@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.mysql.visitor;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnDefinitionContext;
@@ -42,25 +43,26 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
  */
 @Getter
 @Setter
-public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<Boolean> {
+public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<SqlStats> {
 
     private SqlStats sqlStats = new SqlStats();
 
     @Override
-    public Boolean visitTableFactor(final TableFactorContext ctx) {
+    public SqlStats visitTableFactor(final TableFactorContext ctx) {
         if (null != ctx.tableName()) {
             SimpleTableSegment tableSegment = getTableName(ctx.tableName());
             if (null != ctx.alias()) {
                 tableSegment.setAlias(getAlias(ctx.alias()));
             }
             sqlStats.addTable(tableSegment);
-            return true;
+            return sqlStats;
         }
-        return super.visitTableFactor(ctx);
+        super.visitTableFactor(ctx);
+        return sqlStats;
     }
 
     @Override
-    public Boolean visitInsert(final InsertContext ctx) {
+    public SqlStats visitInsert(final InsertContext ctx) {
         SimpleTableSegment tableSegment = getTableName(ctx.tableName());
         sqlStats.addTable(tableSegment);
         if (null != ctx.insertValuesClause()) {
@@ -70,21 +72,21 @@ public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<Boolean
         } else {
             visit(ctx.setAssignmentsClause());
         }
-        return true;
+        return sqlStats;
     }
 
     @Override
-    public Boolean visitColumnRef(final ColumnRefContext ctx) {
+    public SqlStats visitColumnRef(final ColumnRefContext ctx) {
         ColumnSegment column = getColumn(ctx);
         sqlStats.addColumn(column);
-        return true;
+        return sqlStats;
     }
 
     @Override
-    public Boolean visitColumnDefinition(final ColumnDefinitionContext ctx) {
+    public SqlStats visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = getColumn(ctx.column_name);
         sqlStats.addColumn(column);
-        return true;
+        return sqlStats;
     }
 
     private ColumnSegment getColumn(final ColumnRefContext ctx) {
@@ -123,22 +125,28 @@ public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<Boolean
     }
 
     @Override
-    public Boolean visitTableName(final TableNameContext ctx) {
+    public SqlStats visitTableName(final TableNameContext ctx) {
         SimpleTableSegment tableSegment = getTableName(ctx);
         sqlStats.addTable(tableSegment);
-        return true;
+        return sqlStats;
     }
 
     @Override
-    public Boolean visitTableWild(final TableWildContext ctx) {
+    public SqlStats visitTableWild(final TableWildContext ctx) {
         ColumnSegment column = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue("*"));
         IdentifierContext owner = ctx.identifier().get(ctx.identifier().size() - 1);
         column.setOwner(new OwnerSegment(owner.start.getStartIndex(), owner.stop.getStopIndex(), new IdentifierValue(owner.getText())));
         sqlStats.addColumn(column);
-        return true;
+        return sqlStats;
     }
 
     private IdentifierValue getTableFromIden(final IdentifierContext ctx) {
         return new IdentifierValue(ctx.getText());
+    }
+
+    @Override
+    public SqlStats visitTerminal(final TerminalNode node) {
+        super.visitTerminal(node);
+        return sqlStats;
     }
 }
