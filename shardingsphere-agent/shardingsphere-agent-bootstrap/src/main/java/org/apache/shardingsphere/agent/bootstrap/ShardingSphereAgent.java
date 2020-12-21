@@ -24,7 +24,6 @@ import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.core.LoggingListener;
 import org.apache.shardingsphere.agent.core.ShardingSphereTransformer;
-import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.AgentConfigurationLoader;
 import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
 import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
@@ -45,22 +44,24 @@ public class ShardingSphereAgent {
      * @throws IOException IO exception
      */
     public static void premain(final String agentArgs, final Instrumentation instrumentation) throws IOException {
-        AgentConfiguration agentConfiguration = AgentConfigurationLoader.load();
-        SingletonHolder.INSTANCE.put(agentConfiguration);
-        ByteBuddy byteBuddy = new ByteBuddy().with(TypeValidation.ENABLED);
-        AgentBuilder builder = new AgentBuilder.Default()
-            .with(byteBuddy)
-            .ignore(ElementMatchers.isSynthetic())
-            .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."));
-        AgentPluginLoader agentPluginLoader = AgentPluginLoader.getInstance();
-        agentPluginLoader.loadAllPlugins();
-        builder.type(agentPluginLoader.typeMatcher())
-               .transform(new ShardingSphereTransformer(agentPluginLoader))
-               .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
-               .with(new LoggingListener())
-               .installOn(instrumentation);
-        agentPluginLoader.initialAllServices();
-        agentPluginLoader.startAllServices();
+        SingletonHolder.INSTANCE.put(AgentConfigurationLoader.load());
+        AgentPluginLoader agentPluginLoader = createAgentPluginLoader();
+        setUpAgentBuilder(instrumentation, agentPluginLoader);
         Runtime.getRuntime().addShutdownHook(new Thread(agentPluginLoader::shutdownAllServices));
+    }
+    
+    private static AgentPluginLoader createAgentPluginLoader() throws IOException {
+        AgentPluginLoader result = AgentPluginLoader.getInstance();
+        result.loadAllPlugins();
+        result.initialAllServices();
+        result.startAllServices();
+        return result;
+    }
+    
+    private static void setUpAgentBuilder(final Instrumentation instrumentation, final AgentPluginLoader agentPluginLoader) {
+        AgentBuilder agentBuilder = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
+                .ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."));
+        agentBuilder.type(agentPluginLoader.typeMatcher())
+                .transform(new ShardingSphereTransformer(agentPluginLoader)).with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION).with(new LoggingListener()).installOn(instrumentation);
     }
 }

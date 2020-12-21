@@ -19,7 +19,7 @@
 package org.apache.shardingsphere.agent.core;
 
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.agent.builder.AgentBuilder;
+import net.bytebuddy.agent.builder.AgentBuilder.Listener;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.utility.JavaModule;
@@ -28,7 +28,7 @@ import net.bytebuddy.utility.JavaModule;
  * Listener to log what is informed about events that occur during an instrumentation process.
  */
 @Slf4j
-public class LoggingListener implements AgentBuilder.Listener {
+public class LoggingListener implements Listener {
     
     @Override
     public void onDiscovery(final String typeName, final ClassLoader classLoader, final JavaModule module, final boolean loaded) {
