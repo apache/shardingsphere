@@ -19,43 +19,40 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent-plugin-metrics</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>shardingsphere-agent-metrics-api</artifactId>
-
+    <name>${project.artifactId}</name>
+    
     <properties>
         <prometheus.version>0.6.0</prometheus.version>
         <prometheus.jmx.version>0.10</prometheus.jmx.version>
     </properties>
-
+    
     <dependencies>
         <dependency>
             <groupId>io.prometheus</groupId>
             <artifactId>simpleclient</artifactId>
             <version>${prometheus.version}</version>
         </dependency>
-
         <dependency>
             <groupId>io.prometheus</groupId>
             <artifactId>simpleclient_hotspot</artifactId>
             <version>${prometheus.version}</version>
         </dependency>
-
         <dependency>
             <groupId>io.prometheus.jmx</groupId>
             <artifactId>collector</artifactId>
             <version>${prometheus.jmx.version}</version>
         </dependency>
-
         <dependency>
             <groupId>io.prometheus</groupId>
             <artifactId>simpleclient_httpserver</artifactId>
             <version>${prometheus.version}</version>
         </dependency>
     </dependencies>
-
 </project>
