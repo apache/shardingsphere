@@ -500,16 +500,18 @@
     <delete sql-case-id="delete_with_query_hint" parameters="1000">
         <table name="t_order" start-index="12" stop-index="18" />
         <where start-index="20" stop-index="37" literal-stop-index="40">
-            <and-predicate>
-                <predicate start-index="26" stop-index="37" literal-stop-index="40">
-                    <column-left-value name="order_id" start-index="26" stop-index="33" />
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="37" stop-index="37" />
+            <expr>
+                <binary-operation-expression start-index="26" stop-index="37" literal-stop-index="40">
+                    <left>
+                        <column name="order_id" start-index="26" stop-index="33" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
                         <literal-expression value="1000" start-index="37" stop-index="40" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+                        <parameter-marker-expression value="0" start-index="37" stop-index="37" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </delete>
 </sql-parser-test-cases>
