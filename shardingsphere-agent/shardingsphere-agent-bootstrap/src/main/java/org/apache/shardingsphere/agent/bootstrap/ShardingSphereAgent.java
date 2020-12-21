@@ -13,7 +13,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.apache.shardingsphere.agent.bootstrap;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.agent.core.LoggingListener;
 import org.apache.shardingsphere.agent.core.ShardingSphereTransformer;
 import org.apache.shardingsphere.agent.core.config.AgentConfigurationLoader;
 import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
+import org.apache.shardingsphere.agent.core.plugin.ServiceSupervisor;
 import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
 
 import java.io.IOException;
@@ -47,15 +47,19 @@ public class ShardingSphereAgent {
         SingletonHolder.INSTANCE.put(AgentConfigurationLoader.load());
         AgentPluginLoader agentPluginLoader = createAgentPluginLoader();
         setUpAgentBuilder(instrumentation, agentPluginLoader);
-        Runtime.getRuntime().addShutdownHook(new Thread(agentPluginLoader::shutdownAllServices));
+        superviseServices(agentPluginLoader.getServices());
     }
     
     private static AgentPluginLoader createAgentPluginLoader() throws IOException {
         AgentPluginLoader result = AgentPluginLoader.getInstance();
         result.loadAllPlugins();
-        result.initialAllServices();
-        result.startAllServices();
         return result;
+    }
+    
+    private static void superviseServices(final ServiceSupervisor serviceSupervisor) {
+        serviceSupervisor.setUpAllServices();
+        serviceSupervisor.startAllServices();
+        Runtime.getRuntime().addShutdownHook(new Thread(serviceSupervisor::cleanUpAllServices));
     }
     
     private static void setUpAgentBuilder(final Instrumentation instrumentation, final AgentPluginLoader agentPluginLoader) {
