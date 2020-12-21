@@ -19,7 +19,7 @@
 package org.apache.shardingsphere.agent.core;
 
 import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.agent.builder.AgentBuilder;
+import net.bytebuddy.agent.builder.AgentBuilder.Transformer;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.FieldAccessor;
@@ -41,7 +41,7 @@ import org.apache.shardingsphere.agent.core.plugin.point.InstanceMethodPoint;
  * Shardingsphere transformer.
  */
 @Slf4j
-public class ShardingSphereTransformer implements AgentBuilder.Transformer {
+public class ShardingSphereTransformer implements Transformer {
     
     private static final String SS_EXTRA_DATA = "_$EXTRA_DATA$_";
     
