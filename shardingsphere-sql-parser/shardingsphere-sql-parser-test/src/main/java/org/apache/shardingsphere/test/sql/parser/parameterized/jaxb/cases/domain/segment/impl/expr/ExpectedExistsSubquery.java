@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.impl.expression;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.complex.ExpectedComplexExpressionSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.ExpectedProjection;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.simple.ExpectedSubquery;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
-@Getter
 @Setter
-public final class ExpectedExpressionProjection extends AbstractExpectedSQLSegment implements ExpectedProjection, ExpectedComplexExpressionSegment {
+@Getter
+public class ExpectedExistsSubquery extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
+    @XmlElement(name = "not")
+    private boolean not;
 
-    @XmlAttribute(name = "text")
-    private String text;
-
-    @XmlAttribute(name = "literal-text")
-    private String literalText;
-
-    @XmlAttribute(name = "alias")
-    private String alias;
+    @XmlElement(name = "subquery")
+    private ExpectedSubquery subquery;
 }

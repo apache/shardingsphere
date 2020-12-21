@@ -19,23 +19,20 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedDelimiterSQLSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTableOwner;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedIdentifierSQLSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.ExpectedProjection;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedOwner;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 @Getter
 @Setter
-public final class ExpectedColumnProjection extends AbstractExpectedDelimiterSQLSegment implements ExpectedProjection {
-    
-    @XmlAttribute
-    private String name;
+public final class ExpectedColumnProjection extends AbstractExpectedIdentifierSQLSegment implements ExpectedProjection {
     
     @XmlAttribute
     private String alias;
     
     @XmlElement
-    private ExpectedSimpleTableOwner owner;
+    private ExpectedOwner owner;
 }

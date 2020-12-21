@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedDelimiterSQLSegment;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Expected simple table owner.
+ * Abstract expected delimiter SQL segment.
  */
 @Getter
 @Setter
-public final class ExpectedSimpleTableOwner extends AbstractExpectedDelimiterSQLSegment {
-    
+public abstract class AbstractExpectedIdentifierSQLSegment extends AbstractExpectedDelimiterSQLSegment implements ExpectedIdentifierSQLSegment {
+
     @XmlAttribute
     private String name;
 }

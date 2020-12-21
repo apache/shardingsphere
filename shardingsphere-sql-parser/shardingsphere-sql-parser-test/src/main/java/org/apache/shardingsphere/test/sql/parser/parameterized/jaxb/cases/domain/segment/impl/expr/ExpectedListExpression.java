@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.impl.expression;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.complex.ExpectedComplexExpressionSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.ExpectedProjection;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
-@Getter
 @Setter
-public final class ExpectedExpressionProjection extends AbstractExpectedSQLSegment implements ExpectedProjection, ExpectedComplexExpressionSegment {
+@Getter
+public class ExpectedListExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
 
-    @XmlAttribute(name = "text")
-    private String text;
-
-    @XmlAttribute(name = "literal-text")
-    private String literalText;
-
-    @XmlAttribute(name = "alias")
-    private String alias;
+    @XmlElement(name = "items")
+    private List<ExpectedExpression> items = new LinkedList<>();
 }
