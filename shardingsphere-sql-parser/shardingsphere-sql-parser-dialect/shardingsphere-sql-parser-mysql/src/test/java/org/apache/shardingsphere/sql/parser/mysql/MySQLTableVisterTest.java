@@ -84,7 +84,7 @@ public final class MySQLTableVisterTest {
         ParseTree tree = ((ParseASTNode) parser.parse()).getRootNode();
         MySQLSQLStatVisitor visitor = new MySQLSQLStatVisitor();
         visitor.visit(tree);
-        Assert.assertThat("table assert error", visitor.getTables().keySet().size(), Matchers.is(tableNum));
-        Assert.assertThat("column assert error", visitor.getColumns().keySet().size(), Matchers.is(columnNum));
+        Assert.assertThat("table assert error", visitor.getSqlStats().getTables().keySet().size(), Matchers.is(tableNum));
+        Assert.assertThat("column assert error", visitor.getSqlStats().getColumns().keySet().size(), Matchers.is(columnNum));
     }
 }

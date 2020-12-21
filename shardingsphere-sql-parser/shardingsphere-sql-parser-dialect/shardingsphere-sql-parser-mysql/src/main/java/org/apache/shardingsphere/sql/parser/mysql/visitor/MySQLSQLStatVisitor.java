@@ -29,15 +29,13 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OwnerCo
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableFactorContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableWildContext;
+import org.apache.shardingsphere.sql.parser.sql.common.SqlStats;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * MySQL SQL Stats visitor for MySQL.
@@ -46,9 +44,7 @@ import java.util.Map;
 @Setter
 public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<Boolean> {
 
-    private Map<String, SimpleTableSegment> tables = new LinkedHashMap<>();
-
-    private Map<Integer, ColumnSegment> columns = new LinkedHashMap<>();
+    private SqlStats sqlStats = new SqlStats();
 
     @Override
     public Boolean visitTableFactor(final TableFactorContext ctx) {
@@ -57,7 +53,7 @@ public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<Boolean
             if (null != ctx.alias()) {
                 tableSegment.setAlias(getAlias(ctx.alias()));
             }
-            addTable(tableSegment);
+            sqlStats.addTable(tableSegment);
             return true;
         }
         return super.visitTableFactor(ctx);
@@ -66,7 +62,7 @@ public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<Boolean
     @Override
     public Boolean visitInsert(final InsertContext ctx) {
         SimpleTableSegment tableSegment = getTableName(ctx.tableName());
-        addTable(tableSegment);
+        sqlStats.addTable(tableSegment);
         if (null != ctx.insertValuesClause()) {
             visit(ctx.insertValuesClause());
         } else if (null != ctx.insertSelectClause()) {
@@ -80,14 +76,14 @@ public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<Boolean
     @Override
     public Boolean visitColumnRef(final ColumnRefContext ctx) {
         ColumnSegment column = getColumn(ctx);
-        addColumn(column);
+        sqlStats.addColumn(column);
         return true;
     }
 
     @Override
     public Boolean visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = getColumn(ctx.column_name);
-        addColumn(column);
+        sqlStats.addColumn(column);
         return true;
     }
 
@@ -129,7 +125,7 @@ public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<Boolean
     @Override
     public Boolean visitTableName(final TableNameContext ctx) {
         SimpleTableSegment tableSegment = getTableName(ctx);
-        addTable(tableSegment);
+        sqlStats.addTable(tableSegment);
         return true;
     }
 
@@ -138,31 +134,7 @@ public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<Boolean
         ColumnSegment column = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue("*"));
         IdentifierContext owner = ctx.identifier().get(ctx.identifier().size() - 1);
         column.setOwner(new OwnerSegment(owner.start.getStartIndex(), owner.stop.getStopIndex(), new IdentifierValue(owner.getText())));
-        addColumn(column);
-        return true;
-    }
-
-    private int hashCode(final ColumnSegment column) {
-        StringBuilder columString = new StringBuilder();
-        if (column.getOwner().isPresent()) {
-            columString.append(column.getOwner().get().getIdentifier().getValue());
-        }
-        columString.append(column.getIdentifier().getValue());
-        return columString.toString().hashCode();
-    }
-
-    private Boolean addTable(final SimpleTableSegment tableSegment) {
-        if (!tables.containsKey(tableSegment.getTableName().getIdentifier().getValue())) {
-            tables.put(tableSegment.getTableName().getIdentifier().getValue(), tableSegment);
-        }
-        return true;
-    }
-
-    private Boolean addColumn(final ColumnSegment column) {
-        int columnHashcode = hashCode(column);
-        if (!columns.containsKey(columnHashcode)) {
-            columns.put(columnHashcode, column);
-        }
+        sqlStats.addColumn(column);
         return true;
     }
 
