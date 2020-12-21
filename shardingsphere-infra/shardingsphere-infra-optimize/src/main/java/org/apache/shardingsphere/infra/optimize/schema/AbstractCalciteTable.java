@@ -90,7 +90,6 @@ public abstract class AbstractCalciteTable extends AbstractTable {
         return dataSources.get(result);
     }
     
-    
     @Override
     public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
         return relProtoDataType.apply(typeFactory);
