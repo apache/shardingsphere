@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
 
 import java.io.Closeable;
 import java.util.Collection;
@@ -58,6 +59,13 @@ public interface MetaDataContexts extends Closeable {
      * @return executor engine
      */
     ExecutorEngine getExecutorEngine();
+    
+    /**
+     * Get calcite context factory.
+     *
+     * @return calcite context factory
+     */
+    CalciteContextFactory getCalciteContextFactory();
     
     /**
      * Get authentication.

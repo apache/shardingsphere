@@ -40,21 +40,11 @@ public final class CalciteSchema extends AbstractSchema {
     
     private final Map<String, Table> tables = new LinkedMap<>();
 
-    public CalciteSchema(final Map<String, DataSource> dataSources,
-                         final Map<String, Collection<DataNode>> dataNodes, final DatabaseType databaseType) throws SQLException {
-        for (Entry<String, Collection<DataNode>> entry : dataNodes.entrySet()) {
-            tables.put(entry.getKey(), createTable(dataSources, entry.getValue(), databaseType));
+    public CalciteSchema(final Map<String, DataSource> dataSources, final Map<String, Collection<String>> dataSourceRules,
+                         final Map<String, Collection<DataNode>> tableDataNodes, final DatabaseType databaseType) throws SQLException {
+        for (Entry<String, Collection<DataNode>> entry : tableDataNodes.entrySet()) {
+            tables.put(entry.getKey(), new CalciteFilterableTable(dataSources, dataSourceRules, entry.getValue(), databaseType));
         }
-    }
-    
-    private Table createTable(final Map<String, DataSource> dataSources, final Collection<DataNode> dataNodes, final DatabaseType databaseType) throws SQLException {
-        Map<String, DataSource> tableDataSources = new LinkedMap<>();
-        for (DataNode each : dataNodes) {
-            if (dataSources.containsKey(each.getDataSourceName())) {
-                tableDataSources.put(each.getDataSourceName(), dataSources.get(each.getDataSourceName()));
-            }
-        }
-        return new CalciteFilterableTable(tableDataSources, dataNodes, databaseType);
     }
     
     @Override

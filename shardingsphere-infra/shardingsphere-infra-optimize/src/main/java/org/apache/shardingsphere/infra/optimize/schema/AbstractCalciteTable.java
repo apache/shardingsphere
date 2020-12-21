@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
@@ -48,26 +49,27 @@ public abstract class AbstractCalciteTable extends AbstractTable {
     
     private final Map<String, DataSource> dataSources = new LinkedMap<>();
     
-    private final Collection<DataNode> dataNodes = new LinkedList<>();
+    private final Map<String, Collection<String>> dataSourceRules = new LinkedHashMap<>();
+    
+    private final Collection<DataNode> tableDataNodes = new LinkedList<>();
     
     private final TableMetaData tableMetaData;
     
     private final RelProtoDataType relProtoDataType;
     
-    public AbstractCalciteTable(final Map<String, DataSource> dataSources, final Collection<DataNode> dataNodes, final DatabaseType databaseType) throws SQLException {
+    public AbstractCalciteTable(final Map<String, DataSource> dataSources, final Map<String, Collection<String>> dataSourceRules,
+                                final Collection<DataNode> tableDataNodes, final DatabaseType databaseType) throws SQLException {
         this.dataSources.putAll(dataSources);
-        this.dataNodes.addAll(dataNodes);
-        tableMetaData = createTableMetaData(dataSources, dataNodes, databaseType);
+        this.dataSourceRules.putAll(dataSourceRules);
+        this.tableDataNodes.addAll(tableDataNodes);
+        tableMetaData = createTableMetaData(databaseType);
         relProtoDataType = getRelDataType();
     }
     
-    private TableMetaData createTableMetaData(final Map<String, DataSource> dataSources, final Collection<DataNode> dataNodes, final DatabaseType databaseType) throws SQLException {
-        DataNode dataNode = dataNodes.iterator().next();
-        Optional<TableMetaData> tableMetaData = TableMetaDataLoader.load(dataSources.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType);
-        if (!tableMetaData.isPresent()) {
-            throw new RuntimeException("No table metaData.");
-        }
-        return tableMetaData.get();
+    private TableMetaData createTableMetaData(final DatabaseType databaseType) throws SQLException {
+        DataNode dataNode = tableDataNodes.iterator().next();
+        Optional<TableMetaData> tableMetaData = TableMetaDataLoader.load(getActualDataSource(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType);
+        return tableMetaData.orElseGet(TableMetaData::new);
     }
     
     private RelProtoDataType getRelDataType() {
@@ -78,6 +80,14 @@ public abstract class AbstractCalciteTable extends AbstractTable {
             fieldInfo.add(entry.getKey(), null == sqlTypeName ? typeFactory.createUnknownType() : typeFactory.createTypeWithNullability(typeFactory.createSqlType(sqlTypeName), true));
         }
         return RelDataTypeImpl.proto(fieldInfo.build());
+    }
+    
+    protected final DataSource getActualDataSource(final String logicDataSource) {
+        String result = logicDataSource;
+        if (dataSourceRules.containsKey(logicDataSource)) {
+            result = dataSourceRules.get(logicDataSource).iterator().next();
+        }
+        return dataSources.get(result);
     }
     
     @Override

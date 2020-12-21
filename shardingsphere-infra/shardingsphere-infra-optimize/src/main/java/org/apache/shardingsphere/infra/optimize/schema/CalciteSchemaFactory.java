@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -52,11 +53,12 @@ public final class CalciteSchemaFactory {
     }
     
     private CalciteSchema createCalciteSchema(final ShardingSphereMetaData metaData) throws SQLException {
-        Collection<DataNodeContainedRule> dataNodeRules = getDataNodeRules(metaData);
-        return new CalciteSchema(metaData.getResource().getDataSources(), getDataNodes(dataNodeRules), metaData.getResource().getDatabaseType());
+        Collection<DataNodeContainedRule> dataNodeRules = getDataNodeContainedRules(metaData);
+        return new CalciteSchema(metaData.getResource().getDataSources(), getDataSourceRules(metaData),
+                getTableDataNodes(dataNodeRules), metaData.getResource().getDatabaseType());
     }
     
-    private Collection<DataNodeContainedRule> getDataNodeRules(final ShardingSphereMetaData metaData) {
+    private Collection<DataNodeContainedRule> getDataNodeContainedRules(final ShardingSphereMetaData metaData) {
         Collection<DataNodeContainedRule> result = new LinkedList<>();
         for (ShardingSphereRule each : metaData.getRuleMetaData().getRules()) {
             if (each instanceof DataNodeContainedRule) {
@@ -66,7 +68,17 @@ public final class CalciteSchemaFactory {
         return result;
     }
     
-    private Map<String, Collection<DataNode>> getDataNodes(final Collection<DataNodeContainedRule> dataNodeRules) {
+    private Map<String, Collection<String>> getDataSourceRules(final ShardingSphereMetaData metaData) {
+        Map<String, Collection<String>> result = new LinkedHashMap<>();
+        for (ShardingSphereRule each : metaData.getRuleMetaData().getRules()) {
+            if (each instanceof DataSourceContainedRule) {
+                result.putAll(((DataSourceContainedRule) each).getDataSourceMapper());
+            }
+        }
+        return result;
+    }
+    
+    private Map<String, Collection<DataNode>> getTableDataNodes(final Collection<DataNodeContainedRule> dataNodeRules) {
         Map<String, Collection<DataNode>> result = new LinkedHashMap<>();
         for (DataNodeContainedRule each : dataNodeRules) {
             result.putAll(each.getAllDataNodes());
