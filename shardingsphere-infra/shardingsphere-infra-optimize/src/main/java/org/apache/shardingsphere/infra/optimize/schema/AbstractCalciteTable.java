@@ -62,13 +62,13 @@ public abstract class AbstractCalciteTable extends AbstractTable {
         this.dataSources.putAll(dataSources);
         this.dataSourceRules.putAll(dataSourceRules);
         this.tableDataNodes.addAll(tableDataNodes);
-        tableMetaData = createTableMetaData(dataSources, tableDataNodes, databaseType);
+        tableMetaData = createTableMetaData(databaseType);
         relProtoDataType = getRelDataType();
     }
     
-    private TableMetaData createTableMetaData(final Map<String, DataSource> dataSources, final Collection<DataNode> dataNodes, final DatabaseType databaseType) throws SQLException {
-        DataNode dataNode = dataNodes.iterator().next();
-        Optional<TableMetaData> tableMetaData = TableMetaDataLoader.load(dataSources.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType);
+    private TableMetaData createTableMetaData(final DatabaseType databaseType) throws SQLException {
+        DataNode dataNode = tableDataNodes.iterator().next();
+        Optional<TableMetaData> tableMetaData = TableMetaDataLoader.load(getActualDataSource(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType);
         return tableMetaData.orElseGet(TableMetaData::new);
     }
     
