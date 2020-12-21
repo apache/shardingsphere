@@ -45,23 +45,23 @@ public class ShardingSphereAgent {
      */
     public static void premain(final String agentArgs, final Instrumentation instrumentation) throws IOException {
         SingletonHolder.INSTANCE.put(AgentConfigurationLoader.load());
-        AgentBuilder agentBuilder = createAgentBuilder();
-        AgentPluginLoader agentPluginLoader = createAgentPluginLoader(instrumentation, agentBuilder);
+        AgentPluginLoader agentPluginLoader = createAgentPluginLoader();
+        setUpAgentBuilder(instrumentation, agentPluginLoader);
         Runtime.getRuntime().addShutdownHook(new Thread(agentPluginLoader::shutdownAllServices));
     }
     
-    private static AgentBuilder createAgentBuilder() {
-        ByteBuddy byteBuddy = new ByteBuddy().with(TypeValidation.ENABLED);
-        return new AgentBuilder.Default().with(byteBuddy).ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."));
-    }
-    
-    private static AgentPluginLoader createAgentPluginLoader(final Instrumentation instrumentation, final AgentBuilder agentBuilder) throws IOException {
+    private static AgentPluginLoader createAgentPluginLoader() throws IOException {
         AgentPluginLoader result = AgentPluginLoader.getInstance();
         result.loadAllPlugins();
-        agentBuilder.type(result.typeMatcher())
-                .transform(new ShardingSphereTransformer(result)).with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION).with(new LoggingListener()).installOn(instrumentation);
         result.initialAllServices();
         result.startAllServices();
         return result;
+    }
+    
+    private static void setUpAgentBuilder(final Instrumentation instrumentation, final AgentPluginLoader agentPluginLoader) {
+        AgentBuilder agentBuilder = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
+                .ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent."));
+        agentBuilder.type(agentPluginLoader.typeMatcher())
+                .transform(new ShardingSphereTransformer(agentPluginLoader)).with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION).with(new LoggingListener()).installOn(instrumentation);
     }
 }
