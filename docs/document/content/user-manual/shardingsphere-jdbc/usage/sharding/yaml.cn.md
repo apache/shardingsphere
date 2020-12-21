@@ -22,17 +22,21 @@ ShardingSphere-JDBC 的 YAML 配置文件 通过数据源集合、规则集合�
 # 配置真实数据源
 dataSources:
   # 配置第 1 个数据源
-  ds0: !!org.apache.commons.dbcp2.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds0
-    username: root
-    password:
+  ds0:
+    dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+    props:
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/ds0
+        username: root
+        password:
   # 配置第 2 个数据源
-  ds1: !!org.apache.commons.dbcp2.BasicDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds1
-    username: root
-    password: 
+  ds1:
+    dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+    props:
+        driverClassName: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/ds1
+        username: root
+        password: 
 
 rules:
 # 配置分片规则
