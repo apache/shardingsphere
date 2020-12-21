@@ -64,10 +64,7 @@ public abstract class AbstractCalciteTable extends AbstractTable {
     private TableMetaData createTableMetaData(final Map<String, DataSource> dataSources, final Collection<DataNode> dataNodes, final DatabaseType databaseType) throws SQLException {
         DataNode dataNode = dataNodes.iterator().next();
         Optional<TableMetaData> tableMetaData = TableMetaDataLoader.load(dataSources.get(dataNode.getDataSourceName()), dataNode.getTableName(), databaseType);
-        if (!tableMetaData.isPresent()) {
-            throw new RuntimeException("No table metaData.");
-        }
-        return tableMetaData.get();
+        return tableMetaData.orElseGet(TableMetaData::new);
     }
     
     private RelProtoDataType getRelDataType() {
