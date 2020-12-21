@@ -83,7 +83,7 @@ public final class MGRHAType implements HAType {
     private void checkReplicaMemberCount(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(MEMBER_COUNT)) {
             while (resultSet.next()) {
-                if (Integer.parseInt(resultSet.getString(1)) < 1) {
+                if (resultSet.getInt(1) < 1) {
                     throw new ShardingSphereConfigurationException("MGR member count < 1");
                 }
             }
