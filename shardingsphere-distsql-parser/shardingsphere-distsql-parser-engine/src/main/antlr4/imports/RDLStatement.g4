@@ -63,6 +63,14 @@ createShardingRule
     : CREATE SHARDING RULE LP tableRule (COMMA tableRule)* RP
     ;
 
+createReplicaQueryRule
+    : CREATE REPLICA_QUERY RULE LP replicaQueryRule (COMMA replicaQueryRule)* RP
+    ;
+
+replicaQueryRule
+    : logic_ds=schemaName LP PRIMARY EQ primary_ds=schemaName COMMA REPLICA EQ schemaNames RP load_balancer=IDENTIFIER LP  strategyProps RP
+    ;
+
 tableRule
     : tableName EQ tableRuleDefinition
     ;
@@ -105,6 +113,10 @@ showRule
 
 ruleType
     : SHARDING | REPLICA_QUERY | ENCRYPT | SHADOW
+    ;
+
+schemaNames
+    : schemaName (COMMA schemaName)*
     ;
 
 schemaName

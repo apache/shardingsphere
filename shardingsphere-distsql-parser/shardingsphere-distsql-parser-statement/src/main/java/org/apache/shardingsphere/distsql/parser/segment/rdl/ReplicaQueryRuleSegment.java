@@ -15,54 +15,30 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+package org.apache.shardingsphere.distsql.parser.segment.rdl;
 
-import Alphabet;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-WS
-    : [ \t\r\n] + ->skip
-    ;
+import java.util.Collection;
 
-CREATE
-    : C R E A T E
-    ;
-
-DATASOURCES
-    : D A T A S O U R C E S
-    ;
-
-RULE
-    :  R U L E
-    ;
-
-SHOW
-    : S H O W
-    ;
-
-FROM
-    : F R O M
-    ;
-
-SHARDING
-    : S H A R D I N G
-    ;
-   
-REPLICA_QUERY
-    : R E P L I C A UL_ Q U E R Y
-    ;
-
-ENCRYPT
-    : E N C R Y P T
-    ;
-
-SHADOW
-    : S H A D O W
-    ;
-
-PRIMARY
-    : P R I M A R Y
-    ;
-
-REPLICA
-    : R E P L I C A
-    ;
+/**
+ * Table rule segment.
+ */
+@RequiredArgsConstructor
+@Getter
+@Setter
+public final class ReplicaQueryRuleSegment implements ASTNode {
+    
+    private String logicDatasource;
+    
+    private String primaryDatasource;
+    
+    private Collection<String> replicaDatasources;
+    
+    private String loadBalancer;
+    
+    private Collection<String> properties;
+}

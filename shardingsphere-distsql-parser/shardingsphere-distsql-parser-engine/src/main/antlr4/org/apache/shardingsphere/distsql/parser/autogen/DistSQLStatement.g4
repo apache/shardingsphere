@@ -24,5 +24,6 @@ execute
     | createShardingRule
     | showDataSources
     | showRule
+    | createReplicaQueryRule
     ) SEMI?
     ;
