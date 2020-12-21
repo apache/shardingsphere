@@ -21,7 +21,7 @@ package org.apache.shardingsphere.agent.core;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.agent.builder.AgentBuilder.Transformer;
 import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.dynamic.DynamicType;
+import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.SuperMethodCall;
@@ -52,9 +52,9 @@ public class ShardingSphereTransformer implements Transformer {
     }
     
     @Override
-    public DynamicType.Builder<?> transform(final DynamicType.Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module) {
+    public Builder<?> transform(final Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module) {
         if (agentPluginLoader.containsType(typeDescription)) {
-            DynamicType.Builder<?> newBuilder = builder;
+            Builder<?> newBuilder = builder;
             newBuilder = newBuilder.defineField(SS_EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
                     .implement(TargetObject.class)
                     .intercept(FieldAccessor.ofField(SS_EXTRA_DATA));
