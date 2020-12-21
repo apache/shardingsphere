@@ -54,6 +54,11 @@ public final class SingleTableRoutingEngine implements ShardingRouteEngine {
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName.get(), dataSourceName.get()), routingTables));
     }
     
+    private Optional<String> getRandomDataSourceName(final Collection<String> dataSourceNames) {
+        String dataSourceName = Lists.newArrayList(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
+        return Optional.of(dataSourceName);
+    }
+    
     private Optional<String> findDataSourceNameOfSingleTable(final ShardingRule shardingRule) {
         for (String each : logicTables) {
             if (shardingRule.getSingleTableRules().containsKey(each)) {
@@ -61,10 +66,5 @@ public final class SingleTableRoutingEngine implements ShardingRouteEngine {
             }
         }
         return Optional.empty();
-    }
-    
-    private Optional<String> getRandomDataSourceName(final Collection<String> dataSourceNames) {
-        String dataSourceName = Lists.newArrayList(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
-        return Optional.of(dataSourceName);
     }
 }

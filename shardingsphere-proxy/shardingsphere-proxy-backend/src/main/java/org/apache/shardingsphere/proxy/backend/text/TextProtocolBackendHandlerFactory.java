@@ -72,6 +72,10 @@ public final class TextProtocolBackendHandlerFactory {
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((TCLStatement) sqlStatement, sql, backendConnection);
         }
+        Optional<TextProtocolBackendHandler> distSQLBackendHandler = DistSQLBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection);
+        if (distSQLBackendHandler.isPresent()) {
+            return distSQLBackendHandler.get();
+        }
         Optional<DatabaseAdminBackendHandlerFactory> adminBackendHandlerEngine = TypedSPIRegistry.findRegisteredService(
                 DatabaseAdminBackendHandlerFactory.class, databaseType.getName(), new Properties());
         if (adminBackendHandlerEngine.isPresent()) {
@@ -79,10 +83,6 @@ public final class TextProtocolBackendHandlerFactory {
             if (databaseAdminBackendHandler.isPresent()) {
                 return databaseAdminBackendHandler.get();
             }
-        }
-        Optional<TextProtocolBackendHandler> distSQLBackendHandler = DistSQLBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection);
-        if (distSQLBackendHandler.isPresent()) {
-            return distSQLBackendHandler.get();
         }
         return DatabaseBackendHandlerFactory.newInstance(sqlStatement, sql, backendConnection);
     }
