@@ -21,9 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.facade.listener.GovernanceListenerManager;
 import org.apache.shardingsphere.governance.core.facade.repository.GovernanceRepositoryFacade;
-import org.apache.shardingsphere.governance.core.lock.LockCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.core.state.GovernedStateContext;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -47,12 +45,9 @@ public final class GovernanceFacade implements AutoCloseable {
     private ConfigCenter configCenter;
     
     @Getter
-    private RegistryCenter registryCenter;
+    private RegistryCenter registryCenter = RegistryCenter.getInstance();
     
     private GovernanceListenerManager listenerManager;
-    
-    @Getter
-    private LockCenter lockCenter = LockCenter.getInstance();
     
     /**
      * Initialize governance facade.
@@ -63,12 +58,10 @@ public final class GovernanceFacade implements AutoCloseable {
     public void init(final GovernanceConfiguration config, final Collection<String> schemaNames) {
         isOverwrite = config.isOverwrite();
         repositoryFacade = new GovernanceRepositoryFacade(config);
-        registryCenter = new RegistryCenter(repositoryFacade.getRegistryRepository());
+        registryCenter.init(repositoryFacade.getRegistryRepository());
         configCenter = new ConfigCenter(repositoryFacade.getConfigurationRepository());
-        lockCenter.init(repositoryFacade.getRegistryRepository(), registryCenter);
         listenerManager = new GovernanceListenerManager(repositoryFacade.getRegistryRepository(),
                 repositoryFacade.getConfigurationRepository(), schemaNames.isEmpty() ? configCenter.getAllSchemaNames() : schemaNames);
-        GovernedStateContext.startUp();
     }
     
     /**

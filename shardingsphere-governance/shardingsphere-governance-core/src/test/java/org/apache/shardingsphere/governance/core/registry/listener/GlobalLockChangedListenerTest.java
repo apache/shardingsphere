@@ -15,41 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.lock.listener;
+package org.apache.shardingsphere.governance.core.registry.listener;
 
-import lombok.SneakyThrows;
+import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
+import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockAddedEvent;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.lang.reflect.Field;
+import java.util.Optional;
 
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class LockListenerManagerTest {
+public final class GlobalLockChangedListenerTest {
+    
+    private GlobalLockChangedListener globalLockChangedListener;
     
     @Mock
     private RegistryRepository registryRepository;
     
-    @Mock
-    private GlobalLockChangedListener globalLockChangedListener;
-    
-    @Test
-    public void assertInitListeners() {
-        LockListenerManager actual = new LockListenerManager(registryRepository);
-        setField(actual, "globalLockChangedListener", globalLockChangedListener);
-        actual.initListeners();
-        verify(globalLockChangedListener).watch(Type.ADDED);
+    @Before
+    public void setUp() {
+        globalLockChangedListener = new GlobalLockChangedListener(registryRepository);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static void setField(final Object target, final String fieldName, final Object fieldValue) {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(target, fieldValue);
+    @Test
+    public void createEvent() {
+        Optional<GovernanceEvent> actual = globalLockChangedListener.createEvent(new DataChangedEvent("/glock", "", Type.ADDED));
+        assertTrue(actual.isPresent());
+        assertTrue(actual.get() instanceof GlobalLockAddedEvent);
     }
 }

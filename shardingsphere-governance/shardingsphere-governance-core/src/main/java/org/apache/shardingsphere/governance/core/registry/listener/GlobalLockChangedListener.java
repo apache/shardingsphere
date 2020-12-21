@@ -15,40 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.lock.listener;
+package org.apache.shardingsphere.governance.core.registry.listener;
 
+import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockAddedEvent;
+import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.Assert.assertTrue;
-
-@RunWith(MockitoJUnitRunner.class)
-public final class GlobalLockChangedListenerTest {
+/**
+ * Global lock changed listener.
+ */
+public final class GlobalLockChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
-    private GlobalLockChangedListener globalLockChangedListener;
+    private final LockNode lockNode;
     
-    @Mock
-    private RegistryRepository registryRepository;
-    
-    @Before
-    public void setUp() {
-        globalLockChangedListener = new GlobalLockChangedListener(registryRepository);
+    public GlobalLockChangedListener(final RegistryRepository registryRepository) {
+        super(registryRepository, Collections.singleton(new LockNode().getGlobalLockNodePath()));
+        lockNode = new LockNode();
     }
     
-    @Test
-    public void createEvent() {
-        Optional<GovernanceEvent> actual = globalLockChangedListener.createEvent(new DataChangedEvent("/glock", "", Type.ADDED));
-        assertTrue(actual.isPresent());
-        assertTrue(actual.get() instanceof GlobalLockAddedEvent);
+    @Override
+    protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
+        return event.getKey().equals(lockNode.getGlobalLockNodePath()) ? Optional.of(new GlobalLockAddedEvent()) : Optional.empty();
     }
 }

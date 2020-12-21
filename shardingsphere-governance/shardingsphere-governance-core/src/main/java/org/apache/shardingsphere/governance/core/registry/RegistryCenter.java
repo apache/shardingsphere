@@ -18,28 +18,57 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
  * Registry center.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RegistryCenter {
     
-    private final RegistryCenterNode node;
+    private static final int CHECK_RETRY_MAXIMUM = 5;
     
-    private final RegistryRepository repository;
+    private static final int CHECK_RETRY_INTERVAL_SECONDS = 3;
     
-    private final GovernanceInstance instance;
+    private static final RegistryCenter INSTANCE = new RegistryCenter();
     
-    public RegistryCenter(final RegistryRepository registryRepository) {
+    private RegistryCenterNode node;
+    
+    private RegistryRepository repository;
+    
+    private GovernanceInstance instance;
+    
+    private LockNode lockNode;
+    
+    /**
+     * Get registry center instance.
+     *
+     * @return registry center instance
+     */
+    public static RegistryCenter getInstance() {
+        return INSTANCE;
+    }
+    
+    /**
+     * Initialize registry center.
+     * 
+     * @param registryRepository registry repository
+     */
+    public void init(final RegistryRepository registryRepository) {
         node = new RegistryCenterNode();
         repository = registryRepository;
         instance = GovernanceInstance.getInstance();
+        lockNode = new LockNode();
+        registryRepository.initLock(lockNode.getGlobalLockNodePath());
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -111,5 +140,56 @@ public final class RegistryCenter {
     
     private String getDataSourceNodeData(final String schemaName, final String dataSourceName) {
         return repository.get(node.getDataSourcePath(schemaName, dataSourceName));
+    }
+    
+    /**
+     * Try to get global lock.
+     *
+     * @param timeout the maximum time in milliseconds to acquire lock
+     * @param timeUnit time unit
+     * @return true if get the lock, false if not
+     */
+    public boolean tryGlobalLock(final long timeout, final TimeUnit timeUnit) {
+        return repository.tryLock(timeout, timeUnit);
+    }
+    
+    /**
+     * Release global lock.
+     */
+    public void releaseGlobalLock() {
+        repository.releaseLock();
+    }
+    
+    /**
+     * Check lock state.
+     *
+     * @return true if all instances were locked, else false
+     */
+    public boolean checkLock() {
+        return checkOrRetry(this.loadAllInstances());
+    }
+    
+    private boolean checkOrRetry(final Collection<String> instanceIds) {
+        for (int i = 0; i < CHECK_RETRY_MAXIMUM; i++) {
+            if (check(instanceIds)) {
+                return true;
+            }
+            try {
+                Thread.sleep(CHECK_RETRY_INTERVAL_SECONDS * 1000L);
+                // CHECKSTYLE:OFF
+            } catch (final InterruptedException ex) {
+                // CHECKSTYLE:ON
+            }
+        }
+        return false;
+    }
+    
+    private boolean check(final Collection<String> instanceIds) {
+        for (String each : instanceIds) {
+            if (!RegistryCenterNodeStatus.LOCKED.toString().equalsIgnoreCase(this.loadInstanceData(each))) {
+                return false;
+            }
+        }
+        return true;
     }
 }
