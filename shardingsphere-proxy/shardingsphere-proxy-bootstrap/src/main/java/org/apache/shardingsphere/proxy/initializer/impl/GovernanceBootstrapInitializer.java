@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
+import org.apache.shardingsphere.governance.core.lock.strategy.GovernanceLockStrategy;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
@@ -126,6 +127,8 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     @Override
     protected void initLockContext() {
-        LockContext.init(LockStrategyType.GOVERNANCE);
+        GovernanceLockStrategy governanceLockStrategy = (GovernanceLockStrategy) loadLockStrategy(LockStrategyType.GOVERNANCE);
+        governanceLockStrategy.init(governanceFacade.getRegistryCenter());
+        LockContext.init(governanceLockStrategy);
     }
 }

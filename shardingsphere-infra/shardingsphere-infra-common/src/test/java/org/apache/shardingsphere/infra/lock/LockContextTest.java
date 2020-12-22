@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.infra.lock;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertNotNull;
@@ -27,9 +30,13 @@ import static org.junit.Assert.assertTrue;
 
 public final class LockContextTest {
     
+    static {
+        ShardingSphereServiceLoader.register(LockStrategy.class);
+    }
+    
     @Before
     public void init() {
-        LockContext.init(LockStrategyType.STANDARD);
+        LockContext.init(TypedSPIRegistry.getRegisteredService(LockStrategy.class, LockStrategyType.STANDARD.name(), new Properties()));
     }
     
     @Test

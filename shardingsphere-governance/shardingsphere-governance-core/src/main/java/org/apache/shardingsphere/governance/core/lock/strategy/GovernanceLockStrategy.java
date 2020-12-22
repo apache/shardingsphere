@@ -35,9 +35,15 @@ import java.util.concurrent.TimeUnit;
  */
 public final class GovernanceLockStrategy implements LockStrategy {
     
-    private final RegistryCenter registryCenter = RegistryCenter.getInstance();
+    private RegistryCenter registryCenter;
     
-    public GovernanceLockStrategy() {
+    /**
+     * Init governance lock strategy.
+     * 
+     * @param registryCenter registry center
+     */
+    public void init(final RegistryCenter registryCenter) {
+        this.registryCenter = registryCenter;
         ShardingSphereEventBus.getInstance().register(this);
     }
     

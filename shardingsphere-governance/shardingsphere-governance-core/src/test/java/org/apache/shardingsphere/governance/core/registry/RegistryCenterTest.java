@@ -40,11 +40,11 @@ public final class RegistryCenterTest {
     @Mock
     private RegistryRepository registryRepository;
     
-    private RegistryCenter registryCenter = RegistryCenter.getInstance();
+    private RegistryCenter registryCenter;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        registryCenter.init(registryRepository);
+        registryCenter = new RegistryCenter(registryRepository);
         Field field = registryCenter.getClass().getDeclaredField("repository");
         field.setAccessible(true);
         field.set(registryCenter, registryRepository);

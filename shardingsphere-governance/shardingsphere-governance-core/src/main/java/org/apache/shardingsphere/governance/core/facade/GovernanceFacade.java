@@ -45,7 +45,7 @@ public final class GovernanceFacade implements AutoCloseable {
     private ConfigCenter configCenter;
     
     @Getter
-    private RegistryCenter registryCenter = RegistryCenter.getInstance();
+    private RegistryCenter registryCenter;
     
     private GovernanceListenerManager listenerManager;
     
@@ -58,7 +58,7 @@ public final class GovernanceFacade implements AutoCloseable {
     public void init(final GovernanceConfiguration config, final Collection<String> schemaNames) {
         isOverwrite = config.isOverwrite();
         repositoryFacade = new GovernanceRepositoryFacade(config);
-        registryCenter.init(repositoryFacade.getRegistryRepository());
+        registryCenter = new RegistryCenter(repositoryFacade.getRegistryRepository());
         configCenter = new ConfigCenter(repositoryFacade.getConfigurationRepository());
         listenerManager = new GovernanceListenerManager(repositoryFacade.getRegistryRepository(),
                 repositoryFacade.getConfigurationRepository(), schemaNames.isEmpty() ? configCenter.getAllSchemaNames() : schemaNames);

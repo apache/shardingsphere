@@ -39,8 +39,6 @@ public final class RegistryCenter {
     
     private static final int CHECK_RETRY_INTERVAL_SECONDS = 3;
     
-    private static final RegistryCenter INSTANCE = new RegistryCenter();
-    
     private RegistryCenterNode node;
     
     private RegistryRepository repository;
@@ -49,21 +47,7 @@ public final class RegistryCenter {
     
     private LockNode lockNode;
     
-    /**
-     * Get registry center instance.
-     *
-     * @return registry center instance
-     */
-    public static RegistryCenter getInstance() {
-        return INSTANCE;
-    }
-    
-    /**
-     * Initialize registry center.
-     * 
-     * @param registryRepository registry repository
-     */
-    public void init(final RegistryRepository registryRepository) {
+    public RegistryCenter(final RegistryRepository registryRepository) {
         node = new RegistryCenterNode();
         repository = registryRepository;
         instance = GovernanceInstance.getInstance();
