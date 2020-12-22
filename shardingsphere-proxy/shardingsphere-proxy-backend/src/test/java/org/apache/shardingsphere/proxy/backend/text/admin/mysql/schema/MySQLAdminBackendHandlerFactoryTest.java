@@ -20,12 +20,12 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.schema;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowCurrentDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowDatabasesBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowTablesBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.UseDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowCurrentDatabaseExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowDatabasesExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowTablesExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.UseDatabaseExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
@@ -55,31 +55,31 @@ public final class MySQLAdminBackendHandlerFactoryTest {
     
     @Test
     public void assertUseDatabase() {
-        Optional<DatabaseAdminBackendHandler> actual = databaseAdminBackendHandlerFactory.newInstance(mock(MySQLUseStatement.class), mock(BackendConnection.class));
+        Optional<TextProtocolBackendHandler> actual = databaseAdminBackendHandlerFactory.newInstance(mock(MySQLUseStatement.class), mock(BackendConnection.class));
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(UseDatabaseBackendHandler.class));
+        assertThat(actual.get(), instanceOf(UseDatabaseExecutor.class));
     }
     
     @Test
     public void assertShowDatabases() {
-        Optional<DatabaseAdminBackendHandler> actual = databaseAdminBackendHandlerFactory.newInstance(mock(MySQLShowDatabasesStatement.class), mock(BackendConnection.class));
+        Optional<TextProtocolBackendHandler> actual = databaseAdminBackendHandlerFactory.newInstance(mock(MySQLShowDatabasesStatement.class), mock(BackendConnection.class));
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShowDatabasesBackendHandler.class));
+        assertThat(actual.get(), instanceOf(ShowDatabasesExecutor.class));
     }
     
     @Test
     public void assertShowCurrentDatabase() {
         SelectStatement sqlStatement = mock(SelectStatement.class, RETURNS_DEEP_STUBS);
-        when(sqlStatement.getProjections().getProjections().iterator().next()).thenReturn(new ExpressionProjectionSegment(0, 0, ShowCurrentDatabaseBackendHandler.FUNCTION_NAME));
-        Optional<DatabaseAdminBackendHandler> actual = databaseAdminBackendHandlerFactory.newInstance(sqlStatement, mock(BackendConnection.class));
+        when(sqlStatement.getProjections().getProjections().iterator().next()).thenReturn(new ExpressionProjectionSegment(0, 0, ShowCurrentDatabaseExecutor.FUNCTION_NAME));
+        Optional<TextProtocolBackendHandler> actual = databaseAdminBackendHandlerFactory.newInstance(sqlStatement, mock(BackendConnection.class));
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShowCurrentDatabaseBackendHandler.class));
+        assertThat(actual.get(), instanceOf(ShowCurrentDatabaseExecutor.class));
     }
     
     @Test
     public void assertShowTables() {
-        Optional<DatabaseAdminBackendHandler> actual = databaseAdminBackendHandlerFactory.newInstance(mock(MySQLShowTablesStatement.class), mock(BackendConnection.class));
+        Optional<TextProtocolBackendHandler> actual = databaseAdminBackendHandlerFactory.newInstance(mock(MySQLShowTablesStatement.class), mock(BackendConnection.class));
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShowTablesBackendHandler.class));
+        assertThat(actual.get(), instanceOf(ShowTablesExecutor.class));
     }
 }

@@ -17,24 +17,25 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-
-import java.util.Optional;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 /**
- * Database admin backend handler factory.
+ * Database admin query executor.
  */
-public interface DatabaseAdminBackendHandlerFactory extends TypedSPI {
+public interface DatabaseAdminQueryExecutor extends DatabaseAdminExecutor {
     
     /**
-     * Create new instance of database admin backend handler. 
+     * Get query result meta data.
      * 
-     * @param sqlStatement SQL statement
-     * @param backendConnection backend connection
-     * @return new instance of database admin backend handler
+     * @return query result meta data
      */
-    Optional<TextProtocolBackendHandler> newInstance(SQLStatement sqlStatement, BackendConnection backendConnection);
+    QueryResultMetaData getQueryResultMetaData();
+    
+    /**
+     * Get merged result.
+     * 
+     * @return merged result
+     */
+    MergedResult getMergedResult();
 }

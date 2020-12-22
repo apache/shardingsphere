@@ -27,8 +27,8 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFa
 import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowDatabasesBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.UseDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowDatabasesExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.UseDatabaseExecutor;
 import org.apache.shardingsphere.proxy.backend.text.sctl.set.ShardingCTLSetBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.show.ShardingCTLShowBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
@@ -150,14 +150,14 @@ public final class TextProtocolBackendHandlerFactoryTest {
     public void assertNewInstanceWithUse() throws SQLException {
         String sql = "use sharding_db";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(UseDatabaseBackendHandler.class));
+        assertThat(actual, instanceOf(UseDatabaseExecutor.class));
     }
     
     @Test
     public void assertNewInstanceWithShowDatabase() throws SQLException {
         String sql = "show databases";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(ShowDatabasesBackendHandler.class));
+        assertThat(actual, instanceOf(ShowDatabasesExecutor.class));
     }
     
     @Test

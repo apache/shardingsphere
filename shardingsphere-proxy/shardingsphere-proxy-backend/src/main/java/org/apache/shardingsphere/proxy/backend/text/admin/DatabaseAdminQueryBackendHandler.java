@@ -15,39 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler;
+package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
-import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * Backend handler for show tables.
+ * Database admin query backend handler.
  */
 @RequiredArgsConstructor
-public final class ShowTablesBackendHandler implements DatabaseAdminBackendHandler {
+public final class DatabaseAdminQueryBackendHandler implements TextProtocolBackendHandler {
     
     private final BackendConnection backendConnection;
+    
+    private final DatabaseAdminQueryExecutor executor;
     
     private QueryResultMetaData queryResultMetaData;
     
@@ -55,24 +48,13 @@ public final class ShowTablesBackendHandler implements DatabaseAdminBackendHandl
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        queryResultMetaData = createQueryResultMetaData();
-        QueryResult queryResult = getQueryResult();
-        mergedResult = new TransparentMergedResult(queryResult);
+        executor.execute(backendConnection);
+        queryResultMetaData = executor.getQueryResultMetaData();
+        mergedResult = executor.getMergedResult();
+        
+        // TODO process multiple column
+        
         return new QueryResponseHeader(Collections.singletonList(QueryHeaderBuilder.build(queryResultMetaData, ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()), 1)));
-    }
-    
-    private QueryResult getQueryResult() {
-        if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
-            return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
-        }
-        Collection<String> allTableNames = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getSchema().getAllTableNames();
-        List<MemoryQueryResultDataRow> rows = allTableNames.stream().map(each -> new MemoryQueryResultDataRow(Collections.singletonList(each))).collect(Collectors.toList());
-        return new RawMemoryQueryResult(queryResultMetaData, rows);
-    }
-    
-    private QueryResultMetaData createQueryResultMetaData() {
-        String columnName = String.format("Tables_in_%s", backendConnection.getSchemaName());
-        return new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", columnName, columnName, Types.VARCHAR, "VARCHAR", 255, 0)));
     }
     
     @Override

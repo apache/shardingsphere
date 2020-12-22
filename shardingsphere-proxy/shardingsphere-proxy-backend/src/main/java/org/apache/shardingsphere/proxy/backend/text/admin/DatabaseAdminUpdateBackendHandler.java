@@ -17,10 +17,28 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Database admin backend handler.
+ * Database admin update backend handler.
  */
-public interface DatabaseAdminBackendHandler extends TextProtocolBackendHandler {
+@RequiredArgsConstructor
+public final class DatabaseAdminUpdateBackendHandler implements TextProtocolBackendHandler {
+    
+    private final BackendConnection backendConnection;
+    
+    private final SQLStatement sqlStatement;
+    
+    private final DatabaseAdminExecutor executor;
+    
+    @Override
+    public ResponseHeader execute() {
+        executor.execute(backendConnection);
+        return new UpdateResponseHeader(sqlStatement);
+    }
 }

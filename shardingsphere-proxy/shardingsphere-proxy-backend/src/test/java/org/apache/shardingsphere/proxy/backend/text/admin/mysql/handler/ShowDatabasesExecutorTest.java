@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,25 +41,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class ShowDatabasesBackendHandlerTest {
+public final class ShowDatabasesExecutorTest {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     
-    private ShowDatabasesBackendHandler showDatabasesBackendHandler;
+    private ShowDatabasesExecutor showDatabasesExecutor;
     
     @Before
     public void setUp() throws IllegalAccessException, NoSuchFieldException {
-        BackendConnection backendConnection = mock(BackendConnection.class);
-        when(backendConnection.getUsername()).thenReturn("root");
-        when(backendConnection.getSchemaName()).thenReturn("schema_0");
-        showDatabasesBackendHandler = new ShowDatabasesBackendHandler(backendConnection);
+        showDatabasesExecutor = new ShowDatabasesExecutor();
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), 
@@ -86,17 +81,18 @@ public final class ShowDatabasesBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteShowDatabaseBackendHandler() throws SQLException {
-        QueryResponseHeader actual = (QueryResponseHeader) showDatabasesBackendHandler.execute();
-        assertThat(actual, instanceOf(QueryResponseHeader.class));
-        assertThat(actual.getQueryHeaders().size(), is(1));
+    public void assertExecute() throws SQLException {
+        showDatabasesExecutor.execute(mockBackendConnection());
+        assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
+        while (showDatabasesExecutor.getMergedResult().next()) {
+            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is(1));
+        }
     }
     
-    @Test
-    public void assertShowDatabaseUsingStream() throws SQLException {
-        showDatabasesBackendHandler.execute();
-        while (showDatabasesBackendHandler.next()) {
-            assertThat(showDatabasesBackendHandler.getRowData().size(), is(1));
-        }
+    private BackendConnection mockBackendConnection() {
+        BackendConnection result = mock(BackendConnection.class);
+        when(result.getUsername()).thenReturn("root");
+        when(result.getSchemaName()).thenReturn("schema_0");
+        return result;
     }
 }

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.DistSQLBackendHandlerFactory;
@@ -79,7 +78,7 @@ public final class TextProtocolBackendHandlerFactory {
         Optional<DatabaseAdminBackendHandlerFactory> adminBackendHandlerEngine = TypedSPIRegistry.findRegisteredService(
                 DatabaseAdminBackendHandlerFactory.class, databaseType.getName(), new Properties());
         if (adminBackendHandlerEngine.isPresent()) {
-            Optional<DatabaseAdminBackendHandler> databaseAdminBackendHandler = adminBackendHandlerEngine.get().newInstance(sqlStatement, backendConnection);
+            Optional<TextProtocolBackendHandler> databaseAdminBackendHandler = adminBackendHandlerEngine.get().newInstance(sqlStatement, backendConnection);
             if (databaseAdminBackendHandler.isPresent()) {
                 return databaseAdminBackendHandler.get();
             }

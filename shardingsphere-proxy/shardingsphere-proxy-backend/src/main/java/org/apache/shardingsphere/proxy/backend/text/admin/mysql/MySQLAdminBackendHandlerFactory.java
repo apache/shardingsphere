@@ -18,12 +18,16 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowCurrentDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowDatabasesBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowTablesBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.UseDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminQueryExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminUpdateBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowCurrentDatabaseExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowDatabasesExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowTablesExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.UseDatabaseExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -40,21 +44,32 @@ import java.util.Optional;
 public final class MySQLAdminBackendHandlerFactory implements DatabaseAdminBackendHandlerFactory {
     
     @Override
-    public Optional<DatabaseAdminBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
+    public Optional<TextProtocolBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
+        Optional<DatabaseAdminExecutor> executor = createDatabaseAdminExecutor(sqlStatement);
+        if (executor.isPresent()) {
+            if (executor.get() instanceof DatabaseAdminQueryExecutor) {
+                return Optional.of(new DatabaseAdminQueryBackendHandler(backendConnection, (DatabaseAdminQueryExecutor) executor.get()));
+            }
+            return Optional.of(new DatabaseAdminUpdateBackendHandler(backendConnection, sqlStatement, executor.get()));
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<DatabaseAdminExecutor> createDatabaseAdminExecutor(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof MySQLUseStatement) {
-            return Optional.of(new UseDatabaseBackendHandler((MySQLUseStatement) sqlStatement, backendConnection));
+            return Optional.of(new UseDatabaseExecutor((MySQLUseStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowDatabasesStatement) {
-            return Optional.of(new ShowDatabasesBackendHandler(backendConnection));
+            return Optional.of(new ShowDatabasesExecutor());
         }
         if (sqlStatement instanceof MySQLShowTablesStatement) {
-            return Optional.of(new ShowTablesBackendHandler(backendConnection));
+            return Optional.of(new ShowTablesExecutor());
         }
         if (sqlStatement instanceof SelectStatement) {
             ProjectionSegment firstProjection = ((SelectStatement) sqlStatement).getProjections().getProjections().iterator().next();
             if (firstProjection instanceof ExpressionProjectionSegment
-                    && ShowCurrentDatabaseBackendHandler.FUNCTION_NAME.equalsIgnoreCase(((ExpressionProjectionSegment) firstProjection).getText())) {
-                return Optional.of(new ShowCurrentDatabaseBackendHandler(backendConnection));
+                    && ShowCurrentDatabaseExecutor.FUNCTION_NAME.equalsIgnoreCase(((ExpressionProjectionSegment) firstProjection).getText())) {
+                return Optional.of(new ShowCurrentDatabaseExecutor());
             }
         }
         return Optional.empty();

@@ -21,59 +21,46 @@ import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class UseDatabaseBackendHandlerTest {
+public final class ShowTablesExecutorTest {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     
-    private BackendConnection backendConnection;
+    private ShowTablesExecutor showTablesExecutor;
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        backendConnection = mock(BackendConnection.class);
-        when(backendConnection.getUsername()).thenReturn("root");
+        showTablesExecutor = new ShowTablesExecutor();
+        Map<String, ShardingSphereMetaData> metaDataMap = getMetaDataMap();
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), getAuthentication(), new ConfigurationProperties(new Properties())));
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), getAuthentication(), new ConfigurationProperties(new Properties())));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(10, 1);
+        Map<String, ShardingSphereMetaData> result = new HashMap<>(10);
         for (int i = 0; i < 10; i++) {
-            ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-            when(metaData.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap(), null, null, new MySQLDatabaseType()));
-            when(metaData.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
+            ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+            when(metaData.isComplete()).thenReturn(false);
             result.put(String.format(SCHEMA_PATTERN, i), metaData);
         }
         return result;
@@ -87,20 +74,18 @@ public final class UseDatabaseBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteUseStatementBackendHandler() {
-        MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
-        when(useStatement.getSchema()).thenReturn(String.format(SCHEMA_PATTERN, 0));
-        UseDatabaseBackendHandler useSchemaBackendHandler = new UseDatabaseBackendHandler(useStatement, backendConnection);
-        ResponseHeader actual = useSchemaBackendHandler.execute();
-        verify(backendConnection).setCurrentSchema(anyString());
-        assertThat(actual, instanceOf(UpdateResponseHeader.class));
+    public void assertExecute() throws SQLException {
+        showTablesExecutor.execute(mockBackendConnection());
+        assertThat(showTablesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
+        while (showTablesExecutor.getMergedResult().next()) {
+            assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is(1));
+        }
     }
     
-    @Test(expected = UnknownDatabaseException.class)
-    public void assertExecuteUseStatementNotExist() {
-        MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
-        when(useStatement.getSchema()).thenReturn("not_exist");
-        UseDatabaseBackendHandler useSchemaBackendHandler = new UseDatabaseBackendHandler(useStatement, backendConnection);
-        useSchemaBackendHandler.execute();
+    private BackendConnection mockBackendConnection() {
+        BackendConnection result = mock(BackendConnection.class);
+        when(result.getUsername()).thenReturn("root");
+        when(result.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
+        return result;
     }
 }

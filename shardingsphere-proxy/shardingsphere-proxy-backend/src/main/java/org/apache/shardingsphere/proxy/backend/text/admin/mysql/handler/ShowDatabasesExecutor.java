@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -25,13 +25,9 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
-import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,30 +35,25 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Show databases backend handler.
+ * Show databases executor.
  */
-@RequiredArgsConstructor
-public final class ShowDatabasesBackendHandler implements DatabaseAdminBackendHandler {
-    
-    private final BackendConnection backendConnection;
-    
-    private QueryResultMetaData queryResultMetaData;
+@Getter
+public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
     private MergedResult mergedResult;
     
     @Override
-    public ResponseHeader execute() throws SQLException {
-        queryResultMetaData = createQueryResultMetaData();
-        mergedResult = new SingleLocalDataMergedResult(getSchemaNames());
-        return new QueryResponseHeader(Collections.singletonList(QueryHeaderBuilder.build(queryResultMetaData, ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()), 1)));
+    public void execute(final BackendConnection backendConnection) {
+        mergedResult = new SingleLocalDataMergedResult(getSchemaNames(backendConnection));
     }
     
-    private QueryResultMetaData createQueryResultMetaData() {
+    @Override
+    public QueryResultMetaData getQueryResultMetaData() {
         return new RawQueryResultMetaData(
                 Collections.singletonList(new RawQueryResultColumnMetaData("SCHEMATA", "Database", "SCHEMA_NAME", Types.VARCHAR, "VARCHAR", 255, 0)));
     }
     
-    private Collection<Object> getSchemaNames() {
+    private Collection<Object> getSchemaNames(final BackendConnection backendConnection) {
         Collection<Object> result = new LinkedList<>(ProxyContext.getInstance().getAllSchemaNames());
         Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(backendConnection.getUsername());
         Collection<String> authorizedSchemas = user.isPresent() ? user.get().getAuthorizedSchemas() : Collections.emptyList();
@@ -70,15 +61,5 @@ public final class ShowDatabasesBackendHandler implements DatabaseAdminBackendHa
             result.retainAll(authorizedSchemas);
         }
         return result;
-    }
-    
-    @Override
-    public boolean next() throws SQLException {
-        return mergedResult.next();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() throws SQLException {
-        return Collections.singletonList(mergedResult.getValue(1, Object.class));
     }
 }

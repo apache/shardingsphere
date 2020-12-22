@@ -17,24 +17,17 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-
-import java.util.Optional;
 
 /**
- * Database admin backend handler factory.
+ * Database admin executor.
  */
-public interface DatabaseAdminBackendHandlerFactory extends TypedSPI {
+public interface DatabaseAdminExecutor {
     
     /**
-     * Create new instance of database admin backend handler. 
+     * Execute.
      * 
-     * @param sqlStatement SQL statement
      * @param backendConnection backend connection
-     * @return new instance of database admin backend handler
      */
-    Optional<TextProtocolBackendHandler> newInstance(SQLStatement sqlStatement, BackendConnection backendConnection);
+    void execute(BackendConnection backendConnection);
 }
