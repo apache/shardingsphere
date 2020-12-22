@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.repository.api.config;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.TypedSPIConfiguration;
 
 import java.util.Properties;
 
@@ -26,12 +25,17 @@ import java.util.Properties;
  * Governance center configuration.
  */
 @Getter
-public final class GovernanceCenterConfiguration extends TypedSPIConfiguration {
+public final class GovernanceCenterConfiguration {
     
     private final String serverLists;
     
+    private final String type;
+    
+    private final Properties props;
+    
     public GovernanceCenterConfiguration(final String type, final String serverLists, final Properties props) {
-        super(type, props);
         this.serverLists = serverLists;
+        this.type = type;
+        this.props = props;
     }
 }
