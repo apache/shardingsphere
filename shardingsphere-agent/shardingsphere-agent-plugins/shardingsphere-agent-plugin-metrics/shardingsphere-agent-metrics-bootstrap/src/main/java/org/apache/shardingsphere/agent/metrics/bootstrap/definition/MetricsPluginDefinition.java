@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.metrics.bootstrap.definition;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.core.plugin.definition.PluginDefinition;
 import org.apache.shardingsphere.agent.metrics.api.MetricsProvider;
-import org.apache.shardingsphere.agent.metrics.bootstrap.MethodNameConstant;
+import org.apache.shardingsphere.agent.metrics.bootstrap.constant.MethodNameConstant;
 
 /**
  * Metrics plugin definition.
@@ -29,19 +29,19 @@ public final class MetricsPluginDefinition extends PluginDefinition {
     
     private static final String COMMAND_EXECUTOR_TASK_ENHANCE_CLASS = "org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask";
     
-    private static final String COMMAND_EXECUTOR_TASK_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.bootstrap.CommandExecutorTaskAdvice";
+    private static final String COMMAND_EXECUTOR_TASK_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.bootstrap.advice.CommandExecutorTaskAdvice";
     
     private static final String CHANNEL_HANDLER_ENHANCE_CLASS = "org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler";
     
-    private static final String CHANNEL_HANDLER_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.bootstrap.ChannelHandlerAdvice";
+    private static final String CHANNEL_HANDLER_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.bootstrap.advice.ChannelHandlerAdvice";
     
     private static final String SQL_ROUTER_ENGINE_ENHANCE_CLASS = "org.apache.shardingsphere.infra.route.engine.SQLRouteEngine";
     
-    private static final String SQL_ROUTER_ENGINE_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.bootstrap.SQLRouteEngineAdvice";
+    private static final String SQL_ROUTER_ENGINE_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.bootstrap.advice.SQLRouteEngineAdvice";
     
     private static final String TRANSACTION_ENHANCE_CLASS = "org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager";
     
-    private static final String TRANSACTION_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.bootstrap.TransactionAdvice";
+    private static final String TRANSACTION_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.bootstrap.advice.TransactionAdvice";
     
     public MetricsPluginDefinition() {
         super("Metrics");
@@ -50,7 +50,7 @@ public final class MetricsPluginDefinition extends PluginDefinition {
     @Override
     protected void define() {
         intercept(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
-                .aroundInstanceMethod(ElementMatchers.named("run"))
+                .aroundInstanceMethod(ElementMatchers.named(MethodNameConstant.COMMAND_EXECUTOR_RUN))
                 .implement(COMMAND_EXECUTOR_TASK_ADVICE_CLASS)
                 .build();
         intercept(CHANNEL_HANDLER_ENHANCE_CLASS)
@@ -59,7 +59,7 @@ public final class MetricsPluginDefinition extends PluginDefinition {
                 .implement(CHANNEL_HANDLER_ADVICE_CLASS)
                 .build();
         intercept(SQL_ROUTER_ENGINE_ENHANCE_CLASS)
-                .aroundInstanceMethod(ElementMatchers.named("route"))
+                .aroundInstanceMethod(ElementMatchers.named(MethodNameConstant.SQL_ROUTER))
                 .implement(SQL_ROUTER_ENGINE_ADVICE_CLASS)
                 .build();
         intercept(TRANSACTION_ENHANCE_CLASS)

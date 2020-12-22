@@ -23,7 +23,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.plugin.advice.TargetObject;
-import org.apache.shardingsphere.agent.plugin.tracing.zipkin.ShardingConstants;
+import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -36,14 +36,14 @@ import java.util.Map;
 /**
  * JDBC executor callback advice.
  */
-public class JDBCExecutorCallbackAdvice implements MethodAroundAdvice {
+public final class JDBCExecutorCallbackAdvice implements MethodAroundAdvice {
     
     private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     
     @SneakyThrows
     @Override
     public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        final Span root = (Span) ((Map<String, Object>) args[2]).get(ShardingConstants.ROOT_SPAN);
+        final Span root = (Span) ((Map<String, Object>) args[2]).get(ZipkinConstants.ROOT_SPAN);
         if ((boolean) args[1]) {
             target.setAttachment(Tracing.currentTracer().newChild(root.context()).name(OPERATION_NAME).start());
         } else {
@@ -53,13 +53,13 @@ public class JDBCExecutorCallbackAdvice implements MethodAroundAdvice {
             getMetadataMethod.setAccessible(true);
             DataSourceMetaData metaData = (DataSourceMetaData) getMetadataMethod.invoke(target, new Object[]{executionUnit.getStorageResource().getConnection().getMetaData()});
             Span span = Tracing.currentTracer().nextSpan().name(OPERATION_NAME);
-            span.tag(ShardingConstants.Tags.COMPONENT, ShardingConstants.COMPONENT_NAME);
-            span.tag(ShardingConstants.Tags.DB_TYPE, ShardingConstants.DB_TYPE_VALUE);
-            span.tag(ShardingConstants.Tags.DB_INSTANCE, unit.getDataSourceName());
-            span.tag(ShardingConstants.Tags.PEER_HOSTNAME, metaData.getHostName());
-            span.tag(ShardingConstants.Tags.PEER_PORT, String.valueOf(metaData.getPort()));
-            span.tag(ShardingConstants.Tags.DB_STATEMENT, unit.getSqlUnit().getSql());
-            span.tag(ShardingConstants.Tags.DB_BIND_VARIABLES, unit.getSqlUnit().getParameters().toString());
+            span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
+            span.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
+            span.tag(ZipkinConstants.Tags.DB_INSTANCE, unit.getDataSourceName());
+            span.tag(ZipkinConstants.Tags.PEER_HOSTNAME, metaData.getHostName());
+            span.tag(ZipkinConstants.Tags.PEER_PORT, String.valueOf(metaData.getPort()));
+            span.tag(ZipkinConstants.Tags.DB_STATEMENT, unit.getSqlUnit().getSql());
+            span.tag(ZipkinConstants.Tags.DB_BIND_VARIABLES, unit.getSqlUnit().getParameters().toString());
             span.start();
             target.setAttachment(span);
         }

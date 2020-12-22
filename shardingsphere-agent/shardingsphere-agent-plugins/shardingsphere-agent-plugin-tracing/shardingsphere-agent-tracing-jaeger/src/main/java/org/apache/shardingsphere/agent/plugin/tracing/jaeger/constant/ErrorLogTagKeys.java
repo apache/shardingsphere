@@ -17,28 +17,20 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant;
 
-import io.opentracing.tag.StringTag;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Sharding tags.
+ * Error log tag keys.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingTags {
+public final class ErrorLogTagKeys {
     
-    /**
-     * Component name of ShardingSphere's open tracing tag.
-     */
-    public static final String COMPONENT_NAME = "ShardingSphere";
+    public static final String EVENT = "event";
     
-    /**
-     * The tag to record the bind variables of SQL.
-     */
-    public static final StringTag DB_BIND_VARIABLES = new StringTag("db.bind_vars");
+    public static final String EVENT_ERROR_TYPE = "error";
     
-    /**
-     * The tag to record the connection count.
-     */
-    public static final StringTag CONNECTION_COUNT = new StringTag("connection.count");
+    public static final String ERROR_KIND = "error.kind";
+    
+    public static final String MESSAGE = "message";
 }

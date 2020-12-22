@@ -15,42 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger;
+package org.apache.shardingsphere.agent.plugin.tracing.zipkin.service;
 
-import io.jaegertracing.Configuration;
-import io.opentracing.util.GlobalTracer;
+import brave.Tracing;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.service.BootService;
 import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
+import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
+import zipkin2.reporter.okhttp3.OkHttpSender;
 
 /**
- * Jaeger tracer boot service.
+ * Zipkin tracer boot service.
  */
-public final class JaegerTracerBootService implements BootService {
+public final class ZipkinTracerBootService implements BootService {
     
+    private AsyncZipkinSpanHandler zipkinSpanHandler;
+    
+    private OkHttpSender sender;
+    
+    private Tracing tracing;
+
     @Override
     public void setup() {
         AgentConfiguration configuration = AgentObjectPool.INSTANCE.get(AgentConfiguration.class);
         AgentConfiguration.TracingConfiguration tracingConfiguration = configuration.getTracing();
-        tracingConfiguration.getExtra().forEach(System::setProperty);
-        Configuration.SamplerConfiguration samplerConfig = Configuration.SamplerConfiguration.fromEnv();
-        Configuration.ReporterConfiguration reporterConfig = Configuration.ReporterConfiguration.fromEnv()
-                .withSender(
-                        Configuration.SenderConfiguration.fromEnv()
-                                .withAgentHost(tracingConfiguration.getAgentHost())
-                                .withAgentPort(tracingConfiguration.getAgentPort())
-                );
-        Configuration config = new Configuration(configuration.getApplicationName())
-                .withSampler(samplerConfig)
-                .withReporter(reporterConfig);
-        GlobalTracer.register(config.getTracer());
+        sender = OkHttpSender.create(buildHttpPath(tracingConfiguration));
+        zipkinSpanHandler = AsyncZipkinSpanHandler.create(sender);
     }
-    
+
     @Override
     public void start() {
+        tracing = Tracing.newBuilder().localServiceName("shardingsphere-agent").addSpanHandler(zipkinSpanHandler).build();
     }
-    
+
     @Override
     public void cleanup() {
+        tracing.close();
+        zipkinSpanHandler.close();
+        sender.close();
+    }
+    
+    private String buildHttpPath(final AgentConfiguration.TracingConfiguration tracingConfiguration) {
+        return "http://" + tracingConfiguration.getAgentHost() + ":" + tracingConfiguration.getAgentPort();
     }
 }

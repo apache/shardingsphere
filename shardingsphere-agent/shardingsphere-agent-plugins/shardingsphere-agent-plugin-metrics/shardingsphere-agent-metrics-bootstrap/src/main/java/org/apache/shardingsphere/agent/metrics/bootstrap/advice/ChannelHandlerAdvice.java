@@ -13,40 +13,43 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.metrics.bootstrap;
+package org.apache.shardingsphere.agent.metrics.bootstrap.advice;
 
 import java.lang.reflect.Method;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.plugin.advice.TargetObject;
 import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
+import org.apache.shardingsphere.agent.metrics.bootstrap.constant.MethodNameConstant;
 
 /**
- * Command executor task advice.
+ * Channel handler advice.
  */
-public final class CommandExecutorTaskAdvice implements MethodAroundAdvice {
+public final class ChannelHandlerAdvice implements MethodAroundAdvice {
     
-    private static final String METRICS_NAME = "proxy_execute_latency_millis";
+    private static final String REQUEST_TOTAL = "proxy_request_total";
+    
+    private static final String COLLECTION_TOTAL = "proxy_connection_total";
     
     static {
-        MetricsReporter.registerHistogram(METRICS_NAME, "the shardingsphere proxy executor latency millis");
+        MetricsReporter.registerCounter(REQUEST_TOTAL, "the shardingsphere proxy request total");
+        MetricsReporter.registerGauge(COLLECTION_TOTAL, "the shardingsphere proxy connection total");
     }
     
     @Override
     public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        ElapsedTimeThreadLocal.INSTANCE.set(System.currentTimeMillis());
+        collectMetrics(method.getName());
     }
-
-    @Override
-    public void afterMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        try {
-            long elapsedTime = System.currentTimeMillis() - ElapsedTimeThreadLocal.INSTANCE.get();
-            MetricsReporter.recordTime(METRICS_NAME, elapsedTime);
-        } finally {
-            ElapsedTimeThreadLocal.INSTANCE.remove();
+    
+    private void collectMetrics(final String methodName) {
+        if (MethodNameConstant.CHANNEL_READ.equals(methodName)) {
+            MetricsReporter.counterIncrement(REQUEST_TOTAL);
+        } else if (MethodNameConstant.CHANNEL_ACTIVE.equals(methodName)) {
+            MetricsReporter.gaugeIncrement(COLLECTION_TOTAL);
+        } else if (MethodNameConstant.CHANNEL_INACTIVE.equals(methodName)) {
+            MetricsReporter.gaugeDecrement(COLLECTION_TOTAL);
         }
     }
 }

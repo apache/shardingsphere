@@ -13,38 +13,40 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.metrics.bootstrap;
+package org.apache.shardingsphere.agent.metrics.bootstrap.advice;
 
 import java.lang.reflect.Method;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.plugin.advice.TargetObject;
 import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
+import org.apache.shardingsphere.agent.metrics.bootstrap.threadlocal.ElapsedTimeThreadLocal;
 
 /**
- * Transaction advice.
+ * Command executor task advice.
  */
-public final class TransactionAdvice implements MethodAroundAdvice {
+public final class CommandExecutorTaskAdvice implements MethodAroundAdvice {
     
-    private static final String COMMIT = "proxy_transaction_commit_total";
-    
-    private static final String ROLLBACK = "proxy_transaction_rollback_total";
+    private static final String METRICS_NAME = "proxy_execute_latency_millis";
     
     static {
-        MetricsReporter.registerCounter(COMMIT, "the shardingsphere proxy transaction commit count total");
-        MetricsReporter.registerCounter(ROLLBACK, "the shardingsphere proxy transaction rollback count total");
+        MetricsReporter.registerHistogram(METRICS_NAME, "the shardingsphere proxy executor latency millis");
     }
     
     @Override
     public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        String methodName = method.getName();
-        if (MethodNameConstant.COMMIT.equals(methodName)) {
-            MetricsReporter.counterIncrement(COMMIT);
-        } else if (MethodNameConstant.ROLL_BACK.equals(methodName)) {
-            MetricsReporter.counterIncrement(ROLLBACK);
+        ElapsedTimeThreadLocal.INSTANCE.set(System.currentTimeMillis());
+    }
+
+    @Override
+    public void afterMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+        try {
+            long elapsedTime = System.currentTimeMillis() - ElapsedTimeThreadLocal.INSTANCE.get();
+            MetricsReporter.recordTime(METRICS_NAME, elapsedTime);
+        } finally {
+            ElapsedTimeThreadLocal.INSTANCE.remove();
         }
     }
 }
