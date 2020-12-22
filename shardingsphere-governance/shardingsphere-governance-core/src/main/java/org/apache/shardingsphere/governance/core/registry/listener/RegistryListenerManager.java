@@ -31,9 +31,12 @@ public final class RegistryListenerManager {
     
     private final DataSourceStateChangedListener dataSourceStateChangedListener;
     
+    private final GlobalLockChangedListener globalLockChangedListener;
+    
     public RegistryListenerManager(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
         terminalStateChangedListener = new TerminalStateChangedListener(registryRepository);
         dataSourceStateChangedListener = new DataSourceStateChangedListener(registryRepository, schemaNames);
+        globalLockChangedListener = new GlobalLockChangedListener(registryRepository);
     }
     
     /**
@@ -42,5 +45,6 @@ public final class RegistryListenerManager {
     public void initListeners() {
         terminalStateChangedListener.watch(Type.UPDATED);
         dataSourceStateChangedListener.watch(Type.UPDATED, Type.DELETED, Type.ADDED);
+        globalLockChangedListener.watch(Type.ADDED);
     }
 }

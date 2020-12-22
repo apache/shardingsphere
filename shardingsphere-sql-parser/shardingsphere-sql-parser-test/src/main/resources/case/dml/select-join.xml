@@ -46,18 +46,20 @@
             </shorthand-projection>
         </projections>
         <where start-index="79" stop-index="98" literal-stop-index="101">
-            <and-predicate>
-                <predicate start-index="85" stop-index="98" literal-stop-index="101">
-                    <column-left-value name="order_id" start-index="85" stop-index="94">
-                        <owner name="o" start-index="85" stop-index="85" />
-                    </column-left-value>
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="98" stop-index="98" />
+            <expr>
+                <binary-operation-expression start-index="85" stop-index="98" literal-stop-index="101">
+                    <left>
+                        <column name="order_id" start-index="85" stop-index="94">
+                            <owner name="o" start-index="85" stop-index="85" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
                         <literal-expression value="1000" start-index="98" stop-index="101" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+                        <parameter-marker-expression value="0" start-index="98" stop-index="98" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </select>
 
@@ -90,18 +92,20 @@
             </shorthand-projection>
         </projections>
         <where start-index="97" stop-index="122" literal-stop-index="125">
-            <and-predicate>
-                <predicate start-index="103" stop-index="122" literal-stop-index="125">
-                    <column-left-value name="order_id" start-index="103" stop-index="118">
-                        <owner name="t_order" start-index="103" stop-index="109" />
-                    </column-left-value>
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="122" stop-index="122" />
+            <expr>
+                <binary-operation-expression start-index="103" stop-index="122" literal-stop-index="125">
+                    <left>
+                        <column name="order_id" start-index="103" stop-index="118">
+                            <owner name="t_order" start-index="103" stop-index="109" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
                         <literal-expression value="1000" start-index="122" stop-index="125" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+                        <parameter-marker-expression value="0" start-index="122" stop-index="122" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </select>
 
@@ -122,18 +126,20 @@
             </shorthand-projection>
         </projections>
         <where start-index="62" stop-index="81" literal-stop-index="84">
-            <and-predicate>
-                <predicate start-index="68" stop-index="81" literal-stop-index="84">
-                    <column-left-value name="order_id" start-index="68" stop-index="77">
-                        <owner name="o" start-index="68" stop-index="68" />
-                    </column-left-value>
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="81" stop-index="81" />
+            <expr>
+                <binary-operation-expression start-index="68" stop-index="81" literal-stop-index="84">
+                    <left>
+                        <column name="order_id" start-index="68" stop-index="77">
+                            <owner name="o" start-index="68" stop-index="68" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
                         <literal-expression value="1000" start-index="81" stop-index="84" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+                        <parameter-marker-expression value="0" start-index="81" stop-index="81" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </select>
 </sql-parser-test-cases>

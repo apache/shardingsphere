@@ -30,24 +30,37 @@ import org.apache.shardingsphere.scaling.core.job.position.resume.FakeResumeBrea
 import org.apache.shardingsphere.scaling.core.job.position.resume.IncrementalPositionResumeBreakPointManager;
 import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManagerFactory;
 import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
+import org.apache.shardingsphere.scaling.core.schedule.ScalingTaskScheduler;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class StandaloneScalingJobServiceTest {
     
     private final ScalingJobService scalingJobService = new StandaloneScalingJobService();
+    
+    @Mock
+    private ScalingJob scalingJob;
+    
+    @Mock
+    private ScalingTaskScheduler scalingTaskScheduler;
     
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
@@ -67,14 +80,18 @@ public final class StandaloneScalingJobServiceTest {
     }
     
     @Test
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
     public void assertStopExistJob() {
-        Optional<ScalingJob> scalingJob = scalingJobService.start(mockScalingConfiguration());
-        assertTrue(scalingJob.isPresent());
-        long jobId = scalingJob.get().getJobId();
+        Map<Long, ScalingJob> scalingJobMap = ReflectionUtil.getFieldValue(scalingJobService, "scalingJobMap", Map.class);
+        Map<Long, ScalingTaskScheduler> scalingTaskSchedulerMap = ReflectionUtil.getFieldValue(scalingJobService, "scalingTaskSchedulerMap", Map.class);
+        assertNotNull(scalingJobMap);
+        assertNotNull(scalingTaskSchedulerMap);
+        long jobId = 1L;
+        scalingJobMap.put(jobId, scalingJob);
+        scalingTaskSchedulerMap.put(jobId, scalingTaskScheduler);
         scalingJobService.stop(jobId);
-        JobProgress progress = scalingJobService.getProgress(jobId);
-        assertThat(progress.getStatus(), is(JobStatus.STOPPED.name()));
-        scalingJobService.remove(jobId);
+        verify(scalingJob).setStatus(JobStatus.STOPPED.name());
     }
     
     @Test(expected = ScalingJobNotFoundException.class)

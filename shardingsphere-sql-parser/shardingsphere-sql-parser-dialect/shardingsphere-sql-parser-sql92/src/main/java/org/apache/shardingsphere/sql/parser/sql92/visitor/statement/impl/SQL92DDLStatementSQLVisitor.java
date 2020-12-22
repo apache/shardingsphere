@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
@@ -49,12 +50,18 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL9
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92DropTableStatement;
 
 import java.util.Collections;
+import java.util.Properties;
 
 /**
  * DDL Statement SQL visitor for SQL92.
  */
+@NoArgsConstructor
 public final class SQL92DDLStatementSQLVisitor extends SQL92StatementSQLVisitor implements DDLSQLVisitor, SQLStatementVisitor {
-    
+
+    public SQL92DDLStatementSQLVisitor(final Properties props) {
+        super(props);
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {

@@ -19,24 +19,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent-plugins</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
+    <artifactId>shardingsphere-agent-plugin-metrics</artifactId>
     <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
+    
     <modules>
         <module>shardingsphere-agent-metrics-api</module>
         <module>shardingsphere-agent-metrics-bootstrap</module>
     </modules>
-    <artifactId>shardingsphere-agent-plugin-metrics</artifactId>
-
+    
     <properties>
         <entrypoint.class/>
         <metrics.target.directory>${project.basedir}/../target/plugins</metrics.target.directory>
     </properties>
-
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

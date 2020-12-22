@@ -23,7 +23,11 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
+import org.apache.shardingsphere.infra.lock.LockStrategy;
+import org.apache.shardingsphere.infra.lock.LockStrategyType;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.factory.JDBCRawBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
@@ -43,6 +47,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -52,6 +57,10 @@ import java.util.stream.Collectors;
 public abstract class AbstractBootstrapInitializer implements BootstrapInitializer {
     
     private final ShardingSphereProxy shardingSphereProxy = new ShardingSphereProxy();
+    
+    static {
+        ShardingSphereServiceLoader.register(LockStrategy.class);
+    }
     
     @Override
     public final void init(final YamlProxyConfiguration yamlConfig, final int port) throws SQLException {
@@ -118,4 +127,8 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     protected abstract TransactionContexts decorateTransactionContexts(TransactionContexts transactionContexts, String xaTransactionMangerType);
     
     protected abstract void initLockContext();
+    
+    protected LockStrategy loadLockStrategy(final LockStrategyType lockStrategyType) {
+        return TypedSPIRegistry.getRegisteredService(LockStrategy.class, lockStrategyType.name(), new Properties());
+    }
 }

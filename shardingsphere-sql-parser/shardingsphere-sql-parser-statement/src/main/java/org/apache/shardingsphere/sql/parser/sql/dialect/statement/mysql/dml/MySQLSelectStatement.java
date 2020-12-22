@@ -32,9 +32,9 @@ import java.util.Optional;
 @Setter
 @ToString
 public final class MySQLSelectStatement extends SelectStatement implements MySQLStatement {
-
+    
     private LimitSegment limit;
-
+    
     private LockSegment lock;
     
     /**
@@ -45,7 +45,7 @@ public final class MySQLSelectStatement extends SelectStatement implements MySQL
     public Optional<LimitSegment> getLimit() {
         return Optional.ofNullable(limit);
     }
-
+    
     /**
      * Get lock segment.
      *

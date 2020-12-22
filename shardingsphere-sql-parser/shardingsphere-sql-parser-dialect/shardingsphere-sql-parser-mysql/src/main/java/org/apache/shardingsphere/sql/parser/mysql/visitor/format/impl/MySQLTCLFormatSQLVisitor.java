@@ -17,11 +17,19 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.format.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLFormatVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
+
+import java.util.Properties;
 
 /**
  * TCL Format SQL visitor for MySQL.
  */
+@NoArgsConstructor
 public final class MySQLTCLFormatSQLVisitor extends MySQLFormatSQLVisitor implements TCLSQLVisitor, SQLFormatVisitor {
+
+    public MySQLTCLFormatSQLVisitor(final Properties props) {
+        super(props);
+    }
 }

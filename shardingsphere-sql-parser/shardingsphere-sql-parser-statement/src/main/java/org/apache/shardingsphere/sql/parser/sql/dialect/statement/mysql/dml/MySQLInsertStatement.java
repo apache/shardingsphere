@@ -32,11 +32,11 @@ import java.util.Optional;
 @Setter
 @ToString
 public final class MySQLInsertStatement extends InsertStatement implements MySQLStatement {
-
+    
     private SetAssignmentSegment setAssignment;
-
+    
     private OnDuplicateKeyColumnsSegment onDuplicateKeyColumns;
-
+    
     /**
      * Get set assignment segment.
      *
@@ -45,7 +45,7 @@ public final class MySQLInsertStatement extends InsertStatement implements MySQL
     public Optional<SetAssignmentSegment> getSetAssignment() {
         return Optional.ofNullable(setAssignment);
     }
-
+    
     /**
      * Get on duplicate key columns segment.
      *

@@ -33,9 +33,9 @@ public abstract class PluginDefinition {
     private final Map<String, PluginAdviceDefinition.Builder> defineMap = Maps.newHashMap();
     
     private final List<Class<? extends Service>> services = Lists.newArrayList();
-
+    
     private final String pluginName;
-
+    
     public PluginDefinition(final String pluginName) {
         this.pluginName = pluginName;
     }
@@ -81,7 +81,7 @@ public abstract class PluginDefinition {
     public List<Class<? extends Service>> getAllServices() {
         return services;
     }
-
+    
     /**
      * To get plugin name.
      *

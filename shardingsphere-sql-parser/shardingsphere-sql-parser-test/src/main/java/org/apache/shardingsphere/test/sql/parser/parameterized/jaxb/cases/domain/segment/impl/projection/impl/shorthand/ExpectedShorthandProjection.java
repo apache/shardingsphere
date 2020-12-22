@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTableOwner;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedOwner;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.ExpectedProjection;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -30,5 +30,5 @@ import javax.xml.bind.annotation.XmlElement;
 public final class ExpectedShorthandProjection extends AbstractExpectedSQLSegment implements ExpectedProjection {
     
     @XmlElement
-    private ExpectedSimpleTableOwner owner;
+    private ExpectedOwner owner;
 }
