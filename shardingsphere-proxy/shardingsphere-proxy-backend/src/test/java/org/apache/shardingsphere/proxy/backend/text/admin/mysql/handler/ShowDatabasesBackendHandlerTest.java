@@ -59,6 +59,7 @@ public final class ShowDatabasesBackendHandlerTest {
     public void setUp() throws IllegalAccessException, NoSuchFieldException {
         BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getUsername()).thenReturn("root");
+        when(backendConnection.getSchemaName()).thenReturn("schema_0");
         showDatabasesBackendHandler = new ShowDatabasesBackendHandler(backendConnection);
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
