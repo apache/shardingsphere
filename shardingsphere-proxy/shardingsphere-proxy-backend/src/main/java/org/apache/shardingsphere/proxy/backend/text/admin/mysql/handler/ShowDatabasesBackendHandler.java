@@ -19,12 +19,15 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 
@@ -43,13 +46,20 @@ public final class ShowDatabasesBackendHandler implements DatabaseAdminBackendHa
     
     private final BackendConnection backendConnection;
     
+    private QueryResultMetaData queryResultMetaData;
+    
     private MergedResult mergedResult;
     
     @Override
-    public ResponseHeader execute() {
+    public ResponseHeader execute() throws SQLException {
+        queryResultMetaData = createQueryResultMetaData();
         mergedResult = new SingleLocalDataMergedResult(getSchemaNames());
-        return new QueryResponseHeader(Collections.singletonList(
-                new QueryHeader("information_schema", "SCHEMATA", "Database", "SCHEMA_NAME", Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false)));
+        return new QueryResponseHeader(Collections.singletonList(QueryHeaderBuilder.build(queryResultMetaData, ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()), 1)));
+    }
+    
+    private QueryResultMetaData createQueryResultMetaData() {
+        return new RawQueryResultMetaData(
+                Collections.singletonList(new RawQueryResultColumnMetaData("SCHEMATA", "Database", "SCHEMA_NAME", Types.VARCHAR, "VARCHAR", 255, 0)));
     }
     
     private Collection<Object> getSchemaNames() {

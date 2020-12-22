@@ -70,9 +70,9 @@ public final class ShowTablesBackendHandler implements DatabaseAdminBackendHandl
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     
-    private RawQueryResultMetaData createQueryResultMetaData() {
-        return new RawQueryResultMetaData(
-                Collections.singletonList(new RawQueryResultColumnMetaData("", String.format("Tables_in_%s", backendConnection.getSchemaName()), Types.VARCHAR, "VARCHAR", 255, 0)));
+    private QueryResultMetaData createQueryResultMetaData() {
+        String columnName = String.format("Tables_in_%s", backendConnection.getSchemaName());
+        return new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", columnName, columnName, Types.VARCHAR, "VARCHAR", 255, 0)));
     }
     
     @Override

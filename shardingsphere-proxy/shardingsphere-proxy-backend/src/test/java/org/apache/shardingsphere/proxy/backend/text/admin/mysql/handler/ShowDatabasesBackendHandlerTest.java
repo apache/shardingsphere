@@ -85,7 +85,7 @@ public final class ShowDatabasesBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteShowDatabaseBackendHandler() {
+    public void assertExecuteShowDatabaseBackendHandler() throws SQLException {
         QueryResponseHeader actual = (QueryResponseHeader) showDatabasesBackendHandler.execute();
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(actual.getQueryHeaders().size(), is(1));
