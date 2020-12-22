@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.junit.Test;
 
+import java.util.concurrent.TimeUnit;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -31,14 +33,14 @@ public final class StandardLockStrategyTest {
     
     @Test
     public void assertTryLock() {
-        assertTrue(lockStrategy.tryLock(50L));
+        assertTrue(lockStrategy.tryLock(50L, TimeUnit.MILLISECONDS));
         assertThat(StateContext.getCurrentState(), is(StateType.LOCK));
         lockStrategy.releaseLock();
     }
     
     @Test
     public void assertReleaseLock() {
-        assertTrue(lockStrategy.tryLock(50L));
+        assertTrue(lockStrategy.tryLock(50L, TimeUnit.MILLISECONDS));
         assertThat(StateContext.getCurrentState(), is(StateType.LOCK));
         lockStrategy.releaseLock();
         assertThat(StateContext.getCurrentState(), is(StateType.OK));

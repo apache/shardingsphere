@@ -47,6 +47,6 @@ public final class StandardBootstrapInitializer extends AbstractBootstrapInitial
     
     @Override
     protected void initLockContext() {
-        LockContext.init(LockStrategyType.STANDARD);
+        LockContext.init(loadLockStrategy(LockStrategyType.STANDARD));
     }
 }

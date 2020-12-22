@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -30,16 +32,24 @@ import java.util.stream.Collectors;
  */
 public final class RegistryCenter {
     
+    private static final int CHECK_RETRY_MAXIMUM = 5;
+    
+    private static final int CHECK_RETRY_INTERVAL_SECONDS = 3;
+    
     private final RegistryCenterNode node;
     
     private final RegistryRepository repository;
     
     private final GovernanceInstance instance;
     
+    private final LockNode lockNode;
+    
     public RegistryCenter(final RegistryRepository registryRepository) {
         node = new RegistryCenterNode();
         repository = registryRepository;
         instance = GovernanceInstance.getInstance();
+        lockNode = new LockNode();
+        registryRepository.initLock(lockNode.getGlobalLockNodePath());
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -111,5 +121,56 @@ public final class RegistryCenter {
     
     private String getDataSourceNodeData(final String schemaName, final String dataSourceName) {
         return repository.get(node.getDataSourcePath(schemaName, dataSourceName));
+    }
+    
+    /**
+     * Try to get global lock.
+     *
+     * @param timeout the maximum time in milliseconds to acquire lock
+     * @param timeUnit time unit
+     * @return true if get the lock, false if not
+     */
+    public boolean tryGlobalLock(final long timeout, final TimeUnit timeUnit) {
+        return repository.tryLock(timeout, timeUnit);
+    }
+    
+    /**
+     * Release global lock.
+     */
+    public void releaseGlobalLock() {
+        repository.releaseLock();
+    }
+    
+    /**
+     * Check lock state.
+     *
+     * @return true if all instances were locked, else false
+     */
+    public boolean checkLock() {
+        return checkOrRetry(this.loadAllInstances());
+    }
+    
+    private boolean checkOrRetry(final Collection<String> instanceIds) {
+        for (int i = 0; i < CHECK_RETRY_MAXIMUM; i++) {
+            if (check(instanceIds)) {
+                return true;
+            }
+            try {
+                Thread.sleep(CHECK_RETRY_INTERVAL_SECONDS * 1000L);
+                // CHECKSTYLE:OFF
+            } catch (final InterruptedException ex) {
+                // CHECKSTYLE:ON
+            }
+        }
+        return false;
+    }
+    
+    private boolean check(final Collection<String> instanceIds) {
+        for (String each : instanceIds) {
+            if (!RegistryCenterNodeStatus.LOCKED.toString().equalsIgnoreCase(this.loadInstanceData(each))) {
+                return false;
+            }
+        }
+        return true;
     }
 }
