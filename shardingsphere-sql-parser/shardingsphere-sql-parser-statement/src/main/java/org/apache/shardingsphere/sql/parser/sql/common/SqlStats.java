@@ -25,11 +25,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Getter
-public class SqlStats {
+public final class SqlStats {
 
-    private Map<String, SimpleTableSegment> tables = new LinkedHashMap<>();
+    private final Map<String, SimpleTableSegment> tables = new LinkedHashMap<>();
 
-    private Map<Integer, ColumnSegment> columns = new LinkedHashMap<>();
+    private final Map<Integer, ColumnSegment> columns = new LinkedHashMap<>();
 
     private int hashCode(final ColumnSegment column) {
         StringBuilder columString = new StringBuilder();

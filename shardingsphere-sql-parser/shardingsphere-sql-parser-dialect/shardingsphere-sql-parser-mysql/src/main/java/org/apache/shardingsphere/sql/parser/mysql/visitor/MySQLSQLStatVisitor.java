@@ -45,7 +45,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 @Setter
 public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<SqlStats> {
 
-    private SqlStats sqlStats = new SqlStats();
+    private final SqlStats sqlStats = new SqlStats();
 
     @Override
     public SqlStats visitTableFactor(final TableFactorContext ctx) {
