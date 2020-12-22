@@ -88,9 +88,9 @@ BASE (basically available, soft state, eventually consistent) theorem is the res
 
 <!-- 对于大部分的分布式应用而言，只要数据在规定的时间内达到最终一致性即可。我们可以把符合传统的ACID叫做刚性事务，把满足BASE理论的最终一致性事务叫做柔性事务。  -->
 
-For the most of distributed application, it's enough that data to be eventually consistent state in a reasonable time. If we call transactions that satisfy ACID as hard transactions, then transactions based on BASE are called soft transactions.
+For the most of distributed application, it's enough that data to be eventually consistent state in a reasonable time. If we call transactions that satisfy ACID as hard transactions, then transactions based on BASE are called BASE transactions.
 
-Without regarding system requirements and performance, pursuing strong consistency is not the best solution. The distributed application can benefit from both hard and soft transaction at the same time. The local service adopt strong consistent transaction, and the service across multi systems adopt eventually consistent transaction. How to trade off performance against consistency of a system is a key challenge for the architect and developer.
+Without regarding system requirements and performance, pursuing strong consistency is not the best solution. The distributed application can benefit from both hard and BASE transaction at the same time. The local service adopt strong consistent transaction, and the service across multi systems adopt eventually consistent transaction. How to trade off performance against consistency of a system is a key challenge for the architect and developer.
 
 <!-- 一味的追求强一致性，并非最佳方案。对于分布式应用来说，刚柔并济是更加合理的设计方案，即在本地服务中采用强一致事务，在跨系统调用中采用最终一致性。如何权衡系统的性能与一致性，是十分考验架构师与开发者的设计功力的。 -->
 
@@ -100,7 +100,7 @@ Without regarding system requirements and performance, pursuing strong consisten
 ### Distributed Transaction Method
 
 <!-- 具体到分布式事务的实现上，业界主要采用了XA协议的强一致规范以及柔性事务的最终一致规范。 -->
-For implementation of distributed transaction, There are two main available specifications, XA(using 2PC) and soft transaction.
+For implementation of distributed transaction, There are two main available specifications, XA(using 2PC) and BASE transaction.
 
 #### XA
 
@@ -153,11 +153,11 @@ Sharding-Sphere supports XA-based strong consistent transaction solution, third-
 
 <!-- #### 柔性事务 -->
 
-### Soft Transaction
+### BASE Transaction
 
 <!-- 柔性事务是对XA协议的妥协和补偿，它通过对强一致性要求的降低，以达到降低数据库资源锁定时间的效果。柔性事务的种类很多，可以通过各种不同的策略来权衡使用。 -->
 
-Soft transaction is a compromise to XA, don't need data to be strong consistent any more which benefit for reducing lock time of resource. There are a variety of soft transaction implementations, various strategies can be used to trade off.
+BASE transaction is a compromise to XA, don't need data to be strong consistent any more which benefits for reducing lock time of resource. There are a variety of BASE transaction implementations, various strategies can be used to trade off.
 
 
 <!-- **一阶段提交 + 补偿 ：最大努力送达（BED）** -->
@@ -169,7 +169,7 @@ BED is a compensate strategy for weak XA. Using transaction table records all tr
 
 这种策略的优点是无锁定资源时间，性能损耗小。缺点是尝试多次提交失败后，无法回滚，它仅适用于事务最终一定能够成功的业务场景。因此BED是通过事务回滚功能上的妥协，来换取性能的提升。 -->
 
-Advantage of the strategy is free of resource lock, low performance loss. But the transaction can't be rollback if still failed until reaches max reties, so it's only useful for the transaction that will be successful one hundred percentage. For the sake of improving performance, BED sacrifices rollback function of transaction.
+The advantage of the strategy is free of resource lock, low performance loss. But the transaction can't be rollback if still failed until reaches max reties, so it's only useful for the transaction that will be successful one hundred percentage. For the sake of improving performance, BED sacrifices rollback function of transaction.
 
 ![](https://shardingsphere.apache.org/blog/img/realization4.jpg)
 
@@ -178,7 +178,7 @@ Advantage of the strategy is free of resource lock, low performance loss. But th
 **TCC： Try-Confirm-Cancel**  
 
 <!-- TCC模型是把锁的粒度完全交给业务处理，它需要每个子事务业务都实现Try-Confirm/Cancel接口。 -->
-TCC model gives the control of lock to business level, and all sub transactions business must be implement Try-Confirm/Cancel interface.
+TCC model gives the control of lock to business level, and all sub transactions business must implement Try-Confirm/Cancel interface.
 
 <!-- *   **Try:**
 
@@ -265,7 +265,7 @@ Remittance service
 
     Check effectiveness of account A, namely, check status of account A whether in "transferring" or "Frozen";
 
-    Check account A whether has enough money;
+    Check whether account A has enough money;
 
     Deduct 100 dollars from account A and update the status to "Transferring"
 
@@ -336,7 +336,7 @@ It can be seen that TCC model is intrusive for the business, and hard to busines
 
 <!-- 消息一致性方案是通过消息中间件保证上下游应用数据操作的一致性。基本思路是将本地操作和发送消息放在一个事务中，下游应用向消息系统订阅该消息，收到消息后执行相应操作。本质上是依靠消息的重试机制，达到最终一致性。消息驱动的缺点是：耦合度高，需要在业务系统中引入MQ，导致系统复杂度增加。 -->
 
-Message based consistent solution depends on message middleware to make sure upstream and downstream applications keep the data consistent. The basic idea is put the local operation and sending message into a local transaction, downstream application consumes the message and execute the corresponding operation. It essentially relies on retry mechanism of message middleware to achieve eventually consistent . The disadvantage of message-driven is highly couple with message queue, which may increasing the complexity of business system.
+The message-based consistent solution depends on message middleware to make sure upstream and downstream applications keep the data consistent. The basic idea is to put the local operation and sending message into a local transaction, the downstream application consumes the message and executes the corresponding operation. It essentially relies on retry mechanism of message middleware to achieve eventually consistent. The disadvantage of message-driven is highly couple with message queue, which may increase the complexity of business system.
 
 <!-- **SAGA** -->
 
@@ -364,7 +364,7 @@ Either the sequence T1, T2, ..., Tn(which is the preferable one) or T1, T2, ...,
 *   或者序列 T1, T2, …, Tj, Cj, …, C2, C1, 0 < j < n, 得以完成。 -->
 
 
- For the lack of prepare stage on Saga model, transactions can't keep isolation to each other. So loss of update, dirty read and et problem will happen when a resource is operated concurrently by multi transactions. The problem can be settle by concurrency control in business level, such as lock or pre-allocation resource.
+ For the lack of prepare stage on Saga model, transactions can't keep isolation to each other. So loss of update, dirty read and et problem will happen when a resource is operated concurrently by multi transactions. The problem can be settled by concurrency control in business level, such as lock or pre-allocation resource.
 
 
 <!-- 由于Saga模型中没有Prepare阶段，因此事务间不能保证隔离性，当多个Saga事务操作同一资源时，就会产生更新丢失、脏数据读取等问题，这时需要在业务层控制并发，例如：
@@ -402,13 +402,13 @@ All in word, TCC and MQ are both depend on business transformation, but XA, BED 
 
 <!-- Sharding-Sphere是一套开源的分布式数据库中间件解决方案组成的生态圈，它由Sharding-JDBC、Sharding-Proxy和Sharding-Sidecar这3款相互独立的产品组成。它们均提供标准化的数据分片、读写分离、柔性事务和数据治理功能，可适用于如Java同构、异构语言、容器、云原生等各种多样化的应用场景。 -->
 
-[ShardingSphere](https://github.com/sharding-sphere/sharding-sphere/) is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 3 independent products, JDBC, Proxy & Sidecar. They all provide functions of data sharding, distributed transaction and database governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language container and and cloud native.
+[ShardingSphere](https://github.com/sharding-sphere/sharding-sphere/) is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 3 independent products, JDBC, Proxy & Sidecar. They all provide functions of data sharding, distributed transaction and database governance, applicable in a variety of situations such as Java isomorphism, heterogeneous language container and cloud native.
 
 <!-- 项目地址： -->
 
 <!-- Sharding-Sphere同时支持XA和柔性事务，它允许每次对数据库的访问，可以自由选择事务类型。分布式事务对业务操作完全透明，极大地降低了引入分布式事务的成本。 -->
 
-Both XA and soft transaction are supported by Sharding-Sphere, and allows to select different transaction type for per request. Distributed transactions are completely transparent to business operations, which greatly reduces the cost of introducing distributed transactions.
+Both XA and BASE transaction are supported by Sharding-Sphere, and allows to select different transaction type for per request. Distributed transactions are completely transparent to business operations, which greatly reduces the cost of introducing distributed transactions.
 
 <!-- #### 事务模型 -->
 
@@ -422,7 +422,7 @@ Both XA and soft transaction are supported by Sharding-Sphere, and allows to sel
 
 - 对于柔性事务而言，根据每次连接中事务的类型，可以选择独立的事务管理器进行处理，每个事务管理器都会实现标准的ShardingTransaction接口，在TransactionEvent到来时，执行对应的begin、commit、rollback操作。 -->
 
-Sharding-Sphere TM integrated XA and soft transaction model:
+Sharding-Sphere TM integrated XA and BASE transaction model:
 
 - For XA transaction, using SPI makes weak XA、Atomikos、Narayana are mutually exclusive.
 
@@ -509,7 +509,7 @@ Saga provides distributed transaction service governance in form of jar.
 
 <!-- 对Sharding-Sphere而言，confirm和cancel过程代表了子事务中的正常执行SQL和逆向执行SQL，（未来Sharding-Sphere将提供自动生成逆向SQL的能力）。当启用Saga柔性事务后，路由完成之后的物理数据源将开启本地自动提交事务，每次confirm和cancel都会直接提交。 -->
 
-For Sharding-Sphere, the procedure of confirm and cancel represent normal and backward execution SQL of sub-transaction. Automation of reverse SQL generation is in the plan. After enabling Saga soft transaction, routed physical datasource will enable transaction auto commit, every confirm and cancel will be submitted directly.
+For Sharding-Sphere, the procedure of confirm and cancel represent normal and backward execution SQL of sub-transaction. Automation of reverse SQL generation is in the plan. After enabling Saga BASE transaction, routed physical datasource will enable transaction auto commit, every confirm and cancel will be submitted directly.
 
 <!-- 在Sharding-Sphere内部，触发SQL执行引擎后，将会产生Saga事务事件，这时Sharding-Sphere事务监听器会注册本次子事务的confirm和cancel至Saga事务管理器的队列中；在业务线程触发commit和rollback后，Saga事务管理器再根据子事务执行的结果，判断进行confirm重试或者cancel流程。 -->
 
@@ -535,7 +535,7 @@ Evolution of Sharding-Sphere-TM framework will following the introduction on abo
 
 * Weak XA transaction (released)
 * Atomikos based XA transaction(to be released)
-* BED soft transaction(released)
+* BED BASE transaction(released)
 * SAGA(working on)
 * TCC(in planing)
 
@@ -548,7 +548,7 @@ If the previous sharing is too lengthy, then a thousand words are gathered into 
 
 <!-- 未来，我们将不断优化当前的特性，陆续推出大家关注的柔性事务、数据治理等更多新特性。如果有什么想法、意见和建议，也欢迎留言交流，更欢迎加入到Sharding-Sphere的开源项目中： -->
 
-In the future, feature will be optimized continuously, more new features such as soft transactions and data governance that everyone concerns about will be launched one after another. Any thoughts, advices, suggestions, comments are appreciated, and welcome to join the open source community of Sharding-Sphere.
+In the future, feature will be optimized continuously, more new features such as BASE transactions and data governance that everyone concerns about will be launched one after another. Any thoughts, advices, suggestions, comments are appreciated, and welcome to join the open source community of Sharding-Sphere.
 
 *   https://github.com/sharding-sphere/sharding-sphere/
 
@@ -592,7 +592,7 @@ In the future, feature will be optimized continuously, more new features such as
 <!-- **Q6**：SAGA不支持ACID中的I，咱们这边怎么考虑的呢？ -->
 **Q6**: SAGA doesn't support I of ACID, how do you think of this?
 <!-- **A6**：目前暂不支持隔离性，今后我们有增加I的规划，其实所有的柔性事务都不支持I，TCC增加了Try阶段，可以理解是准隔离性，使用SAGA时，可以在业务层面控制并发，防止脏读等产生。 -->
-**A6**: Now, Isolation is unsupported, and we have plan to support it. Actually all of soft transaction don't support I, Try stage of TCC can be regarded as isolation. Control of concurrency on business level can avoid dirty read.
+**A6**: Now, Isolation is unsupported, and we have plan to support it. Actually all of BASE transaction don't support I, Try stage of TCC can be regarded as isolation. Control of concurrency on business level can avoid dirty read.
 
 
 <!-- **Q7**：那意思，现在3的版本还不能单独用事务的模块？ -->
