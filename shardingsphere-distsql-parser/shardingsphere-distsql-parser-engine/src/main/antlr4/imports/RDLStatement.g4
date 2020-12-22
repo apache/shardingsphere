@@ -64,39 +64,15 @@ createShardingRule
     ;
 
 createReplicaQueryRule
-    : CREATE REPLICA_QUERY RULE LP replicaQueryRule (COMMA replicaQueryRule)* RP
+    : CREATE REPLICA_QUERY RULE LP replicaQueryRuleDefinition (COMMA replicaQueryRuleDefinition)* RP
     ;
 
-replicaQueryRule
-    : rule_name=IDENTIFIER LP PRIMARY EQ primary_ds=schemaName COMMA REPLICA EQ schemaNames RP load_balancer=IDENTIFIER LP  funcProperties RP
+replicaQueryRuleDefinition
+    : ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP loadBalancer=IDENTIFIER LP  algorithmProperties RP
     ;
 
 shardingTableRuleDefinition
-    : tableName columName shardingAlgorithmDefinition
-    ;
-
-shardingAlgorithmDefinition
-    : shardingAlgorithmType LP shardingAlgorithmProperties RP
-    ;
-
-shardingAlgorithmType
-    : IDENTIFIER
-    ;
-
-shardingAlgorithmProperties
-    : shardingAlgorithmProperty (COMMA shardingAlgorithmProperty)*
-    ;
-
-shardingAlgorithmProperty
-    : shardingAlgorithmPropertyKey EQ shardingAlgorithmPropertyValue
-    ;
-
-shardingAlgorithmPropertyKey
-    : IDENTIFIER
-    ;
-
-shardingAlgorithmPropertyValue
-    : NUMBER | INT | STRING
+    : tableName columName shardingAlgorithmType=IDENTIFIER LP algorithmProperties RP
     ;
 
 tableName
@@ -111,10 +87,6 @@ dropShardingRule
     : DROP SHARDING RULE LP tableName (COMMA tableName)* RP
     ;
 
-ruleType
-    : SHARDING | REPLICA_QUERY | ENCRYPT | SHADOW
-    ;
-
 schemaNames
     : schemaName (COMMA schemaName)*
     ;
@@ -123,10 +95,10 @@ schemaName
     : IDENTIFIER
     ;
 
-funcProperties
-    : funcPropertie (COMMA funcPropertie)*
+algorithmProperties
+    : algorithmProperty (COMMA algorithmProperty)*
     ;
 
-funcPropertie
+algorithmProperty
     : key=IDENTIFIER EQ value=(NUMBER | INT | STRING)
     ;
