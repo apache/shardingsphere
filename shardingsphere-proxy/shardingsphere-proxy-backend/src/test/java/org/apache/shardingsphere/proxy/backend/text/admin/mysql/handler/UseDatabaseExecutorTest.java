@@ -56,7 +56,6 @@ public final class UseDatabaseExecutorTest {
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         backendConnection = mock(BackendConnection.class);
-        when(backendConnection.getUsername()).thenReturn("root");
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), 
