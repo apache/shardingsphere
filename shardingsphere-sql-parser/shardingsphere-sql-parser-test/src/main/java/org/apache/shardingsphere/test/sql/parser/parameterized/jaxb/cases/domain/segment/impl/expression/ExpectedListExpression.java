@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.predicate;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expression;
 
 import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
 
-@XmlAccessorType(XmlAccessType.FIELD)
+@Setter
 @Getter
-public final class ExpectedAndPredicate {
-    
-    @XmlElement(name = "predicate")
-    private final List<ExpectedPredicate> predicates = new LinkedList<>();
+public class ExpectedListExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
+
+    @XmlElement(name = "items")
+    private List<ExpectedExpression> items = new LinkedList<>();
 }

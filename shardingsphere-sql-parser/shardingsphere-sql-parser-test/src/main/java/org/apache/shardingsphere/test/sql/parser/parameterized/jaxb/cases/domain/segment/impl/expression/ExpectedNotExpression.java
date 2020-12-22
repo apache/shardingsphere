@@ -15,28 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expression;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedDelimiterSQLSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.predicate.ExpectedAndPredicate;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
 
-/**
- * Expected JoinSpecification.
- */
-@Getter
 @Setter
-public final class ExpectedJoinSpecification extends AbstractExpectedDelimiterSQLSegment {
-    
-    @XmlElement(name = "and-predicate")
-    private final List<ExpectedAndPredicate> andPredicates = new LinkedList<>();
-    
-    @XmlElement
-    private final List<ExpectedColumn> columns = new LinkedList<>();
+@Getter
+public class ExpectedNotExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
+
+    @XmlElement(name = "expr")
+    private ExpectedExpression expr;
 }

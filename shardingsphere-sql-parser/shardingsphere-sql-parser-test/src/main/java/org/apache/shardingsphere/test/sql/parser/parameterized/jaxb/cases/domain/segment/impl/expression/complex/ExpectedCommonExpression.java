@@ -15,9 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.simple;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expression.complex;
 
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.ExpectedExpressionSegment;
+import lombok.Getter;
+import lombok.Setter;
 
-public interface ExpectedSimpleExpressionSegment extends ExpectedExpressionSegment {
+import javax.xml.bind.annotation.XmlAttribute;
+
+@Getter
+@Setter
+public final class ExpectedCommonExpression extends ExpectedBaseComplexExpression {
+    
+    @XmlAttribute(name = "literal-text")
+    private String literalText;
 }

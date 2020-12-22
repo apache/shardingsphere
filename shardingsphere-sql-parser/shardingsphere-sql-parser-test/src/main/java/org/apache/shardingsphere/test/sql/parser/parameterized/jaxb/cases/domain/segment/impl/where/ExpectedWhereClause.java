@@ -15,17 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.simple;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.where;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expression.ExpectedExpression;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 
+/**
+ * Expected where clause.
+ */
 @Getter
 @Setter
-public final class ExpectedLiteralExpression extends ExpectedBaseSimpleExpression {
-    
-    @XmlAttribute
-    private String value;
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class ExpectedWhereClause extends AbstractExpectedSQLSegment {
+
+    @XmlElement(name = "expr")
+    private ExpectedExpression expr;
 }

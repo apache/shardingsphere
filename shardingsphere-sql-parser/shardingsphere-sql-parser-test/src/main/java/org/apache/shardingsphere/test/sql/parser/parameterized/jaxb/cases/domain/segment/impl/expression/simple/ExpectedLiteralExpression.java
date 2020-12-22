@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expression.simple;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.simple.ExpectedSubquery;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
-@Setter
 @Getter
-public class ExpectedExistsSubquery extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
-    @XmlElement(name = "not")
-    private boolean not;
-
-    @XmlElement(name = "subquery")
-    private ExpectedSubquery subquery;
+@Setter
+public final class ExpectedLiteralExpression extends ExpectedBaseSimpleExpression {
+    
+    @XmlAttribute
+    private String value;
 }

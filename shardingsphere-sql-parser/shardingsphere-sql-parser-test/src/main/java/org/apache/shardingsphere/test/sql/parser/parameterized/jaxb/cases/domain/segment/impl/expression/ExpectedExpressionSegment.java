@@ -15,16 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.complex;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expression;
 
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.ExpectedExpressionSegment;
-
-public interface ExpectedComplexExpressionSegment extends ExpectedExpressionSegment {
-    
-    /**
-     * Get text.
-     *
-     * @return text
-     */
-    String getText();
+public interface ExpectedExpressionSegment {
 }
