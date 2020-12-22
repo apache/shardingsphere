@@ -33,7 +33,7 @@ import java.util.Properties;
 @Setter
 public final class ReplicaQueryRuleSegment implements ASTNode {
     
-    private String logicDatasource;
+    private String name;
     
     private String primaryDatasource;
     

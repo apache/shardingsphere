@@ -68,7 +68,7 @@ createReplicaQueryRule
     ;
 
 replicaQueryRule
-    : logic_ds=schemaName LP PRIMARY EQ primary_ds=schemaName COMMA REPLICA EQ schemaNames RP load_balancer=IDENTIFIER LP  funcProperties RP
+    : rule_name=IDENTIFIER LP PRIMARY EQ primary_ds=schemaName COMMA REPLICA EQ schemaNames RP load_balancer=IDENTIFIER LP  funcProperties RP
     ;
 
 shardingTableRuleDefinition

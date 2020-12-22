@@ -113,15 +113,12 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         for (FuncPropertieContext each : ctx.funcProperties().funcPropertie()) {
             properties.setProperty(each.key.getText(), each.value.getText());
         }
-        String primaryDatasource = ctx.primary_ds.getText();
-        String loadBalancer = ctx.load_balancer.getText();
-        String logicDatasource = ctx.logic_ds.getText();
-        result.setLogicDatasource(logicDatasource);
-        result.setPrimaryDatasource(primaryDatasource);
+        result.setName(ctx.rule_name.getText());
+        result.setPrimaryDatasource(ctx.primary_ds.getText());
         result.setReplicaDatasources(replicaDatasources);
-        result.setLoadBalancer(loadBalancer);
+        result.setLoadBalancer(ctx.load_balancer.getText());
         result.setProperties(properties);
-        return new ReplicaQueryRuleSegment();
+        return result;
     }
 
     @Override
