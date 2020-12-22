@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.plugin.PluginDefinition;
+import org.apache.shardingsphere.agent.core.plugin.definition.PluginDefinition;
 
 /**
  * Jaeger plugin definition.
@@ -31,7 +31,7 @@ public class JaegerPluginDefinition extends PluginDefinition {
     
     @Override
     protected void define() {
-        registerService(JaegerTracerService.class);
+        registerService(JaegerTracerBootService.class);
         
         intercept("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask")
                 .aroundInstanceMethod(ElementMatchers.named("executeCommand"))

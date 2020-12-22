@@ -19,15 +19,15 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin;
 
 import brave.Tracing;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.Service;
-import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
+import org.apache.shardingsphere.agent.core.plugin.service.BootService;
+import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.okhttp3.OkHttpSender;
 
 /**
- * Zipkin tracer service.
+ * Zipkin tracer boot service.
  */
-public class ZipkinTracerService implements Service {
+public final class ZipkinTracerBootService implements BootService {
     
     private AsyncZipkinSpanHandler zipkinSpanHandler;
     
@@ -37,7 +37,7 @@ public class ZipkinTracerService implements Service {
 
     @Override
     public void setup() {
-        AgentConfiguration configuration = SingletonHolder.INSTANCE.get(AgentConfiguration.class);
+        AgentConfiguration configuration = AgentObjectPool.INSTANCE.get(AgentConfiguration.class);
         AgentConfiguration.TracingConfiguration tracingConfiguration = configuration.getTracing();
         sender = OkHttpSender.create("http://" + tracingConfiguration.getAgentHost() + ":" + tracingConfiguration.getAgentPort());
         zipkinSpanHandler = AsyncZipkinSpanHandler.create(sender);
@@ -54,5 +54,4 @@ public class ZipkinTracerService implements Service {
         zipkinSpanHandler.close();
         sender.close();
     }
-
 }

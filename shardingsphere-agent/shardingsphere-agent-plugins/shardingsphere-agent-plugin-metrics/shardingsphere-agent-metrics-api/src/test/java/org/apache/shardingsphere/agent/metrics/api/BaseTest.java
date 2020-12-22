@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.net.URL;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.AgentConfigurationLoader;
-import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
+import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
 import org.junit.Before;
 
 public class BaseTest {
@@ -32,7 +32,7 @@ public class BaseTest {
     public void assertLoad() throws IOException {
         System.setProperty("agent-path", getResourceUrl());
         AgentConfiguration configuration = AgentConfigurationLoader.load();
-        SingletonHolder.INSTANCE.put(configuration);
+        AgentObjectPool.INSTANCE.put(configuration);
     }
     
     private static String getResourceUrl() {

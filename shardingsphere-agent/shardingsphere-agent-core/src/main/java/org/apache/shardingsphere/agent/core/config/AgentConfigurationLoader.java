@@ -22,7 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.core.common.AgentPathBuilder;
+import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.yaml.YamlEngine;
 
 /**

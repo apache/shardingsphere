@@ -13,34 +13,34 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.core.plugin;
+package org.apache.shardingsphere.agent.core.plugin.point;
 
 import com.google.common.collect.Lists;
 import java.util.Collections;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.plugin.point.ClassStaticMethodPoint;
-import org.apache.shardingsphere.agent.core.plugin.point.ConstructorPoint;
-import org.apache.shardingsphere.agent.core.plugin.point.InstanceMethodPoint;
 
 import java.util.List;
 
 /**
- * Plugin advice definition.
+ * Plugin interceptor Point.
  *
  * <code>
- * PluginAdviceDefinition.intercept("Target.class")
+ * PluginInterceptorPoint.intercept("Target.class")
  * .onConstructor(ElementMatchers.any()).implement("Advice.class").build()
  * .method(ElementMatchers.named("greet").implement("Advice.class").build()
  * .staticMethod(ElementMatchers.named("of").implement("OfAdvice.class").build()
  * .install();
  * </code>
  */
-public final class PluginAdviceDefinition {
+@Getter
+@RequiredArgsConstructor
+public final class PluginInterceptorPoint {
     
     private final String classNameOfTarget;
     
@@ -50,32 +50,13 @@ public final class PluginAdviceDefinition {
     
     private final List<ClassStaticMethodPoint> classStaticMethodPoints;
     
-    private PluginAdviceDefinition(final String classNameOfTarget,
-                                   final List<ConstructorPoint> constructorPoints,
-                                   final List<InstanceMethodPoint> instanceMethodPoints,
-                                   final List<ClassStaticMethodPoint> classStaticMethodPoints) {
-        this.classNameOfTarget = classNameOfTarget;
-        this.constructorPoints = constructorPoints;
-        this.instanceMethodPoints = instanceMethodPoints;
-        this.classStaticMethodPoints = classStaticMethodPoints;
-    }
-    
     /**
      * Create default plugin advice definition.
      *
      * @return plugin advice definition
      */
-    public static PluginAdviceDefinition createDefault() {
-        return new PluginAdviceDefinition("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    }
-    
-    /**
-     * Get class name of target.
-     *
-     * @return class name
-     */
-    public String getClassNameOfTarget() {
-        return classNameOfTarget;
+    public static PluginInterceptorPoint createDefault() {
+        return new PluginInterceptorPoint("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     }
     
     /**
@@ -86,33 +67,6 @@ public final class PluginAdviceDefinition {
      */
     public static Builder intercept(final String classNameOfTarget) {
         return new Builder(classNameOfTarget);
-    }
-    
-    /**
-     * To get static method point configurations.
-     *
-     * @return series of static method point configuration
-     */
-    public List<ClassStaticMethodPoint> getClassStaticMethodPoints() {
-        return classStaticMethodPoints;
-    }
-    
-    /**
-     * To get constructor point configurations.
-     *
-     * @return series of constructor point configuration
-     */
-    public List<ConstructorPoint> getConstructorPoints() {
-        return constructorPoints;
-    }
-    
-    /**
-     * To get instance point configurations.
-     *
-     * @return series of instance method point configuration
-     */
-    public List<InstanceMethodPoint> getInstanceMethodPoints() {
-        return instanceMethodPoints;
     }
     
     /**
@@ -167,8 +121,8 @@ public final class PluginAdviceDefinition {
          *
          * @return plugin advice definition
          */
-        public PluginAdviceDefinition install() {
-            return new PluginAdviceDefinition(classNameOfTarget, constructorPoints, instanceMethodPoints, classStaticMethodPoints);
+        public PluginInterceptorPoint install() {
+            return new PluginInterceptorPoint(classNameOfTarget, constructorPoints, instanceMethodPoints, classStaticMethodPoints);
         }
         
         /**

@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.shardingsphere.agent.core.common;
+package org.apache.shardingsphere.agent.core.path;
 
 import java.io.File;
 import java.net.MalformedURLException;
