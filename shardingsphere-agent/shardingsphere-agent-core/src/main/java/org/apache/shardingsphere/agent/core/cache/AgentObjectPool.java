@@ -13,28 +13,43 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.core.plugin;
+package org.apache.shardingsphere.agent.core.cache;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Service that the lifecycle is from the agent startup to shutdown.
+ * Agent object pool.
  */
-public interface Service {
+public enum AgentObjectPool {
     
     /**
-     * Setup the service, like to configure or to initial.
+     * Instance singleton.
      */
-    void setup();
+    INSTANCE;
+    
+    private static final Map<String, Object> SINGLES = new ConcurrentHashMap<>();
     
     /**
-     * Start up the service.
+     * Put entity object.
+     *
+     * @param entity entity object
      */
-    void start();
+    public void put(final Object entity) {
+        SINGLES.put(entity.getClass().getName(), entity);
+    }
     
     /**
-     * Cleanup the service.
+     * Get object.
+     *
+     * @param <T> type parameter
+     * @param clazz clazz
+     * @return object
      */
-    void cleanup();
+    @SuppressWarnings("unchecked")
+    public <T> T get(final Class<T> clazz) {
+        return (T) SINGLES.get(clazz.getName());
+    }
 }

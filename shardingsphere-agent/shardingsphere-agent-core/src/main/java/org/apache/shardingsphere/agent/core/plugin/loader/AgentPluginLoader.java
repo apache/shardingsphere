@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin;
+package org.apache.shardingsphere.agent.core.plugin.loader;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -30,9 +30,13 @@ import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
-import org.apache.shardingsphere.agent.core.common.AgentPathBuilder;
+import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
+import org.apache.shardingsphere.agent.core.plugin.point.PluginInterceptorPoint;
+import org.apache.shardingsphere.agent.core.plugin.definition.PluginDefinition;
+import org.apache.shardingsphere.agent.core.plugin.service.BootService;
+import org.apache.shardingsphere.agent.core.plugin.service.ServiceSupervisor;
+import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -69,11 +73,11 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     
     private final ReentrantLock lock = new ReentrantLock();
     
-    private final List<UberJar> jars = Lists.newArrayList();
+    private final List<PluginJar> jars = Lists.newArrayList();
     
-    private final List<Service> services = Lists.newArrayList();
+    private final List<BootService> bootServices = Lists.newArrayList();
     
-    private Map<String, PluginAdviceDefinition> pluginDefineMap;
+    private Map<String, PluginInterceptorPoint> interceptorPointMap;
     
     private AgentPluginLoader() {
         super(AgentPluginLoader.class.getClassLoader());
@@ -105,17 +109,14 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
         if (null == jarFiles) {
             return;
         }
-        Map<String, PluginAdviceDefinition> pluginAdviceDefinitionMap = Maps.newHashMap();
-        List<String> activatedLists = SingletonHolder.INSTANCE.get(AgentConfiguration.class).getActivatedPlugins();
-        if (null == activatedLists) {
-            activatedLists = Lists.newArrayList();
-        }
+        Map<String, PluginInterceptorPoint> pointMap = Maps.newHashMap();
+        List<String> activatedLists = AgentObjectPool.INSTANCE.get(AgentConfiguration.class).getActivatedPlugins();
         Set<String> activatedPlugins = Sets.newHashSet(activatedLists);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         for (File jarFile : jarFiles) {
             outputStream.reset();
             JarFile jar = new JarFile(jarFile, true);
-            jars.add(new UberJar(jar, jarFile));
+            jars.add(new PluginJar(jar, jarFile));
             log.info("Loaded jar {}.", jarFile.getName());
             Attributes attributes = jar.getManifest().getMainAttributes();
             String entrypoint = attributes.getValue("Entrypoint");
@@ -129,33 +130,15 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
                 if (!activatedPlugins.isEmpty() && !activatedPlugins.contains(pluginDefinition.getPluginName())) {
                     continue;
                 }
-                pluginDefinition.build().forEach(plugin -> {
-                    String target = plugin.getClassNameOfTarget();
-                    if (pluginAdviceDefinitionMap.containsKey(target)) {
-                        PluginAdviceDefinition definition = pluginAdviceDefinitionMap.get(target);
-                        definition.getConstructorPoints().addAll(plugin.getConstructorPoints());
-                        definition.getInstanceMethodPoints().addAll(plugin.getInstanceMethodPoints());
-                        definition.getClassStaticMethodPoints().addAll(plugin.getClassStaticMethodPoints());
-                    } else {
-                        pluginAdviceDefinitionMap.put(target, plugin);
-                    }
-                });
-                pluginDefinition.getAllServices().forEach(klass -> {
-                    try {
-                        services.add(klass.newInstance());
-                        // CHECKSTYLE:OFF
-                    } catch (final Throwable ex) {
-                        // CHECKSTYLE:ON
-                        log.error("Failed to create service instance, {}.", klass, ex);
-                    }
-                });
+                buildPluginInterceptorPointMap(pluginDefinition, pointMap);
+                buildBootServices(pluginDefinition);
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
                 log.error("Failed to load plugin definition, {}.", entrypoint, ex);
             }
         }
-        pluginDefineMap = ImmutableMap.<String, PluginAdviceDefinition>builder().putAll(pluginAdviceDefinitionMap).build();
+        interceptorPointMap = ImmutableMap.<String, PluginInterceptorPoint>builder().putAll(pointMap).build();
     }
     
     /**
@@ -168,7 +151,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
             
             @Override
             public boolean matches(final TypeDescription target) {
-                return pluginDefineMap.containsKey(target.getTypeName());
+                return interceptorPointMap.containsKey(target.getTypeName());
             }
             
             @Override
@@ -190,26 +173,26 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
      * @return contains when it is true
      */
     public boolean containsType(final TypeDescription typeDescription) {
-        return pluginDefineMap.containsKey(typeDescription.getTypeName());
+        return interceptorPointMap.containsKey(typeDescription.getTypeName());
     }
     
     /**
-     * Load the definition configuration by TypeDescription.
+     * Load plugin interceptor point by TypeDescription.
      *
      * @param typeDescription TypeDescription
-     * @return the plugin definition configurations
+     * @return plugin interceptor point
      */
-    public PluginAdviceDefinition loadPluginAdviceDefine(final TypeDescription typeDescription) {
-        return pluginDefineMap.getOrDefault(typeDescription.getTypeName(), PluginAdviceDefinition.createDefault());
+    public PluginInterceptorPoint loadPluginInterceptorPoint(final TypeDescription typeDescription) {
+        return interceptorPointMap.getOrDefault(typeDescription.getTypeName(), PluginInterceptorPoint.createDefault());
     }
     
     /**
-     * Get the supervisor of services.
+     * Get the supervisor of boot services.
      *
      * @return service supervisor
      */
-    public ServiceSupervisor getServices() {
-        return new ServiceSupervisor(ImmutableList.<Service>builder().addAll(services).build());
+    public ServiceSupervisor getBootServices() {
+        return new ServiceSupervisor(ImmutableList.<BootService>builder().addAll(bootServices).build());
     }
     
     /**
@@ -241,11 +224,11 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     @Override
     protected Class<?> findClass(final String name) throws ClassNotFoundException {
         String path = classNameToPath(name);
-        for (UberJar jar : jars) {
-            ZipEntry entry = jar.jarFile.getEntry(path);
+        for (PluginJar each : jars) {
+            ZipEntry entry = each.jarFile.getEntry(path);
             if (Objects.nonNull(entry)) {
                 try {
-                    byte[] data = ByteStreams.toByteArray(jar.jarFile.getInputStream(entry));
+                    byte[] data = ByteStreams.toByteArray(each.jarFile.getInputStream(entry));
                     return defineClass(name, data, 0, data.length);
                 } catch (final IOException ex) {
                     log.error("Failed to load class {}.", name, ex);
@@ -262,11 +245,11 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     @Override
     protected Enumeration<URL> findResources(final String name) {
         List<URL> resources = Lists.newArrayList();
-        for (UberJar jar : jars) {
-            JarEntry entry = jar.jarFile.getJarEntry(name);
+        for (PluginJar each : jars) {
+            JarEntry entry = each.jarFile.getJarEntry(name);
             if (Objects.nonNull(entry)) {
                 try {
-                    resources.add(new URL("jar:file:" + jar.sourcePath.getAbsolutePath() + "!/" + name));
+                    resources.add(new URL("jar:file:" + each.sourcePath.getAbsolutePath() + "!/" + name));
                 } catch (final MalformedURLException ignored) {
                 }
             }
@@ -276,11 +259,11 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     
     @Override
     protected URL findResource(final String name) {
-        for (UberJar jar : jars) {
-            JarEntry entry = jar.jarFile.getJarEntry(name);
+        for (PluginJar each : jars) {
+            JarEntry entry = each.jarFile.getJarEntry(name);
             if (Objects.nonNull(entry)) {
                 try {
-                    return new URL("jar:file:" + jar.sourcePath.getAbsolutePath() + "!/" + name);
+                    return new URL("jar:file:" + each.sourcePath.getAbsolutePath() + "!/" + name);
                 } catch (final MalformedURLException ignored) {
                 }
             }
@@ -290,17 +273,43 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     
     @Override
     public void close() {
-        for (UberJar jar : jars) {
+        for (PluginJar each : jars) {
             try {
-                jar.jarFile.close();
+                each.jarFile.close();
             } catch (final IOException ex) {
                 log.error("close is ", ex);
             }
         }
     }
     
+    private void buildPluginInterceptorPointMap(final PluginDefinition pluginDefinition, final Map<String, PluginInterceptorPoint> pointMap) {
+        pluginDefinition.build().forEach(each -> {
+            String target = each.getClassNameOfTarget();
+            if (pointMap.containsKey(target)) {
+                PluginInterceptorPoint definition = pointMap.get(target);
+                definition.getConstructorPoints().addAll(each.getConstructorPoints());
+                definition.getInstanceMethodPoints().addAll(each.getInstanceMethodPoints());
+                definition.getClassStaticMethodPoints().addAll(each.getClassStaticMethodPoints());
+            } else {
+                pointMap.put(target, each);
+            }
+        });
+    }
+    
+    private void buildBootServices(final PluginDefinition pluginDefinition) {
+        pluginDefinition.getAllServices().forEach(each -> {
+            try {
+                bootServices.add(each.newInstance());
+                // CHECKSTYLE:OFF
+            } catch (final Throwable ex) {
+                // CHECKSTYLE:ON
+                log.error("Failed to create service instance, {}.", each, ex);
+            }
+        });
+    }
+    
     @RequiredArgsConstructor
-    private static class UberJar {
+    private static class PluginJar {
         
         private final JarFile jarFile;
         

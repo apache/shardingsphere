@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.metrics.bootstrap.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.plugin.PluginDefinition;
+import org.apache.shardingsphere.agent.core.plugin.definition.PluginDefinition;
 import org.apache.shardingsphere.agent.metrics.api.MetricsProvider;
 import org.apache.shardingsphere.agent.metrics.bootstrap.MethodNameConstant;
 

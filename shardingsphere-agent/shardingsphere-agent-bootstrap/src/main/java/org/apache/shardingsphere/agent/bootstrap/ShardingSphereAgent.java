@@ -21,12 +21,12 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.LoggingListener;
-import org.apache.shardingsphere.agent.core.ShardingSphereTransformer;
+import org.apache.shardingsphere.agent.core.listener.LoggingListener;
+import org.apache.shardingsphere.agent.core.transformer.ShardingSphereTransformer;
 import org.apache.shardingsphere.agent.core.config.AgentConfigurationLoader;
-import org.apache.shardingsphere.agent.core.plugin.AgentPluginLoader;
-import org.apache.shardingsphere.agent.core.plugin.ServiceSupervisor;
-import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
+import org.apache.shardingsphere.agent.core.plugin.loader.AgentPluginLoader;
+import org.apache.shardingsphere.agent.core.plugin.service.ServiceSupervisor;
+import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
 
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
@@ -34,20 +34,20 @@ import java.lang.instrument.Instrumentation;
 /**
  * ShardingSphere agent.
  */
-public class ShardingSphereAgent {
+public final class ShardingSphereAgent {
     
     /**
      * Premain for instrumentation.
      *
-     * @param agentArgs agent args
+     * @param arguments arguments
      * @param instrumentation instrumentation
      * @throws IOException IO exception
      */
-    public static void premain(final String agentArgs, final Instrumentation instrumentation) throws IOException {
-        SingletonHolder.INSTANCE.put(AgentConfigurationLoader.load());
+    public static void premain(final String arguments, final Instrumentation instrumentation) throws IOException {
+        AgentObjectPool.INSTANCE.put(AgentConfigurationLoader.load());
         AgentPluginLoader agentPluginLoader = createAgentPluginLoader();
         setUpAgentBuilder(instrumentation, agentPluginLoader);
-        superviseServices(agentPluginLoader.getServices());
+        superviseServices(agentPluginLoader.getBootServices());
     }
     
     private static AgentPluginLoader createAgentPluginLoader() throws IOException {

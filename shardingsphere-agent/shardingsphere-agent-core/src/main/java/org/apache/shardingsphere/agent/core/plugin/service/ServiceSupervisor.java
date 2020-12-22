@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin;
+package org.apache.shardingsphere.agent.core.plugin.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
+/**
+ * Service supervisor.
+ */
 @Slf4j
+@RequiredArgsConstructor
 public final class ServiceSupervisor {
     
-    private final List<Service> services;
-    
-    public ServiceSupervisor(final List<Service> services) {
-        this.services = services;
-    }
-    
+    private final List<BootService> bootServices;
     
     /**
-     * Initial all services.
+     * Set up services.
      */
     public void setUpAllServices() {
-        services.forEach(service -> {
+        bootServices.forEach(each -> {
             try {
-                service.setup();
+                each.setup();
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
@@ -50,9 +50,9 @@ public final class ServiceSupervisor {
      * Start all services.
      */
     public void startAllServices() {
-        services.forEach(service -> {
+        bootServices.forEach(each -> {
             try {
-                service.start();
+                each.start();
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
@@ -62,12 +62,12 @@ public final class ServiceSupervisor {
     }
     
     /**
-     * Shutdown all services.
+     * Clean up all services.
      */
     public void cleanUpAllServices() {
-        services.forEach(service -> {
+        bootServices.forEach(each -> {
             try {
-                service.cleanup();
+                each.cleanup();
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
@@ -75,5 +75,4 @@ public final class ServiceSupervisor {
             }
         });
     }
-    
 }

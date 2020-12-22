@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
+import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
 import org.apache.shardingsphere.agent.metrics.api.MetricsRegister;
 
 /**
@@ -44,7 +44,7 @@ public final class PrometheusMetricsRegister implements MetricsRegister {
     
     private static final Map<String, Histogram> HISTOGRAM_MAP = new ConcurrentHashMap<>();
     
-    private final AgentConfiguration.MetricsConfiguration metricsConfiguration = SingletonHolder.INSTANCE.get(AgentConfiguration.class).getMetrics();
+    private final AgentConfiguration.MetricsConfiguration metricsConfiguration = AgentObjectPool.INSTANCE.get(AgentConfiguration.class).getMetrics();
     
     private HTTPServer httpServer;
     

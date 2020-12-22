@@ -13,10 +13,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.core;
+package org.apache.shardingsphere.agent.core.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.agent.builder.AgentBuilder.Listener;
@@ -25,10 +24,10 @@ import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.utility.JavaModule;
 
 /**
- * Listener to log what is informed about events that occur during an instrumentation process.
+ * Logging listener what is informed about events that occur during an instrumentation process.
  */
 @Slf4j
-public class LoggingListener implements Listener {
+public final class LoggingListener implements Listener {
     
     @Override
     public void onDiscovery(final String typeName, final ClassLoader classLoader, final JavaModule module, final boolean loaded) {

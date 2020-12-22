@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.plugin.PluginDefinition;
+import org.apache.shardingsphere.agent.core.plugin.definition.PluginDefinition;
 
 /**
  * Zipkin plugin definition.
@@ -31,7 +31,7 @@ public class ZipkinPluginDefinition extends PluginDefinition {
     
     @Override
     protected void define() {
-        registerService(ZipkinTracerService.class);
+        registerService(ZipkinTracerBootService.class);
         
         intercept("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask")
                 .aroundInstanceMethod(ElementMatchers.named("executeCommand"))

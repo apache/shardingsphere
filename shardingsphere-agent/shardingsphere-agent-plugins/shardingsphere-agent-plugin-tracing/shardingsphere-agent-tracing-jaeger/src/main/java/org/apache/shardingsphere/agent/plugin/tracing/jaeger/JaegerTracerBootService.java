@@ -20,17 +20,17 @@ package org.apache.shardingsphere.agent.plugin.tracing.jaeger;
 import io.jaegertracing.Configuration;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.Service;
-import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
+import org.apache.shardingsphere.agent.core.plugin.service.BootService;
+import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
 
 /**
- * Jaeger tracer service.
+ * Jaeger tracer boot service.
  */
-public class JaegerTracerService implements Service {
+public final class JaegerTracerBootService implements BootService {
     
     @Override
     public void setup() {
-        AgentConfiguration configuration = SingletonHolder.INSTANCE.get(AgentConfiguration.class);
+        AgentConfiguration configuration = AgentObjectPool.INSTANCE.get(AgentConfiguration.class);
         AgentConfiguration.TracingConfiguration tracingConfiguration = configuration.getTracing();
         tracingConfiguration.getExtra().forEach(System::setProperty);
         Configuration.SamplerConfiguration samplerConfig = Configuration.SamplerConfiguration.fromEnv();
@@ -48,11 +48,9 @@ public class JaegerTracerService implements Service {
     
     @Override
     public void start() {
-    
     }
     
     @Override
     public void cleanup() {
-    
     }
 }
