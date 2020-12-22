@@ -17,13 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminQueryBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
-import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminUpdateBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowCurrentDatabaseExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowDatabasesExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowTablesExecutor;
@@ -39,23 +34,12 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import java.util.Optional;
 
 /**
- * MySQL admin backend handler factory.
+ * Admin executor factory for MySQL.
  */
-public final class MySQLAdminBackendHandlerFactory implements DatabaseAdminBackendHandlerFactory {
+public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFactory {
     
     @Override
-    public Optional<TextProtocolBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
-        Optional<DatabaseAdminExecutor> executor = createDatabaseAdminExecutor(sqlStatement);
-        if (executor.isPresent()) {
-            if (executor.get() instanceof DatabaseAdminQueryExecutor) {
-                return Optional.of(new DatabaseAdminQueryBackendHandler(backendConnection, (DatabaseAdminQueryExecutor) executor.get()));
-            }
-            return Optional.of(new DatabaseAdminUpdateBackendHandler(backendConnection, sqlStatement, executor.get()));
-        }
-        return Optional.empty();
-    }
-    
-    private Optional<DatabaseAdminExecutor> createDatabaseAdminExecutor(final SQLStatement sqlStatement) {
+    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof MySQLUseStatement) {
             return Optional.of(new UseDatabaseExecutor((MySQLUseStatement) sqlStatement));
         }
