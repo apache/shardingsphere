@@ -19,6 +19,7 @@ package org.apache.shardingsphere.ha.mgr;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.ha.spi.HAType;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -39,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * MGR HA type.
  */
+@Slf4j
 public final class MGRHAType implements HAType {
     
     private static final String PLUGIN_STATUS = "SELECT * FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'";
@@ -145,9 +147,8 @@ public final class MGRHAType implements HAType {
                 if (resultSet.next()) {
                     return String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT"));
                 }
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
+            } catch (final SQLException ex) {
+                log.error("An exception occurred while find primary data source url", ex);
             }
         }
         return result;
@@ -161,9 +162,8 @@ public final class MGRHAType implements HAType {
                 if (connection.getMetaData().getURL().contains(primaryDataSourceURL)) {
                     return entry.getKey();
                 }
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
+            } catch (final SQLException ex) {
+                log.error("An exception occurred while find primary data source name", ex);
             }
         }
         return result;
