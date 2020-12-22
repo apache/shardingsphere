@@ -155,8 +155,8 @@ public final class DatabaseCommunicationEngine {
     private QueryHeader createQueryHeader(final ExecutionContext executionContext,
                                           final QueryResult queryResultSample, final ShardingSphereMetaData metaData, final int columnIndex) throws SQLException {
         return hasSelectExpandProjections(executionContext.getSqlStatementContext())
-                ? QueryHeaderBuilder.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample, metaData, columnIndex)
-                : QueryHeaderBuilder.build(queryResultSample, metaData, columnIndex);
+                ? QueryHeaderBuilder.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample.getMetaData(), metaData, columnIndex)
+                : QueryHeaderBuilder.build(queryResultSample.getMetaData(), metaData, columnIndex);
     }
     
     private boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {

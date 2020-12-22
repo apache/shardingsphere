@@ -58,7 +58,7 @@ public final class ShowTablesBackendHandler implements DatabaseAdminBackendHandl
         queryResultMetaData = createQueryResultMetaData();
         QueryResult queryResult = getQueryResult();
         mergedResult = new TransparentMergedResult(queryResult);
-        return new QueryResponseHeader(Collections.singletonList(QueryHeaderBuilder.build(queryResult, ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()), 1)));
+        return new QueryResponseHeader(Collections.singletonList(QueryHeaderBuilder.build(queryResultMetaData, ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()), 1)));
     }
     
     private QueryResult getQueryResult() {
