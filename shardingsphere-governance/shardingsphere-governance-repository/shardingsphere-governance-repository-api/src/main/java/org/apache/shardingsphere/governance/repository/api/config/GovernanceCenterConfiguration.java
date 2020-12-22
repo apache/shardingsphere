@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.governance.repository.api.config;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Properties;
 
@@ -25,17 +26,12 @@ import java.util.Properties;
  * Governance center configuration.
  */
 @Getter
+@RequiredArgsConstructor
 public final class GovernanceCenterConfiguration {
-    
-    private final String serverLists;
     
     private final String type;
     
-    private final Properties props;
+    private final String serverLists;
     
-    public GovernanceCenterConfiguration(final String type, final String serverLists, final Properties props) {
-        this.serverLists = serverLists;
-        this.type = type;
-        this.props = props;
-    }
+    private final Properties props;
 }
