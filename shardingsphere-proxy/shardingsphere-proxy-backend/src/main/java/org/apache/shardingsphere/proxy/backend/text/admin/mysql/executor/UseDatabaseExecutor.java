@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;

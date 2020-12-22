@@ -19,10 +19,10 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowCurrentDatabaseExecutor;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowDatabasesExecutor;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowTablesExecutor;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.UseDatabaseExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowCurrentDatabaseExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowDatabasesExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowTablesExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.UseDatabaseExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
