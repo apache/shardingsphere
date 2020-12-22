@@ -84,15 +84,16 @@ public final class ShowDatabasesExecutorTest {
     public void assertExecute() throws SQLException {
         showDatabasesExecutor.execute(mockBackendConnection());
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
+        int count = 0;
         while (showDatabasesExecutor.getMergedResult().next()) {
-            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is(1));
+            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is(String.format(SCHEMA_PATTERN, count)));
+            count++;
         }
     }
     
     private BackendConnection mockBackendConnection() {
         BackendConnection result = mock(BackendConnection.class);
         when(result.getUsername()).thenReturn("root");
-        when(result.getSchemaName()).thenReturn("schema_0");
         return result;
     }
 }
