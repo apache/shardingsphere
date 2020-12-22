@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import com.google.common.base.Strings;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
@@ -32,20 +30,19 @@ import java.util.stream.Collectors;
 /**
  * Registry center.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RegistryCenter {
     
     private static final int CHECK_RETRY_MAXIMUM = 5;
     
     private static final int CHECK_RETRY_INTERVAL_SECONDS = 3;
     
-    private RegistryCenterNode node;
+    private final RegistryCenterNode node;
     
-    private RegistryRepository repository;
+    private final RegistryRepository repository;
     
-    private GovernanceInstance instance;
+    private final GovernanceInstance instance;
     
-    private LockNode lockNode;
+    private final LockNode lockNode;
     
     public RegistryCenter(final RegistryRepository registryRepository) {
         node = new RegistryCenterNode();
