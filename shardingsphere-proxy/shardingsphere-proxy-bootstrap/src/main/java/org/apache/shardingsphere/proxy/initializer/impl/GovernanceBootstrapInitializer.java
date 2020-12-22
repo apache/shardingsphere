@@ -127,8 +127,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     @Override
     protected void initLockContext() {
-        GovernanceLockStrategy governanceLockStrategy = (GovernanceLockStrategy) loadLockStrategy(LockStrategyType.GOVERNANCE);
-        governanceLockStrategy.init(governanceFacade.getRegistryCenter());
-        LockContext.init(governanceLockStrategy);
+        LockContext.init(LockStrategyType.GOVERNANCE);
+        ((GovernanceLockStrategy) LockContext.getLockStrategy()).init(governanceFacade.getRegistryCenter());
     }
 }
