@@ -20,55 +20,41 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>shardingsphere-agent-plugin-tracers</artifactId>
+
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-agent-plugins</artifactId>
+        <artifactId>shardingsphere-agent-plugin-tracers</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <packaging>pom</packaging>
-    <name>${project.artifactId}</name>
-    
-    <modules>
-        <module>shardingsphere-agent-tracer-jaeger</module>
-        <module>shardingsphere-agent-tracer-zipkin</module>
-    </modules>
-    
+
+    <packaging>jar</packaging>
+    <artifactId>shardingsphere-agent-tracer-zipkin</artifactId>
+
     <properties>
-        <entrypoint.class/>
-        <tracing.target.directory>${project.basedir}/../target/plugins</tracing.target.directory>
+        <zipkin-reporter.version>2.16.2</zipkin-reporter.version>
+        <zipkin-brave.version>5.13.2</zipkin-brave.version>
+        <entrypoint.class>org.apache.shardingsphere.agent.plugin.trace.zipkin.ZipkinPluginDefinition</entrypoint.class>
     </properties>
-    
+
     <dependencies>
         <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-core</artifactId>
+            <groupId>io.zipkin.brave</groupId>
+            <artifactId>brave</artifactId>
+            <version>${zipkin-brave.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.zipkin.reporter2</groupId>
+            <artifactId>zipkin-reporter-brave</artifactId>
+            <version>${zipkin-reporter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.zipkin.reporter2</groupId>
+            <artifactId>zipkin-sender-okhttp3</artifactId>
+            <version>${zipkin-reporter.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-proxy-common</artifactId>
+            <artifactId>shardingsphere-proxy-frontend-core</artifactId>
         </dependency>
     </dependencies>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Entrypoint>${entrypoint.class}</Entrypoint>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-shade-plugin</artifactId>
-                <configuration>
-                    <outputFile>${tracing.target.directory}/${project.build.finalName}</outputFile>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
