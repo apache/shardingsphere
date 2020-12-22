@@ -19,32 +19,34 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-agent-plugin-metrics</artifactId>
+        <artifactId>shardingsphere-agent-plugins</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-agent-metrics-bootstrap</artifactId>
-    <packaging>jar</packaging>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>shardingsphere-agent-plugin-tracing</artifactId>
+    <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
+    <modules>
+        <module>shardingsphere-agent-tracing-jaeger</module>
+        <module>shardingsphere-agent-tracing-zipkin</module>
+    </modules>
+    
     <properties>
-        <entrypoint.class>org.apache.shardingsphere.agent.metrics.bootstrap.definition.MetricsPluginDefinition</entrypoint.class>
+        <entrypoint.class/>
+        <tracing.target.directory>${project.basedir}/../target/plugins</tracing.target.directory>
     </properties>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-metrics-api</artifactId>
-            <version>${project.version}</version>
+            <artifactId>shardingsphere-agent-core</artifactId>
         </dependency>
-        
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-route</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
+            <artifactId>shardingsphere-proxy-common</artifactId>
         </dependency>
     </dependencies>
     
@@ -64,7 +66,7 @@
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
-                    <outputFile>${metrics.target.directory}/${project.build.finalName}</outputFile>
+                    <outputFile>${tracing.target.directory}/${project.build.finalName}</outputFile>
                 </configuration>
             </plugin>
         </plugins>
