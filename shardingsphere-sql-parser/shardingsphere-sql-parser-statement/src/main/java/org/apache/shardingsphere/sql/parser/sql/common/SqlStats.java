@@ -31,15 +31,6 @@ public final class SqlStats {
 
     private final Map<Integer, ColumnSegment> columns = new LinkedHashMap<>();
 
-    private int hashCode(final ColumnSegment column) {
-        StringBuilder columString = new StringBuilder();
-        if (column.getOwner().isPresent()) {
-            columString.append(column.getOwner().get().getIdentifier().getValue());
-        }
-        columString.append(column.getIdentifier().getValue());
-        return columString.toString().hashCode();
-    }
-
     /**
      * add table to tables.
      * @param tableSegment SimpleTableSegment.
@@ -55,7 +46,7 @@ public final class SqlStats {
      * @param column ColumnSegment.
      */
     public void addColumn(final ColumnSegment column) {
-        int columnHashcode = hashCode(column);
+        int columnHashcode = column.hashCode();
         if (!columns.containsKey(columnHashcode)) {
             columns.put(columnHashcode, column);
         }
