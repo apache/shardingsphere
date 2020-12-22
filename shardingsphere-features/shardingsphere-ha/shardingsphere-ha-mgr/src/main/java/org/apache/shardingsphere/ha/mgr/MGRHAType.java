@@ -53,8 +53,6 @@ public final class MGRHAType implements HAType {
     
     private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
     
-    private String primaryDataSource;
-    
     private String oldPrimaryDataSource;
     
     @Getter
@@ -63,7 +61,7 @@ public final class MGRHAType implements HAType {
     
     @Override
     public void checkHAConfig(final Map<String, DataSource> dataSourceMap, final String schemaName) throws SQLException {
-        try (Connection connection = dataSourceMap.get(primaryDataSource).getConnection();
+        try (Connection connection = dataSourceMap.get(oldPrimaryDataSource).getConnection();
              Statement statement = connection.createStatement()) {
             checkPluginIsActive(statement);
             checkReplicaMemberCount(statement);
@@ -120,15 +118,12 @@ public final class MGRHAType implements HAType {
         if (newPrimaryDataSource.isEmpty()) {
             return;
         }
-        if (null == oldPrimaryDataSource && null == primaryDataSource) {
-            oldPrimaryDataSource = newPrimaryDataSource;
-            primaryDataSource = newPrimaryDataSource;
-            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, primaryDataSource, oldPrimaryDataSource));
+        if (null == oldPrimaryDataSource) {
+            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, newPrimaryDataSource, newPrimaryDataSource));
         } else if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
-            oldPrimaryDataSource = primaryDataSource;
-            primaryDataSource = newPrimaryDataSource;
-            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, primaryDataSource, oldPrimaryDataSource));
+            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, newPrimaryDataSource, oldPrimaryDataSource));
         }
+        oldPrimaryDataSource = newPrimaryDataSource;
     }
     
     private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
