@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.ha.algorithm.MGRHAType
+org.apache.shardingsphere.ha.mgr.MGRHAType

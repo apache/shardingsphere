@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ha.algorithm;
+package org.apache.shardingsphere.ha.mgr;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.ha.spi.HAType;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -39,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * MGR HA type.
  */
+@Slf4j
 public final class MGRHAType implements HAType {
     
     private static final String PLUGIN_STATUS = "SELECT * FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'";
@@ -51,8 +53,6 @@ public final class MGRHAType implements HAType {
     
     private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
     
-    private String primaryDataSource;
-    
     private String oldPrimaryDataSource;
     
     @Getter
@@ -61,7 +61,7 @@ public final class MGRHAType implements HAType {
     
     @Override
     public void checkHAConfig(final Map<String, DataSource> dataSourceMap, final String schemaName) throws SQLException {
-        try (Connection connection = dataSourceMap.get(primaryDataSource).getConnection();
+        try (Connection connection = dataSourceMap.get(oldPrimaryDataSource).getConnection();
              Statement statement = connection.createStatement()) {
             checkPluginIsActive(statement);
             checkReplicaMemberCount(statement);
@@ -118,15 +118,12 @@ public final class MGRHAType implements HAType {
         if (newPrimaryDataSource.isEmpty()) {
             return;
         }
-        if (null == oldPrimaryDataSource && null == primaryDataSource) {
-            oldPrimaryDataSource = newPrimaryDataSource;
-            primaryDataSource = newPrimaryDataSource;
-            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, primaryDataSource, oldPrimaryDataSource));
+        if (null == oldPrimaryDataSource) {
+            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, newPrimaryDataSource, newPrimaryDataSource));
         } else if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
-            oldPrimaryDataSource = primaryDataSource;
-            primaryDataSource = newPrimaryDataSource;
-            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, primaryDataSource, oldPrimaryDataSource));
+            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, newPrimaryDataSource, oldPrimaryDataSource));
         }
+        oldPrimaryDataSource = newPrimaryDataSource;
     }
     
     private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
@@ -145,9 +142,8 @@ public final class MGRHAType implements HAType {
                 if (resultSet.next()) {
                     return String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT"));
                 }
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
+            } catch (final SQLException ex) {
+                log.error("An exception occurred while find primary data source url", ex);
             }
         }
         return result;
@@ -161,9 +157,8 @@ public final class MGRHAType implements HAType {
                 if (connection.getMetaData().getURL().contains(primaryDataSourceURL)) {
                     return entry.getKey();
                 }
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
+            } catch (final SQLException ex) {
+                log.error("An exception occurred while find primary data source name", ex);
             }
         }
         return result;
