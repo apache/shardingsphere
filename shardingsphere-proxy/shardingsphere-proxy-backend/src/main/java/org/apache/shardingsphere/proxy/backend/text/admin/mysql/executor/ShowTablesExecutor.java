@@ -49,8 +49,7 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     @Override
     public void execute(final BackendConnection backendConnection) {
         queryResultMetaData = createQueryResultMetaData(backendConnection.getSchemaName());
-        QueryResult queryResult = getQueryResult(backendConnection.getSchemaName());
-        mergedResult = new TransparentMergedResult(queryResult);
+        mergedResult = new TransparentMergedResult(getQueryResult(backendConnection.getSchemaName()));
     }
     
     private QueryResult getQueryResult(final String schemaName) {
