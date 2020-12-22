@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Create sharding rule backend handler.
+ * Create replica query rule backend handler.
  */
 public final class CreateReplicaQueryRuleBackendHandler extends SchemaRequiredBackendHandler<CreateReplicaQueryRuleStatement> {
 
