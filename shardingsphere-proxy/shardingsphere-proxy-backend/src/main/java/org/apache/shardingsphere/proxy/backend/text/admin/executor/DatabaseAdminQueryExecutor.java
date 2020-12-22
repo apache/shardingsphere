@@ -15,12 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin;
+package org.apache.shardingsphere.proxy.backend.text.admin.executor;
 
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 
 /**
- * Database admin backend handler.
+ * Database admin query executor.
  */
-public interface DatabaseAdminBackendHandler extends TextProtocolBackendHandler {
+public interface DatabaseAdminQueryExecutor extends DatabaseAdminExecutor {
+    
+    /**
+     * Get query result meta data.
+     * 
+     * @return query result meta data
+     */
+    QueryResultMetaData getQueryResultMetaData();
+    
+    /**
+     * Get merged result.
+     * 
+     * @return merged result
+     */
+    MergedResult getMergedResult();
 }

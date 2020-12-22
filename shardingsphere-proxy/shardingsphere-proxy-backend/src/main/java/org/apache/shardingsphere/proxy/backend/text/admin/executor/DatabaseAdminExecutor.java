@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type;
+package org.apache.shardingsphere.proxy.backend.text.admin.executor;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.AbstractMemoryQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
-
-import java.util.List;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 
 /**
- * Raw query result for memory loading.
+ * Database admin executor.
  */
-public final class RawMemoryQueryResult extends AbstractMemoryQueryResult {
+public interface DatabaseAdminExecutor {
     
-    public RawMemoryQueryResult(final QueryResultMetaData metaData, final List<MemoryQueryResultDataRow> rows) {
-        super(metaData, rows.iterator());
-    }
+    /**
+     * Execute.
+     * 
+     * @param backendConnection backend connection
+     */
+    void execute(BackendConnection backendConnection);
 }

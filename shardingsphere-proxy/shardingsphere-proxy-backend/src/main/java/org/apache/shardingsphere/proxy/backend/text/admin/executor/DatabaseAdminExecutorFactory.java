@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type;
+package org.apache.shardingsphere.proxy.backend.text.admin.executor;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.AbstractMemoryQueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.List;
+import java.util.Optional;
 
 /**
- * Raw query result for memory loading.
+ * Database admin executor factory.
  */
-public final class RawMemoryQueryResult extends AbstractMemoryQueryResult {
+public interface DatabaseAdminExecutorFactory extends TypedSPI {
     
-    public RawMemoryQueryResult(final QueryResultMetaData metaData, final List<MemoryQueryResultDataRow> rows) {
-        super(metaData, rows.iterator());
-    }
+    /**
+     * New instance of database admin executor.
+     * 
+     * @param sqlStatement SQL statement
+     * @return instance of database admin executor
+     */
+    Optional<DatabaseAdminExecutor> newInstance(SQLStatement sqlStatement);
 }

@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowCurrentDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowDatabasesBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowTablesBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.UseDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowCurrentDatabaseExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowDatabasesExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowTablesExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.UseDatabaseExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -35,26 +34,26 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import java.util.Optional;
 
 /**
- * MySQL admin backend handler factory.
+ * Admin executor factory for MySQL.
  */
-public final class MySQLAdminBackendHandlerFactory implements DatabaseAdminBackendHandlerFactory {
+public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFactory {
     
     @Override
-    public Optional<DatabaseAdminBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
+    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof MySQLUseStatement) {
-            return Optional.of(new UseDatabaseBackendHandler((MySQLUseStatement) sqlStatement, backendConnection));
+            return Optional.of(new UseDatabaseExecutor((MySQLUseStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowDatabasesStatement) {
-            return Optional.of(new ShowDatabasesBackendHandler(backendConnection));
+            return Optional.of(new ShowDatabasesExecutor());
         }
         if (sqlStatement instanceof MySQLShowTablesStatement) {
-            return Optional.of(new ShowTablesBackendHandler(backendConnection));
+            return Optional.of(new ShowTablesExecutor());
         }
         if (sqlStatement instanceof SelectStatement) {
             ProjectionSegment firstProjection = ((SelectStatement) sqlStatement).getProjections().getProjections().iterator().next();
             if (firstProjection instanceof ExpressionProjectionSegment
-                    && ShowCurrentDatabaseBackendHandler.FUNCTION_NAME.equalsIgnoreCase(((ExpressionProjectionSegment) firstProjection).getText())) {
-                return Optional.of(new ShowCurrentDatabaseBackendHandler(backendConnection));
+                    && ShowCurrentDatabaseExecutor.FUNCTION_NAME.equalsIgnoreCase(((ExpressionProjectionSegment) firstProjection).getText())) {
+                return Optional.of(new ShowCurrentDatabaseExecutor());
             }
         }
         return Optional.empty();

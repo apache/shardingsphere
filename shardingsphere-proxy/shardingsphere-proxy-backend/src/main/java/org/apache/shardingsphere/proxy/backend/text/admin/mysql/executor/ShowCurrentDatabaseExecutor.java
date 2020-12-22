@@ -15,48 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
 
-import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Show current database backend handler.
+ * Show current database executor.
  */
-@RequiredArgsConstructor
-public final class ShowCurrentDatabaseBackendHandler implements DatabaseAdminBackendHandler {
+@Getter
+public final class ShowCurrentDatabaseExecutor implements DatabaseAdminQueryExecutor {
     
     public static final String FUNCTION_NAME = "DATABASE()";
-    
-    private final BackendConnection backendConnection;
     
     private MergedResult mergedResult;
     
     @Override
-    public ResponseHeader execute() {
+    public void execute(final BackendConnection backendConnection) {
         mergedResult = new SingleLocalDataMergedResult(Collections.singleton(backendConnection.getSchemaName()));
-        return new QueryResponseHeader(Collections.singletonList(new QueryHeader(
-                "information_schema", "SCHEMATA", FUNCTION_NAME, FUNCTION_NAME, Types.VARCHAR, "VARCHAR", 100, 0, false, false, false, false)));
     }
     
     @Override
-    public boolean next() throws SQLException {
-        return mergedResult.next();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() throws SQLException {
-        return Collections.singletonList(mergedResult.getValue(1, Object.class));
+    public QueryResultMetaData getQueryResultMetaData() {
+        return new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("SCHEMATA", FUNCTION_NAME, FUNCTION_NAME, Types.VARCHAR, "VARCHAR", 100, 0)));
     }
 }

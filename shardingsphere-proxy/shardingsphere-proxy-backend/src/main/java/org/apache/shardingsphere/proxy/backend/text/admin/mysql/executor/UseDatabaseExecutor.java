@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 
@@ -33,26 +31,23 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Use database backend handler.
+ * Use database executor.
  */
 @RequiredArgsConstructor
-public final class UseDatabaseBackendHandler implements DatabaseAdminBackendHandler {
+public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     
     private final MySQLUseStatement useStatement;
     
-    private final BackendConnection backendConnection;
-    
     @Override
-    public ResponseHeader execute() {
+    public void execute(final BackendConnection backendConnection) {
         String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
-        if (ProxyContext.getInstance().schemaExists(schema) && isAuthorizedSchema(schema)) {
-            backendConnection.setCurrentSchema(schema);
-            return new UpdateResponseHeader(useStatement);
+        if (!ProxyContext.getInstance().schemaExists(schema) && isAuthorizedSchema(backendConnection, schema)) {
+            throw new UnknownDatabaseException(schema);
         }
-        throw new UnknownDatabaseException(schema);
+        backendConnection.setCurrentSchema(schema);
     }
     
-    private boolean isAuthorizedSchema(final String schema) {
+    private boolean isAuthorizedSchema(final BackendConnection backendConnection, final String schema) {
         Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(backendConnection.getUsername());
         Collection<String> authorizedSchemas = user.isPresent() ? user.get().getAuthorizedSchemas() : Collections.emptyList();
         return authorizedSchemas.isEmpty() || authorizedSchemas.contains(schema);
