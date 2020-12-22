@@ -10,8 +10,8 @@ weight = 2
 authentication:
   users:
     root: # 自定义用户名
-      password: root # 自定义用户名
+      password: root # 自定义用户名密码
     sharding: # 自定义用户名
-      password: sharding # 自定义用户名
+      password: sharding # 自定义用户名密码
       authorizedSchemas: sharding_db, replica_query_db # 该用户授权可访问的数据库，多个用逗号分隔。缺省将拥有 root 权限，可访问全部数据库。
 ```
