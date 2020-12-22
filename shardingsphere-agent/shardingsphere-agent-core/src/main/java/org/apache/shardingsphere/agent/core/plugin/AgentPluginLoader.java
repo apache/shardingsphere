@@ -13,12 +13,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package org.apache.shardingsphere.agent.core.plugin;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -159,51 +159,6 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     }
     
     /**
-     * Initial all services.
-     */
-    public void initialAllServices() {
-        services.forEach(service -> {
-            try {
-                service.setup();
-                // CHECKSTYLE:OFF
-            } catch (final Throwable ex) {
-                // CHECKSTYLE:ON
-                log.error("Failed to initial service.", ex);
-            }
-        });
-    }
-    
-    /**
-     * Start all services.
-     */
-    public void startAllServices() {
-        services.forEach(service -> {
-            try {
-                service.start();
-                // CHECKSTYLE:OFF
-            } catch (final Throwable ex) {
-                // CHECKSTYLE:ON
-                log.error("Failed to start service.", ex);
-            }
-        });
-    }
-    
-    /**
-     * Shutdown all services.
-     */
-    public void shutdownAllServices() {
-        services.forEach(service -> {
-            try {
-                service.cleanup();
-                // CHECKSTYLE:OFF
-            } catch (final Throwable ex) {
-                // CHECKSTYLE:ON
-                log.error("Failed to shutdown service.", ex);
-            }
-        });
-    }
-    
-    /**
      * To find all intercepting target classes then to build TypeMatcher.
      *
      * @return type matcher
@@ -246,6 +201,15 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
      */
     public PluginAdviceDefinition loadPluginAdviceDefine(final TypeDescription typeDescription) {
         return pluginDefineMap.getOrDefault(typeDescription.getTypeName(), PluginAdviceDefinition.createDefault());
+    }
+    
+    /**
+     * Get the supervisor of services.
+     *
+     * @return service supervisor
+     */
+    public ServiceSupervisor getServices() {
+        return new ServiceSupervisor(ImmutableList.<Service>builder().addAll(services).build());
     }
     
     /**
