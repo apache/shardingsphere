@@ -31,7 +31,8 @@
     
     <modules>
         <module>shardingsphere-agent-plugin-metrics</module>
-        <module>shardingsphere-agent-plugin-tracers</module>
+        <module>shardingsphere-agent-plugin-tracing</module>
+        <module>shardingsphere-agent-plugin-logging</module>
     </modules>
     
     <dependencyManagement>
