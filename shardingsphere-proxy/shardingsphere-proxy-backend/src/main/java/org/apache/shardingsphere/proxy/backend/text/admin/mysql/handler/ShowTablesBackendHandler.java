@@ -19,11 +19,13 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -47,37 +49,42 @@ public final class ShowTablesBackendHandler implements DatabaseAdminBackendHandl
     
     private final BackendConnection backendConnection;
     
-    private QueryResult queryResult;
+    private QueryResultMetaData queryResultMetaData;
+    
+    private MergedResult mergedResult;
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        RawQueryResultMetaData queryResultMetaData = createQueryResultMetaData();
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
-        if (ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
-            Collection<String> allTableNames = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getSchema().getAllTableNames();
-            List<MemoryQueryResultDataRow> rows = allTableNames.stream().map(each -> new MemoryQueryResultDataRow(Collections.singletonList(each))).collect(Collectors.toList());
-            queryResult = new RawMemoryQueryResult(queryResultMetaData, rows);
-        } else {
-            queryResult = new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
+        queryResultMetaData = createQueryResultMetaData();
+        QueryResult queryResult = getQueryResult();
+        mergedResult = new TransparentMergedResult(queryResult);
+        return new QueryResponseHeader(Collections.singletonList(QueryHeaderBuilder.build(queryResult, ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()), 1)));
+    }
+    
+    private QueryResult getQueryResult() {
+        if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
+            return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        return new QueryResponseHeader(Collections.singletonList(QueryHeaderBuilder.build(queryResult, metaData, 1)));
+        Collection<String> allTableNames = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).getSchema().getAllTableNames();
+        List<MemoryQueryResultDataRow> rows = allTableNames.stream().map(each -> new MemoryQueryResultDataRow(Collections.singletonList(each))).collect(Collectors.toList());
+        return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     
     private RawQueryResultMetaData createQueryResultMetaData() {
-        String column = String.format("Tables_in_%s", backendConnection.getSchemaName());
-        return new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", column, column, Types.VARCHAR, "VARCHAR", 255, 0, false, false, false)));
+        return new RawQueryResultMetaData(
+                Collections.singletonList(new RawQueryResultColumnMetaData("", String.format("Tables_in_%s", backendConnection.getSchemaName()), Types.VARCHAR, "VARCHAR", 255, 0)));
     }
     
     @Override
     public boolean next() throws SQLException {
-        return queryResult.next();
+        return mergedResult.next();
     }
     
     @Override
     public Collection<Object> getRowData() throws SQLException {
         Collection<Object> result = new LinkedList<>();
-        for (int columnIndex = 1; columnIndex <= queryResult.getMetaData().getColumnCount(); columnIndex++) {
-            result.add(queryResult.getValue(columnIndex, Object.class));
+        for (int columnIndex = 1; columnIndex <= queryResultMetaData.getColumnCount(); columnIndex++) {
+            result.add(mergedResult.getValue(columnIndex, Object.class));
         }
         return result;
     }

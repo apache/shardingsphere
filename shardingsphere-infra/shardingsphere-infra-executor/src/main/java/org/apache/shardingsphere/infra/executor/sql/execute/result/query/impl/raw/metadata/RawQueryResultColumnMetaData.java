@@ -46,4 +46,17 @@ public final class RawQueryResultColumnMetaData {
     private final boolean notNull;
     
     private final boolean autoIncrement;
+    
+    public RawQueryResultColumnMetaData(final String tableName, final String name, final int type, final String typeName, final int length, final int decimals) {
+        this.tableName = tableName;
+        this.name = name;
+        label = name;
+        this.type = type;
+        this.typeName = typeName;
+        this.length = length;
+        this.decimals = decimals;
+        signed = false;
+        notNull = false;
+        autoIncrement = false;
+    }
 }
