@@ -34,7 +34,7 @@ import org.apache.shardingsphere.agent.core.plugin.service.BootService;
 @RequiredArgsConstructor
 public abstract class PluginDefinition {
     
-    private final Map<String, PluginInterceptorPoint.Builder> InterceptorPointMap = Maps.newHashMap();
+    private final Map<String, PluginInterceptorPoint.Builder> interceptorPointMap = Maps.newHashMap();
     
     private final List<Class<? extends BootService>> bootServices = Lists.newArrayList();
     
@@ -44,11 +44,11 @@ public abstract class PluginDefinition {
     protected abstract void define();
     
     protected PluginInterceptorPoint.Builder intercept(final String classNameOfTarget) {
-        if (InterceptorPointMap.containsKey(classNameOfTarget)) {
-            return InterceptorPointMap.get(classNameOfTarget);
+        if (interceptorPointMap.containsKey(classNameOfTarget)) {
+            return interceptorPointMap.get(classNameOfTarget);
         }
         PluginInterceptorPoint.Builder builder = PluginInterceptorPoint.intercept(classNameOfTarget);
-        InterceptorPointMap.put(classNameOfTarget, builder);
+        interceptorPointMap.put(classNameOfTarget, builder);
         return builder;
     }
     
@@ -68,7 +68,7 @@ public abstract class PluginDefinition {
      */
     public final List<PluginInterceptorPoint> build() {
         define();
-        return InterceptorPointMap.values().stream().map(PluginInterceptorPoint.Builder::install).collect(Collectors.toList());
+        return interceptorPointMap.values().stream().map(PluginInterceptorPoint.Builder::install).collect(Collectors.toList());
     }
     
     /**
