@@ -66,9 +66,9 @@ Local transaction of relational database guarantees ACID perfectly. But in distr
 #### CAP and BASE Theorem
 <!-- 对于互联网应用而言，随着访问量和数据量的激增，传统的单体架构模式将无法满足业务的高速发展。这时，开发者需要把单体应用拆分为多个独立的小应用，把单个数据库按照分片规则拆分为多个库和多个表。 -->
 
-For the internet application, traditional all-in one architecture can't amply the business requirement with increasing of visit and data gradually. Developer of application needs to split the big application into several independent small applications, And all data in one database will reorganized into multiple databases and tables.
+For the internet application, traditional all-in-one architecture can't satisfy the business requirement with increasing of visit and data gradually. the developer of the application needs to split the big application into several independent small applications, And all data in one database will be reorganized into multiple databases and tables.
 
-But how to keep ACID between multi databases will be a hard tech problem, the CAP and BASE are basic theorem when to discuss the problem in distributed system.
+But how to keep ACID among multi databases will be a hard tech problem, the CAP and BASE are basic theorem when to discuss the problem in distributed system.
 
 <!-- 数据拆分后，如何在多个数据库节点间保证本地事务的ACID特性则成为一个技术难题，并且由此而衍生出了CAP和BASE经典理论。 -->
 
@@ -82,7 +82,7 @@ The CAP theorem states that it is impossible for a distributed data system to si
 
 No distributed system is safe from network failures, thus network partitioning generally has to be tolerated. In the presence of a network partition, one has to choose between consistency and availability.
 
-BASE (basically available, soft state, eventually consistent) theorem is the result in trade off between Consistency and availability.
+BASE (basically available, soft state, eventually consistent) theorem is the result of trade off Consistency against availability.
 
 <!-- 由于C和A互斥性，其权衡的结果就是BASE理论。   -->
 
@@ -90,7 +90,7 @@ BASE (basically available, soft state, eventually consistent) theorem is the res
 
 For the most of distributed application, it's enough that data to be eventually consistent state in a reasonable time. If we call transactions that satisfy ACID as hard transactions, then transactions based on BASE are called soft transactions.
 
-Without regarding system requirements and performance, pursuing strong consistency is not the best solution. The distributed application can be benefit from both hard and soft transaction at the same time. The local service adopt strong consistent transaction, and a service across multi systems adopt eventually consistent transaction. How to  rade off performance and consistency of a system is a key challenge for the architect and developer.
+Without regarding system requirements and performance, pursuing strong consistency is not the best solution. The distributed application can benefit from both hard and soft transaction at the same time. The local service adopt strong consistent transaction, and the service across multi systems adopt eventually consistent transaction. How to trade off performance against consistency of a system is a key challenge for the architect and developer.
 
 <!-- 一味的追求强一致性，并非最佳方案。对于分布式应用来说，刚柔并济是更加合理的设计方案，即在本地服务中采用强一致事务，在跨系统调用中采用最终一致性。如何权衡系统的性能与一致性，是十分考验架构师与开发者的设计功力的。 -->
 
@@ -108,7 +108,7 @@ XA standard describes the interface between transaction manager(TM) and resource
 
 <!-- XA是X/Open CAE Specification (Distributed Transaction Processing)模型中定义的TM（Transaction Manager）与RM（Resource Manager）之间进行通信的接口。 -->
 
-The XAResource interface is a Java mapping of the industry standard XA interface, And its implementation varies between database vendors。
+The XAResource interface is a Java mapping of the industry standard XA interface, And its implementation varies among database vendors。
 
 <!-- Java中的javax.transaction.xa.XAResource定义了XA接口，它依赖数据库厂商对jdbc-driver的具体实现。 -->
 
@@ -117,8 +117,8 @@ The implementation details by MySQL can be found in com.mysql.jdbc.jdbc2.optiona
 
 
 <!-- 在XA规范中，数据库充当RM角色，应用需要充当TM的角色，即生成全局的txId，调用XAResource接口，把多个本地事务协调为全局统一的分布式事务。   -->
-In XA specification,TM(the application) controls a transaction which involves multiple RM(the database).
-TM needs a global transaction id(xid) to call XAResource interfaces and coordinate multi local transaction into a global unique distributed transaction.
+In XA specification, TM(the application) controls a transaction which involves multiple RM(the database).
+TM needs a global transaction id(xid) to call XAResource interfaces and coordinate multi local transactions into a global unique distributed transaction.
 
 <!-- **一阶段提交：弱XA** -->
 
@@ -128,7 +128,7 @@ TM needs a global transaction id(xid) to call XAResource interfaces and coordina
 
 <!-- 弱XA通过去掉XA的Prepare阶段，以达到减少资源锁定范围而提升并发性能的效果。典型的实现为在一个业务线程中，遍历所有的数据库连接，依次做commit或者rollback。弱XA同本地事务相比，性能损耗低，但在事务提交的执行过程中，若出现网络故障、数据库宕机等预期之外的异常，将会造成数据不一致，且无法进行回滚。基于弱XA的事务无需额外的实现成本，因此Sharding-Sphere默认支持。 -->
 
-Comparing to 2PC, weak XA without prepare phase can benefits for reducing resource blocking and improving concurrency. The implementation only needs to iterate and call commit/callback on each datasource connection in a business thread. Performance of weak XA almost without reducing compares to local transaction. When has network failures、database crash and et., weak XA will lead inconsistent data and can't be rollback. Weak XA transaction implementation doesn't need extra efforts, so Sharding-Sphere supports it by default.
+Comparing to 2PC, weak XA without prepare phase can benefit for reducing resource blocking and improving concurrency. The implementation only needs to iterate and call commit/callback on each datasource connection in a business thread. Performance of weak XA almost without reducing compares to local transaction. When has network failures、database crash and et., weak XA will lead inconsistent data and can't be rollback. Weak XA transaction implementation doesn't need extra efforts, so Sharding-Sphere supports it by default.
 
 <!-- **二阶段提交：2PC** -->
 
@@ -137,7 +137,7 @@ Comparing to 2PC, weak XA without prepare phase can benefits for reducing resour
 ![](https://shardingsphere.apache.org/blog/img/realization3.jpg)
 
 <!-- 二阶段提交是XA的标准实现。它将分布式事务的提交拆分为2个阶段：prepare和commit/rollback。 -->
-Two phase commit is a standard implementation of XA. The distributed transaction commit consists of two phases:prepare and commit/rollback.
+Two phase commit is a standard implementation of XA. The distributed transaction commit consists of two phases: prepare and commit/rollback.
 
 All local transactions will use default isolation level to lock resources, record redo and undo logs when XA global transaction enabled. In the prepare stage, TM initiates a prepare request to each RM and waits for response. and then to execute a commit operation if all RMs send yes or decides to execute a rollback if an TM sends no. if all TM said yes, but some of nodes crash on commit stage, The XA recover will be used to commit compensation when the node recovery, and make sure that data is consistent.
 
@@ -169,7 +169,7 @@ BED is a compensate strategy for weak XA. Using transaction table records all tr
 
 这种策略的优点是无锁定资源时间，性能损耗小。缺点是尝试多次提交失败后，无法回滚，它仅适用于事务最终一定能够成功的业务场景。因此BED是通过事务回滚功能上的妥协，来换取性能的提升。 -->
 
-Advantage of the strategy is free of resource lock, low performance loss. But the transaction can't be rollback if still failed until reaches max reties. so it's only useful for the transaction that will be successful one hundred percentage. For the sake of improving performance, BED sacrifices rollback function of transaction.
+Advantage of the strategy is free of resource lock, low performance loss. But the transaction can't be rollback if still failed until reaches max reties, so it's only useful for the transaction that will be successful one hundred percentage. For the sake of improving performance, BED sacrifices rollback function of transaction.
 
 ![](https://shardingsphere.apache.org/blog/img/realization4.jpg)
 
@@ -235,7 +235,7 @@ TCC model gives the control of lock to business level, and all sub transactions 
 
 <!-- 这三个阶段都会按本地事务的方式执行，不同于XA的prepare，TCC无需将XA的投票期间的所有资源挂起，因此极大的提高了吞吐量。   -->
 
-Different from XA prepare stage, the three stage will execute as the local transaction way. TCC don't need to lock all the resource during voting, and improves system concurrency.
+Different from XA prepare stage, the three stages will execute as the local transaction way. TCC don't need to lock all the resource during voting, and improves system concurrency.
 
 
 <!-- 下面对TCC模式下，A账户往B账户汇款100元为例子，对业务的改造进行详细的分析： -->
@@ -442,13 +442,13 @@ As can be seen from above figure, Sharding-core will produce and dispatch variou
 
 <!-- Sharding-Proxy是基于netty开发的数据库中间代理层，实现了标准的MySQL协议，可以看做是一个实现了数据分片的数据库。Sharding-Proxy已经实现了基于Atomikos的XA事务，为了保证所有的子事务都处于同一个线程之中，整个Proxy的线程模型进行了如下的调整： -->
 
-Sharding-Proxy is a netty based database middle layer proxy, it implements MySQL protocol, and could be regard as a database with built-in data sharding ability. Sharding-Proxy have implemented XA transaction based on Atomikos. For ensuring all sub transaction in the same thread, the changes of proxy thread model can be seen from the following figure.
+Sharding-Proxy is a netty based database middle layer proxy, it implements MySQL protocol, and could be regarded as a database with built-in data sharding ability. Sharding-Proxy has implemented XA transaction based on Atomikos. For ensuring all sub transaction in the same thread, the changes of proxy thread model can be seen from the following figure.
 
 ![](https://shardingsphere.apache.org/blog/img/realization9.jpg)
 
 <!-- 当开启事务后，Proxy后端的SQL命令执行引擎将采用一通道一线程的模式，此事务线程的生命周期同通道保持一致。事务处理的具体过程与Proxy彻底解耦，即Proxy将发布事务类型的事件，然后Sharding-Sphere-TM根据传入的事务消息，选择具体的TM进行处理。 -->
 
-When transaction enabled, SQL engine will using Channel-Thread pattern on Proxy backend, and lifecycle of channel and transaction thread keeps same. The process procedure of transaction are totally decoupled with Proxy, namely, the transaction event produced by Proxy will consumed by Sharding-Sphere TM.
+When transaction enabled, SQL engine will use Channel-Thread pattern on Proxy backend, and lifecycle of channel and transaction thread keeps same. The process procedure of transaction are totally decoupled with Proxy, namely, the transaction event produced by Proxy will consumed by Sharding-Sphere TM.
 
 <!-- 压测结果表明：XA事务的插入和更新的性能，基本上同跨库的个数呈线性关系，查询的性能基本不受影响，建议在并发量不大，每次事务涉及的库在10个以内时，可以使用XA。 -->
 Pressure test results show that insert and update performance of XA transaction is linear with amount of databases, and performance of query don't have obvious change.
@@ -509,8 +509,7 @@ Saga provides distributed transaction service governance in form of jar.
 
 <!-- 对Sharding-Sphere而言，confirm和cancel过程代表了子事务中的正常执行SQL和逆向执行SQL，（未来Sharding-Sphere将提供自动生成逆向SQL的能力）。当启用Saga柔性事务后，路由完成之后的物理数据源将开启本地自动提交事务，每次confirm和cancel都会直接提交。 -->
 
-For Sharding-Sphere, procedure of confirm and cancel represent normal and backward execution SQL of sub-transaction. Automation of reverse
-SQL generation is in the plan. After enabling Saga soft transaction, routed physical datasource will enable transaction auto commit, every confirm and cancel will submit directly.
+For Sharding-Sphere, the procedure of confirm and cancel represent normal and backward execution SQL of sub-transaction. Automation of reverse SQL generation is in the plan. After enabling Saga soft transaction, routed physical datasource will enable transaction auto commit, every confirm and cancel will be submitted directly.
 
 <!-- 在Sharding-Sphere内部，触发SQL执行引擎后，将会产生Saga事务事件，这时Sharding-Sphere事务监听器会注册本次子事务的confirm和cancel至Saga事务管理器的队列中；在业务线程触发commit和rollback后，Saga事务管理器再根据子事务执行的结果，判断进行confirm重试或者cancel流程。 -->
 
@@ -591,7 +590,7 @@ In the future, feature will be optimized continuously, more new features such as
 
 
 <!-- **Q6**：SAGA不支持ACID中的I，咱们这边怎么考虑的呢？ -->
-**Q6**: SAGA don't support I of ACID, how do you think of this ?
+**Q6**: SAGA doesn't support I of ACID, how do you think of this?
 <!-- **A6**：目前暂不支持隔离性，今后我们有增加I的规划，其实所有的柔性事务都不支持I，TCC增加了Try阶段，可以理解是准隔离性，使用SAGA时，可以在业务层面控制并发，防止脏读等产生。 -->
 **A6**: Now, Isolation is unsupported, and we have plan to support it. Actually all of soft transaction don't support I, Try stage of TCC can be regarded as isolation. Control of concurrency on business level can avoid dirty read.
 
@@ -601,7 +600,7 @@ In the future, feature will be optimized continuously, more new features such as
 
 <!-- **A7**：现在3.0版本，事务模块依赖了Sharding-JDBC模块，事务模块需要监听Sharding-JDBC和Proxy中的事件，然后进行事务操作。如果你想单独用事务模块，需要按Core中定义的事件，在你的业务里进行发布。 -->
 
- **A7**: In version 3.0, transaction module depends on Sharding-JDBC module, and executes transaction when received the event of Sharding-JDBC and Proxy. If you want to use transaction module, you need to handle event according the definition on core module.
+ **A7**: In version 3.0, transaction module depends on Sharding-JDBC module, and executes transaction when received the event of Sharding-JDBC and Proxy. If you want to use the transaction module independently, you need to handle the event according to the definition of core module.
 
 <!-- ### 直播回放 -->
 ### Live playbacks
