@@ -13,23 +13,44 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.metrics.bootstrap;
+package org.apache.shardingsphere.agent.metrics.bootstrap.threadlocal;
 
 /**
- * Method name constant.
+ * The enum Elapsed time thread local.
  */
-public final class MethodNameConstant {
-
-    public static final String CHANNEL_ACTIVE = "channelActive";
+public enum ElapsedTimeThreadLocal {
     
-    public static final String CHANNEL_READ = "channelRead";
+    /**
+     * Instance elapsed time thread local.
+     */
+    INSTANCE;
     
-    public static final String CHANNEL_INACTIVE = "channelInactive";
+    private static final ThreadLocal<Long> CURRENT_LOCAL = new ThreadLocal<>();
     
-    public static final String COMMIT = "commit";
+    /**
+     * Set.
+     *
+     * @param time the time
+     */
+    public void set(final long time) {
+        CURRENT_LOCAL.set(time);
+    }
     
-    public static final String ROLL_BACK = "rollback";
+    /**
+     * Get long.
+     *
+     * @return the long
+     */
+    public Long get() {
+        return CURRENT_LOCAL.get();
+    }
+    
+    /**
+     * Remove.
+     */
+    public void remove() {
+        CURRENT_LOCAL.remove();
+    }
 }

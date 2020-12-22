@@ -15,42 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.bootstrap;
+package org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant;
+
+import io.opentracing.tag.StringTag;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * The enum Elapsed time thread local.
+ * ShardingSphere tags.
  */
-public enum ElapsedTimeThreadLocal {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingSphereTags {
     
     /**
-     * Instance elapsed time thread local.
+     * Component name of ShardingSphere's open tracing tag.
      */
-    INSTANCE;
-    
-    private static final ThreadLocal<Long> CURRENT_LOCAL = new ThreadLocal<>();
+    public static final String COMPONENT_NAME = "ShardingSphere";
     
     /**
-     * Set.
-     *
-     * @param time the time
+     * The tag to record the bind variables of SQL.
      */
-    public void set(final long time) {
-        CURRENT_LOCAL.set(time);
-    }
+    public static final StringTag DB_BIND_VARIABLES = new StringTag("db.bind_vars");
     
     /**
-     * Get long.
-     *
-     * @return the long
+     * The tag to record the connection count.
      */
-    public Long get() {
-        return CURRENT_LOCAL.get();
-    }
-    
-    /**
-     * Remove.
-     */
-    public void remove() {
-        CURRENT_LOCAL.remove();
-    }
+    public static final StringTag CONNECTION_COUNT = new StringTag("connection.count");
 }

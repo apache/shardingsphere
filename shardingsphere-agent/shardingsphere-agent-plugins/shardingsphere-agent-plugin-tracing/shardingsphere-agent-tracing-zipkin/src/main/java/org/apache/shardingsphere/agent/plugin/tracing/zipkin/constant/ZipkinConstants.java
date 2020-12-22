@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.zipkin;
+package org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Sharding constants.
+ * Zipkin constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingConstants {
+public final class ZipkinConstants {
     
     public static final String COMPONENT_NAME = "shardingsphere";
     

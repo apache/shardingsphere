@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger;
+package org.apache.shardingsphere.agent.plugin.tracing.jaeger.span;
 
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.ShardingErrorLogTagKeys;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.ErrorLogTagKeys;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Sharding error span.
+ * Error span.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingErrorSpan {
+public final class ErrorSpan {
     
     /**
      * Set error.
@@ -44,9 +44,9 @@ public final class ShardingErrorSpan {
     
     private static Map<String, ?> getReason(final Throwable cause) {
         Map<String, String> result = new HashMap<>(3, 1);
-        result.put(ShardingErrorLogTagKeys.EVENT, ShardingErrorLogTagKeys.EVENT_ERROR_TYPE);
-        result.put(ShardingErrorLogTagKeys.ERROR_KIND, cause.getClass().getName());
-        result.put(ShardingErrorLogTagKeys.MESSAGE, cause.getMessage());
+        result.put(ErrorLogTagKeys.EVENT, ErrorLogTagKeys.EVENT_ERROR_TYPE);
+        result.put(ErrorLogTagKeys.ERROR_KIND, cause.getClass().getName());
+        result.put(ErrorLogTagKeys.MESSAGE, cause.getMessage());
         return result;
     }
 }

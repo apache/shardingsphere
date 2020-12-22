@@ -23,7 +23,7 @@ import brave.propagation.TraceContext;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.plugin.advice.TargetObject;
-import org.apache.shardingsphere.agent.plugin.tracing.zipkin.ShardingConstants;
+import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 
 import java.lang.reflect.Method;
@@ -31,15 +31,15 @@ import java.lang.reflect.Method;
 /**
  * SQL parser engine advice.
  */
-public class SQLParserEngineAdvice implements MethodAroundAdvice {
+public final class SQLParserEngineAdvice implements MethodAroundAdvice {
     
     private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
     
     @Override
     public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        TraceContext parentContext = ((Span) ExecutorDataMap.getValue().get(ShardingConstants.ROOT_SPAN)).context();
+        TraceContext parentContext = ((Span) ExecutorDataMap.getValue().get(ZipkinConstants.ROOT_SPAN)).context();
         Span span = Tracing.currentTracer().newChild(parentContext).name(OPERATION_NAME);
-        span.tag(ShardingConstants.Tags.COMPONENT, ShardingConstants.COMPONENT_NAME);
+        span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
         span.start();
         target.setAttachment(span);
     }

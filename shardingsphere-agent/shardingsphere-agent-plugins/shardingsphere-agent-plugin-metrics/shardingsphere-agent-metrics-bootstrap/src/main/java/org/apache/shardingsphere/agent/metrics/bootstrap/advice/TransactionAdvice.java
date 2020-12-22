@@ -13,43 +13,38 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.metrics.bootstrap;
+package org.apache.shardingsphere.agent.metrics.bootstrap.advice;
 
 import java.lang.reflect.Method;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.plugin.advice.TargetObject;
 import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
+import org.apache.shardingsphere.agent.metrics.bootstrap.constant.MethodNameConstant;
 
 /**
- * Channel handler advice.
+ * Transaction advice.
  */
-public final class ChannelHandlerAdvice implements MethodAroundAdvice {
+public final class TransactionAdvice implements MethodAroundAdvice {
     
-    private static final String REQUEST_TOTAL = "proxy_request_total";
+    private static final String COMMIT = "proxy_transaction_commit_total";
     
-    private static final String COLLECTION_TOTAL = "proxy_connection_total";
+    private static final String ROLLBACK = "proxy_transaction_rollback_total";
     
     static {
-        MetricsReporter.registerCounter(REQUEST_TOTAL, "the shardingsphere proxy request total");
-        MetricsReporter.registerGauge(COLLECTION_TOTAL, "the shardingsphere proxy connection total");
+        MetricsReporter.registerCounter(COMMIT, "the shardingsphere proxy transaction commit count total");
+        MetricsReporter.registerCounter(ROLLBACK, "the shardingsphere proxy transaction rollback count total");
     }
     
     @Override
     public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        collectMetrics(method.getName());
-    }
-    
-    private void collectMetrics(final String methodName) {
-        if (MethodNameConstant.CHANNEL_READ.equals(methodName)) {
-            MetricsReporter.counterIncrement(REQUEST_TOTAL);
-        } else if (MethodNameConstant.CHANNEL_ACTIVE.equals(methodName)) {
-            MetricsReporter.gaugeIncrement(COLLECTION_TOTAL);
-        } else if (MethodNameConstant.CHANNEL_INACTIVE.equals(methodName)) {
-            MetricsReporter.gaugeDecrement(COLLECTION_TOTAL);
+        String methodName = method.getName();
+        if (MethodNameConstant.COMMIT.equals(methodName)) {
+            MetricsReporter.counterIncrement(COMMIT);
+        } else if (MethodNameConstant.ROLL_BACK.equals(methodName)) {
+            MetricsReporter.counterIncrement(ROLLBACK);
         }
     }
 }

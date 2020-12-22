@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+package org.apache.shardingsphere.agent.metrics.bootstrap.constant;
 
 /**
- * Sharding error log tag keys.
+ * Method name constant.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingErrorLogTagKeys {
+public final class MethodNameConstant {
     
-    public static final String EVENT = "event";
+    public static final String COMMAND_EXECUTOR_RUN = "run";
     
-    public static final String EVENT_ERROR_TYPE = "error";
+    public static final String SQL_ROUTER = "route";
+
+    public static final String CHANNEL_ACTIVE = "channelActive";
     
-    public static final String ERROR_KIND = "error.kind";
+    public static final String CHANNEL_READ = "channelRead";
     
-    public static final String MESSAGE = "message";
+    public static final String CHANNEL_INACTIVE = "channelInactive";
+    
+    public static final String COMMIT = "commit";
+    
+    public static final String ROLL_BACK = "rollback";
 }
