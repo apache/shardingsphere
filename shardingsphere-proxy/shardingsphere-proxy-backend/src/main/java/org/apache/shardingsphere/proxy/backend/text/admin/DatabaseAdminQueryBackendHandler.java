@@ -24,14 +24,16 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Database admin query backend handler.
@@ -52,10 +54,15 @@ public final class DatabaseAdminQueryBackendHandler implements TextProtocolBacke
         executor.execute(backendConnection);
         queryResultMetaData = executor.getQueryResultMetaData();
         mergedResult = executor.getMergedResult();
-        
-        // TODO process multiple column
-        
-        return new QueryResponseHeader(Collections.singletonList(QueryHeaderBuilder.build(queryResultMetaData, ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()), 1)));
+        return new QueryResponseHeader(createResponseHeader());
+    }
+    
+    private List<QueryHeader> createResponseHeader() throws SQLException {
+        List<QueryHeader> result = new ArrayList<>(queryResultMetaData.getColumnCount());
+        for (int columnIndex = 1; columnIndex <= queryResultMetaData.getColumnCount(); columnIndex++) {
+            result.add(QueryHeaderBuilder.build(queryResultMetaData, ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()), columnIndex));
+        }
+        return result;
     }
     
     @Override
