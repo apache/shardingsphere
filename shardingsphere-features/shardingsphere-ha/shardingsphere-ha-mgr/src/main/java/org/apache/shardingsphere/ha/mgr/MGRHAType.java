@@ -53,6 +53,8 @@ public final class MGRHAType implements HAType {
     
     private static final String SINGLE_PRIMARY = "SELECT * FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_single_primary_mode'";
     
+    private static CoordinatorRegistryCenter coordinatorRegistryCenter;
+    
     private ScheduleJobBootstrap scheduleJobBootstrap;
     
     private String oldPrimaryDataSource;
@@ -168,11 +170,13 @@ public final class MGRHAType implements HAType {
     
     @Override
     public void startPeriodicalMonitor(final Map<String, DataSource> dataSourceMap, final String schemaName) {
-        ZookeeperConfiguration zkConfig = new ZookeeperConfiguration("localhost:", "2181");
-        CoordinatorRegistryCenter coordinatorRegistryCenter = new ZookeeperRegistryCenter(zkConfig);
-        coordinatorRegistryCenter.init();
+        if (null == coordinatorRegistryCenter) {
+            ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("zkServerLists"), "mgr-elasticjob");
+            coordinatorRegistryCenter = new ZookeeperRegistryCenter(zkConfig);
+            coordinatorRegistryCenter.init();
+        }
         scheduleJobBootstrap = new ScheduleJobBootstrap(coordinatorRegistryCenter, new MGRPeriodicalJob(this, dataSourceMap, schemaName),
-                JobConfiguration.newBuilder("MGRPeriodicalJob", 1).cron("0/5 * * * * ?").build());
+                JobConfiguration.newBuilder("MGRPeriodicalJob", 1).cron(props.getProperty("keepAliveCron")).build());
         scheduleJobBootstrap.schedule();
     }
     
