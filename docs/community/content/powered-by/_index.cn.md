@@ -146,6 +146,7 @@ chapter = true
     <li><a href="http://www.yaduo.com/" rel="nofollow">亚朵</a></li>
     <li><a href="http://read.zhulang.com/" rel="nofollow">连尚文学</a></li>
     <li><a href="https://www.yy.com/" rel="nofollow">欢聚时代(YY)</a></li>
+    <li><a href="https://y.tencentmusic.com" rel="nofollow">腾讯音乐娱乐科技有限公司</a></li>
 </ul>
 
 ### 新闻资讯
@@ -170,6 +171,7 @@ chapter = true
     <li><a href="http://dnr.gxzf.gov.cn/" rel="nofollow">广西壮族自治区自然资源信息中心</a></li>
     <li><a href="http://www.ascf.com.cn/" rel="nofollow">航天长峰</a></li>
     <li><a href="http://www.chiscdc.com/" rel="nofollow">中卫信</a></li>
+    <li><a href="http://www.taxchina.com/" rel="nofollow">中税网</a></li>
 </ul>
 
 ### 通信科技
