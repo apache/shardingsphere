@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.io.IOException;
 import java.util.Map;
@@ -33,14 +34,13 @@ import java.util.Set;
  * Inventory position group.
  */
 @Getter
-@Setter
 public final class InventoryPositionGroup {
     
     private static final Gson GSON = new GsonBuilder().registerTypeHierarchyAdapter(Position.class, new PositionTypeAdapter()).create();
     
-    private Map<String, Position<?>> unfinished;
+    private final Map<String, Position<?>> unfinished = Maps.newHashMap();
     
-    private Set<String> finished;
+    private final Set<String> finished = Sets.newHashSet();
     
     /**
      * init {@code InventoryPositionGroup} from json.

@@ -123,18 +123,17 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
     }
     
     private void persistInventoryPosition() {
-        InventoryPositionGroup data = new InventoryPositionGroup();
-        data.setUnfinished(Maps.newHashMap());
-        data.setFinished(Sets.newHashSet());
+        InventoryPositionGroup inventoryPositionGroup = new InventoryPositionGroup();
         for (Entry<String, PositionManager> entry : inventoryPositionManagerMap.entrySet()) {
             if (entry.getValue().getPosition() instanceof FinishedPosition) {
-                data.getFinished().add(entry.getKey());
+                inventoryPositionGroup.getFinished().add(entry.getKey());
                 continue;
             }
-            data.getUnfinished().put(entry.getKey(), entry.getValue().getPosition());
+            inventoryPositionGroup.getUnfinished().put(entry.getKey(), entry.getValue().getPosition());
         }
+        String data = inventoryPositionGroup.toJson();
         log.info("persist inventory position {} = {}", getInventoryPath(), data);
-        persistPosition(getInventoryPath(), data.toJson());
+        persistPosition(getInventoryPath(), data);
     }
     
     private void persistIncrementalPosition() {
