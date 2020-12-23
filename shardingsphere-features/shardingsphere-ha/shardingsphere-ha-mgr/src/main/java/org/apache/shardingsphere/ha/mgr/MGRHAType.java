@@ -20,6 +20,11 @@ package org.apache.shardingsphere.ha.mgr;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
+import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobBootstrap;
+import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
+import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
+import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.ha.spi.HAType;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -33,9 +38,6 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * MGR HA type.
@@ -51,7 +53,9 @@ public final class MGRHAType implements HAType {
     
     private static final String SINGLE_PRIMARY = "SELECT * FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_single_primary_mode'";
     
-    private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
+    private static CoordinatorRegistryCenter coordinatorRegistryCenter;
+    
+    private ScheduleJobBootstrap scheduleJobBootstrap;
     
     private String oldPrimaryDataSource;
     
@@ -165,9 +169,20 @@ public final class MGRHAType implements HAType {
     }
     
     @Override
-    public void periodicalMonitor(final Map<String, DataSource> dataSourceMap, final String schemaName) {
-        Runnable runnable = () -> updatePrimaryDataSource(dataSourceMap, schemaName);
-        SCHEDULED_EXECUTOR_SERVICE.scheduleAtFixedRate(runnable, 0, Integer.parseInt(props.getProperty("keepAliveSeconds")), TimeUnit.SECONDS);
+    public void startPeriodicalMonitor(final Map<String, DataSource> dataSourceMap, final String schemaName) {
+        if (null == coordinatorRegistryCenter) {
+            ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("zkServerLists"), "mgr-elasticjob");
+            coordinatorRegistryCenter = new ZookeeperRegistryCenter(zkConfig);
+            coordinatorRegistryCenter.init();
+        }
+        scheduleJobBootstrap = new ScheduleJobBootstrap(coordinatorRegistryCenter, new MGRPeriodicalJob(this, dataSourceMap, schemaName),
+                JobConfiguration.newBuilder("MGRPeriodicalJob", 1).cron(props.getProperty("keepAliveCron")).build());
+        scheduleJobBootstrap.schedule();
+    }
+    
+    @Override
+    public void stopPeriodicalMonitor() {
+        scheduleJobBootstrap.shutdown();
     }
     
     @Override

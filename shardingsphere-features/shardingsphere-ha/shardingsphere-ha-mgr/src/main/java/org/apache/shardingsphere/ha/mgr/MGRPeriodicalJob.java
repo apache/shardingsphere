@@ -15,37 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ha.route.fixture;
+package org.apache.shardingsphere.ha.mgr;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.elasticjob.api.ShardingContext;
+import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.ha.spi.HAType;
 
 import javax.sql.DataSource;
 import java.util.Map;
 
-/**
- * Test HA type.
- */
-public final class TestRouteHATypeFixture implements HAType {
+@RequiredArgsConstructor
+@Slf4j
+public final class MGRPeriodicalJob implements SimpleJob {
+    
+    private final HAType haType;
+    
+    private final Map<String, DataSource> dataSourceMap;
+    
+    private final String schemaName;
     
     @Override
-    public void checkHAConfig(final Map<String, DataSource> dataSourceMap, final String schemaName) {
-    }
-    
-    @Override
-    public void updatePrimaryDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName) {
-
-    }
-    
-    @Override
-    public void startPeriodicalMonitor(final Map<String, DataSource> dataSourceMap, final String schemaName) {
-    }
-    
-    @Override
-    public void stopPeriodicalMonitor() {
-    }
-    
-    @Override
-    public String getType() {
-        return "TestRoute";
+    public void execute(final ShardingContext shardingContext) {
+        log.info("---------------MGRPeriodicalJob--------------");
+        log.info("dataSourceMap: " + dataSourceMap.toString());
+        haType.updatePrimaryDataSource(dataSourceMap, schemaName);
     }
 }
