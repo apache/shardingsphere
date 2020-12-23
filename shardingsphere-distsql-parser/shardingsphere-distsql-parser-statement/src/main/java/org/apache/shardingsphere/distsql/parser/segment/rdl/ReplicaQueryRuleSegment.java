@@ -39,5 +39,5 @@ public final class ReplicaQueryRuleSegment implements ASTNode {
     
     private String loadBalancer;
     
-    private Properties properties;
+    private Properties props;
 }

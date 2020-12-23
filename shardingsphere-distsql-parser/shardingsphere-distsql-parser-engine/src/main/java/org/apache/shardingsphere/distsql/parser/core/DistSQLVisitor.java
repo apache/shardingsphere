@@ -108,15 +108,15 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         for (SchemaNameContext each : ctx.schemaNames().schemaName()) {
             replicaDatasources.add(each.getText());
         }
-        Properties properties = new Properties();
+        Properties props = new Properties();
         for (AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
-            properties.setProperty(each.key.getText(), each.value.getText());
+            props.setProperty(each.key.getText(), each.value.getText());
         }
         result.setName(ctx.ruleName.getText());
         result.setPrimaryDatasource(ctx.primary.getText());
         result.setReplicaDatasources(replicaDatasources);
         result.setLoadBalancer(ctx.loadBalancer.getText());
-        result.setProperties(properties);
+        result.setProps(props);
         return result;
     }
 
