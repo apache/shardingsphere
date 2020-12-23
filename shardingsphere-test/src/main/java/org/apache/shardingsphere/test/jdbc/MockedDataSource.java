@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.jdbc.test;
+package org.apache.shardingsphere.test.jdbc;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -68,7 +68,6 @@ public final class MockedDataSource implements DataSource {
     
     @Override
     public void setLoginTimeout(final int seconds) {
-        
     }
     
     @Override

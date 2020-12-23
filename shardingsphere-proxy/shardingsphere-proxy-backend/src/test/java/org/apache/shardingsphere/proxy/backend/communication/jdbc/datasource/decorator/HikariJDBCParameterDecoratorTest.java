@@ -36,7 +36,7 @@ public final class HikariJDBCParameterDecoratorTest {
     @Test
     public void assertDecoratedHikariDataSource() {
         HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setDriverClassName("org.apache.shardingsphere.jdbc.test.MockedDriver");
+        dataSource.setDriverClassName("org.apache.shardingsphere.test.jdbc.MockedDriver");
         dataSource.setJdbcUrl("mock:jdbc");
         HikariDataSource actual = new HikariJDBCParameterDecorator().decorate(dataSource);
         Properties props = actual.getDataSourceProperties();
