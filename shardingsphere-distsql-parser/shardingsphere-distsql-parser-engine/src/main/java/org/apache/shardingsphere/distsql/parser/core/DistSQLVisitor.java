@@ -124,7 +124,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     public ASTNode visitShardingTableRuleDefinition(final ShardingTableRuleDefinitionContext ctx) {
         TableRuleSegment result = new TableRuleSegment();
         result.setLogicTable(ctx.tableName().getText());
-        result.setShardingColumn(ctx.columName().getText());
+        result.setShardingColumn(ctx.columnName().getText());
         result.setAlgorithmType(ctx.shardingAlgorithmType.getText());
         // TODO Future feature.
         result.setDataSources(new LinkedList<>());

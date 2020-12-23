@@ -72,14 +72,14 @@ replicaQueryRuleDefinition
     ;
 
 shardingTableRuleDefinition
-    : tableName columName shardingAlgorithmType=IDENTIFIER LP algorithmProperties RP
+    : tableName columnName shardingAlgorithmType=IDENTIFIER LP algorithmProperties RP
     ;
 
 tableName
     : IDENTIFIER
     ;
 
-columName
+columnName
     : IDENTIFIER
     ;
 
