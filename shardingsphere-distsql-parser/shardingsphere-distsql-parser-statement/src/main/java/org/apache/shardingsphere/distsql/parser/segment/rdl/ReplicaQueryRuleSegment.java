@@ -26,9 +26,8 @@ import java.util.Collection;
 import java.util.Properties;
 
 /**
- * Table rule segment.
+ * Replica query rule segment.
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
 public final class ReplicaQueryRuleSegment implements ASTNode {

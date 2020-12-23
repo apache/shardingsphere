@@ -32,7 +32,7 @@ import org.apache.shardingsphere.replicaquery.yaml.config.rule.YamlReplicaQueryD
 public final class CreateReplicaQueryRuleStatementConverter {
     
     /**
-     * Convert create replica query rule statement context to YAML sharding rule configuration.
+     * Convert create replica query rule statement context to YAML replica query rule configuration.
      *
      * @param sqlStatement create replica query rule statement
      * @return YAML replica query rule configuration
