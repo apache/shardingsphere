@@ -28,7 +28,7 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class MySQLDMLFormatSQLVisitor extends MySQLFormatSQLVisitor implements DMLSQLVisitor, SQLFormatVisitor {
-
+    
     public MySQLDMLFormatSQLVisitor(final Properties props) {
         super(props);
     }

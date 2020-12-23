@@ -110,11 +110,11 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor implements DALSQLVisitor, SQLStatementVisitor {
-
+    
     public MySQLDALStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @Override
     public ASTNode visitUninstallPlugin(final UninstallPluginContext ctx) {
         return new MySQLUninstallPluginStatement();
@@ -291,22 +291,22 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitShowVariables(final ShowVariablesContext ctx) {
         return new MySQLShowOtherStatement();
     }
-
+    
     @Override
     public ASTNode visitShowCharacterSet(final ShowCharacterSetContext ctx) {
         return new MySQLShowOtherStatement();
     }
-
+    
     @Override
     public ASTNode visitShowCollation(final ShowCollationContext ctx) {
         return new MySQLShowOtherStatement();
     }
-
+    
     @Override
     public ASTNode visitSetVariable(final SetVariableContext ctx) {
         MySQLSetStatement result = new MySQLSetStatement();
@@ -364,7 +364,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setVariable(ctx.internalVariableName().getText());
         return result;
     }
-
+    
     @Override
     public ASTNode visitFromSchema(final FromSchemaContext ctx) {
         return new FromSchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
