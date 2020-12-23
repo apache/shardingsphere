@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config;
+package org.apache.shardingsphere.agent.core.yaml.swapper;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.agent.core.yaml.config.YamlConfiguration;
 
 /**
- * Agent configuration.
+ * YAML configuration swapper.
+ *
+ * @param <Y> type of YAML configuration
+ * @param <T> type of swapped object
  */
-@Getter
-@Setter
-public final class AgentConfiguration {
+public interface YamlSwapper<Y extends YamlConfiguration, T> {
     
-    private String applicationName;
-    
-    private String metricsType = "prometheus";
-    
-    private Set<String> ignorePlugins = new HashSet<>();
-    
-    private Collection<PluginConfiguration> pluginConfigurations = new LinkedList<>();
-    
+    /**
+     * Swap from YAML configuration to object.
+     *
+     * @param yamlConfig YAML configuration
+     * @return swapped object
+     */
+    T swapToObject(Y yamlConfig);
 }

@@ -19,26 +19,23 @@ package org.apache.shardingsphere.agent.plugin.tracing.jaeger.service;
 
 import io.jaegertracing.Configuration;
 import io.opentracing.util.GlobalTracer;
-import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
+import org.apache.shardingsphere.agent.core.config.JaegerPluginConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.service.BootService;
-import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
 
 /**
- * Jaeger tracer boot service.
+ * Jaeger tracing boot service.
  */
-public final class JaegerTracerBootService implements BootService {
+public final class JaegerTracingBootService implements BootService<JaegerPluginConfiguration> {
     
     @Override
-    public void setup() {
-        AgentConfiguration configuration = AgentObjectPool.INSTANCE.get(AgentConfiguration.class);
-        AgentConfiguration.TracingConfiguration tracingConfiguration = configuration.getTracing();
-        tracingConfiguration.getExtra().forEach(System::setProperty);
+    public void setup(final JaegerPluginConfiguration configuration) {
+        configuration.getExtra().forEach(System::setProperty);
         Configuration.SamplerConfiguration samplerConfig = Configuration.SamplerConfiguration.fromEnv();
         Configuration.ReporterConfiguration reporterConfig = Configuration.ReporterConfiguration.fromEnv()
                 .withSender(
                         Configuration.SenderConfiguration.fromEnv()
-                                .withAgentHost(tracingConfiguration.getAgentHost())
-                                .withAgentPort(tracingConfiguration.getAgentPort())
+                                .withAgentHost(configuration.getHost())
+                                .withAgentPort(configuration.getPort())
                 );
         Configuration config = new Configuration(configuration.getApplicationName())
                 .withSampler(samplerConfig)
@@ -47,10 +44,11 @@ public final class JaegerTracerBootService implements BootService {
     }
     
     @Override
-    public void start() {
+    public void cleanup() {
     }
     
     @Override
-    public void cleanup() {
+    public String getType() {
+        return "Jaeger";
     }
 }

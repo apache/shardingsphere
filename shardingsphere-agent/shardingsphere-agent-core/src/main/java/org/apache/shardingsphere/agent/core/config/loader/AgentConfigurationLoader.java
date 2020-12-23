@@ -15,13 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config;
+package org.apache.shardingsphere.agent.core.config.loader;
 
 import com.google.common.base.Preconditions;
 import java.io.File;
 import java.io.IOException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
+import org.apache.shardingsphere.agent.core.config.yaml.YamlAgentConfiguration;
+import org.apache.shardingsphere.agent.core.config.yaml.swapper.YamlAgentConfigurationSwapper;
 import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.yaml.YamlEngine;
 
@@ -44,11 +47,12 @@ public final class AgentConfigurationLoader {
     public static AgentConfiguration load() throws IOException {
         String specifiedConfigPath = System.getProperty(SPECIFIED_CONFIG_PATH);
         File configFile = null == specifiedConfigPath ? new File(AgentPathBuilder.getAgentPath(), DEFAULT_CONFIG_PATH) : new File(specifiedConfigPath);
-        return loadAgentConfiguration(configFile);
+        YamlAgentConfiguration yamlAgentConfiguration = loadAgentConfiguration(configFile);
+        return new YamlAgentConfigurationSwapper().swap(yamlAgentConfiguration);
     }
     
-    private static AgentConfiguration loadAgentConfiguration(final File yamlFile) throws IOException {
-        AgentConfiguration result = YamlEngine.unmarshal(yamlFile, AgentConfiguration.class);
+    private static YamlAgentConfiguration loadAgentConfiguration(final File yamlFile) throws IOException {
+        YamlAgentConfiguration result = YamlEngine.unmarshal(yamlFile, YamlAgentConfiguration.class);
         Preconditions.checkNotNull(result, "Agent configuration file `%s` is invalid.", yamlFile.getName());
         return result;
     }

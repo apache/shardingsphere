@@ -18,16 +18,15 @@
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.service;
 
 import brave.Tracing;
-import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
+import org.apache.shardingsphere.agent.core.config.ZipkinPluginConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.service.BootService;
-import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.okhttp3.OkHttpSender;
 
 /**
- * Zipkin tracer boot service.
+ * Zipkin tracing boot service.
  */
-public final class ZipkinTracerBootService implements BootService {
+public final class ZipkinTracingBootService implements BootService<ZipkinPluginConfiguration> {
     
     private AsyncZipkinSpanHandler zipkinSpanHandler;
     
@@ -36,15 +35,13 @@ public final class ZipkinTracerBootService implements BootService {
     private Tracing tracing;
 
     @Override
-    public void setup() {
-        AgentConfiguration configuration = AgentObjectPool.INSTANCE.get(AgentConfiguration.class);
-        AgentConfiguration.TracingConfiguration tracingConfiguration = configuration.getTracing();
-        sender = OkHttpSender.create(buildHttpPath(tracingConfiguration));
+    public void setup(final ZipkinPluginConfiguration configuration) {
+        sender = OkHttpSender.create(buildHttpPath(configuration));
         zipkinSpanHandler = AsyncZipkinSpanHandler.create(sender);
     }
 
     @Override
-    public void start() {
+    public void start(final ZipkinPluginConfiguration configuration) {
         tracing = Tracing.newBuilder().localServiceName("shardingsphere-agent").addSpanHandler(zipkinSpanHandler).build();
     }
 
@@ -55,7 +52,12 @@ public final class ZipkinTracerBootService implements BootService {
         sender.close();
     }
     
-    private String buildHttpPath(final AgentConfiguration.TracingConfiguration tracingConfiguration) {
-        return "http://" + tracingConfiguration.getAgentHost() + ":" + tracingConfiguration.getAgentPort();
+    private String buildHttpPath(final ZipkinPluginConfiguration configuration) {
+        return "http://" + configuration.getHost() + ":" + configuration.getPort();
+    }
+    
+    @Override
+    public String getType() {
+        return "Zipkin";
     }
 }

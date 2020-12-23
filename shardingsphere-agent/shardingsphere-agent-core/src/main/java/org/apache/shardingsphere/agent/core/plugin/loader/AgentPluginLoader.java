@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.agent.core.plugin.loader;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -34,8 +32,6 @@ import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.core.plugin.definition.PluginDefinition;
-import org.apache.shardingsphere.agent.core.plugin.service.BootService;
-import org.apache.shardingsphere.agent.core.plugin.service.ServiceSupervisor;
 import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
 
 import java.io.ByteArrayOutputStream;
@@ -75,8 +71,6 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     
     private final List<PluginJar> jars = Lists.newArrayList();
     
-    private final List<BootService> bootServices = Lists.newArrayList();
-    
     private Map<String, PluginInterceptorPoint> interceptorPointMap;
     
     private AgentPluginLoader() {
@@ -110,8 +104,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
             return;
         }
         Map<String, PluginInterceptorPoint> pointMap = Maps.newHashMap();
-        List<String> activatedLists = AgentObjectPool.INSTANCE.get(AgentConfiguration.class).getActivatedPlugins();
-        Set<String> activatedPlugins = Sets.newHashSet(activatedLists);
+        Set<String> activatedPlugins = AgentObjectPool.INSTANCE.get(AgentConfiguration.class).getIgnorePlugins();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         for (File jarFile : jarFiles) {
             outputStream.reset();
@@ -131,7 +124,6 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
                     continue;
                 }
                 buildPluginInterceptorPointMap(pluginDefinition, pointMap);
-                buildBootServices(pluginDefinition);
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
@@ -184,15 +176,6 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
      */
     public PluginInterceptorPoint loadPluginInterceptorPoint(final TypeDescription typeDescription) {
         return interceptorPointMap.getOrDefault(typeDescription.getTypeName(), PluginInterceptorPoint.createDefault());
-    }
-    
-    /**
-     * Get the supervisor of boot services.
-     *
-     * @return service supervisor
-     */
-    public ServiceSupervisor getBootServices() {
-        return new ServiceSupervisor(ImmutableList.<BootService>builder().addAll(bootServices).build());
     }
     
     /**
@@ -292,18 +275,6 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
                 definition.getClassStaticMethodPoints().addAll(each.getClassStaticMethodPoints());
             } else {
                 pointMap.put(target, each);
-            }
-        });
-    }
-    
-    private void buildBootServices(final PluginDefinition pluginDefinition) {
-        pluginDefinition.getAllServices().forEach(each -> {
-            try {
-                bootServices.add(each.newInstance());
-                // CHECKSTYLE:OFF
-            } catch (final Throwable ex) {
-                // CHECKSTYLE:ON
-                log.error("Failed to create service instance, {}.", each, ex);
             }
         });
     }

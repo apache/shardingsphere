@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.agent.core.spi;
 
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -42,5 +46,33 @@ public final class AgentTypedSPIRegistry {
             return serviceInstance.get();
         }
         throw new AgentServiceProviderNotFoundException(typedSPIClass, type);
+    }
+    
+    /**
+     * Get all registered service.
+     *
+     * @param typedSPIClass typed SPI class
+     * @param <T> type
+     * @return registered service
+     */
+    public static <T extends AgentTypedSPI> Collection<T> getAllRegisteredService(final Class<T> typedSPIClass) {
+        return AgentServiceLoader.getServiceLoader(typedSPIClass).newServiceInstances();
+    }
+    
+    /**
+     * Get registered services.
+     *
+     * @param types types
+     * @param typedSPIClass typed SPI class
+     * @param <V> type of typed SPI class
+     * @return registered services
+     */
+    public static <V extends AgentTypedSPI> Map<String, V> getRegisteredServices(final Collection<String> types, final Class<V> typedSPIClass) {
+        Collection<V> registeredServices = AgentServiceLoader.getServiceLoader(typedSPIClass).newServiceInstances();
+        Map<String, V> result = new LinkedHashMap<>(registeredServices.size(), 1);
+        for (V each : registeredServices) {
+            types.stream().filter(type -> Objects.equals(each.getType(), type)).forEach(type -> result.put(type, each));
+        }
+        return result;
     }
 }

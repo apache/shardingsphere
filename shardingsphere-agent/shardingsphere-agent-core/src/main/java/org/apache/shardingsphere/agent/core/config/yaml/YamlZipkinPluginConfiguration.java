@@ -15,28 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config;
+package org.apache.shardingsphere.agent.core.config.yaml;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.agent.core.yaml.config.YamlPluginConfiguration;
 
 /**
- * Agent configuration.
+ * Jaeger plugin configuration for YAML.
  */
 @Getter
 @Setter
-public final class AgentConfiguration {
+public class YamlZipkinPluginConfiguration implements YamlPluginConfiguration {
     
-    private String applicationName;
+    private String host = "localhost";
     
-    private String metricsType = "prometheus";
+    private int port = 15775;
     
-    private Set<String> ignorePlugins = new HashSet<>();
+    private Map<String, String> extra = new HashMap<>();
     
-    private Collection<PluginConfiguration> pluginConfigurations = new LinkedList<>();
-    
+    @Override
+    public String getPluginName() {
+        return "Zipkin";
+    }
 }
