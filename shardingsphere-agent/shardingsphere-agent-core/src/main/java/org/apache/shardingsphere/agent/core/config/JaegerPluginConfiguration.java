@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.agent.core.constant.AgentConstant;
 
 /**
  * Jaeger plugin configuration.
@@ -39,6 +40,6 @@ public final class JaegerPluginConfiguration implements PluginConfiguration {
     
     @Override
     public String getPluginName() {
-        return "Jaeger";
+        return AgentConstant.PLUGIN_NAME_JAEGER;
     }
 }

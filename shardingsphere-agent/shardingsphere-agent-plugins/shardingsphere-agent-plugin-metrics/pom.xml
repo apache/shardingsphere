@@ -31,7 +31,7 @@
     
     <modules>
         <module>shardingsphere-agent-metrics-api</module>
-        <module>shardingsphere-agent-metrics-bootstrap</module>
+        <module>shardingsphere-agent-metrics-prometheus</module>
     </modules>
     
     <properties>

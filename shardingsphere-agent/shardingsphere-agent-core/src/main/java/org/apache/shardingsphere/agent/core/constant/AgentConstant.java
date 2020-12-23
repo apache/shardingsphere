@@ -15,29 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config;
-
-import java.util.HashMap;
-import java.util.Map;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.agent.core.constant.AgentConstant;
+package org.apache.shardingsphere.agent.core.constant;
 
 /**
- * Zipkin plugin configuration.
+ * Agent constant.
  */
-@Getter
-@Setter
-public final class ZipkinPluginConfiguration implements PluginConfiguration {
+public final class AgentConstant {
     
-    private String host = "localhost";
+    public static final String PLUGIN_NAME_PROMETHEUS = "Prometheus";
     
-    private int port = 15775;
+    public static final String PLUGIN_NAME_JAEGER = "Jaeger";
     
-    private Map<String, String> extra = new HashMap<>();
-    
-    @Override
-    public String getPluginName() {
-        return AgentConstant.PLUGIN_NAME_ZIPKIN;
-    }
+    public static final String PLUGIN_NAME_ZIPKIN = "Zipkin";
 }

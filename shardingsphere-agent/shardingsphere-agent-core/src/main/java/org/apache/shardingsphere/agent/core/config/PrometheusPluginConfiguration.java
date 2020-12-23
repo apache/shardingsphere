@@ -19,6 +19,7 @@ package org.apache.shardingsphere.agent.core.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.agent.core.constant.AgentConstant;
 
 /**
  * Prometheus plugin configuration.
@@ -35,6 +36,6 @@ public final class PrometheusPluginConfiguration implements PluginConfiguration 
     
     @Override
     public String getPluginName() {
-        return "Prometheus";
+        return AgentConstant.PLUGIN_NAME_PROMETHEUS;
     }
 }
