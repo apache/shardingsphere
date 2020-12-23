@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.metrics.api;
 import java.io.IOException;
 import java.net.URL;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.config.AgentConfigurationLoader;
+import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
 import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
 import org.junit.Before;
 

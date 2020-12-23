@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Properties;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.agent.core.yaml.constructor.AgentYamlConstructor;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -51,7 +52,7 @@ public final class YamlEngine {
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream)
         ) {
-            return new Yaml().loadAs(inputStreamReader, classType);
+            return new Yaml(new AgentYamlConstructor(classType)).loadAs(inputStreamReader, classType);
         }
     }
     
@@ -66,7 +67,7 @@ public final class YamlEngine {
      */
     public static <T> T unmarshal(final byte[] yamlBytes, final Class<T> classType) throws IOException {
         try (InputStream inputStream = new ByteArrayInputStream(yamlBytes)) {
-            return new Yaml().loadAs(inputStream, classType);
+            return new Yaml(new AgentYamlConstructor(classType)).loadAs(inputStream, classType);
         }
     }
     
@@ -79,7 +80,7 @@ public final class YamlEngine {
      * @return object from YAML
      */
     public static <T> T unmarshal(final String yamlContent, final Class<T> classType) {
-        return new Yaml().loadAs(yamlContent, classType);
+        return new Yaml(new AgentYamlConstructor(classType)).loadAs(yamlContent, classType);
     }
     
     /**

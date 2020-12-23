@@ -17,29 +17,24 @@
 
 package org.apache.shardingsphere.agent.core.config;
 
-import java.io.IOException;
-import java.net.URL;
-import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.Setter;
 
-import static org.junit.Assert.assertNotNull;
-
-public final class AgentConfigurationLoaderTest {
+/**
+ * Prometheus plugin configuration.
+ */
+@Getter
+@Setter
+public final class PrometheusPluginConfiguration implements PluginConfiguration {
     
-    private static final String DEFAULT_CONFIG_PATH = "/conf/agent.yaml";
+    private String host = "localhost";
     
-    @Test
-    public void assertLoad() throws IOException {
-        System.setProperty("agent-path", getResourceUrl());
-        AgentConfiguration configuration = AgentConfigurationLoader.load();
-        assertNotNull(configuration);
-    }
+    private int port = 9090;
     
-    private static String getResourceUrl() {
-        URL url = AgentConfigurationLoader.class.getResource(DEFAULT_CONFIG_PATH);
-        if (null != url) {
-            return url.getFile();
-        }
-        return DEFAULT_CONFIG_PATH;
+    private boolean jvmInformationCollectorEnabled;
+    
+    @Override
+    public String getPluginName() {
+        return "Prometheus";
     }
 }

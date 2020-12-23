@@ -17,13 +17,16 @@
 
 package org.apache.shardingsphere.agent.bootstrap;
 
+import java.util.Collection;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
+import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.listener.LoggingListener;
 import org.apache.shardingsphere.agent.core.transformer.ShardingSphereTransformer;
-import org.apache.shardingsphere.agent.core.config.AgentConfigurationLoader;
+import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
 import org.apache.shardingsphere.agent.core.plugin.loader.AgentPluginLoader;
 import org.apache.shardingsphere.agent.core.plugin.service.ServiceSupervisor;
 import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
@@ -44,10 +47,11 @@ public final class ShardingSphereAgent {
      * @throws IOException IO exception
      */
     public static void premain(final String arguments, final Instrumentation instrumentation) throws IOException {
-        AgentObjectPool.INSTANCE.put(AgentConfigurationLoader.load());
+        AgentConfiguration agentConfiguration = AgentConfigurationLoader.load();
+        AgentObjectPool.INSTANCE.put(agentConfiguration);
         AgentPluginLoader agentPluginLoader = createAgentPluginLoader();
         setUpAgentBuilder(instrumentation, agentPluginLoader);
-        superviseServices(agentPluginLoader.getBootServices());
+        setupPluginBootService(agentConfiguration.getPluginConfigurations());
     }
     
     private static AgentPluginLoader createAgentPluginLoader() throws IOException {
@@ -56,10 +60,10 @@ public final class ShardingSphereAgent {
         return result;
     }
     
-    private static void superviseServices(final ServiceSupervisor serviceSupervisor) {
-        serviceSupervisor.setUpAllServices();
-        serviceSupervisor.startAllServices();
-        Runtime.getRuntime().addShutdownHook(new Thread(serviceSupervisor::cleanUpAllServices));
+    private static void setupPluginBootService(final Collection<PluginConfiguration> pluginConfigurations) {
+        ServiceSupervisor.setupAllService(pluginConfigurations);
+        ServiceSupervisor.startAllService(pluginConfigurations);
+        Runtime.getRuntime().addShutdownHook(new Thread(ServiceSupervisor::clernAllService));
     }
     
     private static void setUpAgentBuilder(final Instrumentation instrumentation, final AgentPluginLoader agentPluginLoader) {

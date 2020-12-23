@@ -34,8 +34,8 @@ public enum MetricsProvider {
     private static MetricsRegisterFactory metricRegisterFactory;
     
     static {
-        AgentConfiguration.MetricsConfiguration metricsConfiguration = AgentObjectPool.INSTANCE.get(AgentConfiguration.class).getMetrics();
-        metricRegisterFactory = AgentTypedSPIRegistry.getRegisteredService(MetricsRegisterFactory.class, metricsConfiguration.getType());
+        AgentConfiguration agentConfiguration = AgentObjectPool.INSTANCE.get(AgentConfiguration.class);
+        metricRegisterFactory = AgentTypedSPIRegistry.getRegisteredService(MetricsRegisterFactory.class, agentConfiguration.getMetricsType());
     }
     
     /**

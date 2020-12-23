@@ -17,29 +17,26 @@
 
 package org.apache.shardingsphere.agent.core.config;
 
-import java.io.IOException;
-import java.net.URL;
-import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
-import org.junit.Test;
+import java.util.HashMap;
+import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
 
-import static org.junit.Assert.assertNotNull;
-
-public final class AgentConfigurationLoaderTest {
+/**
+ * Zipkin plugin configuration.
+ */
+@Getter
+@Setter
+public final class ZipkinPluginConfiguration implements PluginConfiguration {
     
-    private static final String DEFAULT_CONFIG_PATH = "/conf/agent.yaml";
+    private String host = "localhost";
     
-    @Test
-    public void assertLoad() throws IOException {
-        System.setProperty("agent-path", getResourceUrl());
-        AgentConfiguration configuration = AgentConfigurationLoader.load();
-        assertNotNull(configuration);
-    }
+    private int port = 15775;
     
-    private static String getResourceUrl() {
-        URL url = AgentConfigurationLoader.class.getResource(DEFAULT_CONFIG_PATH);
-        if (null != url) {
-            return url.getFile();
-        }
-        return DEFAULT_CONFIG_PATH;
+    private Map<String, String> extra = new HashMap<>();
+    
+    @Override
+    public String getPluginName() {
+        return "Zipkin";
     }
 }

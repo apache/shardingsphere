@@ -15,28 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config;
+package org.apache.shardingsphere.agent.core.yaml.constructor;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.agent.core.yaml.swapper.YamlPluginConfigurationSwapperEngine;
+import org.yaml.snakeyaml.TypeDescription;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 /**
- * Agent configuration.
+ * Agent YAML constructor.
  */
-@Getter
-@Setter
-public final class AgentConfiguration {
+public final class AgentYamlConstructor extends Constructor {
     
-    private String applicationName;
-    
-    private String metricsType = "prometheus";
-    
-    private Set<String> ignorePlugins = new HashSet<>();
-    
-    private Collection<PluginConfiguration> pluginConfigurations = new LinkedList<>();
-    
+    public AgentYamlConstructor(final Class<?> rootClass) {
+        super(rootClass);
+        YamlPluginConfigurationSwapperEngine.getYamlShortcuts().forEach((key, value) -> addTypeDescription(new TypeDescription(value, key)));
+    }
 }

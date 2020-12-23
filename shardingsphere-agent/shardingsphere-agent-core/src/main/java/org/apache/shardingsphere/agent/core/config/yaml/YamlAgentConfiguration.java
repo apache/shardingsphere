@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config;
+package org.apache.shardingsphere.agent.core.config.yaml;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -23,20 +23,20 @@ import java.util.LinkedList;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.agent.core.yaml.config.YamlPluginConfiguration;
 
 /**
- * Agent configuration.
+ * YAML agent configuration.
  */
 @Getter
 @Setter
-public final class AgentConfiguration {
+public final class YamlAgentConfiguration {
     
-    private String applicationName;
+    private String applicationName = "shardingsphere-agent";
     
     private String metricsType = "prometheus";
     
     private Set<String> ignorePlugins = new HashSet<>();
     
-    private Collection<PluginConfiguration> pluginConfigurations = new LinkedList<>();
-    
+    private Collection<YamlPluginConfiguration> plugins = new LinkedList<>();
 }

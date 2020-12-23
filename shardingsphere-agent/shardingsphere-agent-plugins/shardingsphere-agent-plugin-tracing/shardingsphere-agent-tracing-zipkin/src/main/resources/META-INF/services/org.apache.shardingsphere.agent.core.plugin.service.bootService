@@ -15,24 +15,4 @@
 # limitations under the License.
 #
 
-applicationName: shardingsphere-agent
-metricsType : prometheus
-ignorePlugins:
-  - test
-  - metrics
-
-plugins:
-  - !PROMETHEUS
-    host: "localhost"
-    port: 9090
-    jvmInformationCollectorEnabled : true
-  - !JAEGER
-    host: "localhost"
-    port: 5775
-    extra:
-      name: jaeger
-  - !ZIPKIN
-    host: "localhost"
-    port: 15775
-    extra:
-      name: zipkin
+org.apache.shardingsphere.agent.plugin.tracing.zipkin.service.ZipkinTracingBootService

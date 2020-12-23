@@ -17,55 +17,69 @@
 
 package org.apache.shardingsphere.agent.core.plugin.service;
 
-import lombok.RequiredArgsConstructor;
+import java.util.Collection;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
+import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.core.spi.AgentTypedSPIRegistry;
 
 /**
  * Service supervisor.
  */
 @Slf4j
-@RequiredArgsConstructor
+@SuppressWarnings("ALL")
 public final class ServiceSupervisor {
     
-    private final List<BootService> bootServices;
-    
     /**
-     * Set up services.
+     * Set up all service.
+     *
+     * @param pluginConfigurations plugin configurations
      */
-    public void setUpAllServices() {
-        bootServices.forEach(each -> {
-            try {
-                each.setup();
-                // CHECKSTYLE:OFF
-            } catch (final Throwable ex) {
-                // CHECKSTYLE:ON
-                log.error("Failed to initial service.", ex);
+    public static void setupAllService(final Collection<PluginConfiguration> pluginConfigurations) {
+        Collection<String> pluginNames = pluginConfigurations.stream().map(PluginConfiguration::getPluginName).collect(Collectors.toList());
+        for (Map.Entry<String, BootService> entry : AgentTypedSPIRegistry.getRegisteredServices(pluginNames, BootService.class).entrySet()) {
+            for (PluginConfiguration each : pluginConfigurations) {
+                if (each.getPluginName().equals(entry.getKey())) {
+                    try {
+                        entry.getValue().setup(each);
+                        // CHECKSTYLE:OFF
+                    } catch (final Throwable ex) {
+                        // CHECKSTYLE:ON
+                        log.error("Failed to setup service.", ex);
+                    }
+                }
             }
-        });
+        }
     }
     
     /**
-     * Start all services.
+     * Start all service.
+     *
+     * @param pluginConfigurations plugin configurations
      */
-    public void startAllServices() {
-        bootServices.forEach(each -> {
-            try {
-                each.start();
-                // CHECKSTYLE:OFF
-            } catch (final Throwable ex) {
-                // CHECKSTYLE:ON
-                log.error("Failed to start service.", ex);
+    public static void startAllService(final Collection<PluginConfiguration> pluginConfigurations) {
+        Collection<String> pluginNames = pluginConfigurations.stream().map(PluginConfiguration::getPluginName).collect(Collectors.toList());
+        for (Map.Entry<String, BootService> entry : AgentTypedSPIRegistry.getRegisteredServices(pluginNames, BootService.class).entrySet()) {
+            for (PluginConfiguration each : pluginConfigurations) {
+                if (each.getPluginName().equals(entry.getKey())) {
+                    try {
+                        entry.getValue().start(each);
+                        // CHECKSTYLE:OFF
+                    } catch (final Throwable ex) {
+                        // CHECKSTYLE:ON
+                        log.error("Failed to start service.", ex);
+                    }
+                }
             }
-        });
+        }
     }
     
     /**
-     * Clean up all services.
+     * Clern all service.
      */
-    public void cleanUpAllServices() {
-        bootServices.forEach(each -> {
+    public static void clernAllService() {
+        AgentTypedSPIRegistry.getAllRegisteredService(BootService.class).forEach(each -> {
             try {
                 each.cleanup();
                 // CHECKSTYLE:OFF

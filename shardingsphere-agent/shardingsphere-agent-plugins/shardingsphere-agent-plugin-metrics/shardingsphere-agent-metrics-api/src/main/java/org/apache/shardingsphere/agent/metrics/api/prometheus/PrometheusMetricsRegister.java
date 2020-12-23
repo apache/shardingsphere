@@ -17,19 +17,12 @@
 
 package org.apache.shardingsphere.agent.metrics.api.prometheus;
 
-import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 import io.prometheus.client.Histogram;
-import io.prometheus.client.exporter.HTTPServer;
-import io.prometheus.client.hotspot.DefaultExports;
-import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
 import org.apache.shardingsphere.agent.metrics.api.MetricsRegister;
 
 /**
@@ -43,16 +36,6 @@ public final class PrometheusMetricsRegister implements MetricsRegister {
     private static final Map<String, Gauge> GAUGE_MAP = new ConcurrentHashMap<>();
     
     private static final Map<String, Histogram> HISTOGRAM_MAP = new ConcurrentHashMap<>();
-    
-    private final AgentConfiguration.MetricsConfiguration metricsConfiguration = AgentObjectPool.INSTANCE.get(AgentConfiguration.class).getMetrics();
-    
-    private HTTPServer httpServer;
-    
-    private PrometheusMetricsRegister() {
-        registerJvm();
-        startServer();
-        registerClose();
-    }
     
     /**
      * Get instance prometheus metrics register.
@@ -144,39 +127,6 @@ public final class PrometheusMetricsRegister implements MetricsRegister {
         } else {
             histogram.observe(duration);
         }
-    }
-    
-    private void startServer() {
-        int port = metricsConfiguration.getPort();
-        String host = metricsConfiguration.getHost();
-        InetSocketAddress inetSocketAddress;
-        if ("".equals(host) || null == host) {
-            inetSocketAddress = new InetSocketAddress(port);
-        } else {
-            inetSocketAddress = new InetSocketAddress(host, port);
-        }
-        try {
-            httpServer = new HTTPServer(inetSocketAddress, CollectorRegistry.defaultRegistry, true);
-            log.info(String.format("you start prometheus metrics http server host is: %s , port is: %s", inetSocketAddress.getHostString(), inetSocketAddress.getPort()));
-        } catch (final IOException exception) {
-            log.error("you start prometheus metrics http server is error", exception);
-        }
-    }
-    
-    private void registerJvm() {
-        boolean enabled = metricsConfiguration.isJvmInformationCollectorEnabled();
-        if (enabled) {
-            new BuildInfoCollector().register();
-            DefaultExports.initialize();
-        }
-    }
-    
-    private void registerClose() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            if (null != httpServer) {
-                httpServer.stop();
-            }
-        }));
     }
     
     private static class PrometheusMetricsRegisterHolder {
