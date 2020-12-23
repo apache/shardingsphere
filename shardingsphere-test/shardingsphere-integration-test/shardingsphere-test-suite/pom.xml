@@ -138,7 +138,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/test-classes</outputDirectory>
+                            <outputDirectory>target/test-classes</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>src/test/resources</directory>
