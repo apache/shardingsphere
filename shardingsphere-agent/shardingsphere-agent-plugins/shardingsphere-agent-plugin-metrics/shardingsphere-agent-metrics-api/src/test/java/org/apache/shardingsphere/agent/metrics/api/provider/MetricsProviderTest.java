@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config;
+package org.apache.shardingsphere.agent.metrics.api.provider;
 
-import java.util.HashMap;
-import java.util.Map;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.agent.core.constant.AgentConstant;
+import org.apache.shardingsphere.agent.metrics.api.BaseTest;
+import org.apache.shardingsphere.agent.metrics.api.MetricsRegister;
+import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureMetricsRegister;
+import org.junit.Test;
 
-/**
- * Zipkin plugin configuration.
- */
-@Getter
-@Setter
-public final class ZipkinPluginConfiguration implements PluginConfiguration {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+
+public final class MetricsProviderTest extends BaseTest {
     
-    private String host = "localhost";
-    
-    private int port = 15775;
-    
-    private Map<String, String> extra = new HashMap<>();
-    
-    @Override
-    public String getPluginName() {
-        return AgentConstant.PLUGIN_NAME_ZIPKIN;
+    @Test
+    public void assertInstance() {
+        MetricsRegister metricsRegister = MetricsProvider.INSTANCE.newInstance();
+        assertThat(metricsRegister, instanceOf(FixtureMetricsRegister.class));
     }
 }

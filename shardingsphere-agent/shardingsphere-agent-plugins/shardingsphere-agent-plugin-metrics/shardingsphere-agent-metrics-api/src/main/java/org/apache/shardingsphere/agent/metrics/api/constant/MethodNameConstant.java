@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config;
-
-import java.util.HashMap;
-import java.util.Map;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.agent.core.constant.AgentConstant;
+package org.apache.shardingsphere.agent.metrics.api.constant;
 
 /**
- * Zipkin plugin configuration.
+ * Method name constant.
  */
-@Getter
-@Setter
-public final class ZipkinPluginConfiguration implements PluginConfiguration {
+public final class MethodNameConstant {
     
-    private String host = "localhost";
+    public static final String COMMAND_EXECUTOR_RUN = "run";
     
-    private int port = 15775;
+    public static final String SQL_ROUTER = "route";
+
+    public static final String CHANNEL_ACTIVE = "channelActive";
     
-    private Map<String, String> extra = new HashMap<>();
+    public static final String CHANNEL_READ = "channelRead";
     
-    @Override
-    public String getPluginName() {
-        return AgentConstant.PLUGIN_NAME_ZIPKIN;
-    }
+    public static final String CHANNEL_INACTIVE = "channelInactive";
+    
+    public static final String COMMIT = "commit";
+    
+    public static final String ROLL_BACK = "rollback";
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.agent.core.config.yaml.swapper;
 
 import org.apache.shardingsphere.agent.core.config.PrometheusPluginConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.YamlPrometheusPluginConfiguration;
+import org.apache.shardingsphere.agent.core.constant.AgentConstant;
 import org.apache.shardingsphere.agent.core.yaml.swapper.YamlPluginConfigurationSwapper;
 
 /**
@@ -42,6 +43,6 @@ public final class PrometheusPluginConfigurationYamlSwapper implements YamlPlugi
     
     @Override
     public String getType() {
-        return "Prometheus";
+        return AgentConstant.PLUGIN_NAME_PROMETHEUS;
     }
 }

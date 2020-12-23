@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config;
+package org.apache.shardingsphere.agent.metrics.prometheus.register;
 
-import java.util.HashMap;
-import java.util.Map;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.agent.core.constant.AgentConstant;
+import org.apache.shardingsphere.agent.metrics.api.MetricsRegister;
+import org.apache.shardingsphere.agent.metrics.api.MetricsRegisterFactory;
 
 /**
- * Zipkin plugin configuration.
+ * Prometheus metrics register factory.
  */
-@Getter
-@Setter
-public final class ZipkinPluginConfiguration implements PluginConfiguration {
-    
-    private String host = "localhost";
-    
-    private int port = 15775;
-    
-    private Map<String, String> extra = new HashMap<>();
+public final class PrometheusMetricsRegisterFactory implements MetricsRegisterFactory {
     
     @Override
-    public String getPluginName() {
-        return AgentConstant.PLUGIN_NAME_ZIPKIN;
+    public MetricsRegister newInstance() {
+        return PrometheusMetricsRegister.getInstance();
+    }
+    
+    @Override
+    public String getType() {
+        return AgentConstant.PLUGIN_NAME_PROMETHEUS;
     }
 }

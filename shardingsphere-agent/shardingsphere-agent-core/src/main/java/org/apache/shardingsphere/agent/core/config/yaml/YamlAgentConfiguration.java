@@ -34,7 +34,7 @@ public final class YamlAgentConfiguration {
     
     private String applicationName = "shardingsphere-agent";
     
-    private String metricsType = "prometheus";
+    private String metricsType = "Prometheus";
     
     private Set<String> ignorePlugins = new HashSet<>();
     

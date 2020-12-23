@@ -15,29 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config;
-
-import java.util.HashMap;
-import java.util.Map;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.agent.core.constant.AgentConstant;
+package org.apache.shardingsphere.agent.metrics.api.threadlocal;
 
 /**
- * Zipkin plugin configuration.
+ * The enum Elapsed time thread local.
  */
-@Getter
-@Setter
-public final class ZipkinPluginConfiguration implements PluginConfiguration {
+public enum ElapsedTimeThreadLocal {
     
-    private String host = "localhost";
+    /**
+     * Instance elapsed time thread local.
+     */
+    INSTANCE;
     
-    private int port = 15775;
+    private static final ThreadLocal<Long> CURRENT_LOCAL = new ThreadLocal<>();
     
-    private Map<String, String> extra = new HashMap<>();
+    /**
+     * Set.
+     *
+     * @param time the time
+     */
+    public void set(final long time) {
+        CURRENT_LOCAL.set(time);
+    }
     
-    @Override
-    public String getPluginName() {
-        return AgentConstant.PLUGIN_NAME_ZIPKIN;
+    /**
+     * Get long.
+     *
+     * @return the long
+     */
+    public Long get() {
+        return CURRENT_LOCAL.get();
+    }
+    
+    /**
+     * Remove.
+     */
+    public void remove() {
+        CURRENT_LOCAL.remove();
     }
 }

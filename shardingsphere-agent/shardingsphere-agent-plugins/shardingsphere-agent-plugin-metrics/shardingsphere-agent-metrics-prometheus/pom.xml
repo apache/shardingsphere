@@ -25,33 +25,54 @@
         <artifactId>shardingsphere-agent-plugin-metrics</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-agent-metrics-api</artifactId>
+    <artifactId>shardingsphere-agent-metrics-prometheus</artifactId>
+    <packaging>jar</packaging>
     <name>${project.artifactId}</name>
-
+    
     <properties>
-        <entrypoint.class>org.apache.shardingsphere.agent.metrics.api.definition.MetricsPluginDefinition</entrypoint.class>
+        <prometheus.version>0.6.0</prometheus.version>
+        <prometheus.jmx.version>0.10</prometheus.jmx.version>
     </properties>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-route</artifactId>
+            <artifactId>shardingsphere-agent-metrics-api</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
         </dependency>
-    </dependencies>
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient</artifactId>
+            <version>${prometheus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_hotspot</artifactId>
+            <version>${prometheus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.prometheus.jmx</groupId>
+            <artifactId>collector</artifactId>
+            <version>${prometheus.jmx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_httpserver</artifactId>
+            <version>${prometheus.version}</version>
+        </dependency>
 
+    </dependencies>
+    
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Entrypoint>${entrypoint.class}</Entrypoint>
-                        </manifestEntries>
-                    </archive>
+                    <outputFile>${metrics.target.directory}/${project.build.finalName}</outputFile>
                 </configuration>
             </plugin>
         </plugins>
