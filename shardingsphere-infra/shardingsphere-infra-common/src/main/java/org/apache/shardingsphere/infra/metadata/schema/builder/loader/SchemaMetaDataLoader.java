@@ -58,7 +58,7 @@ public final class SchemaMetaDataLoader {
         try (MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
             result = loadAllTableNames(connectionAdapter);
         }
-        log.info("Loading {} tables' meta data for unconfigured tables.", result.size());
+        log.info("Loading {} table's meta data for unconfigured tables.", result.size());
         if (result.isEmpty()) {
             return Collections.emptyList();
         }
