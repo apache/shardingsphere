@@ -45,11 +45,11 @@ public final class CreateReplicaQueryRuleStatementConverter {
             dataSourceRuleConfiguration.setPrimaryDataSourceName(each.getPrimaryDatasource());
             dataSourceRuleConfiguration.getReplicaDataSourceNames().addAll(each.getReplicaDatasources());
             dataSourceRuleConfiguration.setLoadBalancerName(each.getLoadBalancer());
-            dataSourceRuleConfiguration.setProps(each.getProperties());
+            dataSourceRuleConfiguration.setProps(each.getProps());
             result.getDataSources().put(each.getName(), dataSourceRuleConfiguration);
             YamlShardingSphereAlgorithmConfiguration loadBalancer = new YamlShardingSphereAlgorithmConfiguration();
             loadBalancer.setType(each.getLoadBalancer());
-            loadBalancer.setProps(each.getProperties());
+            loadBalancer.setProps(each.getProps());
             result.getLoadBalancers().put(each.getLoadBalancer(), loadBalancer);
         }
         return result;
