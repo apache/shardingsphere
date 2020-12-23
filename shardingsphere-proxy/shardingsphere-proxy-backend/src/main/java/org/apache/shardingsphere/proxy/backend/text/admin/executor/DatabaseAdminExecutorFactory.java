@@ -30,8 +30,9 @@ public interface DatabaseAdminExecutorFactory extends TypedSPI {
     /**
      * New instance of database admin executor.
      * 
+     * @param currentSchema current schema
      * @param sqlStatement SQL statement
      * @return instance of database admin executor
      */
-    Optional<DatabaseAdminExecutor> newInstance(SQLStatement sqlStatement);
+    Optional<DatabaseAdminExecutor> newInstance(String currentSchema, SQLStatement sqlStatement);
 }

@@ -25,6 +25,8 @@ import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowTab
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.UseDatabaseExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
@@ -38,8 +40,12 @@ import java.util.Optional;
  */
 public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFactory {
     
+    private static final String INFORMATION_SCHEMA = "information_schema";
+    
+    private static final String PERFORMANCE_SCHEMA = "performance_schema";
+    
     @Override
-    public Optional<DatabaseAdminExecutor> newInstance(final SQLStatement sqlStatement) {
+    public Optional<DatabaseAdminExecutor> newInstance(final String currentSchema, final SQLStatement sqlStatement) {
         if (sqlStatement instanceof MySQLUseStatement) {
             return Optional.of(new UseDatabaseExecutor((MySQLUseStatement) sqlStatement));
         }
@@ -50,13 +56,43 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
             return Optional.of(new ShowTablesExecutor());
         }
         if (sqlStatement instanceof SelectStatement) {
-            ProjectionSegment firstProjection = ((SelectStatement) sqlStatement).getProjections().getProjections().iterator().next();
-            if (firstProjection instanceof ExpressionProjectionSegment
-                    && ShowCurrentDatabaseExecutor.FUNCTION_NAME.equalsIgnoreCase(((ExpressionProjectionSegment) firstProjection).getText())) {
+            if (isShowCurrentDatabaseStatement((SelectStatement) sqlStatement)) {
                 return Optional.of(new ShowCurrentDatabaseExecutor());
+            } 
+            if (isQueryInformationSchema(currentSchema, (SelectStatement) sqlStatement)) {
+                // TODO
+                return Optional.empty();
+            }
+            if (isQueryPerformanceSchema(currentSchema, (SelectStatement) sqlStatement)) {
+                // TODO
+                return Optional.empty();
             }
         }
         return Optional.empty();
+    }
+    
+    private boolean isShowCurrentDatabaseStatement(final SelectStatement sqlStatement) {
+        ProjectionSegment firstProjection = sqlStatement.getProjections().getProjections().iterator().next();
+        return firstProjection instanceof ExpressionProjectionSegment && ShowCurrentDatabaseExecutor.FUNCTION_NAME.equalsIgnoreCase(((ExpressionProjectionSegment) firstProjection).getText());
+    }
+    
+    private boolean isQueryInformationSchema(final String currentSchema, final SelectStatement sqlStatement) {
+        return isQuerySpecialSchema(currentSchema, sqlStatement, INFORMATION_SCHEMA);
+    }
+    
+    private boolean isQueryPerformanceSchema(final String currentSchema, final SelectStatement sqlStatement) {
+        return isQuerySpecialSchema(currentSchema, sqlStatement, PERFORMANCE_SCHEMA);
+    }
+    
+    private boolean isQuerySpecialSchema(final String currentSchema, final SelectStatement sqlStatement, final String specialSchemaName) {
+        TableSegment tableSegment = sqlStatement.getFrom();
+        if (!(tableSegment instanceof SimpleTableSegment)) {
+            return false;
+        }
+        if (specialSchemaName.equalsIgnoreCase(currentSchema) && !((SimpleTableSegment) tableSegment).getOwner().isPresent()) {
+            return true;
+        }
+        return ((SimpleTableSegment) tableSegment).getOwner().isPresent() && specialSchemaName.equalsIgnoreCase(((SimpleTableSegment) tableSegment).getOwner().get().getIdentifier().getValue());
     }
     
     @Override
