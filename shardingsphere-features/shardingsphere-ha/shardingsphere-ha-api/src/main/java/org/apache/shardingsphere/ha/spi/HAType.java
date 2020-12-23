@@ -46,10 +46,15 @@ public interface HAType extends ShardingSphereAlgorithm {
     void updatePrimaryDataSource(Map<String, DataSource> dataSourceMap, String schemaName);
     
     /**
-     * Periodical monitor.
+     * Start periodical monitor.
      *
      * @param dataSourceMap data source map
      * @param schemaName schema name
      */
-    void periodicalMonitor(Map<String, DataSource> dataSourceMap, String schemaName);
+    void startPeriodicalMonitor(Map<String, DataSource> dataSourceMap, String schemaName);
+    
+    /**
+     * Stop periodical monitor.
+     */
+    void stopPeriodicalMonitor();
 }

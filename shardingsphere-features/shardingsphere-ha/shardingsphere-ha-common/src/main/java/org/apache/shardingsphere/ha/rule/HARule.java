@@ -53,6 +53,8 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
         ShardingSphereServiceLoader.register(HAType.class);
     }
     
+    private static HAType haType;
+    
     private final Map<String, ReplicaLoadBalanceAlgorithm> loadBalancers = new LinkedHashMap<>();
     
     private final Map<String, HADataSourceRule> dataSourceRules;
@@ -69,11 +71,15 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
                     ? TypedSPIRegistry.getRegisteredService(ReplicaLoadBalanceAlgorithm.class) : loadBalancers.get(each.getLoadBalancerName());
             dataSourceRules.put(each.getName(), new HADataSourceRule(each, loadBalanceAlgorithm));
         }
-        HAType haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaType().getType(), config.getHaType().getProps());
-        try {
+        if (null == haType) {
+            haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaType().getType(), config.getHaType().getProps());
             haType.updatePrimaryDataSource(dataSourceMap, schemaName);
+        } else {
+            haType.stopPeriodicalMonitor();
+        }
+        try {
             haType.checkHAConfig(dataSourceMap, schemaName);
-            haType.periodicalMonitor(dataSourceMap, schemaName);
+            haType.startPeriodicalMonitor(dataSourceMap, schemaName);
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         }
@@ -91,11 +97,15 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
                     ? TypedSPIRegistry.getRegisteredService(ReplicaLoadBalanceAlgorithm.class) : loadBalancers.get(each.getLoadBalancerName());
             dataSourceRules.put(each.getName(), new HADataSourceRule(each, loadBalanceAlgorithm));
         }
-        HAType haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaType().getType(), config.getHaType().getProps());
-        try {
+        if (null == haType) {
+            haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaType().getType(), config.getHaType().getProps());
             haType.updatePrimaryDataSource(dataSourceMap, schemaName);
+        } else {
+            haType.stopPeriodicalMonitor();
+        }
+        try {
             haType.checkHAConfig(dataSourceMap, schemaName);
-            haType.periodicalMonitor(dataSourceMap, schemaName);
+            haType.startPeriodicalMonitor(dataSourceMap, schemaName);
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         }
