@@ -141,7 +141,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitDropShardingRule(final DropShardingRuleContext ctx) {
         DropShardingRuleStatement result = new DropShardingRuleStatement();
