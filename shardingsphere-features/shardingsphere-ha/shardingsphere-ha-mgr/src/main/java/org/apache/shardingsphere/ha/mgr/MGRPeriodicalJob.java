@@ -26,8 +26,8 @@ import org.apache.shardingsphere.ha.spi.HAType;
 import javax.sql.DataSource;
 import java.util.Map;
 
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class MGRPeriodicalJob implements SimpleJob {
     
     private final HAType haType;
