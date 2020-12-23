@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.mysql.visitor;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AliasContext;
@@ -39,20 +38,20 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 /**
- * MySQL SQL Stats visitor for MySQL.
+ * SQL Stats visitor for MySQL.
  */
 @Getter
-@Setter
 public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<SqlStats> {
-
+    
     private final SqlStats sqlStats = new SqlStats();
-
+    
     @Override
     public SqlStats visitTableFactor(final TableFactorContext ctx) {
         if (null != ctx.tableName()) {
             SimpleTableSegment tableSegment = getTableName(ctx.tableName());
             if (null != ctx.alias()) {
-                tableSegment.setAlias(getAlias(ctx.alias()));
+                AliasContext aliasContext = ctx.alias();
+                tableSegment.setAlias(new AliasSegment(aliasContext.start.getStartIndex(), aliasContext.stop.getStopIndex(), new IdentifierValue(aliasContext.textOrIdentifier().getText())));
             }
             sqlStats.addTable(tableSegment);
             return sqlStats;
@@ -60,7 +59,7 @@ public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<SqlStat
         super.visitTableFactor(ctx);
         return sqlStats;
     }
-
+    
     @Override
     public SqlStats visitInsert(final InsertContext ctx) {
         SimpleTableSegment tableSegment = getTableName(ctx.tableName());
@@ -74,21 +73,19 @@ public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<SqlStat
         }
         return sqlStats;
     }
-
+    
     @Override
     public SqlStats visitColumnRef(final ColumnRefContext ctx) {
-        ColumnSegment column = getColumn(ctx);
-        sqlStats.addColumn(column);
+        sqlStats.addColumn(getColumn(ctx));
         return sqlStats;
     }
-
+    
     @Override
     public SqlStats visitColumnDefinition(final ColumnDefinitionContext ctx) {
-        ColumnSegment column = getColumn(ctx.column_name);
-        sqlStats.addColumn(column);
+        sqlStats.addColumn(new ColumnSegment(ctx.column_name.start.getStartIndex(), ctx.column_name.stop.getStopIndex(), new IdentifierValue(ctx.column_name.getText())));
         return sqlStats;
     }
-
+    
     private ColumnSegment getColumn(final ColumnRefContext ctx) {
         IdentifierValue name;
         OwnerSegment owner = null;
@@ -105,31 +102,23 @@ public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<SqlStat
         result.setOwner(owner);
         return result;
     }
-
-    private ColumnSegment getColumn(final IdentifierContext ctx) {
-        return new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.getText()));
-    }
-
-    private AliasSegment getAlias(final AliasContext ctx) {
-        return new AliasSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.textOrIdentifier().getText()));
-    }
-
+    
     private SimpleTableSegment getTableName(final TableNameContext ctx) {
-        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getTableFromIden(ctx.name().identifier())));
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.name().identifier().getText())));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
             result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), new IdentifierValue(owner.identifier().getText())));
         }
         return result;
     }
-
+    
     @Override
     public SqlStats visitTableName(final TableNameContext ctx) {
         SimpleTableSegment tableSegment = getTableName(ctx);
         sqlStats.addTable(tableSegment);
         return sqlStats;
     }
-
+    
     @Override
     public SqlStats visitTableWild(final TableWildContext ctx) {
         ColumnSegment column = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue("*"));
@@ -138,11 +127,7 @@ public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<SqlStat
         sqlStats.addColumn(column);
         return sqlStats;
     }
-
-    private IdentifierValue getTableFromIden(final IdentifierContext ctx) {
-        return new IdentifierValue(ctx.getText());
-    }
-
+    
     @Override
     public SqlStats visitTerminal(final TerminalNode node) {
         super.visitTerminal(node);
