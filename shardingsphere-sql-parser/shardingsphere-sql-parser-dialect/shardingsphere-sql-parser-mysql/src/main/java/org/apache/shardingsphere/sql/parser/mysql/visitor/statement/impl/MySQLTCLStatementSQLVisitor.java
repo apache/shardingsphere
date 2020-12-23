@@ -47,11 +47,11 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor implements TCLSQLVisitor, SQLStatementVisitor {
-
+    
     public MySQLTCLStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
         MySQLSetTransactionStatement result = new MySQLSetTransactionStatement();
@@ -108,7 +108,7 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitSavepoint(final SavepointContext ctx) {
         return new MySQLSavepointStatement();
     }
-
+    
     @Override
     public ASTNode visitXa(final XaContext ctx) {
         return new MySQLXAStatement();
