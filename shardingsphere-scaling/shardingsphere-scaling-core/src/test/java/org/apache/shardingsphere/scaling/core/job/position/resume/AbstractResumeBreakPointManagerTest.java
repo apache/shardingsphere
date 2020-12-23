@@ -17,15 +17,17 @@
 
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -35,90 +37,68 @@ public final class AbstractResumeBreakPointManagerTest {
     
     private AbstractResumeBreakPointManager resumeBreakPointManager;
     
-    private final String incrementalPosition = "{\"ds0\":[],\"ds1\":[]}";
-    
-    private final String inventoryPosition = "{\"unfinished\":{\"ds1.t_order_1#0\":[0,200],\"ds0.t_order_1#0\":[0,100],\"ds0.t_order_2\":[]},\"finished\":[\"ds0.t_order_1#1\"]}";
-    
-    @Before
-    public void setUp() throws NoSuchFieldException, IllegalAccessException {
-        resumeBreakPointManager = new AbstractResumeBreakPointManager() {
-            
-            @Override
-            public void persistInventoryPosition() {
-            }
-            
-            @Override
-            public void persistIncrementalPosition() {
-            }
-        };
-        resumeBreakPointManager.setDatabaseType("H2");
-        resumeBreakPointManager.setTaskPath("/");
-        setPositionManagerMap("inventoryPositionManagerMap");
-        setPositionManagerMap("incrementalPositionManagerMap");
-    }
-    
-    private void setPositionManagerMap(final String inventoryPositionManagerMap) throws NoSuchFieldException, IllegalAccessException {
-        ReflectionUtil.setFieldValue(AbstractResumeBreakPointManager.class, resumeBreakPointManager, inventoryPositionManagerMap, new TreeMap<String, PositionManager>());
-    }
-    
     @Test
-    public void assertResumeIncrementalPosition() {
+    public void assertResumeInventoryPosition() {
+        Map<String, String> dataMap = new HashMap<>();
+        dataMap.put("/base/inventory", "{\"unfinished\":{\"ds1.t_order_1#0\":[0,200],\"ds0.t_order_1#0\":[0,100],\"ds0.t_order_2\":[]},\"finished\":[\"ds0.t_order_1#1\"]}");
+        resumeBreakPointManager = mockResumeBreakPointManager(dataMap);
         resumeBreakPointManager.resumeInventoryPosition("");
         assertThat(resumeBreakPointManager.getInventoryPositionManagerMap().size(), is(0));
-        resumeBreakPointManager.resumeInventoryPosition(inventoryPosition);
+        resumeBreakPointManager.resumeInventoryPosition("/base/inventory");
         assertThat(resumeBreakPointManager.getInventoryPositionManagerMap().size(), is(4));
     }
     
     @Test
-    public void assertResumeInventoryPosition() {
+    public void assertResumeIncrementalPosition() {
+        Map<String, String> dataMap = new HashMap<>();
+        dataMap.put("/base/incremental", "{\"ds0\":[],\"ds1\":[]}");
+        resumeBreakPointManager = mockResumeBreakPointManager(dataMap);
         resumeBreakPointManager.resumeIncrementalPosition("");
         assertThat(resumeBreakPointManager.getIncrementalPositionManagerMap().size(), is(0));
-        resumeBreakPointManager.resumeIncrementalPosition(incrementalPosition);
+        resumeBreakPointManager.resumeIncrementalPosition("/base/incremental");
         assertThat(resumeBreakPointManager.getIncrementalPositionManagerMap().size(), is(2));
     }
     
     @Test
-    public void assertGetIncrementalPositionData() {
-        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0", new PositionManager(new PlaceholderPosition()));
-        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds1", new PositionManager(new PlaceholderPosition()));
-        assertThat(resumeBreakPointManager.getIncrementalPositionData(), is(incrementalPosition));
-    }
-    
-    @Test
-    public void assertPrimaryKeyPositionJson() {
-        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new PositionManager(new PrimaryKeyPosition(0L, 100L)));
-        assertThat(resumeBreakPointManager.getInventoryPositionData(), is("{\"unfinished\":{\"ds0.t_order_1#0\":[0,100]},\"finished\":[]}"));
-    }
-    
-    @Test
-    public void assertPlaceholderPositionJson() {
-        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new PositionManager(new PlaceholderPosition()));
-        assertThat(resumeBreakPointManager.getInventoryPositionData(), is("{\"unfinished\":{\"ds0.t_order_1#0\":[]},\"finished\":[]}"));
-    }
-    
-    @Test
-    public void assertFinishedPositionJson() {
-        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new PositionManager(new FinishedPosition()));
-        assertThat(resumeBreakPointManager.getInventoryPositionData(), is("{\"unfinished\":{},\"finished\":[\"ds0.t_order_1#0\"]}"));
-    }
-    
-    @Test
-    public void assertGetInventoryPositionData() {
+    public void assertPersistInventoryPosition() {
+        Map<String, String> dataMap = new HashMap<>();
+        dataMap.put("/base/inventory", "{\"unfinished\":{\"ds0.t_order_2#0\":[],\"ds0.t_order_1#0\":[0,100]},\"finished\":[\"ds0.t_order_1#1\"]}");
+        dataMap.put("/base/incremental", "{}");
+        resumeBreakPointManager = mockResumeBreakPointManager(dataMap);
         resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#0", new PositionManager(new PrimaryKeyPosition(0L, 100L)));
         resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_1#1", new PositionManager(new FinishedPosition()));
-        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_2", new PositionManager(new PlaceholderPosition()));
-        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds1.t_order_1#0", new PositionManager(new PrimaryKeyPosition(0L, 200L)));
-        assertThat(resumeBreakPointManager.getInventoryPositionData(), is(inventoryPosition));
+        resumeBreakPointManager.getInventoryPositionManagerMap().put("ds0.t_order_2#0", new PositionManager(new PlaceholderPosition()));
+        resumeBreakPointManager.persistPosition();
     }
     
     @Test
-    public void assertGetDatabaseType() {
-        assertThat(resumeBreakPointManager.getDatabaseType(), is("H2"));
+    public void assertPersistIncrementalPosition() {
+        Map<String, String> dataMap = new HashMap<>();
+        dataMap.put("/base/inventory", "{\"unfinished\":{},\"finished\":[]}");
+        dataMap.put("/base/incremental", "{\"ds0\":[],\"ds1\":[]}");
+        resumeBreakPointManager = mockResumeBreakPointManager(dataMap);
+        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds0", new PositionManager(new PlaceholderPosition()));
+        resumeBreakPointManager.getIncrementalPositionManagerMap().put("ds1", new PositionManager(new PlaceholderPosition()));
+        resumeBreakPointManager.persistPosition();
     }
     
-    @Test
-    public void assertGetTaskPath() {
-        assertThat(resumeBreakPointManager.getTaskPath(), is("/"));
+    @SneakyThrows(ReflectiveOperationException.class)
+    private AbstractResumeBreakPointManager mockResumeBreakPointManager(final Map<String, String> dataMap) {
+        AbstractResumeBreakPointManager result = new AbstractResumeBreakPointManager("H2", "/base") {
+            
+            @Override
+            public String getPosition(final String path) {
+                return dataMap.get(path);
+            }
+            
+            @Override
+            public void persistPosition(final String path, final String data) {
+                assertThat(data, is(dataMap.get(path)));
+            }
+        };
+        ReflectionUtil.setFieldValue(AbstractResumeBreakPointManager.class, result, "inventoryPositionManagerMap", new TreeMap<String, PositionManager>());
+        ReflectionUtil.setFieldValue(AbstractResumeBreakPointManager.class, result, "incrementalPositionManagerMap", new TreeMap<String, PositionManager>());
+        return result;
     }
     
     @After

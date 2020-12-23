@@ -17,21 +17,35 @@
 
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
+import lombok.SneakyThrows;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 /**
- * Fake resume from break-point manager as default.
+ * File system resume from break-point manager as default.
  */
-public final class FakeResumeBreakPointManager extends AbstractResumeBreakPointManager {
+public final class FileSystemResumeBreakPointManager extends AbstractResumeBreakPointManager implements ResumeBreakPointManager {
     
-    public FakeResumeBreakPointManager(final String databaseType, final String taskPath) {
-        setDatabaseType(databaseType);
-        setTaskPath(taskPath);
+    public FileSystemResumeBreakPointManager(final String databaseType, final String taskPath) {
+        super(databaseType, taskPath);
     }
     
     @Override
-    public void persistInventoryPosition() {
+    @SneakyThrows(IOException.class)
+    public String getPosition(final String path) {
+        File file = new File(path);
+        if (!file.exists()) {
+            return null;
+        }
+        return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
     }
     
     @Override
-    public void persistIncrementalPosition() {
+    @SneakyThrows(IOException.class)
+    public void persistPosition(final String path, final String data) {
+        FileUtils.writeStringToFile(new File(path), data, StandardCharsets.UTF_8);
     }
 }

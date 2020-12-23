@@ -17,33 +17,27 @@
 
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
+import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public final class IncrementalPositionResumeBreakPointManager extends AbstractResumeBreakPointManager {
+/**
+ * Registry repository resume from break-point manager.
+ */
+public final class RegistryRepositoryResumeBreakPointManager extends AbstractResumeBreakPointManager implements ResumeBreakPointManager {
     
-    public IncrementalPositionResumeBreakPointManager(final String databaseType, final String taskPath) {
-        getIncrementalPositionManagerMap().put("ds_0", new PositionManager(new PlaceholderPosition()));
+    private static final RegistryRepository REGISTRY_REPOSITORY = RegistryRepositoryHolder.getInstance();
+    
+    public RegistryRepositoryResumeBreakPointManager(final String databaseType, final String taskPath) {
+        super(databaseType, taskPath);
     }
     
     @Override
-    public boolean isResumable() {
-        return true;
+    public String getPosition(final String path) {
+        return REGISTRY_REPOSITORY.get(path);
     }
     
     @Override
-    public Map<String, PositionManager> getInventoryPositionManagerMap() {
-        return new HashMap<>(1, 1);
-    }
-    
-    @Override
-    public void persistInventoryPosition() {
-    }
-    
-    @Override
-    public void persistIncrementalPosition() {
+    public void persistPosition(final String path, final String data) {
+        REGISTRY_REPOSITORY.persist(path, data);
     }
 }
