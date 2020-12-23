@@ -40,7 +40,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
-import org.apache.shardingsphere.jdbc.test.MockedDataSource;
+import org.apache.shardingsphere.test.jdbc.MockedDataSource;
 import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryRule;
 import org.junit.Before;
 import org.junit.Test;
