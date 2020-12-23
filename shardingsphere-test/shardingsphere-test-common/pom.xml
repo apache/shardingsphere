@@ -22,15 +22,21 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere</artifactId>
+        <artifactId>shardingsphere-test</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-test</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-test-common</artifactId>
     <name>${project.artifactId}</name>
     
-    <modules>
-        <module>shardingsphere-test-common</module>
-        <module>shardingsphere-integration-test</module>
-    </modules>
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 </project>
