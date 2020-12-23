@@ -101,14 +101,14 @@ public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<SqlStat
         } else {
             name = new IdentifierValue(ctx.identifier(0).getText());
         }
-        ColumnSegment column = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), name);
-        column.setOwner(owner);
-        return column;
+        ColumnSegment result = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), name);
+        result.setOwner(owner);
+        return result;
     }
 
     private ColumnSegment getColumn(final IdentifierContext ctx) {
-        ColumnSegment column = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.getText()));
-        return column;
+        ColumnSegment result = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.getText()));
+        return result;
     }
 
     private AliasSegment getAlias(final AliasContext ctx) {
