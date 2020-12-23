@@ -15,16 +15,29 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.segment.rdl;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-execute
-    : (addResource
-    | createShardingRule
-    | dropShardingRule
-    | createReplicaQueryRule
-    | showResources
-    | showRule
-    ) SEMI?
-    ;
+import java.util.Collection;
+import java.util.Properties;
+
+/**
+ * Replica query rule segment.
+ */
+@Getter
+@Setter
+public final class ReplicaQueryRuleSegment implements ASTNode {
+    
+    private String name;
+    
+    private String primaryDatasource;
+    
+    private Collection<String> replicaDatasources;
+    
+    private String loadBalancer;
+    
+    private Properties props;
+}

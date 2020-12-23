@@ -15,16 +15,21 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.ReplicaQueryRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRDLStatement;
 
-execute
-    : (addResource
-    | createShardingRule
-    | dropShardingRule
-    | createReplicaQueryRule
-    | showResources
-    | showRule
-    ) SEMI?
-    ;
+import java.util.Collection;
+
+/**
+ * Create replica query rule statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class CreateReplicaQueryRuleStatement extends CreateRDLStatement {
+    
+    private final Collection<ReplicaQueryRuleSegment> replicaQueryRules;
+}
