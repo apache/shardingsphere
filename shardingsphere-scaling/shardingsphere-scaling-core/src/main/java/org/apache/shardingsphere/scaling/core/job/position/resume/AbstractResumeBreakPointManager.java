@@ -19,7 +19,6 @@ package org.apache.shardingsphere.scaling.core.job.position.resume;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
