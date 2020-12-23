@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.config;
 
+import java.util.LinkedList;
 import lombok.Data;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class AgentConfiguration {
     
     private TracingConfiguration tracing;
     
-    private List<String> activatedPlugins;
+    private List<String> activatedPlugins = new LinkedList<>();
     
     @Data
     public static class MetricsConfiguration {

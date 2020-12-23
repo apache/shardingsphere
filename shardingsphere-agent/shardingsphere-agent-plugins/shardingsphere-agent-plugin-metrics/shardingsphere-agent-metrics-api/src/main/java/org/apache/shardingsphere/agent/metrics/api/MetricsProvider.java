@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.metrics.api;
 
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.spi.AgentTypedSPIRegistry;
-import org.apache.shardingsphere.agent.core.utils.SingletonHolder;
+import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
 
 /**
  * The enum metrics provider.
@@ -34,7 +34,7 @@ public enum MetricsProvider {
     private static MetricsRegisterFactory metricRegisterFactory;
     
     static {
-        AgentConfiguration.MetricsConfiguration metricsConfiguration = SingletonHolder.INSTANCE.get(AgentConfiguration.class).getMetrics();
+        AgentConfiguration.MetricsConfiguration metricsConfiguration = AgentObjectPool.INSTANCE.get(AgentConfiguration.class).getMetrics();
         metricRegisterFactory = AgentTypedSPIRegistry.getRegisteredService(MetricsRegisterFactory.class, metricsConfiguration.getType());
     }
     

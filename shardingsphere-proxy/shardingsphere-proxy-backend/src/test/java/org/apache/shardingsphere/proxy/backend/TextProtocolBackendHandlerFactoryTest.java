@@ -24,11 +24,11 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminUpdateBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.ShowDatabasesBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.handler.UseDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.set.ShardingCTLSetBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.sctl.show.ShardingCTLShowBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
@@ -150,14 +150,14 @@ public final class TextProtocolBackendHandlerFactoryTest {
     public void assertNewInstanceWithUse() throws SQLException {
         String sql = "use sharding_db";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(UseDatabaseBackendHandler.class));
+        assertThat(actual, instanceOf(DatabaseAdminUpdateBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithShowDatabase() throws SQLException {
         String sql = "show databases";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
-        assertThat(actual, instanceOf(ShowDatabasesBackendHandler.class));
+        assertThat(actual, instanceOf(DatabaseAdminQueryBackendHandler.class));
     }
     
     @Test

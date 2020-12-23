@@ -146,6 +146,7 @@ Total: 153 companies.
     <li><a href="http://www.yaduo.com/" rel="nofollow">YaDuo</a></li>
     <li><a href="http://read.zhulang.com/" rel="nofollow">LianShang Literature</a></li>
     <li><a href="https://www.yy.com/" rel="nofollow">YY</a></li>
+    <li><a href="https://y.tencentmusic.com" rel="nofollow">Tencent Music</a></li>
 </ul>
 
 ### News
@@ -170,6 +171,7 @@ Total: 153 companies.
     <li><a href="http://dnr.gxzf.gov.cn/" rel="nofollow">Guangxi Province Natural Resources Information Center</a></li>
     <li><a href="http://www.ascf.com.cn/" rel="nofollow">AreoSpace</a></li>
     <li><a href="http://www.chiscdc.com/" rel="nofollow">CHISCDC</a></li>
+    <li><a href="http://www.taxchina.com/" rel="nofollow">Tax China</a></li>
 </ul>
 
 ### Communication

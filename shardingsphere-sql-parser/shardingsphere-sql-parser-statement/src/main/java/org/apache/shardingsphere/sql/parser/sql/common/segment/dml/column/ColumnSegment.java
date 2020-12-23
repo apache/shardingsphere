@@ -61,4 +61,14 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
     public Optional<OwnerSegment> getOwner() {
         return Optional.ofNullable(owner);
     }
+
+    @Override
+    public int hashCode() {
+        StringBuilder columnString = new StringBuilder();
+        if (null != owner) {
+            columnString.append(owner.getIdentifier().getValue());
+        }
+        columnString.append(identifier.getValue());
+        return columnString.toString().hashCode();
+    }
 }

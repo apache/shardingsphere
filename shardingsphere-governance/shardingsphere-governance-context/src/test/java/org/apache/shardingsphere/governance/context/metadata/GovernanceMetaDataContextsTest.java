@@ -29,7 +29,6 @@ import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
-import org.apache.shardingsphere.governance.core.state.GovernedStateContext;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -104,7 +103,6 @@ public final class GovernanceMetaDataContextsTest {
         when(governanceFacade.getConfigCenter()).thenReturn(configCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
         governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), authentication, props), governanceFacade);
-        GovernedStateContext.startUp();
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {

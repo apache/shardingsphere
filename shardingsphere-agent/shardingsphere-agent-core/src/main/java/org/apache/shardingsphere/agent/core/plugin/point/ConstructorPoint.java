@@ -18,38 +18,19 @@
 
 package org.apache.shardingsphere.agent.core.plugin.point;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
 /**
  * Configuration of constructor intercepting point.
  */
-public class ConstructorPoint {
+@Getter
+@RequiredArgsConstructor
+public final class ConstructorPoint {
     
     private final ElementMatcher<? super MethodDescription> matcher;
     
     private final String advice;
-    
-    public ConstructorPoint(final ElementMatcher<? super MethodDescription> matcher, final String advice) {
-        this.matcher = matcher;
-        this.advice = advice;
-    }
-    
-    /**
-     * To detect target constructor constraints.
-     *
-     * @return constraints
-     */
-    public ElementMatcher<? super MethodDescription> getConstructorMatcher() {
-        return matcher;
-    }
-    
-    /**
-     * To get the class name of advice.
-     *
-     * @return the class name of advice
-     */
-    public String getAdvice() {
-        return advice;
-    }
 }

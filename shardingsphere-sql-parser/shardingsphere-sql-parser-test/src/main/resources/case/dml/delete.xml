@@ -20,141 +20,191 @@
     <delete sql-case-id="delete_with_sharding_value" parameters="1000, 1001, 'init'">
         <table name="t_order" start-index="12" stop-index="18" />
         <where start-index="20" stop-index="66" literal-stop-index="77">
-            <and-predicate>
-                <predicate start-index="26" stop-index="37" literal-stop-index="40">
-                    <column-left-value name="order_id" start-index="26" stop-index="33" />
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="37" stop-index="37" />
-                        <literal-expression value="1000" start-index="37" stop-index="40" />
-                    </compare-right-value>
-                </predicate>
-                <predicate start-index="43" stop-index="53" literal-start-index="46" literal-stop-index="59">
-                    <column-left-value name="user_id" start-index="43" stop-index="49" literal-start-index="46" literal-stop-index="52" />
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="1" start-index="53" stop-index="53" />
-                        <literal-expression value="1001" start-index="56" stop-index="59" />
-                    </compare-right-value>
-                </predicate>
-                <predicate start-index="59" stop-index="66" literal-start-index="65" literal-stop-index="77">
-                    <column-left-value name="status" start-index="59" stop-index="64" literal-start-index="65" literal-stop-index="70" />
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="2" start-index="66" stop-index="66" />
-                        <literal-expression value="init" start-index="72" stop-index="77" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+            <expr>
+                <binary-operation-expression start-index="26" stop-index="66" literal-stop-index="77">
+                    <left>
+                        <binary-operation-expression start-index="26" stop-index="53" literal-stop-index="59">
+                            <left>
+                                <binary-operation-expression start-index="26" stop-index="37" literal-stop-index="40">
+                                    <left>
+                                        <column name="order_id" start-index="26" stop-index="33" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="1000" start-index="37" stop-index="40" />
+                                        <parameter-marker-expression value="0" start-index="37" stop-index="37" />
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>AND</operator>
+                            <right>
+                                <binary-operation-expression start-index="43" stop-index="53" literal-start-index="46" literal-stop-index="59">
+                                    <left>
+                                        <column name="user_id" start-index="43" stop-index="49" literal-start-index="46" literal-stop-index="52" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="1001" start-index="56" stop-index="59" />
+                                        <parameter-marker-expression value="1" start-index="53" stop-index="53" />
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="59" stop-index="66" literal-start-index="65" literal-stop-index="77">
+                            <left>
+                                <column name="status" start-index="59" stop-index="64" literal-start-index="65" literal-stop-index="70" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="init" start-index="72" stop-index="77" />
+                                <parameter-marker-expression value="2" start-index="66" stop-index="66" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </delete>
 
     <delete sql-case-id="delete_without_sharding_value" parameters="'init'">
         <table name="t_order" start-index="12" stop-index="18" />
         <where start-index="20" stop-index="33" literal-stop-index="38">
-            <and-predicate>
-                <predicate start-index="26" stop-index="33" literal-stop-index="38">
-                    <column-left-value name="status" start-index="26" stop-index="31" />
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="33" stop-index="33" />
+            <expr>
+                <binary-operation-expression start-index="26" stop-index="33" literal-stop-index="38">
+                    <left>
+                        <column name="status" start-index="26" stop-index="31" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
                         <literal-expression value="init" start-index="33" stop-index="38" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+                        <parameter-marker-expression value="0" start-index="33" stop-index="33" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </delete>
 
     <delete sql-case-id="delete_with_special_character_without_sharding_value">
         <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="12" stop-index="20" />
         <where start-index="22" stop-index="42">
-            <and-predicate>
-                <predicate start-index="28" stop-index="42">
-                    <column-left-value name="status" start-delimiter="`" end-delimiter="`" start-index="28" stop-index="35" />
-                    <operator type="=" />
-                    <compare-right-value>
-                        <literal-expression value="init" start-index="37" stop-index="42"/>
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="42">
+                    <left>
+                        <column name="status" start-delimiter="`" end-delimiter="`" start-index="28" stop-index="35" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="init" start-index="37" stop-index="42" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </delete>
 
     <delete sql-case-id="delete_with_special_comments_return_without_sharding_value">
         <table name="t_order" start-index="33" stop-index="39" />
         <where start-index="41" stop-index="54">
-            <and-predicate>
-                <predicate start-index="47" stop-index="54">
-                    <column-left-value name="status" start-index="47" stop-index="52" />
-                    <operator type="=" />
-                    <compare-right-value>
+            <expr>
+                <binary-operation-expression start-index="47" stop-index="54">
+                    <left>
+                        <column name="status" start-index="47" stop-index="52" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
                         <literal-expression value="1" start-index="54" stop-index="54" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </delete>
 
     <delete sql-case-id="delete_with_special_comments_returning_without_sharding_value">
         <table name="t_order" start-index="34" stop-index="40" />
         <where start-index="43" stop-index="56">
-            <and-predicate>
-                <predicate start-index="49" stop-index="56">
-                    <column-left-value name="status" start-index="49" stop-index="54" />
-                    <operator type="=" />
-                    <compare-right-value>
+            <expr>
+                <binary-operation-expression start-index="49" stop-index="56">
+                    <left>
+                        <column name="status" start-index="49" stop-index="54" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
                         <literal-expression value="1" start-index="56" stop-index="56" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </delete>
 
     <delete sql-case-id="delete_with_alias" parameters="'init'">
         <table name="t_order" alias="o" start-index="12" stop-index="23" />
-        <where start-index="25" stop-index="38" literal-stop-index="44">
-            <and-predicate>
-                <predicate start-index="31" stop-index="38" literal-stop-index="43">
-                    <column-left-value name="status" start-index="31" stop-index="36" />
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="38" stop-index="38" />
+        <where start-index="25" stop-index="38" literal-stop-index="43">
+            <expr>
+                <binary-operation-expression start-index="31" stop-index="38" literal-stop-index="43">
+                    <left>
+                        <column name="status" start-index="31" stop-index="36" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
                         <literal-expression value="init" start-index="38" stop-index="43" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+                        <parameter-marker-expression value="0" start-index="38" stop-index="38" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </delete>
 
     <delete sql-case-id="delete_with_order_by_row_count" parameters="1000, 1001, 'init', 10">
         <table name="t_order" start-index="12" stop-index="18" />
         <where start-index="20" stop-index="66" literal-stop-index="77">
-            <and-predicate>
-                <predicate start-index="26" stop-index="37" literal-stop-index="40">
-                    <column-left-value name="order_id" start-index="26" stop-index="33" />
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="37" stop-index="37" />
-                        <literal-expression value="1000" start-index="37" stop-index="40" />
-                    </compare-right-value>
-                </predicate>
-                <predicate start-index="43" stop-index="53" literal-start-index="46" literal-stop-index="59">
-                    <column-left-value name="user_id" start-index="43" stop-index="49" literal-start-index="46" literal-stop-index="52" />
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="1" start-index="53" stop-index="53" />
-                        <literal-expression value="1001" start-index="56" stop-index="59" />
-                    </compare-right-value>
-                </predicate>
-                <predicate start-index="59" stop-index="66" literal-start-index="65" literal-stop-index="77">
-                    <column-left-value name="status" start-index="59" stop-index="64" literal-start-index="65" literal-stop-index="70" />
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="2" start-index="66" stop-index="66" />
-                        <literal-expression value="init" start-index="72" stop-index="77" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+            <expr>
+                <binary-operation-expression start-index="26" stop-index="66" literal-stop-index="77">
+                    <left>
+                        <binary-operation-expression start-index="26" stop-index="53" literal-stop-index="59">
+                            <left>
+                                <binary-operation-expression start-index="26" stop-index="37" literal-stop-index="40">
+                                    <left>
+                                        <column name="order_id" start-index="26" stop-index="33" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="1000" start-index="37" stop-index="40" />
+                                        <parameter-marker-expression value="0" start-index="37" stop-index="37" />
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>AND</operator>
+                            <right>
+                                <binary-operation-expression start-index="43" stop-index="53" literal-start-index="46" literal-stop-index="59">
+                                    <left>
+                                        <column name="user_id" start-index="43" stop-index="49" literal-start-index="46" literal-stop-index="52" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="1001" start-index="56" stop-index="59" />
+                                        <parameter-marker-expression value="1" start-index="53" stop-index="53" />
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="59" stop-index="66" literal-start-index="65" literal-stop-index="77">
+                            <left>
+                                <column name="status" start-index="59" stop-index="64" literal-start-index="65" literal-stop-index="70" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="init" start-index="72" stop-index="77" />
+                                <parameter-marker-expression value="2" start-index="66" stop-index="66" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
         <order-by>
             <column-item name="order_id" start-index="77" stop-index="84" literal-start-index="88" literal-stop-index="95" />
@@ -182,16 +232,18 @@
             </output-table-columns>
         </output>
         <where start-index="108" stop-index="125" literal-stop-index="128">
-            <and-predicate>
-                <predicate start-index="114" stop-index="125" literal-stop-index="128">
-                    <column-left-value name="order_id" start-index="114" stop-index="121" />
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="125" stop-index="125" />
+            <expr>
+                <binary-operation-expression start-index="114" stop-index="125" literal-stop-index="128">
+                    <left>
+                        <column name="order_id" start-index="114" stop-index="121" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
                         <literal-expression value="1000" start-index="125" stop-index="128" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+                        <parameter-marker-expression value="0" start-index="125" stop-index="125" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </delete>
 
@@ -209,16 +261,18 @@
             <output-table name="@MyTableVar" start-index="66" stop-index="76"/>
         </output>
         <where start-index="78" stop-index="95" literal-stop-index="98">
-            <and-predicate>
-                <predicate start-index="84" stop-index="95" literal-stop-index="98">
-                    <column-left-value name="order_id" start-index="84" stop-index="91" />
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="95" stop-index="95" />
+            <expr>
+                <binary-operation-expression start-index="84" stop-index="95" literal-stop-index="98">
+                    <left>
+                        <column name="order_id" start-index="84" stop-index="91" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
                         <literal-expression value="1000" start-index="95" stop-index="98" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+                        <parameter-marker-expression value="0" start-index="95" stop-index="95" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </delete>
 
@@ -235,16 +289,18 @@
             </output-columns>
         </output>
         <where start-index="61" stop-index="78" literal-stop-index="81">
-            <and-predicate>
-                <predicate start-index="67" stop-index="74" literal-stop-index="81">
-                    <column-left-value name="order_id" start-index="67" stop-index="74" />
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="78" stop-index="78" />
+            <expr>
+                <binary-operation-expression start-index="67" stop-index="78" literal-stop-index="81">
+                    <left>
+                        <column name="order_id" start-index="67" stop-index="74" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
                         <literal-expression value="1000" start-index="78" stop-index="81" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+                        <parameter-marker-expression value="0" start-index="78" stop-index="78" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </delete>
 
@@ -252,48 +308,54 @@
         <table name="t_order" start-index="12" stop-index="18" />
         <output start-index="20" stop-index="35"/>
         <where start-index="37" stop-index="54" literal-stop-index="57">
-            <and-predicate>
-                <predicate start-index="43" stop-index="50" literal-stop-index="54">
-                    <column-left-value name="order_id" start-index="43" stop-index="50" />
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="54" stop-index="54" />
+            <expr>
+                <binary-operation-expression start-index="43" stop-index="54" literal-stop-index="57">
+                    <left>
+                        <column name="order_id" start-index="43" stop-index="50" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
                         <literal-expression value="1000" start-index="54" stop-index="57" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+                        <parameter-marker-expression value="0" start-index="54" stop-index="54" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </delete>
 
     <delete sql-case-id="delete_with_top" parameters="1000">
         <table name="t_order" start-index="20" stop-index="26" />
         <where start-index="28" stop-index="45" literal-stop-index="48">
-            <and-predicate>
-                <predicate start-index="34" stop-index="45" literal-stop-index="48">
-                    <column-left-value name="order_id" start-index="34" stop-index="41" />
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="45" stop-index="45" />
+            <expr>
+                <binary-operation-expression start-index="34" stop-index="45" literal-stop-index="48">
+                    <left>
+                        <column name="order_id" start-index="34" stop-index="41" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
                         <literal-expression value="1000" start-index="45" stop-index="48" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+                        <parameter-marker-expression value="0" start-index="45" stop-index="45" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </delete>
 
     <delete sql-case-id="delete_with_top_percent" parameters="1000">
         <table name="t_order" start-index="28" stop-index="34" />
         <where start-index="36" stop-index="53" literal-stop-index="56">
-            <and-predicate>
-                <predicate start-index="42" stop-index="53" literal-stop-index="56">
-                    <column-left-value name="order_id" start-index="42" stop-index="49" />
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="53" stop-index="53" />
+            <expr>
+                <binary-operation-expression start-index="42" stop-index="53" literal-stop-index="56">
+                    <left>
+                        <column name="order_id" start-index="42" stop-index="49" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
                         <literal-expression value="1000" start-index="53" stop-index="56" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+                        <parameter-marker-expression value="0" start-index="53" stop-index="53" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </delete>
 
@@ -319,13 +381,21 @@
         </with>
         <table name="t_order" start-index="79" stop-index="85" />
         <where start-index="96" stop-index="132">
-            <and-predicate>
-                <predicate start-index="96" stop-index="132">
-                    <column-left-value owner="t_order" name="order_id" start-index="110" stop-index="117" />
-                    <operator type="=" />
-                    <column-right-value owner="cte" name="order_id" start-index="125" stop-index="132" />
-                </predicate>
-            </and-predicate>
+            <expr>
+                <binary-operation-expression start-index="102" stop-index="132">
+                    <left>
+                        <column name="order_id" start-index="102" stop-index="117">
+                            <owner name="t_order" start-index="102" stop-index="108" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <column name="order_id" start-index="121" stop-index="132">
+                            <owner name="cte" start-index="121" stop-index="123" />
+                        </column>
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </delete>
 
@@ -347,39 +417,60 @@
         </with>
         <table name="t_order" start-index="59" stop-index="65" />
         <where start-index="76" stop-index="112">
-            <and-predicate>
-                <predicate start-index="82" stop-index="112">
-                    <column-left-value owner="t_order" name="order_id" start-index="90" stop-index="97" />
-                    <operator type="=" />
-                    <column-right-value owner="cte" name="order_id" start-index="105" stop-index="112" />
-                </predicate>
-            </and-predicate>
+            <expr>
+                <binary-operation-expression start-index="82" stop-index="112">
+                    <left>
+                        <column name="order_id" start-index="82" stop-index="97">
+                            <owner name="t_order" start-index="82" stop-index="88" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <column name="order_id" start-index="101" stop-index="112">
+                            <owner name="cte" start-index="101" stop-index="103" />
+                        </column>
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </delete>
 
     <delete sql-case-id="delete_multi_tables" parameters="1">
         <where start-index="56" stop-index="124">
-            <and-predicate>
-                <predicate start-index="62" stop-index="101">
-                    <column-left-value name="order_id" start-index="62" stop-index="77">
-                        <owner name="t_order" start-index="62" stop-index="68"/>
-                    </column-left-value>
-                    <operator type="="/>
-                    <column-right-value name="order_id" start-index="62" stop-index="77">
-                        <owner name="t_order" start-index="62" stop-index="68"/>
-                    </column-right-value>
-                </predicate>
-                <predicate start-index="107" stop-index="124">
-                    <column-left-value name="status" start-index="107" stop-index="120">
-                        <owner name="t_order" start-index="107" stop-index="113"/>
-                    </column-left-value>
-                    <operator type="="/>
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="124" stop-index="124"/>
-                        <literal-expression value="1" start-index="124" stop-index="124"/>
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+            <expr>
+                <binary-operation-expression start-index="62" stop-index="124">
+                    <left>
+                        <binary-operation-expression start-index="62" stop-index="101">
+                            <left>
+                                <column name="order_id" start-index="62" stop-index="77">
+                                    <owner name="t_order" start-index="62" stop-index="68" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <column name="order_id" start-index="81" stop-index="101">
+                                    <owner name="t_order_item" start-index="81" stop-index="92" />
+                                </column>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>and</operator>
+                    <right>
+                        <binary-operation-expression start-index="107" stop-index="124">
+                            <left>
+                                <column name="status" start-index="107" stop-index="120">
+                                    <owner name="t_order" start-index="107" stop-index="113" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="124" stop-index="124" />
+                                <parameter-marker-expression value="0" start-index="124" stop-index="124" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
         <table name="t_order" start-index="7" stop-index="13"/>
         <table name="t_order_item" start-index="16" stop-index="27"/>
@@ -387,18 +478,20 @@
 
     <delete sql-case-id="delete_multi_tables_with_using" parameters="1">
         <where start-index="115" stop-index="138">
-            <and-predicate>
-                <predicate start-index="121" stop-index="138">
-                    <column-left-value name="status" start-index="121" stop-index="134">
-                        <owner name="t_order" start-index="121" stop-index="127"/>
-                    </column-left-value>
-                    <operator type="="/>
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="138" stop-index="138"/>
-                        <literal-expression value="1" start-index="138" stop-index="138"/>
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+            <expr>
+                <binary-operation-expression start-index="121" stop-index="138">
+                    <left>
+                        <column name="status" start-index="121" stop-index="134">
+                            <owner name="t_order" start-index="121" stop-index="127" />
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="138" stop-index="138" />
+                        <parameter-marker-expression value="0" start-index="138" stop-index="138" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
         <table name="t_order" start-index="12" stop-index="18"/>
         <table name="t_order_item" start-index="21" stop-index="32"/>
@@ -407,16 +500,18 @@
     <delete sql-case-id="delete_with_query_hint" parameters="1000">
         <table name="t_order" start-index="12" stop-index="18" />
         <where start-index="20" stop-index="37" literal-stop-index="40">
-            <and-predicate>
-                <predicate start-index="26" stop-index="37" literal-stop-index="40">
-                    <column-left-value name="order_id" start-index="26" stop-index="33" />
-                    <operator type="=" />
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="37" stop-index="37" />
+            <expr>
+                <binary-operation-expression start-index="26" stop-index="37" literal-stop-index="40">
+                    <left>
+                        <column name="order_id" start-index="26" stop-index="33" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
                         <literal-expression value="1000" start-index="37" stop-index="40" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+                        <parameter-marker-expression value="0" start-index="37" stop-index="37" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </delete>
 </sql-parser-test-cases>

@@ -32,10 +32,10 @@ public final class StandardLockStrategy implements LockStrategy {
     private final ReentrantLock lock = new ReentrantLock();
     
     @Override
-    public boolean tryLock(final Long timeout) {
+    public boolean tryLock(final long timeout, final TimeUnit timeUnit) {
         boolean result = false;
         try {
-            result = lock.tryLock(timeout, TimeUnit.MILLISECONDS);
+            result = lock.tryLock(timeout, timeUnit);
             // CHECKSTYLE:OFF
         } catch (final InterruptedException e) {
             // CHECKSTYLE:ON

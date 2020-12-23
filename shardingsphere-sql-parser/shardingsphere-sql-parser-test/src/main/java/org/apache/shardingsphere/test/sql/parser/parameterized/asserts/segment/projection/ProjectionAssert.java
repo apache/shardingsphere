@@ -21,7 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.owner.OwnerAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.ExpectedProjection;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.ExpectedProjections;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.impl.aggregation.ExpectedAggregationDistinctProjection;
@@ -40,8 +41,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Shorthan
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.NumberLiteralRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.rownum.ParameterMarkerRowNumberValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.top.TopProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.SQLCaseType;
 
 import java.util.List;
 
@@ -79,8 +79,14 @@ public final class ProjectionAssert {
         assertThat(assertContext.getText("Projections distinct row assertion error: "), actual.isDistinctRow(), is(expected.isDistinctRow()));
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
-    
-    private static void assertProjection(final SQLCaseAssertContext assertContext, final ProjectionSegment actual, final ExpectedProjection expected) {
+
+    /**
+     * Assert actual projection segment is correct with expected projection.
+     * @param assertContext assert context
+     * @param actual actual projection
+     * @param expected expected projection
+     */
+    public static void assertProjection(final SQLCaseAssertContext assertContext, final ProjectionSegment actual, final ExpectedProjection expected) {
         if (actual instanceof ShorthandProjectionSegment) {
             assertThat(assertContext.getText("Projection type assertion error: "), expected, instanceOf(ExpectedShorthandProjection.class));
             assertShorthandProjection(assertContext, (ShorthandProjectionSegment) actual, (ExpectedShorthandProjection) expected);
@@ -103,25 +109,18 @@ public final class ProjectionAssert {
     private static void assertShorthandProjection(final SQLCaseAssertContext assertContext, final ShorthandProjectionSegment actual, final ExpectedShorthandProjection expected) {
         if (null != expected.getOwner()) {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getOwner().isPresent());
-            OwnerSegment owner = actual.getOwner().get();
-            TableAssert.assertOwner(assertContext, new SimpleTableSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
+            OwnerAssert.assertIs(assertContext, actual.getOwner().get(), expected.getOwner());
         } else {
             assertFalse(assertContext.getText("Actual owner should not exist."), actual.getOwner().isPresent());
         }
     }
     
     private static void assertColumnProjection(final SQLCaseAssertContext assertContext, final ColumnProjectionSegment actual, final ExpectedColumnProjection expected) {
-        assertThat(assertContext.getText("Column projection name assertion error: "), actual.getColumn().getIdentifier().getValue(), is(expected.getName()));
-        assertThat(assertContext.getText("Column projection start delimiter assertion error: "), 
-                actual.getColumn().getIdentifier().getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
-        assertThat(assertContext.getText("Column projection end delimiter assertion error: "), 
-                actual.getColumn().getIdentifier().getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
+        IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getIdentifier(), expected, "Column projection");
         assertThat(assertContext.getText("Column projection alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
         if (null != expected.getOwner()) {
             assertTrue(assertContext.getText("Actual owner should exist."), actual.getColumn().getOwner().isPresent());
-            // TODO OwnerAssert is needed.
-            OwnerSegment owner = actual.getColumn().getOwner().get();
-            TableAssert.assertOwner(assertContext, new SimpleTableSegment(owner.getStartIndex(), owner.getStopIndex(), owner.getIdentifier()), expected.getOwner());
+            OwnerAssert.assertIs(assertContext, actual.getColumn().getOwner().get(), expected.getOwner());
         } else {
             assertFalse(assertContext.getText("Actual owner should not exist."), actual.getColumn().getOwner().isPresent());
         }
@@ -139,7 +138,12 @@ public final class ProjectionAssert {
     }
     
     private static void assertExpressionProjection(final SQLCaseAssertContext assertContext, final ExpressionProjectionSegment actual, final ExpectedExpressionProjection expected) {
-        assertThat(assertContext.getText("Expression projection alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
+        assertThat(assertContext.getText("Expression projection alias assertion error: "),
+                actual.getAlias().orElse(null), is(expected.getAlias()));
+        String expectedText = SQLCaseType.Literal == assertContext.getSqlCaseType() && null != expected.getLiteralText()
+                ? expected.getLiteralText() : expected.getText();
+        assertThat(assertContext.getText("Expression projection text assertion error: "),
+                actual.getText(), is(expectedText));
     }
     
     private static void assertTopProjection(final SQLCaseAssertContext assertContext, final TopProjectionSegment actual, final ExpectedTopProjection expected) {

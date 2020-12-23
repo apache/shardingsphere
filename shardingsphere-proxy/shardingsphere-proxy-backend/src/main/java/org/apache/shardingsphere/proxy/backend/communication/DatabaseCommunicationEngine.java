@@ -60,6 +60,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -119,7 +120,7 @@ public final class DatabaseCommunicationEngine {
     
     private void lockForDDL(final ExecutionContext executionContext, final Long lockTimeoutMilliseconds) {
         if (needLock(executionContext)) {
-            if (!LockContext.getLockStrategy().tryLock(lockTimeoutMilliseconds)) {
+            if (!LockContext.getLockStrategy().tryLock(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
                 throw new LockWaitTimeoutException(lockTimeoutMilliseconds);
             }
             checkLock(lockTimeoutMilliseconds);
@@ -154,8 +155,8 @@ public final class DatabaseCommunicationEngine {
     private QueryHeader createQueryHeader(final ExecutionContext executionContext,
                                           final QueryResult queryResultSample, final ShardingSphereMetaData metaData, final int columnIndex) throws SQLException {
         return hasSelectExpandProjections(executionContext.getSqlStatementContext())
-                ? QueryHeaderBuilder.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample, metaData, columnIndex)
-                : QueryHeaderBuilder.build(queryResultSample, metaData, columnIndex);
+                ? QueryHeaderBuilder.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample.getMetaData(), metaData, columnIndex)
+                : QueryHeaderBuilder.build(queryResultSample.getMetaData(), metaData, columnIndex);
     }
     
     private boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
