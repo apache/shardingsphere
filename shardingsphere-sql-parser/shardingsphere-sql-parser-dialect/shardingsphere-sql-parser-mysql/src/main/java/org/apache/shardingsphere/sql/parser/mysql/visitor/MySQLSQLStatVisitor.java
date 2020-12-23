@@ -107,8 +107,7 @@ public final class MySQLSQLStatVisitor extends MySQLStatementBaseVisitor<SqlStat
     }
 
     private ColumnSegment getColumn(final IdentifierContext ctx) {
-        ColumnSegment result = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.getText()));
-        return result;
+        return new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.getText()));
     }
 
     private AliasSegment getAlias(final AliasContext ctx) {
