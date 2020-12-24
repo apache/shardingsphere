@@ -695,6 +695,9 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     
     @Override
     public String visitTerminal(final TerminalNode node) {
+        if ("<EOF>".equals(node.getText())) {
+            return result.toString();
+        }
         if (upperCase) {
             formatPrint(node.getText().toUpperCase());
         } else {

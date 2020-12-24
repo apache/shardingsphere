@@ -2631,7 +2631,5 @@
             </expr>
         </where>
     </select>
-
-    <select sql-case-id="only_comment"/>
 </sql-parser-test-cases>
 
