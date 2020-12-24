@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.agent.core.constant.AgentConstant;
 import org.apache.shardingsphere.agent.core.yaml.config.YamlPluginConfiguration;
 
 /**
@@ -39,6 +38,6 @@ public final class YamlJaegerPluginConfiguration implements YamlPluginConfigurat
     
     @Override
     public String getPluginName() {
-        return AgentConstant.PLUGIN_NAME_JAEGER;
+        return "Jaeger";
     }
 }

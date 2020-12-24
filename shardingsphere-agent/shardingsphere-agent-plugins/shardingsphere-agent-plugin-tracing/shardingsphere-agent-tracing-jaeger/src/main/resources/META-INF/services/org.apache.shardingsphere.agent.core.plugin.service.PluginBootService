@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.agent.plugin.tracing.zipkin.service.ZipkinTracingBootService
+org.apache.shardingsphere.agent.plugin.tracing.jaeger.service.JaegerTracingPluginBootService

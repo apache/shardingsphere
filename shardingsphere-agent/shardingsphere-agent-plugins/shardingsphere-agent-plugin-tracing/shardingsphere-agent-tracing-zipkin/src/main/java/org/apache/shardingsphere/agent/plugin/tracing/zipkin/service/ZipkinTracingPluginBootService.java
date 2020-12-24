@@ -19,15 +19,14 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.service;
 
 import brave.Tracing;
 import org.apache.shardingsphere.agent.core.config.ZipkinPluginConfiguration;
-import org.apache.shardingsphere.agent.core.constant.AgentConstant;
-import org.apache.shardingsphere.agent.core.plugin.service.BootService;
+import org.apache.shardingsphere.agent.core.plugin.service.PluginBootService;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.okhttp3.OkHttpSender;
 
 /**
- * Zipkin tracing boot service.
+ * Zipkin tracing plugin boot service.
  */
-public final class ZipkinTracingBootService implements BootService<ZipkinPluginConfiguration> {
+public final class ZipkinTracingPluginBootService implements PluginBootService<ZipkinPluginConfiguration> {
     
     private AsyncZipkinSpanHandler zipkinSpanHandler;
     
@@ -55,7 +54,7 @@ public final class ZipkinTracingBootService implements BootService<ZipkinPluginC
     
     @Override
     public String getType() {
-        return AgentConstant.PLUGIN_NAME_ZIPKIN;
+        return "Zipkin";
     }
     
     private String buildHttpPath(final ZipkinPluginConfiguration configuration) {

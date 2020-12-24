@@ -25,20 +25,20 @@ import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.spi.AgentTypedSPIRegistry;
 
 /**
- * Service supervisor.
+ * Plugin Service manager.
  */
 @Slf4j
-@SuppressWarnings("ALL")
-public final class ServiceSupervisor {
+public final class PluginServiceManager {
     
     /**
      * Set up all service.
      *
      * @param pluginConfigurations plugin configurations
      */
-    public static void setupAllService(final Collection<PluginConfiguration> pluginConfigurations) {
+    @SuppressWarnings(value = {"unchecked", "rawtypes"})
+    public static void setUpAllService(final Collection<PluginConfiguration> pluginConfigurations) {
         Collection<String> pluginNames = pluginConfigurations.stream().map(PluginConfiguration::getPluginName).collect(Collectors.toList());
-        for (Map.Entry<String, BootService> entry : AgentTypedSPIRegistry.getRegisteredServices(pluginNames, BootService.class).entrySet()) {
+        for (Map.Entry<String, PluginBootService> entry : AgentTypedSPIRegistry.getRegisteredServices(pluginNames, PluginBootService.class).entrySet()) {
             for (PluginConfiguration each : pluginConfigurations) {
                 if (each.getPluginName().equals(entry.getKey())) {
                     try {
@@ -58,9 +58,10 @@ public final class ServiceSupervisor {
      *
      * @param pluginConfigurations plugin configurations
      */
+    @SuppressWarnings(value = {"unchecked", "rawtypes"})
     public static void startAllService(final Collection<PluginConfiguration> pluginConfigurations) {
         Collection<String> pluginNames = pluginConfigurations.stream().map(PluginConfiguration::getPluginName).collect(Collectors.toList());
-        for (Map.Entry<String, BootService> entry : AgentTypedSPIRegistry.getRegisteredServices(pluginNames, BootService.class).entrySet()) {
+        for (Map.Entry<String, PluginBootService> entry : AgentTypedSPIRegistry.getRegisteredServices(pluginNames, PluginBootService.class).entrySet()) {
             for (PluginConfiguration each : pluginConfigurations) {
                 if (each.getPluginName().equals(entry.getKey())) {
                     try {
@@ -76,10 +77,10 @@ public final class ServiceSupervisor {
     }
     
     /**
-     * Clern all service.
+     * Clean up all service.
      */
-    public static void clernAllService() {
-        AgentTypedSPIRegistry.getAllRegisteredService(BootService.class).forEach(each -> {
+    public static void cleanUpAllService() {
+        AgentTypedSPIRegistry.getAllRegisteredService(PluginBootService.class).forEach(each -> {
             try {
                 each.cleanup();
                 // CHECKSTYLE:OFF

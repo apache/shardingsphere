@@ -27,10 +27,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Error span.
+ * Jaeger error span.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ErrorSpan {
+public final class JaegerErrorSpan {
     
     /**
      * Set error.

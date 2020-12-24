@@ -36,8 +36,6 @@ public final class AgentConfigurationLoader {
     
     private static final String DEFAULT_CONFIG_PATH = "/conf/agent.yaml";
     
-    private static final String SPECIFIED_CONFIG_PATH = "agent-path";
-    
     /**
      * Load configuration of ShardingSphere-Agent.
      *
@@ -45,8 +43,7 @@ public final class AgentConfigurationLoader {
      * @throws IOException IO exception
      */
     public static AgentConfiguration load() throws IOException {
-        String specifiedConfigPath = System.getProperty(SPECIFIED_CONFIG_PATH);
-        File configFile = null == specifiedConfigPath ? new File(AgentPathBuilder.getAgentPath(), DEFAULT_CONFIG_PATH) : new File(specifiedConfigPath);
+        File configFile = new File(AgentPathBuilder.getAgentPath(), DEFAULT_CONFIG_PATH);
         YamlAgentConfiguration yamlAgentConfiguration = loadAgentConfiguration(configFile);
         return new YamlAgentConfigurationSwapper().swap(yamlAgentConfiguration);
     }

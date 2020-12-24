@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.agent.core.config;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import org.apache.shardingsphere.agent.core.base.ReflectiveUtil;
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
+import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
@@ -30,13 +33,14 @@ public final class AgentConfigurationLoaderTest {
     
     @Test
     public void assertLoad() throws IOException {
-        System.setProperty("agent-path", getResourceUrl());
+        AgentPathBuilder builder = new AgentPathBuilder();
+        ReflectiveUtil.setProperty(builder, "agentPath", new File(getResourceUrl()));
         AgentConfiguration configuration = AgentConfigurationLoader.load();
         assertNotNull(configuration);
     }
     
-    private static String getResourceUrl() {
-        URL url = AgentConfigurationLoader.class.getResource(DEFAULT_CONFIG_PATH);
+    private String getResourceUrl() {
+        URL url = AgentConfigurationLoader.class.getClassLoader().getResource("");
         if (null != url) {
             return url.getFile();
         }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.constant.AgentConstant;
 import org.apache.shardingsphere.agent.core.plugin.definition.PluginDefinition;
 
 /**
@@ -47,7 +46,7 @@ public final class ZipkinPluginDefinition extends PluginDefinition {
     private static final String JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice.JDBCExecutorCallbackAdvice";
     
     public ZipkinPluginDefinition() {
-        super(AgentConstant.PLUGIN_NAME_ZIPKIN);
+        super("Zipkin");
     }
     
     @Override

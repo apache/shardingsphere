@@ -19,7 +19,6 @@ package org.apache.shardingsphere.agent.core.config.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.agent.core.constant.AgentConstant;
 import org.apache.shardingsphere.agent.core.yaml.config.YamlPluginConfiguration;
 
 /**
@@ -37,6 +36,6 @@ public class YamlPrometheusPluginConfiguration implements YamlPluginConfiguratio
     
     @Override
     public String getPluginName() {
-        return AgentConstant.PLUGIN_NAME_PROMETHEUS;
+        return "Prometheus";
     }
 }

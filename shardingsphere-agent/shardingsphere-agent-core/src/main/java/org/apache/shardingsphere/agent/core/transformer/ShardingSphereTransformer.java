@@ -27,7 +27,7 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.utility.JavaModule;
-import org.apache.shardingsphere.agent.core.plugin.loader.AgentPluginLoader;
+import org.apache.shardingsphere.agent.core.plugin.loader.PluginLoader;
 import org.apache.shardingsphere.agent.core.plugin.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorMethodInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodAroundInterceptor;
@@ -46,16 +46,16 @@ public final class ShardingSphereTransformer implements Transformer {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
-    private final AgentPluginLoader agentPluginLoader;
+    private final PluginLoader pluginLoader;
     
     @Override
     public Builder<?> transform(final Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module) {
-        if (agentPluginLoader.containsType(typeDescription)) {
+        if (pluginLoader.containsType(typeDescription)) {
             Builder<?> newBuilder = builder;
             newBuilder = newBuilder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
                     .implement(TargetObject.class)
                     .intercept(FieldAccessor.ofField(EXTRA_DATA));
-            PluginInterceptorPoint pluginInterceptorPoint = agentPluginLoader.loadPluginInterceptorPoint(typeDescription);
+            PluginInterceptorPoint pluginInterceptorPoint = pluginLoader.loadPluginInterceptorPoint(typeDescription);
             newBuilder = interceptorConstructorPoint(pluginInterceptorPoint, newBuilder);
             newBuilder = interceptorClassStaticMethodPoint(pluginInterceptorPoint, newBuilder);
             newBuilder = interceptorInstanceMethodPoint(pluginInterceptorPoint, newBuilder);
@@ -67,7 +67,7 @@ public final class ShardingSphereTransformer implements Transformer {
     private Builder<?> interceptorConstructorPoint(final PluginInterceptorPoint pluginInterceptorPoint, final Builder<?> builder) {
         for (ConstructorPoint each : pluginInterceptorPoint.getConstructorPoints()) {
             try {
-                ConstructorMethodInterceptor interceptor = new ConstructorMethodInterceptor(agentPluginLoader.getOrCreateInstance(each.getAdvice()));
+                ConstructorMethodInterceptor interceptor = new ConstructorMethodInterceptor(pluginLoader.getOrCreateInstance(each.getAdvice()));
                 return builder.constructor(each.getMatcher()).intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(interceptor)));
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
@@ -81,7 +81,7 @@ public final class ShardingSphereTransformer implements Transformer {
     private Builder<?> interceptorClassStaticMethodPoint(final PluginInterceptorPoint pluginInterceptorPoint, final Builder<?> builder) {
         for (ClassStaticMethodPoint each : pluginInterceptorPoint.getClassStaticMethodPoints()) {
             try {
-                StaticMethodAroundInterceptor interceptor = new StaticMethodAroundInterceptor(agentPluginLoader.getOrCreateInstance(each.getAdvice()));
+                StaticMethodAroundInterceptor interceptor = new StaticMethodAroundInterceptor(pluginLoader.getOrCreateInstance(each.getAdvice()));
                 return builder.method(each.getMatcher()).intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
@@ -95,7 +95,7 @@ public final class ShardingSphereTransformer implements Transformer {
     private Builder<?> interceptorInstanceMethodPoint(final PluginInterceptorPoint pluginInterceptorPoint, final Builder<?> builder) {
         for (InstanceMethodPoint each : pluginInterceptorPoint.getInstanceMethodPoints()) {
             try {
-                MethodAroundInterceptor interceptor = new MethodAroundInterceptor(agentPluginLoader.getOrCreateInstance(each.getAdvice()));
+                MethodAroundInterceptor interceptor = new MethodAroundInterceptor(pluginLoader.getOrCreateInstance(each.getAdvice()));
                 return builder.method(each.getMatcher()).intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {

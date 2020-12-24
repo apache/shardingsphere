@@ -55,16 +55,16 @@ import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
 /**
- * Agent plugin loader.
+ * Plugin loader.
  */
 @Slf4j
-public final class AgentPluginLoader extends ClassLoader implements Closeable {
+public final class PluginLoader extends ClassLoader implements Closeable {
     
     static {
         registerAsParallelCapable();
     }
     
-    private static volatile AgentPluginLoader agentPluginLoader;
+    private static volatile PluginLoader pluginLoader;
     
     private final ConcurrentHashMap<String, Object> objectPool = new ConcurrentHashMap<>();
     
@@ -74,24 +74,24 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     
     private Map<String, PluginInterceptorPoint> interceptorPointMap;
     
-    private AgentPluginLoader() {
-        super(AgentPluginLoader.class.getClassLoader());
+    private PluginLoader() {
+        super(PluginLoader.class.getClassLoader());
     }
     
     /**
-     * Get agent plugin loader instance.
+     * Get plugin loader instance.
      *
-     * @return agent plugin loader instance
+     * @return plugin loader instance
      */
-    public static AgentPluginLoader getInstance() {
-        if (null == agentPluginLoader) {
-            synchronized (AgentPluginLoader.class) {
-                if (null == agentPluginLoader) {
-                    agentPluginLoader = new AgentPluginLoader();
+    public static PluginLoader getInstance() {
+        if (null == pluginLoader) {
+            synchronized (PluginLoader.class) {
+                if (null == pluginLoader) {
+                    pluginLoader = new PluginLoader();
                 }
             }
         }
-        return agentPluginLoader;
+        return pluginLoader;
     }
     
     /**
@@ -228,24 +228,6 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
         throw new ClassNotFoundException("Class " + name + " not found.");
     }
     
-    private String classNameToPath(final String className) {
-        return className.replace(".", "/") + ".class";
-    }
-    
-    private void definePackageInternal(final String packageName, final Manifest manifest) {
-        if (getPackage(packageName) != null) {
-            return;
-        }
-        Attributes attr = manifest.getMainAttributes();
-        String specTitle = attr.getValue(Attributes.Name.SPECIFICATION_TITLE);
-        String specVersion = attr.getValue(Attributes.Name.SPECIFICATION_VERSION);
-        String specVendor = attr.getValue(Attributes.Name.SPECIFICATION_VENDOR);
-        String implTitle = attr.getValue(Attributes.Name.IMPLEMENTATION_TITLE);
-        String implVersion = attr.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
-        String implVendor = attr.getValue(Attributes.Name.IMPLEMENTATION_VENDOR);
-        super.definePackage(packageName, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor, null);
-    }
-    
     @Override
     protected Enumeration<URL> findResources(final String name) {
         List<URL> resources = Lists.newArrayList();
@@ -284,6 +266,24 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
                 log.error("close is ", ex);
             }
         }
+    }
+    
+    private String classNameToPath(final String className) {
+        return className.replace(".", "/") + ".class";
+    }
+    
+    private void definePackageInternal(final String packageName, final Manifest manifest) {
+        if (null != getPackage(packageName)) {
+            return;
+        }
+        Attributes attr = manifest.getMainAttributes();
+        String specTitle = attr.getValue(Attributes.Name.SPECIFICATION_TITLE);
+        String specVersion = attr.getValue(Attributes.Name.SPECIFICATION_VERSION);
+        String specVendor = attr.getValue(Attributes.Name.SPECIFICATION_VENDOR);
+        String implTitle = attr.getValue(Attributes.Name.IMPLEMENTATION_TITLE);
+        String implVersion = attr.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
+        String implVendor = attr.getValue(Attributes.Name.IMPLEMENTATION_VENDOR);
+        super.definePackage(packageName, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor, null);
     }
     
     private void buildPluginInterceptorPointMap(final PluginDefinition pluginDefinition, final Map<String, PluginInterceptorPoint> pointMap) {

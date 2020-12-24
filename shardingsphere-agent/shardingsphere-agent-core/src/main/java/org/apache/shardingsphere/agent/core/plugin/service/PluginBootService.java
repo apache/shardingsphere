@@ -21,29 +21,29 @@ import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.spi.AgentTypedSPI;
 
 /**
- * Boot service that the lifecycle is from the agent startup to shutdown.
+ * Plugin boot service that the lifecycle is from the agent startup to shutdown.
  *
- * @param <T> plugin configuration
+ * @param <T> type of plugin configuration
  */
-public interface BootService<T extends PluginConfiguration> extends AgentTypedSPI {
+public interface PluginBootService<T extends PluginConfiguration> extends AgentTypedSPI {
     
     /**
-     * Setup the boot service, like to configure or to initial.
+     * Setup plugin boot service, like to configure or to initial.
      *
-     * @param configuration configuration
+     * @param configuration type of plugin configuration
      */
     void setup(T configuration);
     
     /**
-     * Start up the boot service.
+     * Start plugin boot service.
      *
-     * @param configuration configuration
+     * @param configuration type of plugin configuration
      */
     default void start(T configuration) {
     }
     
     /**
-     * Cleanup the boot service.
+     * Cleanup plugin boot service.
      */
     default void cleanup() {
     }
