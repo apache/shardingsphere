@@ -23,14 +23,18 @@ import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.execute.engine.TaskExecuteEngine;
+import org.apache.shardingsphere.scaling.core.fixture.FixtureResumeBreakPointManager;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
+import org.apache.shardingsphere.scaling.core.job.position.resume.FileSystemResumeBreakPointManager;
+import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManagerFactory;
 import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
 import org.apache.shardingsphere.scaling.core.schedule.ScalingTaskScheduler;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,6 +68,7 @@ public final class StandaloneScalingJobServiceTest {
     public void setUp() {
         ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", new ServerConfiguration());
         ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "inventoryDumperExecuteEngine", mock(TaskExecuteEngine.class));
+        ReflectionUtil.setStaticFieldValue(ResumeBreakPointManagerFactory.class, "clazz", FixtureResumeBreakPointManager.class);
     }
     
     @Test
@@ -122,5 +127,11 @@ public final class StandaloneScalingJobServiceTest {
     @SneakyThrows(IOException.class)
     private ScalingConfiguration mockScalingConfiguration() {
         return ScalingConfigurationUtil.initConfig("/config.json");
+    }
+    
+    @After
+    @SneakyThrows(ReflectiveOperationException.class)
+    public void tearDown() {
+        ReflectionUtil.setStaticFieldValue(ResumeBreakPointManagerFactory.class, "clazz", FileSystemResumeBreakPointManager.class);
     }
 }

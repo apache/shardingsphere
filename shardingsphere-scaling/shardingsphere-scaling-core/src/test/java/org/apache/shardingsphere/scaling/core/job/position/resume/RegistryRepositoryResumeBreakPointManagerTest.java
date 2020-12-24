@@ -48,7 +48,14 @@ public final class RegistryRepositoryResumeBreakPointManagerTest {
         assertThat(resumeBreakPointManager.getPosition("/base/inventory"), is("{\"unfinished\":{},\"finished\":[]}"));
     }
     
+    @After
+    public void tearDown() {
+        resumeBreakPointManager.close();
+        resetRegistryRepositoryAvailable();
+    }
+    
     private ServerConfiguration mockServerConfiguration() {
+        resetRegistryRepositoryAvailable();
         YamlGovernanceConfiguration distributedScalingService = new YamlGovernanceConfiguration();
         distributedScalingService.setName("test");
         YamlGovernanceCenterConfiguration registryCenter = new YamlGovernanceCenterConfiguration();
@@ -59,11 +66,9 @@ public final class RegistryRepositoryResumeBreakPointManagerTest {
         result.setDistributedScalingService(distributedScalingService);
         return result;
     }
-
-    @After
+    
     @SneakyThrows(ReflectiveOperationException.class)
-    public void tearDown() {
-        resumeBreakPointManager.close();
+    private void resetRegistryRepositoryAvailable() {
         ReflectionUtil.setStaticFieldValue(RegistryRepositoryHolder.class, "available", null);
     }
 }
