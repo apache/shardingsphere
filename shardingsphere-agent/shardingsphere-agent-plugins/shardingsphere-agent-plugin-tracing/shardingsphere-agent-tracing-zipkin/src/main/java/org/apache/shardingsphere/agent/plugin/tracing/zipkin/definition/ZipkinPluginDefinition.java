@@ -51,7 +51,7 @@ public final class ZipkinPluginDefinition extends PluginDefinition {
     }
     
     @Override
-    protected void definition() {
+    protected void define() {
         intercept(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(COMMAND_EXECUTOR_METHOD_NAME))
                 .implement(COMMAND_EXECUTOR_TASK_ADVICE_CLASS)

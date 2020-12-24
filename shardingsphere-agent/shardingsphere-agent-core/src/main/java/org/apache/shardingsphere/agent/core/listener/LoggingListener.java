@@ -24,7 +24,7 @@ import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.utility.JavaModule;
 
 /**
- * Logging listener what is informed about events that occur during an instrumentation process.
+ * Logging listener for ByteBuddy lifecycle.
  */
 @Slf4j
 public final class LoggingListener implements Listener {

@@ -47,7 +47,7 @@ public final class MetricsPluginDefinition extends PluginDefinition {
     }
     
     @Override
-    protected void definition() {
+    protected void define() {
         intercept(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(MethodNameConstant.COMMAND_EXECUTOR_RUN))
                 .implement(COMMAND_EXECUTOR_TASK_ADVICE_CLASS)

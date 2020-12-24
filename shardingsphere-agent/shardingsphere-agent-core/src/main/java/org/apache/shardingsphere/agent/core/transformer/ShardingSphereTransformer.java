@@ -38,7 +38,7 @@ import org.apache.shardingsphere.agent.core.plugin.point.ConstructorPoint;
 import org.apache.shardingsphere.agent.core.plugin.point.InstanceMethodPoint;
 
 /**
- * Shardingsphere transformer.
+ * ShardingSphere transformer.
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -55,7 +55,7 @@ public final class ShardingSphereTransformer implements Transformer {
             newBuilder = newBuilder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
                     .implement(TargetObject.class)
                     .intercept(FieldAccessor.ofField(EXTRA_DATA));
-            final PluginInterceptorPoint pluginInterceptorPoint = agentPluginLoader.loadPluginInterceptorPoint(typeDescription);
+            PluginInterceptorPoint pluginInterceptorPoint = agentPluginLoader.loadPluginInterceptorPoint(typeDescription);
             newBuilder = interceptorConstructorPoint(pluginInterceptorPoint, newBuilder);
             newBuilder = interceptorClassStaticMethodPoint(pluginInterceptorPoint, newBuilder);
             newBuilder = interceptorInstanceMethodPoint(pluginInterceptorPoint, newBuilder);
