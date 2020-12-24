@@ -15,17 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expression.simple;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
-@Getter
 @Setter
-public final class ExpectedParameterMarkerExpression extends ExpectedBaseSimpleExpression {
-    
-    @XmlAttribute
-    private int value;
+@Getter
+public class ExpectedBetweenExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
+    @XmlElement(name = "not")
+    private boolean not;
+
+    @XmlElement(name = "left")
+    private ExpectedExpression left;
+
+    @XmlElement(name = "between-expr")
+    private ExpectedExpression betweenExpr;
+
+    @XmlElement(name = "and-expr")
+    private ExpectedExpression andExpr;
 }

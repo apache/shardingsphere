@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expression;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 @Setter
 @Getter
-public class ExpectedBetweenExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
-    @XmlElement(name = "not")
-    private boolean not;
+public class ExpectedListExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
 
-    @XmlElement(name = "left")
-    private ExpectedExpression left;
-
-    @XmlElement(name = "between-expr")
-    private ExpectedExpression betweenExpr;
-
-    @XmlElement(name = "and-expr")
-    private ExpectedExpression andExpr;
+    @XmlElement(name = "items")
+    private List<ExpectedExpression> items = new LinkedList<>();
 }

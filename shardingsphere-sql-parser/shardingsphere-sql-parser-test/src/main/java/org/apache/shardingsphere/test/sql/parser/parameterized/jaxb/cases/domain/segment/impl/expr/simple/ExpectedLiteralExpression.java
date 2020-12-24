@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expression;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.simple;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
-@Setter
 @Getter
-public class ExpectedNotExpression extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
-
-    @XmlElement(name = "expr")
-    private ExpectedExpression expr;
+@Setter
+public final class ExpectedLiteralExpression extends ExpectedBaseSimpleExpression {
+    
+    @XmlAttribute
+    private String value;
 }
