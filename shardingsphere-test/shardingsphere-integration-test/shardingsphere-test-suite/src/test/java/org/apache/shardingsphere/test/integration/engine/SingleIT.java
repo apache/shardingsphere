@@ -69,7 +69,7 @@ public abstract class SingleIT extends BaseIT {
             .replace("%%", "%").replace("'%'", "'%%'");
     }
     
-    protected void printExceptionContext(final Exception ex) {
+    protected final void printExceptionContext(final Exception ex) {
         log.error("ruleType={}, databaseType={}, expectedDataFile={}, sql={}", getRuleType(), getDatabaseType().getName(), expectedDataFile, sql, ex);
     }
 }

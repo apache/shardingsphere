@@ -111,9 +111,9 @@ public final class IntegrateTestEnvironment {
     }
     
     /**
-     * Is proxy environment.
+     * Judge whether proxy environment.
      *
-     * @return true or false
+     * @return is proxy environment or not 
      */
     public boolean isProxyEnvironment() {
         return "proxy".equals(activeProfile);
