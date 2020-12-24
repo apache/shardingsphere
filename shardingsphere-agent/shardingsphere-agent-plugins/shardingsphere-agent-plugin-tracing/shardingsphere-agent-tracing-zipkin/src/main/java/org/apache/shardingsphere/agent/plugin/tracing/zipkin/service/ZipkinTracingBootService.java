@@ -34,18 +34,18 @@ public final class ZipkinTracingBootService implements BootService<ZipkinPluginC
     private OkHttpSender sender;
     
     private Tracing tracing;
-
+    
     @Override
     public void setup(final ZipkinPluginConfiguration configuration) {
         sender = OkHttpSender.create(buildHttpPath(configuration));
         zipkinSpanHandler = AsyncZipkinSpanHandler.create(sender);
     }
-
+    
     @Override
     public void start(final ZipkinPluginConfiguration configuration) {
         tracing = Tracing.newBuilder().localServiceName("shardingsphere-agent").addSpanHandler(zipkinSpanHandler).build();
     }
-
+    
     @Override
     public void cleanup() {
         tracing.close();
@@ -59,6 +59,6 @@ public final class ZipkinTracingBootService implements BootService<ZipkinPluginC
     }
     
     private String buildHttpPath(final ZipkinPluginConfiguration configuration) {
-        return "http://" + configuration.getHost() + ":" + configuration.getPort();
+        return String.format("http://%s:%s", configuration.getHost(), configuration.getPort());
     }
 }
