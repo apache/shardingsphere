@@ -32,10 +32,12 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.execute.engine.TaskExecuteEngine;
+import org.apache.shardingsphere.scaling.core.job.position.resume.FileSystemResumeBreakPointManager;
 import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManagerFactory;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.apache.shardingsphere.scaling.fixture.FixtureResumeBreakPointManager;
 import org.apache.shardingsphere.scaling.util.ScalingConfigurationUtil;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -187,5 +189,11 @@ public final class HttpServerHandlerTest {
         FullHttpResponse fullHttpResponse = argumentCaptor.getValue();
         JsonObject jsonObject = new Gson().fromJson(fullHttpResponse.content().toString(CharsetUtil.UTF_8), JsonObject.class);
         return jsonObject.get("model").getAsJsonObject().get("jobId").getAsLong();
+    }
+    
+    @After
+    @SneakyThrows(ReflectiveOperationException.class)
+    public void tearDown() {
+        ReflectionUtil.setStaticFieldValue(ResumeBreakPointManagerFactory.class, "clazz", FileSystemResumeBreakPointManager.class);
     }
 }
