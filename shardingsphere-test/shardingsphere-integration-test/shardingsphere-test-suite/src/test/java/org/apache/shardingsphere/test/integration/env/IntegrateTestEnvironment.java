@@ -19,16 +19,17 @@ package org.apache.shardingsphere.test.integration.env;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Integrate test running environment.
@@ -37,6 +38,8 @@ import java.util.Properties;
 public final class IntegrateTestEnvironment {
     
     private static final IntegrateTestEnvironment INSTANCE = new IntegrateTestEnvironment();
+
+    private final String activeProfile;
     
     private final boolean runAdditionalTestCases;
     
@@ -46,42 +49,41 @@ public final class IntegrateTestEnvironment {
     
     private final Map<DatabaseType, DatabaseEnvironment> databaseEnvironments;
     
-    private final String activeProfile;
-    
     private IntegrateTestEnvironment() {
         activeProfile = loadProperties("integrate/profile.properties").getProperty("mode");
         Properties envProps = loadProperties(IntegrateTestEnvironmentType.valueFromProfileName(activeProfile).getEnvFileName());
         runAdditionalTestCases = Boolean.parseBoolean(envProps.getProperty("run.additional.cases"));
         ruleTypes = Splitter.on(",").trimResults().splitToList(envProps.getProperty("rule.types"));
-        databaseTypes = new LinkedList<>();
-        for (String each : envProps.getProperty("databases", "H2").split(",")) {
-            databaseTypes.add(DatabaseTypeRegistry.getActualDatabaseType(each.trim()));
-        }
-        databaseEnvironments = new HashMap<>(databaseTypes.size(), 1);
+        databaseTypes = Arrays.stream(envProps.getProperty("databases", "H2").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
+        databaseEnvironments = createDatabaseEnvironments(envProps);
+    }
+    
+    private Map<DatabaseType, DatabaseEnvironment> createDatabaseEnvironments(final Properties envProps) {
+        Map<DatabaseType, DatabaseEnvironment> result = new HashMap<>(databaseTypes.size(), 1);
         for (DatabaseType each : databaseTypes) {
-            switch (each.getName()) {
-                case "H2":
-                    databaseEnvironments.put(each, new DatabaseEnvironment(each, "", 0, "sa", ""));
-                    break;
-                case "MySQL":
-                    databaseEnvironments.put(each, new DatabaseEnvironment(each, envProps.getProperty("mysql.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("mysql.port", "3306")),
-                        envProps.getProperty("mysql.username", "root"), envProps.getProperty("mysql.password", "")));
-                    break;
-                case "PostgreSQL":
-                    databaseEnvironments.put(each, new DatabaseEnvironment(each, envProps.getProperty("postgresql.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("postgresql.port", "5432")),
-                        envProps.getProperty("postgresql.username", "postgres"), envProps.getProperty("postgresql.password", "")));
-                    break;
-                case "SQLServer":
-                    databaseEnvironments.put(each, new DatabaseEnvironment(each, envProps.getProperty("sqlserver.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("sqlserver.port", "1433")),
-                        envProps.getProperty("sqlserver.username", "sa"), envProps.getProperty("sqlserver.password", "Jdbc1234")));
-                    break;
-                case "Oracle":
-                    databaseEnvironments.put(each, new DatabaseEnvironment(each, envProps.getProperty("oracle.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("oracle.port", "1521")),
-                        envProps.getProperty("oracle.username", "jdbc"), envProps.getProperty("oracle.password", "jdbc")));
-                    break;
-                default:
-                    break;
-            }
+            result.put(each, createDatabaseEnvironment(each, envProps));
+        }
+        return result;
+    }
+    
+    private DatabaseEnvironment createDatabaseEnvironment(final DatabaseType databaseType, final Properties envProps) {
+        switch (databaseType.getName()) {
+            case "H2":
+                return new DatabaseEnvironment(databaseType, "", 0, "sa", "");
+            case "MySQL":
+                return new DatabaseEnvironment(databaseType, envProps.getProperty("mysql.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("mysql.port", "3306")),
+                        envProps.getProperty("mysql.username", "root"), envProps.getProperty("mysql.password", ""));
+            case "PostgreSQL":
+                return new DatabaseEnvironment(databaseType, envProps.getProperty("postgresql.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("postgresql.port", "5432")),
+                        envProps.getProperty("postgresql.username", "postgres"), envProps.getProperty("postgresql.password", ""));
+            case "SQLServer":
+                return new DatabaseEnvironment(databaseType, envProps.getProperty("sqlserver.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("sqlserver.port", "1433")),
+                        envProps.getProperty("sqlserver.username", "sa"), envProps.getProperty("sqlserver.password", "Jdbc1234"));
+            case "Oracle":
+                return new DatabaseEnvironment(databaseType, envProps.getProperty("oracle.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("oracle.port", "1521")),
+                        envProps.getProperty("oracle.username", "jdbc"), envProps.getProperty("oracle.password", "jdbc"));
+            default:
+                throw new UnsupportedOperationException(databaseType.getName());
         }
     }
     
