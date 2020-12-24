@@ -17,27 +17,20 @@
 
 package org.apache.shardingsphere.agent.core.config.yaml;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Properties;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.agent.core.yaml.config.YamlPluginConfiguration;
 
 /**
- * Jaeger plugin configuration for YAML.
+ * YAML plugin configuration.
  */
 @Getter
 @Setter
-public final class YamlJaegerPluginConfiguration implements YamlPluginConfiguration {
+public class YamlPluginConfiguration extends YamlRemotePluginConfiguration {
     
     private String host = "localhost";
     
     private int port = 5775;
     
-    private Map<String, String> extra = new HashMap<>();
-    
-    @Override
-    public String getPluginName() {
-        return "Jaeger";
-    }
+    private Properties props = new Properties();
 }

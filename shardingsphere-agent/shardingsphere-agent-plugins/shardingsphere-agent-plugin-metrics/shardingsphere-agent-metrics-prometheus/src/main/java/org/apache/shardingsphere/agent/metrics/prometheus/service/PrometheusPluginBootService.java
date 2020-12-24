@@ -23,7 +23,7 @@ import io.prometheus.client.hotspot.DefaultExports;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.core.config.PrometheusPluginConfiguration;
+import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.service.PluginBootService;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.BuildInfoCollector;
 
@@ -31,22 +31,19 @@ import org.apache.shardingsphere.agent.metrics.prometheus.collector.BuildInfoCol
  * Prometheus plugin boot service.
  */
 @Slf4j
-public class PrometheusPluginBootService implements PluginBootService<PrometheusPluginConfiguration> {
+public class PrometheusPluginBootService implements PluginBootService {
     
     private HTTPServer httpServer;
     
     @Override
-    public void setup(final PrometheusPluginConfiguration configuration) {
-        registerJvm(configuration);
-    }
-    
-    @Override
-    public void start(final PrometheusPluginConfiguration configuration) {
+    public void start(final PluginConfiguration configuration) {
+        boolean enabled = Boolean.parseBoolean(configuration.getProps().getProperty("jvmInformationCollectorEnabled"));
+        registerJvm(enabled);
         startServer(configuration);
     }
     
     @Override
-    public void cleanup() {
+    public void close() {
         if (null != httpServer) {
             httpServer.stop();
         }
@@ -57,15 +54,14 @@ public class PrometheusPluginBootService implements PluginBootService<Prometheus
         return "Prometheus";
     }
     
-    private void registerJvm(final PrometheusPluginConfiguration configuration) {
-        boolean enabled = configuration.isJvmInformationCollectorEnabled();
+    private void registerJvm(final boolean enabled) {
         if (enabled) {
             new BuildInfoCollector().register();
             DefaultExports.initialize();
         }
     }
     
-    private void startServer(final PrometheusPluginConfiguration configuration) {
+    private void startServer(final PluginConfiguration configuration) {
         int port = configuration.getPort();
         String host = configuration.getHost();
         InetSocketAddress inetSocketAddress;

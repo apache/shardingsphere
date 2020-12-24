@@ -49,6 +49,18 @@ public final class AgentTypedSPIRegistry {
     }
     
     /**
+     * Get registered service.
+     *
+     * @param typedSPIClass typed SPI class
+     * @param type type
+     * @param <T> type
+     * @return registered service
+     */
+    public static <T extends AgentTypedSPI> Optional<T> getRegisteredServiceOptional(final Class<T> typedSPIClass, final String type) {
+        return AgentServiceLoader.getServiceLoader(typedSPIClass).newServiceInstances().stream().filter(each -> each.getType().equalsIgnoreCase(type)).findFirst();
+    }
+    
+    /**
      * Get all registered service.
      *
      * @param typedSPIClass typed SPI class

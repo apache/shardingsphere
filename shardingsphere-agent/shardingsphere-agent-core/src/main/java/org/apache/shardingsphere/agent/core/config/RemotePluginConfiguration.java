@@ -21,20 +21,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Prometheus plugin configuration.
+ * Remote plugin configuration.
  */
 @Getter
 @Setter
-public final class PrometheusPluginConfiguration implements PluginConfiguration {
+public class RemotePluginConfiguration {
     
-    private String host = "localhost";
-    
-    private int port = 9090;
-    
-    private boolean jvmInformationCollectorEnabled;
-    
-    @Override
-    public String getPluginName() {
-        return "Prometheus";
-    }
+    private String password;
 }

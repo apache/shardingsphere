@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.plugin.service;
 
-import java.util.Collection;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.spi.AgentTypedSPIRegistry;
@@ -29,64 +27,36 @@ import org.apache.shardingsphere.agent.core.spi.AgentTypedSPIRegistry;
  */
 @Slf4j
 public final class PluginServiceManager {
-    
-    /**
-     * Set up all service.
-     *
-     * @param pluginConfigurations plugin configurations
-     */
-    @SuppressWarnings(value = {"unchecked", "rawtypes"})
-    public static void setUpAllService(final Collection<PluginConfiguration> pluginConfigurations) {
-        Collection<String> pluginNames = pluginConfigurations.stream().map(PluginConfiguration::getPluginName).collect(Collectors.toList());
-        for (Map.Entry<String, PluginBootService> entry : AgentTypedSPIRegistry.getRegisteredServices(pluginNames, PluginBootService.class).entrySet()) {
-            for (PluginConfiguration each : pluginConfigurations) {
-                if (each.getPluginName().equals(entry.getKey())) {
-                    try {
-                        entry.getValue().setup(each);
-                        // CHECKSTYLE:OFF
-                    } catch (final Throwable ex) {
-                        // CHECKSTYLE:ON
-                        log.error("Failed to setup service.", ex);
-                    }
-                }
-            }
-        }
-    }
-    
     /**
      * Start all service.
      *
-     * @param pluginConfigurations plugin configurations
+     * @param pluginConfigurationMap plugin configurations
      */
-    @SuppressWarnings(value = {"unchecked", "rawtypes"})
-    public static void startAllService(final Collection<PluginConfiguration> pluginConfigurations) {
-        Collection<String> pluginNames = pluginConfigurations.stream().map(PluginConfiguration::getPluginName).collect(Collectors.toList());
-        for (Map.Entry<String, PluginBootService> entry : AgentTypedSPIRegistry.getRegisteredServices(pluginNames, PluginBootService.class).entrySet()) {
-            for (PluginConfiguration each : pluginConfigurations) {
-                if (each.getPluginName().equals(entry.getKey())) {
-                    try {
-                        entry.getValue().start(each);
-                        // CHECKSTYLE:OFF
-                    } catch (final Throwable ex) {
-                        // CHECKSTYLE:ON
-                        log.error("Failed to start service.", ex);
-                    }
+    public static void startAllService(final Map<String, PluginConfiguration> pluginConfigurationMap) {
+        for (Map.Entry<String, PluginConfiguration> entry: pluginConfigurationMap.entrySet()) {
+            AgentTypedSPIRegistry.getRegisteredServiceOptional(PluginBootService.class, entry.getKey()).ifPresent(pluginBootService -> {
+                try {
+                    pluginBootService.start(entry.getValue());
+                    // CHECKSTYLE:OFF
+                } catch (final Throwable ex) {
+                    // CHECKSTYLE:ON
+                    log.error("Failed to start service.", ex);
                 }
-            }
+            });
         }
     }
     
     /**
-     * Clean up all service.
+     * Close all service.
      */
-    public static void cleanUpAllService() {
+    public static void closeAllService() {
         AgentTypedSPIRegistry.getAllRegisteredService(PluginBootService.class).forEach(each -> {
             try {
-                each.cleanup();
+                each.close();
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to shutdown service.", ex);
+                log.error("Failed to close service.", ex);
             }
         });
     }

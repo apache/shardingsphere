@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.agent.core.config.yaml.swapper;
 
-import java.util.Collection;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.YamlAgentConfiguration;
-import org.apache.shardingsphere.agent.core.yaml.swapper.YamlPluginConfigurationSwapperEngine;
+import org.apache.shardingsphere.agent.core.config.yaml.YamlPluginConfiguration;
 
 /**
  * YAML agent configuration swapper.
@@ -34,13 +35,22 @@ public final class YamlAgentConfigurationSwapper {
      * @param yamlConfig YAML agent configuration
      * @return agent configuration
      */
-    public AgentConfiguration swap(final YamlAgentConfiguration yamlConfig) {
+    public static AgentConfiguration swap(final YamlAgentConfiguration yamlConfig) {
         AgentConfiguration result = new AgentConfiguration();
         result.setApplicationName(yamlConfig.getApplicationName());
         result.setMetricsType(yamlConfig.getMetricsType());
         result.setIgnorePlugins(yamlConfig.getIgnorePlugins());
-        Collection<PluginConfiguration> pluginConfigurations = YamlPluginConfigurationSwapperEngine.swapToPluginConfigurations(yamlConfig.getPlugins());
-        result.setPluginConfigurations(pluginConfigurations);
+        Map<String, PluginConfiguration> configurationMap = yamlConfig.getPlugins().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> transform(entry.getValue())));
+        result.setPlugins(configurationMap);
+        return result;
+    }
+    
+    private static PluginConfiguration transform(final YamlPluginConfiguration yamlConfig) {
+        PluginConfiguration result = new PluginConfiguration();
+        result.setHost(yamlConfig.getHost());
+        result.setPort(yamlConfig.getPort());
+        result.setProps(yamlConfig.getProps());
+        result.setPassword(yamlConfig.getPassword());
         return result;
     }
 }

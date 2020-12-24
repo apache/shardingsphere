@@ -17,24 +17,23 @@
 
 package org.apache.shardingsphere.agent.bootstrap;
 
-import java.util.Collection;
+import java.io.IOException;
+import java.lang.instrument.Instrumentation;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.listener.LoggingListener;
-import org.apache.shardingsphere.agent.core.transformer.ShardingSphereTransformer;
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
+import org.apache.shardingsphere.agent.core.listener.LoggingListener;
 import org.apache.shardingsphere.agent.core.plugin.loader.PluginLoader;
 import org.apache.shardingsphere.agent.core.plugin.service.PluginServiceManager;
-import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
-
-import java.io.IOException;
-import java.lang.instrument.Instrumentation;
+import org.apache.shardingsphere.agent.core.transformer.ShardingSphereTransformer;
 
 /**
  * ShardingSphere agent.
@@ -54,7 +53,7 @@ public final class ShardingSphereAgent {
         AgentObjectPool.INSTANCE.put(agentConfiguration);
         PluginLoader pluginLoader = createPluginLoader();
         setUpAgentBuilder(instrumentation, pluginLoader);
-        setupPluginBootService(agentConfiguration.getPluginConfigurations());
+        setupPluginBootService(agentConfiguration.getPlugins());
     }
     
     private static PluginLoader createPluginLoader() throws IOException {
@@ -63,10 +62,9 @@ public final class ShardingSphereAgent {
         return result;
     }
     
-    private static void setupPluginBootService(final Collection<PluginConfiguration> pluginConfigurations) {
-        PluginServiceManager.setUpAllService(pluginConfigurations);
-        PluginServiceManager.startAllService(pluginConfigurations);
-        Runtime.getRuntime().addShutdownHook(new Thread(PluginServiceManager::cleanUpAllService));
+    private static void setupPluginBootService(final Map<String, PluginConfiguration> pluginConfigurationMap) {
+        PluginServiceManager.startAllService(pluginConfigurationMap);
+        Runtime.getRuntime().addShutdownHook(new Thread(PluginServiceManager::closeAllService));
     }
     
     private static void setUpAgentBuilder(final Instrumentation instrumentation, final PluginLoader pluginLoader) {
