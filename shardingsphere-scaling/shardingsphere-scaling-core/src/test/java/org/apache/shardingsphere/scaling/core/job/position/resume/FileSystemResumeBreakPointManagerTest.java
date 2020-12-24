@@ -35,20 +35,20 @@ public final class FileSystemResumeBreakPointManagerTest {
     
     @Before
     public void setUp() {
-        resumeBreakPointManager = new FileSystemResumeBreakPointManager("file", "target/scaling");
+        resumeBreakPointManager = new FileSystemResumeBreakPointManager("H2", "target/.scaling");
     }
     
     @Test
     public void assertPersistAndGetPosition() {
         resumeBreakPointManager.persistPosition();
-        assertThat(resumeBreakPointManager.getPosition("target/scaling/incremental"), is("{}"));
-        assertThat(resumeBreakPointManager.getPosition("target/scaling/inventory"), is("{\"unfinished\":{},\"finished\":[]}"));
+        assertThat(resumeBreakPointManager.getPosition("target/.scaling/incremental"), is("{}"));
+        assertThat(resumeBreakPointManager.getPosition("target/.scaling/inventory"), is("{\"unfinished\":{},\"finished\":[]}"));
     }
     
     @After
     @SneakyThrows(IOException.class)
     public void tearDown() {
         resumeBreakPointManager.close();
-        FileUtils.forceDeleteOnExit(new File("target/scaling"));
+        FileUtils.forceDeleteOnExit(new File("target/.scaling"));
     }
 }

@@ -32,7 +32,9 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.execute.engine.TaskExecuteEngine;
+import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManagerFactory;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
+import org.apache.shardingsphere.scaling.fixture.FixtureResumeBreakPointManager;
 import org.apache.shardingsphere.scaling.util.ScalingConfigurationUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,6 +65,7 @@ public final class HttpServerHandlerTest {
     public void setUp() {
         ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", new ServerConfiguration());
         ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "inventoryDumperExecuteEngine", mock(TaskExecuteEngine.class));
+        ReflectionUtil.setStaticFieldValue(ResumeBreakPointManagerFactory.class, "clazz", FixtureResumeBreakPointManager.class);
         httpServerHandler = new HttpServerHandler();
     }
     

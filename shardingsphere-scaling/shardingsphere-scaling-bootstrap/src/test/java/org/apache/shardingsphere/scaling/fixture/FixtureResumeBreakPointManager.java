@@ -15,37 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position.resume;
+package org.apache.shardingsphere.scaling.fixture;
 
-import lombok.SneakyThrows;
-import org.apache.commons.io.FileUtils;
+import org.apache.shardingsphere.scaling.core.job.position.resume.AbstractResumeBreakPointManager;
+import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManager;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-/**
- * File system resume from break-point manager as default.
- */
-public final class FileSystemResumeBreakPointManager extends AbstractResumeBreakPointManager implements ResumeBreakPointManager {
+public final class FixtureResumeBreakPointManager extends AbstractResumeBreakPointManager implements ResumeBreakPointManager {
     
-    public FileSystemResumeBreakPointManager(final String databaseType, final String taskPath) {
-        super(databaseType, taskPath.startsWith("/") ? ".scaling/" + taskPath : taskPath);
+    public FixtureResumeBreakPointManager(final String databaseType, final String taskPath) {
+        super(databaseType, taskPath);
     }
     
     @Override
-    @SneakyThrows(IOException.class)
     public String getPosition(final String path) {
-        File file = new File(path);
-        if (!file.exists()) {
-            return null;
-        }
-        return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+        return null;
     }
     
     @Override
-    @SneakyThrows(IOException.class)
     public void persistPosition(final String path, final String data) {
-        FileUtils.writeStringToFile(new File(path), data, StandardCharsets.UTF_8);
+    
     }
 }
