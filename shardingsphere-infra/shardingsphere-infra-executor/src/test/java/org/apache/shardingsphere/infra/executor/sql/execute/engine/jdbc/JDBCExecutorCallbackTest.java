@@ -76,6 +76,11 @@ public final class JDBCExecutorCallbackTest {
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return ((PreparedStatement) statement).executeUpdate();
             }
+            
+            @Override
+            protected Integer getSaneResult(final JDBCExecutionUnit jdbcExecutionUnit) {
+                return 0;
+            }
         };
         Field field = JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA");
         field.setAccessible(true);

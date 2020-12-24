@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback.impl.ProxyPreparedStatementExecutorCallback;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback.impl.ProxyStatementExecutorCallback;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * Proxy JDBC executor callback factory.
@@ -36,19 +37,20 @@ public final class ProxyJDBCExecutorCallbackFactory {
      * 
      * @param type driver type
      * @param databaseType database type
+     * @param sqlStatement SQL statement
      * @param backendConnection backend connection
      * @param isExceptionThrown is exception thrown or not
      * @param isReturnGeneratedKeys is return generated keys or not
      * @param isFetchMetaData is fetch meta data or not
      * @return instance of Proxy JDBC executor callback
      */
-    public static ProxyJDBCExecutorCallback newInstance(final String type, final DatabaseType databaseType, final BackendConnection backendConnection,
+    public static ProxyJDBCExecutorCallback newInstance(final String type, final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection,
                                                         final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean isFetchMetaData) {
         if (JDBCDriverType.STATEMENT.equals(type)) {
-            return new ProxyStatementExecutorCallback(databaseType, backendConnection, isExceptionThrown, isReturnGeneratedKeys, isFetchMetaData);
+            return new ProxyStatementExecutorCallback(databaseType, sqlStatement, backendConnection, isExceptionThrown, isReturnGeneratedKeys, isFetchMetaData);
         }
         if (JDBCDriverType.PREPARED_STATEMENT.equals(type)) {
-            return new ProxyPreparedStatementExecutorCallback(databaseType, backendConnection, isExceptionThrown, isReturnGeneratedKeys, isFetchMetaData);
+            return new ProxyPreparedStatementExecutorCallback(databaseType, sqlStatement, backendConnection, isExceptionThrown, isReturnGeneratedKeys, isFetchMetaData);
         }
         throw new UnsupportedOperationException(String.format("Unsupported driver type: `%s`", type));
     }
