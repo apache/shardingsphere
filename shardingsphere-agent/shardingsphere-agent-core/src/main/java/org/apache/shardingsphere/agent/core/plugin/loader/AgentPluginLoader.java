@@ -22,6 +22,18 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.matcher.ElementMatcher;
+import net.bytebuddy.matcher.ElementMatcher.Junction;
+import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
+import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
+import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
+import org.apache.shardingsphere.agent.core.plugin.definition.PluginDefinition;
+import org.apache.shardingsphere.agent.core.plugin.point.PluginInterceptorPoint;
+
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -39,43 +51,33 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatcher.Junction;
-import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
-import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
-import org.apache.shardingsphere.agent.core.plugin.definition.PluginDefinition;
-import org.apache.shardingsphere.agent.core.plugin.point.PluginInterceptorPoint;
 
 /**
  * Agent plugin loader.
  */
 @Slf4j
 public final class AgentPluginLoader extends ClassLoader implements Closeable {
-    
+
     static {
         registerAsParallelCapable();
     }
-    
+
     private static volatile AgentPluginLoader agentPluginLoader;
-    
+
     private final ConcurrentHashMap<String, Object> objectPool = new ConcurrentHashMap<>();
-    
+
     private final ReentrantLock lock = new ReentrantLock();
-    
+
     private final List<PluginJar> jars = Lists.newArrayList();
-    
+
     private Map<String, PluginInterceptorPoint> interceptorPointMap;
-    
+
     private AgentPluginLoader() {
         super(AgentPluginLoader.class.getClassLoader());
     }
-    
+
     /**
      * Get agent plugin loader instance.
      *
@@ -91,7 +93,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
         }
         return agentPluginLoader;
     }
-    
+
     /**
      * Load all plugins.
      *
@@ -110,6 +112,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
                 JarFile jar = new JarFile(jarFile, true);
                 jars.add(new PluginJar(jar, jarFile));
                 log.info("Loaded jar {}.", jarFile.getName());
+
                 Attributes attributes = jar.getManifest().getMainAttributes();
                 String entrypoint = attributes.getValue("Entrypoint");
                 if (Strings.isNullOrEmpty(entrypoint)) {
@@ -132,7 +135,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
         }
         interceptorPointMap = ImmutableMap.<String, PluginInterceptorPoint>builder().putAll(pointMap).build();
     }
-    
+
     /**
      * To find all intercepting target classes then to build TypeMatcher.
      *
@@ -140,24 +143,24 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
      */
     public ElementMatcher<? super TypeDescription> typeMatcher() {
         return new Junction<TypeDescription>() {
-            
+
             @Override
             public boolean matches(final TypeDescription target) {
                 return interceptorPointMap.containsKey(target.getTypeName());
             }
-            
+
             @Override
             public <U extends TypeDescription> Junction<U> and(final ElementMatcher<? super U> other) {
                 return null;
             }
-            
+
             @Override
             public <U extends TypeDescription> Junction<U> or(final ElementMatcher<? super U> other) {
                 return null;
             }
         };
     }
-    
+
     /**
      * To detect the type whether or not exists.
      *
@@ -167,7 +170,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     public boolean containsType(final TypeDescription typeDescription) {
         return interceptorPointMap.containsKey(typeDescription.getTypeName());
     }
-    
+
     /**
      * Load plugin interceptor point by TypeDescription.
      *
@@ -177,12 +180,12 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     public PluginInterceptorPoint loadPluginInterceptorPoint(final TypeDescription typeDescription) {
         return interceptorPointMap.getOrDefault(typeDescription.getTypeName(), PluginInterceptorPoint.createDefault());
     }
-    
+
     /**
      * To get or create instance of the advice class. Create new one and caching when it is not exist.
      *
      * @param classNameOfAdvice class name of advice
-     * @param <T> advice type
+     * @param <T>               advice type
      * @return instance of advice
      */
     @SneakyThrows({ClassNotFoundException.class, IllegalAccessException.class, InstantiationException.class})
@@ -203,7 +206,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
             lock.unlock();
         }
     }
-    
+
     @Override
     protected Class<?> findClass(final String name) throws ClassNotFoundException {
         String path = classNameToPath(name);
@@ -211,6 +214,11 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
             ZipEntry entry = each.jarFile.getEntry(path);
             if (Objects.nonNull(entry)) {
                 try {
+                    int i = name.lastIndexOf('.');
+                    if (i != -1) {
+                        String packageName = name.substring(0, i);
+                        definePackageInternal(packageName, each.jarFile.getManifest());
+                    }
                     byte[] data = ByteStreams.toByteArray(each.jarFile.getInputStream(entry));
                     return defineClass(name, data, 0, data.length);
                 } catch (final IOException ex) {
@@ -220,11 +228,25 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
         }
         throw new ClassNotFoundException("Class " + name + " not found.");
     }
-    
+
     private String classNameToPath(final String className) {
         return className.replace(".", "/") + ".class";
     }
-    
+
+    private void definePackageInternal(final String packageName, final Manifest manifest) {
+        if (getPackage(packageName) != null) {
+            return;
+        }
+        Attributes attr = manifest.getMainAttributes();
+        String specTitle = attr.getValue(Attributes.Name.SPECIFICATION_TITLE);
+        String specVersion = attr.getValue(Attributes.Name.SPECIFICATION_VERSION);
+        String specVendor = attr.getValue(Attributes.Name.SPECIFICATION_VENDOR);
+        String implTitle = attr.getValue(Attributes.Name.IMPLEMENTATION_TITLE);
+        String implVersion = attr.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
+        String implVendor = attr.getValue(Attributes.Name.IMPLEMENTATION_VENDOR);
+        super.definePackage(packageName, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor, null);
+    }
+
     @Override
     protected Enumeration<URL> findResources(final String name) {
         List<URL> resources = Lists.newArrayList();
@@ -239,7 +261,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
         }
         return Collections.enumeration(resources);
     }
-    
+
     @Override
     protected URL findResource(final String name) {
         for (PluginJar each : jars) {
@@ -253,7 +275,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
         }
         return null;
     }
-    
+
     @Override
     public void close() {
         for (PluginJar each : jars) {
@@ -264,7 +286,7 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
             }
         }
     }
-    
+
     private void buildPluginInterceptorPointMap(final PluginDefinition pluginDefinition, final Map<String, PluginInterceptorPoint> pointMap) {
         pluginDefinition.build().forEach(each -> {
             String target = each.getClassNameOfTarget();
@@ -278,12 +300,12 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
             }
         });
     }
-    
+
     @RequiredArgsConstructor
     private static class PluginJar {
-        
+
         private final JarFile jarFile;
-        
+
         private final File sourcePath;
     }
 }
