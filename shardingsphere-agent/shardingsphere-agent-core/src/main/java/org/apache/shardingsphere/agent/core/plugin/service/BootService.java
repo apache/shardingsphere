@@ -45,5 +45,6 @@ public interface BootService<T extends PluginConfiguration> extends AgentTypedSP
     /**
      * Cleanup the boot service.
      */
-    void cleanup();
+    default void cleanup() {
+    }
 }
