@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.expr;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.expression;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
