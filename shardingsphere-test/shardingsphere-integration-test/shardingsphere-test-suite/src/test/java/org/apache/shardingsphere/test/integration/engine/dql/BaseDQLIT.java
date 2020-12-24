@@ -66,7 +66,7 @@ public abstract class BaseDQLIT extends SingleIT {
     @BeforeClass
     public static void insertData() throws IOException, JAXBException, SQLException, ParseException {
         createDatabasesAndTables();
-        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
+        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             insertData(each);
         }
     }

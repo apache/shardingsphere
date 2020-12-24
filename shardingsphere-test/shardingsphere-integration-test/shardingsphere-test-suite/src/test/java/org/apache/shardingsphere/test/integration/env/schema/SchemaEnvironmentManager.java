@@ -67,7 +67,7 @@ public final class SchemaEnvironmentManager {
      */
     public static void createDatabase(final String ruleType) throws IOException, JAXBException, SQLException {
         SchemaEnvironment databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(ruleType));
-        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
+        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             DataSource dataSource = DataSourceUtil.createDataSource(each, null);
             try (
                     Connection connection = dataSource.getConnection();
@@ -86,7 +86,7 @@ public final class SchemaEnvironmentManager {
      */
     public static void dropDatabase(final String ruleType) throws IOException, JAXBException {
         SchemaEnvironment databaseInitialization = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(ruleType));
-        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
+        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             DataSource dataSource = DataSourceUtil.createDataSource(each, null);
             if ("PostgreSQL".equals(each.getName())) {
                 try (
@@ -155,7 +155,7 @@ public final class SchemaEnvironmentManager {
      * @throws SQLException SQL exception
      */
     public static void createTable(final String ruleType) throws JAXBException, IOException, SQLException {
-        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
+        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             SchemaEnvironment databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(ruleType));
             createTable(databaseEnvironmentSchema, each);
         }
@@ -179,7 +179,7 @@ public final class SchemaEnvironmentManager {
      * @throws IOException IO exception
      */
     public static void dropTable(final String ruleType) throws JAXBException, IOException {
-        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseTypes()) {
+        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             SchemaEnvironment databaseEnvironmentSchema = unmarshal(EnvironmentPath.getDatabaseEnvironmentResourceFile(ruleType));
             dropTable(databaseEnvironmentSchema, each);
         }

@@ -63,7 +63,7 @@ public final class IntegrateTestParameters {
         Map<DatabaseType, Collection<Object[]>> availableCases = new LinkedHashMap<>();
         Map<DatabaseType, Collection<Object[]>> disabledCases = new LinkedHashMap<>();
         INTEGRATE_TEST_CASES_LOADER.getTestCases(sqlType).forEach(integrateTestCase -> getDatabaseTypes(integrateTestCase.getDbTypes()).forEach(databaseType -> {
-            if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType)) {
+            if (IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().containsKey(databaseType)) {
                 availableCases.putIfAbsent(databaseType, new LinkedList<>());
                 Arrays.stream(SQLCaseType.values()).forEach(sqlCaseType -> availableCases.get(databaseType).addAll(getParametersWithAssertion(databaseType, sqlCaseType, integrateTestCase)));
             } else {
@@ -114,7 +114,7 @@ public final class IntegrateTestParameters {
         Map<DatabaseType, Collection<Object[]>> disabledCases = new LinkedHashMap<>();
         INTEGRATE_TEST_CASES_LOADER.getTestCases(sqlType).forEach(integrateTestCase ->
             getDatabaseTypes(integrateTestCase.getDbTypes()).forEach(databaseType -> {
-                if (IntegrateTestEnvironment.getInstance().getDatabaseTypes().contains(databaseType)) {
+                if (IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().containsKey(databaseType)) {
                     availableCases.putIfAbsent(databaseType, new LinkedList<>());
                     availableCases.get(databaseType).addAll(getParametersWithCase(databaseType, integrateTestCase));
                 } else {

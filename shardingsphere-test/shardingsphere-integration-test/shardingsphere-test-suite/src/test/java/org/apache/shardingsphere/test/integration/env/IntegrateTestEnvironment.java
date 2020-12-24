@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnviron
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -38,14 +38,12 @@ import java.util.stream.Collectors;
 public final class IntegrateTestEnvironment {
     
     private static final IntegrateTestEnvironment INSTANCE = new IntegrateTestEnvironment();
-
+    
     private final String activeProfile;
     
     private final boolean runAdditionalTestCases;
     
     private final Collection<String> ruleTypes;
-    
-    private final Collection<DatabaseType> databaseTypes;
     
     private final Map<DatabaseType, DatabaseEnvironment> databaseEnvironments;
     
@@ -54,12 +52,23 @@ public final class IntegrateTestEnvironment {
         Properties envProps = loadProperties(IntegrateTestEnvironmentType.valueFromProfileName(activeProfile).getEnvFileName());
         runAdditionalTestCases = Boolean.parseBoolean(envProps.getProperty("run.additional.cases"));
         ruleTypes = Splitter.on(",").trimResults().splitToList(envProps.getProperty("rule.types"));
-        databaseTypes = Arrays.stream(envProps.getProperty("databases", "H2").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
         databaseEnvironments = createDatabaseEnvironments(envProps);
     }
     
+    private Properties loadProperties(final String fileName) {
+        Properties result = new Properties();
+        try {
+            result.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream(fileName));
+        } catch (final IOException ex) {
+            throw new RuntimeException(ex);
+        }
+        return result;
+    }
+    
     private Map<DatabaseType, DatabaseEnvironment> createDatabaseEnvironments(final Properties envProps) {
-        Map<DatabaseType, DatabaseEnvironment> result = new HashMap<>(databaseTypes.size(), 1);
+        Collection<DatabaseType> databaseTypes = Arrays.stream(
+                envProps.getProperty("databases", "H2").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
+        Map<DatabaseType, DatabaseEnvironment> result = new LinkedHashMap<>(databaseTypes.size(), 1);
         for (DatabaseType each : databaseTypes) {
             result.put(each, createDatabaseEnvironment(each, envProps));
         }
@@ -85,16 +94,6 @@ public final class IntegrateTestEnvironment {
             default:
                 throw new UnsupportedOperationException(databaseType.getName());
         }
-    }
-    
-    private Properties loadProperties(final String fileName) {
-        Properties result = new Properties();
-        try {
-            result.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream(fileName));
-        } catch (final IOException ex) {
-            throw new RuntimeException(ex);
-        }
-        return result;
     }
     
     /**
