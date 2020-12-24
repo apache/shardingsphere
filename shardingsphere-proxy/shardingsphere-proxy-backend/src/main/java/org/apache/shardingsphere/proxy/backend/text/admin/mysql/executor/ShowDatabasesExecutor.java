@@ -47,12 +47,6 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
         mergedResult = new SingleLocalDataMergedResult(getSchemaNames(backendConnection));
     }
     
-    @Override
-    public QueryResultMetaData getQueryResultMetaData() {
-        return new RawQueryResultMetaData(
-                Collections.singletonList(new RawQueryResultColumnMetaData("SCHEMATA", "Database", "SCHEMA_NAME", Types.VARCHAR, "VARCHAR", 255, 0)));
-    }
-    
     private Collection<Object> getSchemaNames(final BackendConnection backendConnection) {
         Collection<Object> result = new LinkedList<>(ProxyContext.getInstance().getAllSchemaNames());
         Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(backendConnection.getUsername());
@@ -61,5 +55,11 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
             result.retainAll(authorizedSchemas);
         }
         return result;
+    }
+    
+    @Override
+    public QueryResultMetaData getQueryResultMetaData() {
+        return new RawQueryResultMetaData(
+                Collections.singletonList(new RawQueryResultColumnMetaData("SCHEMATA", "Database", "SCHEMA_NAME", Types.VARCHAR, "VARCHAR", 255, 0)));
     }
 }

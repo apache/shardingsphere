@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -59,8 +60,9 @@ public final class DatabaseAdminQueryBackendHandler implements TextProtocolBacke
     
     private List<QueryHeader> createResponseHeader() throws SQLException {
         List<QueryHeader> result = new ArrayList<>(queryResultMetaData.getColumnCount());
+        ShardingSphereMetaData metaData = null == backendConnection.getSchemaName() ? null : ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
         for (int columnIndex = 1; columnIndex <= queryResultMetaData.getColumnCount(); columnIndex++) {
-            result.add(QueryHeaderBuilder.build(queryResultMetaData, ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()), columnIndex));
+            result.add(QueryHeaderBuilder.build(queryResultMetaData, metaData, columnIndex));
         }
         return result;
     }
