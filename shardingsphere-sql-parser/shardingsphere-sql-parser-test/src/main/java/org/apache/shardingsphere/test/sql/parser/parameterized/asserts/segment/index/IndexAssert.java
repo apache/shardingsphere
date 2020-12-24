@@ -19,14 +19,13 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedIndex;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 /**
  * Index assert.
@@ -43,9 +42,7 @@ public final class IndexAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final IndexSegment actual, final ExpectedIndex expected) {
         assertNotNull(assertContext.getText("Index should exist."), expected);
-        assertThat(assertContext.getText("Index name assertion error: "), actual.getIdentifier().getValue(), is(expected.getName()));
-        assertThat(assertContext.getText("Index name start delimiter assertion error: "), actual.getIdentifier().getQuoteCharacter().getStartDelimiter(), is(expected.getStartDelimiter()));
-        assertThat(assertContext.getText("Index name end delimiter assertion error: "), actual.getIdentifier().getQuoteCharacter().getEndDelimiter(), is(expected.getEndDelimiter()));
+        IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "Index");
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

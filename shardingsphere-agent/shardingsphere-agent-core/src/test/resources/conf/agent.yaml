@@ -16,8 +16,22 @@
 #
 
 applicationName: shardingsphere-agent
+metricsType : Prometheus
+ignorePlugins:
+  - test
 
-metrics:
-  host: localhost
-  port: 8090
-
+plugins:
+  - !PROMETHEUS
+    host: "localhost"
+    port: 9090
+    jvmInformationCollectorEnabled : true
+  - !JAEGER
+    host: "localhost"
+    port: 5775
+    extra:
+      name: Jaeger
+  - !ZIPKIN
+    host: "localhost"
+    port: 15775
+    extra:
+      name: Zipkin

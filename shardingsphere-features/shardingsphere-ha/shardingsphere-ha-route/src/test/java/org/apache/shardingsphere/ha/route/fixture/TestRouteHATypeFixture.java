@@ -37,7 +37,11 @@ public final class TestRouteHATypeFixture implements HAType {
     }
     
     @Override
-    public void periodicalMonitor(final Map<String, DataSource> dataSourceMap, final String schemaName) {
+    public void startPeriodicalMonitor(final Map<String, DataSource> dataSourceMap, final String schemaName) {
+    }
+    
+    @Override
+    public void stopPeriodicalMonitor() {
     }
     
     @Override

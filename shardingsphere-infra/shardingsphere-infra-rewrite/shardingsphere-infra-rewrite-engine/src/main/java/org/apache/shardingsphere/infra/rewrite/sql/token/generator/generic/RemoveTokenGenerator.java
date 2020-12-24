@@ -32,7 +32,7 @@ import java.util.Collections;
 /**
  * Remove token generator.
  */
-public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator {
+public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext<?>> {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {

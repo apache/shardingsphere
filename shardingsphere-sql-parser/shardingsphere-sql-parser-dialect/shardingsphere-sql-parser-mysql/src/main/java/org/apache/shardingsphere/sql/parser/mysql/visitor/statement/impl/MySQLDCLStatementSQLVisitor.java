@@ -55,11 +55,11 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor implements DCLSQLVisitor, SQLStatementVisitor {
-
+    
     public MySQLDCLStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         MySQLGrantStatement result = new MySQLGrantStatement();

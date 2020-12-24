@@ -25,16 +25,18 @@
             <column-projection name="status" start-index="7" stop-index="12"/>
         </projections>
         <where start-index="38" stop-index="55">
-            <and-predicate>
-                <predicate start-index="44" stop-index="55">
-                    <column-left-value name="order_id" start-index="44" stop-index="51"/>
-                    <operator type="="/>
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="55" stop-index="55"/>
-                        <literal-expression value="1" start-index="55" stop-index="55"/>
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+            <expr>
+                <binary-operation-expression start-index="44" stop-index="55">
+                    <left>
+                        <column name="order_id" start-index="44" stop-index="51" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="55" stop-index="55" />
+                        <parameter-marker-expression value="0" start-index="55" stop-index="55" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </select>
 
@@ -46,16 +48,18 @@
             <column-projection name="status" start-index="7" stop-index="12"/>
         </projections>
         <where start-index="27" stop-index="44">
-            <and-predicate>
-                <predicate start-index="33" stop-index="44">
-                    <column-left-value name="order_id" start-index="33" stop-index="40"/>
-                    <operator type="="/>
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="44" stop-index="44"/>
-                        <literal-expression value="1" start-index="44" stop-index="44"/>
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+            <expr>
+                <binary-operation-expression start-index="33" stop-index="44">
+                    <left>
+                        <column name="order_id" start-index="33" stop-index="40" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="44" stop-index="44" />
+                        <parameter-marker-expression value="0" start-index="44" stop-index="44" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </select>
 
@@ -68,16 +72,18 @@
             <column-projection name="status" start-index="16" stop-index="21"/>
         </projections>
         <where start-index="36" stop-index="53">
-            <and-predicate>
-                <predicate start-index="42" stop-index="53">
-                    <column-left-value name="order_id" start-index="42" stop-index="49"/>
-                    <operator type="="/>
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="53" stop-index="53"/>
-                        <literal-expression value="1" start-index="53" stop-index="53"/>
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+            <expr>
+                <binary-operation-expression start-index="42" stop-index="53">
+                    <left>
+                        <column name="order_id" start-index="42" stop-index="49" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="53" stop-index="53" />
+                        <parameter-marker-expression value="0" start-index="53" stop-index="53" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </select>
 
@@ -150,16 +156,18 @@
             <column-projection name="status" start-index="7" stop-index="12"/>
         </projections>
         <where start-index="27" stop-index="44">
-            <and-predicate>
-                <predicate start-index="33" stop-index="44">
-                    <column-left-value name="order_id" start-index="33" stop-index="40"/>
-                    <operator type="="/>
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="44" stop-index="44"/>
-                        <literal-expression value="1" start-index="44" stop-index="44"/>
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+            <expr>
+                <binary-operation-expression start-index="33" stop-index="44">
+                    <left>
+                        <column name="order_id" start-index="33" stop-index="40" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="44" stop-index="44" />
+                        <parameter-marker-expression value="0" start-index="44" stop-index="44" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
         <lock start-index="57" stop-index="66"/>
     </select>
@@ -172,16 +180,18 @@
             <column-projection name="status" start-index="7" stop-index="12"/>
         </projections>
         <where start-index="27" stop-index="44">
-            <and-predicate>
-                <predicate start-index="33" stop-index="44">
-                    <column-left-value name="order_id" start-index="33" stop-index="40"/>
-                    <operator type="="/>
-                    <compare-right-value>
-                        <parameter-marker-expression value="0" start-index="44" stop-index="44"/>
-                        <literal-expression value="1" start-index="44" stop-index="44"/>
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+            <expr>
+                <binary-operation-expression start-index="33" stop-index="44">
+                    <left>
+                        <column name="order_id" start-index="33" stop-index="40" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="44" stop-index="44" />
+                        <parameter-marker-expression value="0" start-index="44" stop-index="44" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
         <lock start-index="46" stop-index="55"/>
     </select>

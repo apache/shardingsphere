@@ -19,20 +19,24 @@ package org.apache.shardingsphere.distsql.parser.core;
 
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AddResourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlgorithmPropertiesContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlgorithmPropertyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropShardingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ReplicaQueryRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.SchemaNameContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingAlgorithmPropertiesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingAlgorithmPropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingTableRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.ReplicaQueryRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
@@ -45,6 +49,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.props.PropertiesVal
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Properties;
 
 /**
  * Dist SQL visitor.
@@ -86,25 +91,53 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         }
         return new CreateShardingRuleStatement(tables);
     }
-    
+
+    @Override
+    public ASTNode visitCreateReplicaQueryRule(final CreateReplicaQueryRuleContext ctx) {
+        Collection<ReplicaQueryRuleSegment> replicaQueryRules = new LinkedList<>();
+        for (ReplicaQueryRuleDefinitionContext each : ctx.replicaQueryRuleDefinition()) {
+            replicaQueryRules.add((ReplicaQueryRuleSegment) visit(each));
+        }
+        return new CreateReplicaQueryRuleStatement(replicaQueryRules);
+    }
+
+    @Override
+    public ASTNode visitReplicaQueryRuleDefinition(final ReplicaQueryRuleDefinitionContext ctx) {
+        ReplicaQueryRuleSegment result = new ReplicaQueryRuleSegment();
+        Collection<String> replicaDatasources = new LinkedList<>();
+        for (SchemaNameContext each : ctx.schemaNames().schemaName()) {
+            replicaDatasources.add(each.getText());
+        }
+        Properties props = new Properties();
+        for (AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
+            props.setProperty(each.key.getText(), each.value.getText());
+        }
+        result.setName(ctx.ruleName.getText());
+        result.setPrimaryDatasource(ctx.primary.getText());
+        result.setReplicaDatasources(replicaDatasources);
+        result.setLoadBalancer(ctx.loadBalancer.getText());
+        result.setProps(props);
+        return result;
+    }
+
     @Override
     public ASTNode visitShardingTableRuleDefinition(final ShardingTableRuleDefinitionContext ctx) {
         TableRuleSegment result = new TableRuleSegment();
         result.setLogicTable(ctx.tableName().getText());
-        result.setShardingColumn(ctx.columName().getText());
-        result.setAlgorithmType(ctx.shardingAlgorithmDefinition().shardingAlgorithmType().getText());
+        result.setShardingColumn(ctx.columnName().getText());
+        result.setAlgorithmType(ctx.shardingAlgorithmType.getText());
         // TODO Future feature.
         result.setDataSources(new LinkedList<>());
-        PropertiesValue propertiesValue = (PropertiesValue) visit(ctx.shardingAlgorithmDefinition().shardingAlgorithmProperties());
+        PropertiesValue propertiesValue = (PropertiesValue) visit(ctx.algorithmProperties());
         result.setAlgorithmProps(propertiesValue.getValue());
         return result;
     }
     
     @Override
-    public ASTNode visitShardingAlgorithmProperties(final ShardingAlgorithmPropertiesContext ctx) {
+    public ASTNode visitAlgorithmProperties(final AlgorithmPropertiesContext ctx) {
         PropertiesValue result = new PropertiesValue();
-        for (ShardingAlgorithmPropertyContext each : ctx.shardingAlgorithmProperty()) {
-            result.getValue().setProperty(each.shardingAlgorithmPropertyKey().getText(), each.shardingAlgorithmPropertyValue().getText());
+        for (AlgorithmPropertyContext each : ctx.algorithmProperty()) {
+            result.getValue().setProperty(each.key.getText(), each.value.getText());
         }
         return result;
     }
