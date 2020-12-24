@@ -117,6 +117,7 @@ public final class MySQLFormatTest {
                 + "FROM t_order\n"
                 + "WHERE \n"
                 + "\torder_id = 1;"});
+        testUnits.add(new String[]{"only_comment", "/* c_zz_xdba_test_4 login */", ""});
     }
 
     private final String caseId;

@@ -118,4 +118,5 @@ execute
     | unlock
     | xa
     ) (SEMI_ EOF? | EOF)
+    | EOF
     ;
