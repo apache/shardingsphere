@@ -19,7 +19,6 @@ package org.apache.shardingsphere.agent.core.config.yaml.swapper;
 
 import org.apache.shardingsphere.agent.core.config.JaegerPluginConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.YamlJaegerPluginConfiguration;
-import org.apache.shardingsphere.agent.core.constant.AgentConstant;
 import org.apache.shardingsphere.agent.core.yaml.swapper.YamlPluginConfigurationSwapper;
 
 /**
@@ -43,6 +42,6 @@ public final class JaegerPluginConfigurationYamlSwapper implements YamlPluginCon
     
     @Override
     public String getType() {
-        return AgentConstant.PLUGIN_NAME_JAEGER;
+        return "Jaeger";
     }
 }

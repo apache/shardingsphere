@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.agent.metrics.prometheus.service.PrometheusBootService
+org.apache.shardingsphere.agent.plugin.tracing.zipkin.service.ZipkinTracingPluginBootService

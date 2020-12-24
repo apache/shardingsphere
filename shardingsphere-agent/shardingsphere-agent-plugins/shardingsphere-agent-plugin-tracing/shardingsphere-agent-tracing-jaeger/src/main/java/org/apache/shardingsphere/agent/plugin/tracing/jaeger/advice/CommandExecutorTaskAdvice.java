@@ -23,7 +23,7 @@ import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.advice.MethodInvocationResult;
 import org.apache.shardingsphere.agent.core.plugin.advice.TargetObject;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.ErrorSpan;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.ShardingSphereTags;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 
@@ -54,6 +54,6 @@ public final class CommandExecutorTaskAdvice implements MethodAroundAdvice {
     
     @Override
     public void onThrowing(final TargetObject target, final Method method, final Object[] args, final Throwable throwable) {
-        ErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
+        JaegerErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
     }
 }

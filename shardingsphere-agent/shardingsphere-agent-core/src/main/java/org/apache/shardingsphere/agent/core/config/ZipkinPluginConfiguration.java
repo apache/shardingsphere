@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.agent.core.constant.AgentConstant;
 
 /**
  * Zipkin plugin configuration.
@@ -38,6 +37,6 @@ public final class ZipkinPluginConfiguration implements PluginConfiguration {
     
     @Override
     public String getPluginName() {
-        return AgentConstant.PLUGIN_NAME_ZIPKIN;
+        return "Zipkin";
     }
 }

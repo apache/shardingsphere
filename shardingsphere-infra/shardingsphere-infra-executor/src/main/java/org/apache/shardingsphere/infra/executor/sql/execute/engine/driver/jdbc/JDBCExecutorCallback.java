@@ -53,7 +53,10 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     public final Collection<T> execute(final Collection<JDBCExecutionUnit> executionUnits, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
         Collection<T> result = new LinkedList<>();
         for (JDBCExecutionUnit each : executionUnits) {
-            result.add(execute(each, isTrunkThread, dataMap));
+            T executeResult = execute(each, isTrunkThread, dataMap);
+            if (null != executeResult) {
+                result.add(executeResult);
+            }
         }
         return result;
     }
@@ -77,7 +80,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
         } catch (final SQLException ex) {
             sqlExecutionHook.finishFailure(ex);
             SQLExecutorExceptionHandler.handleException(ex);
-            return null;
+            return isTrunkThread ? getSaneResult(jdbcExecutionUnit) : null;
         }
     }
     
@@ -92,4 +95,6 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     }
     
     protected abstract T executeSQL(String sql, Statement statement, ConnectionMode connectionMode) throws SQLException;
+    
+    protected abstract T getSaneResult(JDBCExecutionUnit jdbcExecutionUnit) throws SQLException;
 }

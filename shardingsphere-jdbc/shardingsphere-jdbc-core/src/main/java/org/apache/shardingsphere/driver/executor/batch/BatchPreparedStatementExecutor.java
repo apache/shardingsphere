@@ -124,6 +124,11 @@ public final class BatchPreparedStatementExecutor {
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return statement.executeBatch();
             }
+            
+            @Override
+            protected int[] getSaneResult(final JDBCExecutionUnit jdbcExecutionUnit) {
+                return new int[batchCount];
+            }
         };
         List<int[]> results = jdbcExecutor.execute(executionGroups, callback);
         return isNeedAccumulate(

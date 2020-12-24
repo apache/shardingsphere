@@ -24,15 +24,14 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.core.config.PrometheusPluginConfiguration;
-import org.apache.shardingsphere.agent.core.constant.AgentConstant;
-import org.apache.shardingsphere.agent.core.plugin.service.BootService;
+import org.apache.shardingsphere.agent.core.plugin.service.PluginBootService;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.BuildInfoCollector;
 
 /**
- * Prometheus boot service.
+ * Prometheus plugin boot service.
  */
 @Slf4j
-public class PrometheusBootService implements BootService<PrometheusPluginConfiguration> {
+public class PrometheusPluginBootService implements PluginBootService<PrometheusPluginConfiguration> {
     
     private HTTPServer httpServer;
     
@@ -55,7 +54,7 @@ public class PrometheusBootService implements BootService<PrometheusPluginConfig
     
     @Override
     public String getType() {
-        return AgentConstant.PLUGIN_NAME_PROMETHEUS;
+        return "Prometheus";
     }
     
     private void registerJvm(final PrometheusPluginConfiguration configuration) {

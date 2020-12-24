@@ -22,7 +22,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.shardingsphere.agent.core.plugin.loader.AgentPluginLoader;
+import org.apache.shardingsphere.agent.core.plugin.loader.PluginLoader;
 
 /**
  * Agent service loader.
@@ -77,7 +77,7 @@ public final class AgentServiceLoader<T> {
             return;
         }
         serviceMap.put(service, new LinkedList<>());
-        for (T each : ServiceLoader.load(service, AgentPluginLoader.getInstance())) {
+        for (T each : ServiceLoader.load(service, PluginLoader.getInstance())) {
             serviceMap.get(service).add(each);
         }
     }
