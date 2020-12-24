@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.agent.core.plugin.definition;
 
 import com.google.common.collect.Maps;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.core.plugin.point.PluginInterceptorPoint;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Plugin definition.
@@ -36,7 +37,7 @@ public abstract class PluginDefinition {
     @Getter
     private final String pluginName;
     
-    protected abstract void definition();
+    protected abstract void define();
     
     protected PluginInterceptorPoint.Builder intercept(final String classNameOfTarget) {
         if (interceptorPointMap.containsKey(classNameOfTarget)) {
@@ -53,7 +54,7 @@ public abstract class PluginDefinition {
      * @return Collection of pluginInterceptorPoint
      */
     public final List<PluginInterceptorPoint> build() {
-        definition();
+        define();
         return interceptorPointMap.values().stream().map(PluginInterceptorPoint.Builder::install).collect(Collectors.toList());
     }
 }
