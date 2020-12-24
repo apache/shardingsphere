@@ -17,34 +17,74 @@
 
 package org.apache.shardingsphere.governance.core.lock.strategy;
 
-import org.apache.shardingsphere.governance.core.lock.LockCenter;
+import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockAddedEvent;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.LockStrategy;
 import org.apache.shardingsphere.infra.lock.LockStrategyType;
+import org.apache.shardingsphere.infra.state.StateContext;
+import org.apache.shardingsphere.infra.state.StateEvent;
+import org.apache.shardingsphere.infra.state.StateType;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Governance lock strategy.
  */
 public final class GovernanceLockStrategy implements LockStrategy {
     
-    private final LockCenter lockCenter = LockCenter.getInstance();
+    private RegistryCenter registryCenter;
+    
+    /**
+     * Init governance lock strategy.
+     * 
+     * @param registryCenter registry center
+     */
+    public void init(final RegistryCenter registryCenter) {
+        this.registryCenter = registryCenter;
+        ShardingSphereEventBus.getInstance().register(this);
+    }
     
     @Override
-    public boolean tryLock(final Long timeout) {
-        return lockCenter.tryGlobalLock(timeout);
+    public boolean tryLock(final long timeout, final TimeUnit timeUnit) {
+        return registryCenter.tryGlobalLock(timeout, timeUnit);
     }
     
     @Override
     public void releaseLock() {
-        lockCenter.releaseGlobalLock();
+        registryCenter.releaseGlobalLock();
     }
     
     @Override
     public boolean checkLock() {
-        return lockCenter.checkLock();
+        return registryCenter.checkLock();
     }
     
     @Override
     public String getType() {
         return LockStrategyType.GOVERNANCE.name();
+    }
+    
+    /**
+     * Switch state.
+     *
+     * @param event state event
+     */
+    @Subscribe
+    public void switchState(final StateEvent event) {
+        StateContext.switchState(event);
+    }
+    
+    /**
+     * Lock instance after global lock added.
+     *
+     * @param event global lock added event
+     */
+    @Subscribe
+    public void doLock(final GlobalLockAddedEvent event) {
+        StateContext.switchState(new StateEvent(StateType.LOCK, true));
+        registryCenter.persistInstanceData(RegistryCenterNodeStatus.LOCKED.toString());
     }
 }

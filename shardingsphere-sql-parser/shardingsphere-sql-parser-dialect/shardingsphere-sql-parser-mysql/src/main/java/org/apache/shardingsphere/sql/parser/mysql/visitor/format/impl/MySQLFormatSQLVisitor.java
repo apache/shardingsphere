@@ -78,19 +78,19 @@ import java.util.Properties;
 @Getter
 @Setter
 public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<String> {
-
+    
     private StringBuilder result = new StringBuilder();
-
+    
     private boolean upperCase = true;
-
+    
     private boolean parameterized = true;
-
+    
     private int indentCount;
-
+    
     private int lines;
-
+    
     private int projectionsCountOfLine = 3;
-
+    
     public MySQLFormatSQLVisitor(final Properties props) {
         if (null != props) {
             if (props.containsKey("upperCase")) {
@@ -104,7 +104,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
             }
         }
     }
-
+    
     @Override
     public String visitSelect(final SelectContext ctx) {
         if (null != ctx.queryExpression()) {
@@ -121,7 +121,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         formatPrint(";");
         return result.toString();
     }
-
+    
     @Override
     public String visitQueryExpression(final QueryExpressionContext ctx) {
         if (null != ctx.withClause()) {
@@ -143,7 +143,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitQueryExpressionParens(final QueryExpressionParensContext ctx) {
         formatPrintln();
@@ -164,7 +164,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         formatPrint(")");
         return result.toString();
     }
-
+    
     @Override
     public String visitQueryExpressionBody(final QueryExpressionBodyContext ctx) {
         if (1 == ctx.getChildCount()) {
@@ -184,7 +184,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitQuerySpecification(final QuerySpecificationContext ctx) {
         formatPrint("SELECT ");
@@ -216,14 +216,14 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitExplicitTable(final ExplicitTableContext ctx) {
         formatPrint("TABLE ");
         visit(ctx.tableName());
         return result.toString();
     }
-
+    
     @Override
     public String visitInsert(final InsertContext ctx) {
         visit(ctx.INSERT());
@@ -253,13 +253,13 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitPartitionNames(final PartitionNamesContext ctx) {
         visit(ctx.PARTITION());
         formatPrintln(" (");
-        int idenCount = ctx.identifier().size();
-        for (int i = 0; i < idenCount; i++) {
+        int identifierCount = ctx.identifier().size();
+        for (int i = 0; i < identifierCount; i++) {
             if (i == 0) {
                 visit(ctx.identifier(i));
             } else {
@@ -270,7 +270,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         formatPrint(")");
         return result.toString();
     }
-
+    
     @Override
     public String visitInsertValuesClause(final InsertValuesClauseContext ctx) {
         if (null != ctx.LP_()) {
@@ -312,7 +312,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitInsertSelectClause(final InsertSelectClauseContext ctx) {
         if (null != ctx.valueReference()) {
@@ -330,7 +330,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         visit(ctx.select());
         return result.toString();
     }
-
+    
     @Override
     public String visitSetAssignmentsClause(final SetAssignmentsClauseContext ctx) {
         if (null != ctx.valueReference()) {
@@ -340,8 +340,8 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         indentCount++;
         visit(ctx.SET());
         formatPrint(" ");
-        int assigntCount = ctx.assignment().size();
-        for (int i = 0; i < assigntCount; i++) {
+        int assignmentCount = ctx.assignment().size();
+        for (int i = 0; i < assignmentCount; i++) {
             if (i == 0) {
                 visit(ctx.assignment(i));
             } else {
@@ -352,7 +352,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         indentCount--;
         return result.toString();
     }
-
+    
     @Override
     public String visitDerivedColumns(final DerivedColumnsContext ctx) {
         formatPrint("(");
@@ -368,7 +368,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         formatPrint(")");
         return result.toString();
     }
-
+    
     @Override
     public String visitOnDuplicateKeyClause(final OnDuplicateKeyClauseContext ctx) {
         visit(ctx.ON());
@@ -392,7 +392,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         indentCount--;
         return result.toString();
     }
-
+    
     @Override
     public String visitTableName(final TableNameContext ctx) {
         if (null != ctx.owner()) {
@@ -402,14 +402,14 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         formatPrint(ctx.name().getText());
         return result.toString();
     }
-
+    
     @Override
     public String visitTableValueConstructor(final TableValueConstructorContext ctx) {
         formatPrint("VALUES ");
         visit(ctx.rowConstructorList());
         return result.toString();
     }
-
+    
     @Override
     public String visitAlterTable(final AlterTableContext ctx) {
         visit(ctx.ALTER());
@@ -430,7 +430,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitAlterTableActions(final AlterTableActionsContext ctx) {
         if (null != ctx.alterCommandList()) {
@@ -444,7 +444,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitAlterCommandList(final AlterCommandListContext ctx) {
         if (null != ctx.alterCommandsModifierList()) {
@@ -458,7 +458,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitAlterList(final AlterListContext ctx) {
         int childCount = ctx.getChildCount();
@@ -477,7 +477,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitCreateTableOptionsSpaceSeparated(final CreateTableOptionsSpaceSeparatedContext ctx) {
         int childCount = ctx.getChildCount();
@@ -489,7 +489,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitStandaloneAlterTableAction(final StandaloneAlterTableActionContext ctx) {
         if (null != ctx.alterCommandsModifierList()) {
@@ -499,7 +499,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         visit(ctx.standaloneAlterCommands());
         return result.toString();
     }
-
+    
     @Override
     public String visitRowConstructorList(final RowConstructorListContext ctx) {
         int rowCount = ctx.assignmentValues().size();
@@ -517,7 +517,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitAssignmentValues(final AssignmentValuesContext ctx) {
         formatPrint("(");
@@ -533,7 +533,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         formatPrint(")");
         return result.toString();
     }
-
+    
     @Override
     public String visitWhereClause(final WhereClauseContext ctx) {
         visit(ctx.WHERE());
@@ -544,7 +544,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         indentCount--;
         return result.toString();
     }
-
+    
     @Override
     public String visitExpr(final ExprContext ctx) {
         if (null != ctx.logicalOperator()) {
@@ -563,13 +563,13 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitAlias(final AliasContext ctx) {
         formatPrint(ctx.getText());
         return result.toString();
     }
-
+    
     @Override
     public String visitProjections(final ProjectionsContext ctx) {
         indentCount++;
@@ -593,7 +593,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         indentCount--;
         return result.toString();
     }
-
+    
     @Override
     public String visitProjection(final ProjectionContext ctx) {
         if (null != ctx.expr()) {
@@ -611,7 +611,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
         indentCount++;
@@ -623,7 +623,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         indentCount--;
         return result.toString();
     }
-
+    
     @Override
     public String visitTableElementList(final TableElementListContext ctx) {
         int tableElementCount = ctx.tableElement().size();
@@ -637,7 +637,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitFieldLength(final FieldLengthContext ctx) {
         formatPrint("(");
@@ -645,7 +645,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         formatPrint(")");
         return result.toString();
     }
-
+    
     @Override
     public String visitPrecision(final PrecisionContext ctx) {
         formatPrint("(");
@@ -655,7 +655,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         formatPrint(")");
         return super.visitPrecision(ctx);
     }
-
+    
     @Override
     public String visitTypeDatetimePrecision(final TypeDatetimePrecisionContext ctx) {
         formatPrint("(");
@@ -663,7 +663,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         formatPrint(")");
         return result.toString();
     }
-
+    
     @Override
     public String visitDataType(final DataTypeContext ctx) {
         int childCount = ctx.getChildCount();
@@ -676,7 +676,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitStringList(final StringListContext ctx) {
         int stringCount = ctx.textString().size();
@@ -692,23 +692,23 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         formatPrint(")");
         return result.toString();
     }
-
+    
     @Override
     public String visitTerminal(final TerminalNode node) {
-        if (isUpperCase()) {
+        if (upperCase) {
             formatPrint(node.getText().toUpperCase());
         } else {
             formatPrint(node.getText().toLowerCase());
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitIdentifier(final IdentifierContext ctx) {
         formatPrint(ctx.getText());
         return result.toString();
     }
-
+    
     @Override
     public String visitLiterals(final LiteralsContext ctx) {
         if (parameterized) {
@@ -718,14 +718,14 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitTemporalLiterals(final TemporalLiteralsContext ctx) {
         visit(ctx.getChild(0));
         formatPrint(ctx.SINGLE_QUOTED_TEXT().getText());
         return result.toString();
     }
-
+    
     @Override
     public String visitStringLiterals(final StringLiteralsContext ctx) {
         if (parameterized) {
@@ -742,13 +742,13 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitString_(final String_Context ctx) {
         formatPrint(ctx.getText());
         return result.toString();
     }
-
+    
     @Override
     public String visitNumberLiterals(final NumberLiteralsContext ctx) {
         if (parameterized) {
@@ -758,7 +758,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitWithClause(final WithClauseContext ctx) {
         formatPrint("WITH ");
@@ -777,7 +777,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitCteClause(final CteClauseContext ctx) {
         visit(ctx.identifier());
@@ -790,7 +790,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         visit(ctx.subquery());
         return result.toString();
     }
-
+    
     @Override
     public String visitColumnNames(final ColumnNamesContext ctx) {
         int columnCount = ctx.columnName().size();
@@ -803,11 +803,10 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitChildren(final RuleNode node) {
         String result = defaultResult();
-
         int childCount = node.getChildCount();
         for (int i = 0; i < childCount; i++) {
             if (i != 0 && !"(".equals(node.getChild(i - 1).getText()) && !")".equals(node.getChild(i).getText()) && !"(".equals(node.getChild(i).getText())) {
@@ -816,28 +815,27 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
             if (!shouldVisitNextChild(node, result)) {
                 break;
             }
-
             ParseTree child = node.getChild(i);
             String childResult = child.accept(this);
             result = aggregateResult(result, childResult);
         }
         return result;
     }
-
+    
     private void formatPrint(final char value) {
         if (null == result) {
             return;
         }
         result.append(value);
     }
-
+    
     private void formatPrint(final String text) {
         if (null == result) {
             return;
         }
         result.append(text);
     }
-
+    
     protected void formatPrintIndent() {
         if (null == result) {
             return;
@@ -846,13 +844,13 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
             result.append('\t');
         }
     }
-
+    
     private void formatPrintln() {
         formatPrint('\n');
         lines++;
         formatPrintIndent();
     }
-
+    
     private void formatPrintln(final String text) {
         formatPrint(text);
         formatPrint('\n');

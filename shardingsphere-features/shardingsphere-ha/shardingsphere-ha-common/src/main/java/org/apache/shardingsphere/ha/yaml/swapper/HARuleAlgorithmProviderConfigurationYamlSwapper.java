@@ -54,7 +54,7 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapper
         result.setPrimaryDataSourceName(dataSourceRuleConfig.getPrimaryDataSourceName());
         result.setReplicaDataSourceNames(dataSourceRuleConfig.getReplicaDataSourceNames());
         result.setLoadBalancerName(dataSourceRuleConfig.getLoadBalancerName());
-        result.setReadWriteSplit(dataSourceRuleConfig.getReadWriteSplit());
+        result.setReadWriteSplit(dataSourceRuleConfig.isReadWriteSplit());
         return result;
     }
     
@@ -71,7 +71,7 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapper
     
     private HADataSourceRuleConfiguration swapToObject(final String name, final YamlHADataSourceRuleConfiguration yamlDataSourceRuleConfig) {
         return new HADataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getPrimaryDataSourceName(), yamlDataSourceRuleConfig.getReplicaDataSourceNames(),
-                yamlDataSourceRuleConfig.getLoadBalancerName(), yamlDataSourceRuleConfig.getReadWriteSplit());
+                yamlDataSourceRuleConfig.getLoadBalancerName(), yamlDataSourceRuleConfig.isReadWriteSplit());
     }
     
     @Override

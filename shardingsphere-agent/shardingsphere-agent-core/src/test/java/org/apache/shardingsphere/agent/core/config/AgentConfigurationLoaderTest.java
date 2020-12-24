@@ -19,6 +19,7 @@ package org.apache.shardingsphere.agent.core.config;
 
 import java.io.IOException;
 import java.net.URL;
+import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;

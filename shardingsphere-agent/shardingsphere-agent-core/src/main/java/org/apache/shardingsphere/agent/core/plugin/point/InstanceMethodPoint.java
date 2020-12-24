@@ -18,50 +18,21 @@
 
 package org.apache.shardingsphere.agent.core.plugin.point;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
 /**
  * Configuration of instance method intercepting point.
  */
-public class InstanceMethodPoint {
+@Getter
+@RequiredArgsConstructor
+public final class InstanceMethodPoint {
     
     private final ElementMatcher<? super MethodDescription> matcher;
     
     private final String advice;
     
     private final boolean overrideArgs;
-    
-    public InstanceMethodPoint(final ElementMatcher<? super MethodDescription> matcher, final String advice, final boolean overrideArgs) {
-        this.matcher = matcher;
-        this.advice = advice;
-        this.overrideArgs = overrideArgs;
-    }
-    
-    /**
-     * Detecting target method constraints but static methods.
-     *
-     * @return constraints
-     */
-    public ElementMatcher<? super MethodDescription> getMethodMatcher() {
-        return matcher;
-    }
-    
-    /**
-     * To get the class name of advice.
-     *
-     * @return the class name of advice
-     */
-    public String getAdvice() {
-        return advice;
-    }
-    
-    /**
-     * To detect whether to override origin arguments.
-     *
-     * @return override if true
-     */
-    public boolean isOverrideArgs() {
-        return overrideArgs;
-    }
 }

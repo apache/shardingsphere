@@ -43,15 +43,26 @@
             <aggregation-projection type="COUNT" alias="orders_count" inner-expression="(*)" start-index="7" stop-index="14" />
         </projections>
         <where start-index="45" stop-index="64">
-            <and-predicate>
-                <predicate start-index="51" stop-index="64">
-                    <column-left-value name="order_id" start-index="51" stop-index="58" />
-                    <operator type="&gt;" />
-                    <compare-right-value>
-                        <common-expression text="1-1" start-index="62" stop-index="64" literal-start-index="62" literal-stop-index="64" />
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+            <expr>
+                <binary-operation-expression start-index="51" stop-index="64">
+                    <left>
+                        <column name="order_id" start-index="51" stop-index="58" />
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <binary-operation-expression start-index="62" stop-index="64">
+                            <left>
+                                <literal-expression value="1" start-index="62" stop-index="62" />
+                            </left>
+                            <operator>-</operator>
+                            <right>
+                                <literal-expression value="1" start-index="64" stop-index="64" />
+                            </right>
+                        </binary-operation-expression>
+                        <common-expression text="1-1" start-index="62" stop-index="64" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </select>
 
@@ -63,15 +74,26 @@
             <aggregation-projection type="COUNT" alias="orders_count" inner-expression="(*)" start-index="7" stop-index="14" />
         </projections>
         <where start-index="45" stop-index="66">
-            <and-predicate>
-                <predicate start-index="51" stop-index="66">
-                    <column-left-value name="order_id" start-index="51" stop-index="58" />
-                    <operator type="&gt;" />
-                    <compare-right-value>
-                        <common-expression text="1 - 1" start-index="62" stop-index="66" literal-start-index="62" literal-stop-index="66"/>
-                    </compare-right-value>
-                </predicate>
-            </and-predicate>
+            <expr>
+                <binary-operation-expression start-index="51" stop-index="66">
+                    <left>
+                        <column name="order_id" start-index="51" stop-index="58" />
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <binary-operation-expression start-index="62" stop-index="66">
+                            <left>
+                                <literal-expression value="1" start-index="62" stop-index="62" />
+                            </left>
+                            <operator>-</operator>
+                            <right>
+                                <literal-expression value="1" start-index="66" stop-index="66" />
+                            </right>
+                        </binary-operation-expression>
+                        <common-expression text="1 - 1" start-index="62" stop-index="66" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </select>
 
@@ -117,46 +139,91 @@
             <aggregation-projection type="COUNT" inner-expression="(*)" alias="items_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="62" stop-index="171" literal-stop-index="172">
-            <and-predicate>
-                <predicate start-index="68" stop-index="88">
-                    <column-left-value name="user_id" start-index="68" stop-index="76">
-                        <owner name="o" start-index="68" stop-index="68" />
-                    </column-left-value>
-                    <column-right-value name="user_id" start-index="80" stop-index="88">
-                        <owner name="i" start-index="80" stop-index="80" />
-                    </column-right-value>
-                </predicate>
-                <predicate start-index="94" stop-index="116">
-                    <column-left-value name="order_id" start-index="94" stop-index="103">
-                        <owner name="o" start-index="94" stop-index="94" />
-                    </column-left-value>
-                    <column-right-value name="order_id" start-index="107" stop-index="116">
-                        <owner name="i" start-index="107" stop-index="107" />
-                    </column-right-value>
-                </predicate>
-                <predicate start-index="122" stop-index="140">
-                    <column-left-value name="user_id" start-index="122" stop-index="130">
-                        <owner name="o" start-index="122" stop-index="122" />
-                    </column-left-value>
-                    <in-right-value>
-                        <parameter-marker-expression value="0" start-index="136" stop-index="136" />
-                        <parameter-marker-expression value="1" start-index="139" stop-index="139" />
-                        <literal-expression value="1" start-index="136" stop-index="136" />
-                        <literal-expression value="2" start-index="139" stop-index="139" />
-                    </in-right-value>
-                </predicate>
-                <predicate start-index="146" stop-index="171" literal-stop-index="172">
-                    <column-left-value name="order_id" start-index="146" stop-index="155">
-                        <owner name="o" start-index="146" stop-index="146" />
-                    </column-left-value>
-                    <between-right-value>
-                        <between-parameter-marker-expression value="2" start-index="165" stop-index="165" />
-                        <between-literal-expression value="9" start-index="165" stop-index="165" />
-                        <and-parameter-marker-expression value="3" start-index="171" stop-index="171" />
-                        <and-literal-expression value="10" start-index="171" stop-index="172" />
-                    </between-right-value>
-                </predicate>
-            </and-predicate>
+            <expr>
+                <binary-operation-expression start-index="68" stop-index="171" literal-stop-index="172">
+                    <left>
+                        <binary-operation-expression start-index="68" stop-index="140">
+                            <left>
+                                <binary-operation-expression start-index="68" stop-index="116">
+                                    <left>
+                                        <binary-operation-expression start-index="68" stop-index="88">
+                                            <left>
+                                                <column name="user_id" start-index="68" stop-index="76">
+                                                    <owner name="o" start-index="68" stop-index="68" />
+                                                </column>
+                                            </left>
+                                            <operator>=</operator>
+                                            <right>
+                                                <column name="user_id" start-index="80" stop-index="88">
+                                                    <owner name="i" start-index="80" stop-index="80" />
+                                                </column>
+                                            </right>
+                                        </binary-operation-expression>
+                                    </left>
+                                    <operator>AND</operator>
+                                    <right>
+                                        <binary-operation-expression start-index="94" stop-index="116">
+                                            <left>
+                                                <column name="order_id" start-index="94" stop-index="103">
+                                                    <owner name="o" start-index="94" stop-index="94" />
+                                                </column>
+                                            </left>
+                                            <operator>=</operator>
+                                            <right>
+                                                <column name="order_id" start-index="107" stop-index="116">
+                                                    <owner name="i" start-index="107" stop-index="107" />
+                                                </column>
+                                            </right>
+                                        </binary-operation-expression>
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>AND</operator>
+                            <right>
+                                <in-expression start-index="122" stop-index="140">
+                                    <not>false</not>
+                                    <left>
+                                        <column name="user_id" start-index="122" stop-index="130">
+                                            <owner name="o" start-index="122" stop-index="122" />
+                                        </column>
+                                    </left>
+                                    <right>
+                                        <list-expression start-index="135" stop-index="140">
+                                            <items>
+                                                <literal-expression value="1" start-index="136" stop-index="136" />
+                                                <parameter-marker-expression value="0" start-index="136" stop-index="136" />
+                                            </items>
+                                            <items>
+                                                <literal-expression value="2" start-index="139" stop-index="139" />
+                                                <parameter-marker-expression value="1" start-index="139" stop-index="139" />
+                                            </items>
+                                        </list-expression>
+                                    </right>
+                                </in-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <between-expression start-index="146" stop-index="171" literal-stop-index="172">
+                            <not>false</not>
+                            <left>
+                                <column name="order_id" start-index="146" stop-index="155">
+                                    <owner name="o" start-index="146" stop-index="146" />
+                                </column>
+                            </left>
+                            <between-expr>
+                                <literal-expression value="9" start-index="165" stop-index="165" />
+                                <parameter-marker-expression value="2" start-index="165" stop-index="165" />
+                            </between-expr>
+                            <and-expr>
+                                <literal-expression value="10" start-index="171" stop-index="172" />
+                                <parameter-marker-expression value="3" start-index="171" stop-index="171" />
+                            </and-expr>
+                        </between-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </select>
 
@@ -195,30 +262,51 @@
             <aggregation-projection type="COUNT" inner-expression="(*)" alias="items_count" start-index="7" stop-index="14" />
         </projections>
         <where start-index="119" stop-index="174" literal-stop-index="175">
-            <and-predicate>
-                <predicate start-index="125" stop-index="143">
-                    <column-left-value name="user_id" start-index="125" stop-index="133">
-                        <owner name="o" start-index="125" stop-index="125" />
-                    </column-left-value>
-                    <in-right-value>
-                        <parameter-marker-expression value="0" start-index="139" stop-index="139" />
-                        <parameter-marker-expression value="1" start-index="142" stop-index="142" />
-                        <literal-expression value="1" start-index="139" stop-index="139" />
-                        <literal-expression value="2" start-index="142" stop-index="142" />
-                    </in-right-value>
-                </predicate>
-                <predicate start-index="149" stop-index="174" literal-stop-index="175">
-                    <column-left-value name="order_id" start-index="149" stop-index="158">
-                        <owner name="o" start-index="149" stop-index="149" />
-                    </column-left-value>
-                    <between-right-value>
-                        <between-parameter-marker-expression value="2" start-index="168" stop-index="168" />
-                        <between-literal-expression value="9" start-index="168" stop-index="168" />
-                        <and-parameter-marker-expression value="3" start-index="174" stop-index="174" />
-                        <and-literal-expression value="10" start-index="174" stop-index="175" />
-                    </between-right-value>
-                </predicate>
-            </and-predicate>
+            <expr>
+                <binary-operation-expression start-index="125" stop-index="174" literal-stop-index="175">
+                    <left>
+                        <in-expression start-index="125" stop-index="143">
+                            <not>false</not>
+                            <left>
+                                <column name="user_id" start-index="125" stop-index="133">
+                                    <owner name="o" start-index="125" stop-index="125" />
+                                </column>
+                            </left>
+                            <right>
+                                <list-expression start-index="138" stop-index="143">
+                                    <items>
+                                        <literal-expression value="1" start-index="139" stop-index="139" />
+                                        <parameter-marker-expression value="0" start-index="139" stop-index="139" />
+                                    </items>
+                                    <items>
+                                        <literal-expression value="2" start-index="142" stop-index="142" />
+                                        <parameter-marker-expression value="1" start-index="142" stop-index="142" />
+                                    </items>
+                                </list-expression>
+                            </right>
+                        </in-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <between-expression start-index="149" stop-index="174" literal-stop-index="175">
+                            <not>false</not>
+                            <left>
+                                <column name="order_id" start-index="149" stop-index="158">
+                                    <owner name="o" start-index="149" stop-index="149" />
+                                </column>
+                            </left>
+                            <between-expr>
+                                <literal-expression value="9" start-index="168" stop-index="168" />
+                                <parameter-marker-expression value="2" start-index="168" stop-index="168" />
+                            </between-expr>
+                            <and-expr>
+                                <literal-expression value="10" start-index="174" stop-index="175" />
+                                <parameter-marker-expression value="3" start-index="174" stop-index="174" />
+                            </and-expr>
+                        </between-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
         </where>
     </select>
 

@@ -28,7 +28,7 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class MySQLTCLFormatSQLVisitor extends MySQLFormatSQLVisitor implements TCLSQLVisitor, SQLFormatVisitor {
-
+    
     public MySQLTCLFormatSQLVisitor(final Properties props) {
         super(props);
     }

@@ -20,9 +20,11 @@ package org.apache.shardingsphere.infra.lock.fixture;
 import org.apache.shardingsphere.infra.lock.LockStrategy;
 import org.apache.shardingsphere.infra.lock.LockStrategyType;
 
+import java.util.concurrent.TimeUnit;
+
 public final class FixtureLockStrategy implements LockStrategy {
     @Override
-    public boolean tryLock(final Long timeout) {
+    public boolean tryLock(final long timeout, final TimeUnit timeUnit) {
         return false;
     }
     

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.lock.strategy;
 
-import org.apache.shardingsphere.governance.core.lock.LockCenter;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.util.FieldUtil;
 import org.apache.shardingsphere.infra.lock.LockStrategy;
 import org.junit.Before;
@@ -26,6 +26,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.concurrent.TimeUnit;
+
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -33,25 +35,25 @@ import static org.mockito.Mockito.verify;
 public final class GovernanceLockStrategyTest {
     
     @Mock
-    private LockCenter lockCenter;
+    private RegistryCenter registryCenter;
     
     private LockStrategy lockStrategy;
     
     @Before
     public void setUp() {
         lockStrategy = new GovernanceLockStrategy();
-        FieldUtil.setField(lockStrategy, "lockCenter", lockCenter);
+        FieldUtil.setField(lockStrategy, "registryCenter", registryCenter);
     }
     
     @Test
     public void assertTryLock() {
-        lockStrategy.tryLock(50L);
-        verify(lockCenter).tryGlobalLock(eq(50L));
+        lockStrategy.tryLock(50L, TimeUnit.MILLISECONDS);
+        verify(registryCenter).tryGlobalLock(eq(50L), eq(TimeUnit.MILLISECONDS));
     }
     
     @Test
     public void assertReleaseLock() {
         lockStrategy.releaseLock();
-        verify(lockCenter).releaseGlobalLock();
+        verify(registryCenter).releaseGlobalLock();
     }
 }

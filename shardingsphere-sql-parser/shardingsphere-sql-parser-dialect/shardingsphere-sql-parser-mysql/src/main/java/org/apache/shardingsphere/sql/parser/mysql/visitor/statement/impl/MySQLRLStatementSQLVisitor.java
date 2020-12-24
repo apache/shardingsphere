@@ -35,11 +35,11 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class MySQLRLStatementSQLVisitor extends MySQLStatementSQLVisitor implements RLSQLVisitor, SQLStatementVisitor {
-
+    
     public MySQLRLStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @Override public ASTNode visitChangeMasterTo(final ChangeMasterToContext ctx) {
         return new MySQLChangeMasterStatement();
     }

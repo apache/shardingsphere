@@ -70,3 +70,11 @@ ENCRYPT
 SHADOW
     : S H A D O W
     ;
+
+PRIMARY
+    : P R I M A R Y
+    ;
+
+REPLICA
+    : R E P L I C A
+    ;

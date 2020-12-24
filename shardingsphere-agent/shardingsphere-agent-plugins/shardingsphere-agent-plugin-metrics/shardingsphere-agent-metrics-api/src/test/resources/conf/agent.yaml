@@ -16,9 +16,4 @@
 #
 
 applicationName: shardingsphere-agent
-
-metrics:
-  host: localhost
-  port: 8090
-  type: fixture
-
+metricsType: fixture
