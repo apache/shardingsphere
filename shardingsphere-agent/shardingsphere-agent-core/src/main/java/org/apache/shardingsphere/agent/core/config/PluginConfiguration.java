@@ -17,15 +17,20 @@
 
 package org.apache.shardingsphere.agent.core.config;
 
+import java.util.Properties;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Plugin configuration.
  */
-public interface PluginConfiguration {
+@Getter
+@Setter
+public class PluginConfiguration extends RemotePluginConfiguration {
     
-    /**
-     * Get plugin name.
-     *
-     * @return plugin name
-     */
-    String getPluginName();
+    private String host = "localhost";
+    
+    private int port = 5775;
+    
+    private Properties props = new Properties();
 }

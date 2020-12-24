@@ -19,25 +19,25 @@ package org.apache.shardingsphere.agent.plugin.tracing.jaeger.service;
 
 import io.jaegertracing.Configuration;
 import io.opentracing.util.GlobalTracer;
-import org.apache.shardingsphere.agent.core.config.JaegerPluginConfiguration;
+import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.service.PluginBootService;
 
 /**
  * Jaeger tracing plugin boot service.
  */
-public final class JaegerTracingPluginBootService implements PluginBootService<JaegerPluginConfiguration> {
+public final class JaegerTracingPluginBootService implements PluginBootService {
     
     @Override
-    public void setup(final JaegerPluginConfiguration configuration) {
-        configuration.getExtra().forEach(System::setProperty);
+    public void start(final PluginConfiguration pluginConfiguration) {
+        pluginConfiguration.getProps().forEach((key, value) -> System.setProperty(String.valueOf(key), String.valueOf(value)));
         Configuration.SamplerConfiguration samplerConfig = Configuration.SamplerConfiguration.fromEnv();
         Configuration.ReporterConfiguration reporterConfig = Configuration.ReporterConfiguration.fromEnv()
                 .withSender(
                         Configuration.SenderConfiguration.fromEnv()
-                                .withAgentHost(configuration.getHost())
-                                .withAgentPort(configuration.getPort())
+                                .withAgentHost(pluginConfiguration.getHost())
+                                .withAgentPort(pluginConfiguration.getPort())
                 );
-        Configuration config = new Configuration(configuration.getApplicationName())
+        Configuration config = new Configuration("ShardingSphere-Jaeger")
                 .withSampler(samplerConfig)
                 .withReporter(reporterConfig);
         GlobalTracer.register(config.getTracer());
@@ -46,5 +46,9 @@ public final class JaegerTracingPluginBootService implements PluginBootService<J
     @Override
     public String getType() {
         return "Jaeger";
+    }
+    
+    @Override
+    public void close() {
     }
 }

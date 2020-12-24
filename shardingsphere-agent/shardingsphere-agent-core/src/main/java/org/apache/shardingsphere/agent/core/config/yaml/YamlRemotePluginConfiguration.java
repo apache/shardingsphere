@@ -15,24 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.yaml.swapper;
+package org.apache.shardingsphere.agent.core.config.yaml;
 
-import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.spi.AgentTypedSPI;
-import org.apache.shardingsphere.agent.core.yaml.config.YamlPluginConfiguration;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * YAML plugin configuration swapper.
- * 
- * @param <Y> type of YAML plugin configuration
- * @param <T> type of plugin configuration
+ * YAML Remote plugin configuration.
  */
-public interface YamlPluginConfigurationSwapper<Y extends YamlPluginConfiguration, T extends PluginConfiguration> extends YamlSwapper<Y, T>, AgentTypedSPI {
+@Getter
+@Setter
+public class YamlRemotePluginConfiguration {
     
-    /**
-     * Get YAML plugin tag name.
-     *
-     * @return YAML plugin tag name
-     */
-    String getPluginTagName();
+    private String password;
 }
