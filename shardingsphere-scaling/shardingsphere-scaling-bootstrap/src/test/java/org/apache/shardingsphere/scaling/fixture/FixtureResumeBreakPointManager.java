@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position.resume;
+package org.apache.shardingsphere.scaling.fixture;
 
-/**
- * Fake resume from break-point manager as default.
- */
-public final class FakeResumeBreakPointManager extends AbstractResumeBreakPointManager {
+import org.apache.shardingsphere.scaling.core.job.position.resume.AbstractResumeBreakPointManager;
+import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManager;
+
+public final class FixtureResumeBreakPointManager extends AbstractResumeBreakPointManager implements ResumeBreakPointManager {
     
-    public FakeResumeBreakPointManager(final String databaseType, final String taskPath) {
-        setDatabaseType(databaseType);
-        setTaskPath(taskPath);
+    public FixtureResumeBreakPointManager(final String databaseType, final String taskPath) {
+        super(databaseType, taskPath);
     }
     
     @Override
-    public void persistInventoryPosition() {
+    public String getPosition(final String path) {
+        return null;
     }
     
     @Override
-    public void persistIncrementalPosition() {
+    public void persistPosition(final String path, final String data) {
+    
     }
 }

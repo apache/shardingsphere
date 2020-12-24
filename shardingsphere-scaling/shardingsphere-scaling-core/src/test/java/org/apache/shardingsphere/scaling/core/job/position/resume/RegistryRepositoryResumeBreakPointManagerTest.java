@@ -31,36 +31,24 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class RepositoryResumeBreakPointManagerTest {
-    
-    private RepositoryResumeBreakPointManager repositoryResumeBreakPointManager;
-    
+public final class RegistryRepositoryResumeBreakPointManagerTest {
+
+    private RegistryRepositoryResumeBreakPointManager resumeBreakPointManager;
+
     @Before
     public void setUp() {
         ScalingContext.getInstance().init(mockServerConfiguration());
-        repositoryResumeBreakPointManager = new RepositoryResumeBreakPointManager("H2", "/base");
+        resumeBreakPointManager = new RegistryRepositoryResumeBreakPointManager("H2", "/base");
     }
-    
+
     @Test
-    public void assertPersistIncrementalPosition() {
-        repositoryResumeBreakPointManager.persistIncrementalPosition();
-        assertThat(RegistryRepositoryHolder.getInstance().get("/base/incremental"), is("{}"));
-    }
-    
-    @Test
-    public void assertPersistInventoryPosition() {
-        repositoryResumeBreakPointManager.persistInventoryPosition();
-        assertThat(RegistryRepositoryHolder.getInstance().get("/base/inventory"), is("{\"unfinished\":{},\"finished\":[]}"));
-    }
-    
-    @After
-    public void tearDown() {
-        repositoryResumeBreakPointManager.close();
-        resetRegistryRepositoryAvailable();
+    public void assertPersistAndGetPosition() {
+        resumeBreakPointManager.persistPosition();
+        assertThat(resumeBreakPointManager.getPosition("/base/incremental"), is("{}"));
+        assertThat(resumeBreakPointManager.getPosition("/base/inventory"), is("{\"unfinished\":{},\"finished\":[]}"));
     }
     
     private ServerConfiguration mockServerConfiguration() {
-        resetRegistryRepositoryAvailable();
         YamlGovernanceConfiguration distributedScalingService = new YamlGovernanceConfiguration();
         distributedScalingService.setName("test");
         YamlGovernanceCenterConfiguration registryCenter = new YamlGovernanceCenterConfiguration();
@@ -71,9 +59,11 @@ public final class RepositoryResumeBreakPointManagerTest {
         result.setDistributedScalingService(distributedScalingService);
         return result;
     }
-    
+
+    @After
     @SneakyThrows(ReflectiveOperationException.class)
-    private void resetRegistryRepositoryAvailable() {
+    public void tearDown() {
+        resumeBreakPointManager.close();
         ReflectionUtil.setStaticFieldValue(RegistryRepositoryHolder.class, "available", null);
     }
 }
