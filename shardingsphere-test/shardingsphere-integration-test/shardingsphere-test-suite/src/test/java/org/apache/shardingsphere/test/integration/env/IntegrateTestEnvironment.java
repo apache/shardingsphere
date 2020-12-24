@@ -49,17 +49,12 @@ public final class IntegrateTestEnvironment {
     private final String activeProfile;
     
     private IntegrateTestEnvironment() {
-        activeProfile = loadActiveProfile();
-        Properties prop = new Properties();
-        try {
-            prop.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream(getEnvironmentProperties()));
-        } catch (final IOException ex) {
-            throw new RuntimeException(ex);
-        }
-        runAdditionalTestCases = Boolean.parseBoolean(prop.getProperty("run.additional.cases"));
-        ruleTypes = Splitter.on(",").trimResults().splitToList(prop.getProperty("rule.types"));
+        activeProfile = loadProperties("integrate/profile.properties").getProperty("mode");
+        Properties envProps = loadProperties(IntegrateTestEnvironmentType.valueFromProfileName(activeProfile).getEnvFileName());
+        runAdditionalTestCases = Boolean.parseBoolean(envProps.getProperty("run.additional.cases"));
+        ruleTypes = Splitter.on(",").trimResults().splitToList(envProps.getProperty("rule.types"));
         databaseTypes = new LinkedList<>();
-        for (String each : prop.getProperty("databases", "H2").split(",")) {
+        for (String each : envProps.getProperty("databases", "H2").split(",")) {
             databaseTypes.add(DatabaseTypeRegistry.getActualDatabaseType(each.trim()));
         }
         databaseEnvironments = new HashMap<>(databaseTypes.size(), 1);
@@ -69,20 +64,20 @@ public final class IntegrateTestEnvironment {
                     databaseEnvironments.put(each, new DatabaseEnvironment(each, "", 0, "sa", ""));
                     break;
                 case "MySQL":
-                    databaseEnvironments.put(each, new DatabaseEnvironment(each, prop.getProperty("mysql.host", "127.0.0.1"), Integer.parseInt(prop.getProperty("mysql.port", "3306")),
-                        prop.getProperty("mysql.username", "root"), prop.getProperty("mysql.password", "")));
+                    databaseEnvironments.put(each, new DatabaseEnvironment(each, envProps.getProperty("mysql.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("mysql.port", "3306")),
+                        envProps.getProperty("mysql.username", "root"), envProps.getProperty("mysql.password", "")));
                     break;
                 case "PostgreSQL":
-                    databaseEnvironments.put(each, new DatabaseEnvironment(each, prop.getProperty("postgresql.host", "127.0.0.1"), Integer.parseInt(prop.getProperty("postgresql.port", "5432")),
-                        prop.getProperty("postgresql.username", "postgres"), prop.getProperty("postgresql.password", "")));
+                    databaseEnvironments.put(each, new DatabaseEnvironment(each, envProps.getProperty("postgresql.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("postgresql.port", "5432")),
+                        envProps.getProperty("postgresql.username", "postgres"), envProps.getProperty("postgresql.password", "")));
                     break;
                 case "SQLServer":
-                    databaseEnvironments.put(each, new DatabaseEnvironment(each, prop.getProperty("sqlserver.host", "127.0.0.1"), Integer.parseInt(prop.getProperty("sqlserver.port", "1433")),
-                        prop.getProperty("sqlserver.username", "sa"), prop.getProperty("sqlserver.password", "Jdbc1234")));
+                    databaseEnvironments.put(each, new DatabaseEnvironment(each, envProps.getProperty("sqlserver.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("sqlserver.port", "1433")),
+                        envProps.getProperty("sqlserver.username", "sa"), envProps.getProperty("sqlserver.password", "Jdbc1234")));
                     break;
                 case "Oracle":
-                    databaseEnvironments.put(each, new DatabaseEnvironment(each, prop.getProperty("oracle.host", "127.0.0.1"), Integer.parseInt(prop.getProperty("oracle.port", "1521")),
-                        prop.getProperty("oracle.username", "jdbc"), prop.getProperty("oracle.password", "jdbc")));
+                    databaseEnvironments.put(each, new DatabaseEnvironment(each, envProps.getProperty("oracle.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("oracle.port", "1521")),
+                        envProps.getProperty("oracle.username", "jdbc"), envProps.getProperty("oracle.password", "jdbc")));
                     break;
                 default:
                     break;
@@ -90,24 +85,14 @@ public final class IntegrateTestEnvironment {
         }
     }
     
-    private String loadActiveProfile() {
-        Properties prop = new Properties();
+    private Properties loadProperties(final String fileName) {
+        Properties result = new Properties();
         try {
-            prop.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream("integrate/profile.properties"));
+            result.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream(fileName));
         } catch (final IOException ex) {
             throw new RuntimeException(ex);
         }
-        return prop.getProperty("mode");
-    }
-    
-    private String getEnvironmentProperties() {
-        if ("jdbc-ci".equals(activeProfile)) {
-            return "integrate/env-jdbc-ci.properties";
-        }
-        if ("proxy".equals(activeProfile)) {
-            return "integrate/env-proxy.properties";
-        }
-        return "integrate/env-jdbc-local.properties";
+        return result;
     }
     
     /**
