@@ -22,6 +22,18 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.matcher.ElementMatcher;
+import net.bytebuddy.matcher.ElementMatcher.Junction;
+import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
+import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
+import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
+import org.apache.shardingsphere.agent.core.plugin.definition.PluginDefinition;
+import org.apache.shardingsphere.agent.core.plugin.point.PluginInterceptorPoint;
+
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -39,18 +51,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatcher.Junction;
-import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
-import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
-import org.apache.shardingsphere.agent.core.plugin.definition.PluginDefinition;
-import org.apache.shardingsphere.agent.core.plugin.point.PluginInterceptorPoint;
 
 /**
  * Agent plugin loader.
@@ -211,6 +213,11 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
             ZipEntry entry = each.jarFile.getEntry(path);
             if (Objects.nonNull(entry)) {
                 try {
+                    int i = name.lastIndexOf('.');
+                    if (i != -1) {
+                        String packageName = name.substring(0, i);
+                        definePackageInternal(packageName, each.jarFile.getManifest());
+                    }
                     byte[] data = ByteStreams.toByteArray(each.jarFile.getInputStream(entry));
                     return defineClass(name, data, 0, data.length);
                 } catch (final IOException ex) {
@@ -223,6 +230,20 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
     
     private String classNameToPath(final String className) {
         return className.replace(".", "/") + ".class";
+    }
+    
+    private void definePackageInternal(final String packageName, final Manifest manifest) {
+        if (getPackage(packageName) != null) {
+            return;
+        }
+        Attributes attr = manifest.getMainAttributes();
+        String specTitle = attr.getValue(Attributes.Name.SPECIFICATION_TITLE);
+        String specVersion = attr.getValue(Attributes.Name.SPECIFICATION_VERSION);
+        String specVendor = attr.getValue(Attributes.Name.SPECIFICATION_VENDOR);
+        String implTitle = attr.getValue(Attributes.Name.IMPLEMENTATION_TITLE);
+        String implVersion = attr.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
+        String implVendor = attr.getValue(Attributes.Name.IMPLEMENTATION_VENDOR);
+        super.definePackage(packageName, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor, null);
     }
     
     @Override
