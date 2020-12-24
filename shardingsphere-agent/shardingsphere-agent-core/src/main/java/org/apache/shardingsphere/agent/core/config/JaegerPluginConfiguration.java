@@ -39,6 +39,6 @@ public final class JaegerPluginConfiguration implements PluginConfiguration {
     
     @Override
     public String getPluginName() {
-        return "Jaeger  ";
+        return "Jaeger";
     }
 }
