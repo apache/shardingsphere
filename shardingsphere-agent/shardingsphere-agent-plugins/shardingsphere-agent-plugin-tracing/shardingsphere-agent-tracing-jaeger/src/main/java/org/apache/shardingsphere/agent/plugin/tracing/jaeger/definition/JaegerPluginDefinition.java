@@ -51,7 +51,7 @@ public final class JaegerPluginDefinition extends PluginDefinition {
     }
     
     @Override
-    protected void define() {
+    protected void definition() {
         intercept(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(COMMAND_EXECUTOR_METHOD_NAME))
                 .implement(COMMAND_EXECUTOR_TASK_ADVICE_CLASS)

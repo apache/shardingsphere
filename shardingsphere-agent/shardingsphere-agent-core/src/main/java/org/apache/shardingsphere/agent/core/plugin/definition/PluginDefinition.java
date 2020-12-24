@@ -17,16 +17,13 @@
 
 package org.apache.shardingsphere.agent.core.plugin.definition;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.core.plugin.point.PluginInterceptorPoint;
-import org.apache.shardingsphere.agent.core.plugin.service.BootService;
 
 /**
  * Plugin definition.
@@ -36,12 +33,10 @@ public abstract class PluginDefinition {
     
     private final Map<String, PluginInterceptorPoint.Builder> interceptorPointMap = Maps.newHashMap();
     
-    private final List<Class<? extends BootService>> bootServices = Lists.newArrayList();
-    
     @Getter
     private final String pluginName;
     
-    protected abstract void define();
+    protected abstract void definition();
     
     protected PluginInterceptorPoint.Builder intercept(final String classNameOfTarget) {
         if (interceptorPointMap.containsKey(classNameOfTarget)) {
@@ -53,30 +48,12 @@ public abstract class PluginDefinition {
     }
     
     /**
-     * Register boot service to agent.
-     *
-     * @param service the class of Service
-     */
-    protected void registerService(final Class<? extends BootService> service) {
-        bootServices.add(service);
-    }
-    
-    /**
      * Build collection of pluginInterceptorPoint.
      *
      * @return Collection of pluginInterceptorPoint
      */
     public final List<PluginInterceptorPoint> build() {
-        define();
+        definition();
         return interceptorPointMap.values().stream().map(PluginInterceptorPoint.Builder::install).collect(Collectors.toList());
-    }
-    
-    /**
-     * To get all boot services.
-     *
-     * @return all boot services
-     */
-    public List<Class<? extends BootService>> getAllServices() {
-        return bootServices;
     }
 }

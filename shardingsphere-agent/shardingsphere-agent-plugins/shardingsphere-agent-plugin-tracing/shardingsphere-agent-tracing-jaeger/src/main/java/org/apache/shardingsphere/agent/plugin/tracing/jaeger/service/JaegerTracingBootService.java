@@ -45,10 +45,6 @@ public final class JaegerTracingBootService implements BootService<JaegerPluginC
     }
     
     @Override
-    public void cleanup() {
-    }
-    
-    @Override
     public String getType() {
         return AgentConstant.PLUGIN_NAME_JAEGER;
     }

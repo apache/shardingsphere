@@ -53,12 +53,12 @@ public final class ZipkinTracingBootService implements BootService<ZipkinPluginC
         sender.close();
     }
     
-    private String buildHttpPath(final ZipkinPluginConfiguration configuration) {
-        return "http://" + configuration.getHost() + ":" + configuration.getPort();
-    }
-    
     @Override
     public String getType() {
         return AgentConstant.PLUGIN_NAME_ZIPKIN;
+    }
+    
+    private String buildHttpPath(final ZipkinPluginConfiguration configuration) {
+        return "http://" + configuration.getHost() + ":" + configuration.getPort();
     }
 }

@@ -22,18 +22,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatcher.Junction;
-import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
-import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.point.PluginInterceptorPoint;
-import org.apache.shardingsphere.agent.core.plugin.definition.PluginDefinition;
-import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
-
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -52,6 +40,17 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.matcher.ElementMatcher;
+import net.bytebuddy.matcher.ElementMatcher.Junction;
+import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
+import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
+import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
+import org.apache.shardingsphere.agent.core.plugin.definition.PluginDefinition;
+import org.apache.shardingsphere.agent.core.plugin.point.PluginInterceptorPoint;
 
 /**
  * Agent plugin loader.
@@ -104,30 +103,31 @@ public final class AgentPluginLoader extends ClassLoader implements Closeable {
             return;
         }
         Map<String, PluginInterceptorPoint> pointMap = Maps.newHashMap();
-        Set<String> activatedPlugins = AgentObjectPool.INSTANCE.get(AgentConfiguration.class).getIgnorePlugins();
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        for (File jarFile : jarFiles) {
-            outputStream.reset();
-            JarFile jar = new JarFile(jarFile, true);
-            jars.add(new PluginJar(jar, jarFile));
-            log.info("Loaded jar {}.", jarFile.getName());
-            Attributes attributes = jar.getManifest().getMainAttributes();
-            String entrypoint = attributes.getValue("Entrypoint");
-            if (Strings.isNullOrEmpty(entrypoint)) {
-                log.warn("Entrypoint is not setting in {}.", jarFile.getName());
-                continue;
-            }
-            ByteStreams.copy(jar.getInputStream(jar.getEntry(classNameToPath(entrypoint))), outputStream);
-            try {
-                PluginDefinition pluginDefinition = (PluginDefinition) defineClass(entrypoint, outputStream.toByteArray(), 0, outputStream.size()).newInstance();
-                if (!activatedPlugins.isEmpty() && !activatedPlugins.contains(pluginDefinition.getPluginName())) {
+        Set<String> ignorePlugins = AgentObjectPool.INSTANCE.get(AgentConfiguration.class).getIgnorePlugins();
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            for (File jarFile : jarFiles) {
+                outputStream.reset();
+                JarFile jar = new JarFile(jarFile, true);
+                jars.add(new PluginJar(jar, jarFile));
+                log.info("Loaded jar {}.", jarFile.getName());
+                Attributes attributes = jar.getManifest().getMainAttributes();
+                String entrypoint = attributes.getValue("Entrypoint");
+                if (Strings.isNullOrEmpty(entrypoint)) {
+                    log.warn("Entrypoint is not setting in {}.", jarFile.getName());
                     continue;
                 }
-                buildPluginInterceptorPointMap(pluginDefinition, pointMap);
-                // CHECKSTYLE:OFF
-            } catch (final Throwable ex) {
-                // CHECKSTYLE:ON
-                log.error("Failed to load plugin definition, {}.", entrypoint, ex);
+                try {
+                    ByteStreams.copy(jar.getInputStream(jar.getEntry(classNameToPath(entrypoint))), outputStream);
+                    PluginDefinition pluginDefinition = (PluginDefinition) defineClass(entrypoint, outputStream.toByteArray(), 0, outputStream.size()).newInstance();
+                    if (!ignorePlugins.isEmpty() && ignorePlugins.contains(pluginDefinition.getPluginName())) {
+                        continue;
+                    }
+                    buildPluginInterceptorPointMap(pluginDefinition, pointMap);
+                    // CHECKSTYLE:OFF
+                } catch (final Throwable ex) {
+                    // CHECKSTYLE:ON
+                    log.error("Failed to load plugin definition, {}.", entrypoint, ex);
+                }
             }
         }
         interceptorPointMap = ImmutableMap.<String, PluginInterceptorPoint>builder().putAll(pointMap).build();
