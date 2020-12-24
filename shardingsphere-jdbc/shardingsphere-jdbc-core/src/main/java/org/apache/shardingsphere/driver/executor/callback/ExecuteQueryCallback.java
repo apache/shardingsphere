@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.executor.callback;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
@@ -41,6 +42,11 @@ public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryRes
     protected final QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
         ResultSet resultSet = executeQuery(sql, statement);
         return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new JDBCStreamQueryResult(resultSet) : new JDBCMemoryQueryResult(resultSet);
+    }
+    
+    @Override
+    protected final QueryResult getSaneResult(final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
+        return new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery("SELECT 1"));
     }
     
     protected abstract ResultSet executeQuery(String sql, Statement statement) throws SQLException;
