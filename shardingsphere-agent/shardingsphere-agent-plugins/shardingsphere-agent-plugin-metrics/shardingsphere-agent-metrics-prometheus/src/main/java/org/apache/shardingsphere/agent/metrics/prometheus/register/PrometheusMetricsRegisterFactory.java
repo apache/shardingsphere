@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus.register;
 
-import org.apache.shardingsphere.agent.core.constant.AgentConstant;
 import org.apache.shardingsphere.agent.metrics.api.MetricsRegister;
 import org.apache.shardingsphere.agent.metrics.api.MetricsRegisterFactory;
 
@@ -33,6 +32,6 @@ public final class PrometheusMetricsRegisterFactory implements MetricsRegisterFa
     
     @Override
     public String getType() {
-        return AgentConstant.PLUGIN_NAME_PROMETHEUS;
+        return "Prometheus";
     }
 }

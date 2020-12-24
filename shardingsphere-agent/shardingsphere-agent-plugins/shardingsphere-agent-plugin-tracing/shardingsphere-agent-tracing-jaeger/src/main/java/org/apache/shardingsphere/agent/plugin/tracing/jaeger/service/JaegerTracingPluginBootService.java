@@ -20,13 +20,12 @@ package org.apache.shardingsphere.agent.plugin.tracing.jaeger.service;
 import io.jaegertracing.Configuration;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.core.config.JaegerPluginConfiguration;
-import org.apache.shardingsphere.agent.core.constant.AgentConstant;
-import org.apache.shardingsphere.agent.core.plugin.service.BootService;
+import org.apache.shardingsphere.agent.core.plugin.service.PluginBootService;
 
 /**
- * Jaeger tracing boot service.
+ * Jaeger tracing plugin boot service.
  */
-public final class JaegerTracingBootService implements BootService<JaegerPluginConfiguration> {
+public final class JaegerTracingPluginBootService implements PluginBootService<JaegerPluginConfiguration> {
     
     @Override
     public void setup(final JaegerPluginConfiguration configuration) {
@@ -46,6 +45,6 @@ public final class JaegerTracingBootService implements BootService<JaegerPluginC
     
     @Override
     public String getType() {
-        return AgentConstant.PLUGIN_NAME_JAEGER;
+        return "Jaeger";
     }
 }

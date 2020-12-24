@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.agent.metrics.api;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
 import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
+import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
 import org.junit.Before;
 
 public class BaseTest {
@@ -30,13 +32,14 @@ public class BaseTest {
     
     @Before
     public void assertLoad() throws IOException {
-        System.setProperty("agent-path", getResourceUrl());
+        AgentPathBuilder builder = new AgentPathBuilder();
+        ReflectiveUtil.setProperty(builder, "agentPath", new File(getResourceUrl()));
         AgentConfiguration configuration = AgentConfigurationLoader.load();
         AgentObjectPool.INSTANCE.put(configuration);
     }
     
     private static String getResourceUrl() {
-        URL url = AgentConfigurationLoader.class.getResource(DEFAULT_CONFIG_PATH);
+        URL url = AgentConfigurationLoader.class.getClassLoader().getResource("");
         if (null != url) {
             return url.getFile();
         }
