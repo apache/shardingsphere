@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.driver.executor.callback;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.JDBCSaneQueryResultEngineFactory;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
@@ -30,18 +28,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Optional;
 
 /**
  * Execute query callback.
  */
 public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryResult> {
     
-    private final DatabaseType databaseType;
-    
     protected ExecuteQueryCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
         super(databaseType, sqlStatement, isExceptionThrown);
-        this.databaseType = databaseType;
     }
     
     @Override
@@ -52,9 +46,6 @@ public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryRes
     
     @Override
     protected final QueryResult getSaneResult(final SQLStatement sqlStatement) {
-        // TODO useless, JDBC cannot support database gateway now
-        Optional<QueryResult> queryResult = JDBCSaneQueryResultEngineFactory.newInstance(databaseType).getSaneQueryResult(sqlStatement);
-        Preconditions.checkState(queryResult.isPresent());
         return null;
     }
     
