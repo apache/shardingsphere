@@ -41,6 +41,7 @@ import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobServiceFactory;
 import org.apache.shardingsphere.scaling.util.ResponseContentUtil;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,6 +81,10 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
             checkJob(context, requestPath);
             return;
         }
+        if (requestPath.contains("/scaling/job/reset/")) {
+            resetJob(context, requestPath);
+            return;
+        }
         response(ResponseContentUtil.handleBadRequest("Not support request!"), context, HttpResponseStatus.BAD_REQUEST);
     }
     
@@ -111,6 +116,15 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
         try {
             response(ResponseContentUtil.build(SCALING_JOB_SERVICE.check(getJobId(requestPath))), context, HttpResponseStatus.OK);
         } catch (final ScalingJobNotFoundException ex) {
+            response(ResponseContentUtil.handleBadRequest(ex.getMessage()), context, HttpResponseStatus.BAD_REQUEST);
+        }
+    }
+    
+    private void resetJob(final ChannelHandlerContext context, final String requestPath) {
+        try {
+            SCALING_JOB_SERVICE.reset(getJobId(requestPath));
+            response(ResponseContentUtil.success(), context, HttpResponseStatus.OK);
+        } catch (final ScalingJobNotFoundException | SQLException ex) {
             response(ResponseContentUtil.handleBadRequest(ex.getMessage()), context, HttpResponseStatus.BAD_REQUEST);
         }
     }

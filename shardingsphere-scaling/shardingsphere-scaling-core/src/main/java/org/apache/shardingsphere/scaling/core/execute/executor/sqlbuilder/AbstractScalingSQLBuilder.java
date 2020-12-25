@@ -124,6 +124,11 @@ public abstract class AbstractScalingSQLBuilder implements ScalingSQLBuilder {
         return sqlCacheMap.get(sqlCacheKey);
     }
     
+    @Override
+    public String buildTruncateSQL(final String tableName) {
+        return String.format("TRUNCATE TABLE %s", quote(tableName));
+    }
+    
     private String buildDeleteSQLInternal(final String tableName, final Collection<Column> conditionColumns) {
         return String.format("DELETE FROM %s WHERE %s", quote(tableName), buildWhereSQL(conditionColumns));
     }

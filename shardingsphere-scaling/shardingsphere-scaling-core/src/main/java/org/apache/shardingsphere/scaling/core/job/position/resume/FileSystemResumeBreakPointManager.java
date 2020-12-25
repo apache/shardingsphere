@@ -30,7 +30,7 @@ import java.nio.charset.StandardCharsets;
 public final class FileSystemResumeBreakPointManager extends AbstractResumeBreakPointManager implements ResumeBreakPointManager {
     
     public FileSystemResumeBreakPointManager(final String databaseType, final String taskPath) {
-        super(databaseType, taskPath.startsWith("/") ? ".scaling/" + taskPath : taskPath);
+        super(databaseType, taskPath.startsWith("/") ? ".scaling" + taskPath : taskPath);
     }
     
     @Override
