@@ -63,18 +63,18 @@ public final class StandaloneScalingJobService extends AbstractScalingJobService
     }
     
     @Override
+    public void stop(final long jobId) {
+        ScalingJob scalingJob = getJob(jobId);
+        scalingTaskSchedulerMap.get(jobId).stop();
+        scalingJob.setStatus(JobStatus.STOPPED.name());
+    }
+    
+    @Override
     public ScalingJob getJob(final long jobId) {
         if (!scalingJobMap.containsKey(jobId)) {
             throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", jobId));
         }
         return scalingJobMap.get(jobId);
-    }
-    
-    @Override
-    public void stop(final long jobId) {
-        ScalingJob scalingJob = getJob(jobId);
-        scalingTaskSchedulerMap.get(jobId).stop();
-        scalingJob.setStatus(JobStatus.STOPPED.name());
     }
     
     @Override

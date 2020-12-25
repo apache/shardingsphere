@@ -60,19 +60,19 @@ public interface ScalingJobService {
     Optional<ScalingJob> start(String sourceDataSource, String sourceRule, String targetDataSource, String targetRule, ScalingCallback scalingCallback);
     
     /**
+     * Stop job.
+     *
+     * @param jobId job id
+     */
+    void stop(long jobId);
+    
+    /**
      * Get {@code ScalingJob} by id.
      *
      * @param jobId job id
      * @return {@code ScalingJob} instance
      */
     ScalingJob getJob(long jobId);
-    
-    /**
-     * Stop a job.
-     *
-     * @param jobId job id
-     */
-    void stop(long jobId);
     
     /**
      * Get job progress.
