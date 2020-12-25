@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.JDBCSaneQueryResultEngineFactory;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
@@ -90,10 +89,9 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     }
     
     @Override
-    protected final ExecuteResult getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
+    protected final ExecuteResult getSaneResult(final SQLStatement sqlStatement) {
         String configuredDatabaseType = ProxyContext.getInstance().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
-        Optional<QueryResult> queryResult = JDBCSaneQueryResultEngineFactory.newInstance(
-                DatabaseTypeRegistry.getTrunkDatabaseType(configuredDatabaseType)).getSaneQueryResult(sqlStatement, jdbcExecutionUnit, getDatabaseType());
+        Optional<QueryResult> queryResult = JDBCSaneQueryResultEngineFactory.newInstance(DatabaseTypeRegistry.getTrunkDatabaseType(configuredDatabaseType)).getSaneQueryResult(sqlStatement);
         return queryResult.isPresent() ? queryResult.get() : new UpdateResult(0, 0);
     }
 }

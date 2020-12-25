@@ -128,7 +128,7 @@ public final class BatchPreparedStatementExecutor {
             }
             
             @Override
-            protected int[] getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) {
+            protected int[] getSaneResult(final SQLStatement sqlStatement) {
                 return new int[batchCount];
             }
         };

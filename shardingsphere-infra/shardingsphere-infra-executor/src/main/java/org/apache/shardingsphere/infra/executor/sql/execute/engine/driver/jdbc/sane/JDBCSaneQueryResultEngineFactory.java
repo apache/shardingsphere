@@ -32,7 +32,7 @@ import java.util.Properties;
 public final class JDBCSaneQueryResultEngineFactory {
     
     static {
-        ShardingSphereServiceLoader.register(JDBCSaneQueryResultEngine.class);
+        ShardingSphereServiceLoader.register(SaneQueryResultEngine.class);
     }
     
     /**
@@ -41,7 +41,7 @@ public final class JDBCSaneQueryResultEngineFactory {
      * @param databaseType database type
      * @return new instance of JDBC sane query result engine
      */
-    public static JDBCSaneQueryResultEngine newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.findRegisteredService(JDBCSaneQueryResultEngine.class, databaseType.getName(), new Properties()).orElse(new DefaultSaneQueryResultEngine());
+    public static SaneQueryResultEngine newInstance(final DatabaseType databaseType) {
+        return TypedSPIRegistry.findRegisteredService(SaneQueryResultEngine.class, databaseType.getName(), new Properties()).orElse(new DefaultSaneQueryResultEngine());
     }
 }
