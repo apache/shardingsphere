@@ -61,11 +61,13 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Standal
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StringLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.String_Context;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SystemVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableElementListContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableValueConstructorContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TemporalLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TypeDatetimePrecisionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UserVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WithClauseContext;
 
@@ -692,7 +694,32 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         formatPrint(")");
         return result.toString();
     }
-    
+
+    @Override
+    public String visitUserVariable(final UserVariableContext ctx) {
+        formatPrint("@");
+        visit(ctx.textOrIdentifier());
+        return result.toString();
+    }
+
+    @Override
+    public String visitSystemVariable(final SystemVariableContext ctx) {
+        formatPrint("@@");
+        if (null != ctx.systemVariableScope) {
+            if (upperCase) {
+                formatPrint(ctx.systemVariableScope.getText().toUpperCase());
+            } else {
+                formatPrint(ctx.systemVariableScope.getText().toLowerCase());
+            }
+        }
+        visit(ctx.textOrIdentifier());
+        if (null != ctx.DOT_()) {
+            formatPrint(".");
+            visit(ctx.identifier());
+        }
+        return result.toString();
+    }
+
     @Override
     public String visitTerminal(final TerminalNode node) {
         if ("<EOF>".equals(node.getText())) {
