@@ -17,31 +17,31 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.JDBCSaneQueryResultEngineFactory;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOtherStatement;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collections;
+import java.util.Optional;
 
 /**
  * JDBC executor callback for proxy.
  */
 public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<ExecuteResult> {
-    
-    private final SQLStatement sqlStatement;
     
     private final BackendConnection backendConnection;
     
@@ -53,8 +53,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     public ProxyJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection,
                                      final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
-        super(databaseType, isExceptionThrown);
-        this.sqlStatement = sqlStatement;
+        super(databaseType, sqlStatement, isExceptionThrown);
         this.backendConnection = backendConnection;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         this.fetchMetaData = fetchMetaData;
@@ -91,19 +90,10 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     }
     
     @Override
-    protected ExecuteResult getSaneResult(final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
-        if (sqlStatement instanceof SelectStatement) {
-            return new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery(getSaneSQL((SelectStatement) sqlStatement)));
-        }
-        // TODO abstract with show statement
-        if (sqlStatement instanceof MySQLShowOtherStatement) {
-            return new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery("SELECT 1"));
-        }
-        return new UpdateResult(0, 0);
-    }
-    
-    private String getSaneSQL(final SelectStatement selectStatement) {
-        String saneProjections = String.join(", ", Collections.nCopies(selectStatement.getProjections().getProjections().size(), "1"));
-        return String.format("SELECT %s", saneProjections);
+    protected final ExecuteResult getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
+        String configuredDatabaseType = ProxyContext.getInstance().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
+        Optional<QueryResult> queryResult = JDBCSaneQueryResultEngineFactory.newInstance(
+                DatabaseTypeRegistry.getTrunkDatabaseType(configuredDatabaseType)).getSaneQueryResult(sqlStatement, jdbcExecutionUnit, getDatabaseType());
+        return queryResult.isPresent() ? queryResult.get() : new UpdateResult(0, 0);
     }
 }
