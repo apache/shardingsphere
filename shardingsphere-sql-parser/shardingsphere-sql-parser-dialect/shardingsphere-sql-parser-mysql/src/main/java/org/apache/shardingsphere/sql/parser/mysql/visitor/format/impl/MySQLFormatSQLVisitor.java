@@ -678,7 +678,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result.toString();
     }
-
+    
     @Override
     public String visitStringList(final StringListContext ctx) {
         int stringCount = ctx.textString().size();
@@ -851,7 +851,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         }
         return result;
     }
-
+    
     private void formatPrint(final char value) {
         if (null == result) {
             return;
