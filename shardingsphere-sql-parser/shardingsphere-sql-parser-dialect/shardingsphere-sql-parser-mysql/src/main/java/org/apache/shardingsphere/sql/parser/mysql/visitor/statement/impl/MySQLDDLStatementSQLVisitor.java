@@ -145,11 +145,11 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor implements DDLSQLVisitor, SQLStatementVisitor {
-
+    
     public MySQLDDLStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         MySQLCreateViewStatement result = new MySQLCreateViewStatement();
@@ -251,15 +251,13 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     private ColumnDefinitionSegment generateColumnDefinitionSegment(final ColumnSegment column, final FieldDefinitionContext ctx) {
         DataTypeSegment dataTypeSegment = (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = isPrimaryKey(ctx);
-        ColumnDefinitionSegment result = new ColumnDefinitionSegment(
-                column.getStartIndex(), dataTypeSegment.getStopIndex(), column, dataTypeSegment, isPrimaryKey);
-        return result;
+        return new ColumnDefinitionSegment(column.getStartIndex(), dataTypeSegment.getStopIndex(), column, dataTypeSegment, isPrimaryKey);
     }
-
+    
     @Override
     public ASTNode visitAlterList(final AlterListContext ctx) {
         CollectionValue<AlterDefinitionSegment> result = new CollectionValue<>();
@@ -301,7 +299,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitAddColumn(final AddColumnContext ctx) {
         Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
@@ -322,7 +320,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = new ColumnSegment(ctx.column_name.start.getStartIndex(), ctx.column_name.stop.getStopIndex(), (IdentifierValue) visit(ctx.column_name));
@@ -381,7 +379,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     private Collection<ColumnSegment> getKeyColumnsFromKeyListWithExpression(final KeyListWithExpressionContext ctx) {
         Collection<ColumnSegment> result = new LinkedList<>();
         for (MySQLStatementParser.KeyPartWithExpressionContext each : ctx.keyPartWithExpression()) {

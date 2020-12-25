@@ -23,12 +23,10 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.orderby.ExpectedOrderByClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.predicate.ExpectedWhereClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.set.ExpectedSetClause;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Update statement test case.
@@ -38,7 +36,7 @@ import java.util.List;
 public final class UpdateStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "table")
-    private final List<ExpectedSimpleTable> tables = new LinkedList<>();
+    private ExpectedTable table;
     
     @XmlElement(name = "set")
     private ExpectedSetClause setClause;

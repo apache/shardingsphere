@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.protocol;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -33,6 +32,8 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FrontDatabaseProtocolTypeFactory {
     
+    private static final String DEFAULT_FRONTEND_DATABASE_PROTOCOL_TYPE = "MySQL";
+    
     /**
      * Get front database protocol type.
      * 
@@ -44,7 +45,7 @@ public final class FrontDatabaseProtocolTypeFactory {
             return configuredDatabaseType.get();
         }
         if (ProxyContext.getInstance().getMetaDataContexts().getAllSchemaNames().isEmpty()) {
-            throw new ShardingSphereConfigurationException("Can not find any configured data sources and database frontend protocol type.");
+            return DatabaseTypeRegistry.getTrunkDatabaseType(DEFAULT_FRONTEND_DATABASE_PROTOCOL_TYPE);
         }
         String schemaName = ProxyContext.getInstance().getMetaDataContexts().getAllSchemaNames().iterator().next();
         return ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType();

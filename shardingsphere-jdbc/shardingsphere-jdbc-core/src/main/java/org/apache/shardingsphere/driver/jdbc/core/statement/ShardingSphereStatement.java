@@ -67,6 +67,7 @@ import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.RawExecutionRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -150,8 +151,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
         Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
         cacheStatements(executionGroups);
-        return driverJDBCExecutor.executeQuery(executionGroups, 
-                new StatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), SQLExecutorExceptionHandler.isExceptionThrown()));
+        StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), 
+                SQLExecutorExceptionHandler.isExceptionThrown(), executionContext.getSqlStatementContext().getSqlStatement());
+        return driverJDBCExecutor.executeQuery(executionGroups, callback);
     }
     
     @Override
@@ -232,6 +234,11 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return updater.executeUpdate(sql, statement);
+            }
+            
+            @Override
+            protected Integer getSaneResult(final JDBCExecutionUnit jdbcExecutionUnit) {
+                return 0;
             }
         };
         return driverJDBCExecutor.executeUpdate(executionGroups, sqlStatementContext, routeUnits, callback);
@@ -330,6 +337,11 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             @Override
             protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return executor.execute(sql, statement);
+            }
+
+            @Override
+            protected Boolean getSaneResult(final JDBCExecutionUnit jdbcExecutionUnit) {
+                return sqlStatement instanceof SelectStatement;
             }
         };
         return driverJDBCExecutor.execute(executionGroups, sqlStatement, routeUnits, jdbcExecutorCallback);

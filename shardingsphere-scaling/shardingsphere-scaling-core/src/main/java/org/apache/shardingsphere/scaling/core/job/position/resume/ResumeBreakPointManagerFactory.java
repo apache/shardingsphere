@@ -31,13 +31,13 @@ import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResumeBreakPointManagerFactory {
     
-    private static Class<? extends ResumeBreakPointManager> clazz = FakeResumeBreakPointManager.class;
+    private static Class<? extends ResumeBreakPointManager> clazz = FileSystemResumeBreakPointManager.class;
     
     static {
         ShardingSphereServiceLoader.register(RegistryRepository.class);
         ShardingSphereServiceLoader.register(ConfigurationRepository.class);
         if (RegistryRepositoryHolder.isAvailable()) {
-            clazz = RepositoryResumeBreakPointManager.class;
+            clazz = RegistryRepositoryResumeBreakPointManager.class;
         }
     }
     

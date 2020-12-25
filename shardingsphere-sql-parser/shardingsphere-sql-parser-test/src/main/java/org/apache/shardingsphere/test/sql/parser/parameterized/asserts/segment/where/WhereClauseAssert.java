@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.predicate.ExpectedWhereClause;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 
@@ -37,6 +39,7 @@ public final class WhereClauseAssert {
      * @param expected expected where clause
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final WhereSegment actual, final ExpectedWhereClause expected) {
-//        TODO support expr in where assert
+        ExpressionAssert.assertExpression(assertContext, actual.getExpr(), expected.getExpr());
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

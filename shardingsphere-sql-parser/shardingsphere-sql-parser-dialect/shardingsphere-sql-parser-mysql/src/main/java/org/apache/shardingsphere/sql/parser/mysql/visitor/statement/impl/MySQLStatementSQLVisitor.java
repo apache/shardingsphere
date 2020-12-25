@@ -195,10 +195,10 @@ import java.util.Properties;
 public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
-
+    
     public MySQLStatementSQLVisitor(final Properties props) {
     }
-
+    
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
         return new ParameterMarkerValue(currentParameterIndex++);
@@ -307,8 +307,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitColumnName(final ColumnNameContext ctx) {
-        ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
-        return result;
+        return new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
     }
     
     @Override
@@ -529,14 +528,14 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         return visitRemainSimpleExpr(ctx);
     }
-
+    
     @Override
     public ASTNode visitColumnRef(final ColumnRefContext ctx) {
-        int idenCount = ctx.identifier().size();
+        int identifierCount = ctx.identifier().size();
         ColumnSegment result;
-        if (1 == idenCount) {
+        if (1 == identifierCount) {
             result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier(0)));
-        } else if (2 == idenCount) {
+        } else if (2 == identifierCount) {
             result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier(1)));
             result.setOwner(new OwnerSegment(ctx.identifier(0).start.getStartIndex(), ctx.identifier(0).stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier(0))));
         } else {
@@ -545,12 +544,12 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
         return visit(ctx.queryExpressionParens());
     }
-
+    
     @Override
     public ASTNode visitQueryExpressionParens(final QueryExpressionParensContext ctx) {
         if (null != ctx.queryExpressionParens()) {
@@ -560,10 +559,10 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.lockClauseList()) {
             result.setLock((LockSegment) visit(ctx.lockClauseList()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
+        result.setParameterCount(currentParameterIndex);
         return result;
     }
-
+    
     @Override
     public ASTNode visitLockClauseList(final LockClauseListContext ctx) {
         LockSegment result = new LockSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
@@ -574,7 +573,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitQueryExpression(final QueryExpressionContext ctx) {
         MySQLSelectStatement result;
@@ -591,7 +590,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitSelectWithInto(final SelectWithIntoContext ctx) {
         if (null != ctx.selectWithInto()) {
@@ -603,7 +602,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitQueryExpressionBody(final QueryExpressionBodyContext ctx) {
         if (1 == ctx.getChildCount() && ctx.getChild(0) instanceof QueryPrimaryContext) {
@@ -611,7 +610,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         throw new IllegalStateException("union select is not supported yet.");
     }
-
+    
     @Override
     public ASTNode visitQuerySpecification(final QuerySpecificationContext ctx) {
         MySQLSelectStatement result = new MySQLSelectStatement();
@@ -631,7 +630,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitIntervalExpression(final IntervalExpressionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.intervalValue().expr()));
@@ -828,7 +827,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitFieldLength(final FieldLengthContext ctx) {
         DataTypeLengthSegment result = new DataTypeLengthSegment();
@@ -837,7 +836,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         result.setPrecision(Integer.parseInt(ctx.length.getText()));
         return result;
     }
-
+    
     @Override
     public ASTNode visitPrecision(final PrecisionContext ctx) {
         DataTypeLengthSegment result = new DataTypeLengthSegment();
@@ -848,7 +847,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         result.setScale(Integer.parseInt(numbers.get(1).getText()));
         return result;
     }
-
+    
     @Override
     public final ASTNode visitOrderByClause(final OrderByClauseContext ctx) {
         Collection<OrderByItemSegment> items = new LinkedList<>();
@@ -860,7 +859,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitOrderByItem(final OrderByItemContext ctx) {
-        OrderDirection orderDirection = null;
+        OrderDirection orderDirection;
         if (null != ctx.direction()) {
             orderDirection = null != ctx.direction().DESC() ? OrderDirection.DESC : OrderDirection.ASC;
         } else {
@@ -878,7 +877,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             }
         }
     }
-
+    
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
@@ -895,7 +894,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()));
         }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setParameterCount(getCurrentParameterIndex());
+        result.setParameterCount(currentParameterIndex);
         return result;
     }
     
@@ -969,7 +968,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         result.setParameterCount(getCurrentParameterIndex());
         return result;
     }
-
+    
     @Override
     public ASTNode visitReplaceSelectClause(final ReplaceSelectClauseContext ctx) {
         MySQLInsertStatement result = new MySQLInsertStatement();
@@ -1007,7 +1006,6 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     private List<ColumnSegment> createInsertColumns(final FieldsContext fields) {
         List<ColumnSegment> result = new LinkedList<>();
         for (InsertIdentifierContext each : fields.insertIdentifier()) {
@@ -1015,7 +1013,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         return result;
     }
-
+    
     private Collection<InsertValuesSegment> createReplaceValuesSegments(final Collection<MySQLStatementParser.AssignmentValuesContext> assignmentValuesContexts) {
         Collection<InsertValuesSegment> result = new LinkedList<>();
         for (MySQLStatementParser.AssignmentValuesContext each : assignmentValuesContexts) {
@@ -1039,7 +1037,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.limitClause()) {
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
+        result.setParameterCount(currentParameterIndex);
         return result;
     }
     
@@ -1104,7 +1102,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.limitClause()) {
             result.setLimit((LimitSegment) visit(ctx.limitClause()));
         }
-        result.setParameterCount(getCurrentParameterIndex());
+        result.setParameterCount(currentParameterIndex);
         return result;
     }
     
@@ -1148,7 +1146,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         } else {
             result = (MySQLSelectStatement) visit(ctx.getChild(0));
         }
-        result.setParameterCount(getCurrentParameterIndex());
+        result.setParameterCount(currentParameterIndex);
         return result;
     }
     

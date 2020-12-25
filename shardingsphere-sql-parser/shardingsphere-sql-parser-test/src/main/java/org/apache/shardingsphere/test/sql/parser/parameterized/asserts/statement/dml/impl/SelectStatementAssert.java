@@ -60,7 +60,6 @@ public final class SelectStatementAssert {
         assertLimitClause(assertContext, actual, expected);
         assertTable(assertContext, actual, expected);
         assertLockClause(assertContext, actual, expected);
-//        TODO support table assert
     }
     
     private static void assertProjection(final SQLCaseAssertContext assertContext, final SelectStatement actual, final SelectStatementTestCase expected) {

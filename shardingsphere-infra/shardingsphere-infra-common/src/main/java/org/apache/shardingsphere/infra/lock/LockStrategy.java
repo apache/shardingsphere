@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.lock;
 
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Lock strategy.
  */
@@ -28,9 +30,10 @@ public interface LockStrategy extends TypedSPI {
      * Try to get lock.
      * 
      * @param timeout the maximum time in milliseconds to acquire lock
+     * @param timeUnit time unit
      * @return true if get the lock, false if not
      */
-    boolean tryLock(Long timeout);
+    boolean tryLock(long timeout, TimeUnit timeUnit);
     
     /**
      * Release lock.

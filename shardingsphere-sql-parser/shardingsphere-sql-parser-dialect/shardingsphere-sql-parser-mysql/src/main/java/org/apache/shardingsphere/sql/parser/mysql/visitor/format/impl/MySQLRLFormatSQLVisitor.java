@@ -28,7 +28,7 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class MySQLRLFormatSQLVisitor extends MySQLFormatSQLVisitor implements RLSQLVisitor, SQLFormatVisitor {
-
+    
     public MySQLRLFormatSQLVisitor(final Properties props) {
         super(props);
     }

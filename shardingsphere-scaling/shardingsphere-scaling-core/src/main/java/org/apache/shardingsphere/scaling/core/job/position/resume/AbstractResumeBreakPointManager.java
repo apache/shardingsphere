@@ -19,11 +19,10 @@ package org.apache.shardingsphere.scaling.core.job.position.resume;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionGroup;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
@@ -33,29 +32,57 @@ import org.apache.shardingsphere.scaling.core.job.position.PositionManagerFactor
 import java.io.Closeable;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
  * Abstract resume from break-point manager.
  */
-@Getter
-@Setter
 @Slf4j
 public abstract class AbstractResumeBreakPointManager implements ResumeBreakPointManager, Closeable {
     
     private static final Gson GSON = new Gson();
     
+    @Getter
     private final Map<String, PositionManager> inventoryPositionManagerMap = Maps.newConcurrentMap();
     
+    @Getter
     private final Map<String, PositionManager> incrementalPositionManagerMap = Maps.newConcurrentMap();
     
+    @Getter
     private boolean resumable;
     
-    private String databaseType;
+    private final String databaseType;
     
-    private String taskPath;
+    private final String taskPath;
     
-    protected final void resumeInventoryPosition(final String data) {
+    private final ScheduledExecutorService executor;
+    
+    public AbstractResumeBreakPointManager(final String databaseType, final String taskPath) {
+        this.databaseType = databaseType;
+        this.taskPath = taskPath;
+        resumePosition();
+        executor = Executors.newSingleThreadScheduledExecutor();
+        executor.scheduleWithFixedDelay(this::persistPosition, 1, 1, TimeUnit.MINUTES);
+    }
+    
+    private void resumePosition() {
+        try {
+            resumeInventoryPosition(getInventoryPath());
+            resumeIncrementalPosition(getIncrementalPath());
+            resumable = !inventoryPositionManagerMap.isEmpty() && !incrementalPositionManagerMap.isEmpty();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("resume position failed.");
+            throw ex;
+        }
+    }
+    
+    protected void resumeInventoryPosition(final String path) {
+        String data = getPosition(path);
         if (Strings.isNullOrEmpty(data)) {
             return;
         }
@@ -70,7 +97,8 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
         }
     }
     
-    protected final void resumeIncrementalPosition(final String data) {
+    protected void resumeIncrementalPosition(final String path) {
+        String data = getPosition(path);
         if (Strings.isNullOrEmpty(data)) {
             return;
         }
@@ -81,25 +109,49 @@ public abstract class AbstractResumeBreakPointManager implements ResumeBreakPoin
         }
     }
     
-    protected final String getInventoryPositionData() {
-        InventoryPositionGroup result = new InventoryPositionGroup();
-        result.setUnfinished(Maps.newHashMap());
-        result.setFinished(Sets.newHashSet());
-        for (Entry<String, PositionManager> entry : inventoryPositionManagerMap.entrySet()) {
-            if (entry.getValue().getPosition() instanceof FinishedPosition) {
-                result.getFinished().add(entry.getKey());
-                continue;
-            }
-            result.getUnfinished().put(entry.getKey(), entry.getValue().getPosition());
+    @Override
+    public void persistPosition() {
+        try {
+            persistIncrementalPosition();
+            persistInventoryPosition();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("persist position failed.", ex);
         }
-        return result.toJson();
     }
     
-    protected final String getIncrementalPositionData() {
-        return GSON.toJson(incrementalPositionManagerMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getPosition())));
+    private void persistInventoryPosition() {
+        InventoryPositionGroup inventoryPositionGroup = new InventoryPositionGroup();
+        for (Entry<String, PositionManager> entry : inventoryPositionManagerMap.entrySet()) {
+            if (entry.getValue().getPosition() instanceof FinishedPosition) {
+                inventoryPositionGroup.getFinished().add(entry.getKey());
+                continue;
+            }
+            inventoryPositionGroup.getUnfinished().put(entry.getKey(), entry.getValue().getPosition());
+        }
+        String data = inventoryPositionGroup.toJson();
+        log.info("persist inventory position {} = {}", getInventoryPath(), data);
+        persistPosition(getInventoryPath(), data);
+    }
+    
+    private void persistIncrementalPosition() {
+        String data = GSON.toJson(incrementalPositionManagerMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getPosition())));
+        log.info("persist incremental position {} = {}", getIncrementalPath(), data);
+        persistPosition(getIncrementalPath(), data);
+    }
+    
+    protected String getInventoryPath() {
+        return String.format("%s/%s", taskPath, ScalingConstant.INVENTORY);
+    }
+    
+    protected String getIncrementalPath() {
+        return String.format("%s/%s", taskPath, ScalingConstant.INCREMENTAL);
     }
     
     @Override
     public void close() {
+        executor.submit((Runnable) this::persistPosition);
+        executor.shutdown();
     }
 }

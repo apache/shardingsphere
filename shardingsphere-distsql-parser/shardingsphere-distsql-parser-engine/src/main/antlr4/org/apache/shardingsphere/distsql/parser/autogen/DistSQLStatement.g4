@@ -23,6 +23,7 @@ execute
     : (addResource
     | createShardingRule
     | dropShardingRule
+    | createReplicaQueryRule
     | showResources
     | showRule
     ) SEMI?

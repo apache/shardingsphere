@@ -60,6 +60,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -108,22 +109,33 @@ public final class DatabaseCommunicationEngine {
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
-        lockForDDL(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
-        proxySQLExecutor.checkExecutePrerequisites(executionContext);
-        Collection<ExecuteResult> executeResults = proxySQLExecutor.execute(executionContext);
+        boolean locked = false;
+        Collection<ExecuteResult> executeResults;
+        try {
+            locked = tryLock(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
+            proxySQLExecutor.checkExecutePrerequisites(executionContext);
+            executeResults = proxySQLExecutor.execute(executionContext);
+            refreshSchema(executionContext);
+        } finally {
+            if (locked) {
+                releaseLock();
+            }
+        }
         ExecuteResult executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
                 ? processExecuteQuery(executionContext, executeResults.stream().map(each -> (QueryResult) each).collect(Collectors.toList()), (QueryResult) executeResultSample)
                 : processExecuteUpdate(executionContext, executeResults.stream().map(each -> (UpdateResult) each).collect(Collectors.toList()));
     }
     
-    private void lockForDDL(final ExecutionContext executionContext, final Long lockTimeoutMilliseconds) {
+    private boolean tryLock(final ExecutionContext executionContext, final Long lockTimeoutMilliseconds) {
         if (needLock(executionContext)) {
-            if (!LockContext.getLockStrategy().tryLock(lockTimeoutMilliseconds)) {
+            if (!LockContext.getLockStrategy().tryLock(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
                 throw new LockWaitTimeoutException(lockTimeoutMilliseconds);
             }
             checkLock(lockTimeoutMilliseconds);
+            return true;
         }
+        return false;
     }
     
     private boolean needLock(final ExecutionContext executionContext) {
@@ -136,6 +148,10 @@ public final class DatabaseCommunicationEngine {
         }
     }
     
+    private void releaseLock() {
+        LockContext.getLockStrategy().releaseLock();
+    }
+    
     private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
         queryHeaders = createQueryHeaders(executionContext, queryResultSample);
         mergedResult = mergeQuery(executionContext.getSqlStatementContext(), queryResults);
@@ -143,7 +159,7 @@ public final class DatabaseCommunicationEngine {
     }
     
     private List<QueryHeader> createQueryHeaders(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
-        int columnCount = queryResultSample.getMetaData().getColumnCount();
+        int columnCount = getColumnCount(executionContext, queryResultSample);
         List<QueryHeader> result = new ArrayList<>(columnCount);
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             result.add(createQueryHeader(executionContext, queryResultSample, metaData, columnIndex));
@@ -154,8 +170,13 @@ public final class DatabaseCommunicationEngine {
     private QueryHeader createQueryHeader(final ExecutionContext executionContext,
                                           final QueryResult queryResultSample, final ShardingSphereMetaData metaData, final int columnIndex) throws SQLException {
         return hasSelectExpandProjections(executionContext.getSqlStatementContext())
-                ? QueryHeaderBuilder.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample, metaData, columnIndex)
-                : QueryHeaderBuilder.build(queryResultSample, metaData, columnIndex);
+                ? QueryHeaderBuilder.build(((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext(), queryResultSample.getMetaData(), metaData, columnIndex)
+                : QueryHeaderBuilder.build(queryResultSample.getMetaData(), metaData, columnIndex);
+    }
+    
+    private int getColumnCount(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
+        return executionContext.getSqlStatementContext() instanceof SelectStatementContext
+                ? ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext().getExpandProjections().size() : queryResultSample.getMetaData().getColumnCount();
     }
     
     private boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
@@ -168,9 +189,8 @@ public final class DatabaseCommunicationEngine {
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     
-    private UpdateResponseHeader processExecuteUpdate(final ExecutionContext executionContext, final Collection<UpdateResult> updateResults) throws SQLException {
+    private UpdateResponseHeader processExecuteUpdate(final ExecutionContext executionContext, final Collection<UpdateResult> updateResults) {
         UpdateResponseHeader result = new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement(), updateResults);
-        refreshSchema(executionContext);
         mergeUpdateCount(executionContext.getSqlStatementContext(), result);
         return result;
     }
@@ -180,17 +200,13 @@ public final class DatabaseCommunicationEngine {
         SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
         Optional<SchemaRefresher> schemaRefresher = SchemaRefresherFactory.newInstance(sqlStatement);
         if (schemaRefresher.isPresent()) {
-            try {
-                Collection<String> routeDataSourceNames = executionContext.getRouteContext().getRouteUnits().stream()
-                        .map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
-                SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
-                        ProxyContext.getInstance().getMetaDataContexts().getMetaData(metaData.getName()).getResource().getDatabaseType(),
-                        metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), ProxyContext.getInstance().getMetaDataContexts().getProps());
-                schemaRefresher.get().refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, materials);
-                notifySchemaChanged(metaData.getName(), metaData.getSchema());
-            } finally {
-                LockContext.getLockStrategy().releaseLock();
-            }
+            Collection<String> routeDataSourceNames = executionContext.getRouteContext().getRouteUnits().stream()
+                    .map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
+            SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
+                    ProxyContext.getInstance().getMetaDataContexts().getMetaData(metaData.getName()).getResource().getDatabaseType(),
+                    metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), ProxyContext.getInstance().getMetaDataContexts().getProps());
+            schemaRefresher.get().refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, materials);
+            notifySchemaChanged(metaData.getName(), metaData.getSchema());
         }
     }
     

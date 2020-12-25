@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.metrics.api.reporter;
 
 import java.util.Collection;
 import java.util.List;
-import org.apache.shardingsphere.agent.metrics.api.MetricsProvider;
+import org.apache.shardingsphere.agent.metrics.api.provider.MetricsProvider;
 import org.apache.shardingsphere.agent.metrics.api.MetricsRegister;
 import org.apache.shardingsphere.agent.metrics.api.entity.Metric;
 

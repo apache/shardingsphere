@@ -27,8 +27,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -79,5 +81,17 @@ public final class RegistryCenterTest {
         registryCenter.loadDisabledDataSources("replica_query_db");
         verify(registryRepository).getChildrenKeys(anyString());
         verify(registryRepository).get(anyString());
+    }
+    
+    @Test
+    public void assertTryGlobalLock() {
+        registryCenter.tryGlobalLock(50L, TimeUnit.MILLISECONDS);
+        verify(registryRepository).tryLock(eq(50L), eq(TimeUnit.MILLISECONDS));
+    }
+    
+    @Test
+    public void assertReleaseGlobalLock() {
+        registryCenter.releaseGlobalLock();
+        verify(registryRepository).releaseLock();
     }
 }

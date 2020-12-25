@@ -849,17 +849,19 @@
                 <column-projection name="user_id" start-index="66" stop-index="72" />
                 <column-projection name="status" start-index="75" stop-index="80" />
             </projections>
-            <where start-index="95" stop-index="112">
-                <and-predicate>
-                    <predicate start-index="101" stop-index="112" literal-stop-index="114">
-                        <column-left-value name="order_id" start-index="101" stop-index="108" />
-                        <operator type="=" />
-                        <compare-right-value>
-                            <parameter-marker-expression value="0" start-index="112" stop-index="112" />
+            <where start-index="95" stop-index="112" literal-stop-index="114">
+                <expr>
+                    <binary-operation-expression start-index="101" stop-index="112" literal-stop-index="114">
+                        <left>
+                            <column name="order_id" start-index="101" stop-index="108" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
                             <literal-expression value="100" start-index="112" stop-index="114" />
-                        </compare-right-value>
-                    </predicate>
-                </and-predicate>
+                            <parameter-marker-expression value="0" start-index="112" stop-index="112" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
             </where>
         </select>
     </insert>
@@ -876,17 +878,19 @@
                 <column-projection name="user_id" start-index="38" stop-index="44" />
                 <column-projection name="status" start-index="47" stop-index="52" />
             </projections>
-            <where start-index="67" stop-index="84">
-                <and-predicate>
-                    <predicate start-index="73" stop-index="84" literal-stop-index="86">
-                        <column-left-value name="order_id" start-index="73" stop-index="80" />
-                        <operator type="=" />
-                        <compare-right-value>
-                            <parameter-marker-expression value="0" start-index="84" stop-index="84" />
+            <where start-index="67" stop-index="84" literal-stop-index="86">
+                <expr>
+                    <binary-operation-expression start-index="73" stop-index="84" literal-stop-index="86">
+                        <left>
+                            <column name="order_id" start-index="73" stop-index="80" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
                             <literal-expression value="100" start-index="84" stop-index="86" />
-                        </compare-right-value>
-                    </predicate>
-                </and-predicate>
+                            <parameter-marker-expression value="0" start-index="84" stop-index="84" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
             </where>
         </select>
     </insert>
@@ -901,11 +905,6 @@
             <column name="creation_date" start-index="62" stop-index="74" />
         </columns>
         <select>
-<!--            <table-reference>-->
-<!--                <table-factor>-->
-<!--                    <table name="t_order_item" start-index="140" stop-index="151" />-->
-<!--                </table-factor>-->
-<!--            </table-reference>-->
             <from>
                 <simple-table name="t_order_item" start-index="140" stop-index="151" />
             </from>
@@ -913,20 +912,22 @@
                 <column-projection name="item_id" start-index="84" stop-index="90" />
                 <column-projection name="order_id" start-index="93" stop-index="100" />
                 <column-projection name="user_id" start-index="103" stop-index="109" />
-                <expression-projection start-index="112" stop-index="119" />
-                <expression-projection start-index="122" stop-index="133" />
+                <expression-projection text="insert" start-index="112" stop-index="119" />
+                <expression-projection text="2017-08-08" start-index="122" stop-index="133" />
             </projections>
-            <where start-index="153" stop-index="169">
-                <and-predicate>
-                    <predicate start-index="159" stop-index="169" literal-stop-index="171">
-                        <column-left-value name="item_id" start-index="159" stop-index="165" />
-                        <operator type="=" />
-                        <compare-right-value>
-                            <parameter-marker-expression value="0" start-index="169" stop-index="169" />
+            <where start-index="153" stop-index="169" literal-stop-index="171">
+                <expr>
+                    <binary-operation-expression start-index="159" stop-index="169" literal-stop-index="171">
+                        <left>
+                            <column name="item_id" start-index="159" stop-index="165" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
                             <literal-expression value="100" start-index="169" stop-index="171" />
-                        </compare-right-value>
-                    </predicate>
-                </and-predicate>
+                            <parameter-marker-expression value="0" start-index="169" stop-index="169" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
             </where>
         </select>
     </insert>
@@ -946,20 +947,22 @@
             <projections start-index="75" stop-index="115">
                 <column-projection name="order_id" start-index="75" stop-index="82" />
                 <column-projection name="user_id" start-index="85" stop-index="91" />
-                <expression-projection start-index="94" stop-index="101" />
-                <expression-projection start-index="104" stop-index="115" />
+                <expression-projection text="insert" start-index="94" stop-index="101" />
+                <expression-projection text="2017-08-08" start-index="104" stop-index="115" />
             </projections>
-            <where start-index="135" stop-index="152">
-                <and-predicate>
-                    <predicate start-index="141" stop-index="152" literal-stop-index="154">
-                        <column-left-value name="order_id" start-index="141" stop-index="148" />
-                        <operator type="=" />
-                        <compare-right-value>
-                            <parameter-marker-expression value="0" start-index="152" stop-index="152" />
+            <where start-index="135" stop-index="152" literal-stop-index="154">
+                <expr>
+                    <binary-operation-expression start-index="141" stop-index="152" literal-stop-index="154">
+                        <left>
+                            <column name="order_id" start-index="141" stop-index="148" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
                             <literal-expression value="100" start-index="152" stop-index="154" />
-                        </compare-right-value>
-                    </predicate>
-                </and-predicate>
+                            <parameter-marker-expression value="0" start-index="152" stop-index="152" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
             </where>
         </select>
     </insert>

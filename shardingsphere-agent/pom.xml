@@ -25,22 +25,22 @@
         <artifactId>shardingsphere</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-
     <artifactId>shardingsphere-agent</artifactId>
     <packaging>pom</packaging>
-
-    <properties>
-        <maven-shade-plugin.version>3.1.1</maven-shade-plugin.version>
-        <shade.package>org.apache.shardingsphere.dependencies</shade.package>
-    </properties>
-
+    <name>${project.artifactId}</name>
+    
     <modules>
         <module>shardingsphere-agent-bootstrap</module>
         <module>shardingsphere-agent-core</module>
         <module>shardingsphere-agent-plugins</module>
         <module>shardingsphere-agent-distribution</module>
     </modules>
-
+    
+    <properties>
+        <maven-shade-plugin.version>3.1.1</maven-shade-plugin.version>
+        <shade.package>org.apache.shardingsphere.dependencies</shade.package>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>net.bytebuddy</groupId>
@@ -54,7 +54,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
+    
     <build>
         <pluginManagement>
             <plugins>

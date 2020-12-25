@@ -17,45 +17,25 @@
 
 package org.apache.shardingsphere.agent.core.config;
 
-import lombok.Data;
-
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Agent configuration.
  */
-@Data
-public class AgentConfiguration {
+@Getter
+@Setter
+public final class AgentConfiguration {
     
     private String applicationName;
     
-    private MetricsConfiguration metrics;
+    private String metricsType = "Prometheus";
     
-    private TracingConfiguration tracing;
+    private Set<String> ignorePlugins = new HashSet<>();
     
-    private List<String> activatedPlugins;
-    
-    @Data
-    public static class MetricsConfiguration {
-        
-        private String type = "prometheus";
-        
-        private String host;
-        
-        private int port = 9090;
-        
-        private boolean jvmInformationCollectorEnabled;
-    }
-    
-    @Data
-    public static class TracingConfiguration {
-        
-        private String agentHost = "localhost";
-        
-        private int agentPort = 5775;
-        
-        private Map<String, String> extra;
-        
-    }
+    private Map<String, PluginConfiguration> plugins = new HashMap<>();
 }
