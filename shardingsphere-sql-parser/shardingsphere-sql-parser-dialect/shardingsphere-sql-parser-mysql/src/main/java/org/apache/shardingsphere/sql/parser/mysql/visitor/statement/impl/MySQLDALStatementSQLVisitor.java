@@ -405,7 +405,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setVariable(ctx.textOrIdentifier().getText());
         return result;
     }
-
+    
     @Override
     public ASTNode visitSystemVariable(final SystemVariableContext ctx) {
         VariableSegment result = new VariableSegment();
@@ -415,7 +415,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setVariable(ctx.textOrIdentifier().getText());
         return result;
     }
-
+    
     @Override
     public ASTNode visitFromSchema(final FromSchemaContext ctx) {
         return new FromSchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
