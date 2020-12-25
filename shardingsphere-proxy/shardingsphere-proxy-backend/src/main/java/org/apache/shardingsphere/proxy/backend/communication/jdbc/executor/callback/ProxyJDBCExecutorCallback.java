@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.update.Update
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOtherStatement;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -91,8 +92,14 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     @Override
     protected ExecuteResult getSaneResult(final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
-        return sqlStatement instanceof SelectStatement
-                ? new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery(getSaneSQL((SelectStatement) sqlStatement))) : new UpdateResult(0, 0);
+        if (sqlStatement instanceof SelectStatement) {
+            return new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery(getSaneSQL((SelectStatement) sqlStatement)));
+        }
+        // TODO abstract with show statement
+        if (sqlStatement instanceof MySQLShowOtherStatement) {
+            return new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery("SELECT 1"));
+        }
+        return new UpdateResult(0, 0);
     }
     
     private String getSaneSQL(final SelectStatement selectStatement) {
