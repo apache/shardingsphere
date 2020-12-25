@@ -19,7 +19,6 @@ package org.apache.shardingsphere.agent.metrics.api.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.core.plugin.definition.PluginDefinition;
-import org.apache.shardingsphere.agent.metrics.api.provider.MetricsProvider;
 import org.apache.shardingsphere.agent.metrics.api.constant.MethodNameConstant;
 
 /**
@@ -66,6 +65,5 @@ public final class MetricsPluginDefinition extends PluginDefinition {
                 .aroundInstanceMethod(ElementMatchers.named(MethodNameConstant.COMMIT).or(ElementMatchers.named(MethodNameConstant.ROLL_BACK)))
                 .implement(TRANSACTION_ADVICE_CLASS)
                 .build();
-        MetricsProvider.INSTANCE.newInstance();
     }
 }

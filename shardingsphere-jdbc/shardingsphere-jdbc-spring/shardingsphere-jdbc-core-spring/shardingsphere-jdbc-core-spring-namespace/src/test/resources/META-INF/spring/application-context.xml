@@ -38,12 +38,12 @@
                            ">
     <context:property-placeholder location="classpath:conf/conf.properties" />
     
-    <bean id="ds_0_primary" class="org.apache.shardingsphere.test.jdbc.MockedDataSource" />
-    <bean id="ds_0_replica_0" class="org.apache.shardingsphere.test.jdbc.MockedDataSource" />
-    <bean id="ds_0_replica_1" class="org.apache.shardingsphere.test.jdbc.MockedDataSource" />
-    <bean id="ds_1_primary" class="org.apache.shardingsphere.test.jdbc.MockedDataSource" />
-    <bean id="ds_1_replica_0" class="org.apache.shardingsphere.test.jdbc.MockedDataSource" />
-    <bean id="ds_1_replica_1" class="org.apache.shardingsphere.test.jdbc.MockedDataSource" />
+    <bean id="ds_0_primary" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
+    <bean id="ds_0_replica_0" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
+    <bean id="ds_0_replica_1" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
+    <bean id="ds_1_primary" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
+    <bean id="ds_1_replica_0" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
+    <bean id="ds_1_replica_1" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
     
     <sharding:sharding-algorithm id="dataSourceShardingAlgorithm" type="INLINE">
         <props>

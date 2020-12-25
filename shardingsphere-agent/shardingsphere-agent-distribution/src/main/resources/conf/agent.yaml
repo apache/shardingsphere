@@ -21,21 +21,22 @@ ignorePlugins:
   - test
 
 plugins:
-  - !PROMETHEUS
-    host: "localhost"
+  prometheus:
+    host:  "localhost"
     port: 9090
-    jvmInformationCollectorEnabled : true
-  - !JAEGER
+    props:
+      jvmInformationCollectorEnabled : "true"
+  Jaeger:
     host: "localhost"
     port: 5775
-    extra:
-      JAEGER_SAMPLER_TYPE: const
-      JAEGER_SAMPLER_PARAM: 1
-      JAEGER_REPORTER_LOG_SPANS: true
-      JAEGER_REPORTER_FLUSH_INTERVAL: 1
-  - !ZIPKIN
+    props:
+      JAEGER_SAMPLER_TYPE: "const"
+      JAEGER_SAMPLER_PARAM: "1"
+      JAEGER_REPORTER_LOG_SPANS: "true"
+      JAEGER_REPORTER_FLUSH_INTERVAL: "1"
+  Zipkin:
     host: "localhost"
     port: 15775
-    extra:
-      name: Zipkin
+    props:
+      name: "Zipkin"
     

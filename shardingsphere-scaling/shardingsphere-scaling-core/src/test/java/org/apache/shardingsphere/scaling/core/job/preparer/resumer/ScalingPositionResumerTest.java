@@ -66,8 +66,7 @@ public final class ScalingPositionResumerTest {
     public void assertPersistPosition() {
         ResumeBreakPointManager resumeBreakPointManager = mock(ResumeBreakPointManager.class);
         scalingPositionResumer.persistPosition(scalingJob, resumeBreakPointManager);
-        verify(resumeBreakPointManager).persistIncrementalPosition();
-        verify(resumeBreakPointManager).persistInventoryPosition();
+        verify(resumeBreakPointManager).persistPosition();
     }
     
     @SneakyThrows(IOException.class)

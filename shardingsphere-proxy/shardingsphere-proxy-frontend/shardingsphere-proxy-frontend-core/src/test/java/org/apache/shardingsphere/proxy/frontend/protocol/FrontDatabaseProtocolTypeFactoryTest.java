@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.protocol;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -47,13 +46,13 @@ import static org.mockito.Mockito.when;
 
 public final class FrontDatabaseProtocolTypeFactoryTest {
     
-    @Test(expected = ShardingSphereConfigurationException.class)
+    @Test
     public void assertGetDatabaseTypeWhenThrowShardingSphereConfigurationException() {
         StandardMetaDataContexts metaDataContexts = new StandardMetaDataContexts(
                 Collections.emptyMap(), mock(ExecutorEngine.class), mock(Authentication.class), new ConfigurationProperties(new Properties()));
         setMetaDataContexts(metaDataContexts);
         assertTrue(metaDataContexts.getMetaDataMap().isEmpty());
-        FrontDatabaseProtocolTypeFactory.getDatabaseType();
+        assertThat(FrontDatabaseProtocolTypeFactory.getDatabaseType().getName(), is("MySQL"));
     }
     
     @Test
