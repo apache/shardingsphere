@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
@@ -37,7 +36,7 @@ import java.util.Optional;
 public final class DefaultSaneQueryResultEngine implements JDBCSaneQueryResultEngine {
     
     @Override
-    public Optional<QueryResult> getSaneQueryResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) {
+    public Optional<QueryResult> getSaneQueryResult(final SQLStatement sqlStatement) {
         return sqlStatement instanceof SelectStatement || sqlStatement instanceof MySQLShowOtherStatement
                 ? Optional.of(createDefaultQueryResult()) : Optional.empty();
     }

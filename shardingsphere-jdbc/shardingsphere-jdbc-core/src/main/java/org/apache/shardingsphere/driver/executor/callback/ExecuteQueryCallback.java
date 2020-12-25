@@ -52,9 +52,9 @@ public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryRes
     }
     
     @Override
-    protected final QueryResult getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
+    protected final QueryResult getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) {
         // TODO useless, JDBC cannot support database gateway now
-        Optional<QueryResult> queryResult = JDBCSaneQueryResultEngineFactory.newInstance(databaseType).getSaneQueryResult(sqlStatement, jdbcExecutionUnit);
+        Optional<QueryResult> queryResult = JDBCSaneQueryResultEngineFactory.newInstance(databaseType).getSaneQueryResult(sqlStatement);
         Preconditions.checkState(queryResult.isPresent());
         return queryResult.get();
     }

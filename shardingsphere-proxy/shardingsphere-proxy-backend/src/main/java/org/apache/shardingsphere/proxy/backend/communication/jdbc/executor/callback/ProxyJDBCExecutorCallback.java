@@ -90,10 +90,9 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     }
     
     @Override
-    protected final ExecuteResult getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
+    protected final ExecuteResult getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) {
         String configuredDatabaseType = ProxyContext.getInstance().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
-        Optional<QueryResult> queryResult = JDBCSaneQueryResultEngineFactory.newInstance(
-                DatabaseTypeRegistry.getTrunkDatabaseType(configuredDatabaseType)).getSaneQueryResult(sqlStatement, jdbcExecutionUnit);
+        Optional<QueryResult> queryResult = JDBCSaneQueryResultEngineFactory.newInstance(DatabaseTypeRegistry.getTrunkDatabaseType(configuredDatabaseType)).getSaneQueryResult(sqlStatement);
         return queryResult.isPresent() ? queryResult.get() : new UpdateResult(0, 0);
     }
 }
