@@ -76,7 +76,7 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         boolean autoCommit = "1".equals(ctx.getText()) || "ON".equals(ctx.getText());
         return new AutoCommitSegment(ctx.getStartIndex(), ctx.getStopIndex(), autoCommit);
     }
-
+    
     @Override
     public ASTNode visitBeginTransaction(final BeginTransactionContext ctx) {
         return new MySQLBeginTransactionStatement();
