@@ -50,7 +50,6 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
-        // first packet from server is handshake initialization packet
         MySQLPacketPayload payload = new MySQLPacketPayload(in);
         if (!auth) {
             out.add(decodeHandshakePacket(payload));
