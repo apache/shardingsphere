@@ -129,7 +129,7 @@
                 <right>
                     <simple-table start-index="155" stop-index="171" name="t_order_item" alias="o"/>
                 </right>
-                <condition>
+                <on-condition>
                     <binary-operation-expression start-index="176" stop-index="197">
                         <left>
                             <column name="order_id" start-index="176" stop-index="185">
@@ -143,7 +143,7 @@
                             </column>
                         </right>
                     </binary-operation-expression>
-                </condition>
+                </on-condition>
             </join-table>
         </from>
         <where start-index="199" stop-index="219">

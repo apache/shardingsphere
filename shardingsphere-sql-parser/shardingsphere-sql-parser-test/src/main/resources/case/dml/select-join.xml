@@ -26,7 +26,7 @@
                 <right>
                     <simple-table name="t_order_item" alias="i" start-index="37" stop-index="50" />
                 </right>
-                <condition>
+                <on-condition>
                     <binary-operation-expression start-index="55" stop-index="77">
                         <left>
                             <column name="order_id" start-index="55" stop-index="64">
@@ -40,7 +40,7 @@
                             </column>
                         </right>
                     </binary-operation-expression>
-                </condition>
+                </on-condition>
             </join-table>
         </from>
         <projections start-index="7" stop-index="9">
@@ -75,7 +75,7 @@
                 <right>
                     <simple-table name="t_order_item" start-index="40" stop-index="51" />
                 </right>
-                <condition>
+                <on-condition>
                     <binary-operation-expression start-index="56" stop-index="95">
                         <left>
                             <column name="order_id" start-index="56" stop-index="71">
@@ -89,7 +89,7 @@
                             </column>
                         </right>
                     </binary-operation-expression>
-                </condition>
+                </on-condition>
             </join-table>
         </from>
         <projections start-index="7" stop-index="20">
@@ -124,7 +124,7 @@
                 <right>
                     <simple-table name="t_order_item" alias="i" start-index="31" stop-index="44" />
                 </right>
-                <columns name="order_id" start-index="52" stop-index="59" />
+                <using-columns name="order_id" start-index="52" stop-index="59" />
             </join-table>
         </from>
         <projections start-index="7" stop-index="9">

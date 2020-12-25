@@ -288,7 +288,7 @@
                 <right>
                     <simple-table name="t_order_item" alias="i" start-index="36" stop-index="49" />
                 </right>
-                <condition>
+                <on-condition>
                     <binary-operation-expression start-index="54" stop-index="102">
                         <left>
                             <binary-operation-expression start-index="54" stop-index="74">
@@ -322,7 +322,7 @@
                             </binary-operation-expression>
                         </right>
                     </binary-operation-expression>
-                </condition>
+                </on-condition>
             </join-table>
         </from>
         <projections start-index="7" stop-index="14">

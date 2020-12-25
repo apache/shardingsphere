@@ -40,9 +40,9 @@ public final class ExpectedJoinTable extends AbstractExpectedDelimiterSQLSegment
     @XmlElement(name = "right")
     private ExpectedTable right;
 
-    @XmlElement(name = "condition")
-    private ExpectedExpression condition;
+    @XmlElement(name = "on-condition")
+    private ExpectedExpression onCondition;
 
-    @XmlElement(name = "columns")
-    private final List<ExpectedColumn> columns = new LinkedList<>();
+    @XmlElement(name = "using-columns")
+    private final List<ExpectedColumn> usingColumns = new LinkedList<>();
 }

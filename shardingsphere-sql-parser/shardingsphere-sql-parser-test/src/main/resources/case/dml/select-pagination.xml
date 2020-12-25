@@ -26,7 +26,7 @@
                 <right>
                     <simple-table name="t_order_item" alias="i" start-index="31" stop-index="44" />
                 </right>
-                <condition>
+                <on-condition>
                     <binary-operation-expression start-index="49" stop-index="97">
                         <left>
                             <binary-operation-expression start-index="49" stop-index="69">
@@ -60,7 +60,7 @@
                             </binary-operation-expression>
                         </right>
                     </binary-operation-expression>
-                </condition>
+                </on-condition>
             </join-table>
         </from>
         <projections start-index="7" stop-index="9">
@@ -135,7 +135,7 @@
                 <right>
                     <simple-table name="t_order_item" alias="i" start-index="31" stop-index="44" />
                 </right>
-                <condition>
+                <on-condition>
                     <binary-operation-expression start-index="49" stop-index="97">
                         <left>
                             <binary-operation-expression start-index="49" stop-index="69">
@@ -169,7 +169,7 @@
                             </binary-operation-expression>
                         </right>
                     </binary-operation-expression>
-                </condition>
+                </on-condition>
             </join-table>
         </from>
 
@@ -244,7 +244,7 @@
                 <right>
                     <simple-table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="48" />
                 </right>
-                <condition>
+                <on-condition>
                     <binary-operation-expression start-index="53" stop-index="101">
                         <left>
                             <binary-operation-expression start-index="53" stop-index="73">
@@ -278,7 +278,7 @@
                             </binary-operation-expression>
                         </right>
                     </binary-operation-expression>
-                </condition>
+                </on-condition>
             </join-table>
         </from>
         <projections start-index="7" stop-index="9">
@@ -353,7 +353,7 @@
                 <right>
                     <simple-table name="t_order_item" alias="i" start-delimiter="`" end-delimiter="`" start-index="33" stop-index="48" />
                 </right>
-                <condition>
+                <on-condition>
                     <binary-operation-expression start-index="53" stop-index="101">
                         <left>
                             <binary-operation-expression start-index="53" stop-index="73">
@@ -387,7 +387,7 @@
                             </binary-operation-expression>
                         </right>
                     </binary-operation-expression>
-                </condition>
+                </on-condition>
             </join-table>
         </from>
         <projections start-index="7" stop-index="9">
@@ -486,7 +486,7 @@
                                 <right>
                                     <simple-table start-index="182" stop-index="195" name="t_order_item" alias="i" />
                                 </right>
-                                <condition>
+                                <on-condition>
                                     <binary-operation-expression start-index="200" stop-index="248">
                                         <left>
                                             <binary-operation-expression start-index="200" stop-index="220">
@@ -520,7 +520,7 @@
                                             </binary-operation-expression>
                                         </right>
                                     </binary-operation-expression>
-                                </condition>
+                                </on-condition>
                             </join-table>
                         </from>
                         <where start-index="250" stop-index="305" literal-stop-index="306">
@@ -609,7 +609,7 @@
                                 <right>
                                     <simple-table start-index="200" stop-index="213" name="t_order_item" alias="i" />
                                 </right>
-                                <condition>
+                                <on-condition>
                                     <binary-operation-expression start-index="218" stop-index="266">
                                         <left>
                                             <binary-operation-expression start-index="218" stop-index="238">
@@ -643,7 +643,7 @@
                                             </binary-operation-expression>
                                         </right>
                                     </binary-operation-expression>
-                                </condition>
+                                </on-condition>
                             </join-table>
                         </from>
                         <where start-index="268" stop-index="323" literal-stop-index="324">
@@ -708,7 +708,7 @@
                 <right>
                     <simple-table name="t_order_item" alias="i" start-index="31" stop-index="44" />
                 </right>
-                <condition>
+                <on-condition>
                     <binary-operation-expression start-index="49" stop-index="97">
                         <left>
                             <binary-operation-expression start-index="49" stop-index="69">
@@ -742,7 +742,7 @@
                             </binary-operation-expression>
                         </right>
                     </binary-operation-expression>
-                </condition>
+                </on-condition>
             </join-table>
         </from>
         <projections start-index="7" stop-index="9">
@@ -818,7 +818,7 @@
                 <right>
                     <simple-table name="t_order_item" alias="i" start-index="31" stop-index="44" />
                 </right>
-                <condition>
+                <on-condition>
                     <binary-operation-expression start-index="49" stop-index="97">
                         <left>
                             <binary-operation-expression start-index="49" stop-index="69">
@@ -852,7 +852,7 @@
                             </binary-operation-expression>
                         </right>
                     </binary-operation-expression>
-                </condition>
+                </on-condition>
             </join-table>
         </from>
         <projections start-index="7" stop-index="9">
@@ -950,7 +950,7 @@
                                 <right>
                                     <simple-table start-index="182" stop-index="195" name="t_order_item" alias="i" />
                                 </right>
-                                <condition>
+                                <on-condition>
                                     <binary-operation-expression start-index="200" stop-index="248">
                                         <left>
                                             <binary-operation-expression start-index="200" stop-index="220">
@@ -984,7 +984,7 @@
                                             </binary-operation-expression>
                                         </right>
                                     </binary-operation-expression>
-                                </condition>
+                                </on-condition>
                             </join-table>
                         </from>
                         <where start-index="250" stop-index="305" literal-stop-index="306">
@@ -1089,7 +1089,7 @@
                                 <right>
                                     <simple-table start-index="200" stop-index="213" name="t_order_item" alias="i" />
                                 </right>
-                                <condition>
+                                <on-condition>
                                     <binary-operation-expression start-index="218" stop-index="266">
                                         <left>
                                             <binary-operation-expression start-index="218" stop-index="238">
@@ -1123,7 +1123,7 @@
                                             </binary-operation-expression>
                                         </right>
                                     </binary-operation-expression>
-                                </condition>
+                                </on-condition>
                             </join-table>
                         </from>
                         <where start-index="268" stop-index="323" literal-stop-index="324">
@@ -1228,7 +1228,7 @@
                                 <right>
                                     <simple-table start-index="182" stop-index="195" name="t_order_item" alias="i" />
                                 </right>
-                                <condition>
+                                <on-condition>
                                     <binary-operation-expression start-index="200" stop-index="248">
                                         <left>
                                             <binary-operation-expression start-index="200" stop-index="220">
@@ -1262,7 +1262,7 @@
                                             </binary-operation-expression>
                                         </right>
                                     </binary-operation-expression>
-                                </condition>
+                                </on-condition>
                             </join-table>
                         </from>
                         <where start-index="250" stop-index="305" literal-stop-index="306">
@@ -1367,7 +1367,7 @@
                                 <right>
                                     <simple-table start-index="200" stop-index="213" name="t_order_item" alias="i" />
                                 </right>
-                                <condition>
+                                <on-condition>
                                     <binary-operation-expression start-index="218" stop-index="266">
                                         <left>
                                             <binary-operation-expression start-index="218" stop-index="238">
@@ -1401,7 +1401,7 @@
                                             </binary-operation-expression>
                                         </right>
                                     </binary-operation-expression>
-                                </condition>
+                                </on-condition>
                             </join-table>
                         </from>
                         <where start-index="268" stop-index="323" literal-stop-index="324">
@@ -1510,7 +1510,7 @@
                                                 <right>
                                                     <simple-table start-index="167" stop-index="180" name="t_order_item" alias="i" />
                                                 </right>
-                                                <condition>
+                                                <on-condition>
                                                     <binary-operation-expression start-index="185" stop-index="245">
                                                         <left>
                                                             <binary-operation-expression start-index="185" stop-index="211">
@@ -1544,7 +1544,7 @@
                                                             </binary-operation-expression>
                                                         </right>
                                                     </binary-operation-expression>
-                                                </condition>
+                                                </on-condition>
                                             </join-table>
                                         </from>
                                         <where start-index="247" stop-index="314">
@@ -1660,7 +1660,7 @@
                                                 <right>
                                                     <simple-table start-index="167" stop-index="180" name="t_order_item" alias="i" />
                                                 </right>
-                                                <condition>
+                                                <on-condition>
                                                     <binary-operation-expression start-index="185" stop-index="245">
                                                         <left>
                                                             <binary-operation-expression start-index="185" stop-index="211">
@@ -1694,7 +1694,7 @@
                                                             </binary-operation-expression>
                                                         </right>
                                                     </binary-operation-expression>
-                                                </condition>
+                                                </on-condition>
                                             </join-table>
                                         </from>
                                         <where start-index="247" stop-index="314">
@@ -1826,7 +1826,7 @@
                                                 <right>
                                                     <simple-table start-index="167" stop-index="180" name="t_order_item" alias="i" />
                                                 </right>
-                                                <condition>
+                                                <on-condition>
                                                     <binary-operation-expression start-index="185" stop-index="245">
                                                         <left>
                                                             <binary-operation-expression start-index="185" stop-index="211">
@@ -1860,7 +1860,7 @@
                                                             </binary-operation-expression>
                                                         </right>
                                                     </binary-operation-expression>
-                                                </condition>
+                                                </on-condition>
                                             </join-table>
                                         </from>
                                         <where start-index="247" stop-index="314">
