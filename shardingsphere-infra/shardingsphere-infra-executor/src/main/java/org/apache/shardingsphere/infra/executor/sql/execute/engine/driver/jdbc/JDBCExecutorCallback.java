@@ -54,6 +54,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     
     @Override
     public final Collection<T> execute(final Collection<JDBCExecutionUnit> executionUnits, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
+        // TODO It is better to judge whether need sane result before execute, can avoid exception thrown
         Collection<T> result = new LinkedList<>();
         for (JDBCExecutionUnit each : executionUnits) {
             T executeResult = execute(each, isTrunkThread, dataMap);
