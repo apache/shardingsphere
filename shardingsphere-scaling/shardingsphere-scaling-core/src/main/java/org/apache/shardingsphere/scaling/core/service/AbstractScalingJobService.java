@@ -57,31 +57,27 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
     
     private Optional<ScalingJob> start(final String sourceDataSource, final String sourceRule, final String targetDataSource, final String targetRule) {
         ScalingConfiguration scalingConfig = new ScalingConfiguration();
-        scalingConfig.setRuleConfiguration(
-                new RuleConfiguration(new ShardingSphereJDBCDataSourceConfiguration(sourceDataSource, sourceRule), new ShardingSphereJDBCDataSourceConfiguration(targetDataSource, targetRule)));
+        scalingConfig.setRuleConfiguration(new RuleConfiguration(
+                new ShardingSphereJDBCDataSourceConfiguration(sourceDataSource, sourceRule),
+                new ShardingSphereJDBCDataSourceConfiguration(targetDataSource, targetRule)));
         scalingConfig.setJobConfiguration(new JobConfiguration());
         return start(scalingConfig);
     }
     
     @Override
-    public void reset(final long jobId) throws SQLException {
-        new ScalingEnvironmentalManager().resetTargetTable(getJob(jobId));
-    }
-    
-    /**
-     * Do data consistency check.
-     *
-     * @param scalingJob scaling job
-     * @return data consistency check result
-     */
-    protected Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final ScalingJob scalingJob) {
-        DataConsistencyChecker dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance(scalingJob);
+    public Map<String, DataConsistencyCheckResult> check(final long jobId) {
+        DataConsistencyChecker dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance(getJob(jobId));
         Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.countCheck();
         if (result.values().stream().allMatch(DataConsistencyCheckResult::isCountValid)) {
             Map<String, Boolean> dataCheckResult = dataConsistencyChecker.dataCheck();
             result.forEach((key, value) -> value.setDataValid(dataCheckResult.getOrDefault(key, false)));
         }
         return result;
+    }
+    
+    @Override
+    public void reset(final long jobId) throws SQLException {
+        new ScalingEnvironmentalManager().resetTargetTable(getJob(jobId));
     }
     
     @RequiredArgsConstructor

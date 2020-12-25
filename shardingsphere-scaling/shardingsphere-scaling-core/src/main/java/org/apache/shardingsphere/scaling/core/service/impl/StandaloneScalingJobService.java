@@ -21,10 +21,9 @@ import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.preparer.ScalingJobPreparer;
-import org.apache.shardingsphere.scaling.core.schedule.ScalingTaskScheduler;
 import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
+import org.apache.shardingsphere.scaling.core.schedule.ScalingTaskScheduler;
 import org.apache.shardingsphere.scaling.core.service.AbstractScalingJobService;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 
@@ -64,39 +63,28 @@ public final class StandaloneScalingJobService extends AbstractScalingJobService
     }
     
     @Override
-    public void stop(final long jobId) {
+    public ScalingJob getJob(final long jobId) {
         if (!scalingJobMap.containsKey(jobId)) {
             throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", jobId));
         }
-        scalingTaskSchedulerMap.get(jobId).stop();
-        scalingJobMap.get(jobId).setStatus(JobStatus.STOPPED.name());
-    }
-    
-    @Override
-    public ScalingJob getJob(final long jobId) {
         return scalingJobMap.get(jobId);
     }
     
     @Override
+    public void stop(final long jobId) {
+        ScalingJob scalingJob = getJob(jobId);
+        scalingTaskSchedulerMap.get(jobId).stop();
+        scalingJob.setStatus(JobStatus.STOPPED.name());
+    }
+    
+    @Override
     public JobProgress getProgress(final long jobId) {
-        if (!scalingJobMap.containsKey(jobId)) {
-            throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", jobId));
-        }
-        ScalingJob scalingJob = scalingJobMap.get(jobId);
-        JobProgress result = new JobProgress(jobId, scalingJob.getStatus());
+        JobProgress result = new JobProgress(jobId, getJob(jobId).getStatus());
         if (scalingTaskSchedulerMap.containsKey(jobId)) {
             result.getInventoryTaskProgress().put("0", scalingTaskSchedulerMap.get(jobId).getInventoryTaskProgress());
             result.getIncrementalTaskProgress().put("0", scalingTaskSchedulerMap.get(jobId).getIncrementalTaskProgress());
         }
         return result;
-    }
-    
-    @Override
-    public Map<String, DataConsistencyCheckResult> check(final long jobId) {
-        if (!scalingJobMap.containsKey(jobId)) {
-            throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", jobId));
-        }
-        return dataConsistencyCheck(scalingJobMap.get(jobId));
     }
     
     @Override
