@@ -181,7 +181,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
         cacheStatements(executionGroups);
         return driverJDBCExecutor.executeQuery(executionGroups, 
-                new PreparedStatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), SQLExecutorExceptionHandler.isExceptionThrown()));
+                new PreparedStatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), SQLExecutorExceptionHandler.isExceptionThrown(), sqlStatement));
     }
     
     @Override

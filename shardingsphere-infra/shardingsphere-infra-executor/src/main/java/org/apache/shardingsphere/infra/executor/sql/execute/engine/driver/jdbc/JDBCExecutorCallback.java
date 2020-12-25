@@ -46,7 +46,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     private static final Map<String, DataSourceMetaData> CACHED_DATASOURCE_METADATA = new ConcurrentHashMap<>();
     
     private final DatabaseType databaseType;
-    
+
     private final boolean isExceptionThrown;
     
     @Override
