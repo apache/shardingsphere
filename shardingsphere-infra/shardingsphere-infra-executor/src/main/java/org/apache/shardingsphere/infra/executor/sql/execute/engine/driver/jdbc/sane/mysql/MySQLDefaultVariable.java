@@ -51,6 +51,7 @@ public final class MySQLDefaultVariable {
         VARIABLES.put("time_zone", "SYSTEM");
         VARIABLES.put("transaction_isolation", "REPEATABLE-READ");
         VARIABLES.put("wait_timeout", "28800");
+        VARIABLES.put("@@session.transaction_read_only", "0");
     }
     
     /**
