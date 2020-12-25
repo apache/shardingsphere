@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -46,7 +47,9 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     private static final Map<String, DataSourceMetaData> CACHED_DATASOURCE_METADATA = new ConcurrentHashMap<>();
     
     private final DatabaseType databaseType;
-
+    
+    private final SQLStatement sqlStatement;
+    
     private final boolean isExceptionThrown;
     
     @Override
@@ -80,7 +83,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
         } catch (final SQLException ex) {
             sqlExecutionHook.finishFailure(ex);
             SQLExecutorExceptionHandler.handleException(ex);
-            return isTrunkThread ? getSaneResult(jdbcExecutionUnit) : null;
+            return isTrunkThread ? getSaneResult(sqlStatement, jdbcExecutionUnit) : null;
         }
     }
     
@@ -96,5 +99,5 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     
     protected abstract T executeSQL(String sql, Statement statement, ConnectionMode connectionMode) throws SQLException;
     
-    protected abstract T getSaneResult(JDBCExecutionUnit jdbcExecutionUnit) throws SQLException;
+    protected abstract T getSaneResult(SQLStatement sqlStatement, JDBCExecutionUnit jdbcExecutionUnit) throws SQLException;
 }

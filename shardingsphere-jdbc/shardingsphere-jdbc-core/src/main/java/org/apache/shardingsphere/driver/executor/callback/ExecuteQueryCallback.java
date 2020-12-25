@@ -39,8 +39,8 @@ public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryRes
     
     private final SQLStatement sqlStatement;
     
-    protected ExecuteQueryCallback(final DatabaseType databaseType, final boolean isExceptionThrown, final SQLStatement sqlStatement) {
-        super(databaseType, isExceptionThrown);
+    protected ExecuteQueryCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
+        super(databaseType, sqlStatement, isExceptionThrown);
         this.sqlStatement = sqlStatement;
     }
     
@@ -51,7 +51,7 @@ public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryRes
     }
     
     @Override
-    protected final QueryResult getSaneResult(final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
+    protected final QueryResult getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
         return new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery(getSaneSQL()));
     }
     

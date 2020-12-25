@@ -181,7 +181,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
         cacheStatements(executionGroups);
         return driverJDBCExecutor.executeQuery(executionGroups, 
-                new PreparedStatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), SQLExecutorExceptionHandler.isExceptionThrown(), sqlStatement));
+                new PreparedStatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown()));
     }
     
     @Override
@@ -212,7 +212,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private JDBCExecutorCallback<Integer> createExecuteUpdateCallback() {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        return new JDBCExecutorCallback<Integer>(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), isExceptionThrown) {
+        return new JDBCExecutorCallback<Integer>(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), sqlStatement, isExceptionThrown) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -220,7 +220,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             
             @Override
-            protected Integer getSaneResult(final JDBCExecutionUnit jdbcExecutionUnit) {
+            protected Integer getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) {
                 return 0;
             }
         };
@@ -260,7 +260,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private JDBCExecutorCallback<Boolean> createExecuteCallback() {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        return new JDBCExecutorCallback<Boolean>(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), isExceptionThrown) {
+        return new JDBCExecutorCallback<Boolean>(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), sqlStatement, isExceptionThrown) {
             
             @Override
             protected Boolean executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
@@ -268,7 +268,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             
             @Override
-            protected Boolean getSaneResult(final JDBCExecutionUnit jdbcExecutionUnit) {
+            protected Boolean getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) {
                 return sqlStatement instanceof SelectStatement;
             }
         };

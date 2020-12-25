@@ -54,7 +54,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     public ProxyJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection,
                                      final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
-        super(databaseType, isExceptionThrown);
+        super(databaseType, sqlStatement, isExceptionThrown);
         this.sqlStatement = sqlStatement;
         this.backendConnection = backendConnection;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
@@ -92,7 +92,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     }
     
     @Override
-    protected final ExecuteResult getSaneResult(final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
+    protected final ExecuteResult getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
         if (sqlStatement instanceof SelectStatement) {
             return new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery(getSaneSQL((SelectStatement) sqlStatement)));
         }
