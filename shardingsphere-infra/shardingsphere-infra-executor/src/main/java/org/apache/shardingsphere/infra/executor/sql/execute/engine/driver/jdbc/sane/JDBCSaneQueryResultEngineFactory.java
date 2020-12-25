@@ -36,12 +36,12 @@ public final class JDBCSaneQueryResultEngineFactory {
     }
     
     /**
-     * Get sane query result.
+     * Get new instance of JDBC sane query result engine.
      * 
      * @param databaseType database type
-     * @return sane query result
+     * @return new instance of JDBC sane query result engine
      */
     public static JDBCSaneQueryResultEngine newInstance(final DatabaseType databaseType) {
-        return TypedSPIRegistry.getRegisteredService(JDBCSaneQueryResultEngine.class, databaseType.getName(), new Properties());
+        return TypedSPIRegistry.findRegisteredService(JDBCSaneQueryResultEngine.class, databaseType.getName(), new Properties()).orElse(new DefaultSaneQueryResultEngine());
     }
 }

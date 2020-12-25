@@ -19,24 +19,27 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.
 
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOtherStatement;
 
 import java.sql.SQLException;
 import java.util.Optional;
 
 /**
- * JDBC sane query result engine.
+ * Default Sane query result engine.
  */
-public interface JDBCSaneQueryResultEngine extends TypedSPI {
+public final class DefaultSaneQueryResultEngine implements JDBCSaneQueryResultEngine {
     
-    /**
-     * Get sane query result.
-     * 
-     * @param sqlStatement SQL statement
-     * @param jdbcExecutionUnit JDBC execution unit
-     * @return sane query result
-     * @throws SQLException SQL exception
-     */
-    Optional<QueryResult> getSaneQueryResult(SQLStatement sqlStatement, JDBCExecutionUnit jdbcExecutionUnit) throws SQLException;
+    @Override
+    public Optional<QueryResult> getSaneQueryResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
+        return sqlStatement instanceof SelectStatement || sqlStatement instanceof MySQLShowOtherStatement
+                ? Optional.of(new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery("SELECT 1"))) : Optional.empty();
+    }
+    
+    @Override
+    public String getType() {
+        return "";
+    }
 }
