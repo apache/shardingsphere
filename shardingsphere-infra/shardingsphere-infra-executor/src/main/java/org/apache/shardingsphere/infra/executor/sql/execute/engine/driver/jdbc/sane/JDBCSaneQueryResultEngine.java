@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.sql.SQLException;
 import java.util.Optional;
 
 /**
@@ -36,7 +35,6 @@ public interface JDBCSaneQueryResultEngine extends TypedSPI {
      * @param sqlStatement SQL statement
      * @param jdbcExecutionUnit JDBC execution unit
      * @return sane query result
-     * @throws SQLException SQL exception
      */
-    Optional<QueryResult> getSaneQueryResult(SQLStatement sqlStatement, JDBCExecutionUnit jdbcExecutionUnit) throws SQLException;
+    Optional<QueryResult> getSaneQueryResult(SQLStatement sqlStatement, JDBCExecutionUnit jdbcExecutionUnit);
 }
