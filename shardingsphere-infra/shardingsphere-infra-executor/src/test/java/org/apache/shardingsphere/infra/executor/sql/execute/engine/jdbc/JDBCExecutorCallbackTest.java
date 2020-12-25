@@ -81,7 +81,7 @@ public final class JDBCExecutorCallbackTest {
             }
             
             @Override
-            protected Integer getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) {
+            protected Integer getSaneResult(final SQLStatement sqlStatement) {
                 return 0;
             }
         };

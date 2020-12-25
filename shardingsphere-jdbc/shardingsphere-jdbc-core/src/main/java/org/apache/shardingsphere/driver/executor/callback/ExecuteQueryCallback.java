@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.executor.callback;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.JDBCSaneQueryResultEngineFactory;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -52,11 +51,11 @@ public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryRes
     }
     
     @Override
-    protected final QueryResult getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) {
+    protected final QueryResult getSaneResult(final SQLStatement sqlStatement) {
         // TODO useless, JDBC cannot support database gateway now
         Optional<QueryResult> queryResult = JDBCSaneQueryResultEngineFactory.newInstance(databaseType).getSaneQueryResult(sqlStatement);
         Preconditions.checkState(queryResult.isPresent());
-        return queryResult.get();
+        return null;
     }
     
     protected abstract ResultSet executeQuery(String sql, Statement statement) throws SQLException;

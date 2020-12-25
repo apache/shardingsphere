@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -84,7 +83,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
         } catch (final SQLException ex) {
             sqlExecutionHook.finishFailure(ex);
             SQLExecutorExceptionHandler.handleException(ex);
-            return isTrunkThread ? getSaneResult(sqlStatement, jdbcExecutionUnit) : null;
+            return isTrunkThread ? getSaneResult(sqlStatement) : null;
         }
     }
     
@@ -100,5 +99,5 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     
     protected abstract T executeSQL(String sql, Statement statement, ConnectionMode connectionMode) throws SQLException;
     
-    protected abstract T getSaneResult(SQLStatement sqlStatement, JDBCExecutionUnit jdbcExecutionUnit) throws SQLException;
+    protected abstract T getSaneResult(SQLStatement sqlStatement) throws SQLException;
 }
