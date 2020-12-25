@@ -66,7 +66,7 @@ public final class MySQLSaneQueryResultEngine implements JDBCSaneQueryResultEngi
         for (ProjectionSegment each : selectStatement.getProjections().getProjections()) {
             if (each instanceof ExpressionProjectionSegment) {
                 String alias = ((ExpressionProjectionSegment) each).getAlias().orElse(((ExpressionProjectionSegment) each).getText());
-                saneProjections.add(String.format("%s AS %s", 10000, quoteCharacter.wrap(alias)));
+                saneProjections.add(String.format("'%s' AS %s", MySQLDefaultVariable.containsVariable(alias) ? MySQLDefaultVariable.getVariable(alias) : "1", quoteCharacter.wrap(alias)));
             }
         }
         return String.format("SELECT %s", String.join(", ", saneProjections));
