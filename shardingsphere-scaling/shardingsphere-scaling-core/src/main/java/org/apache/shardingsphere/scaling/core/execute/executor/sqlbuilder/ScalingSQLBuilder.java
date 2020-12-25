@@ -54,6 +54,14 @@ public interface ScalingSQLBuilder {
     String buildDeleteSQL(DataRecord dataRecord, Collection<Column> conditionColumns);
     
     /**
+     * Build truncate SQL.
+     *
+     * @param tableName table name
+     * @return truncate SQL
+     */
+    String buildTruncateSQL(String tableName);
+    
+    /**
      * Build count SQL.
      *
      * @param tableName table name

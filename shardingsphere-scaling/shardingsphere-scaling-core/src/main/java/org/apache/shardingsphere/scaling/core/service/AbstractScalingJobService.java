@@ -28,8 +28,10 @@ import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckerFactory;
+import org.apache.shardingsphere.scaling.core.job.environmental.ScalingEnvironmentalManager;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executors;
@@ -62,8 +64,8 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
     }
     
     @Override
-    public void reset(final long jobId) {
-        // TODO reset target tables.
+    public void reset(final long jobId) throws SQLException {
+        new ScalingEnvironmentalManager().resetTargetTable(getJob(jobId));
     }
     
     /**

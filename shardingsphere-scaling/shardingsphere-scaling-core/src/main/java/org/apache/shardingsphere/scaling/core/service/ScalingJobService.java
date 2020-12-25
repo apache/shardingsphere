@@ -22,6 +22,7 @@ import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -93,8 +94,9 @@ public interface ScalingJobService {
      * Reset target tables.
      *
      * @param jobId job id
+     * @throws SQLException SQL exception
      */
-    void reset(long jobId);
+    void reset(long jobId) throws SQLException;
     
     /**
      * remove job.
