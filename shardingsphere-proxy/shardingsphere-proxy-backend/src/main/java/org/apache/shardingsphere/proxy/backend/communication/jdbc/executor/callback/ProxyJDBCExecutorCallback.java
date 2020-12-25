@@ -27,6 +27,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOtherStatement;
@@ -34,7 +36,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collections;
 
 /**
  * JDBC executor callback for proxy.
@@ -91,7 +92,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     }
     
     @Override
-    protected ExecuteResult getSaneResult(final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
+    protected final ExecuteResult getSaneResult(final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
         if (sqlStatement instanceof SelectStatement) {
             return new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery(getSaneSQL((SelectStatement) sqlStatement)));
         }
@@ -103,7 +104,20 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     }
     
     private String getSaneSQL(final SelectStatement selectStatement) {
-        String saneProjections = String.join(", ", Collections.nCopies(selectStatement.getProjections().getProjections().size(), "1"));
+        StringBuilder saneProjections = new StringBuilder();
+        int count = 0;
+        for (ProjectionSegment each : selectStatement.getProjections().getProjections()) {
+            if (each instanceof ExpressionProjectionSegment) {
+                String label = ((ExpressionProjectionSegment) each).getAlias().orElse(((ExpressionProjectionSegment) each).getText());
+                saneProjections.append("100000 AS \"");
+                saneProjections.append(label);
+                saneProjections.append("\"");
+                if (count < selectStatement.getProjections().getProjections().size() - 1) {
+                    saneProjections.append(", ");
+                }
+            }
+            count++;
+        }
         return String.format("SELECT %s", saneProjections);
     }
 }
