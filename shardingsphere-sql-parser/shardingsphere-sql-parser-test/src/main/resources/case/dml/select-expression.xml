@@ -129,18 +129,21 @@
                 <right>
                     <simple-table start-index="155" stop-index="171" name="t_order_item" alias="o"/>
                 </right>
-                <joinSpecification>
-                    <and-predicate>
-                        <predicate start-index="176" stop-index="197">
-                            <column-left-value name="order_id" start-index="176" stop-index="185">
-                                <owner name="o" start-index="176" stop-index="176"/>
-                            </column-left-value>
-                            <column-right-value name="order_id" start-index="188" stop-index="197">
-                                <owner name="t" start-index="188" stop-index="188"/>
-                            </column-right-value>
-                        </predicate>
-                    </and-predicate>
-                </joinSpecification>
+                <on-condition>
+                    <binary-operation-expression start-index="176" stop-index="197">
+                        <left>
+                            <column name="order_id" start-index="176" stop-index="185">
+                                <owner name="o" start-index="176" stop-index="176" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="order_id" start-index="188" stop-index="197">
+                                <owner name="t" start-index="188" stop-index="188" />
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
             </join-table>
         </from>
         <where start-index="199" stop-index="219">

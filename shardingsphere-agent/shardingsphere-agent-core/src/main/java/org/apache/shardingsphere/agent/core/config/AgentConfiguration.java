@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.agent.core.config;
 
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,6 +37,5 @@ public final class AgentConfiguration {
     
     private Set<String> ignorePlugins = new HashSet<>();
     
-    private Collection<PluginConfiguration> pluginConfigurations = new LinkedList<>();
-    
+    private Map<String, PluginConfiguration> plugins = new HashMap<>();
 }

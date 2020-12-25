@@ -15,4 +15,4 @@
 # limitations under the License.
 #
  
-org.apache.shardingsphere.dbtest.fixture.StandardModuloAlgorithm
+org.apache.shardingsphere.test.integration.fixture.StandardModuloAlgorithm

@@ -103,7 +103,6 @@ execute
     | doStatement
     | show
     | setVariable
-    | setName
     | setCharacter
     | call
     | change
@@ -118,4 +117,5 @@ execute
     | unlock
     | xa
     ) (SEMI_ EOF? | EOF)
+    | EOF
     ;

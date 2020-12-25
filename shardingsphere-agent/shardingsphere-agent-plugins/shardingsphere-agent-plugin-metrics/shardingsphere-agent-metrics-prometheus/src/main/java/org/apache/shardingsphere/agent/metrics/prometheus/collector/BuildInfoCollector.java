@@ -30,12 +30,12 @@ public final class BuildInfoCollector extends Collector {
     
     @Override
     public List<MetricFamilySamples> collect() {
-        List<MetricFamilySamples> result = new ArrayList<>();
+        List<MetricFamilySamples> result = new ArrayList<>(1);
         GaugeMetricFamily artifactInfo = new GaugeMetricFamily(
                 "jmx_exporter_build_info",
                 "A metric with a constant '1' value labeled with the version of the JMX exporter.",
                 Arrays.asList("version", "name"));
-        Package pkg = this.getClass().getPackage();
+        Package pkg = getClass().getPackage();
         String version = pkg.getImplementationVersion();
         String name = pkg.getImplementationTitle();
         artifactInfo.addMetric(Arrays.asList(null != version ? version : "unknown", null != name ? name : "unknown"), 1L);

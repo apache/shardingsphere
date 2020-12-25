@@ -17,19 +17,12 @@
 
 package org.apache.shardingsphere.agent.core.yaml;
 
-import com.google.common.base.Strings;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Properties;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.core.yaml.constructor.AgentYamlConstructor;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -52,54 +45,7 @@ public final class YamlEngine {
                 FileInputStream fileInputStream = new FileInputStream(yamlFile);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream)
         ) {
-            return new Yaml(new AgentYamlConstructor(classType)).loadAs(inputStreamReader, classType);
+            return new Yaml().loadAs(inputStreamReader, classType);
         }
-    }
-    
-    /**
-     * Unmarshal YAML.
-     *
-     * @param yamlBytes YAML bytes
-     * @param classType class type
-     * @param <T> type of class
-     * @return object from YAML
-     * @throws IOException IO Exception
-     */
-    public static <T> T unmarshal(final byte[] yamlBytes, final Class<T> classType) throws IOException {
-        try (InputStream inputStream = new ByteArrayInputStream(yamlBytes)) {
-            return new Yaml(new AgentYamlConstructor(classType)).loadAs(inputStream, classType);
-        }
-    }
-    
-    /**
-     * Unmarshal YAML.
-     *
-     * @param yamlContent YAML content
-     * @param classType class type
-     * @param <T> type of class
-     * @return object from YAML
-     */
-    public static <T> T unmarshal(final String yamlContent, final Class<T> classType) {
-        return new Yaml(new AgentYamlConstructor(classType)).loadAs(yamlContent, classType);
-    }
-    
-    /**
-     * Unmarshal YAML.
-     *
-     * @param yamlContent YAML content
-     * @return map from YAML
-     */
-    public static Map<?, ?> unmarshal(final String yamlContent) {
-        return Strings.isNullOrEmpty(yamlContent) ? new LinkedHashMap<>() : (Map) new Yaml().load(yamlContent);
-    }
-    
-    /**
-     * Unmarshal properties YAML.
-     *
-     * @param yamlContent YAML content
-     * @return properties from YAML
-     */
-    public static Properties unmarshalProperties(final String yamlContent) {
-        return Strings.isNullOrEmpty(yamlContent) ? new Properties() : new Yaml().loadAs(yamlContent, Properties.class);
     }
 }

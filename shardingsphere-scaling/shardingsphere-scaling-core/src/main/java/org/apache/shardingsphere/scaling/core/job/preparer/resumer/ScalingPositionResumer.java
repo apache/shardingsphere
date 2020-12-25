@@ -105,21 +105,12 @@ public final class ScalingPositionResumer {
      * @param resumeBreakPointManager resume from break-point manager
      */
     public void persistPosition(final ScalingJob scalingJob, final ResumeBreakPointManager resumeBreakPointManager) {
-        persistIncrementalPosition(scalingJob.getIncrementalTasks(), resumeBreakPointManager);
-        persistInventoryPosition(scalingJob.getInventoryTasks(), resumeBreakPointManager);
-    }
-    
-    private void persistInventoryPosition(final List<ScalingTask> inventoryTasks, final ResumeBreakPointManager resumeBreakPointManager) {
-        for (ScalingTask each : inventoryTasks) {
+        for (ScalingTask each : scalingJob.getInventoryTasks()) {
             resumeBreakPointManager.getInventoryPositionManagerMap().put(each.getTaskId(), each.getPositionManager());
         }
-        resumeBreakPointManager.persistInventoryPosition();
-    }
-    
-    private void persistIncrementalPosition(final List<ScalingTask> incrementalTasks, final ResumeBreakPointManager resumeBreakPointManager) {
-        for (ScalingTask each : incrementalTasks) {
+        for (ScalingTask each : scalingJob.getIncrementalTasks()) {
             resumeBreakPointManager.getIncrementalPositionManagerMap().put(each.getTaskId(), each.getPositionManager());
         }
-        resumeBreakPointManager.persistIncrementalPosition();
+        resumeBreakPointManager.persistPosition();
     }
 }

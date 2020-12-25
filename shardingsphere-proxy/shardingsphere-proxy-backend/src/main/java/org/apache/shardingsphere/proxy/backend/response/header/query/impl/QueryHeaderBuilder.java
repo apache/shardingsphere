@@ -65,10 +65,10 @@ public final class QueryHeaderBuilder {
     }
     
     private static QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereMetaData metaData, final String columnName, final int columnIndex) throws SQLException {
-        String schemaName = metaData.getName();
+        String schemaName = null == metaData ? "" : metaData.getName();
         String actualTableName = queryResultMetaData.getTableName(columnIndex);
-        Optional<DataNodeContainedRule> dataNodeContainedRule =
-                metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
+        Optional<DataNodeContainedRule> dataNodeContainedRule = null == metaData
+                ? Optional.empty() : metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(rule -> (DataNodeContainedRule) rule);
         String tableName;
         boolean primaryKey;
         if (null != actualTableName && dataNodeContainedRule.isPresent()) {

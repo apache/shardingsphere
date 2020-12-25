@@ -26,6 +26,7 @@ import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
+import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
@@ -100,6 +101,11 @@ public final class DistributedScalingJobServiceTest {
         assertTrue(scalingJob.isPresent());
         scalingJobService.stop(scalingJob.get().getJobId());
         assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(scalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":false"));
+    }
+    
+    @Test(expected = ScalingJobNotFoundException.class)
+    public void assertGetNotExistJob() {
+        scalingJobService.getJob(0);
     }
     
     @Test

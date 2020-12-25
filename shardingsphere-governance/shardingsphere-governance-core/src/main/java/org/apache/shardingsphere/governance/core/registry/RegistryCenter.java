@@ -139,6 +139,7 @@ public final class RegistryCenter {
      */
     public void releaseGlobalLock() {
         repository.releaseLock();
+        repository.delete(lockNode.getGlobalLockNodePath());
     }
     
     /**

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -45,7 +47,10 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     
     private static final Map<String, DataSourceMetaData> CACHED_DATASOURCE_METADATA = new ConcurrentHashMap<>();
     
+    @Getter
     private final DatabaseType databaseType;
+    
+    private final SQLStatement sqlStatement;
     
     private final boolean isExceptionThrown;
     
@@ -53,7 +58,10 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     public final Collection<T> execute(final Collection<JDBCExecutionUnit> executionUnits, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
         Collection<T> result = new LinkedList<>();
         for (JDBCExecutionUnit each : executionUnits) {
-            result.add(execute(each, isTrunkThread, dataMap));
+            T executeResult = execute(each, isTrunkThread, dataMap);
+            if (null != executeResult) {
+                result.add(executeResult);
+            }
         }
         return result;
     }
@@ -77,7 +85,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
         } catch (final SQLException ex) {
             sqlExecutionHook.finishFailure(ex);
             SQLExecutorExceptionHandler.handleException(ex);
-            return null;
+            return isTrunkThread ? getSaneResult(sqlStatement, jdbcExecutionUnit) : null;
         }
     }
     
@@ -92,4 +100,6 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     }
     
     protected abstract T executeSQL(String sql, Statement statement, ConnectionMode connectionMode) throws SQLException;
+    
+    protected abstract T getSaneResult(SQLStatement sqlStatement, JDBCExecutionUnit jdbcExecutionUnit) throws SQLException;
 }

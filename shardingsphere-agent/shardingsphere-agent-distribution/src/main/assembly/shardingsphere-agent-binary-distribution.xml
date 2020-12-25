@@ -41,6 +41,14 @@
         </fileSet>
 
         <fileSet>
+            <directory>${project.basedir}/../shardingsphere-agent-plugins/shardingsphere-agent-plugin-logging/target/plugins</directory>
+            <outputDirectory>./plugins</outputDirectory>
+            <includes>
+                <include>**.jar</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
             <directory>${project.basedir}/../shardingsphere-agent-plugins/shardingsphere-agent-plugin-tracing/target/plugins</directory>
             <outputDirectory>./plugins</outputDirectory>
             <includes>

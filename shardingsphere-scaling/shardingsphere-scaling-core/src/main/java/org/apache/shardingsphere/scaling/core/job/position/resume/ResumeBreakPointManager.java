@@ -48,14 +48,25 @@ public interface ResumeBreakPointManager {
     Map<String, PositionManager> getIncrementalPositionManagerMap();
     
     /**
-     * Persist inventory position.
+     * Get position.
+     *
+     * @param path path
+     * @return data
      */
-    void persistInventoryPosition();
+    String getPosition(String path);
     
     /**
-     * Persist incremental position.
+     * Persist position immediately.
      */
-    void persistIncrementalPosition();
+    void persistPosition();
+    
+    /**
+     * Persist position.
+     *
+     * @param path path
+     * @param data data
+     */
+    void persistPosition(String path, String data);
     
     /**
      * Close this manager.
