@@ -37,11 +37,15 @@ public final class MySQLSaneQueryResultEngine implements JDBCSaneQueryResultEngi
     
     @Override
     public Optional<QueryResult> getSaneQueryResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
+        Optional<String> saneSQL = getSaneSQL(sqlStatement);
+        return saneSQL.isPresent() ? Optional.of(new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery(saneSQL.get()))) : Optional.empty();
+    }
+    
+    private Optional<String> getSaneSQL(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
-            return Optional.of(new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery(getSaneSQL((SelectStatement) sqlStatement))));
-        }
-        if (sqlStatement instanceof MySQLShowOtherStatement) {
-            return Optional.of(new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery("SELECT 1")));
+            return Optional.of(getSaneSQL((SelectStatement) sqlStatement));
+        } else if (sqlStatement instanceof MySQLShowOtherStatement) {
+            return Optional.of("SELECT 1");
         }
         return Optional.empty();
     }
