@@ -18,18 +18,14 @@
 package org.apache.shardingsphere.infra.optimize.execute;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.calcite.DataContext;
 import org.apache.calcite.adapter.enumerable.EnumerableConvention;
-import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.interpreter.InterpretableConvention;
 import org.apache.calcite.interpreter.InterpretableConverter;
 import org.apache.calcite.linq4j.Enumerable;
-import org.apache.calcite.linq4j.QueryProvider;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
@@ -37,6 +33,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.optimize.context.CalciteContext;
+import org.apache.shardingsphere.infra.optimize.context.CalciteDataContext;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -76,39 +73,13 @@ public final class CalciteRawExecutor {
     
     private Enumerable<Object[]> execute(final RelNode bestPlan) {
         RelOptCluster cluster = context.getRelConverter().getCluster();
-        return new CalciteInterpretableConverter(cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(createDataContext());
+        return new CalciteInterpretableConverter(cluster, cluster.traitSetOf(InterpretableConvention.INSTANCE), bestPlan).bind(new CalciteDataContext(context));
     }
     
     private RelNode optimize(final RelNode logicPlan) {
         RelOptPlanner planner = context.getRelConverter().getCluster().getPlanner();
         planner.setRoot(planner.changeTraits(logicPlan, context.getRelConverter().getCluster().traitSet().replace(EnumerableConvention.INSTANCE)));
         return planner.findBestExp();
-    }
-    
-    @SuppressWarnings("checkstyle:AnonInnerLength")
-    private DataContext createDataContext() {
-        return new DataContext() {
-            
-            @Override
-            public SchemaPlus getRootSchema() {
-                return context.getRootSchema().plus();
-            }
-            
-            @Override
-            public JavaTypeFactory getTypeFactory() {
-                return (JavaTypeFactory) context.getRelConverter().getCluster().getTypeFactory();
-            }
-            
-            @Override
-            public QueryProvider getQueryProvider() {
-                return null;
-            }
-            
-            @Override
-            public Object get(final String name) {
-                return null;
-            }
-        };
     }
     
     public static final class CalciteInterpretableConverter extends InterpretableConverter {
