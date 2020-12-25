@@ -87,11 +87,23 @@ showProfileType
     ;
 
 setVariable
-    : SET variableAssign (COMMA_ variableAssign)*
+    : SET optionValueList
     ;
 
-variableAssign
-    : variable EQ_ setExprOrDefault
+optionValueList
+    : optionValueNoOptionType (COMMA_ optionValue)*
+    | optionType (internalVariableName EQ_ setExprOrDefault) (COMMA_ optionValue)*
+    ;
+
+optionValueNoOptionType
+    : internalVariableName EQ_ setExprOrDefault
+    | userVariable EQ_ expr
+    | setSystemVariable EQ_ setExprOrDefault
+    | NAMES (EQ_ expr | charsetName collateClause? | DEFAULT)
+    ;
+
+optionValue
+    : optionType internalVariableName EQ_ setExprOrDefault | optionValueNoOptionType
     ;
 
 showBinaryLogs
@@ -232,10 +244,6 @@ showWarnings
 
 setCharacter
     : SET (CHARACTER SET | CHARSET) (charsetName | DEFAULT)
-    ;
-
-setName
-    : SET NAMES (EQ_ expr | charsetName collateClause? | DEFAULT)
     ;
 
 clone

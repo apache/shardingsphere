@@ -103,7 +103,7 @@ execute
     | doStatement
     | show
     | setVariable
-    | setName
+//    | setName
     | setCharacter
     | call
     | change

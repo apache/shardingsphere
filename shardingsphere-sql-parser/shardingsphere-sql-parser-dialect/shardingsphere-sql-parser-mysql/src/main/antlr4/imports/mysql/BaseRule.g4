@@ -156,7 +156,7 @@ textOrIdentifier
     ;
 
 variable
-    : (AT_? AT_)? scope? DOT_? internalVariableName
+    : userVariable | systemVariable
     ;
 
 userVariable
@@ -164,10 +164,14 @@ userVariable
     ;
 
 systemVariable
-    : AT_ AT_ scope? textOrIdentifier (DOT_ identifier)?
+    : AT_ AT_ systemVariableScope=(GLOBAL | SESSION | LOCAL)? textOrIdentifier (DOT_ identifier)?
     ;
 
-scope
+setSystemVariable
+    : AT_ AT_ (optionType DOT_)? internalVariableName
+    ;
+
+optionType
     : GLOBAL | PERSIST | PERSIST_ONLY | SESSION | LOCAL
     ;
 
@@ -179,6 +183,23 @@ internalVariableName
 
 setExprOrDefault
     : expr | DEFAULT | ALL | ON | BINARY | ROW | SYSTEM
+    ;
+
+transactionCharacteristics
+    : transactionAccessMode (COMMA_ isolationLevel)?
+    | isolationLevel (COMMA_ transactionAccessMode)?
+    ;
+
+isolationLevel
+    : ISOLATION LEVEL isolationTypes
+    ;
+
+isolationTypes
+    : REPEATABLE READ | READ COMMITTED | READ UNCOMMITTED | SERIALIZABLE
+    ;
+
+transactionAccessMode
+    : READ (WRITE | ONLY)
     ;
 
 schemaName
