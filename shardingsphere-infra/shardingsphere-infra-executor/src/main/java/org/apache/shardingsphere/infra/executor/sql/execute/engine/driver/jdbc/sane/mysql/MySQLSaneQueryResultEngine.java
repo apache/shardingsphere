@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.mysql;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.JDBCSaneQueryResultEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandler;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandlerFactory;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -28,6 +32,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOtherStatement;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -36,36 +42,34 @@ import java.util.Optional;
 public final class MySQLSaneQueryResultEngine implements JDBCSaneQueryResultEngine {
     
     @Override
-    public Optional<QueryResult> getSaneQueryResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
-        Optional<String> saneSQL = getSaneSQL(sqlStatement);
+    public Optional<QueryResult> getSaneQueryResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit, final DatabaseType targetDatabaseType) throws SQLException {
+        Optional<String> saneSQL = getSaneSQL(sqlStatement, getDialectQuoteCharacter(targetDatabaseType));
         return saneSQL.isPresent() ? Optional.of(new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery(saneSQL.get()))) : Optional.empty();
     }
     
-    private Optional<String> getSaneSQL(final SQLStatement sqlStatement) {
+    private QuoteCharacter getDialectQuoteCharacter(final DatabaseType targetDatabaseType) {
+        Optional<DatabaseMetaDataDialectHandler> databaseMetaDataDialectHandler = DatabaseMetaDataDialectHandlerFactory.findHandler(targetDatabaseType);
+        return databaseMetaDataDialectHandler.isPresent() ? databaseMetaDataDialectHandler.get().getQuoteCharacter() : QuoteCharacter.NONE;
+    }
+    
+    private Optional<String> getSaneSQL(final SQLStatement sqlStatement, final QuoteCharacter quoteCharacter) {
         if (sqlStatement instanceof SelectStatement) {
-            return Optional.of(getSaneSQL((SelectStatement) sqlStatement));
+            return Optional.of(getSaneSQL((SelectStatement) sqlStatement, quoteCharacter));
         } else if (sqlStatement instanceof MySQLShowOtherStatement) {
             return Optional.of("SELECT 1");
         }
         return Optional.empty();
     }
     
-    private String getSaneSQL(final SelectStatement selectStatement) {
-        StringBuilder saneProjections = new StringBuilder();
-        int count = 0;
+    private String getSaneSQL(final SelectStatement selectStatement, final QuoteCharacter quoteCharacter) {
+        Collection<String> saneProjections = new LinkedList<>();
         for (ProjectionSegment each : selectStatement.getProjections().getProjections()) {
             if (each instanceof ExpressionProjectionSegment) {
-                String label = ((ExpressionProjectionSegment) each).getAlias().orElse(((ExpressionProjectionSegment) each).getText());
-                saneProjections.append("100000 AS \"");
-                saneProjections.append(label);
-                saneProjections.append("\"");
-                if (count < selectStatement.getProjections().getProjections().size() - 1) {
-                    saneProjections.append(", ");
-                }
+                String alias = ((ExpressionProjectionSegment) each).getAlias().orElse(((ExpressionProjectionSegment) each).getText());
+                saneProjections.add(String.format("%s AS %s", 10000, quoteCharacter.wrap(alias)));
             }
-            count++;
         }
-        return String.format("SELECT %s", saneProjections);
+        return String.format("SELECT %s", String.join(", ", saneProjections));
     }
     
     @Override

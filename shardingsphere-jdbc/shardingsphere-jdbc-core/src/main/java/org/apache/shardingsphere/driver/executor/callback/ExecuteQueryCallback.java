@@ -38,11 +38,8 @@ import java.util.Optional;
  */
 public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryResult> {
     
-    private final DatabaseType databaseType;
-    
     protected ExecuteQueryCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
         super(databaseType, sqlStatement, isExceptionThrown);
-        this.databaseType = databaseType;
     }
     
     @Override
@@ -53,7 +50,8 @@ public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryRes
     
     @Override
     protected final QueryResult getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
-        Optional<QueryResult> queryResult = JDBCSaneQueryResultEngineFactory.newInstance(databaseType).getSaneQueryResult(sqlStatement, jdbcExecutionUnit);
+        // TODO useless, JDBC cannot support database gateway now
+        Optional<QueryResult> queryResult = JDBCSaneQueryResultEngineFactory.newInstance(getDatabaseType()).getSaneQueryResult(sqlStatement, jdbcExecutionUnit, getDatabaseType());
         Preconditions.checkState(queryResult.isPresent());
         return queryResult.get();
     }
