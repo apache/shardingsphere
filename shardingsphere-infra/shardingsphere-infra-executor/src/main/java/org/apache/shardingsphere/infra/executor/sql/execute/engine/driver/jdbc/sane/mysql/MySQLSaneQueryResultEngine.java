@@ -44,23 +44,32 @@ public final class MySQLSaneQueryResultEngine implements JDBCSaneQueryResultEngi
     @Override
     public Optional<QueryResult> getSaneQueryResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) {
         if (sqlStatement instanceof SelectStatement) {
-            List<RawQueryResultColumnMetaData> queryResultColumnMetaDataList = new ArrayList<>(((SelectStatement) sqlStatement).getProjections().getProjections().size());
-            List<Object> data = new ArrayList<>(((SelectStatement) sqlStatement).getProjections().getProjections().size());
-            for (ProjectionSegment each : ((SelectStatement) sqlStatement).getProjections().getProjections()) {
-                if (each instanceof ExpressionProjectionSegment) {
-                    String text = ((ExpressionProjectionSegment) each).getText();
-                    String alias = ((ExpressionProjectionSegment) each).getAlias().orElse(((ExpressionProjectionSegment) each).getText());
-                    queryResultColumnMetaDataList.add(createRawQueryResultColumnMetaData(text, alias));
-                    data.add(MySQLDefaultVariable.containsVariable(alias) ? MySQLDefaultVariable.getVariable(alias) : "1");
-                }
-            }
-            return Optional.of(new RawMemoryQueryResult(new RawQueryResultMetaData(queryResultColumnMetaDataList), Collections.singletonList(new MemoryQueryResultDataRow(data))));
-        } else if (sqlStatement instanceof MySQLShowOtherStatement) {
-            RawQueryResultColumnMetaData queryResultColumnMetaData = createRawQueryResultColumnMetaData("", "");
-            MemoryQueryResultDataRow resultDataRow = new MemoryQueryResultDataRow(Collections.singletonList("1"));
-            return Optional.of(new RawMemoryQueryResult(new RawQueryResultMetaData(Collections.singletonList(queryResultColumnMetaData)), Collections.singletonList(resultDataRow)));
+            return Optional.of(createQueryResult((SelectStatement) sqlStatement));
+        }
+        if (sqlStatement instanceof MySQLShowOtherStatement) {
+            return Optional.of(createQueryResult((MySQLShowOtherStatement) sqlStatement));
         }
         return Optional.empty();
+    }
+    
+    private QueryResult createQueryResult(final SelectStatement sqlStatement) {
+        List<RawQueryResultColumnMetaData> queryResultColumnMetaDataList = new ArrayList<>(sqlStatement.getProjections().getProjections().size());
+        List<Object> data = new ArrayList<>(sqlStatement.getProjections().getProjections().size());
+        for (ProjectionSegment each : sqlStatement.getProjections().getProjections()) {
+            if (each instanceof ExpressionProjectionSegment) {
+                String text = ((ExpressionProjectionSegment) each).getText();
+                String alias = ((ExpressionProjectionSegment) each).getAlias().orElse(((ExpressionProjectionSegment) each).getText());
+                queryResultColumnMetaDataList.add(createRawQueryResultColumnMetaData(text, alias));
+                data.add(MySQLDefaultVariable.containsVariable(alias) ? MySQLDefaultVariable.getVariable(alias) : "1");
+            }
+        }
+        return new RawMemoryQueryResult(new RawQueryResultMetaData(queryResultColumnMetaDataList), Collections.singletonList(new MemoryQueryResultDataRow(data)));
+    }
+    
+    private QueryResult createQueryResult(final MySQLShowOtherStatement sqlStatement) {
+        RawQueryResultColumnMetaData queryResultColumnMetaData = createRawQueryResultColumnMetaData("", "");
+        MemoryQueryResultDataRow resultDataRow = new MemoryQueryResultDataRow(Collections.singletonList("1"));
+        return new RawMemoryQueryResult(new RawQueryResultMetaData(Collections.singletonList(queryResultColumnMetaData)), Collections.singletonList(resultDataRow));
     }
     
     private RawQueryResultColumnMetaData createRawQueryResultColumnMetaData(final String name, final String label) {
