@@ -42,8 +42,6 @@ import java.sql.Statement;
  */
 public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<ExecuteResult> {
     
-    private final SQLStatement sqlStatement;
-    
     private final BackendConnection backendConnection;
     
     private final boolean isReturnGeneratedKeys;
@@ -55,7 +53,6 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     public ProxyJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection,
                                      final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
         super(databaseType, sqlStatement, isExceptionThrown);
-        this.sqlStatement = sqlStatement;
         this.backendConnection = backendConnection;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         this.fetchMetaData = fetchMetaData;

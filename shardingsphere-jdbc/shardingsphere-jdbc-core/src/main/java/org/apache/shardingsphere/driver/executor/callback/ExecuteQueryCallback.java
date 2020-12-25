@@ -37,11 +37,8 @@ import java.util.Collections;
  */
 public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryResult> {
     
-    private final SQLStatement sqlStatement;
-    
     protected ExecuteQueryCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
         super(databaseType, sqlStatement, isExceptionThrown);
-        this.sqlStatement = sqlStatement;
     }
     
     @Override
@@ -52,10 +49,10 @@ public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryRes
     
     @Override
     protected final QueryResult getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
-        return new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery(getSaneSQL()));
+        return new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery(getSaneSQL(sqlStatement)));
     }
     
-    private String getSaneSQL() {
+    private String getSaneSQL(final SQLStatement sqlStatement) {
         int size = sqlStatement instanceof SelectStatement ? ((SelectStatement) sqlStatement).getProjections().getProjections().size() : 1;
         String saneProjections = String.join(", ", Collections.nCopies(size, "1"));
         return String.format("SELECT %s", saneProjections);
