@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.mysql;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.JDBCSaneQueryResultEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOtherStatement;
 
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +42,7 @@ import java.util.Optional;
 public final class MySQLSaneQueryResultEngine implements JDBCSaneQueryResultEngine {
     
     @Override
-    public Optional<QueryResult> getSaneQueryResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit, final DatabaseType targetDatabaseType) throws SQLException {
+    public Optional<QueryResult> getSaneQueryResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) {
         if (sqlStatement instanceof SelectStatement) {
             List<RawQueryResultColumnMetaData> queryResultColumnMetaDataList = new ArrayList<>(((SelectStatement) sqlStatement).getProjections().getProjections().size());
             List<Object> data = new ArrayList<>(((SelectStatement) sqlStatement).getProjections().getProjections().size());

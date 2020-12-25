@@ -93,7 +93,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     protected final ExecuteResult getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
         String configuredDatabaseType = ProxyContext.getInstance().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
         Optional<QueryResult> queryResult = JDBCSaneQueryResultEngineFactory.newInstance(
-                DatabaseTypeRegistry.getTrunkDatabaseType(configuredDatabaseType)).getSaneQueryResult(sqlStatement, jdbcExecutionUnit, getDatabaseType());
+                DatabaseTypeRegistry.getTrunkDatabaseType(configuredDatabaseType)).getSaneQueryResult(sqlStatement, jdbcExecutionUnit);
         return queryResult.isPresent() ? queryResult.get() : new UpdateResult(0, 0);
     }
 }
