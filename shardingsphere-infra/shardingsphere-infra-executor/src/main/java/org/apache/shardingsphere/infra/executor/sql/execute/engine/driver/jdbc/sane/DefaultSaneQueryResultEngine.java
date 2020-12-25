@@ -33,7 +33,7 @@ import java.util.Optional;
 /**
  * Default Sane query result engine.
  */
-public final class DefaultSaneQueryResultEngine implements JDBCSaneQueryResultEngine {
+public final class DefaultSaneQueryResultEngine implements SaneQueryResultEngine {
     
     @Override
     public Optional<QueryResult> getSaneQueryResult(final SQLStatement sqlStatement) {

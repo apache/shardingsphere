@@ -24,9 +24,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.util.Optional;
 
 /**
- * JDBC sane query result engine.
+ * Sane query result engine.
  */
-public interface JDBCSaneQueryResultEngine extends TypedSPI {
+public interface SaneQueryResultEngine extends TypedSPI {
     
     /**
      * Get sane query result.
