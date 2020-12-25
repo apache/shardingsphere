@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
 
 /**
  * JDBC executor callback for proxy.
@@ -90,6 +91,12 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     @Override
     protected ExecuteResult getSaneResult(final JDBCExecutionUnit jdbcExecutionUnit) throws SQLException {
-        return sqlStatement instanceof SelectStatement ? new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery("SELECT 1")) : new UpdateResult(0, 0);
+        return sqlStatement instanceof SelectStatement
+                ? new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery(getSaneSQL((SelectStatement) sqlStatement))) : new UpdateResult(0, 0);
+    }
+    
+    private String getSaneSQL(final SelectStatement selectStatement) {
+        String saneProjections = String.join(", ", Collections.nCopies(selectStatement.getProjections().getProjections().size(), "1"));
+        return String.format("SELECT %s", saneProjections);
     }
 }

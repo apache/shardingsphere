@@ -151,8 +151,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
         Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
         cacheStatements(executionGroups);
-        return driverJDBCExecutor.executeQuery(executionGroups, 
-                new StatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), SQLExecutorExceptionHandler.isExceptionThrown()));
+        StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), 
+                SQLExecutorExceptionHandler.isExceptionThrown(), executionContext.getSqlStatementContext().getSqlStatement());
+        return driverJDBCExecutor.executeQuery(executionGroups, callback);
     }
     
     @Override
