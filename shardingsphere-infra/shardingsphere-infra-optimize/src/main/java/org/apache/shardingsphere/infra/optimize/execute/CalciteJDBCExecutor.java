@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 
 import java.sql.DriverManager;
@@ -43,8 +42,6 @@ public final class CalciteJDBCExecutor {
     public static final String DRIVER_NAME = "org.apache.calcite.jdbc.Driver";
     
     public static final Properties PROPERTIES = new Properties();
-    
-    private final JDBCExecutor jdbcExecutor;
     
     static {
         try {
