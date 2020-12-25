@@ -184,9 +184,7 @@ public abstract class AbstractJDBCImporter extends AbstractScalingExecutor imple
             }
             for (int i = 0; i < conditionColumns.size(); i++) {
                 Column keyColumn = conditionColumns.get(i);
-                ps.setObject(updatedColumns.size() + i + 1,
-                        // sharding column can not be updated
-                        (keyColumn.isPrimaryKey() && keyColumn.isUpdated()) ? keyColumn.getOldValue() : keyColumn.getValue());
+                ps.setObject(updatedColumns.size() + i + 1, (keyColumn.isPrimaryKey() && keyColumn.isUpdated()) ? keyColumn.getOldValue() : keyColumn.getValue());
             }
             ps.execute();
         }
