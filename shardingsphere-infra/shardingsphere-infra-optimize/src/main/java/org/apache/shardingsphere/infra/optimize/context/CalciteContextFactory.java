@@ -17,16 +17,13 @@
 
 package org.apache.shardingsphere.infra.optimize.context;
 
-import org.apache.calcite.adapter.enumerable.EnumerableRules;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
-import org.apache.calcite.plan.ConventionTraitDef;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.volcano.VolcanoPlanner;
-import org.apache.calcite.rel.rules.CoreRules;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.sql.parser.SqlParser;
@@ -34,6 +31,7 @@ import org.apache.calcite.sql.parser.SqlParser.Config;
 import org.apache.calcite.sql.parser.impl.SqlParserImpl;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.optimize.plan.PlannerInitializer;
 import org.apache.shardingsphere.infra.optimize.schema.CalciteSchemaFactory;
 
 import java.util.Map;
@@ -76,19 +74,8 @@ public final class CalciteContextFactory {
     
     private RelOptCluster newCluster() {
         RelOptPlanner planner = new VolcanoPlanner();
-        addPlanRules(planner);
-        planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
+        PlannerInitializer.init(planner);
         return RelOptCluster.create(planner, new RexBuilder(typeFactory));
-    }
-    
-    private void addPlanRules(final RelOptPlanner planner) {
-        planner.addRule(CoreRules.PROJECT_TO_CALC);
-        planner.addRule(CoreRules.FILTER_TO_CALC);
-        planner.addRule(EnumerableRules.ENUMERABLE_LIMIT_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_JOIN_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_SORT_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE);
-        planner.addRule(EnumerableRules.ENUMERABLE_CALC_RULE);
     }
     
     /**
