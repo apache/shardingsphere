@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.engine.dql;
 import org.apache.shardingsphere.test.integration.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
-import org.apache.shardingsphere.test.integration.engine.SQLType;
+import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
 import org.apache.shardingsphere.test.integration.engine.util.IntegrateTestParameters;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -52,7 +52,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     @Parameters(name = "{2} -> {3} -> {4} -> {1} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestEnvironment.getInstance().isRunAdditionalTestCases() ? IntegrateTestParameters.getParametersWithAssertion(SQLType.DQL) : Collections.emptyList();
+        return IntegrateTestEnvironment.getInstance().isRunAdditionalTestCases() ? IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DQL) : Collections.emptyList();
     }
     
     @Test

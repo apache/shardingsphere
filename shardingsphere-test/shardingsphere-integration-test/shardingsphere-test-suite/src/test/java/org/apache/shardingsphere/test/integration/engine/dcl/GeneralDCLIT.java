@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.engine.dcl;
 
 import org.apache.shardingsphere.test.integration.cases.assertion.dcl.DCLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
-import org.apache.shardingsphere.test.integration.engine.SQLType;
+import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
 import org.apache.shardingsphere.test.integration.engine.util.IntegrateTestParameters;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public final class GeneralDCLIT extends BaseDCLIT {
     
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParametersWithAssertion(SQLType.DCL);
+        return IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DCL);
     }
     
     @Test
