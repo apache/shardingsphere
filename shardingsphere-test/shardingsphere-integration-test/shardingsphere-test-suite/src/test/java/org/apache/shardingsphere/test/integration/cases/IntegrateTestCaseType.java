@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine;
+package org.apache.shardingsphere.test.integration.cases;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +28,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 
 /**
- * SQL Type.
+ * Integrate test case type.
  */
 @RequiredArgsConstructor
 @Getter
-public enum SQLType {
+public enum IntegrateTestCaseType {
     
     /**
      * Data Query Language.

@@ -19,17 +19,19 @@ package org.apache.shardingsphere.test.integration.env.dataset;
 
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandler;
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandlerFactory;
+import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValueGroup;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -46,6 +48,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 /**
@@ -67,18 +70,11 @@ public final class DataSetEnvironmentManager {
     }
     
     private static String generateTableName(final String tableName, final DatabaseType databaseType) {
-        switch (databaseType.getName()) {
-            case "H2":
-            case "PostgreSQL":
-            case "Oracle":
-                return "\"" + tableName + "\"";
-            case "MySQL":
-                return "`" + tableName + "`";
-            case "SQLServer":
-                return "[" + tableName + "]";
-            default:
-                throw new UnsupportedOperationException(String.format("Cannot support database [%s].", databaseType));
+        Optional<DatabaseMetaDataDialectHandler> databaseMetaDataDialectHandler = DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType);
+        if (databaseMetaDataDialectHandler.isPresent()) {
+            return databaseMetaDataDialectHandler.get().getQuoteCharacter().wrap(tableName);
         }
+        throw new UnsupportedOperationException(String.format("Cannot support database [%s].", databaseType));
     }
     
     /**
@@ -113,7 +109,7 @@ public final class DataSetEnvironmentManager {
     }
     
     private Map<DataNode, List<DataSetRow>> getDataSetRowMap() {
-        Map<DataNode, List<DataSetRow>> result = new LinkedHashMap<>();
+        Map<DataNode, List<DataSetRow>> result = new LinkedHashMap<>(dataSet.getRows().size(), 1);
         for (DataSetRow each : dataSet.getRows()) {
             DataNode dataNode = new DataNode(each.getDataNode());
             if (!result.containsKey(dataNode)) {

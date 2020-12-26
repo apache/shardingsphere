@@ -28,7 +28,7 @@ import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestC
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
-import org.apache.shardingsphere.test.integration.engine.SQLType;
+import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -56,13 +56,13 @@ public final class IntegrateTestParameters {
     /**
      * Get parameters with assertions.
      * 
-     * @param sqlType SQL type
-     * @return integrate test parameters.
+     * @param caseType integrate test case type
+     * @return integrate test parameters
      */
-    public static Collection<Object[]> getParametersWithAssertion(final SQLType sqlType) {
+    public static Collection<Object[]> getParametersWithAssertion(final IntegrateTestCaseType caseType) {
         Map<DatabaseType, Collection<Object[]>> availableCases = new LinkedHashMap<>();
         Map<DatabaseType, Collection<Object[]>> disabledCases = new LinkedHashMap<>();
-        INTEGRATE_TEST_CASES_LOADER.getTestCases(sqlType).forEach(integrateTestCase -> getDatabaseTypes(integrateTestCase.getDbTypes()).forEach(databaseType -> {
+        INTEGRATE_TEST_CASES_LOADER.getTestCases(caseType).forEach(integrateTestCase -> getDatabaseTypes(integrateTestCase.getDbTypes()).forEach(databaseType -> {
             if (IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().containsKey(databaseType)) {
                 availableCases.putIfAbsent(databaseType, new LinkedList<>());
                 Arrays.stream(SQLCaseType.values()).forEach(sqlCaseType -> availableCases.get(databaseType).addAll(getParametersWithAssertion(databaseType, sqlCaseType, integrateTestCase)));
@@ -106,13 +106,13 @@ public final class IntegrateTestParameters {
     /**
      * Get parameters with test cases.
      *
-     * @param sqlType SQL type
-     * @return integrate test parameters.
+     * @param caseType integrate test case type
+     * @return integrate test parameters
      */
-    public static Collection<Object[]> getParametersWithCase(final SQLType sqlType) {
+    public static Collection<Object[]> getParametersWithCase(final IntegrateTestCaseType caseType) {
         Map<DatabaseType, Collection<Object[]>> availableCases = new LinkedHashMap<>();
         Map<DatabaseType, Collection<Object[]>> disabledCases = new LinkedHashMap<>();
-        INTEGRATE_TEST_CASES_LOADER.getTestCases(sqlType).forEach(integrateTestCase ->
+        INTEGRATE_TEST_CASES_LOADER.getTestCases(caseType).forEach(integrateTestCase ->
             getDatabaseTypes(integrateTestCase.getDbTypes()).forEach(databaseType -> {
                 if (IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().containsKey(databaseType)) {
                     availableCases.putIfAbsent(databaseType, new LinkedList<>());

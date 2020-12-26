@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.engine.dml;
 import org.apache.shardingsphere.test.integration.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
-import org.apache.shardingsphere.test.integration.engine.SQLType;
+import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
 import org.apache.shardingsphere.test.integration.engine.util.IntegrateTestParameters;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.junit.Test;
@@ -53,7 +53,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     @Parameters(name = "{2} -> {3} -> {4} -> {1} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParametersWithAssertion(SQLType.DML);
+        return IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DML);
     }
     
     @Test
