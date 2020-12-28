@@ -36,12 +36,9 @@ import java.util.Collection;
 
 public final class GeneralDDLIT extends BaseDDLIT {
     
-    private final DDLIntegrateTestCaseAssertion assertion;
-    
     public GeneralDDLIT(final String parentPath, final DDLIntegrateTestCaseAssertion assertion, final String ruleType,
                         final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
-        this.assertion = assertion;
     }
     
     @Parameters(name = "{2} -> {3} -> {4} -> {1} -> {5}")
@@ -50,20 +47,20 @@ public final class GeneralDDLIT extends BaseDDLIT {
     }
     
     @Test
-    public void assertExecuteUpdate() throws JAXBException, IOException, SQLException {
+    public void assertExecuteUpdate() throws SQLException {
         assertExecuteByType(true);
     }
     
     @Test
-    public void assertExecute() throws JAXBException, IOException, SQLException {
+    public void assertExecute() throws SQLException {
         assertExecuteByType(false);
     }
     
-    private void assertExecuteByType(final boolean isExecuteUpdate) throws JAXBException, IOException, SQLException {
+    private void assertExecuteByType(final boolean isExecuteUpdate) throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             dropTableIfExisted(connection);
-            if (!Strings.isNullOrEmpty(assertion.getInitSQL())) {
-                for (String sql : Splitter.on(";").trimResults().splitToList(assertion.getInitSQL())) {
+            if (!Strings.isNullOrEmpty(((DDLIntegrateTestCaseAssertion) getAssertion()).getInitSQL())) {
+                for (String sql : Splitter.on(";").trimResults().splitToList(((DDLIntegrateTestCaseAssertion) getAssertion()).getInitSQL())) {
                     connection.prepareStatement(sql).executeUpdate();
                 }
             }
