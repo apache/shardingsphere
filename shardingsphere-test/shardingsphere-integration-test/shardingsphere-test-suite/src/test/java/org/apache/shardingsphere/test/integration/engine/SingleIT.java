@@ -30,6 +30,7 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,12 +63,8 @@ public abstract class SingleIT extends BaseIT {
     }
     
     private String getLiteralSQL(final String sql) throws ParseException {
-        List<Object> parameters = null != assertion ? assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList()) : null;
-        if (null == parameters || parameters.isEmpty()) {
-            return sql;
-        }
-        return String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%")
-            .replace("%%", "%").replace("'%'", "'%%'");
+        List<Object> parameters = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
+        return parameters.isEmpty() ? sql : String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%").replace("%%", "%").replace("'%'", "'%%'");
     }
     
     protected final void printExceptionContext(final Exception ex) {
