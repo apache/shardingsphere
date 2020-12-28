@@ -39,13 +39,16 @@ public final class DataSetPathUtil {
     
     /**
      * Load data set.
-     * 
-     * @param expectedDataFile expected data file
+     *
+     * @param parentPath parent path of data set file
+     * @param ruleType rule type
+     * @param databaseType database type
+     * @param dataSetFile name of data set file
      * @return data set
      */
     @SneakyThrows({JAXBException.class, IOException.class})
-    public static DataSet loadDataSet(final String expectedDataFile) {
-        try (FileReader reader = new FileReader(expectedDataFile)) {
+    public static DataSet loadDataSet(final String parentPath, final String ruleType, final DatabaseType databaseType, final String dataSetFile) {
+        try (FileReader reader = new FileReader(getDataSetPath(parentPath, ruleType, databaseType, dataSetFile))) {
             return (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
         }
     }

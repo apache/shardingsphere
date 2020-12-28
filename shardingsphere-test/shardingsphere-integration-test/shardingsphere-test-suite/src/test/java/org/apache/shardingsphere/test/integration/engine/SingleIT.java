@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
+import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.util.DataSetPathUtil;
 
 import javax.xml.bind.JAXBException;
@@ -44,7 +45,7 @@ public abstract class SingleIT extends BaseIT {
     
     private final SQLCaseType caseType;
     
-    private final String expectedDataFile;
+    private final DataSet dataSet;
     
     private final String sql;
     
@@ -55,7 +56,7 @@ public abstract class SingleIT extends BaseIT {
         this.assertion = assertion;
         this.caseType = caseType;
         this.sql = caseType == SQLCaseType.Literal ? getLiteralSQL(sql) : sql;
-        expectedDataFile = null == assertion ? null : DataSetPathUtil.getDataSetPath(parentPath, ruleType, databaseType, assertion.getExpectedDataFile());
+        dataSet = null == assertion ? null : DataSetPathUtil.loadDataSet(parentPath, ruleType, databaseType, assertion.getExpectedDataFile());
     }
 
     private String getLiteralSQL(final String sql) throws ParseException {
@@ -64,6 +65,6 @@ public abstract class SingleIT extends BaseIT {
     }
     
     protected final void logException(final Exception ex) {
-        log.error("ruleType={}, databaseType={}, expectedDataFile={}, sql={}", getRuleType(), getDatabaseType().getName(), expectedDataFile, sql, ex);
+        log.error("ruleType={}, databaseType={}, sql={}", getRuleType(), getDatabaseType().getName(), sql, ex);
     }
 }

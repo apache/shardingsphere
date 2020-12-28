@@ -24,11 +24,9 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
-import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.integration.cases.dataset.util.DataSetPathUtil;
 import org.apache.shardingsphere.test.integration.engine.SingleIT;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
@@ -85,11 +83,10 @@ public abstract class BaseDMLIT extends SingleIT {
     }
     
     protected final void assertDataSet(final int actualUpdateCount) throws SQLException {
-        DataSet expected = DataSetPathUtil.loadDataSet(getExpectedDataFile());
         try {
-            assertThat("Only support single table for DML.", expected.getMetadataList().size(), is(1));
-            assertThat(actualUpdateCount, is(expected.getUpdateCount()));
-            DataSetMetadata expectedDataSetMetadata = expected.getMetadataList().get(0);
+            assertThat("Only support single table for DML.", getDataSet().getMetadataList().size(), is(1));
+            assertThat(actualUpdateCount, is(getDataSet().getUpdateCount()));
+            DataSetMetadata expectedDataSetMetadata = getDataSet().getMetadataList().get(0);
             for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
                 DataNode dataNode = new DataNode(each);
                 String sql;
@@ -103,7 +100,7 @@ public abstract class BaseDMLIT extends SingleIT {
                 }
                 try (Connection connection = getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
                      PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                    assertDataSet(preparedStatement, expected.findRows(dataNode), expectedDataSetMetadata);
+                    assertDataSet(preparedStatement, getDataSet().findRows(dataNode), expectedDataSetMetadata);
                 }
             }
         } catch (final AssertionError ex) {

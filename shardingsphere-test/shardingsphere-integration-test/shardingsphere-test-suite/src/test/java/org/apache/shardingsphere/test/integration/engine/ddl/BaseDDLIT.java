@@ -21,11 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
-import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
-import org.apache.shardingsphere.test.integration.cases.dataset.util.DataSetPathUtil;
 import org.apache.shardingsphere.test.integration.engine.SingleIT;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
@@ -93,7 +91,6 @@ public abstract class BaseDDLIT extends SingleIT {
             log.warn("Expected data file `{}` is empty", getSql());
             return;
         }
-        DataSet expected = DataSetPathUtil.loadDataSet(getExpectedDataFile());
         String tableName = assertion.getTable();
         List<DataSetColumn> actualColumns = getActualColumns(connection, tableName);
         List<DataSetIndex> actualIndexes = getActualIndexes(connection, tableName);
@@ -103,7 +100,7 @@ public abstract class BaseDDLIT extends SingleIT {
             return;
         }
         try {
-            assertMetadata(actualColumns, actualIndexes, expected.findMetadata(tableName));
+            assertMetadata(actualColumns, actualIndexes, getDataSet().findMetadata(tableName));
         } catch (final AssertionError ex) {
             log.error("[ERROR] SQL::{}, Parameter::{}, Expect::{}", getCaseIdentifier(), getAssertion().getParameters(), getAssertion().getExpectedDataFile());
             throw ex;
