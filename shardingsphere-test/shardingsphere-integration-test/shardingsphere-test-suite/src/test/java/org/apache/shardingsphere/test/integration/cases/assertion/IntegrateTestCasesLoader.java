@@ -52,7 +52,7 @@ public final class IntegrateTestCasesLoader {
     
     private static final IntegrateTestCasesLoader INSTANCE = new IntegrateTestCasesLoader();
     
-    private final Map<IntegrateTestCaseType, List<IntegrateTestCaseContext>> integrateTestCases = new LinkedHashMap<>();
+    private final Map<IntegrateTestCaseType, List<IntegrateTestCaseContext>> testCaseContexts = new LinkedHashMap<>();
     
     /**
      * Get singleton instance.
@@ -70,8 +70,8 @@ public final class IntegrateTestCasesLoader {
      * @return integrate test case contexts
      */
     public List<IntegrateTestCaseContext> getTestCaseContexts(final IntegrateTestCaseType caseType) {
-        integrateTestCases.putIfAbsent(caseType, loadIntegrateTestCaseContexts(caseType));
-        return integrateTestCases.get(caseType);
+        testCaseContexts.putIfAbsent(caseType, loadIntegrateTestCaseContexts(caseType));
+        return testCaseContexts.get(caseType);
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
