@@ -38,7 +38,7 @@ public final class GeneralDCLIT extends BaseDCLIT {
                         final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
     }
-    
+
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
         return IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DCL);

@@ -48,13 +48,13 @@ public final class GeneralDQLIT extends BaseDQLIT {
         this.assertion = assertion;
     }
     
-    @Parameters(name = "{2} -> {3} -> {4} -> {1} -> {5}")
+    @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
         return IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DQL);
     }
     
     @Test
-    public void assertExecuteQuery() throws JAXBException, IOException, SQLException, ParseException {
+    public void assertExecuteQuery() throws SQLException, ParseException {
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 assertExecuteQueryForStatement(connection);
@@ -67,7 +67,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
         }
     }
     
-    private void assertExecuteQueryForStatement(final Connection connection) throws SQLException, JAXBException, IOException {
+    private void assertExecuteQueryForStatement(final Connection connection) throws SQLException {
         try (
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(getSql())) {
@@ -75,7 +75,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
         }
     }
     
-    private void assertExecuteQueryForPreparedStatement(final Connection connection) throws SQLException, ParseException, JAXBException, IOException {
+    private void assertExecuteQueryForPreparedStatement(final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
             for (SQLValue each : assertion.getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
@@ -87,7 +87,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
     }
     
     @Test
-    public void assertExecute() throws JAXBException, IOException, SQLException, ParseException {
+    public void assertExecute() throws SQLException, ParseException {
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 assertExecuteForStatement(connection);
@@ -100,7 +100,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
         }
     }
     
-    private void assertExecuteForStatement(final Connection connection) throws SQLException, JAXBException, IOException {
+    private void assertExecuteForStatement(final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             assertTrue("Not a DQL statement.", statement.execute(getSql()));
             try (ResultSet resultSet = statement.getResultSet()) {
@@ -109,7 +109,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
         }
     }
     
-    private void assertExecuteForPreparedStatement(final Connection connection) throws SQLException, ParseException, JAXBException, IOException {
+    private void assertExecuteForPreparedStatement(final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
             for (SQLValue each : assertion.getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());

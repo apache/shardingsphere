@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.cases.assertion.root;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -33,6 +34,7 @@ import java.util.List;
  * JAXB definition of integrate test case assertion.
  */
 @Getter
+@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class IntegrateTestCaseAssertion {
     
@@ -65,10 +67,5 @@ public abstract class IntegrateTestCaseAssertion {
             result.add(new SQLValue(parameterPair.get(0), parameterPair.get(1), ++count));
         }
         return result;
-    }
-    
-    @Override
-    public final String toString() {
-        return expectedDataFile;
     }
 }
