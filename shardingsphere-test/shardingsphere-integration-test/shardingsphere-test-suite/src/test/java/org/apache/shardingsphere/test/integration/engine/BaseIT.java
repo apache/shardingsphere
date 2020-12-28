@@ -50,6 +50,8 @@ import java.util.TimeZone;
 public abstract class BaseIT {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
+
+    private final String path;
     
     private final String ruleType;
     
@@ -66,7 +68,8 @@ public abstract class BaseIT {
         }
     }
     
-    BaseIT(final String ruleType, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
+    BaseIT(final String path, final String ruleType, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
+        this.path = path;
         this.ruleType = ruleType;
         this.databaseType = databaseType;
         dataSourceMap = createDataSourceMap();
@@ -83,11 +86,11 @@ public abstract class BaseIT {
     }
     
     private DataSource createDataSource() throws SQLException, IOException {
-        return IntegrateTestEnvironment.getInstance().isProxyEnvironment() ? ProxyDataSourceUtil.createDataSource(databaseType, "proxy_" + ruleType)
-            : YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRuleResourceFile(ruleType)));
+        return IntegrateTestEnvironment.getInstance().isProxyEnvironment() ? ProxyDataSourceUtil.createDataSource(databaseType, String.format("proxy_%s", ruleType)) 
+                : YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRuleResourceFile(ruleType)));
     }
     
-    protected final String getExpectedDataFile(final String path, final String ruleType, final DatabaseType databaseType, final String expectedDataFile) {
+    protected final String getExpectedDataFile(final String expectedDataFile) {
         if (null == expectedDataFile) {
             return null;
         }

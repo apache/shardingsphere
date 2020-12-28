@@ -72,12 +72,12 @@ public abstract class BatchIT extends BaseIT {
     
     protected BatchIT(final IntegrateTestCase integrateTestCase, 
                       final String ruleType, final DatabaseType databaseType, final String sql) throws IOException, JAXBException, SQLException {
-        super(ruleType, databaseType);
+        super(integrateTestCase.getPath(), ruleType, databaseType);
         this.integrateTestCase = integrateTestCase;
         this.sql = sql;
         expectedDataFiles = new LinkedList<>();
         for (IntegrateTestCaseAssertion each : integrateTestCase.getIntegrateTestCaseAssertions()) {
-            expectedDataFiles.add(getExpectedDataFile(integrateTestCase.getPath(), ruleType, databaseType, each.getExpectedDataFile()));
+            expectedDataFiles.add(getExpectedDataFile(each.getExpectedDataFile()));
         }
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(ruleType), getDataSourceMap());
     }
