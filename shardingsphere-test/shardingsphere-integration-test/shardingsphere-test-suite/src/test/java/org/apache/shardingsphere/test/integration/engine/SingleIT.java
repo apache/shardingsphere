@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
-import org.apache.shardingsphere.test.integration.cases.dataset.util.DataSetFileUtil;
+import org.apache.shardingsphere.test.integration.cases.dataset.util.DataSetPathUtil;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -54,7 +54,7 @@ public abstract class SingleIT extends BaseIT {
         this.caseType = caseType;
         originalSQL = sql;
         this.sql = convert(sql);
-        expectedDataFile = null == assertion ? null : DataSetFileUtil.getDataSetFile(path, ruleType, databaseType, assertion.getExpectedDataFile());
+        expectedDataFile = null == assertion ? null : DataSetPathUtil.getDataSetPath(path, ruleType, databaseType, assertion.getExpectedDataFile());
     }
     
     private String convert(final String sql) throws ParseException {

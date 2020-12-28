@@ -24,35 +24,35 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import java.io.File;
 
 /**
- * Data set file util.
+ * Data set path util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSetFileUtil {
+public final class DataSetPathUtil {
     
     private static final String DATA_SET_FOLDER_NAME = "dataset";
     
     /**
-     * Get data set file.
+     * Get data set absolute path.
      * 
      * @param parentPath parent path of data set file
      * @param ruleType rule type
      * @param databaseType database type
-     * @param dataSetFileName data set file name
-     * @return data set file
+     * @param dataSetFile name of data set file
+     * @return data set absolute path
      */
-    public static String getDataSetFile(final String parentPath, final String ruleType, final DatabaseType databaseType, final String dataSetFileName) {
-        String result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, ruleType, databaseType.getName().toLowerCase(), dataSetFileName);
+    public static String getDataSetPath(final String parentPath, final String ruleType, final DatabaseType databaseType, final String dataSetFile) {
+        String result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, ruleType, databaseType.getName().toLowerCase(), dataSetFile);
         if (new File(result).exists()) {
             return result;
         }
-        result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, ruleType, dataSetFileName);
+        result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, ruleType, dataSetFile);
         if (new File(result).exists()) {
             return result;
         }
-        result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, dataSetFileName);
+        result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, dataSetFile);
         if (new File(result).exists()) {
             return result;
         }
-        throw new IllegalArgumentException(String.format("%s not found, path=%s, ruleType=%s, databaseType=%s", dataSetFileName, parentPath, ruleType, databaseType.getName()));
+        throw new IllegalArgumentException(String.format("%s not found, path=%s, ruleType=%s, databaseType=%s", dataSetFile, parentPath, ruleType, databaseType.getName()));
     }
 }
