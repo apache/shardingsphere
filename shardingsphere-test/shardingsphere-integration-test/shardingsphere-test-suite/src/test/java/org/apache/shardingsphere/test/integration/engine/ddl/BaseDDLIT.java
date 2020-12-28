@@ -51,14 +51,11 @@ import static org.junit.Assert.assertTrue;
 @Slf4j
 public abstract class BaseDDLIT extends SingleIT {
     
-    private final DDLIntegrateTestCaseAssertion assertion;
-    
     private final DatabaseType databaseType;
     
     protected BaseDDLIT(final String parentPath, final DDLIntegrateTestCaseAssertion assertion, final String ruleType, 
                         final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, ruleType, databaseType, caseType, sql);
-        this.assertion = assertion;
         this.databaseType = databaseType;
     }
     
@@ -87,11 +84,11 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     protected final void assertMetaData(final Connection connection) throws SQLException {
-        if (null == assertion.getExpectedDataFile()) {
+        if (null == getAssertion().getExpectedDataFile()) {
             log.warn("Expected data file `{}` is empty", getSql());
             return;
         }
-        String tableName = assertion.getTable();
+        String tableName = ((DDLIntegrateTestCaseAssertion) getAssertion()).getTable();
         List<DataSetColumn> actualColumns = getActualColumns(connection, tableName);
         List<DataSetIndex> actualIndexes = getActualIndexes(connection, tableName);
         if (actualColumns.isEmpty() || actualIndexes.isEmpty()) {
@@ -184,7 +181,7 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     protected final void dropTableIfExisted(final Connection connection) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", assertion.getTable()))) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", ((DDLIntegrateTestCaseAssertion) getAssertion()).getTable()))) {
             preparedStatement.executeUpdate();
         } catch (final SQLException ignored) {
         }
