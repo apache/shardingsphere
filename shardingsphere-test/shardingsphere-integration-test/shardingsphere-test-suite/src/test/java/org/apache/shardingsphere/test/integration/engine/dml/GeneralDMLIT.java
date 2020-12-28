@@ -45,9 +45,9 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     private final DMLIntegrateTestCaseAssertion assertion;
     
-    public GeneralDMLIT(final String path, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
+    public GeneralDMLIT(final String parentPath, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
                         final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(path, assertion, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
+        super(parentPath, assertion, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
         this.assertion = assertion;
     }
     

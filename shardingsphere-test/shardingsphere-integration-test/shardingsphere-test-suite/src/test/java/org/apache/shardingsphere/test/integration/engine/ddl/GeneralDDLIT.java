@@ -38,9 +38,9 @@ public final class GeneralDDLIT extends BaseDDLIT {
     
     private final DDLIntegrateTestCaseAssertion assertion;
     
-    public GeneralDDLIT(final String path, final DDLIntegrateTestCaseAssertion assertion, final String ruleType,
+    public GeneralDDLIT(final String parentPath, final DDLIntegrateTestCaseAssertion assertion, final String ruleType,
                         final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(path, assertion, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
+        super(parentPath, assertion, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
         this.assertion = assertion;
     }
     
