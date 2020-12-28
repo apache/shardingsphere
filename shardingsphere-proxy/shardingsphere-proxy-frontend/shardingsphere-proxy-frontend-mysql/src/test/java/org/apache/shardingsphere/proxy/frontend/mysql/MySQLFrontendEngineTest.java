@@ -173,7 +173,6 @@ public final class MySQLFrontendEngineTest {
         Map<String, ShardingSphereMetaData> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-            when(metaData.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap(), null, null, new MySQLDatabaseType()));
             when(metaData.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
             result.put(String.format(SCHEMA_PATTERN, i), metaData);
         }
