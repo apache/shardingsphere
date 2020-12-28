@@ -89,12 +89,12 @@ public final class IntegrateTestParameters {
         return result;
     }
     
-    private static Collection<Object[]> getParametersWithAssertion(
-            final IntegrateTestCaseContext testCaseContext, final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) {
+    private static Collection<Object[]> getParametersWithAssertion(final IntegrateTestCaseContext testCaseContext, 
+                                                                   final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) {
         Collection<Object[]> result = new LinkedList<>();
         for (String each : INTEGRATE_TEST_ENVIRONMENT.getRuleTypes()) {
             Object[] data = new Object[6];
-            data[0] = testCaseContext.getPath();
+            data[0] = testCaseContext.getParentPath();
             data[1] = assertion;
             data[2] = each;
             data[3] = databaseType.getName();

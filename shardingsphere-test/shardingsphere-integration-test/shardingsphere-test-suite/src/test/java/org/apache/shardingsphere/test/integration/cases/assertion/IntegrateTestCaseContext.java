@@ -30,5 +30,5 @@ public final class IntegrateTestCaseContext {
     
     private final IntegrateTestCase testCase;
     
-    private final String path;
+    private final String parentPath;
 }

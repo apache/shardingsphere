@@ -78,7 +78,7 @@ public abstract class BatchIT extends BaseIT {
         this.sql = sql;
         expectedDataFiles = new LinkedList<>();
         for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getIntegrateTestCaseAssertions()) {
-            expectedDataFiles.add(DataSetPathUtil.getDataSetPath(testCaseContext.getPath(), ruleType, databaseType, each.getExpectedDataFile()));
+            expectedDataFiles.add(DataSetPathUtil.getDataSetPath(testCaseContext.getParentPath(), ruleType, databaseType, each.getExpectedDataFile()));
         }
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(ruleType), getDataSourceMap());
     }
