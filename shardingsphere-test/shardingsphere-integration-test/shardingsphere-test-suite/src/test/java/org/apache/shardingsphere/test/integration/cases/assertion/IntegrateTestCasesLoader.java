@@ -19,14 +19,13 @@ package org.apache.shardingsphere.test.integration.cases.assertion;
 
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.dcl.DCLIntegrateTestCases;
 import org.apache.shardingsphere.test.integration.cases.assertion.ddl.DDLIntegrateTestCases;
 import org.apache.shardingsphere.test.integration.cases.assertion.dml.DMLIntegrateTestCases;
 import org.apache.shardingsphere.test.integration.cases.assertion.dql.DQLIntegrateTestCases;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCases;
-import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -49,12 +48,11 @@ import java.util.Map;
 /**
  * Integrate test cases loader.
  */
-@Slf4j
 public final class IntegrateTestCasesLoader {
     
     private static final IntegrateTestCasesLoader INSTANCE = new IntegrateTestCasesLoader();
     
-    private final Map<IntegrateTestCaseType, List<? extends IntegrateTestCase>> integrateTestCases = new LinkedHashMap<>();
+    private final Map<IntegrateTestCaseType, List<IntegrateTestCaseContext>> integrateTestCases = new LinkedHashMap<>();
     
     /**
      * Get singleton instance.
@@ -66,30 +64,31 @@ public final class IntegrateTestCasesLoader {
     }
     
     /**
-     * Get integrate test cases.
+     * Get integrate test case contexts.
      * 
      * @param caseType integration test case type
-     * @return integrate test cases
+     * @return integrate test case contexts
      */
-    public List<? extends IntegrateTestCase> getTestCases(final IntegrateTestCaseType caseType) {
-        integrateTestCases.putIfAbsent(caseType, loadIntegrateTestCases(caseType));
+    public List<IntegrateTestCaseContext> getTestCaseContexts(final IntegrateTestCaseType caseType) {
+        integrateTestCases.putIfAbsent(caseType, loadIntegrateTestCaseContexts(caseType));
         return integrateTestCases.get(caseType);
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
-    private List<? extends IntegrateTestCase> loadIntegrateTestCases(final IntegrateTestCaseType caseType) {
+    private List<IntegrateTestCaseContext> loadIntegrateTestCaseContexts(final IntegrateTestCaseType caseType) {
         URL url = IntegrateTestCasesLoader.class.getClassLoader().getResource("integrate/cases/");
         Preconditions.checkNotNull(url, "Cannot found integrate test cases.");
-        return loadIntegrateTestCases(url, caseType);
+        return loadIntegrateTestCaseContexts(url, caseType);
     }
     
-    private List<? extends IntegrateTestCase> loadIntegrateTestCases(final URL url, final IntegrateTestCaseType caseType) throws IOException, URISyntaxException, JAXBException {
+    private List<IntegrateTestCaseContext> loadIntegrateTestCaseContexts(final URL url, final IntegrateTestCaseType caseType) throws IOException, URISyntaxException, JAXBException {
         List<File> files = getFiles(url, caseType);
         Preconditions.checkNotNull(files, "Cannot found integrate test cases.");
-        List<? extends IntegrateTestCase> result = new LinkedList<>();
+        List<IntegrateTestCaseContext> result = new LinkedList<>();
         for (File each : files) {
-            result = unmarshal(each.getPath(), caseType).getIntegrateTestCases();
-            result.forEach(testCase -> testCase.setPath(each.getParent()));
+            for (IntegrateTestCase testCase : unmarshal(each.getPath(), caseType).getIntegrateTestCases()) {
+                result.add(new IntegrateTestCaseContext(testCase, each.getParent()));
+            }
         }
         return result;
     }
