@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.integration.cases.dataset.util.DataSetFileUtil;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
@@ -72,12 +73,12 @@ public abstract class BatchIT extends BaseIT {
     
     protected BatchIT(final IntegrateTestCase integrateTestCase, 
                       final String ruleType, final DatabaseType databaseType, final String sql) throws IOException, JAXBException, SQLException {
-        super(integrateTestCase.getPath(), ruleType, databaseType);
+        super(ruleType, databaseType);
         this.integrateTestCase = integrateTestCase;
         this.sql = sql;
         expectedDataFiles = new LinkedList<>();
         for (IntegrateTestCaseAssertion each : integrateTestCase.getIntegrateTestCaseAssertions()) {
-            expectedDataFiles.add(getExpectedDataFile(each.getExpectedDataFile()));
+            expectedDataFiles.add(DataSetFileUtil.getDataSetFile(integrateTestCase.getPath(), ruleType, databaseType, each.getExpectedDataFile()));
         }
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(ruleType), getDataSourceMap());
     }

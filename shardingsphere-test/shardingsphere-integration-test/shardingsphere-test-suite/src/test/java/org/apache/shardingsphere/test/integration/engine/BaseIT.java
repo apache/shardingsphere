@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.test.integration.engine;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.DataSourceUtil;
 import org.apache.shardingsphere.test.integration.env.datasource.ProxyDataSourceUtil;
 import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
-import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.junit.After;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -51,8 +50,6 @@ public abstract class BaseIT {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
-    private final String path;
-    
     private final String ruleType;
     
     private final DatabaseType databaseType;
@@ -68,8 +65,7 @@ public abstract class BaseIT {
         }
     }
     
-    BaseIT(final String path, final String ruleType, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
-        this.path = path;
+    BaseIT(final String ruleType, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
         this.ruleType = ruleType;
         this.databaseType = databaseType;
         dataSourceMap = createDataSourceMap();
@@ -88,22 +84,6 @@ public abstract class BaseIT {
     private DataSource createDataSource() throws SQLException, IOException {
         return IntegrateTestEnvironment.getInstance().isProxyEnvironment() ? ProxyDataSourceUtil.createDataSource(databaseType, String.format("proxy_%s", ruleType)) 
                 : YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRuleResourceFile(ruleType)));
-    }
-    
-    protected final String getExpectedDataFile(final String expectedDataFile) {
-        String result = Joiner.on("/").join(path, "dataset", ruleType, databaseType.getName().toLowerCase(), expectedDataFile);
-        if (new File(result).exists()) {
-            return result;
-        }
-        result = Joiner.on("/").join(path, "dataset", ruleType, expectedDataFile);
-        if (new File(result).exists()) {
-            return result;
-        }
-        result = Joiner.on("/").join(path, "dataset", expectedDataFile);
-        if (new File(result).exists()) {
-            return result;
-        }
-        throw new IllegalArgumentException(String.format("%s not found, path=%s, ruleType=%s, databaseType=%s, expectedDataFile=%s", result, path, ruleType, databaseType.getName(), expectedDataFile));
     }
     
     protected static void createDatabasesAndTables() {
