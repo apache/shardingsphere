@@ -58,7 +58,7 @@ public abstract class SingleIT extends BaseIT {
         this.sql = caseType == SQLCaseType.Literal ? getLiteralSQL(sql) : sql;
         dataSet = null == assertion ? null : DataSetLoader.load(parentPath, ruleType, databaseType, assertion.getExpectedDataFile());
     }
-
+    
     private String getLiteralSQL(final String sql) throws ParseException {
         List<Object> parameters = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
         return parameters.isEmpty() ? sql : String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%").replace("%%", "%").replace("'%'", "'%%'");
