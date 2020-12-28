@@ -61,7 +61,7 @@ public abstract class BaseIT {
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         if (IntegrateTestEnvironment.getInstance().isProxyEnvironment()) {
-            waitForProxy();
+            waitForProxyReady();
         }
     }
     
@@ -142,9 +142,9 @@ public abstract class BaseIT {
         }
     }
     
-    private static void waitForProxy() {
-        int retryCount = 1;
-        while (!isProxyAvailable() && retryCount < 30) {
+    private static void waitForProxyReady() {
+        int retryCount = 0;
+        while (!isProxyReady() && retryCount < 30) {
             try {
                 Thread.sleep(1000L);
             } catch (final InterruptedException ignore) {
@@ -153,15 +153,13 @@ public abstract class BaseIT {
         }
     }
     
-    private static boolean isProxyAvailable() {
+    private static boolean isProxyReady() {
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:33070/proxy_db/?serverTimezone=UTC&useSSL=false&useLocalSessionState=true");
              Statement statement = connection.createStatement()) {
             statement.execute("SELECT 1");
-            
         } catch (final SQLException ignore) {
             return false;
         }
         return true;
     }
 }
-
