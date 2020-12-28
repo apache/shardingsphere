@@ -18,24 +18,23 @@
 package org.apache.shardingsphere.test.integration.engine.ddl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
+import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
+import org.apache.shardingsphere.test.integration.cases.dataset.util.DataSetPathUtil;
 import org.apache.shardingsphere.test.integration.engine.SingleIT;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -89,15 +88,12 @@ public abstract class BaseDDLIT extends SingleIT {
         dropTables();
     }
     
-    protected final void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
+    protected final void assertMetadata(final Connection connection) throws SQLException {
         if (null == assertion.getExpectedDataFile()) {
-            log.warn("Have empty expectedDataFile `{}`", getSql());
+            log.warn("Expected data file `{}` is empty", getSql());
             return;
         }
-        DataSet expected;
-        try (FileReader reader = new FileReader(getExpectedDataFile())) {
-            expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
-        }
+        DataSet expected = DataSetPathUtil.loadDataSet(getExpectedDataFile());
         String tableName = assertion.getTable();
         List<DataSetColumn> actualColumns = getActualColumns(connection, tableName);
         List<DataSetIndex> actualIndexes = getActualIndexes(connection, tableName);

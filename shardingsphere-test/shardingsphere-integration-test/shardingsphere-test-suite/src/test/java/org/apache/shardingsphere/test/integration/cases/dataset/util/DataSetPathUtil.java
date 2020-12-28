@@ -19,9 +19,15 @@ package org.apache.shardingsphere.test.integration.cases.dataset.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * Data set path util.
@@ -30,6 +36,19 @@ import java.io.File;
 public final class DataSetPathUtil {
     
     private static final String DATA_SET_FOLDER_NAME = "dataset";
+    
+    /**
+     * Load data set.
+     * 
+     * @param expectedDataFile expected data file
+     * @return data set
+     */
+    @SneakyThrows({JAXBException.class, IOException.class})
+    public static DataSet loadDataSet(final String expectedDataFile) {
+        try (FileReader reader = new FileReader(expectedDataFile)) {
+            return (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
+        }
+    }
     
     /**
      * Get data set absolute path.
