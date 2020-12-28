@@ -32,6 +32,7 @@ import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
+import org.apache.shardingsphere.infra.optimize.schema.CalciteLogicSchema;
 
 import java.util.Collections;
 
@@ -55,7 +56,7 @@ public final class CalciteContext {
     public CalciteContext(final CalciteConnectionConfig config,
                           final SqlParser.Config parserConfig, final RelDataTypeFactory typeFactory, final RelOptCluster cluster, final Schema calciteSchema) {
         rootSchema = CalciteSchema.createRootSchema(true);
-        rootSchema.add(((CalciteSchema) calciteSchema).name, calciteSchema);
+        rootSchema.add(((CalciteLogicSchema) calciteSchema).getName(), calciteSchema);
         catalogReader = new CalciteCatalogReader(rootSchema, Collections.singletonList(config.schema()), typeFactory, config);
         this.parserConfig = parserConfig;
         validator = SqlValidatorUtil.newValidator(SqlStdOperatorTable.instance(), catalogReader, typeFactory, SqlValidator.Config.DEFAULT
