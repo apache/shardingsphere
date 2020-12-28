@@ -38,6 +38,8 @@ import java.util.stream.Collectors;
 @Getter(AccessLevel.PROTECTED)
 public abstract class SingleIT extends BaseIT {
     
+    private final String caseIdentifier;
+    
     private final IntegrateTestCaseAssertion assertion;
     
     private final SQLCaseType caseType;
@@ -46,28 +48,22 @@ public abstract class SingleIT extends BaseIT {
     
     private final String sql;
     
-    private final String originalSQL;
-    
     protected SingleIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String ruleType, 
                        final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(ruleType, databaseType);
+        caseIdentifier = sql;
         this.assertion = assertion;
         this.caseType = caseType;
-        originalSQL = sql;
-        this.sql = convert(sql);
+        this.sql = caseType == SQLCaseType.Literal ? getLiteralSQL(sql) : sql;
         expectedDataFile = null == assertion ? null : DataSetPathUtil.getDataSetPath(parentPath, ruleType, databaseType, assertion.getExpectedDataFile());
     }
-    
-    private String convert(final String sql) throws ParseException {
-        return caseType == SQLCaseType.Literal ? getLiteralSQL(sql) : sql;
-    }
-    
+
     private String getLiteralSQL(final String sql) throws ParseException {
         List<Object> parameters = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
         return parameters.isEmpty() ? sql : String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%").replace("%%", "%").replace("'%'", "'%%'");
     }
     
-    protected final void printExceptionContext(final Exception ex) {
+    protected final void logException(final Exception ex) {
         log.error("ruleType={}, databaseType={}, expectedDataFile={}, sql={}", getRuleType(), getDatabaseType().getName(), expectedDataFile, sql, ex);
     }
 }

@@ -83,7 +83,7 @@ public final class GeneralDDLIT extends BaseDDLIT {
             assertMetadata(connection);
             dropTableIfExisted(connection);
         } catch (final SQLException ex) {
-            printExceptionContext(ex);
+            logException(ex);
             throw ex;
         }
     }

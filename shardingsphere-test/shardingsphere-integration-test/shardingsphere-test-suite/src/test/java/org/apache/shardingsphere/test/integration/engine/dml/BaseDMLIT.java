@@ -111,7 +111,7 @@ public abstract class BaseDMLIT extends SingleIT {
                 }
             }
         } catch (final AssertionError ex) {
-            log.error("[ERROR] SQL::{}, Parameter::{}, Expect::{}", getOriginalSQL(), getAssertion().getParameters(), getAssertion().getExpectedDataFile());
+            log.error("[ERROR] SQL::{}, Parameter::{}, Expect::{}", getCaseIdentifier(), getAssertion().getParameters(), getAssertion().getExpectedDataFile());
             throw ex;
         }
     }
