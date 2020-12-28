@@ -85,7 +85,7 @@ public abstract class BatchIT extends BaseIT {
     
     @BeforeClass
     public static void initDatabasesAndTables() {
-        createDatabasesAndTables();
+        setUpDatabasesAndTables();
     }
     
     @AfterClass

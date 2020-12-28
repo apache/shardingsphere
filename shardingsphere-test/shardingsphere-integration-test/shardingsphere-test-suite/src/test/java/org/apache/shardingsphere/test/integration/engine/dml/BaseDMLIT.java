@@ -67,7 +67,7 @@ public abstract class BaseDMLIT extends SingleIT {
     
     @BeforeClass
     public static void initDatabasesAndTables() {
-        createDatabasesAndTables();
+        setUpDatabasesAndTables();
     }
     
     @AfterClass
