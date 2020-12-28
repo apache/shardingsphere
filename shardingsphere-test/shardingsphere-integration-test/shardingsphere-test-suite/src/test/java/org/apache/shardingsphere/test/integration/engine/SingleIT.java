@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.integration.cases.assertion.root.Integrate
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
-import org.apache.shardingsphere.test.integration.cases.dataset.util.DataSetPathUtil;
+import org.apache.shardingsphere.test.integration.cases.dataset.util.DataSetLoader;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -56,7 +56,7 @@ public abstract class SingleIT extends BaseIT {
         this.assertion = assertion;
         this.caseType = caseType;
         this.sql = caseType == SQLCaseType.Literal ? getLiteralSQL(sql) : sql;
-        dataSet = null == assertion ? null : DataSetPathUtil.loadDataSet(parentPath, ruleType, databaseType, assertion.getExpectedDataFile());
+        dataSet = null == assertion ? null : DataSetLoader.load(parentPath, ruleType, databaseType, assertion.getExpectedDataFile());
     }
 
     private String getLiteralSQL(final String sql) throws ParseException {

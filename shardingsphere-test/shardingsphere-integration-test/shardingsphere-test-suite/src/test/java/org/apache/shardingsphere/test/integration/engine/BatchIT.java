@@ -29,7 +29,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.integration.cases.dataset.util.DataSetPathUtil;
+import org.apache.shardingsphere.test.integration.cases.dataset.util.DataSetLoader;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.junit.After;
@@ -76,7 +76,7 @@ public abstract class BatchIT extends BaseIT {
         this.sql = sql;
         dataSets = new LinkedList<>();
         for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getIntegrateTestCaseAssertions()) {
-            dataSets.add(DataSetPathUtil.loadDataSet(testCaseContext.getParentPath(), ruleType, databaseType, each.getExpectedDataFile()));
+            dataSets.add(DataSetLoader.load(testCaseContext.getParentPath(), ruleType, databaseType, each.getExpectedDataFile()));
         }
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(ruleType), getDataSourceMap());
     }

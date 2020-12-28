@@ -30,10 +30,10 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
- * Data set path util.
+ * Data set loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSetPathUtil {
+public final class DataSetLoader {
     
     private static final String DATA_SET_FOLDER_NAME = "dataset";
     
@@ -47,13 +47,13 @@ public final class DataSetPathUtil {
      * @return data set
      */
     @SneakyThrows({JAXBException.class, IOException.class})
-    public static DataSet loadDataSet(final String parentPath, final String ruleType, final DatabaseType databaseType, final String dataSetFile) {
-        try (FileReader reader = new FileReader(getPath(parentPath, ruleType, databaseType, dataSetFile))) {
+    public static DataSet load(final String parentPath, final String ruleType, final DatabaseType databaseType, final String dataSetFile) {
+        try (FileReader reader = new FileReader(getFile(parentPath, ruleType, databaseType, dataSetFile))) {
             return (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
         }
     }
     
-    private static String getPath(final String parentPath, final String ruleType, final DatabaseType databaseType, final String dataSetFile) {
+    private static String getFile(final String parentPath, final String ruleType, final DatabaseType databaseType, final String dataSetFile) {
         String result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, ruleType, databaseType.getName().toLowerCase(), dataSetFile);
         if (new File(result).exists()) {
             return result;
