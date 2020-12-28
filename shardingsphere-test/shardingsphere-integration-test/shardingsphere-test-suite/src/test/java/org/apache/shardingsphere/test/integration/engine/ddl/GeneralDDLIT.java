@@ -60,8 +60,8 @@ public final class GeneralDDLIT extends BaseDDLIT {
         try (Connection connection = getDataSource().getConnection()) {
             dropTableIfExisted(connection);
             if (!Strings.isNullOrEmpty(((DDLIntegrateTestCaseAssertion) getAssertion()).getInitSQL())) {
-                for (String sql : Splitter.on(";").trimResults().splitToList(((DDLIntegrateTestCaseAssertion) getAssertion()).getInitSQL())) {
-                    connection.prepareStatement(sql).executeUpdate();
+                for (String each : Splitter.on(";").trimResults().splitToList(((DDLIntegrateTestCaseAssertion) getAssertion()).getInitSQL())) {
+                    connection.prepareStatement(each).executeUpdate();
                 }
             }
             if (isExecuteUpdate) {
