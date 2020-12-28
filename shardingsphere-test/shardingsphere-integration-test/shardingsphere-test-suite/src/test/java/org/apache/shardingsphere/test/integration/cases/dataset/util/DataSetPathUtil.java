@@ -48,21 +48,12 @@ public final class DataSetPathUtil {
      */
     @SneakyThrows({JAXBException.class, IOException.class})
     public static DataSet loadDataSet(final String parentPath, final String ruleType, final DatabaseType databaseType, final String dataSetFile) {
-        try (FileReader reader = new FileReader(getDataSetPath(parentPath, ruleType, databaseType, dataSetFile))) {
+        try (FileReader reader = new FileReader(getPath(parentPath, ruleType, databaseType, dataSetFile))) {
             return (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
         }
     }
     
-    /**
-     * Get data set absolute path.
-     * 
-     * @param parentPath parent path of data set file
-     * @param ruleType rule type
-     * @param databaseType database type
-     * @param dataSetFile name of data set file
-     * @return data set absolute path
-     */
-    public static String getDataSetPath(final String parentPath, final String ruleType, final DatabaseType databaseType, final String dataSetFile) {
+    private static String getPath(final String parentPath, final String ruleType, final DatabaseType databaseType, final String dataSetFile) {
         String result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, ruleType, databaseType.getName().toLowerCase(), dataSetFile);
         if (new File(result).exists()) {
             return result;
