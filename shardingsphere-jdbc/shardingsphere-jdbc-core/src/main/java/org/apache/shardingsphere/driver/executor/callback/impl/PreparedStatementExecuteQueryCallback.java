@@ -31,8 +31,8 @@ import java.sql.Statement;
  */
 public final class PreparedStatementExecuteQueryCallback extends ExecuteQueryCallback {
     
-    public PreparedStatementExecuteQueryCallback(final DatabaseType databaseType, final boolean isExceptionThrown, final SQLStatement sqlStatement) {
-        super(databaseType, isExceptionThrown, sqlStatement);
+    public PreparedStatementExecuteQueryCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
+        super(databaseType, sqlStatement, isExceptionThrown);
     }
     
     @Override

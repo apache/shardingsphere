@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.predicate;
+package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane;
 
-import lombok.Getter;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Optional;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@Getter
-public final class ExpectedAndPredicate {
+/**
+ * Sane query result engine.
+ */
+public interface SaneQueryResultEngine extends TypedSPI {
     
-    @XmlElement(name = "predicate")
-    private final List<ExpectedPredicate> predicates = new LinkedList<>();
+    /**
+     * Get sane query result.
+     * 
+     * @param sqlStatement SQL statement
+     * @return sane query result
+     */
+    Optional<QueryResult> getSaneQueryResult(SQLStatement sqlStatement);
 }

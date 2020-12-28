@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.scaling.core.service.impl;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
+import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.TaskProgress;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionGroup;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
@@ -37,7 +38,6 @@ import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 import org.apache.shardingsphere.scaling.core.utils.TaskConfigurationUtil;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -83,8 +83,12 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
     
     @Override
     public ScalingJob getJob(final long jobId) {
+        String data = REGISTRY_REPOSITORY.get(ScalingTaskUtil.getScalingListenerPath(jobId, ScalingConstant.CONFIG));
+        if (Strings.isNullOrEmpty(data)) {
+            throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", jobId));
+        }
         ScalingJob result = new ScalingJob(jobId);
-        result.setScalingConfig(GSON.fromJson(REGISTRY_REPOSITORY.get(ScalingTaskUtil.getScalingListenerPath(jobId, ScalingConstant.CONFIG)), ScalingConfiguration.class));
+        result.setScalingConfig(GSON.fromJson(data, ScalingConfiguration.class));
         return result;
     }
     
@@ -114,11 +118,6 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
         return jsonObject.entrySet().stream()
                 .map(entry -> new IncrementalTaskProgress(entry.getKey(), entry.getValue().getAsJsonObject().get(ScalingConstant.DELAY).getAsLong(), null))
                 .collect(Collectors.toList());
-    }
-    
-    @Override
-    public Map<String, DataConsistencyCheckResult> check(final long jobId) {
-        return dataConsistencyCheck(getJob(jobId));
     }
     
     @Override

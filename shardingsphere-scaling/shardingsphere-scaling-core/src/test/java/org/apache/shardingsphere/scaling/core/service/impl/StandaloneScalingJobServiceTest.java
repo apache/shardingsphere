@@ -21,6 +21,8 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.execute.engine.TaskExecuteEngine;
 import org.apache.shardingsphere.scaling.core.fixture.FixtureResumeBreakPointManager;
@@ -41,7 +43,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import javax.sql.DataSource;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Map;
 import java.util.Optional;
 
@@ -81,10 +88,15 @@ public final class StandaloneScalingJobServiceTest {
         assertThat(progress.getInventoryTaskProgress().size(), is(1));
     }
     
+    @Test(expected = ScalingJobNotFoundException.class)
+    public void assertGetNotExistJob() {
+        scalingJobService.getJob(0);
+    }
+    
     @Test
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    public void assertStopExistJob() {
+    public void assertStopJob() {
         Map<Long, ScalingJob> scalingJobMap = ReflectionUtil.getFieldValue(scalingJobService, "scalingJobMap", Map.class);
         Map<Long, ScalingTaskScheduler> scalingTaskSchedulerMap = ReflectionUtil.getFieldValue(scalingJobService, "scalingTaskSchedulerMap", Map.class);
         assertNotNull(scalingJobMap);
@@ -96,11 +108,6 @@ public final class StandaloneScalingJobServiceTest {
         verify(scalingJob).setStatus(JobStatus.STOPPED.name());
     }
     
-    @Test(expected = ScalingJobNotFoundException.class)
-    public void assertStopNotExistJob() {
-        scalingJobService.stop(0);
-    }
-    
     @Test
     public void assertListJobs() {
         assertThat(scalingJobService.listJobs().size(), is(0));
@@ -109,7 +116,7 @@ public final class StandaloneScalingJobServiceTest {
     }
     
     @Test
-    public void assertCheckExistJob() {
+    public void assertCheckJob() {
         Optional<ScalingJob> scalingJobOptional = scalingJobService.start(mockScalingConfiguration());
         assertTrue(scalingJobOptional.isPresent());
         ScalingJob scalingJob = scalingJobOptional.get();
@@ -119,14 +126,42 @@ public final class StandaloneScalingJobServiceTest {
         assertTrue(checkResult.isEmpty());
     }
     
-    @Test(expected = ScalingJobNotFoundException.class)
-    public void assertCheckNotExistJob() {
-        scalingJobService.check(0);
+    @Test
+    @SneakyThrows(SQLException.class)
+    public void assertResetJob() {
+        Optional<ScalingJob> scalingJobOptional = scalingJobService.start(mockScalingConfiguration());
+        assertTrue(scalingJobOptional.isPresent());
+        ScalingJob scalingJob = scalingJobOptional.get();
+        DataSourceConfiguration dataSourceConfig = scalingJob.getTaskConfigs().get(0).getImporterConfig().getDataSourceConfig();
+        initTableData(dataSourceConfig);
+        assertThat(countTableData(dataSourceConfig), is(2L));
+        scalingJobService.reset(scalingJob.getJobId());
+        assertThat(countTableData(dataSourceConfig), is(0L));
     }
     
     @SneakyThrows(IOException.class)
     private ScalingConfiguration mockScalingConfiguration() {
         return ScalingConfigurationUtil.initConfig("/config.json");
+    }
+    
+    private void initTableData(final DataSourceConfiguration dataSourceConfig) throws SQLException {
+        DataSource dataSource = new DataSourceManager().getDataSource(dataSourceConfig);
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("DROP TABLE IF EXISTS `t1`");
+            statement.execute("CREATE TABLE `t1` (id INT PRIMARY KEY, user_id VARCHAR(12))");
+            statement.execute("INSERT INTO `t1` (id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
+        }
+    }
+    
+    private long countTableData(final DataSourceConfiguration dataSourceConfig) throws SQLException {
+        DataSource dataSource = new DataSourceManager().getDataSource(dataSourceConfig);
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) FROM `t1`");
+            resultSet.next();
+            return resultSet.getLong(1);
+        }
     }
     
     @After

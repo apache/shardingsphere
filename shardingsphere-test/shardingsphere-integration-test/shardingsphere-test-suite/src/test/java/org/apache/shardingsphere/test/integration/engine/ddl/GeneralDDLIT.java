@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.test.integration.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
-import org.apache.shardingsphere.test.integration.engine.SQLType;
+import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
 import org.apache.shardingsphere.test.integration.engine.util.IntegrateTestParameters;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public final class GeneralDDLIT extends BaseDDLIT {
     
     @Parameters(name = "{2} -> {3} -> {4} -> {1} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParametersWithAssertion(SQLType.DDL);
+        return IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DDL);
     }
     
     @Test

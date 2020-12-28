@@ -38,7 +38,7 @@ public final class BaseLoggingPluginDefinition extends PluginDefinition {
     @Override
     protected void define() {
         intercept(SCHEMA_METADATA_LOADER_CLASS)
-                .aroundInstanceMethod(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME))
+                .aroundClassStaticMethod(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME))
                 .implement(SCHEMA_METADATA_LOADER_ADVICE_CLASS)
                 .build();
     }

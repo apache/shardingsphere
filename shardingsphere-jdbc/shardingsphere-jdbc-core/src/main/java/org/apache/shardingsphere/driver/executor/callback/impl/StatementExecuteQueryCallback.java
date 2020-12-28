@@ -30,8 +30,8 @@ import java.sql.Statement;
  */
 public final class StatementExecuteQueryCallback extends ExecuteQueryCallback {
     
-    public StatementExecuteQueryCallback(final DatabaseType databaseType, final boolean isExceptionThrown, final SQLStatement sqlStatement) {
-        super(databaseType, isExceptionThrown, sqlStatement);
+    public StatementExecuteQueryCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
+        super(databaseType, sqlStatement, isExceptionThrown);
     }
     
     @Override

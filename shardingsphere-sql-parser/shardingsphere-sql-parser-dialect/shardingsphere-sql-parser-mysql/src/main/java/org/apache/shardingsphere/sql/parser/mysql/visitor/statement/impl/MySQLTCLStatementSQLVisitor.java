@@ -18,18 +18,16 @@
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl;
 
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
+import org.antlr.v4.runtime.Token;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AutoCommitValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SavepointContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ScopeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAutoCommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TransactionCharacteristicContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.tcl.AutoCommitSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
@@ -55,23 +53,14 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
         MySQLSetTransactionStatement result = new MySQLSetTransactionStatement();
-        if (null != ctx.scope()) {
-            ScopeContext scopeContext = ctx.scope();
-            if (null != scopeContext.GLOBAL()) {
-                result.setScope(scopeContext.GLOBAL().getText());
-            } else if (null != scopeContext.SESSION()) {
-                result.setScope(scopeContext.SESSION().getText());
-            }
+        if (null != ctx.optionType()) {
+            result.setScope(ctx.optionType().getText());
         }
-        if (null != ctx.transactionCharacteristic()) {
-            for (TransactionCharacteristicContext each : ctx.transactionCharacteristic()) {
-                if (null != each.level()) {
-                    result.setIsolationLevel(each.level().getText());
-                }
-                if (null != each.accessMode()) {
-                    result.setAccessMode(each.accessMode().getText());
-                }
-            }
+        if (null != ctx.transactionCharacteristics().isolationLevel()) {
+            result.setIsolationLevel(ctx.transactionCharacteristics().isolationLevel().isolationTypes().getText());
+        }
+        if (null != ctx.transactionCharacteristics().transactionAccessMode()) {
+            result.setAccessMode(ctx.transactionCharacteristics().transactionAccessMode().getText());
         }
         return new MySQLSetTransactionStatement();
     }
@@ -79,14 +68,13 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitSetAutoCommit(final SetAutoCommitContext ctx) {
         MySQLSetAutoCommitStatement result = new MySQLSetAutoCommitStatement();
-        result.setAutoCommit(((AutoCommitSegment) visit(ctx.autoCommitValue())).isAutoCommit());
+        result.setAutoCommit(generateAutoCommitSegment(ctx.autoCommitValue).isAutoCommit());
         return result;
     }
-    
-    @Override
-    public ASTNode visitAutoCommitValue(final AutoCommitValueContext ctx) {
+
+    private AutoCommitSegment generateAutoCommitSegment(final Token ctx) {
         boolean autoCommit = "1".equals(ctx.getText()) || "ON".equals(ctx.getText());
-        return new AutoCommitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), autoCommit);
+        return new AutoCommitSegment(ctx.getStartIndex(), ctx.getStopIndex(), autoCommit);
     }
     
     @Override

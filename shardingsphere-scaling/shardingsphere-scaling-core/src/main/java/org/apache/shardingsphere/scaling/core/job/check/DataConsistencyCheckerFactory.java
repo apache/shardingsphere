@@ -28,7 +28,7 @@ import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 public final class DataConsistencyCheckerFactory {
     
     /**
-     * create data consistency checker instance.
+     * Create data consistency checker instance.
      *
      * @param scalingJob scaling job
      * @return data consistency checker

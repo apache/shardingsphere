@@ -21,7 +21,7 @@ import org.apache.shardingsphere.test.integration.cases.assertion.root.Integrate
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.BatchIT;
-import org.apache.shardingsphere.test.integration.engine.SQLType;
+import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
 import org.apache.shardingsphere.test.integration.engine.util.IntegrateTestParameters;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.junit.Test;
@@ -50,7 +50,7 @@ public final class BatchDMLIT extends BatchIT {
     
     @Parameters(name = "Rule:{1} -> {2} -> {3}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParametersWithCase(SQLType.DML);
+        return IntegrateTestParameters.getParametersWithCase(IntegrateTestCaseType.DML);
     }
     
     @Test
