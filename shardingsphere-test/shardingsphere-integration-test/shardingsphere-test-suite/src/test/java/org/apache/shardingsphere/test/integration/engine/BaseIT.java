@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.test.integration.engine;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.DataSourceUtil;
 import org.apache.shardingsphere.test.integration.env.datasource.ProxyDataSourceUtil;
 import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
-import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.junit.After;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -62,7 +62,7 @@ public abstract class BaseIT {
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         if (IntegrateTestEnvironment.getInstance().isProxyEnvironment()) {
-            waitForProxy();
+            waitForProxyReady();
         }
     }
     
@@ -83,28 +83,8 @@ public abstract class BaseIT {
     }
     
     private DataSource createDataSource() throws SQLException, IOException {
-        return IntegrateTestEnvironment.getInstance().isProxyEnvironment() ? ProxyDataSourceUtil.createDataSource(databaseType, "proxy_" + ruleType)
-            : YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRuleResourceFile(ruleType)));
-    }
-    
-    protected final String getExpectedDataFile(final String path, final String ruleType, final DatabaseType databaseType, final String expectedDataFile) {
-        if (null == expectedDataFile) {
-            return null;
-        }
-        String prefix = path.substring(0, path.lastIndexOf(File.separator));
-        String result = Joiner.on("/").join(prefix, "dataset", ruleType, databaseType.getName().toLowerCase(), expectedDataFile);
-        if (new File(result).exists()) {
-            return result;
-        }
-        result = Joiner.on("/").join(prefix, "dataset", ruleType, expectedDataFile);
-        if (new File(result).exists()) {
-            return result;
-        }
-        result = Joiner.on("/").join(prefix, "dataset", expectedDataFile);
-        if (new File(result).exists()) {
-            return result;
-        }
-        throw new IllegalArgumentException(String.format("%s not found, path=%s, ruleType=%s, databaseType=%s, expectedDataFile=%s", result, path, ruleType, databaseType.getName(), expectedDataFile));
+        return IntegrateTestEnvironment.getInstance().isProxyEnvironment() ? ProxyDataSourceUtil.createDataSource(databaseType, String.format("proxy_%s", ruleType)) 
+                : YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRuleResourceFile(ruleType)));
     }
     
     protected static void createDatabasesAndTables() {
@@ -113,46 +93,34 @@ public abstract class BaseIT {
         createTables();
     }
     
+    @SneakyThrows({JAXBException.class, IOException.class, SQLException.class})
     protected static void createDatabases() {
-        try {
-            for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
-                SchemaEnvironmentManager.dropDatabase(each);
-            }
-            for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
-                SchemaEnvironmentManager.createDatabase(each);
-            }
-        } catch (final JAXBException | IOException | SQLException ex) {
-            throw new RuntimeException(ex);
+        for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
+            SchemaEnvironmentManager.dropDatabase(each);
+        }
+        for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
+            SchemaEnvironmentManager.createDatabase(each);
         }
     }
     
+    @SneakyThrows({JAXBException.class, IOException.class, SQLException.class})
     protected static void createTables() {
-        try {
-            for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
-                SchemaEnvironmentManager.createTable(each);
-            }
-        } catch (final JAXBException | IOException | SQLException ex) {
-            throw new RuntimeException(ex);
+        for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
+            SchemaEnvironmentManager.createTable(each);
         }
     }
     
+    @SneakyThrows({JAXBException.class, IOException.class})
     protected static void dropDatabases() {
-        try {
-            for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
-                SchemaEnvironmentManager.dropDatabase(each);
-            }
-        } catch (final JAXBException | IOException ex) {
-            throw new RuntimeException(ex);
+        for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
+            SchemaEnvironmentManager.dropDatabase(each);
         }
     }
     
+    @SneakyThrows({JAXBException.class, IOException.class})
     protected static void dropTables() {
-        try {
-            for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
-                SchemaEnvironmentManager.dropTable(each);
-            }
-        } catch (final JAXBException | IOException ex) {
-            throw new RuntimeException(ex);
+        for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
+            SchemaEnvironmentManager.dropTable(each);
         }
     }
     
@@ -163,9 +131,9 @@ public abstract class BaseIT {
         }
     }
     
-    private static void waitForProxy() {
-        int retryCount = 1;
-        while (!isProxyAvailable() && retryCount < 30) {
+    private static void waitForProxyReady() {
+        int retryCount = 0;
+        while (!isProxyReady() && retryCount < 30) {
             try {
                 Thread.sleep(1000L);
             } catch (final InterruptedException ignore) {
@@ -174,15 +142,13 @@ public abstract class BaseIT {
         }
     }
     
-    private static boolean isProxyAvailable() {
+    private static boolean isProxyReady() {
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:33070/proxy_db/?serverTimezone=UTC&useSSL=false&useLocalSessionState=true");
              Statement statement = connection.createStatement()) {
             statement.execute("SELECT 1");
-            
         } catch (final SQLException ignore) {
             return false;
         }
         return true;
     }
 }
-

@@ -20,10 +20,11 @@ package org.apache.shardingsphere.test.integration.engine;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.cases.dataset.util.DataSetPathUtil;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -53,7 +54,7 @@ public abstract class SingleIT extends BaseIT {
         this.caseType = caseType;
         originalSQL = sql;
         this.sql = convert(sql);
-        expectedDataFile = getExpectedDataFile(path, ruleType, databaseType, null != assertion ? assertion.getExpectedDataFile() : null);
+        expectedDataFile = null == assertion ? null : DataSetPathUtil.getDataSetPath(path, ruleType, databaseType, assertion.getExpectedDataFile());
     }
     
     private String convert(final String sql) throws ParseException {
