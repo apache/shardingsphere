@@ -86,7 +86,7 @@ public abstract class BaseDDLIT extends SingleIT {
         dropTables();
     }
     
-    protected final void assertMetadata(final Connection connection) throws SQLException {
+    protected final void assertMetaData(final Connection connection) throws SQLException {
         if (null == assertion.getExpectedDataFile()) {
             log.warn("Expected data file `{}` is empty", getSql());
             return;
@@ -100,19 +100,19 @@ public abstract class BaseDDLIT extends SingleIT {
             return;
         }
         try {
-            assertMetadata(actualColumns, actualIndexes, getDataSet().findMetadata(tableName));
+            assertMetaData(actualColumns, actualIndexes, getDataSet().findMetadata(tableName));
         } catch (final AssertionError ex) {
             log.error("[ERROR] SQL::{}, Parameter::{}, Expect::{}", getCaseIdentifier(), getAssertion().getParameters(), getAssertion().getExpectedDataFile());
             throw ex;
         }
     }
     
-    private void assertMetadata(final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetadata expected) {
+    private void assertMetaData(final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetadata expected) {
         for (DataSetColumn each : expected.getColumns()) {
-            assertColumnMetadata(actualColumns, each);
+            assertColumnMetaData(actualColumns, each);
         }
         for (DataSetIndex each : expected.getIndexes()) {
-            assertIndexMetadata(actualIndexes, each);
+            assertIndexMetaData(actualIndexes, each);
         }
     }
     
@@ -128,7 +128,7 @@ public abstract class BaseDDLIT extends SingleIT {
         }
     }
     
-    private void assertColumnMetadata(final List<DataSetColumn> actual, final DataSetColumn expect) {
+    private void assertColumnMetaData(final List<DataSetColumn> actual, final DataSetColumn expect) {
         for (DataSetColumn each : actual) {
             if (expect.getName().equals(each.getName())) {
                 if ("MySQL".equals(databaseType.getName()) && "integer".equals(expect.getType())) {
@@ -142,7 +142,7 @@ public abstract class BaseDDLIT extends SingleIT {
         }
     }
     
-    private void assertIndexMetadata(final List<DataSetIndex> actual, final DataSetIndex expect) {
+    private void assertIndexMetaData(final List<DataSetIndex> actual, final DataSetIndex expect) {
         for (DataSetIndex each : actual) {
             if (expect.getName().equals(each.getName())) {
                 assertThat(each.isUnique(), is(expect.isUnique()));

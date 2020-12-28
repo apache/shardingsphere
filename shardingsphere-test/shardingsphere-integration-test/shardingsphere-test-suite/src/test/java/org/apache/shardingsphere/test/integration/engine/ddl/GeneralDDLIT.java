@@ -80,7 +80,7 @@ public final class GeneralDDLIT extends BaseDDLIT {
                     connection.prepareStatement(getSql()).execute();
                 }
             }
-            assertMetadata(connection);
+            assertMetaData(connection);
             dropTableIfExisted(connection);
         } catch (final SQLException ex) {
             logException(ex);
