@@ -50,7 +50,7 @@ import java.util.TimeZone;
 public abstract class BaseIT {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
-
+    
     private final String path;
     
     private final String ruleType;
