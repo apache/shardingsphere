@@ -24,12 +24,14 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
-import org.apache.shardingsphere.test.integration.cases.dataset.util.DataSetPathUtil;
+import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
+import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,40 +39,32 @@ import java.util.stream.Collectors;
 @Getter(AccessLevel.PROTECTED)
 public abstract class SingleIT extends BaseIT {
     
+    private final String caseIdentifier;
+    
     private final IntegrateTestCaseAssertion assertion;
     
     private final SQLCaseType caseType;
     
-    private final String expectedDataFile;
+    private final DataSet dataSet;
     
     private final String sql;
-    
-    private final String originalSQL;
     
     protected SingleIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String ruleType, 
                        final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(ruleType, databaseType);
+        caseIdentifier = sql;
         this.assertion = assertion;
         this.caseType = caseType;
-        originalSQL = sql;
-        this.sql = convert(sql);
-        expectedDataFile = null == assertion ? null : DataSetPathUtil.getDataSetPath(parentPath, ruleType, databaseType, assertion.getExpectedDataFile());
-    }
-    
-    private String convert(final String sql) throws ParseException {
-        return caseType == SQLCaseType.Literal ? getLiteralSQL(sql) : sql;
+        this.sql = caseType == SQLCaseType.Literal ? getLiteralSQL(sql) : sql;
+        dataSet = null == assertion ? null : DataSetLoader.load(parentPath, ruleType, databaseType, assertion.getExpectedDataFile());
     }
     
     private String getLiteralSQL(final String sql) throws ParseException {
-        List<Object> parameters = null != assertion ? assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList()) : null;
-        if (null == parameters || parameters.isEmpty()) {
-            return sql;
-        }
-        return String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%")
-            .replace("%%", "%").replace("'%'", "'%%'");
+        List<Object> parameters = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
+        return parameters.isEmpty() ? sql : String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%").replace("%%", "%").replace("'%'", "'%%'");
     }
     
-    protected final void printExceptionContext(final Exception ex) {
-        log.error("ruleType={}, databaseType={}, expectedDataFile={}, sql={}", getRuleType(), getDatabaseType().getName(), expectedDataFile, sql, ex);
+    protected final void logException(final Exception ex) {
+        log.error("ruleType={}, databaseType={}, sql={}", getRuleType(), getDatabaseType().getName(), sql, ex);
     }
 }

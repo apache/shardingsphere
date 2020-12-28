@@ -29,7 +29,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.integration.cases.dataset.util.DataSetPathUtil;
+import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.junit.After;
@@ -37,9 +37,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -69,16 +67,16 @@ public abstract class BatchIT extends BaseIT {
     
     private final String sql;
     
-    private final Collection<String> expectedDataFiles;
+    private final Collection<DataSet> dataSets;
     
     protected BatchIT(final IntegrateTestCaseContext testCaseContext, 
                       final String ruleType, final DatabaseType databaseType, final String sql) throws IOException, JAXBException, SQLException {
         super(ruleType, databaseType);
         this.testCaseContext = testCaseContext;
         this.sql = sql;
-        expectedDataFiles = new LinkedList<>();
+        dataSets = new LinkedList<>();
         for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getIntegrateTestCaseAssertions()) {
-            expectedDataFiles.add(DataSetPathUtil.getDataSetPath(testCaseContext.getParentPath(), ruleType, databaseType, each.getExpectedDataFile()));
+            dataSets.add(DataSetLoader.load(testCaseContext.getParentPath(), ruleType, databaseType, each.getExpectedDataFile()));
         }
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(ruleType), getDataSourceMap());
     }
@@ -103,15 +101,14 @@ public abstract class BatchIT extends BaseIT {
         dataSetEnvironmentManager.clear();
     }
     
-    protected final void assertDataSet(final int[] actualUpdateCounts) throws SQLException, IOException, JAXBException {
+    protected final void assertDataSet(final int[] actualUpdateCounts) throws SQLException {
         Collection<DataSet> expectedList = new LinkedList<>();
-        assertThat(actualUpdateCounts.length, is(expectedDataFiles.size()));
+        assertThat(actualUpdateCounts.length, is(dataSets.size()));
         int count = 0;
-        for (String each : expectedDataFiles) {
-            try (FileReader reader = new FileReader(each)) {
-                DataSet expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
-                assertThat(actualUpdateCounts[count], is(expected.getUpdateCount()));
-                expectedList.add(expected);
+        for (DataSet each : dataSets) {
+            try {
+                assertThat(actualUpdateCounts[count], is(each.getUpdateCount()));
+                expectedList.add(each);
             } catch (final AssertionError ex) {
                 log.error("[ERROR] SQL::{}, Expect::{}", sql, each);
                 throw ex;

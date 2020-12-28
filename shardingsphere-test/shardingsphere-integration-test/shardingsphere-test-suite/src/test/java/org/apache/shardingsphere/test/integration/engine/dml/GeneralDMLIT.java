@@ -73,7 +73,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
         try (Connection connection = getDataSource().getConnection()) {
             actualUpdateCount = SQLCaseType.Literal == getCaseType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
         } catch (final SQLException ex) {
-            printExceptionContext(ex);
+            logException(ex);
             throw ex;
         }
         assertDataSet(actualUpdateCount);
@@ -108,7 +108,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
         try (Connection connection = getDataSource().getConnection()) {
             actualUpdateCount = SQLCaseType.Literal == getCaseType() ? executeForStatement(connection) : executeForPreparedStatement(connection);
         } catch (final SQLException ex) {
-            printExceptionContext(ex);
+            logException(ex);
             throw ex;
         }
         assertDataSet(actualUpdateCount);

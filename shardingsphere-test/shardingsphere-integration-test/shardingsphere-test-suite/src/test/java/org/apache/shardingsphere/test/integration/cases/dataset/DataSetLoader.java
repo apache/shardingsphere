@@ -15,32 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.cases.dataset.util;
+package org.apache.shardingsphere.test.integration.cases.dataset;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
- * Data set path util.
+ * Data set loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSetPathUtil {
+public final class DataSetLoader {
     
     private static final String DATA_SET_FOLDER_NAME = "dataset";
     
     /**
-     * Get data set absolute path.
-     * 
+     * Load data set.
+     *
      * @param parentPath parent path of data set file
      * @param ruleType rule type
      * @param databaseType database type
      * @param dataSetFile name of data set file
-     * @return data set absolute path
+     * @return data set
      */
-    public static String getDataSetPath(final String parentPath, final String ruleType, final DatabaseType databaseType, final String dataSetFile) {
+    @SneakyThrows({JAXBException.class, IOException.class})
+    public static DataSet load(final String parentPath, final String ruleType, final DatabaseType databaseType, final String dataSetFile) {
+        try (FileReader reader = new FileReader(getFile(parentPath, ruleType, databaseType, dataSetFile))) {
+            return (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
+        }
+    }
+    
+    private static String getFile(final String parentPath, final String ruleType, final DatabaseType databaseType, final String dataSetFile) {
         String result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, ruleType, databaseType.getName().toLowerCase(), dataSetFile);
         if (new File(result).exists()) {
             return result;

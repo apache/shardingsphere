@@ -62,8 +62,8 @@ public final class GeneralDDLIT extends BaseDDLIT {
     private void assertExecuteByType(final boolean isExecuteUpdate) throws JAXBException, IOException, SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             dropTableIfExisted(connection);
-            if (!Strings.isNullOrEmpty(assertion.getInitSql())) {
-                for (String sql : Splitter.on(";").trimResults().splitToList(assertion.getInitSql())) {
+            if (!Strings.isNullOrEmpty(assertion.getInitSQL())) {
+                for (String sql : Splitter.on(";").trimResults().splitToList(assertion.getInitSQL())) {
                     connection.prepareStatement(sql).executeUpdate();
                 }
             }
@@ -80,10 +80,10 @@ public final class GeneralDDLIT extends BaseDDLIT {
                     connection.prepareStatement(getSql()).execute();
                 }
             }
-            assertMetadata(connection);
+            assertMetaData(connection);
             dropTableIfExisted(connection);
         } catch (final SQLException ex) {
-            printExceptionContext(ex);
+            logException(ex);
             throw ex;
         }
     }

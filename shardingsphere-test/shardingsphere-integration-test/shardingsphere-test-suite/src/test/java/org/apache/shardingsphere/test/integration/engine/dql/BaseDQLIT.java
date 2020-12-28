@@ -18,26 +18,23 @@
 package org.apache.shardingsphere.test.integration.engine.dql;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
+import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.engine.SingleIT;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.datasource.DataSourceUtil;
 import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -91,20 +88,16 @@ public abstract class BaseDQLIT extends SingleIT {
         return result;
     }
     
-    protected final void assertResultSet(final ResultSet resultSet) throws SQLException, JAXBException, IOException {
-        DataSet expected;
-        try (FileReader reader = new FileReader(getExpectedDataFile())) {
-            expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
-        }
+    protected final void assertResultSet(final ResultSet resultSet) throws SQLException {
         List<DataSetColumn> expectedColumns = new LinkedList<>();
-        for (DataSetMetadata each : expected.getMetadataList()) {
+        for (DataSetMetadata each : getDataSet().getMetadataList()) {
             expectedColumns.addAll(each.getColumns());
         }
         try {
             assertMetaData(resultSet.getMetaData(), expectedColumns);
-            assertRows(resultSet, expected.getRows());
+            assertRows(resultSet, getDataSet().getRows());
         } catch (final AssertionError ex) {
-            log.error("[ERROR] SQL::{}, Parameter::[{}], Expect::{}", getOriginalSQL(), getAssertion().getParameters(), getAssertion().getExpectedDataFile());
+            log.error("[ERROR] SQL::{}, Parameter::[{}], Expect::{}", getCaseIdentifier(), getAssertion().getParameters(), getAssertion().getExpectedDataFile());
             throw ex;
         }
     }
