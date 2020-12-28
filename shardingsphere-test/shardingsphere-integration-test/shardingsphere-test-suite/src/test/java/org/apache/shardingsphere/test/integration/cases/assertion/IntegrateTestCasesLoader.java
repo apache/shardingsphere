@@ -24,7 +24,6 @@ import org.apache.shardingsphere.test.integration.cases.assertion.dcl.DCLIntegra
 import org.apache.shardingsphere.test.integration.cases.assertion.ddl.DDLIntegrateTestCases;
 import org.apache.shardingsphere.test.integration.cases.assertion.dml.DMLIntegrateTestCases;
 import org.apache.shardingsphere.test.integration.cases.assertion.dql.DQLIntegrateTestCases;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCases;
 
 import javax.xml.bind.JAXBContext;
@@ -44,6 +43,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Integrate test cases loader.
@@ -83,12 +83,10 @@ public final class IntegrateTestCasesLoader {
     
     private List<IntegrateTestCaseContext> loadIntegrateTestCaseContexts(final URL url, final IntegrateTestCaseType caseType) throws IOException, URISyntaxException, JAXBException {
         List<File> files = getFiles(url, caseType);
-        Preconditions.checkNotNull(files, "Cannot found integrate test cases.");
+        Preconditions.checkNotNull(files, "Can not find integrate test cases.");
         List<IntegrateTestCaseContext> result = new LinkedList<>();
         for (File each : files) {
-            for (IntegrateTestCase testCase : unmarshal(each.getPath(), caseType).getIntegrateTestCases()) {
-                result.add(new IntegrateTestCaseContext(testCase, each.getParent()));
-            }
+            result.addAll(getIntegrateTestCaseContexts(each, caseType));
         }
         return result;
     }
@@ -96,7 +94,7 @@ public final class IntegrateTestCasesLoader {
     private static List<File> getFiles(final URL url, final IntegrateTestCaseType caseType) throws IOException, URISyntaxException {
         List<File> result = new LinkedList<>();
         Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
-            
+
             @Override
             public FileVisitResult visitFile(final Path file, final BasicFileAttributes basicFileAttributes) {
                 if (file.getFileName().toString().startsWith(caseType.getFilePrefix()) && file.getFileName().toString().endsWith(".xml")) {
@@ -106,6 +104,10 @@ public final class IntegrateTestCasesLoader {
             }
         });
         return result;
+    }
+    
+    private List<IntegrateTestCaseContext> getIntegrateTestCaseContexts(final File file, final IntegrateTestCaseType caseType) throws IOException, JAXBException {
+        return unmarshal(file.getPath(), caseType).getIntegrateTestCases().stream().map(each -> new IntegrateTestCaseContext(each, file.getParent())).collect(Collectors.toList());
     }
     
     private static IntegrateTestCases unmarshal(final String integrateCasesFile, final IntegrateTestCaseType caseType) throws IOException, JAXBException {
