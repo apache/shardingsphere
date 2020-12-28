@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.cases.dataset.util;
+package org.apache.shardingsphere.test.integration.cases.dataset;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

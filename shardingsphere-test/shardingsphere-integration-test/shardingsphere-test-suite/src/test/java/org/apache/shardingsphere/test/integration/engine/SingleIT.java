@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.integration.cases.assertion.root.Integrate
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
-import org.apache.shardingsphere.test.integration.cases.dataset.util.DataSetLoader;
+import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
