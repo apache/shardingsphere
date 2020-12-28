@@ -87,7 +87,7 @@ public abstract class BaseIT {
                 : YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRuleResourceFile(ruleType)));
     }
     
-    protected static void createDatabasesAndTables() {
+    protected static void setUpDatabasesAndTables() {
         createDatabases();
         dropTables();
         createTables();

@@ -20,7 +20,10 @@ package org.apache.shardingsphere.test.integration.engine;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCase;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseContext;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
@@ -29,9 +32,6 @@ import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.cases.dataset.util.DataSetPathUtil;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -65,27 +65,27 @@ public abstract class BatchIT extends BaseIT {
     
     private static DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    private final IntegrateTestCase integrateTestCase;
+    private final IntegrateTestCaseContext testCaseContext;
     
     private final String sql;
     
     private final Collection<String> expectedDataFiles;
     
-    protected BatchIT(final IntegrateTestCase integrateTestCase, 
+    protected BatchIT(final IntegrateTestCaseContext testCaseContext, 
                       final String ruleType, final DatabaseType databaseType, final String sql) throws IOException, JAXBException, SQLException {
         super(ruleType, databaseType);
-        this.integrateTestCase = integrateTestCase;
+        this.testCaseContext = testCaseContext;
         this.sql = sql;
         expectedDataFiles = new LinkedList<>();
-        for (IntegrateTestCaseAssertion each : integrateTestCase.getIntegrateTestCaseAssertions()) {
-            expectedDataFiles.add(DataSetPathUtil.getDataSetPath(integrateTestCase.getPath(), ruleType, databaseType, each.getExpectedDataFile()));
+        for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getIntegrateTestCaseAssertions()) {
+            expectedDataFiles.add(DataSetPathUtil.getDataSetPath(testCaseContext.getParentPath(), ruleType, databaseType, each.getExpectedDataFile()));
         }
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(ruleType), getDataSourceMap());
     }
     
     @BeforeClass
     public static void initDatabasesAndTables() {
-        createDatabasesAndTables();
+        setUpDatabasesAndTables();
     }
     
     @AfterClass

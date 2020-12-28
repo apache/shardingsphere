@@ -58,14 +58,14 @@ import static org.junit.Assert.assertTrue;
 @Slf4j
 public abstract class BaseDQLIT extends SingleIT {
     
-    protected BaseDQLIT(final String path, final DQLIntegrateTestCaseAssertion assertion, final String ruleType,
+    protected BaseDQLIT(final String parentPath, final DQLIntegrateTestCaseAssertion assertion, final String ruleType,
                         final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(path, assertion, ruleType, databaseType, caseType, sql);
+        super(parentPath, assertion, ruleType, databaseType, caseType, sql);
     }
     
     @BeforeClass
     public static void insertData() throws IOException, JAXBException, SQLException, ParseException {
-        createDatabasesAndTables();
+        setUpDatabasesAndTables();
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             insertData(each);
         }

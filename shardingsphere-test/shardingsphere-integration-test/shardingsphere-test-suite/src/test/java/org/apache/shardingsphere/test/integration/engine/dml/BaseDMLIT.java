@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.test.integration.engine.dml;
 
-import java.sql.Statement;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
@@ -28,10 +31,6 @@ import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleIT;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -46,6 +45,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -59,15 +59,15 @@ public abstract class BaseDMLIT extends SingleIT {
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    protected BaseDMLIT(final String path, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
+    protected BaseDMLIT(final String parentPath, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
                         final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(path, assertion, ruleType, databaseType, caseType, sql);
+        super(parentPath, assertion, ruleType, databaseType, caseType, sql);
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getRuleType()), getDataSourceMap());
     }
     
     @BeforeClass
     public static void initDatabasesAndTables() {
-        createDatabasesAndTables();
+        setUpDatabasesAndTables();
     }
     
     @AfterClass

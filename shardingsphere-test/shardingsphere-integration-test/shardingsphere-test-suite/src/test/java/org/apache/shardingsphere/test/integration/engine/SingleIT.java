@@ -47,14 +47,14 @@ public abstract class SingleIT extends BaseIT {
     
     private final String originalSQL;
     
-    protected SingleIT(final String path, final IntegrateTestCaseAssertion assertion, final String ruleType, 
+    protected SingleIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String ruleType, 
                        final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(ruleType, databaseType);
         this.assertion = assertion;
         this.caseType = caseType;
         originalSQL = sql;
         this.sql = convert(sql);
-        expectedDataFile = null == assertion ? null : DataSetPathUtil.getDataSetPath(path, ruleType, databaseType, assertion.getExpectedDataFile());
+        expectedDataFile = null == assertion ? null : DataSetPathUtil.getDataSetPath(parentPath, ruleType, databaseType, assertion.getExpectedDataFile());
     }
     
     private String convert(final String sql) throws ParseException {

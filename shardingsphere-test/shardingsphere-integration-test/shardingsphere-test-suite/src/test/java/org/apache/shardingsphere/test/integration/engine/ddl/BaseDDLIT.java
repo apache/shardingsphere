@@ -58,9 +58,9 @@ public abstract class BaseDDLIT extends SingleIT {
     
     private final DatabaseType databaseType;
     
-    protected BaseDDLIT(final String path, final DDLIntegrateTestCaseAssertion assertion, final String ruleType, 
+    protected BaseDDLIT(final String parentPath, final DDLIntegrateTestCaseAssertion assertion, final String ruleType, 
                         final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(path, assertion, ruleType, databaseType, caseType, sql);
+        super(parentPath, assertion, ruleType, databaseType, caseType, sql);
         this.assertion = assertion;
         this.databaseType = databaseType;
     }
