@@ -30,6 +30,7 @@ import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -83,24 +84,24 @@ public final class IntegrateTestCasesLoader {
     }
     
     private List<? extends IntegrateTestCase> loadIntegrateTestCases(final URL url, final IntegrateTestCaseType caseType) throws IOException, URISyntaxException, JAXBException {
-        List<String> files = getFiles(url, caseType);
+        List<File> files = getFiles(url, caseType);
         Preconditions.checkNotNull(files, "Cannot found integrate test cases.");
         List<? extends IntegrateTestCase> result = new LinkedList<>();
-        for (String each : files) {
-            result = unmarshal(each, caseType).getIntegrateTestCases();
-            result.forEach(testCase -> testCase.setPath(each));
+        for (File each : files) {
+            result = unmarshal(each.getPath(), caseType).getIntegrateTestCases();
+            result.forEach(testCase -> testCase.setPath(each.getParent()));
         }
         return result;
     }
     
-    private static List<String> getFiles(final URL url, final IntegrateTestCaseType caseType) throws IOException, URISyntaxException {
-        List<String> result = new LinkedList<>();
+    private static List<File> getFiles(final URL url, final IntegrateTestCaseType caseType) throws IOException, URISyntaxException {
+        List<File> result = new LinkedList<>();
         Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
             
             @Override
             public FileVisitResult visitFile(final Path file, final BasicFileAttributes basicFileAttributes) {
                 if (file.getFileName().toString().startsWith(caseType.getFilePrefix()) && file.getFileName().toString().endsWith(".xml")) {
-                    result.add(file.toFile().getPath());
+                    result.add(file.toFile());
                 }
                 return FileVisitResult.CONTINUE;
             }
