@@ -53,7 +53,7 @@ public abstract class SingleIT extends BaseIT {
         this.caseType = caseType;
         originalSQL = sql;
         this.sql = convert(sql);
-        expectedDataFile = null != assertion ? null : getExpectedDataFile(assertion.getExpectedDataFile());
+        expectedDataFile = null == assertion ? null : getExpectedDataFile(assertion.getExpectedDataFile());
     }
     
     private String convert(final String sql) throws ParseException {

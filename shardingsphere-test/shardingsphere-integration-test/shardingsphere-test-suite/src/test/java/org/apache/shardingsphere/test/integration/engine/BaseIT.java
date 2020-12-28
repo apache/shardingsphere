@@ -91,9 +91,6 @@ public abstract class BaseIT {
     }
     
     protected final String getExpectedDataFile(final String expectedDataFile) {
-        if (null == expectedDataFile) {
-            return null;
-        }
         String prefix = path.substring(0, path.lastIndexOf(File.separator));
         String result = Joiner.on("/").join(prefix, "dataset", ruleType, databaseType.getName().toLowerCase(), expectedDataFile);
         if (new File(result).exists()) {
