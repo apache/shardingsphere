@@ -26,10 +26,11 @@ import org.apache.shardingsphere.test.integration.cases.assertion.dml.DMLIntegra
 import org.apache.shardingsphere.test.integration.cases.assertion.dql.DQLIntegrateTestCases;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCases;
-import org.apache.shardingsphere.test.integration.engine.SQLType;
+import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -53,7 +54,7 @@ public final class IntegrateTestCasesLoader {
     
     private static final IntegrateTestCasesLoader INSTANCE = new IntegrateTestCasesLoader();
     
-    private final Map<SQLType, List<? extends IntegrateTestCase>> integrateTestCases = new LinkedHashMap<>();
+    private final Map<IntegrateTestCaseType, List<? extends IntegrateTestCase>> integrateTestCases = new LinkedHashMap<>();
     
     /**
      * Get singleton instance.
@@ -66,40 +67,41 @@ public final class IntegrateTestCasesLoader {
     
     /**
      * Get integrate test cases.
-     * @param sqlType SQL type
+     * 
+     * @param caseType integration test case type
      * @return integrate test cases
      */
-    public List<? extends IntegrateTestCase> getTestCases(final SQLType sqlType) {
-        integrateTestCases.putIfAbsent(sqlType, loadIntegrateTestCases(sqlType));
-        return integrateTestCases.get(sqlType);
+    public List<? extends IntegrateTestCase> getTestCases(final IntegrateTestCaseType caseType) {
+        integrateTestCases.putIfAbsent(caseType, loadIntegrateTestCases(caseType));
+        return integrateTestCases.get(caseType);
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
-    private List<? extends IntegrateTestCase> loadIntegrateTestCases(final SQLType sqlType) {
+    private List<? extends IntegrateTestCase> loadIntegrateTestCases(final IntegrateTestCaseType caseType) {
         URL url = IntegrateTestCasesLoader.class.getClassLoader().getResource("integrate/cases/");
         Preconditions.checkNotNull(url, "Cannot found integrate test cases.");
-        return loadIntegrateTestCases(url, sqlType);
+        return loadIntegrateTestCases(url, caseType);
     }
     
-    private List<? extends IntegrateTestCase> loadIntegrateTestCases(final URL url, final SQLType sqlType) throws IOException, URISyntaxException, JAXBException {
-        List<String> files = getFiles(url, sqlType);
+    private List<? extends IntegrateTestCase> loadIntegrateTestCases(final URL url, final IntegrateTestCaseType caseType) throws IOException, URISyntaxException, JAXBException {
+        List<File> files = getFiles(url, caseType);
         Preconditions.checkNotNull(files, "Cannot found integrate test cases.");
         List<? extends IntegrateTestCase> result = new LinkedList<>();
-        for (String each : files) {
-            result = unmarshal(each, sqlType).getIntegrateTestCases();
-            result.forEach(testCase -> testCase.setPath(each));
+        for (File each : files) {
+            result = unmarshal(each.getPath(), caseType).getIntegrateTestCases();
+            result.forEach(testCase -> testCase.setPath(each.getParent()));
         }
         return result;
     }
     
-    private static List<String> getFiles(final URL url, final SQLType sqlType) throws IOException, URISyntaxException {
-        List<String> result = new LinkedList<>();
+    private static List<File> getFiles(final URL url, final IntegrateTestCaseType caseType) throws IOException, URISyntaxException {
+        List<File> result = new LinkedList<>();
         Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
             
             @Override
             public FileVisitResult visitFile(final Path file, final BasicFileAttributes basicFileAttributes) {
-                if (file.getFileName().toString().startsWith(sqlType.getFilePrefix()) && file.getFileName().toString().endsWith(".xml")) {
-                    result.add(file.toFile().getPath());
+                if (file.getFileName().toString().startsWith(caseType.getFilePrefix()) && file.getFileName().toString().endsWith(".xml")) {
+                    result.add(file.toFile());
                 }
                 return FileVisitResult.CONTINUE;
             }
@@ -107,9 +109,9 @@ public final class IntegrateTestCasesLoader {
         return result;
     }
     
-    private static IntegrateTestCases unmarshal(final String integrateCasesFile, final SQLType sqlType) throws IOException, JAXBException {
+    private static IntegrateTestCases unmarshal(final String integrateCasesFile, final IntegrateTestCaseType caseType) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(integrateCasesFile)) {
-            switch (sqlType) {
+            switch (caseType) {
                 case DQL:
                     return (DQLIntegrateTestCases) JAXBContext.newInstance(DQLIntegrateTestCases.class).createUnmarshaller().unmarshal(reader);
                 case DML:
@@ -119,7 +121,7 @@ public final class IntegrateTestCasesLoader {
                 case DCL:
                     return (DCLIntegrateTestCases) JAXBContext.newInstance(DCLIntegrateTestCases.class).createUnmarshaller().unmarshal(reader);
                 default:
-                    throw new UnsupportedOperationException(sqlType.getFilePrefix());
+                    throw new UnsupportedOperationException(caseType.getFilePrefix());
             }
         }
     }

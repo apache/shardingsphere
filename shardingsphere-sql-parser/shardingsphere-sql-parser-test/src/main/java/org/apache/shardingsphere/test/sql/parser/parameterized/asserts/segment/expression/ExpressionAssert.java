@@ -287,7 +287,11 @@ public final class ExpressionAssert {
      */
     public static void assertExpression(final SQLCaseAssertContext assertContext,
                                         final ExpressionSegment actual, final ExpectedExpression expected) {
-        assertNotNull(assertContext.getText("Expected expression should exist."), expected);
+        if (null == expected) {
+            assertNull(assertContext.getText("Actual expression should not exist."), actual);
+            return;
+        }
+        assertNotNull(assertContext.getText("Actual expression should exist."), actual);
         if (actual instanceof BinaryOperationExpression) {
             assertBinaryOperationExpression(assertContext,
                     (BinaryOperationExpression) actual, expected.getBinaryOperationExpression());

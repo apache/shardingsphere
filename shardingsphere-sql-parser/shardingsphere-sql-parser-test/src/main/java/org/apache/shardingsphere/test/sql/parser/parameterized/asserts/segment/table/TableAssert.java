@@ -25,10 +25,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sub
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dml.impl.SelectStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedTable;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedJoinTable;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSubqueryTable;
@@ -108,6 +111,14 @@ public final class TableAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final JoinTableSegment actual, final ExpectedJoinTable expected) {
         TableAssert.assertIs(assertContext, actual.getLeft(), expected.getLeft());
         TableAssert.assertIs(assertContext, actual.getRight(), expected.getRight());
+        ExpressionAssert.assertExpression(assertContext, actual.getCondition(), expected.getOnCondition());
+        assertThat(assertContext.getText("Column size assertion error: "),
+                actual.getUsing() != null ? actual.getUsing().size() : 0, is(expected.getUsingColumns().size()));
+        int count = 0;
+        for (ExpectedColumn each : expected.getUsingColumns()) {
+            ColumnAssert.assertIs(assertContext, actual.getUsing().get(count), each);
+            count++;
+        }
     }
 
     /**
@@ -140,5 +151,4 @@ public final class TableAssert {
             assertIs(assertContext, actualTables.get(i), expectedTables.get(i));
         }
     }
-
 }
