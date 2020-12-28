@@ -54,7 +54,7 @@ public final class BatchDMLIT extends BatchIT {
     }
     
     @Test
-    public void assertExecuteBatch() throws JAXBException, IOException, SQLException, ParseException {
+    public void assertExecuteBatch() throws SQLException, ParseException {
         // TODO fix replica_query
         if ("replica_query".equals(getRuleType())) {
             return;

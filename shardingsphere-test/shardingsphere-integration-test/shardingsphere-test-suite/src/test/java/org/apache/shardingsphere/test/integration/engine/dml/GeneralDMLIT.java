@@ -51,13 +51,13 @@ public final class GeneralDMLIT extends BaseDMLIT {
         this.assertion = assertion;
     }
     
-    @Parameters(name = "{2} -> {3} -> {4} -> {1} -> {5}")
+    @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
         return IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DML);
     }
     
     @Test
-    public void assertExecuteUpdate() throws JAXBException, IOException, SQLException, ParseException {
+    public void assertExecuteUpdate() throws SQLException, ParseException {
         // TODO fix replica-query
         if ("replica_query".equals(getRuleType())) {
             return;
@@ -95,7 +95,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
     }
     
     @Test
-    public void assertExecute() throws JAXBException, IOException, SQLException, ParseException {
+    public void assertExecute() throws SQLException, ParseException {
         // TODO fix replica_query
         if ("replica_query".equals(getRuleType())) {
             return;

@@ -50,7 +50,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
         this.assertion = assertion;
     }
     
-    @Parameters(name = "{2} -> {3} -> {4} -> {1} -> {5}")
+    @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
         return IntegrateTestEnvironment.getInstance().isRunAdditionalTestCases() ? IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DQL) : Collections.emptyList();
     }

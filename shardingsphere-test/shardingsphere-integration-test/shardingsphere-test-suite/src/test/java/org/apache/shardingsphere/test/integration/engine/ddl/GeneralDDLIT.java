@@ -41,7 +41,7 @@ public final class GeneralDDLIT extends BaseDDLIT {
         super(parentPath, assertion, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
     }
     
-    @Parameters(name = "{2} -> {3} -> {4} -> {1} -> {5}")
+    @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
         return IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DDL);
     }
