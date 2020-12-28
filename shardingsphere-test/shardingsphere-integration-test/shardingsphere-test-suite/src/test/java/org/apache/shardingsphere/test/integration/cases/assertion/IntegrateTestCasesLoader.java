@@ -77,7 +77,7 @@ public final class IntegrateTestCasesLoader {
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
     private List<IntegrateTestCaseContext> loadIntegrateTestCaseContexts(final IntegrateTestCaseType caseType) {
         URL url = IntegrateTestCasesLoader.class.getClassLoader().getResource("integrate/cases/");
-        Preconditions.checkNotNull(url, "Cannot found integrate test cases.");
+        Preconditions.checkNotNull(url, "Can not find integrate test cases.");
         return loadIntegrateTestCaseContexts(url, caseType);
     }
     
