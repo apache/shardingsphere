@@ -25,8 +25,8 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
-import org.apache.shardingsphere.test.integration.env.datasource.DataSourceBuilder;
-import org.apache.shardingsphere.test.integration.env.datasource.ProxyDataSourceBuilder;
+import org.apache.shardingsphere.test.integration.env.datasource.builder.JdbcDataSourceBuilder;
+import org.apache.shardingsphere.test.integration.env.datasource.builder.ProxyDataSourceBuilder;
 import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.After;
 import org.junit.runner.RunWith;
@@ -77,7 +77,7 @@ public abstract class BaseIT {
         Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(ruleType);
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
-            result.put(each, DataSourceBuilder.build(each, databaseType));
+            result.put(each, JdbcDataSourceBuilder.build(each, databaseType));
         }
         return result;
     }

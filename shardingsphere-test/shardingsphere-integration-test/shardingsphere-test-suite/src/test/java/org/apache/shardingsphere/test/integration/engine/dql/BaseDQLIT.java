@@ -28,7 +28,7 @@ import org.apache.shardingsphere.test.integration.engine.SingleIT;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.env.datasource.DataSourceBuilder;
+import org.apache.shardingsphere.test.integration.env.datasource.builder.JdbcDataSourceBuilder;
 import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -83,7 +83,7 @@ public abstract class BaseDQLIT extends SingleIT {
         Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(ruleType);
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
-            result.put(each, DataSourceBuilder.build(each, databaseType));
+            result.put(each, JdbcDataSourceBuilder.build(each, databaseType));
         }
         return result;
     }

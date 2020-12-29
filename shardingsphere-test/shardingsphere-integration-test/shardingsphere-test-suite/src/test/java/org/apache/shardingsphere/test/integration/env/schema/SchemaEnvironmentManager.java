@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
-import org.apache.shardingsphere.test.integration.env.datasource.DataSourceBuilder;
+import org.apache.shardingsphere.test.integration.env.datasource.builder.JdbcDataSourceBuilder;
 import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;
@@ -67,7 +67,7 @@ public final class SchemaEnvironmentManager {
     public static void createDatabase(final String ruleType) throws IOException, JAXBException, SQLException {
         SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaEnvironmentFile(ruleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
-            DataSource dataSource = DataSourceBuilder.build(null, each);
+            DataSource dataSource = JdbcDataSourceBuilder.build(null, each);
             try (
                     Connection connection = dataSource.getConnection();
                     StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateCreateDatabaseSQLs(each, schemaEnvironment.getDatabases())))) {
@@ -86,7 +86,7 @@ public final class SchemaEnvironmentManager {
     public static void dropDatabase(final String ruleType) throws IOException, JAXBException {
         SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaEnvironmentFile(ruleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
-            DataSource dataSource = DataSourceBuilder.build(null, each);
+            DataSource dataSource = JdbcDataSourceBuilder.build(null, each);
             if ("PostgreSQL".equals(each.getName())) {
                 try (
                         Connection connection = dataSource.getConnection();
@@ -162,7 +162,7 @@ public final class SchemaEnvironmentManager {
     
     private static void createTable(final SchemaEnvironment databaseEnvironmentSchema, final DatabaseType databaseType) throws SQLException {
         for (String each : databaseEnvironmentSchema.getDatabases()) {
-            DataSource dataSource = DataSourceBuilder.build(each, databaseType);
+            DataSource dataSource = JdbcDataSourceBuilder.build(each, databaseType);
             try (Connection connection = dataSource.getConnection();
                  StringReader stringReader = new StringReader(Joiner.on(";\n").join(databaseEnvironmentSchema.getTableCreateSQLs()))) {
                 RunScript.execute(connection, stringReader);
@@ -186,7 +186,7 @@ public final class SchemaEnvironmentManager {
     
     private static void dropTable(final SchemaEnvironment databaseEnvironmentSchema, final DatabaseType databaseType) {
         for (String each : databaseEnvironmentSchema.getDatabases()) {
-            DataSource dataSource = DataSourceBuilder.build(each, databaseType);
+            DataSource dataSource = JdbcDataSourceBuilder.build(each, databaseType);
             try (Connection connection = dataSource.getConnection();
                  StringReader stringReader = new StringReader(Joiner.on(";\n").join(databaseEnvironmentSchema.getTableDropSQLs()))) {
                 RunScript.execute(connection, stringReader);

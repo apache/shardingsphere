@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.datasource;
+package org.apache.shardingsphere.test.integration.env.datasource.builder;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
+import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Data source builder.
+ * Proxy data source builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyDataSourceBuilder {
@@ -46,11 +45,10 @@ public final class ProxyDataSourceBuilder {
      * @return proxy data source
      */
     public static DataSource build(final String name, final DatabaseType databaseType) {
-        DataSourceCacheKey cacheKey = new DataSourceCacheKey(databaseType, name);
+        DataSourceCacheKey cacheKey = new DataSourceCacheKey(name, databaseType);
         if (CACHE.containsKey(cacheKey)) {
             return CACHE.get(cacheKey);
         }
-        
         DataSource result = createHikariCP(databaseType, name);
         CACHE.put(cacheKey, result);
         return result;
@@ -60,7 +58,7 @@ public final class ProxyDataSourceBuilder {
         HikariConfig result = new HikariConfig();
         DatabaseEnvironment databaseEnvironment = IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().get(databaseType);
         result.setDriverClassName(databaseEnvironment.getDriverClassName());
-        result.setJdbcUrl(getURL(databaseType, dataSourceName));
+        result.setJdbcUrl(getURL(dataSourceName, databaseType));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaximumPoolSize(2);
@@ -68,7 +66,7 @@ public final class ProxyDataSourceBuilder {
         return new HikariDataSource(result);
     }
     
-    private static String getURL(final DatabaseType databaseType, final String dataSourceName) {
+    private static String getURL(final String dataSourceName, final DatabaseType databaseType) {
         switch (databaseType.getName()) {
             case "MySQL":
                 return String.format("jdbc:mysql://127.0.0.1:33070/%s?serverTimezone=UTC&useSSL=false&useLocalSessionState=true", dataSourceName);
@@ -77,14 +75,5 @@ public final class ProxyDataSourceBuilder {
             default:
                 throw new UnsupportedOperationException(databaseType.getName());
         }
-    }
-    
-    @RequiredArgsConstructor
-    @EqualsAndHashCode
-    private static class DataSourceCacheKey {
-        
-        private final DatabaseType databaseType;
-        
-        private final String dataSourceName;
     }
 }
