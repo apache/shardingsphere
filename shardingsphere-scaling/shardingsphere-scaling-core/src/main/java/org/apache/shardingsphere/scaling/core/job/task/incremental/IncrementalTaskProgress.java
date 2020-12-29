@@ -18,18 +18,15 @@
 package org.apache.shardingsphere.scaling.core.job.task.incremental;
 
 import lombok.AllArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.scaling.core.job.TaskProgress;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.scaling.core.job.TaskProgress;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 
 /**
  * Incremental task progress.
  */
 @Getter
-@Setter
 @RequiredArgsConstructor
 @AllArgsConstructor
 public final class IncrementalTaskProgress implements TaskProgress {
