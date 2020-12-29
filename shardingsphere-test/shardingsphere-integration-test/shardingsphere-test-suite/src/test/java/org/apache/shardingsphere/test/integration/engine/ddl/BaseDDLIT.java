@@ -18,24 +18,21 @@
 package org.apache.shardingsphere.test.integration.engine.ddl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
+import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.engine.SingleIT;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -54,14 +51,11 @@ import static org.junit.Assert.assertTrue;
 @Slf4j
 public abstract class BaseDDLIT extends SingleIT {
     
-    private final DDLIntegrateTestCaseAssertion assertion;
-    
     private final DatabaseType databaseType;
     
-    protected BaseDDLIT(final String path, final DDLIntegrateTestCaseAssertion assertion, final String ruleType, 
+    protected BaseDDLIT(final String parentPath, final DDLIntegrateTestCaseAssertion assertion, final String ruleType, 
                         final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(path, assertion, ruleType, databaseType, caseType, sql);
-        this.assertion = assertion;
+        super(parentPath, assertion, ruleType, databaseType, caseType, sql);
         this.databaseType = databaseType;
     }
     
@@ -89,16 +83,12 @@ public abstract class BaseDDLIT extends SingleIT {
         dropTables();
     }
     
-    protected final void assertMetadata(final Connection connection) throws IOException, JAXBException, SQLException {
-        if (null == assertion.getExpectedDataFile()) {
-            log.warn("Have empty expectedDataFile `{}`", getSql());
+    protected final void assertMetaData(final Connection connection) throws SQLException {
+        if (null == getAssertion().getExpectedDataFile()) {
+            log.warn("Expected data file `{}` is empty", getSql());
             return;
         }
-        DataSet expected;
-        try (FileReader reader = new FileReader(getExpectedDataFile())) {
-            expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
-        }
-        String tableName = assertion.getTable();
+        String tableName = ((DDLIntegrateTestCaseAssertion) getAssertion()).getTable();
         List<DataSetColumn> actualColumns = getActualColumns(connection, tableName);
         List<DataSetIndex> actualIndexes = getActualIndexes(connection, tableName);
         if (actualColumns.isEmpty() || actualIndexes.isEmpty()) {
@@ -107,19 +97,19 @@ public abstract class BaseDDLIT extends SingleIT {
             return;
         }
         try {
-            assertMetadata(actualColumns, actualIndexes, expected.findMetadata(tableName));
+            assertMetaData(actualColumns, actualIndexes, getDataSet().findMetadata(tableName));
         } catch (final AssertionError ex) {
-            log.error("[ERROR] SQL::{}, Parameter::{}, Expect::{}", getOriginalSQL(), getAssertion().getParameters(), getAssertion().getExpectedDataFile());
+            log.error("[ERROR] SQL::{}, Parameter::{}, Expect::{}", getCaseIdentifier(), getAssertion().getParameters(), getAssertion().getExpectedDataFile());
             throw ex;
         }
     }
     
-    private void assertMetadata(final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetadata expected) {
+    private void assertMetaData(final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetadata expected) {
         for (DataSetColumn each : expected.getColumns()) {
-            assertColumnMetadata(actualColumns, each);
+            assertColumnMetaData(actualColumns, each);
         }
         for (DataSetIndex each : expected.getIndexes()) {
-            assertIndexMetadata(actualIndexes, each);
+            assertIndexMetaData(actualIndexes, each);
         }
     }
     
@@ -135,7 +125,7 @@ public abstract class BaseDDLIT extends SingleIT {
         }
     }
     
-    private void assertColumnMetadata(final List<DataSetColumn> actual, final DataSetColumn expect) {
+    private void assertColumnMetaData(final List<DataSetColumn> actual, final DataSetColumn expect) {
         for (DataSetColumn each : actual) {
             if (expect.getName().equals(each.getName())) {
                 if ("MySQL".equals(databaseType.getName()) && "integer".equals(expect.getType())) {
@@ -149,7 +139,7 @@ public abstract class BaseDDLIT extends SingleIT {
         }
     }
     
-    private void assertIndexMetadata(final List<DataSetIndex> actual, final DataSetIndex expect) {
+    private void assertIndexMetaData(final List<DataSetIndex> actual, final DataSetIndex expect) {
         for (DataSetIndex each : actual) {
             if (expect.getName().equals(each.getName())) {
                 assertThat(each.isUnique(), is(expect.isUnique()));
@@ -191,7 +181,7 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     protected final void dropTableIfExisted(final Connection connection) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", assertion.getTable()))) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", ((DDLIntegrateTestCaseAssertion) getAssertion()).getTable()))) {
             preparedStatement.executeUpdate();
         } catch (final SQLException ignored) {
         }

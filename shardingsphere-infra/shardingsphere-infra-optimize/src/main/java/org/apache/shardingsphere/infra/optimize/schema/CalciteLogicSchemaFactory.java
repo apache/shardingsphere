@@ -17,38 +17,44 @@
 
 package org.apache.shardingsphere.infra.optimize.schema;
 
-import lombok.Getter;
-import org.apache.calcite.schema.Table;
-import org.apache.calcite.schema.impl.AbstractSchema;
+import org.apache.calcite.schema.Schema;
 import org.apache.commons.collections4.map.LinkedMap;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
 
 /**
- * Calcite schema.
+ * Calcite schema factory.
  *
  */
-@Getter
-public final class CalciteSchema extends AbstractSchema {
+public final class CalciteLogicSchemaFactory {
     
-    private final Map<String, Table> tables = new LinkedMap<>();
-
-    public CalciteSchema(final Map<String, DataSource> dataSources, final Map<String, Collection<String>> dataSourceRules,
-                         final Map<String, Collection<DataNode>> tableDataNodes, final DatabaseType databaseType) throws SQLException {
-        for (Entry<String, Collection<DataNode>> entry : tableDataNodes.entrySet()) {
-            tables.put(entry.getKey(), new CalciteFilterableTable(dataSources, dataSourceRules, entry.getValue(), databaseType));
+    private final Map<String, Schema> schemas = new LinkedMap<>();
+    
+    public CalciteLogicSchemaFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
+        for (Entry<String, ShardingSphereMetaData> each : metaDataMap.entrySet()) {
+            try {
+                schemas.put(each.getKey(), new CalciteLogicSchema(each.getValue()));
+            } catch (final SQLException ex) {
+                throw new ShardingSphereException(ex);
+            }
         }
     }
     
-    @Override
-    protected Map<String, Table> getTableMap() {
-        return tables;
+    /**
+     * Create schema.
+     *
+     * @param name name
+     * @return schema
+     */
+    public Schema create(final String name) {
+        if (!schemas.containsKey(name)) {
+            throw new ShardingSphereException("No `%s` schema.", name);
+        }
+        return schemas.get(name);
     }
 }

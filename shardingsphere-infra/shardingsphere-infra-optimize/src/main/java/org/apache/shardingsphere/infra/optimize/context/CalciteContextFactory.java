@@ -32,7 +32,7 @@ import org.apache.calcite.sql.parser.impl.SqlParserImpl;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.optimize.plan.PlannerInitializer;
-import org.apache.shardingsphere.infra.optimize.schema.CalciteSchemaFactory;
+import org.apache.shardingsphere.infra.optimize.schema.CalciteLogicSchemaFactory;
 
 import java.util.Map;
 import java.util.Properties;
@@ -49,7 +49,7 @@ public final class CalciteContextFactory {
     
     private final RelDataTypeFactory typeFactory;
     
-    private final CalciteSchemaFactory factory;
+    private final CalciteLogicSchemaFactory factory;
     
     private final RelOptCluster cluster;
     
@@ -61,7 +61,7 @@ public final class CalciteContextFactory {
                 .withConformance(connectionConfig.conformance())
                 .withParserFactory(SqlParserImpl.FACTORY);
         typeFactory = new JavaTypeFactoryImpl();
-        factory = new CalciteSchemaFactory(metaDataMap);
+        factory = new CalciteLogicSchemaFactory(metaDataMap);
         cluster = newCluster();
     }
     

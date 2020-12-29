@@ -30,7 +30,6 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.optimize.context.CalciteContext;
 import org.apache.shardingsphere.infra.optimize.context.CalciteDataContext;
@@ -46,8 +45,6 @@ import java.util.List;
 public final class CalciteRawExecutor {
     
     private final CalciteContext context;
-    
-    private final JDBCExecutor jdbcExecutor;
     
     /**
      * Execute query.

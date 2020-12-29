@@ -45,19 +45,19 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     private final DMLIntegrateTestCaseAssertion assertion;
     
-    public GeneralDMLIT(final String path, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
+    public GeneralDMLIT(final String parentPath, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
                         final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(path, assertion, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
+        super(parentPath, assertion, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
         this.assertion = assertion;
     }
     
-    @Parameters(name = "{2} -> {3} -> {4} -> {1} -> {5}")
+    @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
         return IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DML);
     }
     
     @Test
-    public void assertExecuteUpdate() throws JAXBException, IOException, SQLException, ParseException {
+    public void assertExecuteUpdate() throws SQLException, ParseException {
         // TODO fix replica-query
         if ("replica_query".equals(getRuleType())) {
             return;
@@ -73,7 +73,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
         try (Connection connection = getDataSource().getConnection()) {
             actualUpdateCount = SQLCaseType.Literal == getCaseType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
         } catch (final SQLException ex) {
-            printExceptionContext(ex);
+            logException(ex);
             throw ex;
         }
         assertDataSet(actualUpdateCount);
@@ -95,7 +95,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
     }
     
     @Test
-    public void assertExecute() throws JAXBException, IOException, SQLException, ParseException {
+    public void assertExecute() throws SQLException, ParseException {
         // TODO fix replica_query
         if ("replica_query".equals(getRuleType())) {
             return;
@@ -108,7 +108,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
         try (Connection connection = getDataSource().getConnection()) {
             actualUpdateCount = SQLCaseType.Literal == getCaseType() ? executeForStatement(connection) : executeForPreparedStatement(connection);
         } catch (final SQLException ex) {
-            printExceptionContext(ex);
+            logException(ex);
             throw ex;
         }
         assertDataSet(actualUpdateCount);
