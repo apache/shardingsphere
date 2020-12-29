@@ -18,13 +18,14 @@
 
 package org.apache.shardingsphere.agent.core.path;
 
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.agent.core.exception.ShardingSphereAgentException;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.core.exception.ShardingSphereAgentException;
 
 /**
  * Agent path builder.
@@ -51,11 +52,7 @@ public final class AgentPathBuilder {
             log.debug("The beacon class location is {}.", url);
             int insideIndex = url.indexOf('!');
             boolean isInJar = insideIndex > -1;
-            if (isInJar) {
-                return getFileInJar(url, insideIndex);
-            } else {
-                return getFileInResource(url, classResourcePath);
-            }
+            return isInJar ? getFileInJar(url, insideIndex) : getFileInResource(url, classResourcePath);
         }
         throw new ShardingSphereAgentException("Can not locate agent jar file.");
     }

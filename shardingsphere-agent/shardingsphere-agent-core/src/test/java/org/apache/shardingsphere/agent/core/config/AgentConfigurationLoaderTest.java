@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.agent.core.config;
 
+import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
+import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
+import org.apache.shardingsphere.agent.core.util.ReflectiveUtil;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import org.apache.shardingsphere.agent.core.base.ReflectiveUtil;
-import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
-import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
-import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 

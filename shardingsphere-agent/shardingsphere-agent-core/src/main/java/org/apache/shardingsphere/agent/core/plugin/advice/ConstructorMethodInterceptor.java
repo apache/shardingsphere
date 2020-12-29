@@ -42,7 +42,7 @@ public class ConstructorMethodInterceptor {
      * @param args the all constructor arguments
      */
     @RuntimeType
-    public void intercept(final @This TargetObject target, final @AllArguments Object[] args) {
+    public void intercept(@This final TargetObject target, @AllArguments final Object[] args) {
         try {
             advice.onConstructor(target, args);
             // CHECKSTYLE:OFF
