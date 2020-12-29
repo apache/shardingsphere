@@ -62,8 +62,8 @@ public final class DataSetEnvironmentManager {
     
     private final Map<String, DataSource> dataSourceMap;
     
-    public DataSetEnvironmentManager(final String path, final Map<String, DataSource> dataSourceMap) throws IOException, JAXBException {
-        try (FileReader reader = new FileReader(path)) {
+    public DataSetEnvironmentManager(final String dataSetFile, final Map<String, DataSource> dataSourceMap) throws IOException, JAXBException {
+        try (FileReader reader = new FileReader(dataSetFile)) {
             dataSet = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
         }
         this.dataSourceMap = dataSourceMap;

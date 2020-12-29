@@ -35,7 +35,7 @@ public final class EnvironmentPath {
     
     private static final String SCHEMA_FILE = "schema.xml";
     
-    private static final String DATA_FILE = "data.xml";
+    private static final String DATASET_FILE = "dataset.xml";
     
     private static final String RULES_CONFIG_FILE = "rules.yaml";
     
@@ -52,13 +52,13 @@ public final class EnvironmentPath {
     }
     
     /**
-     * Get data file.
+     * Get data set file.
      *
      * @param ruleType rule type
-     * @return data file
+     * @return data set file
      */
-    public static String getDataFile(final String ruleType) {
-        return getFile(ruleType, DATA_FILE);
+    public static String getDataSetFile(final String ruleType) {
+        return getFile(ruleType, DATASET_FILE);
     }
     
     /**
