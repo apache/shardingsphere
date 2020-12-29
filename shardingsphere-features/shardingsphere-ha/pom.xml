@@ -32,6 +32,7 @@
     <modules>
         <module>shardingsphere-ha-api</module>
         <module>shardingsphere-ha-common</module>
+        <module>shardingsphere-ha-mgr</module>
         <module>shardingsphere-ha-route</module>
         <module>shardingsphere-ha-spring</module>
     </modules>

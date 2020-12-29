@@ -20,15 +20,15 @@ package org.apache.shardingsphere.driver.executor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -59,7 +59,7 @@ public abstract class AbstractBaseExecutorTest {
     @Before
     public void setUp() throws SQLException {
         MockitoAnnotations.initMocks(this);
-        ExecutorExceptionHandler.setExceptionThrown(false);
+        SQLExecutorExceptionHandler.setExceptionThrown(false);
         executorEngine = new ExecutorEngine(Runtime.getRuntime().availableProcessors());
         setConnection();
     }
@@ -68,7 +68,7 @@ public abstract class AbstractBaseExecutorTest {
         MetaDataContexts metaDataContexts = mock(StandardMetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getExecutorEngine()).thenReturn(executorEngine);
         when(metaDataContexts.getProps()).thenReturn(createConfigurationProperties());
-        when(metaDataContexts.getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
+        when(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType()).thenReturn(DatabaseTypeRegistry.getActualDatabaseType("H2"));
         ShardingRule shardingRule = mockShardingRule();
         when(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules()).thenReturn(Collections.singletonList(shardingRule));
         TransactionContexts transactionContexts = mock(TransactionContexts.class);

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Executor
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.fetchsize.StatementMemoryStrictlyFetchSizeSetter;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -180,8 +181,12 @@ public final class BackendConnection implements ExecutorJDBCManager {
     }
     
     private void setFetchSize(final Statement statement) throws SQLException {
-        DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getDatabaseType();
-        TypedSPIRegistry.getRegisteredService(StatementMemoryStrictlyFetchSizeSetter.class, databaseType.getName(), new Properties()).setFetchSize(statement);
+        DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType();
+        Optional<StatementMemoryStrictlyFetchSizeSetter> fetchSizeSetter = TypedSPIRegistry.findRegisteredService(
+                StatementMemoryStrictlyFetchSizeSetter.class, databaseType.getName(), new Properties());
+        if (fetchSizeSetter.isPresent()) {
+            fetchSizeSetter.get().setFetchSize(statement);
+        }
     }
     
     /**

@@ -17,34 +17,25 @@
 
 package org.apache.shardingsphere.sharding.route.engine;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngineFactory;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngineFactory;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidator;
 import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStatementValidatorFactory;
-import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -65,7 +56,6 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
         ShardingConditions shardingConditions = createShardingConditions(logicSQL, metaData, rule);
         boolean needMergeShardingValues = isNeedMergeShardingValues(logicSQL.getSqlStatementContext(), rule);
         if (sqlStatement instanceof DMLStatement && needMergeShardingValues) {
-            checkSubqueryShardingValues(logicSQL.getSqlStatementContext(), rule, shardingConditions);
             mergeShardingConditions(shardingConditions);
         }
         ShardingRouteEngineFactory.newInstance(rule, metaData, logicSQL.getSqlStatementContext(), shardingConditions, props).route(result, rule);
@@ -90,74 +80,6 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
         boolean insertSelectContainsSubquery = sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()
                 && ((InsertStatementContext) sqlStatementContext).getInsertSelectContext().getSelectStatementContext().isContainsSubquery();
         return (selectContainsSubquery || insertSelectContainsSubquery) && !rule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty();
-    }
-    
-    private void checkSubqueryShardingValues(final SQLStatementContext<?> sqlStatementContext, final ShardingRule shardingRule, final ShardingConditions shardingConditions) {
-        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            Optional<TableRule> tableRule = shardingRule.findTableRule(each);
-            if (tableRule.isPresent() && isRoutingByHint(shardingRule, tableRule.get())
-                    && !HintManager.getDatabaseShardingValues(each).isEmpty() && !HintManager.getTableShardingValues(each).isEmpty()) {
-                return;
-            }
-        }
-        if (shardingConditions.getConditions().size() > 1) {
-            Preconditions.checkState(isSameShardingCondition(shardingRule, shardingConditions), "Sharding value must same with subquery.");
-        }
-    }
-    
-    private boolean isRoutingByHint(final ShardingRule shardingRule, final TableRule tableRule) {
-        return shardingRule.getDatabaseShardingStrategyConfiguration(tableRule) instanceof HintShardingStrategyConfiguration
-                && shardingRule.getTableShardingStrategyConfiguration(tableRule) instanceof HintShardingStrategyConfiguration;
-    }
-    
-    private boolean isSameShardingCondition(final ShardingRule shardingRule, final ShardingConditions shardingConditions) {
-        ShardingCondition example = shardingConditions.getConditions().remove(shardingConditions.getConditions().size() - 1);
-        for (ShardingCondition each : shardingConditions.getConditions()) {
-            if (!isSameShardingCondition(shardingRule, example, each)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private boolean isSameShardingCondition(final ShardingRule shardingRule, final ShardingCondition shardingCondition1, final ShardingCondition shardingCondition2) {
-        if (shardingCondition1.getValues().size() != shardingCondition2.getValues().size()) {
-            return false;
-        }
-        for (int i = 0; i < shardingCondition1.getValues().size(); i++) {
-            ShardingConditionValue shardingConditionValue1 = shardingCondition1.getValues().get(i);
-            ShardingConditionValue shardingConditionValue2 = shardingCondition2.getValues().get(i);
-            if (!isSameShardingConditionValue(shardingRule, shardingConditionValue1, shardingConditionValue2)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private boolean isSameShardingConditionValue(final ShardingRule shardingRule, final ShardingConditionValue shardingConditionValue1, final ShardingConditionValue shardingConditionValue2) {
-        return isSameLogicTable(shardingRule, shardingConditionValue1, shardingConditionValue2) && shardingConditionValue1.getColumnName().equals(shardingConditionValue2.getColumnName()) 
-                && isSameValue(shardingConditionValue1, shardingConditionValue2);
-    }
-    
-    private boolean isSameLogicTable(final ShardingRule shardingRule, final ShardingConditionValue shardingValue1, final ShardingConditionValue shardingValue2) {
-        return shardingValue1.getTableName().equals(shardingValue2.getTableName()) || isBindingTable(shardingRule, shardingValue1, shardingValue2);
-    }
-    
-    private boolean isBindingTable(final ShardingRule shardingRule, final ShardingConditionValue shardingValue1, final ShardingConditionValue shardingValue2) {
-        Optional<BindingTableRule> bindingRule = shardingRule.findBindingTableRule(shardingValue1.getTableName());
-        return bindingRule.isPresent() && bindingRule.get().hasLogicTable(shardingValue2.getTableName());
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private boolean isSameValue(final ShardingConditionValue shardingConditionValue1, final ShardingConditionValue shardingConditionValue2) {
-        if (shardingConditionValue1 instanceof ListShardingConditionValue && shardingConditionValue2 instanceof ListShardingConditionValue) {
-            return SafeNumberOperationUtils.safeCollectionEquals(
-                    ((ListShardingConditionValue) shardingConditionValue1).getValues(), ((ListShardingConditionValue) shardingConditionValue2).getValues());
-        } else if (shardingConditionValue1 instanceof RangeShardingConditionValue && shardingConditionValue2 instanceof RangeShardingConditionValue) {
-            return SafeNumberOperationUtils.safeRangeEquals(
-                    ((RangeShardingConditionValue) shardingConditionValue1).getValueRange(), ((RangeShardingConditionValue) shardingConditionValue2).getValueRange());
-        }
-        return false;
     }
     
     private void mergeShardingConditions(final ShardingConditions shardingConditions) {

@@ -42,8 +42,8 @@ public final class MySQLImporterTest {
     
     @Test
     public void assertCreateSqlBuilder() {
-        MySQLImporter mySQLImporter = new MySQLImporter(importerConfig, dataSourceManager);
-        String insertSQL = mySQLImporter.createSQLBuilder(Maps.newHashMap()).buildInsertSQL(mockDataRecord());
+        MySQLImporter mysqlImporter = new MySQLImporter(importerConfig, dataSourceManager);
+        String insertSQL = mysqlImporter.createSQLBuilder(Maps.newHashMap()).buildInsertSQL(mockDataRecord());
         assertThat(insertSQL, is("INSERT INTO `t_order`(`id`,`name`) VALUES(?,?) ON DUPLICATE KEY UPDATE `name`=VALUES(`name`)"));
     }
     

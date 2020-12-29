@@ -18,12 +18,15 @@
 package org.apache.shardingsphere.proxy.frontend.mysql;
 
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
+import org.apache.shardingsphere.proxy.backend.exception.TablesInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.InvalidShardingCTLFormatException;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.UnsupportedShardingCTLTypeException;
@@ -35,11 +38,13 @@ import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.junit.Test;
 
 import java.sql.SQLException;
+import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
-import static org.hamcrest.CoreMatchers.endsWith;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class MySQLErrPacketFactoryTest {
     
@@ -90,11 +95,12 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithTableModifyInTransactionException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new TableModifyInTransactionException("tbl"));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new TableModifyInTransactionException(mock(SQLStatementContext.class)));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(3176));
         assertThat(actual.getSqlState(), is("HY000"));
-        assertThat(actual.getErrorMessage(), is("Please do not modify the tbl table with an XA transaction. This is an internal system table used to store GTIDs for committed transactions. "
+        assertThat(actual.getErrorMessage(), is("Please do not modify the unknown_table table with an XA transaction. "
+                + "This is an internal system table used to store GTIDs for committed transactions. "
                 + "Although modifying it can lead to an inconsistent GTID state, if neccessary you can modify it with a non-XA transaction."));
     }
     
@@ -114,15 +120,6 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getErrorCode(), is(1046));
         assertThat(actual.getSqlState(), is("3D000"));
         assertThat(actual.getErrorMessage(), is("No database selected"));
-    }
-    
-    @Test
-    public void assertNewInstanceWithOtherException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new RuntimeException("No reason"));
-        assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(10002));
-        assertThat(actual.getSqlState(), is("C10002"));
-        assertThat(actual.getErrorMessage(), is("Unknown exception: [No reason]"));
     }
     
     @Test
@@ -162,15 +159,6 @@ public final class MySQLErrPacketFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithCircuitBreakException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new CircuitBreakException());
-        assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(10000));
-        assertThat(actual.getSqlState(), is("C10000"));
-        assertThat(actual.getErrorMessage(), is("Circuit break mode is ON."));
-    }
-    
-    @Test
     public void assertNewInstanceWithShardingSphereConfigurationException() {
         assertCommonException(MySQLErrPacketFactory.newInstance(new ShardingSphereConfigurationException("No reason")));
     }
@@ -180,13 +168,11 @@ public final class MySQLErrPacketFactoryTest {
         assertCommonException(MySQLErrPacketFactory.newInstance(new SQLParsingException("No reason")));
     }
     
-    @Test
-    public void assertNewInstanceWithUnsupportedCommandException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new UnsupportedCommandException("No reason"));
+    private void assertCommonException(final MySQLErrPacket actual) {
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(10001));
-        assertThat(actual.getSqlState(), is("C10001"));
-        assertThat(actual.getErrorMessage(), is("Unsupported command: [No reason]"));
+        assertThat(actual.getErrorCode(), is(1235));
+        assertThat(actual.getSqlState(), is("42000"));
+        assertThat(actual.getErrorMessage(), is("This version of ShardingProxy doesn't yet support this SQL. 'No reason'"));
     }
     
     @Test
@@ -198,10 +184,48 @@ public final class MySQLErrPacketFactoryTest {
         assertThat(actual.getErrorMessage(), is("This command is not supported in the prepared statement protocol yet"));
     }
     
-    private void assertCommonException(final MySQLErrPacket actual) {
+    @Test
+    public void assertNewInstanceWithCircuitBreakException() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new CircuitBreakException());
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(1235));
-        assertThat(actual.getSqlState(), is("42000"));
-        assertThat(actual.getErrorMessage(), is("This version of ShardingProxy doesn't yet support this SQL. 'No reason'"));
+        assertThat(actual.getErrorCode(), is(10000));
+        assertThat(actual.getSqlState(), is("C10000"));
+        assertThat(actual.getErrorMessage(), is("Circuit break mode is ON."));
+    }
+    
+    @Test
+    public void assertNewInstanceWithShardingTableRuleNotExistedException() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new ShardingTableRuleNotExistedException(Collections.singleton("tbl")));
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(11001));
+        assertThat(actual.getSqlState(), is("C11001"));
+        assertThat(actual.getErrorMessage(), is("Sharding table rule [tbl] is not exist."));
+    }
+    
+    @Test
+    public void assertNewInstanceWithTablesInUsedException() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new TablesInUsedException(Collections.singleton("tbl")));
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(11002));
+        assertThat(actual.getSqlState(), is("C11002"));
+        assertThat(actual.getErrorMessage(), is("Can not drop rule, tables [tbl] in the rule are still in used."));
+    }
+
+    @Test
+    public void assertNewInstanceWithUnsupportedCommandException() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new UnsupportedCommandException("No reason"));
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(19998));
+        assertThat(actual.getSqlState(), is("C19998"));
+        assertThat(actual.getErrorMessage(), is("Unsupported command: [No reason]"));
+    }
+    
+    @Test
+    public void assertNewInstanceWithOtherException() {
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new RuntimeException("No reason"));
+        assertThat(actual.getSequenceId(), is(1));
+        assertThat(actual.getErrorCode(), is(19999));
+        assertThat(actual.getSqlState(), is("C19999"));
+        assertThat(actual.getErrorMessage(), is("Unknown exception: [No reason]"));
     }
 }

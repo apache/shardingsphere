@@ -29,7 +29,7 @@ import java.util.List;
  * @param <R> type of storage resource
  * @param <O> type of storage resource option
  */
-public interface ExecutorDriverManager<C, R, O> {
+public interface ExecutorDriverManager<C, R, O extends StorageResourceOption> {
     
     /**
      * Get connections.

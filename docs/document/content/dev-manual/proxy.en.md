@@ -1,7 +1,7 @@
 +++
-pre = "<b>5.10. </b>"
+pre = "<b>5.11. </b>"
 title = "Proxy"
-weight = 10
+weight = 11
 chapter = true
 +++
 
@@ -14,7 +14,7 @@ chapter = true
 | *Implementation Class*   | *Description*                                                                   |
 | ------------------------ | ------------------------------------------------------------------------------- |
 | MySQLFrontendEngine      | Base on MySQL database protocol                                                 |
-| PostgreSQLFrontendEngine | Base on postgreSQL database protocol                                            |
+| PostgreSQLFrontendEngine | Base on PostgreSQL database protocol                                            |
 
 ## JDBCDriverURLRecognizer
 

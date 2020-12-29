@@ -44,6 +44,8 @@ customKeyword
     | COPY
     | UL_BINARY
     | AUTOCOMMIT
+    | INNODB
+    | REDO_LOG
     ;
 
 literals
@@ -56,8 +58,12 @@ literals
     | nullValueLiterals
     ;
 
+string_
+    : DOUBLE_QUOTED_TEXT | SINGLE_QUOTED_TEXT
+    ;
+
 stringLiterals
-    : (UNDERSCORE_CHARSET? STRING_ | NCHAR_TEXT) STRING_* collateClause?
+    : UNDERSCORE_CHARSET? string_ | NCHAR_TEXT
     ;
 
 numberLiterals
@@ -85,11 +91,11 @@ nullValueLiterals
     ;
 
 collationName
-   : identifier | STRING_ | BINARY
+   : textOrIdentifier | BINARY
    ;
 
 identifier
-    : IDENTIFIER_ | unreservedWord | customKeyword
+    : IDENTIFIER_ | unreservedWord | customKeyword | DOUBLE_QUOTED_TEXT
     ;
 
 unreservedWord
@@ -141,18 +147,31 @@ unreservedWord
     | TIMESTAMPDIFF | TLS | TRANSACTION | TRIGGERS | TRUNCATE | TYPE | TYPES | UNBOUNDED | UNCOMMITTED | UNDEFINED
     | UNDOFILE | UNDO_BUFFER_SIZE | UNICODE | UNINSTALL | UNKNOWN | UNTIL
     | UPGRADE | USER | USER_RESOURCES | USE_FRM | VALIDATION | VALUE | VARIABLES | VCPU | VIEW | VISIBLE
-    | WAIT | WARNINGS | WEEK | WEIGHT_STRING | WITHOUT | WORK | WRAPPER | X509 | XA | XID | XML | YEAR | COLUMN_NAME
+    | WAIT | WARNINGS | WEEK | WEIGHT_STRING | WITHOUT | WORK | WRAPPER | X509 | XA | XID | XML | YEAR | COLUMN_NAME 
+    | MEMBER
     ;
 
 textOrIdentifier
-    : identifier | STRING_
+    : identifier | string_
     ;
 
 variable
-    : (AT_? AT_)? scope? DOT_? internalVariableName
+    : userVariable | systemVariable
     ;
 
-scope
+userVariable
+    : AT_ textOrIdentifier
+    ;
+
+systemVariable
+    : AT_ AT_ systemVariableScope=(GLOBAL | SESSION | LOCAL)? textOrIdentifier (DOT_ identifier)?
+    ;
+
+setSystemVariable
+    : AT_ AT_ (optionType DOT_)? internalVariableName
+    ;
+
+optionType
     : GLOBAL | PERSIST | PERSIST_ONLY | SESSION | LOCAL
     ;
 
@@ -166,6 +185,23 @@ setExprOrDefault
     : expr | DEFAULT | ALL | ON | BINARY | ROW | SYSTEM
     ;
 
+transactionCharacteristics
+    : transactionAccessMode (COMMA_ isolationLevel)?
+    | isolationLevel (COMMA_ transactionAccessMode)?
+    ;
+
+isolationLevel
+    : ISOLATION LEVEL isolationTypes
+    ;
+
+isolationTypes
+    : REPEATABLE READ | READ COMMITTED | READ UNCOMMITTED | SERIALIZABLE
+    ;
+
+transactionAccessMode
+    : READ (WRITE | ONLY)
+    ;
+
 schemaName
     : identifier
     ;
@@ -175,7 +211,7 @@ schemaNames
     ;
 
 charsetName
-    : identifier | BINARY | DEFAULT
+    : textOrIdentifier | BINARY
     ;
 
 schemaPairs
@@ -191,8 +227,7 @@ tableName
     ;
 
 columnName
-    : (owner DOT_)? name
-    | identifier DOT_ identifier DOT_ identifier
+    : identifier
     ;
 
 indexName
@@ -208,19 +243,15 @@ userName
     ;
 
 eventName
-    : (STRING_ | IDENTIFIER_) AT_ (STRING_ IDENTIFIER_)
-    | identifier
-    | STRING_ 
+    : identifier (DOT_ identifier)?
     ;
 
 serverName
-    : identifier
-    | STRING_
+    : textOrIdentifier
     ; 
 
 wrapperName
-    : identifier
-    | STRING_
+    : textOrIdentifier
     ;
 
 functionName
@@ -238,15 +269,15 @@ owner
     ;
 
 alias
-    : identifier | STRING_
+    : textOrIdentifier
     ;
 
 name
     : identifier
     ;
 
-tableNames
-    : LP_? tableName (COMMA_ tableName)* RP_?
+tableList
+    : tableName (COMMA_ tableName)*
     ;
     
 viewNames
@@ -254,11 +285,11 @@ viewNames
     ;
 
 columnNames
-    : LP_? columnName (COMMA_ columnName)* RP_?
+    : columnName (COMMA_ columnName)*
     ;
 
 groupName
-    : IDENTIFIER_
+    : identifier
     ;
 
 routineName
@@ -266,19 +297,19 @@ routineName
     ;
 
 shardLibraryName
-    : STRING_
+    : stringLiterals
     ;
 
 componentName
-    : STRING_
+    : string_
     ;
 
 pluginName
-    : IDENTIFIER_
+    : identifier
     ;
 
 hostName
-    : STRING_
+    : string_
     ;
 
 port
@@ -290,31 +321,35 @@ cloneInstance
     ;
 
 cloneDir
-    : IDENTIFIER_
+    : string_
     ;
 
 channelName
-    : IDENTIFIER_
+    : identifier (DOT_ identifier)?
     ;
 
 logName
-    : identifier
+    : stringLiterals
     ;
 
 roleName
-    : (STRING_ | IDENTIFIER_) AT_ (STRING_ | IDENTIFIER_) | IDENTIFIER_
+    : (string_ | IDENTIFIER_) AT_ (string_ | IDENTIFIER_) | IDENTIFIER_
     ;
 
 engineRef
-    : STRING_ | identifier
+    : textOrIdentifier
     ;
 
 triggerName
-    : IDENTIFIER_
+    : identifier (DOT_ identifier)?
     ;
 
 triggerTime
     : BEFORE | AFTER
+    ;
+
+tableOrTables
+    : TABLE | TABLES
     ;
 
 userOrRole
@@ -322,7 +357,7 @@ userOrRole
     ;
 
 partitionName
-    : IDENTIFIER_
+    : identifier
     ;
 
 identifierList
@@ -400,18 +435,26 @@ simpleExpr
     : functionCall
     | parameterMarker
     | literals
-    | columnName
-    | simpleExpr COLLATE (STRING_ | identifier)
+    | columnRef
+    | simpleExpr COLLATE textOrIdentifier
     | variable
     | simpleExpr OR_ simpleExpr
     | (PLUS_ | MINUS_ | TILDE_ | notOperator | BINARY) simpleExpr
     | ROW? LP_ expr (COMMA_ expr)* RP_
     | EXISTS? subquery
     | LBE_ identifier expr RBE_
-    | identifier (JSON_SEPARATOR | JSON_UNQUOTED_SEPARATOR) STRING_
+    | identifier (JSON_SEPARATOR | JSON_UNQUOTED_SEPARATOR) string_
     | matchExpression
     | caseExpression
     | intervalExpression
+    ;
+
+columnRef
+    : identifier (DOT_ identifier)? (DOT_ identifier)?
+    ;
+
+columnRefList
+    : columnRef (COMMA_ columnRef)*
     ;
 
 functionCall
@@ -538,15 +581,15 @@ extractFunction
     ;
 
 charFunction
-    : CHAR LP_ expr (COMMA_ expr)* (USING ignoredIdentifier)? RP_
+    : CHAR LP_ expr (COMMA_ expr)* (USING charsetName)? RP_
     ;
 
 trimFunction
-    : TRIM LP_ (LEADING | BOTH | TRAILING) STRING_ FROM STRING_ RP_
+    : TRIM LP_ (LEADING | BOTH | TRAILING) string_ FROM string_ RP_
     ;
 
 valuesFunction
-    : VALUES LP_ columnName RP_
+    : VALUES LP_ columnRefList RP_
     ;
 
 weightStringFunction
@@ -582,7 +625,7 @@ regularFunctionName
     ;
 
 matchExpression
-    : MATCH columnNames AGAINST LP_ expr matchSearchModifier? RP_
+    : MATCH (columnRefList | LP_ columnRefList RP_ ) AGAINST LP_ expr matchSearchModifier? RP_
     ;
 
 matchSearchModifier
@@ -632,7 +675,7 @@ orderByClause
     ;
 
 orderByItem
-    : (columnName | numberLiterals | expr) direction?
+    : (numberLiterals | expr) direction?
     ;
 
 dataType
@@ -671,13 +714,13 @@ stringList
     ;
 
 textString
-    : STRING_
+    : string_
     | HEX_DIGIT_
     | BIT_NUM_
     ;
 
 textStringHash
-    : STRING_ | HEX_DIGIT_
+    : string_ | HEX_DIGIT_
     ;
 
 fieldOptions
@@ -720,7 +763,7 @@ defaultCollation
     ;
 
 defaultEncryption
-    : DEFAULT? ENCRYPTION EQ_? STRING_
+    : DEFAULT? ENCRYPTION EQ_? string_
     ;
 
 defaultCharset
@@ -760,24 +803,12 @@ fieldLength
     : LP_ length=NUMBER_ RP_
     ;
 
-collectionOptions
-    : LP_ STRING_ (COMMA_ STRING_)* RP_
-    ;
-
 characterSet
-    : charset EQ_? charsetName
+    : charset charsetName
     ;
 
 collateClause
-    : COLLATE EQ_? collationName
-    ;
-
-ignoredIdentifier
-    : identifier (DOT_ identifier)?
-    ;
-
-ignoredIdentifiers
-    : ignoredIdentifier (COMMA_ ignoredIdentifier)*
+    : COLLATE collationName
     ;
 
 fieldOrVarSpec
@@ -790,10 +821,6 @@ notExistClause
 
 existClause
     : IF EXISTS
-    ;
-
-pattern
-    : STRING_
     ;
 
 connectionId
@@ -819,4 +846,22 @@ unionOption
 noWriteToBinLog
     : LOCAL
     | NO_WRITE_TO_BINLOG
+    ;
+
+channelOption
+    : FOR CHANNEL string_
+    ;
+
+preparedStatement
+    : PREPARE identifier FROM (stringLiterals | userVariable)
+    | executeStatement
+    | (DEALLOCATE | DROP) PREPARE identifier
+    ;
+
+executeStatement
+    : EXECUTE identifier (USING executeVarList)?
+    ;
+
+executeVarList
+    : userVariable (COMMA_ userVariable)*
     ;

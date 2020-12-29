@@ -23,7 +23,7 @@ import lombok.Setter;
 import javax.sql.DataSource;
 
 /**
- * Data synchronize position manager.
+ * Scaling position manager.
  */
 @Getter
 @Setter

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.governance.repository.api;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Registry repository.
  */
@@ -29,4 +31,25 @@ public interface RegistryRepository extends GovernanceRepository {
      * @param value value of data
      */
     void persistEphemeral(String key, String value);
+    
+    /**
+     * Initialize lock.
+     * 
+     * @param key the key for lock
+     */
+    void initLock(String key);
+    
+    /**
+     * Try to get lock.
+     * 
+     * @param time time to wait
+     * @param unit time unit
+     * @return true if get the lock, false if not
+     */
+    boolean tryLock(long time, TimeUnit unit);
+    
+    /**
+     * Release lock.
+     */
+    void releaseLock();
 }

@@ -57,7 +57,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     }
     
     @Override
-    public CommandExecutor getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final BackendConnection backendConnection) {
+    public CommandExecutor getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final BackendConnection backendConnection) throws SQLException {
         return PostgreSQLCommandExecutorFactory.newInstance((PostgreSQLCommandPacketType) type, (PostgreSQLCommandPacket) packet, backendConnection);
     }
     
@@ -93,7 +93,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
                 context.flush();
                 backendConnection.getResourceLock().doAwait();
             }
-            DatabasePacket<?> resultValue = queryCommandExecutor.getQueryData();
+            DatabasePacket<?> resultValue = queryCommandExecutor.getQueryRowPacket();
             context.write(resultValue);
             if (proxyFrontendFlushThreshold == count) {
                 context.flush();

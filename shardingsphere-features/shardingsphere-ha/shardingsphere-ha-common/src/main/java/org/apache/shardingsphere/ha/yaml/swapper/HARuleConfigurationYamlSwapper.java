@@ -49,6 +49,9 @@ public final class HARuleConfigurationYamlSwapper
         if (null != data.getLoadBalancers()) {
             data.getLoadBalancers().forEach((key, value) -> result.getLoadBalancers().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         }
+        if (null != data.getHaType()) {
+            result.setHaType(algorithmSwapper.swapToYamlConfiguration(data.getHaType()));
+        }
         return result;
     }
     
@@ -58,7 +61,7 @@ public final class HARuleConfigurationYamlSwapper
         result.setPrimaryDataSourceName(dataSourceRuleConfig.getPrimaryDataSourceName());
         result.setReplicaDataSourceNames(dataSourceRuleConfig.getReplicaDataSourceNames());
         result.setLoadBalancerName(dataSourceRuleConfig.getLoadBalancerName());
-        result.setReadWriteSplit(dataSourceRuleConfig.getReadWriteSplit());
+        result.setReadWriteSplit(dataSourceRuleConfig.isReadWriteSplit());
         return result;
     }
     
@@ -72,12 +75,13 @@ public final class HARuleConfigurationYamlSwapper
         if (null != yamlConfig.getLoadBalancers()) {
             yamlConfig.getLoadBalancers().forEach((key, value) -> loadBalancers.put(key, algorithmSwapper.swapToObject(value)));
         }
-        return new HARuleConfiguration(dataSources, loadBalancers);
+        ShardingSphereAlgorithmConfiguration haType = algorithmSwapper.swapToObject(yamlConfig.getHaType());
+        return new HARuleConfiguration(dataSources, loadBalancers, haType);
     }
     
     private HADataSourceRuleConfiguration swapToObject(final String name, final YamlHADataSourceRuleConfiguration yamlDataSourceRuleConfig) {
         return new HADataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getPrimaryDataSourceName(), yamlDataSourceRuleConfig.getReplicaDataSourceNames(),
-                yamlDataSourceRuleConfig.getLoadBalancerName(), yamlDataSourceRuleConfig.getReadWriteSplit());
+                yamlDataSourceRuleConfig.getLoadBalancerName(), yamlDataSourceRuleConfig.isReadWriteSplit());
     }
     
     @Override

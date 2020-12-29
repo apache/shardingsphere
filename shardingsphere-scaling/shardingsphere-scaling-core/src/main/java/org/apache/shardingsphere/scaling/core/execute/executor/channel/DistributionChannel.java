@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.channel;
 
-import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.AutoAcknowledgeBitSetChannel;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.AutoAcknowledgeChannel;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.BitSetChannel;
-import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.BlockingQueueBitSetChannel;
+import org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset.BlockingQueueChannel;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.PlaceholderRecord;
@@ -40,13 +41,14 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Distribution channel.
  */
+@Slf4j
 public final class DistributionChannel implements Channel {
     
     private final int channelNumber;
     
     private final BitSetChannel[] channels;
     
-    private final BitSetChannel autoAckChannel = new AutoAcknowledgeBitSetChannel();
+    private final BitSetChannel autoAckChannel = new AutoAcknowledgeChannel();
     
     private final Map<String, Integer> channelAssignment = new HashMap<>();
     
@@ -65,7 +67,7 @@ public final class DistributionChannel implements Channel {
         this.ackCallback = ackCallback;
         channels = new BitSetChannel[channelNumber];
         for (int i = 0; i < channelNumber; i++) {
-            channels[i] = new BlockingQueueBitSetChannel();
+            channels[i] = new BlockingQueueChannel();
         }
         scheduleAckRecords();
     }
@@ -106,14 +108,20 @@ public final class DistributionChannel implements Channel {
     }
     
     private synchronized void ackRecords0() {
-        int count = shouldAckCount();
-        if (0 == count) {
-            return;
-        }
-        ackCallback.onAck(fetchAckRecords(count));
-        lastAckIndex += count;
-        for (BitSetChannel channel : channels) {
-            channel.clear(lastAckIndex);
+        try {
+            int count = shouldAckCount();
+            if (0 == count) {
+                return;
+            }
+            ackCallback.onAck(fetchAckRecords(count));
+            lastAckIndex += count;
+            for (BitSetChannel channel : channels) {
+                channel.clear(lastAckIndex);
+            }
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("distribution channel auto ack failed.", ex);
         }
     }
     
@@ -157,6 +165,7 @@ public final class DistributionChannel implements Channel {
         for (int i = 0; i < channels.length; i++) {
             if (!channelAssignment.containsValue(i)) {
                 channelAssignment.put(threadId, i);
+                return;
             }
         }
     }

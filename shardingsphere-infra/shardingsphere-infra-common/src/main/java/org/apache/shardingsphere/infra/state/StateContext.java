@@ -19,8 +19,12 @@ package org.apache.shardingsphere.infra.state;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.lock.LockContext;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * State context.
@@ -28,7 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StateContext {
     
-    private static final AtomicReference<StateType> CURRENT_STATE = new AtomicReference<>(StateType.OK);
+    private static final Deque<StateType> CURRENT_STATE = new ConcurrentLinkedDeque<>(Collections.singleton(StateType.OK));
     
     /**
      * Switch state.
@@ -36,12 +40,21 @@ public final class StateContext {
      * @param event state event
      */
     public static void switchState(final StateEvent event) {
-        if (StateType.CIRCUIT_BREAK == event.getType() && event.isOn()) {
-            CURRENT_STATE.set(StateType.CIRCUIT_BREAK);
+        if (event.isOn()) {
+            CURRENT_STATE.push(event.getType());
+        } else {
+            if (getCurrentState() == event.getType()) {
+                recoverState();
+            }
+        }
+        signalAll();
+    }
+    
+    private static void signalAll() {
+        if (getCurrentState() == StateType.LOCK) {
             return;
         }
-        // TODO check lock state
-        CURRENT_STATE.set(StateType.OK);
+        LockContext.signalAll();
     }
     
     /**
@@ -50,6 +63,10 @@ public final class StateContext {
      * @return current state
      */
     public static StateType getCurrentState() {
-        return CURRENT_STATE.get();
+        return Optional.ofNullable(CURRENT_STATE.peek()).orElse(StateType.OK);
+    }
+    
+    private static void recoverState() {
+        CURRENT_STATE.pop();
     }
 }

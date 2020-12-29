@@ -38,12 +38,12 @@ public final class PostgreSQLJdbcDumperTest {
     
     private DataSourceManager dataSourceManager;
     
-    private PostgreSQLJdbcDumper postgreSQLJdbcDumper;
+    private PostgreSQLJdbcDumper jdbcDumper;
     
     @Before
     public void setUp() {
         dataSourceManager = new DataSourceManager();
-        postgreSQLJdbcDumper = new PostgreSQLJdbcDumper(mockInventoryDumperConfiguration(), dataSourceManager);
+        jdbcDumper = new PostgreSQLJdbcDumper(mockInventoryDumperConfiguration(), dataSourceManager);
     }
     
     private InventoryDumperConfiguration mockInventoryDumperConfiguration() {
@@ -69,7 +69,7 @@ public final class PostgreSQLJdbcDumperTest {
     public void assertCreatePreparedStatement() throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(mockDumperConfiguration().getDataSourceConfig());
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = postgreSQLJdbcDumper.createPreparedStatement(connection, "SELECT * FROM t_order")) {
+             PreparedStatement preparedStatement = jdbcDumper.createPreparedStatement(connection, "SELECT * FROM t_order")) {
             assertThat(preparedStatement.getFetchSize(), is(1));
         }
     }

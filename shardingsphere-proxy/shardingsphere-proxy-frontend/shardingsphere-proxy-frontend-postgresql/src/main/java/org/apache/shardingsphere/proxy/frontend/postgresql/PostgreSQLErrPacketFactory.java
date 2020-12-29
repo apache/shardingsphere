@@ -53,6 +53,7 @@ public final class PostgreSQLErrPacketFactory {
         }
         PostgreSQLErrorResponsePacket result = new PostgreSQLErrorResponsePacket();
         result.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, cause.getMessage());
+        // TODO add common error code
         return result;
     }
 }

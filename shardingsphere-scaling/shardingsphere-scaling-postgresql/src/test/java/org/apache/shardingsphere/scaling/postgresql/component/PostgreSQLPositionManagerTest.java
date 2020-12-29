@@ -58,18 +58,16 @@ public final class PostgreSQLPositionManagerTest {
     public void setUp() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
-        PreparedStatement postgreSQL96LsnPs = mockPostgreSQL96Lsn();
-        when(connection.prepareStatement("SELECT * FROM pg_create_logical_replication_slot('sharding_scaling', 'test_decoding')"))
-                .thenReturn(mock(PreparedStatement.class));
-        when(connection.prepareStatement("SELECT PG_CURRENT_XLOG_LOCATION()")).thenReturn(postgreSQL96LsnPs);
-        PreparedStatement postgreSQL10LsnPs = mockPostgreSQL10Lsn();
-        when(connection.prepareStatement("SELECT PG_CURRENT_WAL_LSN()")).thenReturn(postgreSQL10LsnPs);
+        PreparedStatement lsn96PreparedStatement = mockPostgreSQL96LSN();
+        when(connection.prepareStatement("SELECT * FROM pg_create_logical_replication_slot('sharding_scaling', 'test_decoding')")).thenReturn(mock(PreparedStatement.class));
+        when(connection.prepareStatement("SELECT PG_CURRENT_XLOG_LOCATION()")).thenReturn(lsn96PreparedStatement);
+        PreparedStatement lsn10PreparedStatement = mockPostgreSQL10LSN();
+        when(connection.prepareStatement("SELECT PG_CURRENT_WAL_LSN()")).thenReturn(lsn10PreparedStatement);
     }
     
     @Test
     public void assertInitPositionByJson() {
-        PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager("100");
-        WalPosition actual = postgreSQLPositionManager.getPosition();
+        WalPosition actual = new PostgreSQLPositionManager("100").getPosition();
         assertThat(actual.getLogSequenceNumber().asLong(), is(LogSequenceNumber.valueOf(100L).asLong()));
     }
     
@@ -77,16 +75,14 @@ public final class PostgreSQLPositionManagerTest {
     public void assertGetCurrentPositionOnPostgreSQL96() throws SQLException {
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(6);
-        PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager(dataSource);
-        WalPosition actual = postgreSQLPositionManager.getPosition();
+        WalPosition actual = new PostgreSQLPositionManager(dataSource).getPosition();
         assertThat(actual.getLogSequenceNumber(), is(LogSequenceNumber.valueOf(POSTGRESQL_96_LSN)));
     }
     
     @Test
     public void assertGetCurrentPositionOnPostgreSQL10() throws SQLException {
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(10);
-        PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager(dataSource);
-        WalPosition actual = postgreSQLPositionManager.getPosition();
+        WalPosition actual = new PostgreSQLPositionManager(dataSource).getPosition();
         assertThat(actual.getLogSequenceNumber(), is(LogSequenceNumber.valueOf(POSTGRESQL_10_LSN)));
     }
     
@@ -94,8 +90,7 @@ public final class PostgreSQLPositionManagerTest {
     public void assertGetCurrentPositionThrowException() throws SQLException {
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(4);
-        PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager(dataSource);
-        postgreSQLPositionManager.getPosition();
+        new PostgreSQLPositionManager(dataSource).getPosition();
     }
     
     @Test
@@ -103,14 +98,14 @@ public final class PostgreSQLPositionManagerTest {
     public void assertUpdateCurrentPosition() {
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(6);
-        PostgreSQLPositionManager postgreSQLPositionManager = new PostgreSQLPositionManager(dataSource);
+        PostgreSQLPositionManager positionManager = new PostgreSQLPositionManager(dataSource);
         WalPosition expected = new WalPosition(LogSequenceNumber.valueOf(POSTGRESQL_96_LSN));
-        postgreSQLPositionManager.setPosition(expected);
-        assertThat(postgreSQLPositionManager.getPosition(), is(expected));
+        positionManager.setPosition(expected);
+        assertThat(positionManager.getPosition(), is(expected));
     }
     
     @SneakyThrows(SQLException.class)
-    private PreparedStatement mockPostgreSQL96Lsn() {
+    private PreparedStatement mockPostgreSQL96LSN() {
         PreparedStatement result = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);
         when(result.executeQuery()).thenReturn(resultSet);
@@ -120,7 +115,7 @@ public final class PostgreSQLPositionManagerTest {
     }
     
     @SneakyThrows(SQLException.class)
-    private PreparedStatement mockPostgreSQL10Lsn() {
+    private PreparedStatement mockPostgreSQL10LSN() {
         PreparedStatement result = mock(PreparedStatement.class);
         ResultSet resultSet = mock(ResultSet.class);
         when(result.executeQuery()).thenReturn(resultSet);

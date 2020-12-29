@@ -81,6 +81,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SavepointStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetAutoCommitStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetTransactionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.XATestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -280,6 +281,9 @@ public final class SQLParserTestCases {
 
     @XmlElement(name = "call")
     private final List<CallStatementTestCase> callProcedureTestCase = new LinkedList<>();
+
+    @XmlElement(name = "xa")
+    private final List<XATestCase> xaTestCase = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -349,6 +353,7 @@ public final class SQLParserTestCases {
         putAll(dropFunctionTestCase, result);
         putAll(dropDatabaseTestCase, result);
         putAll(callProcedureTestCase, result);
+        putAll(xaTestCase, result);
         return result;
     }
     

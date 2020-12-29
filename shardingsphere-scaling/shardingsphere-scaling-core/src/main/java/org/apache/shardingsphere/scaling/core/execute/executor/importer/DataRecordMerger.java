@@ -129,7 +129,6 @@ public final class DataRecordMerger {
             throw new UnexpectedDataRecordOrderException(beforeDataRecord, dataRecord);
         }
         if (null != beforeDataRecord && ScalingConstant.UPDATE.equals(beforeDataRecord.getType()) && checkUpdatedPrimaryKey(beforeDataRecord)) {
-            // primary key updated + delete
             DataRecord mergedDataRecord = new DataRecord(dataRecord.getPosition(), dataRecord.getColumnCount());
             for (int i = 0; i < dataRecord.getColumnCount(); i++) {
                 mergedDataRecord.addColumn(new Column(

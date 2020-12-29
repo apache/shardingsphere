@@ -67,7 +67,7 @@ tableShardingAlgorithmrProps.setProperty("algorithm-expression", "t_order${order
 shardingRuleConfig.getShardingAlgorithms().put("tableShardingAlgorithm", new ShardingSphereAlgorithmConfiguration("INLINE", tableShardingAlgorithmrProps));
 
 // Create ShardingSphereDataSource
-DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton((shardingRuleConfig), new Properties());
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton(shardingRuleConfig), new Properties());
 ```
 
 ## Use ShardingSphereDataSource
@@ -78,14 +78,14 @@ Developer can choose to use native JDBC or ORM frameworks such as JPA or MyBatis
 Take native JDBC usage as an example:
 
 ```java
-DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton((shardingRuleConfig), new Properties());
+DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Collections.singleton(shardingRuleConfig), new Properties());
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (
         Connection conn = dataSource.getConnection();
         PreparedStatement ps = conn.prepareStatement(sql)) {
     ps.setInt(1, 10);
     ps.setInt(2, 1000);
-    try (ResultSet rs = preparedStatement.executeQuery()) {
+    try (ResultSet rs = ps.executeQuery()) {
         while(rs.next()) {
             // ...
         }

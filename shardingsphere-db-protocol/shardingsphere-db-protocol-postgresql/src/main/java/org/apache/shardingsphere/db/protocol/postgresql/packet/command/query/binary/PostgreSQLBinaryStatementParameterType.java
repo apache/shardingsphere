@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bi
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColumnType;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
 
 /**
  * Bind parameter type for PostgreSQL.
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLColum
 @Getter
 public final class PostgreSQLBinaryStatementParameterType {
     
-    private final PostgreSQLColumnType columnType;
+    private final PostgreSQLBinaryColumnType columnType;
     
     private final int format = 1;
 }

@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.text;
 
-import org.apache.shardingsphere.proxy.backend.response.BackendResponse;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Text protocol backend handler.
@@ -33,7 +34,7 @@ public interface TextProtocolBackendHandler {
      * @return backend response
      * @throws SQLException SQL exception
      */
-    BackendResponse execute() throws SQLException;
+    ResponseHeader execute() throws SQLException;
     
     /**
      * Goto next result value.
@@ -41,7 +42,9 @@ public interface TextProtocolBackendHandler {
      * @return has more result value or not
      * @throws SQLException SQL exception
      */
-    boolean next() throws SQLException;
+    default boolean next() throws SQLException {
+        return false;
+    }
     
     /**
      * Get row data.
@@ -49,5 +52,7 @@ public interface TextProtocolBackendHandler {
      * @return row data
      * @throws SQLException SQL exception
      */
-    Collection<Object> getRowData() throws SQLException;
+    default Collection<Object> getRowData() throws SQLException {
+        return Collections.emptyList();
+    }
 }

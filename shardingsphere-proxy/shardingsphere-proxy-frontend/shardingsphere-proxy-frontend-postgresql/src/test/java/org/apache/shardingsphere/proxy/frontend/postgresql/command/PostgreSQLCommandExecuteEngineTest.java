@@ -44,9 +44,9 @@ public final class PostgreSQLCommandExecuteEngineTest {
     
     @Test
     public void assertWriteQueryDataWithUpdate() throws SQLException {
-        PostgreSQLCommandExecuteEngine postgreSQLCommandExecuteEngine = new PostgreSQLCommandExecuteEngine();
+        PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
         when(queryCommandExecutor.getResponseType()).thenReturn(ResponseType.UPDATE);
-        postgreSQLCommandExecuteEngine.writeQueryData(channelHandlerContext, null, queryCommandExecutor, 0);
+        commandExecuteEngine.writeQueryData(channelHandlerContext, null, queryCommandExecutor, 0);
         verify(channelHandlerContext, times(1)).write(isA(PostgreSQLReadyForQueryPacket.class));
     }
 }

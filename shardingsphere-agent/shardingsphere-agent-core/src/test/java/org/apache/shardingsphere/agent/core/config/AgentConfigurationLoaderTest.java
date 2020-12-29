@@ -17,16 +17,34 @@
 
 package org.apache.shardingsphere.agent.core.config;
 
-import java.io.IOException;
+import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
+import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
+import org.apache.shardingsphere.agent.core.util.ReflectiveUtil;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 
 import static org.junit.Assert.assertNotNull;
 
 public final class AgentConfigurationLoaderTest {
     
+    private static final String DEFAULT_CONFIG_PATH = "/conf/agent.yaml";
+    
     @Test
     public void assertLoad() throws IOException {
+        AgentPathBuilder builder = new AgentPathBuilder();
+        ReflectiveUtil.setProperty(builder, "agentPath", new File(getResourceUrl()));
         AgentConfiguration configuration = AgentConfigurationLoader.load();
         assertNotNull(configuration);
+    }
+    
+    private String getResourceUrl() {
+        URL url = AgentConfigurationLoader.class.getClassLoader().getResource("");
+        if (null != url) {
+            return url.getFile();
+        }
+        return DEFAULT_CONFIG_PATH;
     }
 }

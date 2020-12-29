@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 
@@ -38,7 +38,7 @@ public final class ProxyConfiguration {
     
     private final Map<String, Collection<RuleConfiguration>> schemaRules;
     
-    private final Authentication authentication;
+    private final DefaultAuthentication authentication;
     
     private final Properties props;
 }

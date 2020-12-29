@@ -30,7 +30,7 @@ import lombok.Setter;
 @Setter
 public abstract class Record {
     
-    private final Position position;
+    private final Position<?> position;
         
     private long commitTime;
 }

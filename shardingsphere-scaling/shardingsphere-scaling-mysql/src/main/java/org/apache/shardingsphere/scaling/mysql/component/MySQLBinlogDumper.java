@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.mysql.component;
 
+import com.google.common.base.Preconditions;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -24,7 +25,7 @@ import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceFactory;
-import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
+import org.apache.shardingsphere.scaling.core.execute.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
@@ -55,7 +56,7 @@ import java.util.Random;
  * MySQL binlog dumper.
  */
 @Slf4j
-public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor implements LogDumper {
+public final class MySQLBinlogDumper extends AbstractScalingExecutor implements LogDumper {
     
     private final BinlogPosition binlogPosition;
     
@@ -70,10 +71,8 @@ public final class MySQLBinlogDumper extends AbstractShardingScalingExecutor imp
     
     public MySQLBinlogDumper(final DumperConfiguration dumperConfig, final Position<BinlogPosition> binlogPosition) {
         this.binlogPosition = (BinlogPosition) binlogPosition;
-        if (!StandardJDBCDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
-            throw new UnsupportedOperationException("MySQLBinlogDumper only support JDBCDataSourceConfiguration");
-        }
         this.dumperConfig = dumperConfig;
+        Preconditions.checkArgument(dumperConfig.getDataSourceConfig() instanceof StandardJDBCDataSourceConfiguration, "MySQLBinlogDumper only support StandardJDBCDataSourceConfiguration");
         metaDataManager = new MetaDataManager(new DataSourceFactory().newInstance(dumperConfig.getDataSourceConfig()));
     }
     

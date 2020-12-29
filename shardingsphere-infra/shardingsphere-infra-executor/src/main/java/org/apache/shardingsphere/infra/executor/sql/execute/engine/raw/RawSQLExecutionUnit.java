@@ -23,7 +23,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
-import org.apache.shardingsphere.infra.route.context.RawGroup;
 
 /**
  * Raw SQL execution unit.
@@ -37,5 +36,5 @@ public final class RawSQLExecutionUnit implements SQLExecutionUnit {
     private final ConnectionMode connectionMode;
     
     @Setter
-    private RawGroup rawGroup;
+    private RawSQLRuntimeContext rawSQLRuntimeContext;
 }

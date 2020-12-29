@@ -20,7 +20,7 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
@@ -92,7 +92,7 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
     private List<MySQLBinaryStatementParameterType> getParameterTypes(final MySQLPacketPayload payload, final int parameterCount) {
         List<MySQLBinaryStatementParameterType> result = new ArrayList<>(parameterCount);
         for (int parameterIndex = 0; parameterIndex < parameterCount; parameterIndex++) {
-            MySQLColumnType columnType = MySQLColumnType.valueOf(payload.readInt1());
+            MySQLBinaryColumnType columnType = MySQLBinaryColumnType.valueOf(payload.readInt1());
             int unsignedFlag = payload.readInt1();
             result.add(new MySQLBinaryStatementParameterType(columnType, unsignedFlag));
         }

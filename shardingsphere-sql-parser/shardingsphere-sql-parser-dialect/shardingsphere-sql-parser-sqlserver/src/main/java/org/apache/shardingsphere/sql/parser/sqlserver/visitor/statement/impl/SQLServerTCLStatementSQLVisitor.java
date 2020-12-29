@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl;
 
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
@@ -33,11 +34,18 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl.SQLServerSetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.tcl.SQLServerSetTransactionStatement;
 
+import java.util.Properties;
+
 /**
  * TCL Statement SQL visitor for SQLServer.
  */
+@NoArgsConstructor
 public final class SQLServerTCLStatementSQLVisitor extends SQLServerStatementSQLVisitor implements TCLSQLVisitor, SQLStatementVisitor {
-    
+
+    public SQLServerTCLStatementSQLVisitor(final Properties props) {
+        super(props);
+    }
+
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
         return new SQLServerSetTransactionStatement();

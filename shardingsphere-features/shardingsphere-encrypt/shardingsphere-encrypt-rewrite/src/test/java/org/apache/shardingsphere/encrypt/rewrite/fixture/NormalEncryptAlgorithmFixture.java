@@ -17,17 +17,9 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
-import java.util.Properties;
-
-@Getter
-@Setter
 public final class NormalEncryptAlgorithmFixture implements EncryptAlgorithm {
-    
-    private Properties props = new Properties();
     
     @Override
     public void init() {

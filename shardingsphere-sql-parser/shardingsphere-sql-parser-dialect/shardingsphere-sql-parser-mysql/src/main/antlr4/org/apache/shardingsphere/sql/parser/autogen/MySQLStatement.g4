@@ -25,6 +25,7 @@ execute
     | update
     | delete
     | replace
+    | binlog
     | createTable
     | alterStatement
     | repairTable
@@ -48,6 +49,10 @@ execute
     | dropView
     | createTrigger
     | dropTrigger
+    | alterResourceGroup
+    | createResourceGroup
+    | dropResourceGroup
+    | preparedStatement
     | setTransaction
     | beginTransaction
     | setAutoCommit
@@ -64,18 +69,53 @@ execute
     | dropRole
     | setDefaultRole
     | setRole
+    | createTablespaceInnodb
+    | createTablespaceNdb
+    | dropTablespace
+    | createSRSStatement
+    | dropSRSStatement
+    | flush
+    | getDiagnosticsStatement
+    | groupReplication
+    | handlerStatement
+    | help
+    | importStatement
+    | install
+    | kill
+    | loadStatement
+    | lock
+    | cacheIndex
+    | loadIndexInfo
+    | optimizeTable
+    | purgeBinaryLog
+    | releaseSavepoint
+    | resetStatement
     | setPassword
+    | setTransaction
+    | setResourceGroup
+    | resignalStatement
+    | signalStatement
+    | restart
+    | shutdown
+    | begin
     | use
     | explain
+    | doStatement
     | show
     | setVariable
-    | setName
     | setCharacter
     | call
-    | changeMasterTo
+    | change
+    | checkTable
+    | checksumTable
+    | clone
     | startSlave
     | stopSlave
     | analyzeTable
     | renameTable
+    | uninstall
+    | unlock
+    | xa
     ) (SEMI_ EOF? | EOF)
+    | EOF
     ;

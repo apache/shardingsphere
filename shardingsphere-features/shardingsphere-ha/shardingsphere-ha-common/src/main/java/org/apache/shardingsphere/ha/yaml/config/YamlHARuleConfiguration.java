@@ -19,10 +19,10 @@ package org.apache.shardingsphere.ha.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
 import org.apache.shardingsphere.ha.yaml.config.rule.YamlHADataSourceRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -37,6 +37,8 @@ public final class YamlHARuleConfiguration implements YamlRuleConfiguration {
     private Map<String, YamlHADataSourceRuleConfiguration> dataSources = new LinkedHashMap<>();
     
     private Map<String, YamlShardingSphereAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
+    
+    private YamlShardingSphereAlgorithmConfiguration haType;
     
     @Override
     public Class<HARuleConfiguration> getRuleConfigurationType() {

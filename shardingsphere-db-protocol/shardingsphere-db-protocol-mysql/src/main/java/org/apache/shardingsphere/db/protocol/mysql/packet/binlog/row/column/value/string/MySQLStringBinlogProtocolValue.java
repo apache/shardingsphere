@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string;
 
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
@@ -38,7 +38,7 @@ public final class MySQLStringBinlogProtocolValue implements MySQLBinlogProtocol
             length += ((type & 0x30) ^ 0x30) << 4;
             type |= 0x30;
         }
-        switch (MySQLColumnType.valueOf(type)) {
+        switch (MySQLBinaryColumnType.valueOf(type)) {
             case MYSQL_TYPE_ENUM:
                 return readEnumValue(length, payload);
             case MYSQL_TYPE_SET:

@@ -24,12 +24,13 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -117,12 +118,18 @@ public final class BatchPreparedStatementExecutor {
      * @throws SQLException SQL exception
      */
     public int[] executeBatch(final SQLStatementContext sqlStatementContext) throws SQLException {
-        boolean isExceptionThrown = ExecutorExceptionHandler.isExceptionThrown();
-        JDBCExecutorCallback<int[]> callback = new JDBCExecutorCallback<int[]>(metaDataContexts.getDatabaseType(), isExceptionThrown) {
+        boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
+        JDBCExecutorCallback<int[]> callback = new JDBCExecutorCallback<int[]>(
+                metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), sqlStatementContext.getSqlStatement(), isExceptionThrown) {
             
             @Override
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 return statement.executeBatch();
+            }
+            
+            @Override
+            protected int[] getSaneResult(final SQLStatement sqlStatement) {
+                return new int[batchCount];
             }
         };
         List<int[]> results = jdbcExecutor.execute(executionGroups, callback);

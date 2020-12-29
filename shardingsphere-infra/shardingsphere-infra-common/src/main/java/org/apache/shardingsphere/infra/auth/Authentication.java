@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.infra.auth;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * Authentication.
 */
-@RequiredArgsConstructor
-@Getter
-public final class Authentication {
+public interface Authentication {
     
-    private final Map<String, ProxyUser> users = new LinkedHashMap<>();
+    /**
+     * Find user.
+     * 
+     * @param username username
+     * @return found user
+     */
+    Optional<ShardingSphereUser> findUser(String username);
 }

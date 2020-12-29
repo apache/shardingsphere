@@ -78,7 +78,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     public List<Connection> getConnections(final String schemaName, final String dataSourceName,
                                            final int connectionSize, final ConnectionMode connectionMode, final TransactionType transactionType) throws SQLException {
-        DataSource dataSource = ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap().get(schemaName).getResource().getDataSources().get(dataSourceName);
+        DataSource dataSource = ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getResource().getDataSources().get(dataSourceName);
         Preconditions.checkNotNull(dataSource, "Can not get connection from datasource %s.", dataSourceName);
         if (1 == connectionSize) {
             return Collections.singletonList(createConnection(schemaName, dataSourceName, dataSource, transactionType));

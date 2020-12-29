@@ -20,27 +20,27 @@ grammar TCLStatement;
 import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
 
 setTransaction
-    : SET scope? TRANSACTION transactionCharacteristic (COMMA_ transactionCharacteristic)*
+    : SET optionType? TRANSACTION transactionCharacteristics
     ;
 
 setAutoCommit
-    : SET (AT_? AT_)? scope? DOT_? AUTOCOMMIT EQ_ autoCommitValue
-    ;
-
-autoCommitValue
-    : NUMBER_ | ON | OFF
+    : SET (AT_? AT_)? optionType? DOT_? AUTOCOMMIT EQ_ autoCommitValue=(NUMBER_ | ON | OFF)
     ;
 
 beginTransaction
     : BEGIN | START TRANSACTION (transactionCharacteristic (COMMA_ transactionCharacteristic)*)?
     ;
 
+transactionCharacteristic
+    : WITH CONSISTENT SNAPSHOT | transactionAccessMode
+    ;
+
 commit
-    : COMMIT optionWork? optionChain? optionRelease?
+    : COMMIT WORK? optionChain? optionRelease?
     ;
 
 rollback
-    : ROLLBACK (optionWork? TO SAVEPOINT? identifier | optionWork? optionChain? optionRelease?)
+    : ROLLBACK (WORK? TO SAVEPOINT? identifier | WORK? optionChain? optionRelease?)
     ;
 
 savepoint
@@ -48,7 +48,7 @@ savepoint
     ;
 
 begin
-    : BEGIN optionWork?
+    : BEGIN WORK?
     ;
 
 lock
@@ -64,28 +64,13 @@ releaseSavepoint
     ;
 
 xa
-    : (START | BEGIN) xid (JOIN | RESUME)
-    | END xid (SUSPEND (FOR MIGRATE)?)?
-    | PREPARE xid
-    | COMMIT xid (ONE PHASE)?
-    | ROLLBACK xid
-    | RECOVER (CONVERT xid)?
-    ;
-
-transactionCharacteristic
-   : ISOLATION LEVEL level | accessMode | WITH CONSISTENT SNAPSHOT
-   ;
-
-level
-   : REPEATABLE READ | READ COMMITTED | READ UNCOMMITTED | SERIALIZABLE
-   ;
-
-accessMode
-   : READ (WRITE | ONLY)
-   ;
-
-optionWork
-    : WORK
+    : XA ((START | BEGIN) xid (JOIN | RESUME)
+        | END xid (SUSPEND (FOR MIGRATE)?)?
+        | PREPARE xid
+        | COMMIT xid (ONE PHASE)?
+        | ROLLBACK xid
+        | RECOVER (CONVERT xid)?
+    )
     ;
 
 optionChain
@@ -105,5 +90,5 @@ lockOption
     ;
 
 xid
-    : STRING_ (COMMA_ STRING_)* numberLiterals?
+    : string_ (COMMA_ string_)* numberLiterals?
     ;

@@ -52,8 +52,8 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
         ShardingSphereServiceLoader.register(SQLExecutionUnitBuilder.class);
     }
     
-    public DriverExecutionPrepareEngine(final int maxConnectionsSizePerQuery, final ExecutorDriverManager<C, ?, ?> executorDriverManager, 
-                                        final StorageResourceOption option, final Collection<ShardingSphereRule> rules, final String type) {
+    public DriverExecutionPrepareEngine(final String type, final int maxConnectionsSizePerQuery, final ExecutorDriverManager<C, ?, ?> executorDriverManager, 
+                                        final StorageResourceOption option, final Collection<ShardingSphereRule> rules) {
         super(maxConnectionsSizePerQuery, rules);
         this.executorDriverManager = executorDriverManager;
         this.option = option;

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.driver.governance.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
@@ -28,15 +26,11 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
-@Getter
-@Setter
 public final class TestRegistryRepository implements RegistryRepository, ConfigurationRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
-    
-    private Properties props = new Properties();
     
     @Override
     public void init(final String name, final GovernanceCenterConfiguration config) {
@@ -60,6 +54,19 @@ public final class TestRegistryRepository implements RegistryRepository, Configu
     @Override
     public void persistEphemeral(final String key, final String value) {
         REGISTRY_DATA.put(key, value);
+    }
+    
+    @Override
+    public void initLock(final String key) {
+    }
+    
+    @Override
+    public boolean tryLock(final long time, final TimeUnit unit) {
+        return false;
+    }
+    
+    @Override
+    public void releaseLock() {
     }
     
     @Override

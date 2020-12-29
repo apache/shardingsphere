@@ -23,4 +23,11 @@
     <set-transaction sql-case-id="setTransactionReadOnly" />
     <set-transaction sql-case-id="setTransactionWithName" />
     <set-transaction sql-case-id="setTransactionSnapshot" />
+    <xa sql-case-id="xa-recover" />
+    <xa sql-case-id="xa-start" />
+    <xa sql-case-id="xa-begin" />
+    <xa sql-case-id="xa-end" />
+    <xa sql-case-id="xa-prepare" />
+    <xa sql-case-id="xa-commit" />
+    <xa sql-case-id="xa-rollback" />
 </sql-parser-test-cases>

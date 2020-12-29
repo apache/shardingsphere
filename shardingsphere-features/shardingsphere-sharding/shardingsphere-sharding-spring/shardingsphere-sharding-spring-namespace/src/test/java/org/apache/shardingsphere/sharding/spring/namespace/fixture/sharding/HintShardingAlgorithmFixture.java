@@ -17,19 +17,12 @@
 
 package org.apache.shardingsphere.sharding.spring.namespace.fixture.sharding;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 
 import java.util.Collection;
-import java.util.Properties;
 
-@Getter
-@Setter
 public final class HintShardingAlgorithmFixture implements HintShardingAlgorithm<Integer> {
-    
-    private Properties props = new Properties();
     
     @Override
     public void init() {

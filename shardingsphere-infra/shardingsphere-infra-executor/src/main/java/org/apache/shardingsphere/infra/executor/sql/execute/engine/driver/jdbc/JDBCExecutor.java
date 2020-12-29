@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -65,7 +65,7 @@ public final class JDBCExecutor {
         try {
             return executorEngine.execute(executionGroups, firstCallback, callback, serial);
         } catch (final SQLException ex) {
-            ExecutorExceptionHandler.handleException(ex);
+            SQLExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();
         }
     }

@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.limit.ExpectedLimitClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.lock.ExpectedLockClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.orderby.ExpectedOrderByClause;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.predicate.ExpectedWhereClause;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.where.ExpectedWhereClause;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.ExpectedProjections;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedTable;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;

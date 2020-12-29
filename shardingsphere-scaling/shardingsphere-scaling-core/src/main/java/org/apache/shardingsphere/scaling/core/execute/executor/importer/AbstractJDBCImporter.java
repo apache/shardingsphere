@@ -23,8 +23,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.exception.SyncTaskExecuteException;
-import org.apache.shardingsphere.scaling.core.execute.executor.AbstractShardingScalingExecutor;
+import org.apache.shardingsphere.scaling.core.exception.ScalingTaskExecuteException;
+import org.apache.shardingsphere.scaling.core.execute.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
@@ -32,6 +32,8 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.FinishedRe
 import org.apache.shardingsphere.scaling.core.execute.executor.record.GroupedDataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.utils.ThreadUtil;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -46,7 +48,7 @@ import java.util.stream.Collectors;
  * Abstract JDBC importer implementation.
  */
 @Slf4j
-public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecutor implements Importer {
+public abstract class AbstractJDBCImporter extends AbstractScalingExecutor implements Importer {
     
     private static final DataRecordMerger MERGER = new DataRecordMerger();
     
@@ -54,7 +56,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     
     private final DataSourceManager dataSourceManager;
     
-    private final AbstractSQLBuilder sqlBuilder;
+    private final ScalingSQLBuilder scalingSqlBuilder;
     
     @Setter
     private Channel channel;
@@ -62,7 +64,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     protected AbstractJDBCImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
-        sqlBuilder = createSQLBuilder(importerConfig.getShardingColumnsMap());
+        scalingSqlBuilder = createSQLBuilder(importerConfig.getShardingColumnsMap());
     }
     
     /**
@@ -71,7 +73,7 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
      * @param shardingColumnsMap sharding columns map
      * @return SQL builder
      */
-    protected abstract AbstractSQLBuilder createSQLBuilder(Map<String, Set<String>> shardingColumnsMap);
+    protected abstract ScalingSQLBuilder createSQLBuilder(Map<String, Set<String>> shardingColumnsMap);
     
     @Override
     public final void start() {
@@ -115,20 +117,20 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     private void flushInternal(final DataSource dataSource, final List<DataRecord> buffer) {
         boolean success = tryFlush(dataSource, buffer);
         if (isRunning() && !success) {
-            throw new SyncTaskExecuteException("write failed.");
+            throw new ScalingTaskExecuteException("write failed.");
         }
     }
     
     private boolean tryFlush(final DataSource dataSource, final List<DataRecord> buffer) {
-        int retryTimes = importerConfig.getRetryTimes();
-        do {
+        for (int i = 0; isRunning() && i <= importerConfig.getRetryTimes(); i++) {
             try {
                 doFlush(dataSource, buffer);
                 return true;
             } catch (final SQLException ex) {
-                log.error("flush failed: ", ex);
+                log.error("flush failed {}/{} times.", i, importerConfig.getRetryTimes(), ex);
+                ThreadUtil.sleep(Math.min(5 * 60 * 1000L, 1000 << i));
             }
-        } while (isRunning() && retryTimes-- > 0);
+        }
         return false;
     }
     
@@ -153,16 +155,17 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     }
     
     private void executeBatchInsert(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
-        String insertSql = sqlBuilder.buildInsertSQL(dataRecords.get(0));
-        PreparedStatement ps = connection.prepareStatement(insertSql);
-        ps.setQueryTimeout(30);
-        for (DataRecord each : dataRecords) {
-            for (int i = 0; i < each.getColumnCount(); i++) {
-                ps.setObject(i + 1, each.getColumn(i).getValue());
+        String insertSql = scalingSqlBuilder.buildInsertSQL(dataRecords.get(0));
+        try (PreparedStatement ps = connection.prepareStatement(insertSql)) {
+            ps.setQueryTimeout(30);
+            for (DataRecord each : dataRecords) {
+                for (int i = 0; i < each.getColumnCount(); i++) {
+                    ps.setObject(i + 1, each.getColumn(i).getValue());
+                }
+                ps.addBatch();
             }
-            ps.addBatch();
+            ps.executeBatch();
         }
-        ps.executeBatch();
     }
     
     private void executeUpdate(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
@@ -174,32 +177,32 @@ public abstract class AbstractJDBCImporter extends AbstractShardingScalingExecut
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
         List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, importerConfig.getShardingColumnsMap().get(record.getTableName()));
         List<Column> updatedColumns = RecordUtil.extractUpdatedColumns(record);
-        String updateSql = sqlBuilder.buildUpdateSQL(record, conditionColumns);
-        PreparedStatement ps = connection.prepareStatement(updateSql);
-        for (int i = 0; i < updatedColumns.size(); i++) {
-            ps.setObject(i + 1, updatedColumns.get(i).getValue());
+        String updateSql = scalingSqlBuilder.buildUpdateSQL(record, conditionColumns);
+        try (PreparedStatement ps = connection.prepareStatement(updateSql)) {
+            for (int i = 0; i < updatedColumns.size(); i++) {
+                ps.setObject(i + 1, updatedColumns.get(i).getValue());
+            }
+            for (int i = 0; i < conditionColumns.size(); i++) {
+                Column keyColumn = conditionColumns.get(i);
+                ps.setObject(updatedColumns.size() + i + 1, (keyColumn.isPrimaryKey() && keyColumn.isUpdated()) ? keyColumn.getOldValue() : keyColumn.getValue());
+            }
+            ps.execute();
         }
-        for (int i = 0; i < conditionColumns.size(); i++) {
-            Column keyColumn = conditionColumns.get(i);
-            ps.setObject(updatedColumns.size() + i + 1,
-                    // sharding column can not be updated
-                    (keyColumn.isPrimaryKey() && keyColumn.isUpdated()) ? keyColumn.getOldValue() : keyColumn.getValue());
-        }
-        ps.execute();
     }
     
     private void executeBatchDelete(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
         List<Column> conditionColumns = RecordUtil.extractConditionColumns(dataRecords.get(0), importerConfig.getShardingColumnsMap().get(dataRecords.get(0).getTableName()));
-        String deleteSQL = sqlBuilder.buildDeleteSQL(dataRecords.get(0), conditionColumns);
-        PreparedStatement ps = connection.prepareStatement(deleteSQL);
-        ps.setQueryTimeout(30);
-        for (DataRecord each : dataRecords) {
-            conditionColumns = RecordUtil.extractConditionColumns(each, importerConfig.getShardingColumnsMap().get(each.getTableName()));
-            for (int i = 0; i < conditionColumns.size(); i++) {
-                ps.setObject(i + 1, conditionColumns.get(i).getValue());
+        String deleteSQL = scalingSqlBuilder.buildDeleteSQL(dataRecords.get(0), conditionColumns);
+        try (PreparedStatement ps = connection.prepareStatement(deleteSQL)) {
+            ps.setQueryTimeout(30);
+            for (DataRecord each : dataRecords) {
+                conditionColumns = RecordUtil.extractConditionColumns(each, importerConfig.getShardingColumnsMap().get(each.getTableName()));
+                for (int i = 0; i < conditionColumns.size(); i++) {
+                    ps.setObject(i + 1, conditionColumns.get(i).getValue());
+                }
+                ps.addBatch();
             }
-            ps.addBatch();
+            ps.executeBatch();
         }
-        ps.executeBatch();
     }
 }

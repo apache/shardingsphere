@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.jdbc;
 
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.junit.Test;
 
@@ -64,7 +64,7 @@ public final class JDBCExecutorTest {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
         when(executorEngine.execute(anyCollection(), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));
         JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, false);
-        ExecutorExceptionHandler.setExceptionThrown(false);
+        SQLExecutorExceptionHandler.setExceptionThrown(false);
         List<?> actual = jdbcExecutor.execute(Collections.emptyList(), null);
         assertThat(actual, is(Collections.emptyList()));
     }

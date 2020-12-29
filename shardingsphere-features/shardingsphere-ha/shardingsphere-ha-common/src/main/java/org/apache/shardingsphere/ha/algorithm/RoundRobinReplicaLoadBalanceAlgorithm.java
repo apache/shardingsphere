@@ -17,25 +17,18 @@
 
 package org.apache.shardingsphere.ha.algorithm;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.ha.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Round-robin replica load-balance algorithm.
  */
-@Getter
-@Setter
 public final class RoundRobinReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
     
     private static final ConcurrentHashMap<String, AtomicInteger> COUNTS = new ConcurrentHashMap<>();
-    
-    private Properties props = new Properties();
     
     @Override
     public String getDataSource(final String name, final String primaryDataSourceName, final List<String> replicaDataSourceNames) {

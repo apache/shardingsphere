@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.route.context;
 
 import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
@@ -44,6 +46,13 @@ public final class RouteContext {
     private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
     
     private final Map<Class<? extends ShardingSphereRule>, RouteStageContext> routeStageContexts = new LinkedHashMap<>();
+    
+    @Setter
+    private boolean toCalcite;
+    
+    // TODO Define it as final and return sqlStatementContext in ExecutionContext
+    @Setter
+    private LogicSQL logicSQL;
     
     /**
      * Judge is route for single database and table only or not.

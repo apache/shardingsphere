@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.dumper;
 
-import org.apache.shardingsphere.scaling.core.execute.executor.ShardingScalingExecutor;
+import org.apache.shardingsphere.scaling.core.execute.executor.ScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
 
 /**
  * Dumper interface.
  */
-public interface Dumper extends ShardingScalingExecutor {
+public interface Dumper extends ScalingExecutor {
     
     /**
      * Set channel.

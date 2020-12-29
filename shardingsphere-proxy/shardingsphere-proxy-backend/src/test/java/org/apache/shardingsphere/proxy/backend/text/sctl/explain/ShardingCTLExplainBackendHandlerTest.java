@@ -1,6 +1,6 @@
 package org.apache.shardingsphere.proxy.backend.text.sctl.explain;
 
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
@@ -61,19 +62,19 @@ public final class ShardingCTLExplainBackendHandlerTest {
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
         metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new Authentication(), new ConfigurationProperties(new Properties()), new MySQLDatabaseType()));
+                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties())));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
         ShardingSphereResource resource = new ShardingSphereResource(
-                Collections.singletonMap("ds0", mock(DataSource.class)), mock(DataSourcesMetaData.class, RETURNS_DEEP_STUBS), mock(CachedDatabaseMetaData.class));
+                Collections.singletonMap("ds0", mock(DataSource.class)), mock(DataSourcesMetaData.class, RETURNS_DEEP_STUBS), mock(CachedDatabaseMetaData.class), new MySQLDatabaseType());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData("schema", 
                 resource, new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(mock(ShardingSphereRule.class))), mock(ShardingSphereSchema.class));
         return Collections.singletonMap("schema", metaData);
     }
     
     @Test
-    public void assertGetRowData() {
+    public void assertGetRowData() throws SQLException {
         handler.execute();
         assertTrue(handler.next());
         Iterator<Object> iterator = handler.getRowData().iterator();

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.driver.governance.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
@@ -27,15 +25,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
-@Getter
-@Setter
 public final class TestConfigurationRepository implements ConfigurationRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
-    
-    private Properties props = new Properties();
     
     @Override
     public void init(final String name, final GovernanceCenterConfiguration config) {

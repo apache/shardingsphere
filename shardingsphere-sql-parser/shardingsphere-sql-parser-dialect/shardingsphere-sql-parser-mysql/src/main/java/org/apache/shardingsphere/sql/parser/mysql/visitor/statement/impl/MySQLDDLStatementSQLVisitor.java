@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl;
 
 import com.google.common.base.Preconditions;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
@@ -137,11 +138,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * DDL Statement SQL visitor for MySQL.
  */
+@NoArgsConstructor
 public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor implements DDLSQLVisitor, SQLStatementVisitor {
+    
+    public MySQLDDLStatementSQLVisitor(final Properties props) {
+        super(props);
+    }
     
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
@@ -244,15 +251,13 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     private ColumnDefinitionSegment generateColumnDefinitionSegment(final ColumnSegment column, final FieldDefinitionContext ctx) {
         DataTypeSegment dataTypeSegment = (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = isPrimaryKey(ctx);
-        ColumnDefinitionSegment result = new ColumnDefinitionSegment(
-                column.getStartIndex(), dataTypeSegment.getStopIndex(), column, dataTypeSegment, isPrimaryKey);
-        return result;
+        return new ColumnDefinitionSegment(column.getStartIndex(), dataTypeSegment.getStopIndex(), column, dataTypeSegment, isPrimaryKey);
     }
-
+    
     @Override
     public ASTNode visitAlterList(final AlterListContext ctx) {
         CollectionValue<AlterDefinitionSegment> result = new CollectionValue<>();
@@ -294,7 +299,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitAddColumn(final AddColumnContext ctx) {
         Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
@@ -315,7 +320,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = new ColumnSegment(ctx.column_name.start.getStartIndex(), ctx.column_name.stop.getStopIndex(), (IdentifierValue) visit(ctx.column_name));
@@ -374,7 +379,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
         return result;
     }
-
+    
     private Collection<ColumnSegment> getKeyColumnsFromKeyListWithExpression(final KeyListWithExpressionContext ctx) {
         Collection<ColumnSegment> result = new LinkedList<>();
         for (MySQLStatementParser.KeyPartWithExpressionContext each : ctx.keyPartWithExpression()) {
@@ -404,7 +409,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         MySQLDropTableStatement result = new MySQLDropTableStatement();
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
+        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
     }
     

@@ -59,7 +59,6 @@ public final class PostgreSQLPositionManager extends PositionManager {
     
     private void initPosition() {
         try (Connection connection = getDataSource().getConnection()) {
-            // Need to create slot first, hold oldest wal event.
             createIfNotExists(connection);
             setPosition(getWalPosition(connection));
         } catch (final SQLException ex) {

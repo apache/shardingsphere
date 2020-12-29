@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementExecutionUnitBuilder
-org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.PreparedStatementExecutionUnitBuilder
+org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.builder.StatementExecutionUnitBuilder
+org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.builder.PreparedStatementExecutionUnitBuilder

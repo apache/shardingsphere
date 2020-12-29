@@ -56,7 +56,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     }
     
     @Override
-    public CommandExecutor getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final BackendConnection backendConnection) {
+    public CommandExecutor getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final BackendConnection backendConnection) throws SQLException {
         return MySQLCommandExecutorFactory.newInstance((MySQLCommandPacketType) type, packet, backendConnection);
     }
     
@@ -85,7 +85,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
                 context.flush();
                 backendConnection.getResourceLock().doAwait();
             }
-            DatabasePacket<?> dataValue = queryCommandExecutor.getQueryData();
+            DatabasePacket<?> dataValue = queryCommandExecutor.getQueryRowPacket();
             context.write(dataValue);
             if (flushThreshold == count) {
                 context.flush();

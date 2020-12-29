@@ -51,7 +51,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
     
     private List<Comparable<?>> orderValues;
     
-    public OrderByValue(final QueryResult queryResult, final Collection<OrderByItem> orderByItems, 
+    public OrderByValue(final QueryResult queryResult, final Collection<OrderByItem> orderByItems,
                         final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema) throws SQLException {
         this.queryResult = queryResult;
         this.orderByItems = orderByItems;
@@ -80,7 +80,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
                 }
             } else if (orderByItemSegment instanceof IndexOrderByItemSegment) {
                 int columnIndex = ((IndexOrderByItemSegment) orderByItemSegment).getColumnIndex();
-                String columnName = queryResult.getColumnName(columnIndex);
+                String columnName = queryResult.getMetaData().getColumnName(columnIndex);
                 if (columns.containsKey(columnName)) {
                     return columns.get(columnName).isCaseSensitive();
                 }

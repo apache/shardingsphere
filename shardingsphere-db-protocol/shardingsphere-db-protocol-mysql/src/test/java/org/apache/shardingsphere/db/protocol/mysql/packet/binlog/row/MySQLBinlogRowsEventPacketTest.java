@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row;
 
 import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinlogEventType;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.MySQLBinlogEventHeader;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
@@ -71,7 +71,7 @@ public final class MySQLBinlogRowsEventPacketTest {
     
     private void mockColumnDefs() {
         columnDefs = new ArrayList<>();
-        columnDefs.add(new MySQLBinlogColumnDef(MySQLColumnType.MYSQL_TYPE_LONGLONG));
+        columnDefs.add(new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_LONGLONG));
     }
     
     @Test

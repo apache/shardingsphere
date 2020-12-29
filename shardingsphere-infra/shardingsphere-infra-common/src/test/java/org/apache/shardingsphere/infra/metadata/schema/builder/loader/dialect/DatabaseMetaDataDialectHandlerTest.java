@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseT
 import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -52,89 +53,46 @@ public final class DatabaseMetaDataDialectHandlerTest {
     @Mock
     private DatabaseMetaData databaseMetaData;
     
-    @Test
-    public void assertGetSchema() throws SQLException {
+    @Before
+    public void setUp() throws SQLException {
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getUserName()).thenReturn(USER_NAME);
-
-        String oracleSchema = getSchema(new OracleDatabaseType());
-        assertThat(oracleSchema, is(USER_NAME.toUpperCase()));
-
         when(connection.getSchema()).thenReturn(USER_NAME);
-        String mysqlSchema = getSchema(new MySQLDatabaseType());
-        assertThat(mysqlSchema, is(USER_NAME));
-
-        String h2Schema = getSchema(new H2DatabaseType());
-        assertThat(h2Schema, is(USER_NAME));
-
-        String mariaDBSchema = getSchema(new MariaDBDatabaseType());
-        assertThat(mariaDBSchema, is(USER_NAME));
-
-        String postgreSQLSchema = getSchema(new PostgreSQLDatabaseType());
-        assertThat(postgreSQLSchema, is(USER_NAME));
-
-        String sqlServerSchema = getSchema(new SQLServerDatabaseType());
-        assertThat(sqlServerSchema, is(USER_NAME));
-
-        String sql92Schema = getSchema(new SQL92DatabaseType());
-        assertThat(sql92Schema, is(USER_NAME));
     }
     
     @Test
-    public void assertGetTableNamePattern() {
-        String oracleTableNamePattern = getTableNamePattern(new OracleDatabaseType());
-        assertThat(oracleTableNamePattern, is(TABLE_NAME_PATTERN.toUpperCase()));
-        String mysqlTableNamePattern = getTableNamePattern(new MySQLDatabaseType());
-        assertThat(mysqlTableNamePattern, is(TABLE_NAME_PATTERN));
-        String h2TableNamePattern = getTableNamePattern(new H2DatabaseType());
-        assertThat(h2TableNamePattern, is(TABLE_NAME_PATTERN));
-        String mariaDBTableNamePattern = getTableNamePattern(new MariaDBDatabaseType());
-        assertThat(mariaDBTableNamePattern, is(TABLE_NAME_PATTERN));
-        String postgreSQLTableNamePattern = getTableNamePattern(new PostgreSQLDatabaseType());
-        assertThat(postgreSQLTableNamePattern, is(TABLE_NAME_PATTERN));
-        String sqlServerTableNamePattern = getTableNamePattern(new SQLServerDatabaseType());
-        assertThat(sqlServerTableNamePattern, is(TABLE_NAME_PATTERN));
-        String sql92TableNamePattern = getTableNamePattern(new SQL92DatabaseType());
-        assertThat(sql92TableNamePattern, is(TABLE_NAME_PATTERN));
+    public void assertGetMySQLSchema() {
+        assertThat(getSchema(new MySQLDatabaseType()), is(USER_NAME));
     }
     
     @Test
-    public void assertGetQuoteCharacter() {
-        QuoteCharacter oracleQuoteCharacter = findQuoteCharacter(new OracleDatabaseType());
-        assertThat(oracleQuoteCharacter.getStartDelimiter(), is("\""));
-        assertThat(oracleQuoteCharacter.getEndDelimiter(), is("\""));
-    
-        QuoteCharacter h2QuoteCharacter = findQuoteCharacter(new H2DatabaseType());
-        assertThat(h2QuoteCharacter.getStartDelimiter(), is("\""));
-        assertThat(h2QuoteCharacter.getEndDelimiter(), is("\""));
-    
-        QuoteCharacter postgreSQLQuoteCharacter = findQuoteCharacter(new PostgreSQLDatabaseType());
-        assertThat(postgreSQLQuoteCharacter.getStartDelimiter(), is("\""));
-        assertThat(postgreSQLQuoteCharacter.getEndDelimiter(), is("\""));
-    
-        QuoteCharacter sql92QuoteCharacter = findQuoteCharacter(new SQL92DatabaseType());
-        assertThat(sql92QuoteCharacter.getStartDelimiter(), is("\""));
-        assertThat(sql92QuoteCharacter.getEndDelimiter(), is("\""));
-    
-        QuoteCharacter mariaDBQuoteCharacter = findQuoteCharacter(new MariaDBDatabaseType());
-        assertThat(mariaDBQuoteCharacter.getStartDelimiter(), is("`"));
-        assertThat(mariaDBQuoteCharacter.getEndDelimiter(), is("`"));
-        
-        QuoteCharacter mysqlQuoteCharacter = findQuoteCharacter(new MySQLDatabaseType());
-        assertThat(mysqlQuoteCharacter.getStartDelimiter(), is("`"));
-        assertThat(mysqlQuoteCharacter.getEndDelimiter(), is("`"));
-    
-        QuoteCharacter sqlServerQuoteCharacter = findQuoteCharacter(new SQLServerDatabaseType());
-        assertThat(sqlServerQuoteCharacter.getStartDelimiter(), is("["));
-        assertThat(sqlServerQuoteCharacter.getEndDelimiter(), is("]"));
+    public void assertGetMariaDBSchema() {
+        assertThat(getSchema(new MariaDBDatabaseType()), is(USER_NAME));
     }
     
-    private QuoteCharacter findQuoteCharacter(final DatabaseType databaseType) {
-        return DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(DatabaseMetaDataDialectHandler::getQuoteCharacter).orElse(QuoteCharacter.NONE);
+    @Test
+    public void assertGetH2Schema() {
+        assertThat(getSchema(new H2DatabaseType()), is(USER_NAME));
     }
     
-    private String getTableNamePattern(final DatabaseType databaseType) {
-        return DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(handler -> handler.formatTableNamePattern(TABLE_NAME_PATTERN)).orElse(TABLE_NAME_PATTERN);
+    @Test
+    public void assertGetPostgreSQLSchema() {
+        assertThat(getSchema(new PostgreSQLDatabaseType()), is(USER_NAME));
+    }
+    
+    @Test
+    public void assertSQLServerSchemaSchema() {
+        assertThat(getSchema(new SQLServerDatabaseType()), is(USER_NAME));
+    }
+    
+    @Test
+    public void assertGetOracleSchema() {
+        assertThat(getSchema(new OracleDatabaseType()), is(USER_NAME.toUpperCase()));
+    }
+    
+    @Test
+    public void assertGetSQL92Schema() {
+        assertThat(getSchema(new SQL92DatabaseType()), is(USER_NAME));
     }
     
     private String getSchema(final DatabaseType databaseType) {
@@ -147,5 +105,97 @@ public final class DatabaseMetaDataDialectHandlerTest {
         } catch (final SQLException ex) {
             return null;
         }
+    }
+    
+    @Test
+    public void assertGetTableNamePatternForMySQL() {
+        assertThat(getTableNamePattern(new MySQLDatabaseType()), is(TABLE_NAME_PATTERN));
+    }
+    
+    @Test
+    public void assertGetTableNamePatternForMariaDB() {
+        assertThat(getTableNamePattern(new MariaDBDatabaseType()), is(TABLE_NAME_PATTERN));
+    }
+    
+    @Test
+    public void assertGetTableNamePatternForH2() {
+        assertThat(getTableNamePattern(new H2DatabaseType()), is(TABLE_NAME_PATTERN));
+    }
+    
+    @Test
+    public void assertGetTableNamePatternForPostgreSQL() {
+        assertThat(getTableNamePattern(new PostgreSQLDatabaseType()), is(TABLE_NAME_PATTERN));
+    }
+    
+    @Test
+    public void assertGetTableNamePatternForSQLServer() {
+        assertThat(getTableNamePattern(new SQLServerDatabaseType()), is(TABLE_NAME_PATTERN));
+    }
+    
+    @Test
+    public void assertGetTableNamePatternForOracle() {
+        assertThat(getTableNamePattern(new OracleDatabaseType()), is(TABLE_NAME_PATTERN.toUpperCase()));
+    }
+    
+    @Test
+    public void assertGetTableNamePatternForSQL92() {
+        assertThat(getTableNamePattern(new SQL92DatabaseType()), is(TABLE_NAME_PATTERN));
+    }
+    
+    private String getTableNamePattern(final DatabaseType databaseType) {
+        return DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(handler -> handler.formatTableNamePattern(TABLE_NAME_PATTERN)).orElse(TABLE_NAME_PATTERN);
+    }
+    
+    @Test
+    public void assertGetQuoteCharacterForMySQL() {
+        QuoteCharacter actual = findQuoteCharacter(new MySQLDatabaseType());
+        assertThat(actual.getStartDelimiter(), is("`"));
+        assertThat(actual.getEndDelimiter(), is("`"));
+    }
+    
+    @Test
+    public void assertGetQuoteCharacterForMariaDB() {
+        QuoteCharacter actual = findQuoteCharacter(new MariaDBDatabaseType());
+        assertThat(actual.getStartDelimiter(), is("`"));
+        assertThat(actual.getEndDelimiter(), is("`"));
+    }
+    
+    @Test
+    public void assertGetQuoteCharacterForH2() {
+        QuoteCharacter actual = findQuoteCharacter(new H2DatabaseType());
+        assertThat(actual.getStartDelimiter(), is("\""));
+        assertThat(actual.getEndDelimiter(), is("\""));
+    }
+    
+    @Test
+    public void assertGetQuoteCharacterForPostgreSQL() {
+        QuoteCharacter actual = findQuoteCharacter(new PostgreSQLDatabaseType());
+        assertThat(actual.getStartDelimiter(), is("\""));
+        assertThat(actual.getEndDelimiter(), is("\""));
+    }
+
+    @Test
+    public void assertGetQuoteCharacterForSQLServer() {
+        QuoteCharacter actual = findQuoteCharacter(new SQLServerDatabaseType());
+        assertThat(actual.getStartDelimiter(), is("["));
+        assertThat(actual.getEndDelimiter(), is("]"));
+    }
+    
+    @Test
+    public void assertGetQuoteCharacterOracle() {
+        QuoteCharacter actual = findQuoteCharacter(new OracleDatabaseType());
+        assertThat(actual.getStartDelimiter(), is("\""));
+        assertThat(actual.getEndDelimiter(), is("\""));
+    }
+    
+    @Test
+    public void assertGetQuoteCharacterForSQL92() {
+        QuoteCharacter actual = findQuoteCharacter(new SQL92DatabaseType());
+        assertThat(actual.getStartDelimiter(), is("\""));
+        assertThat(actual.getEndDelimiter(), is("\""));
+    }
+    
+    private QuoteCharacter findQuoteCharacter(final DatabaseType databaseType) {
+        return DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(DatabaseMetaDataDialectHandler::getQuoteCharacter).orElse(QuoteCharacter.NONE);
     }
 }

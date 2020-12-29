@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.scaling.core.job.ShardingScalingJob;
+import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.service.impl.StandaloneScalingJobService;
 
@@ -37,7 +37,7 @@ public final class ScalingElasticJob implements SimpleJob {
     
     private static final ScalingJobService SCALING_JOB_SERVICE = new StandaloneScalingJobService();
     
-    private ShardingScalingJob shardingScalingJob;
+    private ScalingJob scalingJob;
     
     @Override
     public void execute(final ShardingContext shardingContext) {
@@ -54,14 +54,14 @@ public final class ScalingElasticJob implements SimpleJob {
         log.info("start job: {} - {}", shardingContext.getJobName(), shardingContext.getShardingItem());
         scalingConfig.getJobConfiguration().setShardingItem(shardingContext.getShardingItem());
         scalingConfig.getJobConfiguration().setJobId(Long.valueOf(shardingContext.getJobName()));
-        shardingScalingJob = SCALING_JOB_SERVICE.start(scalingConfig).orElse(null);
+        scalingJob = SCALING_JOB_SERVICE.start(scalingConfig).orElse(null);
     }
     
     private void stopJob(final ShardingContext shardingContext) {
         log.info("stop job: {} - {}", shardingContext.getJobName(), shardingContext.getShardingItem());
-        if (null != shardingScalingJob) {
-            SCALING_JOB_SERVICE.stop(shardingScalingJob.getJobId());
-            shardingScalingJob = null;
+        if (null != scalingJob) {
+            SCALING_JOB_SERVICE.stop(scalingJob.getJobId());
+            scalingJob = null;
         }
     }
 }

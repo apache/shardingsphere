@@ -17,17 +17,19 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query;
 
+import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
+
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Calendar;
 
 /**
- * Query result form SQL.
+ * Query result.
  */
-public interface QueryResult {
+public interface QueryResult extends ExecuteResult {
     
     /**
-     * iterate next data.
+     * Iterate next data.
      *
      * @return has next data
      * @throws SQLException SQL Exception
@@ -56,55 +58,27 @@ public interface QueryResult {
     Object getCalendarValue(int columnIndex, Class<?> type, Calendar calendar) throws SQLException;
     
     /**
-     * Get InputStream.
+     * Get input stream.
      *
      * @param columnIndex column index
      * @param type class type of data value
-     * @return InputStream
+     * @return input stream
      * @throws SQLException SQL Exception
      */
     InputStream getInputStream(int columnIndex, String type) throws SQLException;
     
     /**
-     * Judge ResultSet is null or not.
+     * Judge result set is null or not.
      *
-     * @return ResultSet is null or not
+     * @return result set is null or not
      * @throws SQLException SQL Exception
      */
     boolean wasNull() throws SQLException;
     
     /**
-     * Get column count.
-     *
-     * @return column count
-     * @throws SQLException SQL Exception
-     */
-    int getColumnCount() throws SQLException;
-    
-    /**
-     * Get column name.
-     *
-     * @param columnIndex column index
-     * @return column name
-     * @throws SQLException SQL Exception
-     */
-    String getColumnName(int columnIndex) throws SQLException;
-    
-    /**
-     * Get column label.
-     *
-     * @param columnIndex column index
-     * @return column label
-     * @throws SQLException SQL Exception
-     */
-    String getColumnLabel(int columnIndex) throws SQLException;
-    
-    /**
-     * Get column type name.
+     * Get query result meta data.
      * 
-     * @param columnIndex column index
-     * @return column type name
-     * @throws SQLException SQL Exception
+     * @return query result meta data
      */
-    String getColumnTypeName(int columnIndex) throws SQLException;
+    QueryResultMetaData getMetaData();
 }

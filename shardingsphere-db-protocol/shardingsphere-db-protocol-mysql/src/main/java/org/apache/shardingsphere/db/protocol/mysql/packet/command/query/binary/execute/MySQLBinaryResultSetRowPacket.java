@@ -19,12 +19,11 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLColumnType;
+import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
+import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.protocol.MySQLBinaryProtocolValueFactory;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-
-import java.util.List;
 
 /**
  * Binary result set row packet for MySQL.
@@ -41,9 +40,7 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     @Getter
     private final int sequenceId;
     
-    private final List<Object> data;
-    
-    private final List<MySQLColumnType> columnTypes;
+    private final BinaryRow row;
     
     @Override
     public void write(final MySQLPacketPayload payload) {
@@ -59,20 +56,21 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     }
     
     private MySQLNullBitmap getNullBitmap() {
-        MySQLNullBitmap result = new MySQLNullBitmap(columnTypes.size(), NULL_BITMAP_OFFSET);
-        for (int columnIndex = 0; columnIndex < columnTypes.size(); columnIndex++) {
-            if (null == data.get(columnIndex)) {
-                result.setNullBit(columnIndex);
+        MySQLNullBitmap result = new MySQLNullBitmap(row.getCells().size(), NULL_BITMAP_OFFSET);
+        int index = 0;
+        for (BinaryCell each : row.getCells()) {
+            if (null == each.getData()) {
+                result.setNullBit(index);
             }
+            index++;
         }
         return result;
     }
     
     private void writeValues(final MySQLPacketPayload payload) {
-        for (int i = 0; i < columnTypes.size(); i++) {
-            Object value = data.get(i);
-            if (null != value) {
-                MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(columnTypes.get(i)).write(payload, value);
+        for (BinaryCell each : row.getCells()) {
+            if (null != each.getData()) {
+                MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(each.getColumnType()).write(payload, each.getData());
             }
         }
     }

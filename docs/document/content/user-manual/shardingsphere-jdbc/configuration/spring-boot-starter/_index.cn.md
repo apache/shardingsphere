@@ -1,5 +1,5 @@
 +++
-title = "Spring Boot Start 配置"
+title = "Spring Boot Starter 配置"
 weight = 3
 +++
 

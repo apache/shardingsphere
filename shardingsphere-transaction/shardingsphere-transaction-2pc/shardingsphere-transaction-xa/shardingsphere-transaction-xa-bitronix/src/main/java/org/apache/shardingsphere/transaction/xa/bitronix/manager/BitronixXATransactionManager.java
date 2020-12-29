@@ -22,6 +22,7 @@ import bitronix.tm.TransactionManagerServices;
 import bitronix.tm.recovery.RecoveryException;
 import bitronix.tm.resource.ResourceRegistrar;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManager;
 
@@ -29,17 +30,17 @@ import javax.sql.XADataSource;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
-import java.util.Properties;
 
 /**
  * Bitronix sharding transaction manager.
  */
 public final class BitronixXATransactionManager implements XATransactionManager {
     
-    private final BitronixTransactionManager bitronixTransactionManager = TransactionManagerServices.getTransactionManager();
+    private BitronixTransactionManager bitronixTransactionManager;
     
     @Override
     public void init() {
+        bitronixTransactionManager = TransactionManagerServices.getTransactionManager();
     }
     
     @SneakyThrows(RecoveryException.class)
@@ -71,16 +72,6 @@ public final class BitronixXATransactionManager implements XATransactionManager 
     
     @Override
     public String getType() {
-        return "bitronix";
-    }
-    
-    @Override
-    public Properties getProps() {
-        return null;
-    }
-    
-    @Override
-    public void setProps(final Properties props) {
-        
+        return XATransactionManagerType.BITRONIX.getType();
     }
 }

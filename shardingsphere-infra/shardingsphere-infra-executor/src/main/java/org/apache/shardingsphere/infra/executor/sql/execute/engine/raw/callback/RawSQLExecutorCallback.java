@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback;
 
+import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -40,22 +38,17 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
         ShardingSphereServiceLoader.register(RawExecutorCallback.class);
     }
     
-    private final Collection<RawExecutorCallback> rawExecutorCallbacks;
-
-    private final ShardingSphereMetaData shardingSphereMetaData;
+    @SuppressWarnings("rawtypes")
+    private final Collection<RawExecutorCallback> callbacks;
     
-    public RawSQLExecutorCallback(final ShardingSphereMetaData shardingSphereMetaData) {
-        rawExecutorCallbacks = ShardingSphereServiceLoader.newServiceInstances(RawExecutorCallback.class);
-        if (null == rawExecutorCallbacks || rawExecutorCallbacks.isEmpty()) {
-            throw new ShardingSphereException("not found raw executor callback impl");
-        }
-        this.shardingSphereMetaData = shardingSphereMetaData;
+    public RawSQLExecutorCallback() {
+        callbacks = ShardingSphereServiceLoader.newServiceInstances(RawExecutorCallback.class);
+        Preconditions.checkState(!callbacks.isEmpty(), "No raw executor callback implementation found.");
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<ExecuteResult> execute(final Collection<RawSQLExecutionUnit> inputs, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
-        Map<String, Object> currDataMap = null == dataMap ? Collections.emptyMap() : dataMap;
-        currDataMap.put(ShardingSphereMetaData.class.getCanonicalName(), this.shardingSphereMetaData);
-        return rawExecutorCallbacks.iterator().next().execute(inputs, isTrunkThread, dataMap);
+        return callbacks.iterator().next().execute(inputs, isTrunkThread, dataMap);
     }
 }

@@ -40,7 +40,7 @@ public final class YamlHADataSourceRuleConfiguration implements YamlConfiguratio
     
     private String loadBalancerName;
     
-    private Boolean readWriteSplit;
+    private boolean readWriteSplit;
     
     private Properties props = new Properties();
 }

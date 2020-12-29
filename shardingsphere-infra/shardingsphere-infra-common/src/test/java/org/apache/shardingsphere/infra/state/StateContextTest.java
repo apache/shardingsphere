@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.state;
 
-import org.junit.After;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,6 +28,7 @@ public final class StateContextTest {
     public void assertSwitchStateWithCircuitBreakOn() {
         StateContext.switchState(new StateEvent(StateType.CIRCUIT_BREAK, true));
         assertThat(StateContext.getCurrentState(), is(StateType.CIRCUIT_BREAK));
+        StateContext.switchState(new StateEvent(StateType.CIRCUIT_BREAK, false));
     }
     
     @Test
@@ -37,8 +37,12 @@ public final class StateContextTest {
         assertThat(StateContext.getCurrentState(), is(StateType.OK));
     }
     
-    @After
-    public void reset() {
-        StateContext.switchState(new StateEvent(StateType.OK, true));
+    @Test
+    public void assertSwitchStateWithMultiState() {
+        StateContext.switchState(new StateEvent(StateType.CIRCUIT_BREAK, true));
+        StateContext.switchState(new StateEvent(StateType.LOCK, true));
+        assertThat(StateContext.getCurrentState(), is(StateType.LOCK));
+        StateContext.switchState(new StateEvent(StateType.LOCK, false));
+        assertThat(StateContext.getCurrentState(), is(StateType.CIRCUIT_BREAK));
     }
 }

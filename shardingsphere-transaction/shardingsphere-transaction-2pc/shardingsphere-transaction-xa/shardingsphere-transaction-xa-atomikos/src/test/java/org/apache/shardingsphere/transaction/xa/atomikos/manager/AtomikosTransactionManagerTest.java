@@ -60,12 +60,6 @@ public final class AtomikosTransactionManagerTest {
     }
     
     @Test
-    public void assertInit() {
-        atomikosTransactionManager.init();
-        verify(userTransactionService).init();
-    }
-    
-    @Test
     public void assertRegisterRecoveryResource() {
         atomikosTransactionManager.registerRecoveryResource("ds1", xaDataSource);
         verify(userTransactionService).registerResource(any(AtomikosXARecoverableResource.class));

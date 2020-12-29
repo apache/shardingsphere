@@ -40,4 +40,12 @@ public interface ResourceAware {
      * @param dataSourceMap data source map
      */
     void setDataSourceMap(Map<String, DataSource> dataSourceMap);
+    
+    /**
+     * Set schema name.
+     *
+     * @param schemaName schema name
+     */
+    default void setSchemaName(String schemaName) {
+    }
 }

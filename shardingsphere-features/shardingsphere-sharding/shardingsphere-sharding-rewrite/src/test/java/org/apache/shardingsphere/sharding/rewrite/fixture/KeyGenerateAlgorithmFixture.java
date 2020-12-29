@@ -17,17 +17,9 @@
 
 package org.apache.shardingsphere.sharding.rewrite.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Properties;
-
-@Getter
-@Setter
 public final class KeyGenerateAlgorithmFixture implements KeyGenerateAlgorithm {
-    
-    private Properties props = new Properties();
     
     @Override
     public void init() {

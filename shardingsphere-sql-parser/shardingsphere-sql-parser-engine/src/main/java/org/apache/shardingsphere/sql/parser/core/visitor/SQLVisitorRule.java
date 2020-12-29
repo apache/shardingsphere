@@ -186,8 +186,10 @@ public enum SQLVisitorRule {
     
     START_SLAVE("StartSlave", SQLStatementType.RL),
     
-    STOP_SLAVE("StopSlave", SQLStatementType.RL);
-    
+    STOP_SLAVE("StopSlave", SQLStatementType.RL),
+
+    XA("Xa", SQLStatementType.TCL);
+
     private final String name;
     
     @Getter
