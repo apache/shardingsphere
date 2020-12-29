@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.base;
+package org.apache.shardingsphere.agent.core.util;
 
 import com.google.common.base.Preconditions;
-import java.lang.reflect.Field;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+
+import java.lang.reflect.Field;
 
 /**
  * Reflective utility.
@@ -31,6 +32,7 @@ public final class ReflectiveUtil {
     
     /**
      * Get field.
+     * 
      * @param target target
      * @param fieldName field name
      * @return field
@@ -49,6 +51,7 @@ public final class ReflectiveUtil {
     
     /**
      * Set value to specified field.
+     * 
      * @param target target
      * @param fieldName field name
      * @param value value

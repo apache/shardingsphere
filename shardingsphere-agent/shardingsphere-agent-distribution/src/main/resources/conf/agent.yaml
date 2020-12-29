@@ -39,4 +39,3 @@ plugins:
     port: 15775
     props:
       name: "Zipkin"
-    
