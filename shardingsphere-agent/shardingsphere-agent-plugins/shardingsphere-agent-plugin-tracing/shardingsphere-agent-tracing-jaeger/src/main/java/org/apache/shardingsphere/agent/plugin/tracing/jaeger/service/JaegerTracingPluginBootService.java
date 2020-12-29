@@ -32,14 +32,8 @@ public final class JaegerTracingPluginBootService implements PluginBootService {
         pluginConfig.getProps().forEach((key, value) -> System.setProperty(String.valueOf(key), String.valueOf(value)));
         Configuration.SamplerConfiguration samplerConfig = Configuration.SamplerConfiguration.fromEnv();
         Configuration.ReporterConfiguration reporterConfig = Configuration.ReporterConfiguration.fromEnv()
-                .withSender(
-                        Configuration.SenderConfiguration.fromEnv()
-                                .withAgentHost(pluginConfig.getHost())
-                                .withAgentPort(pluginConfig.getPort())
-                );
-        Configuration config = new Configuration("ShardingSphere-Jaeger")
-                .withSampler(samplerConfig)
-                .withReporter(reporterConfig);
+                .withSender(Configuration.SenderConfiguration.fromEnv().withAgentHost(pluginConfig.getHost()).withAgentPort(pluginConfig.getPort()));
+        Configuration config = new Configuration("ShardingSphere-Jaeger").withSampler(samplerConfig).withReporter(reporterConfig);
         GlobalTracer.register(config.getTracer());
     }
     
