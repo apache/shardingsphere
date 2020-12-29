@@ -175,7 +175,7 @@ public final class DatabaseCommunicationEngine {
     }
     
     private int getColumnCount(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
-        return executionContext.getSqlStatementContext() instanceof SelectStatementContext
+        return hasSelectExpandProjections(executionContext.getSqlStatementContext())
                 ? ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext().getExpandProjections().size() : queryResultSample.getMetaData().getColumnCount();
     }
     
