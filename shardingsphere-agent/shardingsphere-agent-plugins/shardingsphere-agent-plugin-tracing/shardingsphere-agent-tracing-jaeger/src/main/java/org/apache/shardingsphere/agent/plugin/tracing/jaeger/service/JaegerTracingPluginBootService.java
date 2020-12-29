@@ -28,14 +28,14 @@ import org.apache.shardingsphere.agent.core.plugin.service.PluginBootService;
 public final class JaegerTracingPluginBootService implements PluginBootService {
     
     @Override
-    public void start(final PluginConfiguration pluginConfiguration) {
-        pluginConfiguration.getProps().forEach((key, value) -> System.setProperty(String.valueOf(key), String.valueOf(value)));
+    public void start(final PluginConfiguration pluginConfig) {
+        pluginConfig.getProps().forEach((key, value) -> System.setProperty(String.valueOf(key), String.valueOf(value)));
         Configuration.SamplerConfiguration samplerConfig = Configuration.SamplerConfiguration.fromEnv();
         Configuration.ReporterConfiguration reporterConfig = Configuration.ReporterConfiguration.fromEnv()
                 .withSender(
                         Configuration.SenderConfiguration.fromEnv()
-                                .withAgentHost(pluginConfiguration.getHost())
-                                .withAgentPort(pluginConfiguration.getPort())
+                                .withAgentHost(pluginConfig.getHost())
+                                .withAgentPort(pluginConfig.getPort())
                 );
         Configuration config = new Configuration("ShardingSphere-Jaeger")
                 .withSampler(samplerConfig)

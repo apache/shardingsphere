@@ -37,10 +37,10 @@ public class PrometheusPluginBootService implements PluginBootService {
     private HTTPServer httpServer;
     
     @Override
-    public void start(final PluginConfiguration configuration) {
-        boolean enabled = Boolean.parseBoolean(configuration.getProps().getProperty("jvmInformationCollectorEnabled"));
+    public void start(final PluginConfiguration pluginConfig) {
+        boolean enabled = Boolean.parseBoolean(pluginConfig.getProps().getProperty("jvmInformationCollectorEnabled"));
         registerJvm(enabled);
-        startServer(configuration);
+        startServer(pluginConfig);
     }
     
     @Override
