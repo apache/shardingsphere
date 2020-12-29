@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.datasource;
+package org.apache.shardingsphere.test.integration.env.datasource.builder;
 
 /**
  * Data source pool type.

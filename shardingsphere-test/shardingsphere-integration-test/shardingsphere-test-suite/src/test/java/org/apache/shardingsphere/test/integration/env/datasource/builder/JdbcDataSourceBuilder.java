@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.datasource;
+package org.apache.shardingsphere.test.integration.env.datasource.builder;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
+import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
 
 import javax.sql.DataSource;
 import java.util.Collections;
@@ -34,17 +33,17 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Data source builder.
+ * JDBC data source builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceBuilder {
+public final class JdbcDataSourceBuilder {
     
     private static final DataSourcePoolType DATA_SOURCE_POOL_TYPE = DataSourcePoolType.HikariCP;
     
     private static final Map<DataSourceCacheKey, DataSource> CACHE = new HashMap<>();
     
     /**
-     * Build data source.
+     * Build jdbc data source.
      *
      * @param name data source name
      * @param databaseType database type
@@ -104,14 +103,5 @@ public final class DataSourceBuilder {
             default:
                 return Optional.empty();
         }
-    }
-    
-    @RequiredArgsConstructor
-    @EqualsAndHashCode
-    private static class DataSourceCacheKey {
-        
-        private final String dataSourceName;
-        
-        private final DatabaseType databaseType;
     }
 }

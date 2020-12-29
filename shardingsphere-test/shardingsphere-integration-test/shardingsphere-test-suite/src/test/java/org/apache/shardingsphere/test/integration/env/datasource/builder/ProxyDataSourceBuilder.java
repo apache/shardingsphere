@@ -15,44 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.datasource;
+package org.apache.shardingsphere.test.integration.env.datasource.builder;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
+import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Data source utility.
+ * Proxy data source builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProxyDataSourceUtil {
+public final class ProxyDataSourceBuilder {
     
     private static final Map<DataSourceCacheKey, DataSource> CACHE = new HashMap<>();
     
     /**
-     * Create data source.
+     * Build proxy data source.
      *
+     * @param name data source name
      * @param databaseType database type
-     * @param dataSourceName data source name
-     * @return data source
+     * @return proxy data source
      */
-    public static DataSource createDataSource(final DatabaseType databaseType, final String dataSourceName) {
-        DataSourceCacheKey dataSourceCacheKey = new DataSourceCacheKey(databaseType, dataSourceName);
-        if (CACHE.containsKey(dataSourceCacheKey)) {
-            return CACHE.get(dataSourceCacheKey);
+    public static DataSource build(final String name, final DatabaseType databaseType) {
+        DataSourceCacheKey cacheKey = new DataSourceCacheKey(name, databaseType);
+        if (CACHE.containsKey(cacheKey)) {
+            return CACHE.get(cacheKey);
         }
-        
-        DataSource result = createHikariCP(databaseType, dataSourceName);
-        CACHE.put(dataSourceCacheKey, result);
+        DataSource result = createHikariCP(databaseType, name);
+        CACHE.put(cacheKey, result);
         return result;
     }
     
@@ -60,18 +58,15 @@ public final class ProxyDataSourceUtil {
         HikariConfig result = new HikariConfig();
         DatabaseEnvironment databaseEnvironment = IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().get(databaseType);
         result.setDriverClassName(databaseEnvironment.getDriverClassName());
-        result.setJdbcUrl(getURL(databaseType, dataSourceName));
+        result.setJdbcUrl(getURL(dataSourceName, databaseType));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        if ("Oracle".equals(databaseType.getName())) {
-            result.setConnectionInitSql("ALTER SESSION SET CURRENT_SCHEMA = " + dataSourceName);
-        }
         return new HikariDataSource(result);
     }
     
-    private static String getURL(final DatabaseType databaseType, final String dataSourceName) {
+    private static String getURL(final String dataSourceName, final DatabaseType databaseType) {
         switch (databaseType.getName()) {
             case "MySQL":
                 return String.format("jdbc:mysql://127.0.0.1:33070/%s?serverTimezone=UTC&useSSL=false&useLocalSessionState=true", dataSourceName);
@@ -80,14 +75,5 @@ public final class ProxyDataSourceUtil {
             default:
                 throw new UnsupportedOperationException(databaseType.getName());
         }
-    }
-    
-    @RequiredArgsConstructor
-    @EqualsAndHashCode
-    private static class DataSourceCacheKey {
-        
-        private final DatabaseType databaseType;
-        
-        private final String dataSourceName;
     }
 }
