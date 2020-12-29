@@ -20,25 +20,24 @@ package org.apache.shardingsphere.test.integration.engine;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCase;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseContext;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -64,27 +63,27 @@ public abstract class BatchIT extends BaseIT {
     
     private static DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    private final IntegrateTestCase integrateTestCase;
+    private final IntegrateTestCaseContext testCaseContext;
     
     private final String sql;
     
-    private final Collection<String> expectedDataFiles;
+    private final Collection<DataSet> dataSets;
     
-    protected BatchIT(final IntegrateTestCase integrateTestCase, 
+    protected BatchIT(final IntegrateTestCaseContext testCaseContext, 
                       final String ruleType, final DatabaseType databaseType, final String sql) throws IOException, JAXBException, SQLException {
         super(ruleType, databaseType);
-        this.integrateTestCase = integrateTestCase;
+        this.testCaseContext = testCaseContext;
         this.sql = sql;
-        expectedDataFiles = new LinkedList<>();
-        for (IntegrateTestCaseAssertion each : integrateTestCase.getIntegrateTestCaseAssertions()) {
-            expectedDataFiles.add(getExpectedDataFile(integrateTestCase.getPath(), ruleType, databaseType, each.getExpectedDataFile()));
+        dataSets = new LinkedList<>();
+        for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getIntegrateTestCaseAssertions()) {
+            dataSets.add(DataSetLoader.load(testCaseContext.getParentPath(), ruleType, databaseType, each.getExpectedDataFile()));
         }
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(ruleType), getDataSourceMap());
     }
     
     @BeforeClass
     public static void initDatabasesAndTables() {
-        createDatabasesAndTables();
+        setUpDatabasesAndTables();
     }
     
     @AfterClass
@@ -102,15 +101,14 @@ public abstract class BatchIT extends BaseIT {
         dataSetEnvironmentManager.clear();
     }
     
-    protected final void assertDataSet(final int[] actualUpdateCounts) throws SQLException, IOException, JAXBException {
+    protected final void assertDataSet(final int[] actualUpdateCounts) throws SQLException {
         Collection<DataSet> expectedList = new LinkedList<>();
-        assertThat(actualUpdateCounts.length, is(expectedDataFiles.size()));
+        assertThat(actualUpdateCounts.length, is(dataSets.size()));
         int count = 0;
-        for (String each : expectedDataFiles) {
-            try (FileReader reader = new FileReader(each)) {
-                DataSet expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
-                assertThat(actualUpdateCounts[count], is(expected.getUpdateCount()));
-                expectedList.add(expected);
+        for (DataSet each : dataSets) {
+            try {
+                assertThat(actualUpdateCounts[count], is(each.getUpdateCount()));
+                expectedList.add(each);
             } catch (final AssertionError ex) {
                 log.error("[ERROR] SQL::{}, Expect::{}", sql, each);
                 throw ex;

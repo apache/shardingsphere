@@ -237,7 +237,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             }
             
             @Override
-            protected Integer getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) {
+            protected Integer getSaneResult(final SQLStatement sqlStatement) {
                 return 0;
             }
         };
@@ -341,7 +341,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             }
             
             @Override
-            protected Boolean getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) {
+            protected Boolean getSaneResult(final SQLStatement sqlStatement) {
                 return sqlStatement instanceof SelectStatement;
             }
         };

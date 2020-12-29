@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.infra.optimize.schema;
 
-import org.apache.calcite.schema.Schema;
+import lombok.Getter;
+import org.apache.calcite.schema.Table;
+import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
@@ -35,27 +36,28 @@ import java.util.Map.Entry;
 
 
 /**
- * Calcite schema factory.
+ * Calcite schema.
  *
  */
-public final class CalciteSchemaFactory {
+@Getter
+public final class CalciteLogicSchema extends AbstractSchema {
     
-    private final Map<String, Schema> schemas = new LinkedMap<>();
+    private final String name;
     
-    public CalciteSchemaFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
-        for (Entry<String, ShardingSphereMetaData> each : metaDataMap.entrySet()) {
-            try {
-                schemas.put(each.getKey(), createCalciteSchema(each.getValue()));
-            } catch (final SQLException ex) {
-                throw new ShardingSphereException(ex);
-            }
-        }
+    private final Map<String, Table> tables = new LinkedMap<>();
+
+    public CalciteLogicSchema(final ShardingSphereMetaData metaData) throws SQLException {
+        name = metaData.getName();
+        initTables(metaData);
     }
     
-    private CalciteSchema createCalciteSchema(final ShardingSphereMetaData metaData) throws SQLException {
+    private void initTables(final ShardingSphereMetaData metaData) throws SQLException {
         Collection<DataNodeContainedRule> dataNodeRules = getDataNodeContainedRules(metaData);
-        return new CalciteSchema(metaData.getResource().getDataSources(), getDataSourceRules(metaData),
-                getTableDataNodes(dataNodeRules), metaData.getResource().getDatabaseType());
+        Map<String, Collection<DataNode>> tableDataNodes = getTableDataNodes(dataNodeRules);
+        Map<String, Collection<String>> dataSourceRules = getDataSourceRules(metaData);
+        for (Entry<String, Collection<DataNode>> entry : tableDataNodes.entrySet()) {
+            tables.put(entry.getKey(), new CalciteFilterableTable(metaData.getResource().getDataSources(), dataSourceRules, entry.getValue(), metaData.getResource().getDatabaseType()));
+        }
     }
     
     private Collection<DataNodeContainedRule> getDataNodeContainedRules(final ShardingSphereMetaData metaData) {
@@ -86,16 +88,8 @@ public final class CalciteSchemaFactory {
         return result;
     }
     
-    /**
-     * Create schema.
-     *
-     * @param name name
-     * @return schema
-     */
-    public Schema create(final String name) {
-        if (!schemas.containsKey(name)) {
-            throw new ShardingSphereException("No `%s` schema.", name);
-        }
-        return schemas.get(name);
+    @Override
+    protected Map<String, Table> getTableMap() {
+        return tables;
     }
 }

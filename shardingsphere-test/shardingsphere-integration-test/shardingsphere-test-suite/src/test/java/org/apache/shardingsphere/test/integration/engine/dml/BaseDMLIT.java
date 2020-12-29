@@ -17,35 +17,32 @@
 
 package org.apache.shardingsphere.test.integration.engine.dml;
 
-import java.sql.Statement;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
-import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleIT;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -59,15 +56,15 @@ public abstract class BaseDMLIT extends SingleIT {
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    protected BaseDMLIT(final String path, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
+    protected BaseDMLIT(final String parentPath, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
                         final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(path, assertion, ruleType, databaseType, caseType, sql);
+        super(parentPath, assertion, ruleType, databaseType, caseType, sql);
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getRuleType()), getDataSourceMap());
     }
     
     @BeforeClass
     public static void initDatabasesAndTables() {
-        createDatabasesAndTables();
+        setUpDatabasesAndTables();
     }
     
     @AfterClass
@@ -85,15 +82,11 @@ public abstract class BaseDMLIT extends SingleIT {
         dataSetEnvironmentManager.clear();
     }
     
-    protected final void assertDataSet(final int actualUpdateCount) throws SQLException, IOException, JAXBException {
-        DataSet expected;
-        try (FileReader reader = new FileReader(getExpectedDataFile())) {
-            expected = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
-        }
+    protected final void assertDataSet(final int actualUpdateCount) throws SQLException {
         try {
-            assertThat("Only support single table for DML.", expected.getMetadataList().size(), is(1));
-            assertThat(actualUpdateCount, is(expected.getUpdateCount()));
-            DataSetMetadata expectedDataSetMetadata = expected.getMetadataList().get(0);
+            assertThat("Only support single table for DML.", getDataSet().getMetadataList().size(), is(1));
+            assertThat(actualUpdateCount, is(getDataSet().getUpdateCount()));
+            DataSetMetadata expectedDataSetMetadata = getDataSet().getMetadataList().get(0);
             for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
                 DataNode dataNode = new DataNode(each);
                 String sql;
@@ -107,11 +100,11 @@ public abstract class BaseDMLIT extends SingleIT {
                 }
                 try (Connection connection = getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
                      PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                    assertDataSet(preparedStatement, expected.findRows(dataNode), expectedDataSetMetadata);
+                    assertDataSet(preparedStatement, getDataSet().findRows(dataNode), expectedDataSetMetadata);
                 }
             }
         } catch (final AssertionError ex) {
-            log.error("[ERROR] SQL::{}, Parameter::{}, Expect::{}", getOriginalSQL(), getAssertion().getParameters(), getAssertion().getExpectedDataFile());
+            log.error("[ERROR] SQL::{}, Parameter::{}, Expect::{}", getCaseIdentifier(), getAssertion().getParameters(), getAssertion().getExpectedDataFile());
             throw ex;
         }
     }

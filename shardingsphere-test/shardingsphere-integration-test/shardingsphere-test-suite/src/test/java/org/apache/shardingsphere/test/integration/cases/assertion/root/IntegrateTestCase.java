@@ -29,6 +29,7 @@ import java.util.List;
  * JAXB definition of integrate test case.
  */
 @Getter
+@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class IntegrateTestCase {
     
@@ -37,9 +38,6 @@ public abstract class IntegrateTestCase {
     
     @XmlAttribute(name = "db-types")
     private String dbTypes;
-    
-    @Setter
-    private String path;
     
     /**
      * Get integrate test case assertions.

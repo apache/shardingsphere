@@ -17,59 +17,62 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.mysql;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.JDBCSaneQueryResultEngine;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.SaneQueryResultEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandler;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandlerFactory;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOtherStatement;
 
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Sane query result engine for MySQL.
  */
-public final class MySQLSaneQueryResultEngine implements JDBCSaneQueryResultEngine {
+public final class MySQLSaneQueryResultEngine implements SaneQueryResultEngine {
     
     @Override
-    public Optional<QueryResult> getSaneQueryResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit, final DatabaseType targetDatabaseType) throws SQLException {
-        Optional<String> saneSQL = getSaneSQL(sqlStatement, getDialectQuoteCharacter(targetDatabaseType));
-        return saneSQL.isPresent() ? Optional.of(new JDBCMemoryQueryResult(jdbcExecutionUnit.getStorageResource().executeQuery(saneSQL.get()))) : Optional.empty();
-    }
-    
-    private QuoteCharacter getDialectQuoteCharacter(final DatabaseType targetDatabaseType) {
-        Optional<DatabaseMetaDataDialectHandler> databaseMetaDataDialectHandler = DatabaseMetaDataDialectHandlerFactory.findHandler(targetDatabaseType);
-        return databaseMetaDataDialectHandler.isPresent() ? databaseMetaDataDialectHandler.get().getQuoteCharacter() : QuoteCharacter.NONE;
-    }
-    
-    private Optional<String> getSaneSQL(final SQLStatement sqlStatement, final QuoteCharacter quoteCharacter) {
+    public Optional<QueryResult> getSaneQueryResult(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
-            return Optional.of(getSaneSQL((SelectStatement) sqlStatement, quoteCharacter));
-        } else if (sqlStatement instanceof MySQLShowOtherStatement) {
-            return Optional.of("SELECT 1");
+            return Optional.of(createQueryResult((SelectStatement) sqlStatement));
+        }
+        if (sqlStatement instanceof MySQLShowOtherStatement) {
+            return Optional.of(createQueryResult((MySQLShowOtherStatement) sqlStatement));
         }
         return Optional.empty();
     }
     
-    private String getSaneSQL(final SelectStatement selectStatement, final QuoteCharacter quoteCharacter) {
-        Collection<String> saneProjections = new LinkedList<>();
-        for (ProjectionSegment each : selectStatement.getProjections().getProjections()) {
+    private QueryResult createQueryResult(final SelectStatement sqlStatement) {
+        List<RawQueryResultColumnMetaData> queryResultColumnMetaDataList = new ArrayList<>(sqlStatement.getProjections().getProjections().size());
+        List<Object> data = new ArrayList<>(sqlStatement.getProjections().getProjections().size());
+        for (ProjectionSegment each : sqlStatement.getProjections().getProjections()) {
             if (each instanceof ExpressionProjectionSegment) {
+                String text = ((ExpressionProjectionSegment) each).getText();
                 String alias = ((ExpressionProjectionSegment) each).getAlias().orElse(((ExpressionProjectionSegment) each).getText());
-                saneProjections.add(String.format("'%s' AS %s", MySQLDefaultVariable.containsVariable(alias) ? MySQLDefaultVariable.getVariable(alias) : "1", quoteCharacter.wrap(alias)));
+                queryResultColumnMetaDataList.add(createRawQueryResultColumnMetaData(text, alias));
+                data.add(MySQLDefaultVariable.containsVariable(alias) ? MySQLDefaultVariable.getVariable(alias) : "1");
             }
         }
-        return String.format("SELECT %s", String.join(", ", saneProjections));
+        return new RawMemoryQueryResult(new RawQueryResultMetaData(queryResultColumnMetaDataList), Collections.singletonList(new MemoryQueryResultDataRow(data)));
+    }
+    
+    private QueryResult createQueryResult(final MySQLShowOtherStatement sqlStatement) {
+        RawQueryResultColumnMetaData queryResultColumnMetaData = createRawQueryResultColumnMetaData("", "");
+        MemoryQueryResultDataRow resultDataRow = new MemoryQueryResultDataRow(Collections.singletonList("1"));
+        return new RawMemoryQueryResult(new RawQueryResultMetaData(Collections.singletonList(queryResultColumnMetaData)), Collections.singletonList(resultDataRow));
+    }
+    
+    private RawQueryResultColumnMetaData createRawQueryResultColumnMetaData(final String name, final String label) {
+        return new RawQueryResultColumnMetaData("", name, label, Types.VARCHAR, "VARCHAR", 255, 0);
     }
     
     @Override

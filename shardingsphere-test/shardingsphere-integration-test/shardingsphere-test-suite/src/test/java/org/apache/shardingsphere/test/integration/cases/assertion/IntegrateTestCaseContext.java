@@ -15,35 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.fixture;
+package org.apache.shardingsphere.test.integration.cases.assertion;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-import java.lang.reflect.Field;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCase;
 
 /**
- * Reflective utility.
+ * Integrate test case context.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReflectiveUtil {
+@RequiredArgsConstructor
+@Getter
+public final class IntegrateTestCaseContext {
     
-    /**
-     * Get field.
-     * 
-     * @param target target
-     * @param fieldName field name
-     * @return field
-     */
-    private static Field getField(final Object target, final String fieldName) {
-        Class clazz = target.getClass();
-        while (clazz != null) {
-            try {
-                return clazz.getDeclaredField(fieldName);
-            } catch (final NoSuchFieldException ignored) {
-            }
-            clazz = clazz.getSuperclass();
-        }
-        return null;
-    }
+    private final IntegrateTestCase testCase;
+    
+    private final String parentPath;
 }

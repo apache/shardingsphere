@@ -39,7 +39,7 @@ public final class EnvironmentPath {
     private static final String AUTHORITY_RESOURCES_PATH = "integrate/env/%s/authority.xml";
     
     /**
-     * Get database environment resource File.
+     * Get database environment resource file.
      * 
      * @param ruleType rule type
      * @return database environment resource file
@@ -49,7 +49,7 @@ public final class EnvironmentPath {
     }
     
     /**
-     * Get data initialize resource File.
+     * Get data initialize resource file.
      *
      * @param ruleType rule type
      * @return data initialize resource file
@@ -59,7 +59,7 @@ public final class EnvironmentPath {
     }
     
     /**
-     * Get rule resource File.
+     * Get rule resource file.
      *
      * @param ruleType rule type
      * @return database environment resource file
@@ -75,7 +75,7 @@ public final class EnvironmentPath {
     }
     
     /**
-     * Get authority resource File.
+     * Get authority resource file.
      *
      * @param ruleType rule type
      * @return authority resource file

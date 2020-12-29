@@ -220,7 +220,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             
             @Override
-            protected Integer getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) {
+            protected Integer getSaneResult(final SQLStatement sqlStatement) {
                 return 0;
             }
         };
@@ -268,7 +268,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             
             @Override
-            protected Boolean getSaneResult(final SQLStatement sqlStatement, final JDBCExecutionUnit jdbcExecutionUnit) {
+            protected Boolean getSaneResult(final SQLStatement sqlStatement) {
                 return sqlStatement instanceof SelectStatement;
             }
         };
