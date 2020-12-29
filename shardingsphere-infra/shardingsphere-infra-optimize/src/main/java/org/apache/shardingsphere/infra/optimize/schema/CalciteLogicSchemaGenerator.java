@@ -91,7 +91,7 @@ public final class CalciteLogicSchemaGenerator {
      * @return schema
      * @exception SQLException sql exception
      */
-    public CalciteLogicSchema create(final CalciteInternalExecutor executor) throws SQLException {
+        public CalciteLogicSchema create(final CalciteInternalExecutor executor) throws SQLException {
         Map<String, Table> tables = new LinkedMap<>();
         for (Entry<String, CalciteLogicTableGenerator> entry : this.tables.entrySet()) {
             tables.put(entry.getKey(), entry.getValue().create(executor));

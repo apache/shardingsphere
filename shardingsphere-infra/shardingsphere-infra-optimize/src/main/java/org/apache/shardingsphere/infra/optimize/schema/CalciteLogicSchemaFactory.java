@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.optimize.schema;
 
-import org.apache.calcite.schema.Schema;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -54,7 +53,7 @@ public final class CalciteLogicSchemaFactory {
      * @return schema
      * @exception SQLException sql exception
      */
-    public Schema create(final String name, final CalciteInternalExecutor executor) throws SQLException {
+    public CalciteLogicSchema create(final String name, final CalciteInternalExecutor executor) throws SQLException {
         if (!schemas.containsKey(name)) {
             throw new ShardingSphereException("No `%s` schema.", name);
         }
