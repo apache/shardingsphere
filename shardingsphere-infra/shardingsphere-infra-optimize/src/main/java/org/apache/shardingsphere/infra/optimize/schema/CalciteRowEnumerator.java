@@ -32,7 +32,7 @@ import java.util.LinkedList;
  */
 public final class CalciteRowEnumerator implements Enumerator<Object[]> {
     
-    private final Collection<QueryResult> resultSets = new LinkedList<>();
+    private final Collection<QueryResult> queryResults = new LinkedList<>();
     
     private final Iterator<QueryResult> iterator;
     
@@ -40,9 +40,9 @@ public final class CalciteRowEnumerator implements Enumerator<Object[]> {
     
     private Object[] currentRow;
     
-    public CalciteRowEnumerator(final Collection<QueryResult> resultSets) {
-        this.resultSets.addAll(resultSets);
-        iterator = this.resultSets.iterator();
+    public CalciteRowEnumerator(final Collection<QueryResult> queryResults) {
+        this.queryResults.addAll(queryResults);
+        iterator = this.queryResults.iterator();
         currentResultSet = iterator.next();
     }
     
@@ -92,7 +92,7 @@ public final class CalciteRowEnumerator implements Enumerator<Object[]> {
     @Override
     public void close() {
         try {
-            for (QueryResult each : resultSets) {
+            for (QueryResult each : queryResults) {
                 each.close();
             }
             currentRow = null;

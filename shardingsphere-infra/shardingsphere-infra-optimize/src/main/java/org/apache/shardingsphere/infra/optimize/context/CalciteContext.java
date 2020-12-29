@@ -24,7 +24,6 @@ import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptTable.ViewExpander;
 import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.schema.Schema;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.validate.SqlValidator;
@@ -43,7 +42,7 @@ import java.util.Collections;
 @Getter
 public final class CalciteContext {
     
-    private final CalciteSchema rootSchema;
+    private final CalciteLogicSchema calciteLogicSchema;
     
     private final CalciteCatalogReader catalogReader;
     
@@ -54,9 +53,10 @@ public final class CalciteContext {
     private final SqlToRelConverter relConverter;
     
     public CalciteContext(final CalciteConnectionConfig config,
-                          final SqlParser.Config parserConfig, final RelDataTypeFactory typeFactory, final RelOptCluster cluster, final Schema calciteSchema) {
-        rootSchema = CalciteSchema.createRootSchema(true);
-        rootSchema.add(((CalciteLogicSchema) calciteSchema).getName(), calciteSchema);
+                          final SqlParser.Config parserConfig, final RelDataTypeFactory typeFactory, final RelOptCluster cluster, final CalciteLogicSchema calciteLogicSchema) {
+        this.calciteLogicSchema = calciteLogicSchema;
+        CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
+        rootSchema.add(calciteLogicSchema.getName(), calciteLogicSchema);
         catalogReader = new CalciteCatalogReader(rootSchema, Collections.singletonList(config.schema()), typeFactory, config);
         this.parserConfig = parserConfig;
         validator = SqlValidatorUtil.newValidator(SqlStdOperatorTable.instance(), catalogReader, typeFactory, SqlValidator.Config.DEFAULT
