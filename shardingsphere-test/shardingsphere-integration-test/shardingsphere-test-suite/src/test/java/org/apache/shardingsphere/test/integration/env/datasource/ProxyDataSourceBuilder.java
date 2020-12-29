@@ -31,28 +31,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Data source utility.
+ * Data source builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProxyDataSourceUtil {
+public final class ProxyDataSourceBuilder {
     
     private static final Map<DataSourceCacheKey, DataSource> CACHE = new HashMap<>();
     
     /**
-     * Create data source.
+     * Build proxy data source.
      *
+     * @param name data source name
      * @param databaseType database type
-     * @param dataSourceName data source name
-     * @return data source
+     * @return proxy data source
      */
-    public static DataSource createDataSource(final DatabaseType databaseType, final String dataSourceName) {
-        DataSourceCacheKey dataSourceCacheKey = new DataSourceCacheKey(databaseType, dataSourceName);
-        if (CACHE.containsKey(dataSourceCacheKey)) {
-            return CACHE.get(dataSourceCacheKey);
+    public static DataSource build(final String name, final DatabaseType databaseType) {
+        DataSourceCacheKey cacheKey = new DataSourceCacheKey(databaseType, name);
+        if (CACHE.containsKey(cacheKey)) {
+            return CACHE.get(cacheKey);
         }
         
-        DataSource result = createHikariCP(databaseType, dataSourceName);
-        CACHE.put(dataSourceCacheKey, result);
+        DataSource result = createHikariCP(databaseType, name);
+        CACHE.put(cacheKey, result);
         return result;
     }
     
@@ -65,9 +65,6 @@ public final class ProxyDataSourceUtil {
         result.setPassword("root");
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        if ("Oracle".equals(databaseType.getName())) {
-            result.setConnectionInitSql("ALTER SESSION SET CURRENT_SCHEMA = " + dataSourceName);
-        }
         return new HikariDataSource(result);
     }
     

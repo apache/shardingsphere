@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.DataSourceBuilder;
-import org.apache.shardingsphere.test.integration.env.datasource.ProxyDataSourceUtil;
+import org.apache.shardingsphere.test.integration.env.datasource.ProxyDataSourceBuilder;
 import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.After;
 import org.junit.runner.RunWith;
@@ -83,7 +83,7 @@ public abstract class BaseIT {
     }
     
     private DataSource createDataSource() throws SQLException, IOException {
-        return IntegrateTestEnvironment.getInstance().isProxyEnvironment() ? ProxyDataSourceUtil.createDataSource(databaseType, String.format("proxy_%s", ruleType)) 
+        return IntegrateTestEnvironment.getInstance().isProxyEnvironment() ? ProxyDataSourceBuilder.build(String.format("proxy_%s", ruleType), databaseType) 
                 : YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRuleResourceFile(ruleType)));
     }
     
