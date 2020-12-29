@@ -27,7 +27,7 @@
     </parent>
     <artifactId>shardingsphere-agent-metrics-api</artifactId>
     <name>${project.artifactId}</name>
-
+    
     <properties>
         <entrypoint.class>org.apache.shardingsphere.agent.metrics.api.definition.MetricsPluginDefinition</entrypoint.class>
     </properties>
@@ -40,7 +40,7 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
+    
     <build>
         <plugins>
             <plugin>
