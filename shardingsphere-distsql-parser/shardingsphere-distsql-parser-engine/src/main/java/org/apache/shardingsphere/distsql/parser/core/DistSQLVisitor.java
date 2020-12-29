@@ -21,6 +21,8 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementBaseVisi
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AddResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlgorithmPropertiesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlgorithmPropertyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterReplicaQueryRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterReplicaQueryRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
@@ -36,6 +38,7 @@ import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ReplicaQueryRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AlterReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
@@ -117,6 +120,36 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         result.setReplicaDatasources(replicaDatasources);
         result.setLoadBalancer(ctx.loadBalancer.getText());
         result.setProps(props);
+        return result;
+    }
+
+    @Override
+    public ASTNode visitAlterReplicaQueryRule(final AlterReplicaQueryRuleContext ctx) {
+        Collection<ReplicaQueryRuleSegment> replicaQueryRules = new LinkedList<>();
+        for (AlterReplicaQueryRuleDefinitionContext each : ctx.alterReplicaQueryRuleDefinition()) {
+            replicaQueryRules.add((ReplicaQueryRuleSegment) visit(each));
+        }
+        return new AlterReplicaQueryRuleStatement(replicaQueryRules);
+    }
+
+    @Override
+    public ASTNode visitAlterReplicaQueryRuleDefinition(final AlterReplicaQueryRuleDefinitionContext ctx) {
+        ReplicaQueryRuleSegment result = new ReplicaQueryRuleSegment();
+        Collection<String> replicaDatasources = new LinkedList<>();
+        for (SchemaNameContext each : ctx.schemaNames().schemaName()) {
+            replicaDatasources.add(each.getText());
+        }
+        result.setName(ctx.ruleName.getText());
+        result.setPrimaryDatasource(ctx.primary.getText());
+        result.setReplicaDatasources(replicaDatasources);
+        if (null != ctx.loadBalancer) {
+            Properties props = new Properties();
+            for (AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
+                props.setProperty(each.key.getText(), each.value.getText());
+            }
+            result.setLoadBalancer(ctx.loadBalancer.getText());
+            result.setProps(props);
+        }
         return result;
     }
 
