@@ -56,7 +56,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     }
     
     @Test
-    public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrency() throws JAXBException, IOException, SQLException, ParseException {
+    public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrency() throws SQLException, ParseException {
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrency(connection);
@@ -66,7 +66,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
         }
     }
     
-    private void assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrency(final Connection connection) throws SQLException, JAXBException, IOException, ParseException {
+    private void assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrency(final Connection connection) throws SQLException, ParseException {
         try (
                 Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                 ResultSet resultSet = statement.executeQuery(String.format(getSql(), assertion.getSQLValues().toArray()))) {
@@ -74,7 +74,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
         }
     }
     
-    private void assertExecuteQueryForPreparedStatementWithResultSetTypeAndResultSetConcurrency(final Connection connection) throws SQLException, ParseException, JAXBException, IOException {
+    private void assertExecuteQueryForPreparedStatementWithResultSetTypeAndResultSetConcurrency(final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSql(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
             for (SQLValue each : assertion.getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
@@ -86,7 +86,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     }
     
     @Test
-    public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws JAXBException, IOException, SQLException, ParseException {
+    public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException, ParseException {
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(connection);
@@ -97,7 +97,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     }
     
     private void assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(final Connection connection)
-            throws SQLException, JAXBException, IOException, ParseException {
+            throws SQLException, ParseException {
         try (
                 Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
                 ResultSet resultSet = statement.executeQuery(String.format(getSql(), assertion.getSQLValues().toArray()))) {
@@ -106,7 +106,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     }
     
     private void assertExecuteQueryForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(final Connection connection)
-            throws SQLException, ParseException, JAXBException, IOException {
+            throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSql(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
             for (SQLValue each : assertion.getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
@@ -118,7 +118,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     }
     
     @Test
-    public void assertExecuteWithResultSetTypeAndResultSetConcurrency() throws JAXBException, IOException, SQLException, ParseException {
+    public void assertExecuteWithResultSetTypeAndResultSetConcurrency() throws SQLException, ParseException {
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 assertExecuteForStatementWithResultSetTypeAndResultSetConcurrency(connection);
@@ -128,7 +128,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
         }
     }
     
-    private void assertExecuteForStatementWithResultSetTypeAndResultSetConcurrency(final Connection connection) throws SQLException, JAXBException, IOException, ParseException {
+    private void assertExecuteForStatementWithResultSetTypeAndResultSetConcurrency(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
             assertTrue("Not a DQL statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
             try (ResultSet resultSet = statement.getResultSet()) {
@@ -137,7 +137,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
         }
     }
     
-    private void assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrency(final Connection connection) throws SQLException, ParseException, JAXBException, IOException {
+    private void assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrency(final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSql(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
             for (SQLValue each : assertion.getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
@@ -150,7 +150,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     }
     
     @Test
-    public void assertExecuteWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws JAXBException, IOException, SQLException, ParseException {
+    public void assertExecuteWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException, ParseException {
         try (Connection connection = getDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 assertExecuteForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(connection);
@@ -160,8 +160,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
         }
     }
     
-    private void assertExecuteForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(final Connection connection)
-            throws SQLException, JAXBException, IOException, ParseException {
+    private void assertExecuteForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
             assertTrue("Not a DQL statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
             try (ResultSet resultSet = statement.getResultSet()) {
@@ -170,8 +169,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
         }
     }
     
-    private void assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(final Connection connection)
-            throws SQLException, ParseException, JAXBException, IOException {
+    private void assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSql(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
             for (SQLValue each : assertion.getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());

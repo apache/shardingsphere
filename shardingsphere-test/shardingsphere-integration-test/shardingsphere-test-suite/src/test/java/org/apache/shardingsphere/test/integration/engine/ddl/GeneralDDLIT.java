@@ -48,15 +48,15 @@ public final class GeneralDDLIT extends BaseDDLIT {
     
     @Test
     public void assertExecuteUpdate() throws SQLException {
-        assertExecuteByType(true);
+        assertExecute(true);
     }
     
     @Test
     public void assertExecute() throws SQLException {
-        assertExecuteByType(false);
+        assertExecute(false);
     }
     
-    private void assertExecuteByType(final boolean isExecuteUpdate) throws SQLException {
+    private void assertExecute(final boolean isExecuteUpdate) throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             dropTableIfExisted(connection);
             if (!Strings.isNullOrEmpty(((DDLIntegrateTestCaseAssertion) getAssertion()).getInitSQL())) {
