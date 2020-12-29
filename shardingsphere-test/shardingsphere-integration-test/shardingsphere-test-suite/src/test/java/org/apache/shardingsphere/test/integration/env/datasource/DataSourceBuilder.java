@@ -24,84 +24,86 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 
 import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
- * Data source utility.
+ * Data source builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceUtil {
+public final class DataSourceBuilder {
     
     private static final DataSourcePoolType DATA_SOURCE_POOL_TYPE = DataSourcePoolType.HikariCP;
     
     private static final Map<DataSourceCacheKey, DataSource> CACHE = new HashMap<>();
     
     /**
-     * Create data source.
+     * Build data source.
      *
-     * @param dataSourceName data source name
+     * @param name data source name
      * @param databaseType database type
      * @return data source
      */
-    public static DataSource createDataSource(final String dataSourceName, final DatabaseType databaseType) {
-        DataSourceCacheKey dataSourceCacheKey = new DataSourceCacheKey(dataSourceName, databaseType);
-        if (CACHE.containsKey(dataSourceCacheKey)) {
-            return CACHE.get(dataSourceCacheKey);
+    public static DataSource build(final String name, final DatabaseType databaseType) {
+        DataSourceCacheKey cacheKey = new DataSourceCacheKey(name, databaseType);
+        if (CACHE.containsKey(cacheKey)) {
+            return CACHE.get(cacheKey);
         }
-        DataSource result;
-        switch (DATA_SOURCE_POOL_TYPE) {
-            case DBCP:
-                result = createDBCP(dataSourceName, databaseType);
-                break;
-            case HikariCP:
-                result = createHikariCP(dataSourceName, databaseType);
-                break;
-            default:
-                throw new UnsupportedOperationException(DATA_SOURCE_POOL_TYPE.name());
-        }
-        CACHE.put(dataSourceCacheKey, result);
+        DataSource result = createDataSource(name, databaseType);
+        CACHE.put(cacheKey, result);
         return result;
     }
     
-    private static DataSource createDBCP(final String dataSourceName, final DatabaseType databaseType) {
-        BasicDataSource result = new BasicDataSource();
+    private static DataSource createDataSource(final String name, final DatabaseType databaseType) {
         DatabaseEnvironment databaseEnvironment = IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().get(databaseType);
+        switch (DATA_SOURCE_POOL_TYPE) {
+            case DBCP:
+                return createDBCP(name, databaseType, databaseEnvironment);
+            case HikariCP:
+                return createHikariCP(name, databaseType, databaseEnvironment);
+            default:
+                throw new UnsupportedOperationException(DATA_SOURCE_POOL_TYPE.name());
+        }
+    }
+
+    private static DataSource createDBCP(final String dataSourceName, final DatabaseType databaseType, final DatabaseEnvironment databaseEnvironment) {
+        BasicDataSource result = new BasicDataSource();
         result.setDriverClassName(databaseEnvironment.getDriverClassName());
         result.setUrl(null == dataSourceName ? databaseEnvironment.getURL() : databaseEnvironment.getURL(dataSourceName));
         result.setUsername(databaseEnvironment.getUsername());
         result.setPassword(databaseEnvironment.getPassword());
         result.setMaxTotal(2);
-        if ("Oracle".equals(databaseType.getName())) {
-            result.setConnectionInitSqls(Collections.singleton("ALTER SESSION SET CURRENT_SCHEMA = " + dataSourceName));
-        }
-        if ("MySQL".equals(databaseType.getName())) {
-            result.setConnectionInitSqls(Collections.singleton("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))"));
-        }
+        getConnectionInitSQL(dataSourceName, databaseType).ifPresent(optional -> result.setConnectionInitSqls(Collections.singleton(optional)));
         return result;
     }
     
-    private static DataSource createHikariCP(final String dataSourceName, final DatabaseType databaseType) {
+    private static DataSource createHikariCP(final String dataSourceName, final DatabaseType databaseType, final DatabaseEnvironment databaseEnvironment) {
         HikariConfig result = new HikariConfig();
-        DatabaseEnvironment databaseEnvironment = IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().get(databaseType);
         result.setDriverClassName(databaseEnvironment.getDriverClassName());
         result.setJdbcUrl(null == dataSourceName ? databaseEnvironment.getURL() : databaseEnvironment.getURL(dataSourceName));
         result.setUsername(databaseEnvironment.getUsername());
         result.setPassword(databaseEnvironment.getPassword());
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        if ("Oracle".equals(databaseType.getName())) {
-            result.setConnectionInitSql("ALTER SESSION SET CURRENT_SCHEMA = " + dataSourceName);
-        }
-        if ("MySQL".equals(databaseType.getName())) {
-            result.setConnectionInitSql("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
-        }
+        getConnectionInitSQL(dataSourceName, databaseType).ifPresent(result::setConnectionInitSql);
         return new HikariDataSource(result);
+    }
+    
+    private static Optional<String> getConnectionInitSQL(final String dataSourceName, final DatabaseType databaseType) {
+        switch (databaseType.getName()) {
+            case "Oracle":
+                return Optional.of(String.format("ALTER SESSION SET CURRENT_SCHEMA = %s", dataSourceName));
+            case "MySQL":
+                return Optional.of("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
+            default:
+                return Optional.empty();
+        }
     }
     
     @RequiredArgsConstructor
