@@ -17,26 +17,17 @@
 
 package org.apache.shardingsphere.infra.optimize.schema;
 
-import com.google.common.base.Joiner;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.linq4j.AbstractEnumerable;
 import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ProjectableFilterableTable;
-import org.apache.commons.collections4.map.LinkedMap;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.optimize.execute.CalciteInternalExecutor;
 
-import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Calcite filterable Table.
@@ -44,15 +35,9 @@ import java.util.Map.Entry;
  */
 public final class CalciteFilterableTable extends AbstractCalciteTable implements ProjectableFilterableTable {
     
-    private final Map<DataNode, String> tableQuerySQLs = new LinkedMap<>();
-    
-    public CalciteFilterableTable(final Map<String, DataSource> dataSources, final Map<String, Collection<String>> dataSourceRules,
-                                  final Collection<DataNode> tableDataNodes, final DatabaseType databaseType) throws SQLException {
-        super(dataSources, dataSourceRules, tableDataNodes, databaseType);
-        String columns = Joiner.on(",").join(getTableMetaData().getColumns().keySet());
-        for (DataNode each : tableDataNodes) {
-            tableQuerySQLs.put(each, String.format("SELECT %s FROM %s", columns, each.getTableName()));
-        }
+    public CalciteFilterableTable(final TableMetaData tableMetaData, final RelProtoDataType relProtoDataType,
+                                  final CalciteInternalExecutor executor) {
+        super(tableMetaData, relProtoDataType, executor);
     }
     
     @Override
@@ -62,25 +47,8 @@ public final class CalciteFilterableTable extends AbstractCalciteTable implement
 
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new CalciteRowEnumerator(getResultSets());
+                return new CalciteRowEnumerator(getExecutor().execute());
             }
         };
-    }
-    
-    private Collection<ResultSet> getResultSets() {
-        Collection<ResultSet> resultSets = new LinkedList<>();
-        for (Entry<DataNode, String> entry : tableQuerySQLs.entrySet()) {
-            resultSets.add(getResultSet(entry));
-        }
-        return resultSets;
-    }
-    
-    private ResultSet getResultSet(final Entry<DataNode, String> tableSQL) {
-        try {
-            Statement statement = getActualDataSource(tableSQL.getKey().getDataSourceName()).getConnection().createStatement();
-            return statement.executeQuery(tableSQL.getValue());
-        } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 }

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.optimize.schema;
 
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -32,15 +32,15 @@ import java.util.LinkedList;
  */
 public final class CalciteRowEnumerator implements Enumerator<Object[]> {
     
-    private final Collection<ResultSet> resultSets = new LinkedList<>();
+    private final Collection<QueryResult> resultSets = new LinkedList<>();
     
-    private final Iterator<ResultSet> iterator;
+    private final Iterator<QueryResult> iterator;
     
-    private ResultSet currentResultSet;
+    private QueryResult currentResultSet;
     
     private Object[] currentRow;
     
-    public CalciteRowEnumerator(final Collection<ResultSet> resultSets) {
+    public CalciteRowEnumerator(final Collection<QueryResult> resultSets) {
         this.resultSets.addAll(resultSets);
         iterator = this.resultSets.iterator();
         currentResultSet = iterator.next();
@@ -81,7 +81,7 @@ public final class CalciteRowEnumerator implements Enumerator<Object[]> {
         int columnCount = currentResultSet.getMetaData().getColumnCount();
         currentRow = new Object[columnCount];
         for (int i = 0; i < columnCount; i++) {
-            currentRow[i] = currentResultSet.getObject(i + 1);
+            currentRow[i] = currentResultSet.getValue(i + 1, Object.class);
         }
     }
     
@@ -92,9 +92,7 @@ public final class CalciteRowEnumerator implements Enumerator<Object[]> {
     @Override
     public void close() {
         try {
-            for (ResultSet each : resultSets) {
-                each.getStatement().getConnection().close();
-                each.getStatement().close();
+            for (QueryResult each : resultSets) {
                 each.close();
             }
             currentRow = null;

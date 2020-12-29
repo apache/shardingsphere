@@ -21,6 +21,7 @@ import org.apache.calcite.schema.Schema;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.optimize.execute.CalciteInternalExecutor;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -33,12 +34,12 @@ import java.util.Map.Entry;
  */
 public final class CalciteLogicSchemaFactory {
     
-    private final Map<String, Schema> schemas = new LinkedMap<>();
+    private final Map<String, CalciteLogicSchemaGenerator> schemas = new LinkedMap<>();
     
     public CalciteLogicSchemaFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
         for (Entry<String, ShardingSphereMetaData> each : metaDataMap.entrySet()) {
             try {
-                schemas.put(each.getKey(), new CalciteLogicSchema(each.getValue()));
+                schemas.put(each.getKey(), new CalciteLogicSchemaGenerator(each.getValue()));
             } catch (final SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
@@ -49,12 +50,14 @@ public final class CalciteLogicSchemaFactory {
      * Create schema.
      *
      * @param name name
+     * @param executor executor
      * @return schema
+     * @exception SQLException sql exception
      */
-    public Schema create(final String name) {
+    public Schema create(final String name, final CalciteInternalExecutor executor) throws SQLException {
         if (!schemas.containsKey(name)) {
             throw new ShardingSphereException("No `%s` schema.", name);
         }
-        return schemas.get(name);
+        return schemas.get(name).create(executor);
     }
 }

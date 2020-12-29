@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.infra.optimize.execute;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
@@ -32,13 +34,12 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.List;
 
 /**
- * Calcite abstract executor.
+ * Calcite internal executor.
  */
 @RequiredArgsConstructor
-public final class CalciteAbstractExecutor {
+public final class CalciteInternalExecutor {
     
     // TODO Consider use emptyList
     private final Collection<ShardingSphereRule> rules;
@@ -49,9 +50,22 @@ public final class CalciteAbstractExecutor {
     
     private final JDBCExecutor jdbcExecutor;
     
-    private <T> List<T> execute(final ExecutionContext executionContext, final JDBCExecutorCallback<T> callback) throws SQLException {
-        Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups(executionContext);
-        return jdbcExecutor.execute(executionGroups, callback);
+    private final ExecutionContext executionContext;
+    
+    private final JDBCExecutorCallback<QueryResult> callback;
+    
+    /**
+     * Execute.
+     *
+     * @return a query result list
+     */
+    public Collection<QueryResult> execute() {
+        try {
+            Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups(executionContext);
+            return jdbcExecutor.execute(executionGroups, callback);
+        } catch (final SQLException ex) {
+            throw new ShardingSphereException(ex);
+        }
     }
     
     private Collection<ExecutionGroup<JDBCExecutionUnit>> createExecutionGroups(final ExecutionContext executionContext) throws SQLException {

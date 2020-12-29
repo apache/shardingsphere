@@ -30,10 +30,13 @@ import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.parser.SqlParser.Config;
 import org.apache.calcite.sql.parser.impl.SqlParserImpl;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.optimize.execute.CalciteInternalExecutor;
 import org.apache.shardingsphere.infra.optimize.plan.PlannerInitializer;
 import org.apache.shardingsphere.infra.optimize.schema.CalciteLogicSchemaFactory;
 
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
 
@@ -82,9 +85,14 @@ public final class CalciteContextFactory {
      * Create.
      *
      * @param schema schema
+     * @param executor executor
      * @return calcite context
      */
-    public CalciteContext create(final String schema) {
-        return new CalciteContext(connectionConfig, parserConfig, typeFactory, cluster, factory.create(schema));
+    public CalciteContext create(final String schema, final CalciteInternalExecutor executor) {
+        try {
+            return new CalciteContext(connectionConfig, parserConfig, typeFactory, cluster, factory.create(schema, executor));
+        } catch (final SQLException ex) {
+            throw new ShardingSphereException(ex);
+        }
     }
 }

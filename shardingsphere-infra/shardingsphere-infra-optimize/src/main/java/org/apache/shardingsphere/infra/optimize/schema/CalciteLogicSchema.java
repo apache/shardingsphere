@@ -21,22 +21,12 @@ import lombok.Getter;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.commons.collections4.map.LinkedMap;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
 
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 
 
 /**
- * Calcite schema.
+ * Calcite logic schema.
  *
  */
 @Getter
@@ -46,46 +36,9 @@ public final class CalciteLogicSchema extends AbstractSchema {
     
     private final Map<String, Table> tables = new LinkedMap<>();
 
-    public CalciteLogicSchema(final ShardingSphereMetaData metaData) throws SQLException {
-        name = metaData.getName();
-        initTables(metaData);
-    }
-    
-    private void initTables(final ShardingSphereMetaData metaData) throws SQLException {
-        Collection<DataNodeContainedRule> dataNodeRules = getDataNodeContainedRules(metaData);
-        Map<String, Collection<DataNode>> tableDataNodes = getTableDataNodes(dataNodeRules);
-        Map<String, Collection<String>> dataSourceRules = getDataSourceRules(metaData);
-        for (Entry<String, Collection<DataNode>> entry : tableDataNodes.entrySet()) {
-            tables.put(entry.getKey(), new CalciteFilterableTable(metaData.getResource().getDataSources(), dataSourceRules, entry.getValue(), metaData.getResource().getDatabaseType()));
-        }
-    }
-    
-    private Collection<DataNodeContainedRule> getDataNodeContainedRules(final ShardingSphereMetaData metaData) {
-        Collection<DataNodeContainedRule> result = new LinkedList<>();
-        for (ShardingSphereRule each : metaData.getRuleMetaData().getRules()) {
-            if (each instanceof DataNodeContainedRule) {
-                result.add((DataNodeContainedRule) each);
-            }
-        }
-        return result;
-    }
-    
-    private Map<String, Collection<String>> getDataSourceRules(final ShardingSphereMetaData metaData) {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
-        for (ShardingSphereRule each : metaData.getRuleMetaData().getRules()) {
-            if (each instanceof DataSourceContainedRule) {
-                result.putAll(((DataSourceContainedRule) each).getDataSourceMapper());
-            }
-        }
-        return result;
-    }
-    
-    private Map<String, Collection<DataNode>> getTableDataNodes(final Collection<DataNodeContainedRule> dataNodeRules) {
-        Map<String, Collection<DataNode>> result = new LinkedHashMap<>();
-        for (DataNodeContainedRule each : dataNodeRules) {
-            result.putAll(each.getAllDataNodes());
-        }
-        return result;
+    public CalciteLogicSchema(final String name, final Map<String, Table> tables) {
+        this.name = name;
+        this.tables.putAll(tables);
     }
     
     @Override
