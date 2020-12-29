@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job;
+package org.apache.shardingsphere.scaling.core.job.task.inventory;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
-import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskGroupProgress;
-
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.shardingsphere.scaling.core.job.TaskProgress;
 
 /**
- * Job progress.
+ * Inventory task group progress.
  */
 @Getter
 @RequiredArgsConstructor
-public final class JobProgress {
+public final class InventoryTaskGroupProgress implements TaskProgress {
     
-    private final long id;
+    private final String shardingItem;
     
-    private final String status;
+    private final int total;
     
-    private final List<InventoryTaskGroupProgress> inventoryTaskProgress = new LinkedList<>();
-    
-    private final List<IncrementalTaskProgress> incrementalTaskProgress = new LinkedList<>();
+    private final int finished;
 }

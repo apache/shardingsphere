@@ -30,6 +30,7 @@ import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.TaskProgress;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionGroup;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskGroupProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
 import org.apache.shardingsphere.scaling.core.service.AbstractScalingJobService;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
@@ -98,25 +99,25 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
         JobProgress result = new JobProgress(jobId, running ? "RUNNING" : "STOPPED");
         List<String> shardingItems = REGISTRY_REPOSITORY.getChildrenKeys(ScalingTaskUtil.getScalingListenerPath(jobId, ScalingConstant.POSITION));
         for (String each : shardingItems) {
-            result.getInventoryTaskProgress().put(each, getInventoryTaskProgress(jobId, each));
-            result.getIncrementalTaskProgress().put(each, getIncrementalTaskProgress(jobId, each));
+            result.getInventoryTaskProgress().add(getInventoryTaskProgress(jobId, each));
+            result.getIncrementalTaskProgress().addAll(getIncrementalTaskProgress(jobId, each));
         }
         return result;
     }
     
-    private List<TaskProgress> getInventoryTaskProgress(final long jobId, final String shardingItem) {
+    private InventoryTaskGroupProgress getInventoryTaskProgress(final long jobId, final String shardingItem) {
         InventoryPositionGroup inventoryPositionGroup = InventoryPositionGroup.fromJson(
                 REGISTRY_REPOSITORY.get(ScalingTaskUtil.getScalingListenerPath(jobId, ScalingConstant.POSITION, shardingItem, ScalingConstant.INVENTORY)));
-        List<TaskProgress> result = inventoryPositionGroup.getUnfinished().keySet().stream().map(each -> new InventoryTaskProgress(each, false)).collect(Collectors.toList());
-        result.addAll(inventoryPositionGroup.getFinished().stream().map(each -> new InventoryTaskProgress(each, true)).collect(Collectors.toList()));
-        return result;
+        List<TaskProgress> unfinished = inventoryPositionGroup.getUnfinished().keySet().stream().map(each -> new InventoryTaskProgress(each, false)).collect(Collectors.toList());
+        List<TaskProgress> finished = inventoryPositionGroup.getFinished().stream().map(each -> new InventoryTaskProgress(each, true)).collect(Collectors.toList());
+        return new InventoryTaskGroupProgress(shardingItem, unfinished.size() + finished.size(), finished.size());
     }
     
-    private List<TaskProgress> getIncrementalTaskProgress(final long jobId, final String shardingItem) {
+    private List<IncrementalTaskProgress> getIncrementalTaskProgress(final long jobId, final String shardingItem) {
         String position = REGISTRY_REPOSITORY.get(ScalingTaskUtil.getScalingListenerPath(jobId, ScalingConstant.POSITION, shardingItem, ScalingConstant.INCREMENTAL));
         JsonObject jsonObject = GSON.fromJson(position, JsonObject.class);
         return jsonObject.entrySet().stream()
-                .map(entry -> new IncrementalTaskProgress(entry.getKey(), entry.getValue().getAsJsonObject().get(ScalingConstant.DELAY).getAsLong(), null))
+                .map(entry -> new IncrementalTaskProgress(entry.getKey(), shardingItem, entry.getValue().getAsJsonObject().get(ScalingConstant.DELAY).getAsLong(), null))
                 .collect(Collectors.toList());
     }
     

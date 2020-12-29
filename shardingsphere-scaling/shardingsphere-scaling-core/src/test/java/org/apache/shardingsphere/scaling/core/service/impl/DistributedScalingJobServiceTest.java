@@ -29,8 +29,6 @@ import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
-import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
-import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 import org.apache.shardingsphere.scaling.core.service.ScalingCallback;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
@@ -120,13 +118,11 @@ public final class DistributedScalingJobServiceTest {
         registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/position/1/incremental"),
                 "{'ds2':{'filename':binlog1,'position':4,'delay':2},'ds4':{'filename':binlog2,'position':4,'delay':4}}");
         JobProgress actual = scalingJobService.getProgress(1);
-        assertThat(actual.getInventoryTaskProgress().get("0").stream()
-                .map(each -> (InventoryTaskProgress) each)
-                .filter(InventoryTaskProgress::isFinished).count(), is(2L));
-        assertTrue(actual.getIncrementalTaskProgress().get("1").stream()
-                .map(each -> (IncrementalTaskProgress) each)
-                .filter(each -> "ds2".equals(each.getId()))
-                .allMatch(each -> 2 == each.getDelayMillisecond()));
+        assertThat(actual.getInventoryTaskProgress().size(), is(2));
+        assertThat(actual.getIncrementalTaskProgress().size(), is(4));
+        assertThat(actual.getInventoryTaskProgress().get(0).getTotal(), is(5));
+        assertThat(actual.getInventoryTaskProgress().get(0).getFinished(), is(2));
+        assertThat(actual.getIncrementalTaskProgress().get(0).getDelayMillisecond(), is(1L));
     }
     
     @Test

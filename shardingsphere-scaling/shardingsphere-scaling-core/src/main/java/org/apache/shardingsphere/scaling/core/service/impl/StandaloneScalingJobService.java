@@ -22,11 +22,14 @@ import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundExcept
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.preparer.ScalingJobPreparer;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskGroupProgress;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
 import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
 import org.apache.shardingsphere.scaling.core.schedule.ScalingTaskScheduler;
 import org.apache.shardingsphere.scaling.core.service.AbstractScalingJobService;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -81,10 +84,15 @@ public final class StandaloneScalingJobService extends AbstractScalingJobService
     public JobProgress getProgress(final long jobId) {
         JobProgress result = new JobProgress(jobId, getJob(jobId).getStatus());
         if (scalingTaskSchedulerMap.containsKey(jobId)) {
-            result.getInventoryTaskProgress().put("0", scalingTaskSchedulerMap.get(jobId).getInventoryTaskProgress());
-            result.getIncrementalTaskProgress().put("0", scalingTaskSchedulerMap.get(jobId).getIncrementalTaskProgress());
+            result.getInventoryTaskProgress().add(getInventoryTaskProgress(jobId));
+            result.getIncrementalTaskProgress().addAll(scalingTaskSchedulerMap.get(jobId).getIncrementalTaskProgress());
         }
         return result;
+    }
+    
+    private InventoryTaskGroupProgress getInventoryTaskProgress(final long jobId) {
+        Collection<InventoryTaskProgress> inventoryTaskProgress = scalingTaskSchedulerMap.get(jobId).getInventoryTaskProgress();
+        return new InventoryTaskGroupProgress("", inventoryTaskProgress.size(), (int) inventoryTaskProgress.stream().filter(InventoryTaskProgress::isFinished).count());
     }
     
     @Override
