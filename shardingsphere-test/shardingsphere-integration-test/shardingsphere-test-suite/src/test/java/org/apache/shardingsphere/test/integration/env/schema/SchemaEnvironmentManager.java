@@ -65,12 +65,12 @@ public final class SchemaEnvironmentManager {
      * @throws SQLException SQL exception
      */
     public static void createDatabase(final String ruleType) throws IOException, JAXBException, SQLException {
-        SchemaEnvironment databaseInitialization = unmarshal(EnvironmentPath.getSchemaEnvironmentFile(ruleType));
+        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaEnvironmentFile(ruleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             DataSource dataSource = DataSourceBuilder.build(null, each);
             try (
                     Connection connection = dataSource.getConnection();
-                    StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateCreateDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
+                    StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateCreateDatabaseSQLs(each, schemaEnvironment.getDatabases())))) {
                 RunScript.execute(connection, stringReader);
             }
         }
@@ -84,13 +84,13 @@ public final class SchemaEnvironmentManager {
      * @throws JAXBException JAXB exception
      */
     public static void dropDatabase(final String ruleType) throws IOException, JAXBException {
-        SchemaEnvironment databaseInitialization = unmarshal(EnvironmentPath.getSchemaEnvironmentFile(ruleType));
+        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaEnvironmentFile(ruleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             DataSource dataSource = DataSourceBuilder.build(null, each);
             if ("PostgreSQL".equals(each.getName())) {
                 try (
                         Connection connection = dataSource.getConnection();
-                        StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateTerminateConnectionSQLs(databaseInitialization.getDatabases())))) {
+                        StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateTerminateConnectionSQLs(schemaEnvironment.getDatabases())))) {
                     RunScript.execute(connection, stringReader);
                 } catch (final SQLException ex) {
                     // TODO database maybe not exist
@@ -98,7 +98,7 @@ public final class SchemaEnvironmentManager {
             }
             try (
                     Connection connection = dataSource.getConnection();
-                    StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateDropDatabaseSQLs(each, databaseInitialization.getDatabases())))) {
+                    StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateDropDatabaseSQLs(each, schemaEnvironment.getDatabases())))) {
                 RunScript.execute(connection, stringReader);
             } catch (final SQLException ex) {
                 // TODO database maybe not exist

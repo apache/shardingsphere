@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.env.schema;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -30,19 +29,18 @@ import java.util.LinkedList;
  * XML definition of schema environment.
  */
 @Getter
-@Setter
 @XmlRootElement(name = "schema")
 public final class SchemaEnvironment {
     
     @XmlElementWrapper(name = "databases")
     @XmlElement(name = "database")
-    private Collection<String> databases = new LinkedList<>();
+    private final Collection<String> databases = new LinkedList<>();
     
     @XmlElementWrapper(name = "table-create")
     @XmlElement(name = "sql")
-    private Collection<String> tableCreateSQLs = new LinkedList<>();
+    private final Collection<String> tableCreateSQLs = new LinkedList<>();
     
     @XmlElementWrapper(name = "table-drop")
     @XmlElement(name = "sql")
-    private Collection<String> tableDropSQLs = new LinkedList<>();
+    private final Collection<String> tableDropSQLs = new LinkedList<>();
 }
