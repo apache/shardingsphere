@@ -93,34 +93,34 @@ public abstract class BaseIT {
         createTables();
     }
     
-    @SneakyThrows({JAXBException.class, IOException.class, SQLException.class})
+    @SneakyThrows({JAXBException.class, IOException.class})
     protected static void createDatabases() {
         for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
-            SchemaEnvironmentManager.dropDatabase(each);
+            SchemaEnvironmentManager.dropDatabases(each);
         }
         for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
-            SchemaEnvironmentManager.createDatabase(each);
+            SchemaEnvironmentManager.createDatabases(each);
         }
     }
     
-    @SneakyThrows({JAXBException.class, IOException.class, SQLException.class})
+    @SneakyThrows({JAXBException.class, IOException.class})
     protected static void createTables() {
         for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
-            SchemaEnvironmentManager.createTable(each);
+            SchemaEnvironmentManager.createTables(each);
         }
     }
     
     @SneakyThrows({JAXBException.class, IOException.class})
     protected static void dropDatabases() {
         for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
-            SchemaEnvironmentManager.dropDatabase(each);
+            SchemaEnvironmentManager.dropDatabases(each);
         }
     }
     
     @SneakyThrows({JAXBException.class, IOException.class})
     protected static void dropTables() {
         for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
-            SchemaEnvironmentManager.dropTable(each);
+            SchemaEnvironmentManager.dropTables(each);
         }
     }
     
