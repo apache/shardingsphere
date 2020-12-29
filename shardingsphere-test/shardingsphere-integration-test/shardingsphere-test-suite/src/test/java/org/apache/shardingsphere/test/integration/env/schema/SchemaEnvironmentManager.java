@@ -36,7 +36,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Schema environment manager.
@@ -68,10 +68,9 @@ public final class SchemaEnvironmentManager {
         SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaEnvironmentFile(ruleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             DataSource dataSource = JdbcDataSourceBuilder.build(null, each);
-            try (
-                    Connection connection = dataSource.getConnection();
-                    StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateCreateDatabaseSQLs(each, schemaEnvironment.getDatabases())))) {
-                RunScript.execute(connection, stringReader);
+            try (Connection connection = dataSource.getConnection();
+                 StringReader sql = new StringReader(Joiner.on(";\n").skipNulls().join(generateCreateDatabaseSQLs(each, schemaEnvironment.getDatabases())))) {
+                RunScript.execute(connection, sql);
             }
         }
     }
@@ -112,37 +111,25 @@ public final class SchemaEnvironmentManager {
         }
     }
     
-    private static Collection<String> generateCreateDatabaseSQLs(final DatabaseType databaseType, final Collection<String> databases) {
+    private static Collection<String> generateCreateDatabaseSQLs(final DatabaseType databaseType, final Collection<String> databaseNames) {
         if ("H2".equals(databaseType.getName())) {
             return Collections.emptyList();
         }
         String sql = "Oracle".equals(databaseType.getName()) ? "CREATE SCHEMA %s" : "CREATE DATABASE %s";
-        Collection<String> result = new LinkedList<>();
-        for (String each : databases) {
-            result.add(String.format(sql, each));
-        }
-        return result;
+        return databaseNames.stream().map(each -> String.format(sql, each)).collect(Collectors.toList());
     }
     
     private static Collection<String> generateTerminateConnectionSQLs(final Collection<String> databases) {
         String sql = "SELECT pg_terminate_backend (pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '%s'";
-        Collection<String> result = new LinkedList<>();
-        for (String each : databases) {
-            result.add(String.format(sql, each));
-        }
-        return result;
+        return databases.stream().map(each -> String.format(sql, each)).collect(Collectors.toList());
     }
     
-    private static Collection<String> generateDropDatabaseSQLs(final DatabaseType databaseType, final Collection<String> databases) {
+    private static Collection<String> generateDropDatabaseSQLs(final DatabaseType databaseType, final Collection<String> databaseNames) {
         if ("H2".equals(databaseType.getName())) {
             return Collections.emptyList();
         }
         String sql = "Oracle".equals(databaseType.getName()) ? "DROP SCHEMA %s" : "DROP DATABASE IF EXISTS %s";
-        Collection<String> result = new LinkedList<>();
-        for (String each : databases) {
-            result.add(String.format(sql, each));
-        }
-        return result;
+        return databaseNames.stream().map(each -> String.format(sql, each)).collect(Collectors.toList());
     }
     
     /**
