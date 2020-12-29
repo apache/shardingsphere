@@ -62,21 +62,21 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     @AfterClass
-    public static void destroyDatabasesAndTables() {
+    public static void destroyDatabases() {
         dropDatabases();
     }
     
     @Before
-    public void initTables() throws SQLException, ParseException, IOException, JAXBException {
+    public final void initTables() throws SQLException, ParseException, IOException, JAXBException {
         if ("H2".equals(getDatabaseType().getName())) {
             dropTables();
         }
         createTables();
-        new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(getRuleType()), getDataSourceMap()).initialize();
+        new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getRuleType()), getDataSourceMap()).initialize();
     }
     
     @After
-    public void destroyTables() {
+    public final void destroyTables() {
         dropTables();
     }
     

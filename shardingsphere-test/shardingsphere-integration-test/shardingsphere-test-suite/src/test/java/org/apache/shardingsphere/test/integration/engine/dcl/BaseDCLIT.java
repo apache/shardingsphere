@@ -51,7 +51,7 @@ public abstract class BaseDCLIT extends SingleIT {
                         final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, ruleType, databaseType, caseType, sql);
         authorityEnvironmentManager = new AuthorityEnvironmentManager(
-                EnvironmentPath.getAuthorityResourcesPath(ruleType), null == getDataSourceMap() ? null : createInstanceDataSourceMap(), getDatabaseType());
+                EnvironmentPath.getAuthorityFile(ruleType), null == getDataSourceMap() ? null : createInstanceDataSourceMap(), getDatabaseType());
     }
     
     private Map<String, DataSource> createInstanceDataSourceMap() throws SQLException {

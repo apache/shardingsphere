@@ -78,7 +78,7 @@ public abstract class BatchIT extends BaseIT {
         for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getIntegrateTestCaseAssertions()) {
             dataSets.add(DataSetLoader.load(testCaseContext.getParentPath(), ruleType, databaseType, each.getExpectedDataFile()));
         }
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(ruleType), getDataSourceMap());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(ruleType), getDataSourceMap());
     }
     
     @BeforeClass

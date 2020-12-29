@@ -84,7 +84,7 @@ public abstract class BaseIT {
     
     private DataSource createDataSource() throws SQLException, IOException {
         return IntegrateTestEnvironment.getInstance().isProxyEnvironment() ? ProxyDataSourceBuilder.build(String.format("proxy_%s", ruleType), databaseType) 
-                : YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRuleResourceFile(ruleType)));
+                : YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(ruleType)));
     }
     
     protected static void setUpDatabasesAndTables() {

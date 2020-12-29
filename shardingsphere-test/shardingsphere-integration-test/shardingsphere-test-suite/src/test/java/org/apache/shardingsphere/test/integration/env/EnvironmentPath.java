@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.env;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.io.File;
 import java.net.URL;
 
 import static org.junit.Assert.assertNotNull;
@@ -30,57 +31,59 @@ import static org.junit.Assert.assertNotNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EnvironmentPath {
     
-    private static final String SCHEMA_ENVIRONMENT_FILE = "integrate/env/%s/schema.xml";
+    private static final String ROOT_PATH = "integrate/env";
     
-    private static final String DATA_INITIALIZE_RESOURCES_PATH = "integrate/env/%s/dataset.xml";
+    private static final String SCHEMA_FILE = "schema.xml";
     
-    private static final String SHARDING_RULE_RESOURCES_PATH = "integrate/env/%s/sharding-rule.yaml";
+    private static final String DATASET_FILE = "dataset.xml";
     
-    private static final String AUTHORITY_RESOURCES_PATH = "integrate/env/%s/authority.xml";
+    private static final String RULES_CONFIG_FILE = "rules.yaml";
+    
+    private static final String AUTHORITY_FILE = "authority.xml";
     
     /**
-     * Get schema environment file.
+     * Get schema file.
      * 
      * @param ruleType rule type
-     * @return schema environment file
+     * @return schema file
      */
-    public static String getSchemaEnvironmentFile(final String ruleType) {
-        return getResourceFile(SCHEMA_ENVIRONMENT_FILE, ruleType);
+    public static String getSchemaFile(final String ruleType) {
+        return getFile(ruleType, SCHEMA_FILE);
     }
     
     /**
-     * Get data initialize resource file.
+     * Get data set file.
      *
      * @param ruleType rule type
-     * @return data initialize resource file
+     * @return data set file
      */
-    public static String getDataInitializeResourceFile(final String ruleType) {
-        return getResourceFile(DATA_INITIALIZE_RESOURCES_PATH, ruleType);
+    public static String getDataSetFile(final String ruleType) {
+        return getFile(ruleType, DATASET_FILE);
     }
     
     /**
-     * Get rule resource file.
+     * Get rules configuration file.
      *
      * @param ruleType rule type
-     * @return database environment resource file
+     * @return rules configuration file
      */
-    public static String getRuleResourceFile(final String ruleType) {
-        return getResourceFile(SHARDING_RULE_RESOURCES_PATH, ruleType);
-    }
-    
-    private static String getResourceFile(final String resourcePath, final String ruleType) {
-        URL resourceURL = EnvironmentPath.class.getClassLoader().getResource(String.format(resourcePath, ruleType));
-        assertNotNull(resourceURL);
-        return resourceURL.getFile();
+    public static String getRulesConfigurationFile(final String ruleType) {
+        return getFile(ruleType, RULES_CONFIG_FILE);
     }
     
     /**
-     * Get authority resource file.
+     * Get authority file.
      *
      * @param ruleType rule type
-     * @return authority resource file
+     * @return authority file
      */
-    public static String getAuthorityResourcesPath(final String ruleType) {
-        return getResourceFile(AUTHORITY_RESOURCES_PATH, ruleType);
+    public static String getAuthorityFile(final String ruleType) {
+        return getFile(ruleType, AUTHORITY_FILE);
+    }
+    
+    private static String getFile(final String ruleType, final String fileName) {
+        URL url = EnvironmentPath.class.getClassLoader().getResource(String.join(File.separator, ROOT_PATH, ruleType, fileName));
+        assertNotNull(url);
+        return url.getFile();
     }
 }

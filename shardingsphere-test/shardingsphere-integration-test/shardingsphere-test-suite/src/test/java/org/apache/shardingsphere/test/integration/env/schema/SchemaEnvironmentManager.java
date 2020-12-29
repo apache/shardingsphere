@@ -53,7 +53,7 @@ public final class SchemaEnvironmentManager {
      * @throws JAXBException JAXB exception
      */
     public static Collection<String> getDataSourceNames(final String ruleType) throws IOException, JAXBException {
-        return unmarshal(EnvironmentPath.getSchemaEnvironmentFile(ruleType)).getDatabases();
+        return unmarshal(EnvironmentPath.getSchemaFile(ruleType)).getDatabases();
     }
     
     private static SchemaEnvironment unmarshal(final String schemaEnvironmentConfigFile) throws IOException, JAXBException {
@@ -70,7 +70,7 @@ public final class SchemaEnvironmentManager {
      * @throws JAXBException JAXB exception
      */
     public static void createDatabases(final String ruleType) throws IOException, JAXBException {
-        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaEnvironmentFile(ruleType));
+        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(ruleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             DataSource dataSource = JdbcDataSourceBuilder.build(null, each);
             executeSQLScript(dataSource, generateCreateDatabaseSQLs(each, schemaEnvironment.getDatabases()));
@@ -96,7 +96,7 @@ public final class SchemaEnvironmentManager {
      * @throws JAXBException JAXB exception
      */
     public static void dropDatabases(final String ruleType) throws IOException, JAXBException {
-        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaEnvironmentFile(ruleType));
+        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(ruleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             DataSource dataSource = JdbcDataSourceBuilder.build(null, each);
             executeSQLScript(dataSource, generatePrepareDropDatabaseSQLs(each, schemaEnvironment.getDatabases()));
@@ -131,7 +131,7 @@ public final class SchemaEnvironmentManager {
      * @throws IOException IO exception
      */
     public static void createTables(final String ruleType) throws JAXBException, IOException {
-        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaEnvironmentFile(ruleType));
+        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(ruleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             createTables(schemaEnvironment, each);
         }
@@ -152,7 +152,7 @@ public final class SchemaEnvironmentManager {
      * @throws IOException IO exception
      */
     public static void dropTables(final String ruleType) throws JAXBException, IOException {
-        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaEnvironmentFile(ruleType));
+        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(ruleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             dropTables(schemaEnvironment, each);
         }

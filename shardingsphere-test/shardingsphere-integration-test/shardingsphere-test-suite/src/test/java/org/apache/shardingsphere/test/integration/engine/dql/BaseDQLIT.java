@@ -70,7 +70,7 @@ public abstract class BaseDQLIT extends SingleIT {
     
     private static void insertData(final DatabaseType databaseType) throws SQLException, ParseException, IOException, JAXBException {
         for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
-            new DataSetEnvironmentManager(EnvironmentPath.getDataInitializeResourceFile(each), createDataSourceMap(databaseType, each)).initialize();
+            new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(each), createDataSourceMap(databaseType, each)).initialize();
         }
     }
     
