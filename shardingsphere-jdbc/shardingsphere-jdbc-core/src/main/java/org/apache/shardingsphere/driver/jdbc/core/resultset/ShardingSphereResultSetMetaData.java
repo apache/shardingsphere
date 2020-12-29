@@ -114,8 +114,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     }
     
     private boolean isHasSelectExpandProjections() {
-        return sqlStatementContext instanceof SelectStatementContext
-                && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
+        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
     }
     
     @Override
