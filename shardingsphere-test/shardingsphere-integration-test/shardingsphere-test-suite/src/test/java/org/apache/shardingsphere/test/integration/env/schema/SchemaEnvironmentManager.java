@@ -87,18 +87,16 @@ public final class SchemaEnvironmentManager {
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             DataSource dataSource = JdbcDataSourceBuilder.build(null, each);
             if ("PostgreSQL".equals(each.getName())) {
-                try (
-                        Connection connection = dataSource.getConnection();
-                        StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateTerminateConnectionSQLs(schemaEnvironment.getDatabases())))) {
-                    RunScript.execute(connection, stringReader);
+                try (Connection connection = dataSource.getConnection();
+                     StringReader sql = new StringReader(Joiner.on(";\n").skipNulls().join(generateTerminateConnectionSQLs(schemaEnvironment.getDatabases())))) {
+                    RunScript.execute(connection, sql);
                 } catch (final SQLException ex) {
                     // TODO database maybe not exist
                 }
             }
-            try (
-                    Connection connection = dataSource.getConnection();
-                    StringReader stringReader = new StringReader(Joiner.on(";\n").skipNulls().join(generateDropDatabaseSQLs(each, schemaEnvironment.getDatabases())))) {
-                RunScript.execute(connection, stringReader);
+            try (Connection connection = dataSource.getConnection();
+                 StringReader sql = new StringReader(Joiner.on(";\n").skipNulls().join(generateDropDatabaseSQLs(each, schemaEnvironment.getDatabases())))) {
+                RunScript.execute(connection, sql);
             } catch (final SQLException ex) {
                 // TODO database maybe not exist
             }
@@ -151,8 +149,8 @@ public final class SchemaEnvironmentManager {
         for (String each : databaseEnvironmentSchema.getDatabases()) {
             DataSource dataSource = JdbcDataSourceBuilder.build(each, databaseType);
             try (Connection connection = dataSource.getConnection();
-                 StringReader stringReader = new StringReader(Joiner.on(";\n").join(databaseEnvironmentSchema.getTableCreateSQLs()))) {
-                RunScript.execute(connection, stringReader);
+                 StringReader sql = new StringReader(Joiner.on(";\n").join(databaseEnvironmentSchema.getTableCreateSQLs()))) {
+                RunScript.execute(connection, sql);
             }
         }
     }
@@ -175,8 +173,8 @@ public final class SchemaEnvironmentManager {
         for (String each : databaseEnvironmentSchema.getDatabases()) {
             DataSource dataSource = JdbcDataSourceBuilder.build(each, databaseType);
             try (Connection connection = dataSource.getConnection();
-                 StringReader stringReader = new StringReader(Joiner.on(";\n").join(databaseEnvironmentSchema.getTableDropSQLs()))) {
-                RunScript.execute(connection, stringReader);
+                 StringReader sql = new StringReader(Joiner.on(";\n").join(databaseEnvironmentSchema.getTableDropSQLs()))) {
+                RunScript.execute(connection, sql);
             } catch (final SQLException ex) {
                 // TODO table maybe not exist
             }
