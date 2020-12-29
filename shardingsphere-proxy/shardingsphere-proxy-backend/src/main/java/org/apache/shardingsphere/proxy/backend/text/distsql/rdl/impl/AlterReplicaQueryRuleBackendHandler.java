@@ -42,7 +42,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Create replica query rule backend handler.
+ * Alter replica query rule backend handler.
  */
 public final class AlterReplicaQueryRuleBackendHandler extends SchemaRequiredBackendHandler<AlterReplicaQueryRuleStatement> {
 

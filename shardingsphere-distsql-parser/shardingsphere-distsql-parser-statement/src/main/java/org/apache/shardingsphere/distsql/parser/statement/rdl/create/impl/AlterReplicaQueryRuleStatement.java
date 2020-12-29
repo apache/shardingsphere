@@ -25,7 +25,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRDLSt
 import java.util.Collection;
 
 /**
- * Create replica query rule statement.
+ * Alter replica query rule statement.
  */
 @RequiredArgsConstructor
 @Getter

@@ -26,15 +26,15 @@ import org.apache.shardingsphere.replicaquery.yaml.config.YamlReplicaQueryRuleCo
 import org.apache.shardingsphere.replicaquery.yaml.config.rule.YamlReplicaQueryDataSourceRuleConfiguration;
 
 /**
- * Create replica query rule statement converter.
+ * Alter replica query rule statement converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterReplicaQueryRuleStatementConverter {
     
     /**
-     * Convert create replica query rule statement context to YAML replica query rule configuration.
+     * Convert alter replica query rule statement context to YAML replica query rule configuration.
      *
-     * @param sqlStatement create replica query rule statement
+     * @param sqlStatement alter replica query rule statement
      * @return YAML replica query rule configuration
      */
     public static YamlReplicaQueryRuleConfiguration convert(final AlterReplicaQueryRuleStatement sqlStatement) {
@@ -53,7 +53,6 @@ public final class AlterReplicaQueryRuleStatementConverter {
                 loadBalancer.setProps(each.getProps());
                 result.getLoadBalancers().put(each.getLoadBalancer(), loadBalancer);
             }
-
         }
         return result;
     }
