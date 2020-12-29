@@ -40,7 +40,7 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
         zipkinSpanHandler = AsyncZipkinSpanHandler.create(sender);
         tracing = Tracing.newBuilder().localServiceName("shardingsphere-agent").addSpanHandler(zipkinSpanHandler).build();
     }
-
+    
     @Override
     public void close() {
         tracing.close();
