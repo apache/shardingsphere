@@ -32,10 +32,6 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata data-nodes="tbl.key_word">
-        <column name="id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
     <row data-node="tbl.t_order_0" values="1000, 10, init" />
     <row data-node="tbl.t_order_1" values="1001, 10, init" />
     <row data-node="tbl.t_order_2" values="1002, 10, init" />
@@ -97,5 +93,4 @@
     <row data-node="tbl.t_order_item_9" values="110900, 1109, 11, init, 2017-08-19" />
     <row data-node="tbl.t_order_item_9" values="110901, 1109, 11, init, 2017-08-19" />
     <row data-node="tbl.t_broadcast_table" values="1, init" />
-    <row data-node="tbl.key_word" values="1, init" />
 </dataset>

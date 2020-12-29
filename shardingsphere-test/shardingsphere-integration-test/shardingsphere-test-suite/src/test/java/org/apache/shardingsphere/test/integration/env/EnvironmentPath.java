@@ -30,7 +30,7 @@ import static org.junit.Assert.assertNotNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EnvironmentPath {
     
-    private static final String DATABASE_ENVIRONMENT_RESOURCES_PATH = "integrate/env/%s/schema.xml";
+    private static final String SCHEMA_ENVIRONMENT_FILE = "integrate/env/%s/schema.xml";
     
     private static final String DATA_INITIALIZE_RESOURCES_PATH = "integrate/env/%s/dataset.xml";
     
@@ -39,13 +39,13 @@ public final class EnvironmentPath {
     private static final String AUTHORITY_RESOURCES_PATH = "integrate/env/%s/authority.xml";
     
     /**
-     * Get database environment resource file.
+     * Get schema environment file.
      * 
      * @param ruleType rule type
-     * @return database environment resource file
+     * @return schema environment file
      */
-    public static String getDatabaseEnvironmentResourceFile(final String ruleType) {
-        return getResourceFile(DATABASE_ENVIRONMENT_RESOURCES_PATH, ruleType);
+    public static String getSchemaEnvironmentFile(final String ruleType) {
+        return getResourceFile(SCHEMA_ENVIRONMENT_FILE, ruleType);
     }
     
     /**
