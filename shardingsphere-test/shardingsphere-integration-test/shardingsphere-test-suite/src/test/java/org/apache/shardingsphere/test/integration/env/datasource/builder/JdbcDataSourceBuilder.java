@@ -43,7 +43,7 @@ public final class JdbcDataSourceBuilder {
     private static final Map<DataSourceCacheKey, DataSource> CACHE = new HashMap<>();
     
     /**
-     * Build data source.
+     * Build jdbc data source.
      *
      * @param name data source name
      * @param databaseType database type
