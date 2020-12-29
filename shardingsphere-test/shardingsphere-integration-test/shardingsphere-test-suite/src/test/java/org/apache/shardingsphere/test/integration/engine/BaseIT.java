@@ -93,7 +93,7 @@ public abstract class BaseIT {
         createTables();
     }
     
-    @SneakyThrows({JAXBException.class, IOException.class, SQLException.class})
+    @SneakyThrows({JAXBException.class, IOException.class})
     protected static void createDatabases() {
         for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
             SchemaEnvironmentManager.dropDatabases(each);
@@ -103,7 +103,7 @@ public abstract class BaseIT {
         }
     }
     
-    @SneakyThrows({JAXBException.class, IOException.class, SQLException.class})
+    @SneakyThrows({JAXBException.class, IOException.class})
     protected static void createTables() {
         for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
             SchemaEnvironmentManager.createTables(each);
