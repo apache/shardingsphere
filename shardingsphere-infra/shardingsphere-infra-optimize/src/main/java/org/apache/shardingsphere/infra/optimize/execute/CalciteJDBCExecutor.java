@@ -19,10 +19,14 @@ package org.apache.shardingsphere.infra.optimize.execute;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.config.Lex;
+import org.apache.calcite.jdbc.CalciteConnection;
+import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
+import org.apache.shardingsphere.infra.optimize.schema.CalciteLogicSchema;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -42,6 +46,8 @@ public final class CalciteJDBCExecutor {
     public static final String DRIVER_NAME = "org.apache.calcite.jdbc.Driver";
     
     public static final Properties PROPERTIES = new Properties();
+    
+    private final CalciteLogicSchema schema;
     
     static {
         try {
@@ -67,9 +73,18 @@ public final class CalciteJDBCExecutor {
     }
     
     private ResultSet execute(final String sql, final List<Object> parameters) throws SQLException {
-        PreparedStatement statement = DriverManager.getConnection(CONNECTION_URL, PROPERTIES).prepareStatement(sql);
+        PreparedStatement statement = getConnection().prepareStatement(sql);
         setParameters(statement, parameters);
         return statement.executeQuery();
+    }
+    
+    private Connection getConnection() throws SQLException {
+        Connection result = DriverManager.getConnection(CONNECTION_URL, PROPERTIES);
+        CalciteConnection calciteConnection = result.unwrap(CalciteConnection.class);
+        SchemaPlus rootSchema = calciteConnection.getRootSchema();
+        rootSchema.add(schema.getName(), schema);
+        calciteConnection.setSchema(schema.getName());
+        return result;
     }
     
     private void setParameters(final PreparedStatement preparedStatement, final List<Object> parameters) throws SQLException {
