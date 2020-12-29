@@ -52,9 +52,9 @@ public class MethodAroundInterceptor {
      */
     @RuntimeType
     @SneakyThrows
-    public Object intercept(final @This Object target, final @Origin Method method, final @AllArguments Object[] args, final @SuperCall Callable<?> callable) {
-        final TargetObject instance = (TargetObject) target;
-        final MethodInvocationResult methodResult = new MethodInvocationResult();
+    public Object intercept(@This final Object target, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
+        TargetObject instance = (TargetObject) target;
+        MethodInvocationResult methodResult = new MethodInvocationResult();
         Object result;
         try {
             advice.beforeMethod(instance, method, args, methodResult);
