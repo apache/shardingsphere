@@ -259,7 +259,7 @@ Response：
 
 #### Stop scaling job
 
-Interface description：POST /scaling/job/stop
+Interface description：GET /scaling/job/stop
 
 Body：
 
@@ -269,12 +269,8 @@ Body：
 
 Example：
 ```
-curl -X POST \
-  http://localhost:8888/scaling/job/stop \
-  -H 'content-type: application/json' \
-  -d '{
-   "jobId":1
-}'
+curl -X GET \
+  http://localhost:8888/scaling/job/stop/1
 ```
 Response：
 ```
