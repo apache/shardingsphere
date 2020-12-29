@@ -25,14 +25,6 @@
         <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_now_function.xml" />
     </dml-test-case>
     
-    <dml-test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert')">
-        <assertion expected-data-file="insert_for_order_1.xml" />
-    </dml-test-case>
-    
-    <dml-test-case sql="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (1, 1, 'insert')" db-types="MySQL">
-        <assertion expected-data-file="insert_for_order_1.xml" />
-    </dml-test-case>
-    
     <dml-test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert'), (2, 2, 'insert2')" db-types="MySQL">
         <assertion expected-data-file="insert_multiple_values_for_order_1_2.xml" />
     </dml-test-case>
@@ -62,11 +54,6 @@
         <!--<assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />-->
         <!--<assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />-->
     <!--</dml-test-case>-->
-    
-    <dml-test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, 'insert')" >
-        <assertion parameters="1:int, 1:int" expected-data-file="insert_for_order_1.xml" />
-        <assertion parameters="2:int, 2:int" expected-data-file="insert_for_order_2.xml" />
-    </dml-test-case>
     
     <dml-test-case sql="INSERT INTO t_order SET order_id = ?, user_id = ?, status = 'insert'" db-types="MySQL">
         <assertion parameters="1:int, 1:int" expected-data-file="insert_for_order_1.xml" />
@@ -133,18 +120,10 @@
         <assertion expected-data-file="update_without_condition.xml" />
     </dml-test-case>
     
-    <dml-test-case sql="UPDATE LOW_PRIORITY IGNORE t_order SET status = ? WHERE order_id = ? AND user_id = ?" db-types="MySQL">
-        <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
-    </dml-test-case>
-    
-    <dml-test-case sql="UPDATE `t_order` SET `status` = ? WHERE `order_id` = ? AND user_id = ?" db-types="MySQL">
-        <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
-    </dml-test-case>
-
     <dml-test-case sql="UPDATE /*+ index(field1) */ ONLY t_order SET status=? WHERE order_id = ? AND user_id = ? RETURN * LOG ERRORS INTO TABLE_LOG" db-types="Oracle">
         <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
     </dml-test-case>
-
+    
     <dml-test-case sql="UPDATE t_order SET status = 'update' WHERE order_id = 1000 AND user_id = 10">
         <assertion expected-data-file="update.xml" />
     </dml-test-case>
@@ -165,10 +144,6 @@
         <assertion parameters="init:String" expected-data-file="delete_without_sharding_value.xml" />
     </dml-test-case>
     
-    <dml-test-case sql="DELETE FROM `t_order` WHERE `status`='init'" db-types="MySQL">
-        <assertion expected-data-file="delete_without_sharding_value.xml" />
-    </dml-test-case>
-
     <dml-test-case sql="DELETE /*+ index(status) */ ONLY t_order WHERE status=1 RETURN * LOG ERRORS INTO TABLE_LOG" db-types="Oracle">
         <assertion expected-data-file="delete_with_special_comments_return_without_sharding_value.xml" />
     </dml-test-case>
@@ -176,7 +151,7 @@
     <dml-test-case sql="DELETE /*+ index(status) */ ONLY (t_order) WHERE status=1 RETURNING *" db-types="Oracle">
         <assertion expected-data-file="delete_with_special_comments_returning_without_sharding_value.xml" />
     </dml-test-case>
-
+    
     <!-- Can't support delete multiple tables-->
     <!--<dml-test-case sql="DELETE o FROM t_order AS o WHERE status=?" db-types="MySQL,Oracle,SQLServer">-->
         <!--<assertion parameters="init:String" expected-data-file="delete_with_alias.xml" />-->
