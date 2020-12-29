@@ -18,29 +18,31 @@
 package org.apache.shardingsphere.test.integration.env.schema;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
- * XML definition for database schema environment.
+ * XML definition of schema environment.
  */
 @Getter
+@Setter
 @XmlRootElement(name = "schema")
 public final class SchemaEnvironment {
     
     @XmlElementWrapper(name = "databases")
     @XmlElement(name = "database")
-    private List<String> databases = new LinkedList<>();
+    private Collection<String> databases = new LinkedList<>();
     
     @XmlElementWrapper(name = "table-create")
     @XmlElement(name = "sql")
-    private List<String> tableCreateSQLs = new LinkedList<>();
+    private Collection<String> tableCreateSQLs = new LinkedList<>();
     
     @XmlElementWrapper(name = "table-drop")
     @XmlElement(name = "sql")
-    private List<String> tableDropSQLs = new LinkedList<>();
+    private Collection<String> tableDropSQLs = new LinkedList<>();
 }

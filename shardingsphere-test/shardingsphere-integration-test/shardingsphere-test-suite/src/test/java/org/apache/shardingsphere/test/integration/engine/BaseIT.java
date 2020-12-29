@@ -77,7 +77,7 @@ public abstract class BaseIT {
         Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(ruleType);
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
-            result.put(each, DataSourceUtil.createDataSource(databaseType, each));
+            result.put(each, DataSourceUtil.createDataSource(each, databaseType));
         }
         return result;
     }

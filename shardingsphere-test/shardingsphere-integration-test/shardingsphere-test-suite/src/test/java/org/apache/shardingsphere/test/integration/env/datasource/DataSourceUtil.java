@@ -45,22 +45,22 @@ public final class DataSourceUtil {
     /**
      * Create data source.
      *
-     * @param databaseType database type
      * @param dataSourceName data source name
+     * @param databaseType database type
      * @return data source
      */
-    public static DataSource createDataSource(final DatabaseType databaseType, final String dataSourceName) {
-        DataSourceCacheKey dataSourceCacheKey = new DataSourceCacheKey(databaseType, dataSourceName);
+    public static DataSource createDataSource(final String dataSourceName, final DatabaseType databaseType) {
+        DataSourceCacheKey dataSourceCacheKey = new DataSourceCacheKey(dataSourceName, databaseType);
         if (CACHE.containsKey(dataSourceCacheKey)) {
             return CACHE.get(dataSourceCacheKey);
         }
         DataSource result;
         switch (DATA_SOURCE_POOL_TYPE) {
             case DBCP:
-                result = createDBCP(databaseType, dataSourceName);
+                result = createDBCP(dataSourceName, databaseType);
                 break;
             case HikariCP:
-                result = createHikariCP(databaseType, dataSourceName);
+                result = createHikariCP(dataSourceName, databaseType);
                 break;
             default:
                 throw new UnsupportedOperationException(DATA_SOURCE_POOL_TYPE.name());
@@ -69,7 +69,7 @@ public final class DataSourceUtil {
         return result;
     }
     
-    private static DataSource createDBCP(final DatabaseType databaseType, final String dataSourceName) {
+    private static DataSource createDBCP(final String dataSourceName, final DatabaseType databaseType) {
         BasicDataSource result = new BasicDataSource();
         DatabaseEnvironment databaseEnvironment = IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().get(databaseType);
         result.setDriverClassName(databaseEnvironment.getDriverClassName());
@@ -86,7 +86,7 @@ public final class DataSourceUtil {
         return result;
     }
     
-    private static DataSource createHikariCP(final DatabaseType databaseType, final String dataSourceName) {
+    private static DataSource createHikariCP(final String dataSourceName, final DatabaseType databaseType) {
         HikariConfig result = new HikariConfig();
         DatabaseEnvironment databaseEnvironment = IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().get(databaseType);
         result.setDriverClassName(databaseEnvironment.getDriverClassName());
@@ -108,8 +108,8 @@ public final class DataSourceUtil {
     @EqualsAndHashCode
     private static class DataSourceCacheKey {
         
-        private final DatabaseType databaseType;
-        
         private final String dataSourceName;
+        
+        private final DatabaseType databaseType;
     }
 }
