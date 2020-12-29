@@ -51,12 +51,9 @@ import static org.junit.Assert.assertTrue;
 @Slf4j
 public abstract class BaseDDLIT extends SingleIT {
     
-    private final DatabaseType databaseType;
-    
     protected BaseDDLIT(final String parentPath, final DDLIntegrateTestCaseAssertion assertion, final String ruleType, 
                         final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, ruleType, databaseType, caseType, sql);
-        this.databaseType = databaseType;
     }
     
     @BeforeClass
@@ -128,9 +125,9 @@ public abstract class BaseDDLIT extends SingleIT {
     private void assertColumnMetaData(final List<DataSetColumn> actual, final DataSetColumn expect) {
         for (DataSetColumn each : actual) {
             if (expect.getName().equals(each.getName())) {
-                if ("MySQL".equals(databaseType.getName()) && "integer".equals(expect.getType())) {
+                if ("MySQL".equals(getDatabaseType().getName()) && "integer".equals(expect.getType())) {
                     assertThat(each.getType(), is("int"));
-                } else if ("PostgreSQL".equals(databaseType.getName()) && "integer".equals(expect.getType())) {
+                } else if ("PostgreSQL".equals(getDatabaseType().getName()) && "integer".equals(expect.getType())) {
                     assertThat(each.getType(), is("int4"));
                 } else {
                     assertThat(each.getType(), is(expect.getType()));
