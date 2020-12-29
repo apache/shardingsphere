@@ -136,16 +136,16 @@ public final class SchemaEnvironmentManager {
      */
     public static void createTables(final String ruleType) throws JAXBException, IOException, SQLException {
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
-            SchemaEnvironment databaseEnvironmentSchema = unmarshal(EnvironmentPath.getSchemaEnvironmentFile(ruleType));
-            createTables(databaseEnvironmentSchema, each);
+            SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaEnvironmentFile(ruleType));
+            createTables(schemaEnvironment, each);
         }
     }
     
-    private static void createTables(final SchemaEnvironment databaseEnvironmentSchema, final DatabaseType databaseType) throws SQLException {
-        for (String each : databaseEnvironmentSchema.getDatabases()) {
+    private static void createTables(final SchemaEnvironment schemaEnvironment, final DatabaseType databaseType) throws SQLException {
+        for (String each : schemaEnvironment.getDatabases()) {
             DataSource dataSource = JdbcDataSourceBuilder.build(each, databaseType);
             try (Connection connection = dataSource.getConnection();
-                 StringReader sql = new StringReader(Joiner.on(";\n").join(databaseEnvironmentSchema.getTableCreateSQLs()))) {
+                 StringReader sql = new StringReader(Joiner.on(";\n").join(schemaEnvironment.getTableCreateSQLs()))) {
                 RunScript.execute(connection, sql);
             }
         }
@@ -160,16 +160,16 @@ public final class SchemaEnvironmentManager {
      */
     public static void dropTables(final String ruleType) throws JAXBException, IOException {
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
-            SchemaEnvironment databaseEnvironmentSchema = unmarshal(EnvironmentPath.getSchemaEnvironmentFile(ruleType));
-            dropTables(databaseEnvironmentSchema, each);
+            SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaEnvironmentFile(ruleType));
+            dropTables(schemaEnvironment, each);
         }
     }
     
-    private static void dropTables(final SchemaEnvironment databaseEnvironmentSchema, final DatabaseType databaseType) {
-        for (String each : databaseEnvironmentSchema.getDatabases()) {
+    private static void dropTables(final SchemaEnvironment schemaEnvironment, final DatabaseType databaseType) {
+        for (String each : schemaEnvironment.getDatabases()) {
             DataSource dataSource = JdbcDataSourceBuilder.build(each, databaseType);
             try (Connection connection = dataSource.getConnection();
-                 StringReader sql = new StringReader(Joiner.on(";\n").join(databaseEnvironmentSchema.getTableDropSQLs()))) {
+                 StringReader sql = new StringReader(Joiner.on(";\n").join(schemaEnvironment.getTableDropSQLs()))) {
                 RunScript.execute(connection, sql);
             } catch (final SQLException ignored) {
                 // TODO table maybe not exist
