@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AlterReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.AddResourceBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.AlterReplicaQueryRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateReplicaQueryRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateShardingRuleBackendHandler;
@@ -82,6 +84,9 @@ public final class RDLBackendHandlerFactory {
         }
         if (sqlStatement instanceof CreateReplicaQueryRuleStatement) {
             return Optional.of(new CreateReplicaQueryRuleBackendHandler((CreateReplicaQueryRuleStatement) sqlStatement, backendConnection));
+        }
+        if (sqlStatement instanceof AlterReplicaQueryRuleStatement) {
+            return Optional.of(new AlterReplicaQueryRuleBackendHandler((AlterReplicaQueryRuleStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
             return Optional.of(new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement));

@@ -71,6 +71,14 @@ replicaQueryRuleDefinition
     : ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP loadBalancer=IDENTIFIER LP algorithmProperties RP
     ;
 
+alterReplicaQueryRule
+    : ALTER REPLICA_QUERY RULE LP alterReplicaQueryRuleDefinition (COMMA alterReplicaQueryRuleDefinition)* RP
+    ;
+
+alterReplicaQueryRuleDefinition
+    : ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP (loadBalancer=IDENTIFIER LP algorithmProperties RP)?
+    ;
+
 shardingTableRuleDefinition
     : tableName columnName shardingAlgorithmType=IDENTIFIER LP algorithmProperties RP
     ;

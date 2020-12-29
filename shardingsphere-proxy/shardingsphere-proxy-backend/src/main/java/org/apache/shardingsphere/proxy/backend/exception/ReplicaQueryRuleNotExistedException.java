@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-execute
-    : (addResource
-    | createShardingRule
-    | dropShardingRule
-    | createReplicaQueryRule
-    | alterReplicaQueryRule
-    | showResources
-    | showRule
-    ) SEMI?
-    ;
+import java.util.Collection;
+
+/**
+ * replica query rule not existed exception.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ReplicaQueryRuleNotExistedException extends BackendException {
+
+    private static final long serialVersionUID = -5119217255419990719L;
+
+    private final Collection<String> ruleNames;
+}
