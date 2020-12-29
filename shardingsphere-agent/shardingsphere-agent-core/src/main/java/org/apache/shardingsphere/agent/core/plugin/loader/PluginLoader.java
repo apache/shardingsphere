@@ -283,7 +283,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
         String implTitle = attr.getValue(Attributes.Name.IMPLEMENTATION_TITLE);
         String implVersion = attr.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
         String implVendor = attr.getValue(Attributes.Name.IMPLEMENTATION_VENDOR);
-        super.definePackage(packageName, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor, null);
+        definePackage(packageName, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor, null);
     }
     
     private void buildPluginInterceptorPointMap(final PluginDefinition pluginDefinition, final Map<String, PluginInterceptorPoint> pointMap) {
