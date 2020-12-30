@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.engine.ddl;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
@@ -39,7 +38,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 
-@Slf4j
 public abstract class BaseDDLIT extends SingleIT {
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
@@ -63,25 +61,31 @@ public abstract class BaseDDLIT extends SingleIT {
     @Before
     public final void initTables() throws SQLException, ParseException, IOException, JAXBException {
         SchemaEnvironmentManager.createTables();
-        resetTargetDataSource();
         dataSetEnvironmentManager.load();
+        try (Connection connection = getTargetDataSource().getConnection()) {
+            executeInitSQLs(connection);
+        }
+        resetTargetDataSource();
     }
     
-    @After
-    public final void destroyTables() throws JAXBException, IOException {
-        SchemaEnvironmentManager.dropTables();
-    }
-    
-    protected final void executeInitSQLs(final Connection connection) throws SQLException {
-        dropTableIfExisted(connection);
-        if (!Strings.isNullOrEmpty(((DDLIntegrateTestCaseAssertion) getAssertion()).getInitSQL())) {
-            for (String each : Splitter.on(";").trimResults().splitToList(((DDLIntegrateTestCaseAssertion) getAssertion()).getInitSQL())) {
-                connection.prepareStatement(each).executeUpdate();
-            }
+    private void executeInitSQLs(final Connection connection) throws SQLException {
+        if (Strings.isNullOrEmpty(((DDLIntegrateTestCaseAssertion) getAssertion()).getInitSQL())) {
+            return;
+        }
+        for (String each : Splitter.on(";").trimResults().splitToList(((DDLIntegrateTestCaseAssertion) getAssertion()).getInitSQL())) {
+            connection.prepareStatement(each).executeUpdate();
         }
     }
     
-    private void dropTableIfExisted(final Connection connection) {
+    @After
+    public final void destroyTables() throws JAXBException, IOException, SQLException {
+        SchemaEnvironmentManager.dropTables();
+        try (Connection connection = getTargetDataSource().getConnection()) {
+            dropInitializedTable(connection);
+        }
+    }
+    
+    private void dropInitializedTable(final Connection connection) {
         try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", ((DDLIntegrateTestCaseAssertion) getAssertion()).getTable()))) {
             preparedStatement.executeUpdate();
         } catch (final SQLException ignored) {

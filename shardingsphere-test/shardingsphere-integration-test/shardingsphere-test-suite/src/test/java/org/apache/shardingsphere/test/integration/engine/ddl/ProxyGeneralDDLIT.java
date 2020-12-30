@@ -52,9 +52,6 @@ public final class ProxyGeneralDDLIT extends BaseDDLIT {
     public ProxyGeneralDDLIT(final String parentPath, final DDLIntegrateTestCaseAssertion assertion, final String ruleType,
                              final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
-        try (Connection connection = getTargetDataSource().getConnection()) {
-            executeInitSQLs(connection);
-        }
     }
     
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")
