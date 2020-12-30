@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseTy
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
+import org.junit.Rule;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -38,6 +39,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @Getter(AccessLevel.PROTECTED)
 public abstract class SingleIT extends BaseIT {
+    
+    @Rule
+    public IntegrationTestWatcher watcher = new IntegrationTestWatcher();
     
     private final String caseIdentifier;
     

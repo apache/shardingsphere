@@ -21,13 +21,13 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.test.integration.IntegrateTestParameters;
 import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
-import org.apache.shardingsphere.test.integration.IntegrateTestParameters;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
