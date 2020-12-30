@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.engine;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
@@ -58,7 +57,6 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@Slf4j
 @Getter(AccessLevel.PROTECTED)
 public abstract class BatchIT extends BaseIT {
     
@@ -109,13 +107,8 @@ public abstract class BatchIT extends BaseIT {
         assertThat(actualUpdateCounts.length, is(dataSets.size()));
         int count = 0;
         for (DataSet each : dataSets) {
-            try {
-                assertThat(actualUpdateCounts[count], is(each.getUpdateCount()));
-                expectedList.add(each);
-            } catch (final AssertionError ex) {
-                log.error("[ERROR] SQL::{}, Expect::{}", sql, each);
-                throw ex;
-            }
+            assertThat(actualUpdateCounts[count], is(each.getUpdateCount()));
+            expectedList.add(each);
             count++;
         }
         DataSet expected = merge(expectedList);

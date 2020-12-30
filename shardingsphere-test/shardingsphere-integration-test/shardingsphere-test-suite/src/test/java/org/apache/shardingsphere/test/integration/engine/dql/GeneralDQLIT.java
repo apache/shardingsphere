@@ -61,9 +61,6 @@ public final class GeneralDQLIT extends BaseDQLIT {
             } else {
                 assertExecuteQueryForPreparedStatement(connection);
             }
-        } catch (final SQLException ex) {
-            logException(ex);
-            throw ex;
         }
     }
     
@@ -94,9 +91,6 @@ public final class GeneralDQLIT extends BaseDQLIT {
             } else {
                 assertExecuteForPreparedStatement(connection);
             }
-        } catch (final SQLException ex) {
-            logException(ex);
-            throw ex;
         }
     }
     

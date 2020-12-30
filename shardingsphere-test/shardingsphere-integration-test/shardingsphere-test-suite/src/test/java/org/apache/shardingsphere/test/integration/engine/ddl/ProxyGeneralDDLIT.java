@@ -68,9 +68,6 @@ public final class ProxyGeneralDDLIT extends BaseDDLIT {
                 connection.prepareStatement(getSql()).executeUpdate();
             }
             assertTableMetaData(connection);
-        } catch (final SQLException ex) {
-            logException(ex);
-            throw ex;
         }
     }
     
@@ -84,9 +81,6 @@ public final class ProxyGeneralDDLIT extends BaseDDLIT {
                 connection.prepareStatement(getSql()).execute();
             }
             assertTableMetaData(connection);
-        } catch (final SQLException ex) {
-            logException(ex);
-            throw ex;
         }
     }
     

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.engine.dml;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -53,7 +52,6 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@Slf4j
 public abstract class BaseDMLIT extends SingleIT {
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
@@ -87,29 +85,24 @@ public abstract class BaseDMLIT extends SingleIT {
     }
     
     protected final void assertDataSet(final int actualUpdateCount) throws SQLException {
-        try {
-            assertThat("Only support single table for DML.", getDataSet().getMetadataList().size(), is(1));
-            assertThat(actualUpdateCount, is(getDataSet().getUpdateCount()));
-            DataSetMetadata expectedDataSetMetadata = getDataSet().getMetadataList().get(0);
-            for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
-                DataNode dataNode = new DataNode(each);
-                String sql;
-                if (getDatabaseType() instanceof PostgreSQLDatabaseType) {
-                    try (Connection connection = getActualDataSources().get(dataNode.getDataSourceName()).getConnection()) {
-                        String primaryKeyColumnName = getPostgreSQLTablePrimaryKeyColumnName(connection, dataNode.getTableName());
-                        sql = String.format("SELECT * FROM %s ORDER BY %s ASC", dataNode.getTableName(), primaryKeyColumnName);
-                    }
-                } else {
-                    sql = String.format("SELECT * FROM %s", dataNode.getTableName());
+        assertThat("Only support single table for DML.", getDataSet().getMetadataList().size(), is(1));
+        assertThat(actualUpdateCount, is(getDataSet().getUpdateCount()));
+        DataSetMetadata expectedDataSetMetadata = getDataSet().getMetadataList().get(0);
+        for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
+            DataNode dataNode = new DataNode(each);
+            String sql;
+            if (getDatabaseType() instanceof PostgreSQLDatabaseType) {
+                try (Connection connection = getActualDataSources().get(dataNode.getDataSourceName()).getConnection()) {
+                    String primaryKeyColumnName = getPostgreSQLTablePrimaryKeyColumnName(connection, dataNode.getTableName());
+                    sql = String.format("SELECT * FROM %s ORDER BY %s ASC", dataNode.getTableName(), primaryKeyColumnName);
                 }
-                try (Connection connection = getActualDataSources().get(dataNode.getDataSourceName()).getConnection();
-                     PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                    assertDataSet(preparedStatement, getDataSet().findRows(dataNode), expectedDataSetMetadata);
-                }
+            } else {
+                sql = String.format("SELECT * FROM %s", dataNode.getTableName());
             }
-        } catch (final AssertionError ex) {
-            log.error("[ERROR] SQL::{}, Parameter::{}, Expect::{}", getCaseIdentifier(), getAssertion().getParameters(), getAssertion().getExpectedDataFile());
-            throw ex;
+            try (Connection connection = getActualDataSources().get(dataNode.getDataSourceName()).getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                assertDataSet(preparedStatement, getDataSet().findRows(dataNode), expectedDataSetMetadata);
+            }
         }
     }
     

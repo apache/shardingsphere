@@ -69,9 +69,6 @@ public final class JDBCGeneralDDLIT extends BaseDDLIT {
                 connection.prepareStatement(getSql()).executeUpdate();
             }
             assertTableMetaData(((ShardingSphereConnection) connection).getMetaDataContexts().getDefaultMetaData().getSchema());
-        } catch (final SQLException ex) {
-            logException(ex);
-            throw ex;
         }
     }
     
@@ -85,9 +82,6 @@ public final class JDBCGeneralDDLIT extends BaseDDLIT {
                 connection.prepareStatement(getSql()).execute();
             }
             assertTableMetaData(((ShardingSphereConnection) connection).getMetaDataContexts().getDefaultMetaData().getSchema());
-        } catch (final SQLException ex) {
-            logException(ex);
-            throw ex;
         }
     }
     
