@@ -25,7 +25,7 @@ import java.sql.SQLException;
 /**
  * Scaling data source configuration.
  */
-public interface DataSourceConfiguration {
+public interface ScalingDataSourceConfiguration {
     
     /**
      * Get config type.

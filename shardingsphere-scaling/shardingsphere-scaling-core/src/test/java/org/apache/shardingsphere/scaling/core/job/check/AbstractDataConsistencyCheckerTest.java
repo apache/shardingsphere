@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job.check;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
@@ -49,7 +49,7 @@ public final class AbstractDataConsistencyCheckerTest {
     }
     
     @SneakyThrows(SQLException.class)
-    private void initTableData(final DataSourceConfiguration dataSourceConfig) {
+    private void initTableData(final ScalingDataSourceConfiguration dataSourceConfig) {
         DataSource dataSource = new DataSourceManager().getDataSource(dataSourceConfig);
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {

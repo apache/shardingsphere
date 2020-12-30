@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.scaling.core.spi;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
@@ -46,11 +46,7 @@ public final class ScalingWorkerLoaderTest {
     
     private ServerConfiguration mockServerConfiguration() {
         ServerConfiguration result = new ServerConfiguration();
-        YamlGovernanceConfiguration distributedScalingService = new YamlGovernanceConfiguration();
-        YamlGovernanceCenterConfiguration registryCenter = new YamlGovernanceCenterConfiguration();
-        registryCenter.setType("Zookeeper");
-        distributedScalingService.setRegistryCenter(registryCenter);
-        result.setDistributedScalingService(distributedScalingService);
+        result.setDistributedScalingService(new GovernanceConfiguration("test", new GovernanceCenterConfiguration("Zookeeper", "", null), false));
         return result;
     }
 }

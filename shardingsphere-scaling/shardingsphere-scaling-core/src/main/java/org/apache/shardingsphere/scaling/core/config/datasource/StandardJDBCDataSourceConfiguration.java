@@ -32,7 +32,7 @@ import javax.sql.DataSource;
 @Getter
 @Setter
 @EqualsAndHashCode(exclude = "databaseType")
-public final class StandardJDBCDataSourceConfiguration implements DataSourceConfiguration {
+public final class StandardJDBCDataSourceConfiguration implements ScalingDataSourceConfiguration {
     
     /**
      * Config type.
