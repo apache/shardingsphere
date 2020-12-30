@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.cases.dataset.row;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -29,6 +30,7 @@ import java.util.List;
  * Data set row.
  */
 @Getter
+@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class DataSetRow {
     

@@ -96,7 +96,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
     
     private void assertExecuteForStatement(final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            assertTrue("Not a DQL statement.", statement.execute(getSql()));
+            assertTrue("Not a query statement.", statement.execute(getSql()));
             try (ResultSet resultSet = statement.getResultSet()) {
                 assertResultSet(resultSet);
             }
@@ -108,7 +108,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
             for (SQLValue each : assertion.getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
-            assertTrue("Not a DQL statement.", preparedStatement.execute());
+            assertTrue("Not a query statement.", preparedStatement.execute());
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 assertResultSet(resultSet);
             }
