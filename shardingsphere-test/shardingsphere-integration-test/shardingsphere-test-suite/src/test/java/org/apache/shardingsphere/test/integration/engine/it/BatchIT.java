@@ -99,7 +99,7 @@ public abstract class BatchIT extends BaseIT {
     
     @After
     public void clearData() {
-        dataSetEnvironmentManager.clear();
+        dataSetEnvironmentManager.clearData();
     }
     
     protected final void assertDataSet(final int[] actualUpdateCounts) throws SQLException {

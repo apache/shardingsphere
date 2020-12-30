@@ -80,7 +80,7 @@ public abstract class BaseDMLIT extends SingleIT {
     
     @After
     public final void clearData() {
-        dataSetEnvironmentManager.clear();
+        dataSetEnvironmentManager.clearData();
     }
     
     protected final void assertDataSet(final int actualUpdateCount) throws SQLException {

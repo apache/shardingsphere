@@ -134,7 +134,7 @@ public final class DataSetEnvironmentManager {
      * Clear data.
      * 
      */
-    public void clear() {
+    public void clearData() {
         List<Callable<Void>> deleteTasks = new LinkedList<>();
         for (Entry<String, Collection<String>> entry : getDataNodeMap().entrySet()) {
             deleteTasks.add(new DeleteTask(dataSourceMap.get(entry.getKey()), entry.getValue()));
