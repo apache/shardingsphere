@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseTy
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
-import org.apache.shardingsphere.test.integration.engine.util.IntegrateTestParameters;
+import org.apache.shardingsphere.test.integration.IntegrateTestParameters;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
