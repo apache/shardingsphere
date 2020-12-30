@@ -75,7 +75,7 @@ public abstract class BaseDMLIT extends SingleIT {
     }
     
     @Before
-    public void insertData() throws SQLException, ParseException {
+    public void fillData() throws SQLException, ParseException {
         dataSetEnvironmentManager.fillData();
     }
     
