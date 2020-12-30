@@ -51,9 +51,12 @@ import static org.junit.Assert.assertTrue;
 @Slf4j
 public abstract class BaseDDLIT extends SingleIT {
     
+    private final DataSetEnvironmentManager dataSetEnvironmentManager;
+    
     protected BaseDDLIT(final String parentPath, final DDLIntegrateTestCaseAssertion assertion, final String ruleType, 
                         final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, ruleType, databaseType, caseType, sql);
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(ruleType), getActualDataSources());
     }
     
     @BeforeClass
@@ -67,10 +70,10 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     @Before
-    public final void initTables() throws SQLException, ParseException, IOException, JAXBException {
+    public final void initTables() throws SQLException, ParseException, IOException {
         createTables();
-        new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getRuleType()), getActualDataSources()).initialize();
         resetTargetDataSource();
+        dataSetEnvironmentManager.load();
     }
     
     @After

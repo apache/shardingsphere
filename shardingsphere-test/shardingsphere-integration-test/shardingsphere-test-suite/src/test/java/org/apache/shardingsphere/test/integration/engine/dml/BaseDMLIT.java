@@ -59,7 +59,7 @@ public abstract class BaseDMLIT extends SingleIT {
     protected BaseDMLIT(final String parentPath, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
                         final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, ruleType, databaseType, caseType, sql);
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getRuleType()), getActualDataSources());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(ruleType), getActualDataSources());
     }
     
     @BeforeClass
@@ -74,7 +74,7 @@ public abstract class BaseDMLIT extends SingleIT {
     
     @Before
     public void insertData() throws SQLException, ParseException {
-        dataSetEnvironmentManager.initialize();
+        dataSetEnvironmentManager.load();
     }
     
     @After
