@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.test.integration.engine.ddl;
 
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.engine.util.IntegrateTestParameters;
+import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -38,6 +38,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,61 +52,57 @@ public final class JDBCGeneralDDLIT extends BaseDDLIT {
     public JDBCGeneralDDLIT(final String parentPath, final DDLIntegrateTestCaseAssertion assertion, final String ruleType,
                             final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
+        try (Connection connection = getTargetDataSource().getConnection()) {
+            executeInitSQLs(connection);
+        }
     }
     
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DDL);
+        return IntegrateTestEnvironment.getInstance().isProxyEnvironment() ? Collections.emptyList() : IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DDL);
     }
     
+    @SuppressWarnings("JUnitTestMethodWithNoAssertions")
     @Test
     public void assertExecuteUpdate() throws SQLException {
-        assertExecute(true);
-    }
-    
-    @Test
-    public void assertExecute() throws SQLException {
-        assertExecute(false);
-    }
-    
-    private void assertExecute(final boolean isExecuteUpdate) throws SQLException {
         try (Connection connection = getTargetDataSource().getConnection()) {
-            dropTableIfExisted(connection);
-            if (!Strings.isNullOrEmpty(((DDLIntegrateTestCaseAssertion) getAssertion()).getInitSQL())) {
-                for (String each : Splitter.on(";").trimResults().splitToList(((DDLIntegrateTestCaseAssertion) getAssertion()).getInitSQL())) {
-                    connection.prepareStatement(each).executeUpdate();
-                }
-            }
-            if (isExecuteUpdate) {
-                if (SQLCaseType.Literal == getCaseType()) {
-                    connection.createStatement().executeUpdate(getSql());
-                } else {
-                    connection.prepareStatement(getSql()).executeUpdate();
-                }
+            if (SQLCaseType.Literal == getCaseType()) {
+                connection.createStatement().executeUpdate(getSql());
             } else {
-                if (SQLCaseType.Literal == getCaseType()) {
-                    connection.createStatement().execute(getSql());
-                } else {
-                    connection.prepareStatement(getSql()).execute();
-                }
+                connection.prepareStatement(getSql()).executeUpdate();
             }
-            assertTableMetaData(connection);
-            dropTableIfExisted(connection);
+            assertTableMetaData(((ShardingSphereConnection) connection).getMetaDataContexts().getDefaultMetaData().getSchema());
         } catch (final SQLException ex) {
             logException(ex);
             throw ex;
         }
     }
     
-    protected void assertTableMetaData(final Connection connection) {
+    @SuppressWarnings("JUnitTestMethodWithNoAssertions")
+    @Test
+    public void assertExecute() throws SQLException {
+        try (Connection connection = getTargetDataSource().getConnection()) {
+            if (SQLCaseType.Literal == getCaseType()) {
+                connection.createStatement().execute(getSql());
+            } else {
+                connection.prepareStatement(getSql()).execute();
+            }
+            assertTableMetaData(((ShardingSphereConnection) connection).getMetaDataContexts().getDefaultMetaData().getSchema());
+        } catch (final SQLException ex) {
+            logException(ex);
+            throw ex;
+        }
+    }
+    
+    private void assertTableMetaData(final ShardingSphereSchema schema) {
         String tableName = ((DDLIntegrateTestCaseAssertion) getAssertion()).getTable();
         Optional<DataSetMetadata> expected = getDataSet().findMetadata(tableName);
         if (!expected.isPresent()) {
-            assertFalse(((ShardingSphereConnection) connection).getMetaDataContexts().getDefaultMetaData().getSchema().containsTable(tableName));
-        } else {
-            TableMetaData actual = ((ShardingSphereConnection) connection).getMetaDataContexts().getDefaultMetaData().getSchema().get(tableName);
-            assertTableMetaData(actual, expected.get());
+            assertFalse(schema.containsTable(tableName));
+            return;
         }
+        TableMetaData actual = schema.get(tableName);
+        assertTableMetaData(actual, expected.get());
     }
     
     private void assertTableMetaData(final TableMetaData actual, final DataSetMetadata expected) {
