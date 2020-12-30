@@ -79,7 +79,7 @@ public abstract class BaseIT {
     }
     
     @After
-    public void tearDown() {
+    public final void tearDown() {
         if (targetDataSource instanceof ShardingSphereDataSource) {
             ((ShardingSphereDataSource) targetDataSource).getMetaDataContexts().getExecutorEngine().close();
         }
