@@ -163,15 +163,12 @@ public final class ConfigCenter {
      */
     @Subscribe
     public synchronized void renew(final PrimaryDataSourceUpdateEvent event) {
-        Map<String, DataSourceConfiguration> dataSourceConfigurations = loadDataSourceConfigurations(event.getSchemaName());
-        dataSourceConfigurations.remove(event.getOldPrimaryDataSource());
         Collection<RuleConfiguration> ruleConfigurations = loadRuleConfigurations(event.getSchemaName());
         for (RuleConfiguration each : ruleConfigurations) {
             if (each instanceof HARuleConfiguration) {
                 updateHaDataSourceRuleConfigurations(event, (HARuleConfiguration) each);
             }
         }
-        persistDataSourceConfigurations(event.getSchemaName(), dataSourceConfigurations);
         persistRuleConfigurations(event.getSchemaName(), ruleConfigurations);
     }
     
