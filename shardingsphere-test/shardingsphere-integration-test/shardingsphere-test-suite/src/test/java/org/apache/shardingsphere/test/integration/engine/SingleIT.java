@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 public abstract class SingleIT extends BaseIT {
     
     @Rule
-    public IntegrationTestWatcher watcher = new IntegrationTestWatcher();
+    public ITWatcher watcher = new ITWatcher();
     
     private final String caseIdentifier;
     

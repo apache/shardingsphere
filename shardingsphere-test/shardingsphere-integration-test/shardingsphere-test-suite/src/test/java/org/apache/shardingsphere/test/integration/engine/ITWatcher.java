@@ -25,7 +25,7 @@ import org.junit.runner.Description;
  * Integration test watcher.
  */
 @Slf4j
-public final class IntegrationTestWatcher extends TestWatcher {
+public final class ITWatcher extends TestWatcher {
     
     @Override
     protected void failed(final Throwable ex, final Description description) {
