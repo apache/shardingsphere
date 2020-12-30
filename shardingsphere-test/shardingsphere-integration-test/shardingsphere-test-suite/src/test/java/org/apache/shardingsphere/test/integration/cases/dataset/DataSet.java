@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Data sets root xml entry.
@@ -53,13 +54,13 @@ public final class DataSet {
      * @param tableName table name
      * @return data set meta data belong to current table
      */
-    public DataSetMetadata findMetadata(final String tableName) {
+    public Optional<DataSetMetadata> findMetadata(final String tableName) {
         for (DataSetMetadata each : metadataList) {
             if (tableName.equals(each.getTableName())) {
-                return each;
+                return Optional.of(each);
             }
         }
-        throw new IllegalArgumentException(String.format("Cannot find expected metadata via table name: '%s'", tableName));
+        return Optional.empty();
     }
         
     /**

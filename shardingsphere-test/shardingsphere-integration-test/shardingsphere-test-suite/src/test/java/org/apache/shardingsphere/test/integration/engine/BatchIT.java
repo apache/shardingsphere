@@ -166,7 +166,7 @@ public abstract class BatchIT extends BaseIT {
         dataSet.getRows().sort(Comparator.comparingInt(o -> Integer.parseInt(o.getValues().get(0))));
     }
     
-    private void assertMetaData(final ResultSetMetaData actualMetaData, final List<DataSetColumn> columnMetadataList) throws SQLException {
+    private void assertMetaData(final ResultSetMetaData actualMetaData, final Collection<DataSetColumn> columnMetadataList) throws SQLException {
         assertThat(actualMetaData.getColumnCount(), is(columnMetadataList.size()));
         int index = 1;
         for (DataSetColumn each : columnMetadataList) {

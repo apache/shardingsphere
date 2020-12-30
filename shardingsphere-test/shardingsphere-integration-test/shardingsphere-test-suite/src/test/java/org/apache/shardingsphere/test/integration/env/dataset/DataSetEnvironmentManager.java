@@ -120,7 +120,7 @@ public final class DataSetEnvironmentManager {
         return result;
     }
     
-    private String generateInsertSQL(final String tableName, final List<DataSetColumn> columnMetadata) {
+    private String generateInsertSQL(final String tableName, final Collection<DataSetColumn> columnMetadata) {
         List<String> columnNames = new LinkedList<>();
         List<String> placeholders = new LinkedList<>();
         for (DataSetColumn each : columnMetadata) {

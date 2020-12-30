@@ -82,7 +82,7 @@ public abstract class BaseDDLIT extends SingleIT {
         SchemaEnvironmentManager.dropTables();
     }
     
-    protected final void assertTableMetaData(final Connection connection) throws SQLException {
+    protected void assertTableMetaData(final Connection connection) throws SQLException {
         String tableName = ((DDLIntegrateTestCaseAssertion) getAssertion()).getTable();
         List<DataSetColumn> actualColumns = getActualColumns(connection, tableName);
         List<DataSetIndex> actualIndexes = getActualIndexes(connection, tableName);
@@ -92,7 +92,7 @@ public abstract class BaseDDLIT extends SingleIT {
             return;
         }
         try {
-            assertTableMetaData(actualColumns, actualIndexes, getDataSet().findMetadata(tableName));
+            assertTableMetaData(actualColumns, actualIndexes, getDataSet().findMetadata(tableName).orElse(null));
         } catch (final AssertionError ex) {
             log.error("[ERROR] SQL::{}, Parameter::{}, Expect::{}", getCaseIdentifier(), getAssertion().getParameters(), getAssertion().getExpectedDataFile());
             throw ex;
