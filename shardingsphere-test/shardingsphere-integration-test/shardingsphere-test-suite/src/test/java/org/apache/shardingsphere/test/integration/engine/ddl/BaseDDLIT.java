@@ -73,6 +73,7 @@ public abstract class BaseDDLIT extends SingleIT {
         }
         createTables();
         new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getRuleType()), getActualDataSources()).initialize();
+        resetTargetDataSource();
     }
     
     @After

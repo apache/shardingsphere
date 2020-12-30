@@ -57,7 +57,7 @@ public abstract class BaseIT {
     
     private final Map<String, DataSource> actualDataSources;
     
-    private final DataSource targetDataSource;
+    private DataSource targetDataSource;
     
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -122,6 +122,10 @@ public abstract class BaseIT {
         for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
             SchemaEnvironmentManager.dropTables(each);
         }
+    }
+    
+    protected void resetTargetDataSource() throws IOException, SQLException {
+        targetDataSource = createTargetDataSource();
     }
     
     @After
