@@ -44,9 +44,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -106,14 +107,15 @@ public abstract class BaseDDLIT extends SingleIT {
         }
     }
     
-    protected void assertTableMetaData(final Connection connection) throws SQLException {
+    protected final void assertTableMetaData() throws SQLException {
         String tableName = ((DDLIntegrateTestCaseAssertion) getAssertion()).getTable();
-        Optional<DataSetMetadata> expected = getDataSet().findMetadata(tableName);
-        if (!expected.isPresent()) {
-            assertFalse(containsTable(connection, tableName));
+        DataSetMetadata expected = getDataSet().findMetadata(tableName);
+        Collection<DataNode> dataNodes = new InlineExpressionParser(expected.getDataNodes()).splitAndEvaluate().stream().map(DataNode::new).collect(Collectors.toList());
+        if (expected.getColumns().isEmpty()) {
+            assertFalse(containsTable(dataNodes));
             return;
         }
-        assertTableMetaData(getActualColumns(expected.get().getDataNodes()), getActualIndexes(expected.get().getDataNodes()), expected.get());
+        assertTableMetaData(getActualColumns(dataNodes), getActualIndexes(dataNodes), expected);
     }
     
     private void assertTableMetaData(final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetadata expected) {
@@ -125,16 +127,26 @@ public abstract class BaseDDLIT extends SingleIT {
         }
     }
     
-    private boolean containsTable(final Connection connection, final String tableName) throws SQLException {
-        return connection.getMetaData().getTables(null, null, tableName, new String[] {"TABLE"}).next();
+    private boolean containsTable(final Collection<DataNode> dataNodes) throws SQLException {
+        for (DataNode each : dataNodes) {
+            try (Connection connection = getActualDataSources().get(each.getDataSourceName()).getConnection()) {
+                if (containsTable(connection, each.getTableName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
-    private List<DataSetColumn> getActualColumns(final String dataNodes) throws SQLException {
+    private boolean containsTable(final Connection connection, final String tableName) throws SQLException {
+        return connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE"}).next();
+    }
+    
+    private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes) throws SQLException {
         List<DataSetColumn> result = new LinkedList<>();
-        for (String each : new InlineExpressionParser(dataNodes).splitAndEvaluate()) {
-            DataNode dataNode = new DataNode(each);
-            try (Connection connection = getActualDataSources().get(dataNode.getDataSourceName()).getConnection()) {
-                result.addAll(getActualColumns(connection, dataNode.getTableName()));
+        for (DataNode each : dataNodes) {
+            try (Connection connection = getActualDataSources().get(each.getDataSourceName()).getConnection()) {
+                result.addAll(getActualColumns(connection, each.getTableName()));
             }
         }
         return result;
@@ -154,12 +166,11 @@ public abstract class BaseDDLIT extends SingleIT {
         }
     }
     
-    private List<DataSetIndex> getActualIndexes(final String dataNodes) throws SQLException {
+    private List<DataSetIndex> getActualIndexes(final Collection<DataNode> dataNodes) throws SQLException {
         List<DataSetIndex> result = new LinkedList<>();
-        for (String each : new InlineExpressionParser(dataNodes).splitAndEvaluate()) {
-            DataNode dataNode = new DataNode(each);
-            try (Connection connection = getActualDataSources().get(dataNode.getDataSourceName()).getConnection()) {
-                result.addAll(getActualIndexes(connection, dataNode.getTableName()));
+        for (DataNode each : dataNodes) {
+            try (Connection connection = getActualDataSources().get(each.getDataSourceName()).getConnection()) {
+                result.addAll(getActualIndexes(connection, each.getTableName()));
             }
         }
         return result;
@@ -180,6 +191,7 @@ public abstract class BaseDDLIT extends SingleIT {
         }
     }
     
+    // TODO need to assert line by line
     private void assertColumnMetaData(final List<DataSetColumn> actual, final DataSetColumn expect) {
         for (DataSetColumn each : actual) {
             if (expect.getName().equals(each.getName())) {
@@ -194,6 +206,7 @@ public abstract class BaseDDLIT extends SingleIT {
         }
     }
     
+    // TODO need to assert line by line
     private void assertIndexMetaData(final List<DataSetIndex> actual, final DataSetIndex expect) {
         for (DataSetIndex each : actual) {
             if (expect.getName().equals(each.getName())) {

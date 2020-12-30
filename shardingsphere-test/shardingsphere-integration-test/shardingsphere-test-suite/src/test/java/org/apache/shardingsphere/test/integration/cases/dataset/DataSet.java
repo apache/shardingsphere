@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.test.integration.cases.dataset;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -29,13 +29,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Data sets root xml entry.
  */
 @Getter
-//@Setter
 @XmlRootElement(name = "dataset")
 public final class DataSet {
     
@@ -54,15 +52,15 @@ public final class DataSet {
      * @param tableName table name
      * @return data set meta data belong to current table
      */
-    public Optional<DataSetMetadata> findMetadata(final String tableName) {
+    public DataSetMetadata findMetadata(final String tableName) {
         for (DataSetMetadata each : metadataList) {
             if (tableName.equals(each.getTableName())) {
-                return Optional.of(each);
+                return each;
             }
         }
-        return Optional.empty();
+        throw new IllegalArgumentException(String.format("Cannot find expected metadata via table name: '%s'", tableName));
     }
-        
+    
     /**
      * Find data set meta data via data node.
      * 

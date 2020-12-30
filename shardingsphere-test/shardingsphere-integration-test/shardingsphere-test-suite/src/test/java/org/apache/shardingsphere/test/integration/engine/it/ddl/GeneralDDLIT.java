@@ -53,7 +53,7 @@ public final class GeneralDDLIT extends BaseDDLIT {
             } else {
                 connection.prepareStatement(getSql()).executeUpdate();
             }
-            assertTableMetaData(connection);
+            assertTableMetaData();
         }
     }
     
@@ -66,7 +66,7 @@ public final class GeneralDDLIT extends BaseDDLIT {
             } else {
                 connection.prepareStatement(getSql()).execute();
             }
-            assertTableMetaData(connection);
+            assertTableMetaData();
         }
     }
 }
