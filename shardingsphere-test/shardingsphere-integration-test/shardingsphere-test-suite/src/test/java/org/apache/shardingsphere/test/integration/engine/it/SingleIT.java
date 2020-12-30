@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine;
+package org.apache.shardingsphere.test.integration.engine.it;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,6 +25,7 @@ import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseTy
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
+import org.apache.shardingsphere.test.integration.engine.watcher.ITWatcher;
 import org.junit.Rule;
 
 import javax.xml.bind.JAXBException;

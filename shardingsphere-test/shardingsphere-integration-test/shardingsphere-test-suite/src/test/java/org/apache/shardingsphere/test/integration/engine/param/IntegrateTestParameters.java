@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration;
+package org.apache.shardingsphere.test.integration.engine.param;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.dql;
+package org.apache.shardingsphere.test.integration.engine.it.dql;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseTy
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.integration.engine.SingleIT;
+import org.apache.shardingsphere.test.integration.engine.it.SingleIT;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
