@@ -65,7 +65,6 @@ public abstract class BaseDMLIT extends SingleIT {
     @BeforeClass
     public static void initDatabasesAndTables() throws IOException, JAXBException {
         SchemaEnvironmentManager.createDatabases();
-        SchemaEnvironmentManager.dropTables();
         SchemaEnvironmentManager.createTables();
     }
     
@@ -75,12 +74,12 @@ public abstract class BaseDMLIT extends SingleIT {
     }
     
     @Before
-    public void fillData() throws SQLException, ParseException {
+    public final void fillData() throws SQLException, ParseException {
         dataSetEnvironmentManager.fillData();
     }
     
     @After
-    public void clearData() {
+    public final void clearData() {
         dataSetEnvironmentManager.clear();
     }
     
