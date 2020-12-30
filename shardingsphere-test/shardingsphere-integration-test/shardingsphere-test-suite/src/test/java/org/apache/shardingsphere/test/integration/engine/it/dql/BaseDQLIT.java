@@ -76,12 +76,16 @@ public abstract class BaseDQLIT extends SingleIT {
     }
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {
-        Collection<DataSetColumn> expectedColumns = new LinkedList<>();
-        for (DataSetMetadata each : getDataSet().getMetadataList()) {
-            expectedColumns.addAll(each.getColumns());
-        }
-        assertMetaData(resultSet.getMetaData(), expectedColumns);
+        assertMetaData(resultSet.getMetaData(), getExpectedColumns());
         assertRows(resultSet, getDataSet().getRows());
+    }
+    
+    private Collection<DataSetColumn> getExpectedColumns() {
+        Collection<DataSetColumn> result = new LinkedList<>();
+        for (DataSetMetadata each : getDataSet().getMetadataList()) {
+            result.addAll(each.getColumns());
+        }
+        return result;
     }
     
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
@@ -96,26 +100,41 @@ public abstract class BaseDQLIT extends SingleIT {
         }
     }
     
-    private void assertRows(final ResultSet actualResultSet, final List<DataSetRow> expectedDatSetRows) throws SQLException {
-        int count = 0;
-        ResultSetMetaData actualMetaData = actualResultSet.getMetaData();
-        while (actualResultSet.next()) {
-            int index = 1;
-            assertTrue("Size of actual result set is different with size of expected dat set rows.", count < expectedDatSetRows.size());
-            for (String each : expectedDatSetRows.get(count).getValues()) {
-                if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
-                    if (!NOT_VERIFY_FLAG.equals(each)) {
-                        assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
-                        assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(actualMetaData.getColumnLabel(index))), is(each));
-                    }
-                } else {
-                    assertThat(String.valueOf(actualResultSet.getObject(index)), is(each));
-                    assertThat(String.valueOf(actualResultSet.getObject(actualMetaData.getColumnLabel(index))), is(each));
-                }
-                index++;
-            }
-            count++;
+    private void assertRows(final ResultSet actual, final List<DataSetRow> expected) throws SQLException {
+        int rowCount = 0;
+        ResultSetMetaData actualMetaData = actual.getMetaData();
+        while (actual.next()) {
+            assertTrue("Size of actual result set is different with size of expected dat set rows.", rowCount < expected.size());
+            assertRow(actual, actualMetaData, expected.get(rowCount));
+            rowCount++;
         }
-        assertThat("Size of actual result set is different with size of expected dat set rows.", count, is(expectedDatSetRows.size()));
+        assertThat("Size of actual result set is different with size of expected dat set rows.", rowCount, is(expected.size()));
+    }
+    
+    private void assertRow(final ResultSet actual, final ResultSetMetaData actualMetaData, final DataSetRow expected) throws SQLException {
+        int columnIndex = 1;
+        for (String each : expected.getValues()) {
+            String columnLabel = actualMetaData.getColumnLabel(columnIndex);
+            if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
+                assertDateValue(actual, columnIndex, columnLabel, each);
+            } else {
+                assertObjectValue(actual, columnIndex, columnLabel, each);
+            }
+            columnIndex++;
+        }
+    }
+    
+    private void assertDateValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
+        if (NOT_VERIFY_FLAG.equals(expected)) {
+            return;
+        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        assertThat(dateFormat.format(actual.getDate(columnIndex)), is(expected));
+        assertThat(dateFormat.format(actual.getDate(columnLabel)), is(expected));
+    }
+    
+    private void assertObjectValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
+        assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
+        assertThat(String.valueOf(actual.getObject(columnLabel)), is(expected));
     }
 }
