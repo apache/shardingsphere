@@ -81,11 +81,7 @@ public abstract class BaseDDLIT extends SingleIT {
         dropTables();
     }
     
-    protected final void assertMetaData(final Connection connection) throws SQLException {
-        if (null == getAssertion().getExpectedDataFile()) {
-            log.warn("Expected data file `{}` is empty", getSql());
-            return;
-        }
+    protected final void assertTableMetaData(final Connection connection) throws SQLException {
         String tableName = ((DDLIntegrateTestCaseAssertion) getAssertion()).getTable();
         List<DataSetColumn> actualColumns = getActualColumns(connection, tableName);
         List<DataSetIndex> actualIndexes = getActualIndexes(connection, tableName);
@@ -95,19 +91,52 @@ public abstract class BaseDDLIT extends SingleIT {
             return;
         }
         try {
-            assertMetaData(actualColumns, actualIndexes, getDataSet().findMetadata(tableName));
+            assertTableMetaData(actualColumns, actualIndexes, getDataSet().findMetadata(tableName));
         } catch (final AssertionError ex) {
             log.error("[ERROR] SQL::{}, Parameter::{}, Expect::{}", getCaseIdentifier(), getAssertion().getParameters(), getAssertion().getExpectedDataFile());
             throw ex;
         }
     }
     
-    private void assertMetaData(final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetadata expected) {
+    private void assertTableMetaData(final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetadata expected) {
         for (DataSetColumn each : expected.getColumns()) {
             assertColumnMetaData(actualColumns, each);
         }
         for (DataSetIndex each : expected.getIndexes()) {
             assertIndexMetaData(actualIndexes, each);
+        }
+    }
+    
+    private List<DataSetColumn> getActualColumns(final Connection connection, final String tableName) throws SQLException {
+        DatabaseMetaData metaData = connection.getMetaData();
+        boolean isTableExisted = metaData.getTables(null, null, tableName, new String[] {"TABLE"}).next();
+        if (!isTableExisted) {
+            return Collections.emptyList();
+        }
+        try (ResultSet resultSet = metaData.getColumns(null, null, tableName, null)) {
+            List<DataSetColumn> result = new LinkedList<>();
+            while (resultSet.next()) {
+                DataSetColumn each = new DataSetColumn();
+                each.setName(resultSet.getString("COLUMN_NAME"));
+                each.setType(resultSet.getString("TYPE_NAME").toLowerCase());
+                result.add(each);
+            }
+            return result;
+        }
+    }
+    
+    private List<DataSetIndex> getActualIndexes(final Connection connection, final String tableName) throws SQLException {
+        DatabaseMetaData metaData = connection.getMetaData();
+        try (ResultSet resultSet = metaData.getIndexInfo(null, null, tableName, false, false)) {
+            List<DataSetIndex> result = new LinkedList<>();
+            while (resultSet.next()) {
+                DataSetIndex each = new DataSetIndex();
+                each.setName(resultSet.getString("INDEX_NAME"));
+                each.setUnique(!resultSet.getBoolean("NON_UNIQUE"));
+                each.setColumns(resultSet.getString("COLUMN_NAME"));
+                result.add(each);
+            }
+            return result;
         }
     }
     
@@ -142,39 +171,6 @@ public abstract class BaseDDLIT extends SingleIT {
             if (expect.getName().equals(each.getName())) {
                 assertThat(each.isUnique(), is(expect.isUnique()));
             }
-        }
-    }
-    
-    private List<DataSetColumn> getActualColumns(final Connection connection, final String tableName) throws SQLException {
-        DatabaseMetaData metaData = connection.getMetaData();
-        boolean isTableExisted = metaData.getTables(null, null, tableName, new String[] {"TABLE"}).next();
-        if (!isTableExisted) {
-            return Collections.emptyList();
-        }
-        try (ResultSet resultSet = metaData.getColumns(null, null, tableName, null)) {
-            List<DataSetColumn> result = new LinkedList<>();
-            while (resultSet.next()) {
-                DataSetColumn each = new DataSetColumn();
-                each.setName(resultSet.getString("COLUMN_NAME"));
-                each.setType(resultSet.getString("TYPE_NAME").toLowerCase());
-                result.add(each);
-            }
-            return result;
-        }
-    }
-    
-    private List<DataSetIndex> getActualIndexes(final Connection connection, final String tableName) throws SQLException {
-        DatabaseMetaData metaData = connection.getMetaData();
-        try (ResultSet resultSet = metaData.getIndexInfo(null, null, tableName, false, false)) {
-            List<DataSetIndex> result = new LinkedList<>();
-            while (resultSet.next()) {
-                DataSetIndex each = new DataSetIndex();
-                each.setName(resultSet.getString("INDEX_NAME"));
-                each.setUnique(!resultSet.getBoolean("NON_UNIQUE"));
-                each.setColumns(resultSet.getString("COLUMN_NAME"));
-                result.add(each);
-            }
-            return result;
         }
     }
     
