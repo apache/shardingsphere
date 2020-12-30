@@ -46,7 +46,7 @@ public final class GeneralDCLIT extends BaseDCLIT {
     
     @Test
     public void assertExecuteUpdate() throws SQLException {
-        try (Connection connection = getDataSource().getConnection()) {
+        try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 connection.createStatement().executeUpdate(getSql());
             } else {
@@ -60,7 +60,7 @@ public final class GeneralDCLIT extends BaseDCLIT {
     
     @Test
     public void assertExecute() throws SQLException {
-        try (Connection connection = getDataSource().getConnection()) {
+        try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 connection.createStatement().execute(getSql());
             } else {

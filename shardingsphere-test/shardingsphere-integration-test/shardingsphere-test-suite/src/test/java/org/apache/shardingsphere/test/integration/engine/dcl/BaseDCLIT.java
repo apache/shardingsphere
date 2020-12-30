@@ -51,17 +51,17 @@ public abstract class BaseDCLIT extends SingleIT {
                         final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, ruleType, databaseType, caseType, sql);
         authorityEnvironmentManager = new AuthorityEnvironmentManager(
-                EnvironmentPath.getAuthorityFile(ruleType), null == getDataSourceMap() ? null : createInstanceDataSourceMap(), getDatabaseType());
+                EnvironmentPath.getAuthorityFile(ruleType), null == getActualDataSources() ? null : createInstanceDataSourceMap(), databaseType);
     }
     
     private Map<String, DataSource> createInstanceDataSourceMap() throws SQLException {
-        return "shadow".equals(getRuleType()) ? getDataSourceMap() : getShardingInstanceDataSourceMap();
+        return "shadow".equals(getRuleType()) ? getActualDataSources() : getShardingInstanceDataSourceMap();
     }
     
     private Map<String, DataSource> getShardingInstanceDataSourceMap() throws SQLException {
-        Map<String, DataSource> result = new LinkedHashMap<>();
+        Map<String, DataSource> result = new LinkedHashMap<>(getActualDataSources().size(), 1);
         Map<String, DataSourceMetaData> dataSourceMetaDataMap = getDataSourceMetaDataMap();
-        for (Entry<String, DataSource> entry : getDataSourceMap().entrySet()) {
+        for (Entry<String, DataSource> entry : getActualDataSources().entrySet()) {
             if (!isExisted(entry.getKey(), result.keySet(), dataSourceMetaDataMap)) {
                 result.put(entry.getKey(), entry.getValue());
             }
@@ -70,8 +70,8 @@ public abstract class BaseDCLIT extends SingleIT {
     }
     
     private Map<String, DataSourceMetaData> getDataSourceMetaDataMap() throws SQLException {
-        Map<String, DataSourceMetaData> result = new LinkedHashMap<>();
-        for (Entry<String, DataSource> entry : getDataSourceMap().entrySet()) {
+        Map<String, DataSourceMetaData> result = new LinkedHashMap<>(getActualDataSources().size(), 1);
+        for (Entry<String, DataSource> entry : getActualDataSources().entrySet()) {
             try (Connection connection = entry.getValue().getConnection()) {
                 DatabaseMetaData metaData = connection.getMetaData();
                 result.put(entry.getKey(), getDatabaseType().getDataSourceMetaData(metaData.getURL(), metaData.getUserName()));

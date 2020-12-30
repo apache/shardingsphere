@@ -55,9 +55,9 @@ public abstract class BaseIT {
     
     private final DatabaseType databaseType;
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final Map<String, DataSource> actualDataSources;
     
-    private final DataSource dataSource;
+    private final DataSource targetDataSource;
     
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -69,11 +69,11 @@ public abstract class BaseIT {
     BaseIT(final String ruleType, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
         this.ruleType = ruleType;
         this.databaseType = databaseType;
-        dataSourceMap = createDataSourceMap();
-        dataSource = createDataSource();
+        actualDataSources = createActualDataSources();
+        targetDataSource = createTargetDataSource();
     }
     
-    private Map<String, DataSource> createDataSourceMap() throws IOException, JAXBException {
+    private Map<String, DataSource> createActualDataSources() throws IOException, JAXBException {
         Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(ruleType);
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
@@ -82,9 +82,9 @@ public abstract class BaseIT {
         return result;
     }
     
-    private DataSource createDataSource() throws SQLException, IOException {
+    private DataSource createTargetDataSource() throws SQLException, IOException {
         return IntegrateTestEnvironment.getInstance().isProxyEnvironment() ? ProxyDataSourceBuilder.build(String.format("proxy_%s", ruleType), databaseType) 
-                : YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(ruleType)));
+                : YamlShardingSphereDataSourceFactory.createDataSource(actualDataSources, new File(EnvironmentPath.getRulesConfigurationFile(ruleType)));
     }
     
     protected static void setUpDatabasesAndTables() {
@@ -126,8 +126,8 @@ public abstract class BaseIT {
     
     @After
     public void tearDown() {
-        if (dataSource instanceof ShardingSphereDataSource) {
-            ((ShardingSphereDataSource) dataSource).getMetaDataContexts().getExecutorEngine().close();
+        if (targetDataSource instanceof ShardingSphereDataSource) {
+            ((ShardingSphereDataSource) targetDataSource).getMetaDataContexts().getExecutorEngine().close();
         }
     }
     
