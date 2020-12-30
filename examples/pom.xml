@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.shardingsphere.example</groupId>
     <artifactId>shardingsphere-example</artifactId>
-    <version>5.0.0-alpha</version>
+    <version>5.0.0-RC1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
@@ -41,10 +41,10 @@
         <shardingsphere.version>5.0.0-RC1-SNAPSHOT</shardingsphere.version>
         
         <aspectjweaver.version>1.8.9</aspectjweaver.version>
-        <spring-framework.version>4.3.20.RELEASE</spring-framework.version>
-        <spring-boot.version>1.5.17.RELEASE</spring-boot.version>
+        <spring-framework.version>5.1.1.RELEASE</spring-framework.version>
+        <spring-boot.version>2.1.0.RELEASE</spring-boot.version>
         <hikari-cp.version>2.4.11</hikari-cp.version>
-        <mysql-connector-java.version>5.1.42</mysql-connector-java.version>
+        <mysql-connector-java.version>5.1.44</mysql-connector-java.version>
         <postgresql.version>42.2.5.jre7</postgresql.version>
         <h2.version>1.4.196</h2.version>
         <slf4j.version>1.7.7</slf4j.version>
