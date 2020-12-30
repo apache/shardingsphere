@@ -33,21 +33,21 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * JDBC data source builder.
+ * Actual data source builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JdbcDataSourceBuilder {
+public final class ActualDataSourceBuilder {
     
     private static final DataSourcePoolType DATA_SOURCE_POOL_TYPE = DataSourcePoolType.HikariCP;
     
     private static final Map<DataSourceCacheKey, DataSource> CACHE = new HashMap<>();
     
     /**
-     * Build jdbc data source.
+     * Build actual data source.
      *
-     * @param name data source name
+     * @param name actual data source name
      * @param databaseType database type
-     * @return data source
+     * @return actual data source
      */
     public static DataSource build(final String name, final DatabaseType databaseType) {
         DataSourceCacheKey cacheKey = new DataSourceCacheKey(name, databaseType);
@@ -70,7 +70,7 @@ public final class JdbcDataSourceBuilder {
                 throw new UnsupportedOperationException(DATA_SOURCE_POOL_TYPE.name());
         }
     }
-
+    
     private static DataSource createDBCP(final String dataSourceName, final DatabaseType databaseType, final DatabaseEnvironment databaseEnvironment) {
         BasicDataSource result = new BasicDataSource();
         result.setDriverClassName(databaseEnvironment.getDriverClassName());
