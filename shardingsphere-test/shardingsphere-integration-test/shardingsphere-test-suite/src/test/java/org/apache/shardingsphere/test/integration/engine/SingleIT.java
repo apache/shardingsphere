@@ -19,13 +19,13 @@ package org.apache.shardingsphere.test.integration.engine;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
+import org.junit.Rule;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -35,9 +35,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Getter(AccessLevel.PROTECTED)
 public abstract class SingleIT extends BaseIT {
+    
+    @Rule
+    public ITWatcher watcher = new ITWatcher();
     
     private final String caseIdentifier;
     
@@ -62,9 +64,5 @@ public abstract class SingleIT extends BaseIT {
     private String getLiteralSQL(final String sql) throws ParseException {
         List<Object> parameters = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
         return parameters.isEmpty() ? sql : String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%").replace("%%", "%").replace("'%'", "'%%'");
-    }
-    
-    protected final void logException(final Exception ex) {
-        log.error("ruleType={}, databaseType={}, sql={}", getRuleType(), getDatabaseType().getName(), sql, ex);
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.engine.dql;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.dql.DQLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
@@ -48,7 +47,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@Slf4j
 public abstract class BaseDQLIT extends SingleIT {
     
     protected BaseDQLIT(final String parentPath, final DQLIntegrateTestCaseAssertion assertion, final String ruleType,
@@ -82,13 +80,8 @@ public abstract class BaseDQLIT extends SingleIT {
         for (DataSetMetadata each : getDataSet().getMetadataList()) {
             expectedColumns.addAll(each.getColumns());
         }
-        try {
-            assertMetaData(resultSet.getMetaData(), expectedColumns);
-            assertRows(resultSet, getDataSet().getRows());
-        } catch (final AssertionError ex) {
-            log.error("[ERROR] SQL::{}, Parameter::[{}], Expect::{}", getCaseIdentifier(), getAssertion().getParameters(), getAssertion().getExpectedDataFile());
-            throw ex;
-        }
+        assertMetaData(resultSet.getMetaData(), expectedColumns);
+        assertRows(resultSet, getDataSet().getRows());
     }
     
     private void assertMetaData(final ResultSetMetaData actualMetaData, final List<DataSetColumn> expectedColumns) throws SQLException {

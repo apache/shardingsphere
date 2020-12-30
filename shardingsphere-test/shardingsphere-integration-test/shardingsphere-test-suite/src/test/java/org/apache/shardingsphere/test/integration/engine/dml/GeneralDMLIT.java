@@ -17,15 +17,13 @@
 
 package org.apache.shardingsphere.test.integration.engine.dml;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.test.integration.IntegrateTestParameters;
+import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
-import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
-import org.apache.shardingsphere.test.integration.IntegrateTestParameters;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import javax.xml.bind.JAXBException;
@@ -40,7 +38,6 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertFalse;
 
-@RunWith(Parameterized.class)
 public final class GeneralDMLIT extends BaseDMLIT {
     
     private final DMLIntegrateTestCaseAssertion assertion;
@@ -72,9 +69,6 @@ public final class GeneralDMLIT extends BaseDMLIT {
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCount = SQLCaseType.Literal == getCaseType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
-        } catch (final SQLException ex) {
-            logException(ex);
-            throw ex;
         }
         assertDataSet(actualUpdateCount);
     }
@@ -107,9 +101,6 @@ public final class GeneralDMLIT extends BaseDMLIT {
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCount = SQLCaseType.Literal == getCaseType() ? executeForStatement(connection) : executeForPreparedStatement(connection);
-        } catch (final SQLException ex) {
-            logException(ex);
-            throw ex;
         }
         assertDataSet(actualUpdateCount);
     }
