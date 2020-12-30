@@ -16,8 +16,5 @@
   -->
 
 <dataset>
-    <metadata table-name="t_order_details">
-        <column name="id" type="integer" />
-        <column name="description" type="varchar" />
-    </metadata>
+    <metadata table-name="t_order_details" data-nodes="db.t_order_details" />
 </dataset>

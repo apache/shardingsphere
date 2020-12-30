@@ -16,8 +16,9 @@
   -->
 
 <dataset>
-    <metadata table-name="t_order_details">
+    <metadata table-name="t_order_details" data-nodes="db_${0..9}.t_order_details">
         <column name="id" type="integer" />
         <column name="description" type="varchar" />
+        <column name="name" type="varchar" />
     </metadata>
 </dataset>
