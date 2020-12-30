@@ -47,6 +47,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -131,7 +132,7 @@ public abstract class BaseDMLIT extends SingleIT {
         }
     }
     
-    private void assertMetaData(final ResultSetMetaData actualMetaData, final List<DataSetColumn> columnMetadataList) throws SQLException {
+    private void assertMetaData(final ResultSetMetaData actualMetaData, final Collection<DataSetColumn> columnMetadataList) throws SQLException {
         assertThat(actualMetaData.getColumnCount(), is(columnMetadataList.size()));
         int index = 1;
         for (DataSetColumn each : columnMetadataList) {

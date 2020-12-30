@@ -28,12 +28,11 @@ import org.apache.shardingsphere.test.integration.engine.SingleIT;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.env.datasource.builder.JdbcDataSourceBuilder;
+import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -42,11 +41,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -72,22 +68,13 @@ public abstract class BaseDQLIT extends SingleIT {
     
     private static void insertData(final DatabaseType databaseType) throws SQLException, ParseException, IOException, JAXBException {
         for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
-            new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(each), createDataSourceMap(databaseType, each)).load();
+            new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(each), ActualDataSourceBuilder.createActualDataSources(each, databaseType)).load();
         }
     }
     
     @AfterClass
     public static void clearData() throws IOException, JAXBException {
         SchemaEnvironmentManager.dropDatabases();
-    }
-    
-    private static Map<String, DataSource> createDataSourceMap(final DatabaseType databaseType, final String ruleType) throws IOException, JAXBException {
-        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(ruleType);
-        Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
-        for (String each : dataSourceNames) {
-            result.put(each, JdbcDataSourceBuilder.build(each, databaseType));
-        }
-        return result;
     }
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {

@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
-import org.apache.shardingsphere.test.integration.env.datasource.builder.JdbcDataSourceBuilder;
+import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;
@@ -78,7 +78,7 @@ public final class SchemaEnvironmentManager {
     private static void createDatabases(final String ruleType) throws IOException, JAXBException {
         SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(ruleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
-            DataSource dataSource = JdbcDataSourceBuilder.build(null, each);
+            DataSource dataSource = ActualDataSourceBuilder.build(null, each);
             executeSQLScript(dataSource, generateCreateDatabaseSQLs(each, schemaEnvironment.getDatabases()));
         }
     }
@@ -109,7 +109,7 @@ public final class SchemaEnvironmentManager {
     private static void dropDatabases(final String ruleType) throws IOException, JAXBException {
         SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(ruleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
-            DataSource dataSource = JdbcDataSourceBuilder.build(null, each);
+            DataSource dataSource = ActualDataSourceBuilder.build(null, each);
             executeSQLScript(dataSource, generatePrepareDropDatabaseSQLs(each, schemaEnvironment.getDatabases()));
             executeSQLScript(dataSource, generateDropDatabaseSQLs(each, schemaEnvironment.getDatabases()));
         }
@@ -155,7 +155,7 @@ public final class SchemaEnvironmentManager {
     
     private static void createTables(final SchemaEnvironment schemaEnvironment, final DatabaseType databaseType) {
         for (String each : schemaEnvironment.getDatabases()) {
-            DataSource dataSource = JdbcDataSourceBuilder.build(each, databaseType);
+            DataSource dataSource = ActualDataSourceBuilder.build(each, databaseType);
             executeSQLScript(dataSource, schemaEnvironment.getTableCreateSQLs());
         }
     }
@@ -181,7 +181,7 @@ public final class SchemaEnvironmentManager {
     
     private static void dropTables(final SchemaEnvironment schemaEnvironment, final DatabaseType databaseType) {
         for (String each : schemaEnvironment.getDatabases()) {
-            DataSource dataSource = JdbcDataSourceBuilder.build(each, databaseType);
+            DataSource dataSource = ActualDataSourceBuilder.build(each, databaseType);
             executeSQLScript(dataSource, schemaEnvironment.getTableDropSQLs());
         }
     }

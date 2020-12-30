@@ -24,9 +24,8 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
-import org.apache.shardingsphere.test.integration.env.datasource.builder.JdbcDataSourceBuilder;
+import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ProxyDataSourceBuilder;
-import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.After;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -39,8 +38,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -68,17 +65,8 @@ public abstract class BaseIT {
     BaseIT(final String ruleType, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
         this.ruleType = ruleType;
         this.databaseType = databaseType;
-        actualDataSources = createActualDataSources();
+        actualDataSources = ActualDataSourceBuilder.createActualDataSources(ruleType, databaseType);
         targetDataSource = createTargetDataSource();
-    }
-    
-    private Map<String, DataSource> createActualDataSources() throws IOException, JAXBException {
-        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(ruleType);
-        Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
-        for (String each : dataSourceNames) {
-            result.put(each, JdbcDataSourceBuilder.build(each, databaseType));
-        }
-        return result;
     }
     
     private DataSource createTargetDataSource() throws SQLException, IOException {
@@ -91,7 +79,7 @@ public abstract class BaseIT {
     }
     
     @After
-    public void tearDown() {
+    public final void tearDown() {
         if (targetDataSource instanceof ShardingSphereDataSource) {
             ((ShardingSphereDataSource) targetDataSource).getMetaDataContexts().getExecutorEngine().close();
         }

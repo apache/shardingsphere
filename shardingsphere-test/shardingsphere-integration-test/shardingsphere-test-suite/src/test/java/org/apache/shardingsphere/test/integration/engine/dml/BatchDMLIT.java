@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestC
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.BatchIT;
-import org.apache.shardingsphere.test.integration.engine.util.IntegrateTestParameters;
+import org.apache.shardingsphere.test.integration.IntegrateTestParameters;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.engine.dcl;
 import org.apache.shardingsphere.test.integration.cases.assertion.dcl.DCLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
-import org.apache.shardingsphere.test.integration.engine.util.IntegrateTestParameters;
+import org.apache.shardingsphere.test.integration.IntegrateTestParameters;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;

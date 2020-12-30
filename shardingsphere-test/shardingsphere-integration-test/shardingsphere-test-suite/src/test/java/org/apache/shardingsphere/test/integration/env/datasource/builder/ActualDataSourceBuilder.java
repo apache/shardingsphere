@@ -25,29 +25,51 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
+import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * JDBC data source builder.
+ * Actual data source builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JdbcDataSourceBuilder {
+public final class ActualDataSourceBuilder {
     
     private static final DataSourcePoolType DATA_SOURCE_POOL_TYPE = DataSourcePoolType.HikariCP;
     
     private static final Map<DataSourceCacheKey, DataSource> CACHE = new HashMap<>();
     
     /**
-     * Build jdbc data source.
-     *
-     * @param name data source name
+     * Create actual data sources.
+     * 
+     * @param ruleType rule type
      * @param databaseType database type
-     * @return data source
+     * @return actual data sources map
+     * @throws IOException IO exception
+     * @throws JAXBException JAXB exception
+     */
+    public static Map<String, DataSource> createActualDataSources(final String ruleType, final DatabaseType databaseType) throws IOException, JAXBException {
+        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(ruleType);
+        Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
+        for (String each : dataSourceNames) {
+            result.put(each, build(each, databaseType));
+        }
+        return result;
+    }
+    
+    /**
+     * Build actual data source.
+     *
+     * @param name actual data source name
+     * @param databaseType database type
+     * @return actual data source
      */
     public static DataSource build(final String name, final DatabaseType databaseType) {
         DataSourceCacheKey cacheKey = new DataSourceCacheKey(name, databaseType);
@@ -70,7 +92,7 @@ public final class JdbcDataSourceBuilder {
                 throw new UnsupportedOperationException(DATA_SOURCE_POOL_TYPE.name());
         }
     }
-
+    
     private static DataSource createDBCP(final String dataSourceName, final DatabaseType databaseType, final DatabaseEnvironment databaseEnvironment) {
         BasicDataSource result = new BasicDataSource();
         result.setDriverClassName(databaseEnvironment.getDriverClassName());

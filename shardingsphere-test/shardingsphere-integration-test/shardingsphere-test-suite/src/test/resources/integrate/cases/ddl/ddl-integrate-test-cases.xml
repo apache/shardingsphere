@@ -33,19 +33,19 @@
     </ddl-test-case>
     
     <ddl-test-case sql="DROP TABLE t_order_details">
-        <assertion init-sql="CREATE TABLE t_order_details(id int, description varchar(10))" table="t_order_details" expected-data-file="empty_table.xml" />
+        <assertion init-sql="CREATE TABLE t_order_details(id int, description varchar(10))" table="t_order_details" expected-data-file="drop_table.xml" />
     </ddl-test-case>
     
     <ddl-test-case sql="DROP INDEX t_order_details_index ON t_order_details" db-types="MySQL,SQLServer">
-        <assertion init-sql="CREATE TABLE t_order_details(id int, description varchar(10));CREATE INDEX t_order_details_index ON t_order_details(description)" table="t_order_details" expected-data-file="empty_table.xml" />
+        <assertion init-sql="CREATE TABLE t_order_details(id int, description varchar(10));CREATE INDEX t_order_details_index ON t_order_details(description)" table="t_order_details" expected-data-file="unchanged_table.xml" />
     </ddl-test-case>
     
     <ddl-test-case sql="DROP INDEX order_index" db-types="PostgreSQL,Oracle">
-        <assertion init-sql="CREATE TABLE t_order_details(id int, description varchar(10));CREATE INDEX t_order_details_index ON t_order_details(description)" table="t_order_details" expected-data-file="empty_table.xml" />
+        <assertion init-sql="CREATE TABLE t_order_details(id int, description varchar(10));CREATE INDEX t_order_details_index ON t_order_details(description)" table="t_order_details" expected-data-file="unchanged_table.xml" />
     </ddl-test-case>
     
     <ddl-test-case sql="TRUNCATE TABLE t_order_details">
-        <assertion init-sql="CREATE TABLE t_order_details(id int, description varchar(10))" table="t_order_details" expected-data-file="empty_table.xml" />
+        <assertion init-sql="CREATE TABLE t_order_details(id int, description varchar(10))" table="t_order_details" expected-data-file="unchanged_table.xml" />
     </ddl-test-case>
     
     <!-- TODO add single table DDL test cases -->
