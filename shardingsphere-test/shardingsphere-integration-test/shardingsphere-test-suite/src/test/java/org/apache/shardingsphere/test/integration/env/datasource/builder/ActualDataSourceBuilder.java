@@ -25,8 +25,12 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
+import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 
 import javax.sql.DataSource;
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +45,24 @@ public final class ActualDataSourceBuilder {
     private static final DataSourcePoolType DATA_SOURCE_POOL_TYPE = DataSourcePoolType.HikariCP;
     
     private static final Map<DataSourceCacheKey, DataSource> CACHE = new HashMap<>();
+    
+    /**
+     * Create actual data sources.
+     * 
+     * @param ruleType rule type
+     * @param databaseType database type
+     * @return actual data sources map
+     * @throws IOException IO exception
+     * @throws JAXBException JAXB exception
+     */
+    public static Map<String, DataSource> createActualDataSources(final String ruleType, final DatabaseType databaseType) throws IOException, JAXBException {
+        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(ruleType);
+        Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
+        for (String each : dataSourceNames) {
+            result.put(each, build(each, databaseType));
+        }
+        return result;
+    }
     
     /**
      * Build actual data source.
