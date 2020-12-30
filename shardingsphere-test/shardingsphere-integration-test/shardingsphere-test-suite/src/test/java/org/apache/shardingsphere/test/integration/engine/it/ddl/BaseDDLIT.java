@@ -134,7 +134,7 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     private void assertNotContainsTable(final Connection connection, final String tableName) throws SQLException {
-        assertFalse(connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE"}).next());
+        assertFalse(String.format("Table `%s` should not existed", tableName), connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE"}).next());
     }
     
     private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes) throws SQLException {
@@ -187,20 +187,20 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     private void assertColumnMetaData(final List<DataSetColumn> actual, final List<DataSetColumn> expected) {
-        assertThat(actual.size(), is(expected.size()));
+        assertThat("Size of actual columns is different with size of expected columns.", actual.size(), is(expected.size()));
         for (int i = 0; i < actual.size(); i++) {
             assertColumnMetaData(actual.get(i), expected.get(i));
         }
     }
     
     private void assertColumnMetaData(final DataSetColumn actual, final DataSetColumn expected) {
-        assertThat(actual.getName(), is(expected.getName()));
+        assertThat("Mismatched column name.", actual.getName(), is(expected.getName()));
         if ("MySQL".equals(getDatabaseType().getName()) && "integer".equals(expected.getType())) {
-            assertThat(actual.getType(), is("int"));
+            assertThat("Mismatched column type.", actual.getType(), is("int"));
         } else if ("PostgreSQL".equals(getDatabaseType().getName()) && "integer".equals(expected.getType())) {
-            assertThat(actual.getType(), is("int4"));
+            assertThat("Mismatched column type.", actual.getType(), is("int4"));
         } else {
-            assertThat(actual.getType(), is(expected.getType()));
+            assertThat("Mismatched column type.", actual.getType(), is(expected.getType()));
         }
     }
     
