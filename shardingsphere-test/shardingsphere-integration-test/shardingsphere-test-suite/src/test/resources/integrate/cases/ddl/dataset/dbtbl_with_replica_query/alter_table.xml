@@ -16,9 +16,9 @@
   -->
 
 <dataset>
-    <metadata table-name="t_order_details">
+    <metadata table-name="t_order_details" data-nodes="primary_ds_${0..9}.t_order_details_${0..9},replica_ds_${0..9}.t_order_details_${0..9}">
         <column name="id" type="integer" />
         <column name="description" type="varchar" />
-        <index name="t_order_details_index_t_order_details" column="id" unique="true" />
+        <column name="name" type="varchar" />
     </metadata>
 </dataset>

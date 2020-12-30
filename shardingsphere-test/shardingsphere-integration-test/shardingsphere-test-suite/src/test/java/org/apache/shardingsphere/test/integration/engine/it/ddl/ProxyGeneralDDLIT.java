@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.test.integration.engine.it.ddl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
@@ -25,7 +27,6 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.engine.param.IntegrateTestParameters;
-import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -37,7 +38,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +55,7 @@ public final class ProxyGeneralDDLIT extends BaseDDLIT {
     
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestEnvironment.getInstance().isProxyEnvironment() ? IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DDL) : Collections.emptyList();
+        return IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DDL);
     }
     
     @SuppressWarnings("JUnitTestMethodWithNoAssertions")
@@ -91,7 +91,7 @@ public final class ProxyGeneralDDLIT extends BaseDDLIT {
             assertFalse(containsTable(connection, tableName));
             return;
         }
-        assertTableMetaData(getActualColumns(connection, tableName), getActualIndexes(connection, tableName), expected.get());
+        assertTableMetaData(getActualColumns(expected.get().getDataNodes()), getActualIndexes(expected.get().getDataNodes()), expected.get());
     }
     
     private void assertTableMetaData(final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetadata expected) {
@@ -107,6 +107,17 @@ public final class ProxyGeneralDDLIT extends BaseDDLIT {
         return connection.getMetaData().getTables(null, null, tableName, new String[] {"TABLE"}).next();
     }
     
+    private List<DataSetColumn> getActualColumns(final String dataNodes) throws SQLException {
+        List<DataSetColumn> result = new LinkedList<>();
+        for (String each : new InlineExpressionParser(dataNodes).splitAndEvaluate()) {
+            DataNode dataNode = new DataNode(each);
+            try (Connection connection = getActualDataSources().get(dataNode.getDataSourceName()).getConnection()) {
+                result.addAll(getActualColumns(connection, dataNode.getTableName()));
+            }
+        }
+        return result;
+    }
+    
     private List<DataSetColumn> getActualColumns(final Connection connection, final String tableName) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         try (ResultSet resultSet = metaData.getColumns(null, null, tableName, null)) {
@@ -119,6 +130,17 @@ public final class ProxyGeneralDDLIT extends BaseDDLIT {
             }
             return result;
         }
+    }
+    
+    private List<DataSetIndex> getActualIndexes(final String dataNodes) throws SQLException {
+        List<DataSetIndex> result = new LinkedList<>();
+        for (String each : new InlineExpressionParser(dataNodes).splitAndEvaluate()) {
+            DataNode dataNode = new DataNode(each);
+            try (Connection connection = getActualDataSources().get(dataNode.getDataSourceName()).getConnection()) {
+                result.addAll(getActualIndexes(connection, dataNode.getTableName()));
+            }
+        }
+        return result;
     }
     
     private List<DataSetIndex> getActualIndexes(final Connection connection, final String tableName) throws SQLException {
