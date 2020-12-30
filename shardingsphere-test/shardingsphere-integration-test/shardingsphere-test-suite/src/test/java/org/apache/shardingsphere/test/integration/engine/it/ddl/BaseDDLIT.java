@@ -61,7 +61,7 @@ public abstract class BaseDDLIT extends SingleIT {
     @Before
     public final void initTables() throws SQLException, ParseException, IOException, JAXBException {
         SchemaEnvironmentManager.createTables();
-        dataSetEnvironmentManager.load();
+        dataSetEnvironmentManager.fillData();
         try (Connection connection = getTargetDataSource().getConnection()) {
             executeInitSQLs(connection);
         }

@@ -94,7 +94,7 @@ public abstract class BatchIT extends BaseIT {
     
     @Before
     public void insertData() throws SQLException, ParseException {
-        dataSetEnvironmentManager.load();
+        dataSetEnvironmentManager.fillData();
     }
     
     @After
