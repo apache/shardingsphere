@@ -22,18 +22,14 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-features</artifactId>
+        <artifactId>shardingsphere-ha</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-ha</artifactId>
-    <name>${project.artifactId}</name>
+    <artifactId>shardingsphere-ha-provider</artifactId>
     <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-ha-api</module>
-        <module>shardingsphere-ha-common</module>
-        <module>shardingsphere-ha-provider</module>
-        <module>shardingsphere-ha-route</module>
-        <module>shardingsphere-ha-spring</module>
+        <module>shardingsphere-ha-mgr</module>
     </modules>
 </project>
