@@ -57,7 +57,7 @@ public abstract class BaseIT {
     
     private final Map<String, DataSource> actualDataSources;
     
-    private volatile DataSource targetDataSource;
+    private DataSource targetDataSource;
     
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
