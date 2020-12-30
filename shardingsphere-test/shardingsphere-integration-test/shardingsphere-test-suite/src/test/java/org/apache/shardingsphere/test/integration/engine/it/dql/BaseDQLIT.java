@@ -40,6 +40,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -75,7 +76,7 @@ public abstract class BaseDQLIT extends SingleIT {
     }
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {
-        List<DataSetColumn> expectedColumns = new LinkedList<>();
+        Collection<DataSetColumn> expectedColumns = new LinkedList<>();
         for (DataSetMetadata each : getDataSet().getMetadataList()) {
             expectedColumns.addAll(each.getColumns());
         }
@@ -83,19 +84,15 @@ public abstract class BaseDQLIT extends SingleIT {
         assertRows(resultSet, getDataSet().getRows());
     }
     
-    private void assertMetaData(final ResultSetMetaData actualMetaData, final List<DataSetColumn> expectedColumns) throws SQLException {
-        // TODO fix shadow
+    private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
+        // TODO Fix shadow
         if ("shadow".equals(getRuleType())) {
             return;
         }
-        // Unconfigured Table doesn't have column info, should skip check column info
-        if (0 == actualMetaData.getColumnCount()) {
-            return;
-        }
-        assertThat(actualMetaData.getColumnCount(), is(expectedColumns.size()));
+        assertThat(actual.getColumnCount(), is(expected.size()));
         int index = 1;
-        for (DataSetColumn each : expectedColumns) {
-            assertThat(actualMetaData.getColumnLabel(index++).toLowerCase(), is(each.getName().toLowerCase()));
+        for (DataSetColumn each : expected) {
+            assertThat(actual.getColumnLabel(index++).toLowerCase(), is(each.getName().toLowerCase()));
         }
     }
     
