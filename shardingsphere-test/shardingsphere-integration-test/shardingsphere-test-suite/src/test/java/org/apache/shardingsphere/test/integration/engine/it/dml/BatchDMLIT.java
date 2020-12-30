@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.dml;
+package org.apache.shardingsphere.test.integration.engine.it.dml;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseContext;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
-import org.apache.shardingsphere.test.integration.engine.BatchIT;
-import org.apache.shardingsphere.test.integration.IntegrateTestParameters;
+import org.apache.shardingsphere.test.integration.engine.it.BatchIT;
+import org.apache.shardingsphere.test.integration.engine.param.IntegrateTestParameters;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 

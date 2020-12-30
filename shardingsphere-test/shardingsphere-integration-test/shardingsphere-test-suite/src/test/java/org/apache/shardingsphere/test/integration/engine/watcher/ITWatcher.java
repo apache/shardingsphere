@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine;
+package org.apache.shardingsphere.test.integration.engine.watcher;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.rules.TestWatcher;
