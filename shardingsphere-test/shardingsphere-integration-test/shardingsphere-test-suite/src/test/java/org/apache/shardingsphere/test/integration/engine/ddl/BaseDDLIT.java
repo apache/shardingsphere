@@ -68,9 +68,6 @@ public abstract class BaseDDLIT extends SingleIT {
     
     @Before
     public final void initTables() throws SQLException, ParseException, IOException, JAXBException {
-        if ("H2".equals(getDatabaseType().getName())) {
-            dropTables();
-        }
         createTables();
         new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getRuleType()), getActualDataSources()).initialize();
         resetTargetDataSource();
