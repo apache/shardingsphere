@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.engine.ddl;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
@@ -41,12 +40,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
-@Slf4j
 public final class ProxyGeneralDDLIT extends BaseDDLIT {
     
     public ProxyGeneralDDLIT(final String parentPath, final DDLIntegrateTestCaseAssertion assertion, final String ruleType,
@@ -93,19 +92,12 @@ public final class ProxyGeneralDDLIT extends BaseDDLIT {
     
     private void assertTableMetaData(final Connection connection) throws SQLException {
         String tableName = ((DDLIntegrateTestCaseAssertion) getAssertion()).getTable();
-        List<DataSetColumn> actualColumns = getActualColumns(connection, tableName);
-        List<DataSetIndex> actualIndexes = getActualIndexes(connection, tableName);
-        if (actualColumns.isEmpty() || actualIndexes.isEmpty()) {
-            assertIfDropTable(actualColumns);
-            assertIfDropIndex(actualIndexes);
+        Optional<DataSetMetadata> expected = getDataSet().findMetadata(tableName);
+        if (!expected.isPresent()) {
+            assertFalse(containsTable(connection, tableName));
             return;
         }
-        try {
-            assertTableMetaData(actualColumns, actualIndexes, getDataSet().findMetadata(tableName).orElse(null));
-        } catch (final AssertionError ex) {
-            log.error("[ERROR] SQL::{}, Parameter::{}, Expect::{}", getCaseIdentifier(), getAssertion().getParameters(), getAssertion().getExpectedDataFile());
-            throw ex;
-        }
+        assertTableMetaData(getActualColumns(connection, tableName), getActualIndexes(connection, tableName), expected.get());
     }
     
     private void assertTableMetaData(final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetadata expected) {
@@ -117,12 +109,12 @@ public final class ProxyGeneralDDLIT extends BaseDDLIT {
         }
     }
     
+    private boolean containsTable(final Connection connection, final String tableName) throws SQLException {
+        return connection.getMetaData().getTables(null, null, tableName, new String[] {"TABLE"}).next();
+    }
+    
     private List<DataSetColumn> getActualColumns(final Connection connection, final String tableName) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
-        boolean isTableExisted = metaData.getTables(null, null, tableName, new String[] {"TABLE"}).next();
-        if (!isTableExisted) {
-            return Collections.emptyList();
-        }
         try (ResultSet resultSet = metaData.getColumns(null, null, tableName, null)) {
             List<DataSetColumn> result = new LinkedList<>();
             while (resultSet.next()) {
@@ -147,18 +139,6 @@ public final class ProxyGeneralDDLIT extends BaseDDLIT {
                 result.add(each);
             }
             return result;
-        }
-    }
-    
-    private void assertIfDropTable(final List<DataSetColumn> actualColumns) {
-        if (getSql().startsWith("DROP TABLE")) {
-            assertTrue(actualColumns.isEmpty());
-        }
-    }
-    
-    private void assertIfDropIndex(final List<DataSetIndex> actualIndexes) {
-        if (getSql().startsWith("DROP INDEX")) {
-            assertTrue(actualIndexes.isEmpty());
         }
     }
     
