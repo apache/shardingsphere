@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.datasource;
+package org.apache.shardingsphere.scaling.core.config.datasource;
 
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
-import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Data source factory.
+ * Data source configuration for YAML.
  */
-public final class DataSourceFactory {
+@Getter
+@Setter
+public final class YamlDataSourceConfiguration implements YamlConfiguration {
     
-    /**
-     * New instance data source wrapper.
-     *
-     * @param dataSourceConfig scaling data source configuration
-     * @return new data source wrapper
-     */
-    @SneakyThrows(SQLException.class)
-    public DataSourceWrapper newInstance(final ScalingDataSourceConfiguration dataSourceConfig) {
-        return new DataSourceWrapper(dataSourceConfig.toDataSource());
-    }
+    private String dataSourceClassName;
+    
+    private Map<String, Object> props = new HashMap<>();
 }
