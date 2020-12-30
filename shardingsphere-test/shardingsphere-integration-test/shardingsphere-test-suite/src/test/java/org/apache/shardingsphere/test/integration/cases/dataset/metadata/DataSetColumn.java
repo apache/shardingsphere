@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.cases.dataset.metadata;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,6 +28,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
+@EqualsAndHashCode
 public final class DataSetColumn {
     
     @XmlAttribute(required = true)
