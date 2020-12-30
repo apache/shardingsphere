@@ -45,8 +45,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -112,44 +114,37 @@ public abstract class BaseDDLIT extends SingleIT {
         DataSetMetadata expected = getDataSet().findMetadata(tableName);
         Collection<DataNode> dataNodes = new InlineExpressionParser(expected.getDataNodes()).splitAndEvaluate().stream().map(DataNode::new).collect(Collectors.toList());
         if (expected.getColumns().isEmpty()) {
-            assertFalse(containsTable(dataNodes));
+            assertNotContainsTable(dataNodes);
             return;
         }
         assertTableMetaData(getActualColumns(dataNodes), getActualIndexes(dataNodes), expected);
     }
     
     private void assertTableMetaData(final List<DataSetColumn> actualColumns, final List<DataSetIndex> actualIndexes, final DataSetMetadata expected) {
-        for (DataSetColumn each : expected.getColumns()) {
-            assertColumnMetaData(actualColumns, each);
-        }
-        for (DataSetIndex each : expected.getIndexes()) {
-            assertIndexMetaData(actualIndexes, each);
-        }
+        assertColumnMetaData(actualColumns, expected.getColumns());
+        assertIndexMetaData(actualIndexes, expected.getIndexes());
     }
     
-    private boolean containsTable(final Collection<DataNode> dataNodes) throws SQLException {
+    private void assertNotContainsTable(final Collection<DataNode> dataNodes) throws SQLException {
         for (DataNode each : dataNodes) {
             try (Connection connection = getActualDataSources().get(each.getDataSourceName()).getConnection()) {
-                if (containsTable(connection, each.getTableName())) {
-                    return true;
-                }
+                assertNotContainsTable(connection, each.getTableName());
             }
         }
-        return false;
     }
     
-    private boolean containsTable(final Connection connection, final String tableName) throws SQLException {
-        return connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE"}).next();
+    private void assertNotContainsTable(final Connection connection, final String tableName) throws SQLException {
+        assertFalse(connection.getMetaData().getTables(null, null, tableName, new String[]{"TABLE"}).next());
     }
     
     private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes) throws SQLException {
-        List<DataSetColumn> result = new LinkedList<>();
+        Set<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
             try (Connection connection = getActualDataSources().get(each.getDataSourceName()).getConnection()) {
                 result.addAll(getActualColumns(connection, each.getTableName()));
             }
         }
-        return result;
+        return new LinkedList<>(result);
     }
     
     private List<DataSetColumn> getActualColumns(final Connection connection, final String tableName) throws SQLException {
@@ -167,13 +162,13 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     private List<DataSetIndex> getActualIndexes(final Collection<DataNode> dataNodes) throws SQLException {
-        List<DataSetIndex> result = new LinkedList<>();
+        Set<DataSetIndex> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
             try (Connection connection = getActualDataSources().get(each.getDataSourceName()).getConnection()) {
                 result.addAll(getActualIndexes(connection, each.getTableName()));
             }
         }
-        return result;
+        return new LinkedList<>(result);
     }
     
     private List<DataSetIndex> getActualIndexes(final Connection connection, final String tableName) throws SQLException {
@@ -191,26 +186,34 @@ public abstract class BaseDDLIT extends SingleIT {
         }
     }
     
-    // TODO need to assert line by line
-    private void assertColumnMetaData(final List<DataSetColumn> actual, final DataSetColumn expect) {
-        for (DataSetColumn each : actual) {
-            if (expect.getName().equals(each.getName())) {
-                if ("MySQL".equals(getDatabaseType().getName()) && "integer".equals(expect.getType())) {
-                    assertThat(each.getType(), is("int"));
-                } else if ("PostgreSQL".equals(getDatabaseType().getName()) && "integer".equals(expect.getType())) {
-                    assertThat(each.getType(), is("int4"));
-                } else {
-                    assertThat(each.getType(), is(expect.getType()));
-                }
-            }
+    private void assertColumnMetaData(final List<DataSetColumn> actual, final List<DataSetColumn> expected) {
+        assertThat(actual.size(), is(expected.size()));
+        for (int i = 0; i < actual.size(); i++) {
+            assertColumnMetaData(actual.get(i), expected.get(i));
         }
     }
     
-    // TODO need to assert line by line
-    private void assertIndexMetaData(final List<DataSetIndex> actual, final DataSetIndex expect) {
+    private void assertColumnMetaData(final DataSetColumn actual, final DataSetColumn expected) {
+        assertThat(actual.getName(), is(expected.getName()));
+        if ("MySQL".equals(getDatabaseType().getName()) && "integer".equals(expected.getType())) {
+            assertThat(actual.getType(), is("int"));
+        } else if ("PostgreSQL".equals(getDatabaseType().getName()) && "integer".equals(expected.getType())) {
+            assertThat(actual.getType(), is("int4"));
+        } else {
+            assertThat(actual.getType(), is(expected.getType()));
+        }
+    }
+    
+    private void assertIndexMetaData(final List<DataSetIndex> actual, final List<DataSetIndex> expected) {
+        for (DataSetIndex each : expected) {
+            assertIndexMetaData(actual, each);
+        }
+    }
+    
+    private void assertIndexMetaData(final List<DataSetIndex> actual, final DataSetIndex expected) {
         for (DataSetIndex each : actual) {
-            if (expect.getName().equals(each.getName())) {
-                assertThat(each.isUnique(), is(expect.isUnique()));
+            if (expected.getName().equals(each.getName())) {
+                assertThat(each.isUnique(), is(expected.isUnique()));
             }
         }
     }
