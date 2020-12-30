@@ -77,7 +77,7 @@ public final class GeneralDDLIT extends BaseDDLIT {
                     connection.prepareStatement(getSql()).execute();
                 }
             }
-            assertMetaData(connection);
+            assertTableMetaData(connection);
             dropTableIfExisted(connection);
         } catch (final SQLException ex) {
             logException(ex);

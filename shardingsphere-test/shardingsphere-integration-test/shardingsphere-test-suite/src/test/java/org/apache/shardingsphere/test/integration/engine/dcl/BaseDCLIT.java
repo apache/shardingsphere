@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.test.integration.engine.dcl;
 
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.metadata.MemorizedDataSourceMetaData;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.dcl.DCLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.engine.SingleIT;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.authority.AuthorityEnvironmentManager;
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.metadata.MemorizedDataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -96,22 +97,24 @@ public abstract class BaseDCLIT extends SingleIT {
     }
     
     @BeforeClass
-    public static void initDatabasesAndTables() {
-        setUpDatabasesAndTables();
+    public static void initDatabasesAndTables() throws JAXBException, IOException {
+        SchemaEnvironmentManager.createDatabases();
+        SchemaEnvironmentManager.dropTables();
+        SchemaEnvironmentManager.createTables();
     }
-
+    
     @AfterClass
-    public static void destroyDatabasesAndTables() {
-        dropDatabases();
+    public static void destroyDatabasesAndTables() throws IOException, JAXBException {
+        SchemaEnvironmentManager.dropDatabases();
     }
-
+    
     @Before
-    public void insertData() throws SQLException {
+    public final void insertData() throws SQLException {
         authorityEnvironmentManager.initialize();
     }
     
     @After
-    public void cleanData() throws SQLException {
+    public final void cleanData() throws SQLException {
         authorityEnvironmentManager.clean();
     }
 }

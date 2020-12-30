@@ -78,12 +78,12 @@ public final class DataSetEnvironmentManager {
     }
     
     /**
-     * Initialize data.
+     * Load data.
      * 
      * @throws SQLException SQL exception
      * @throws ParseException parse exception
      */
-    public void initialize() throws SQLException, ParseException {
+    public void load() throws SQLException, ParseException {
         Map<DataNode, List<DataSetRow>> dataNodeListMap = getDataSetRowMap();
         List<Callable<Void>> insertTasks = new LinkedList<>();
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {

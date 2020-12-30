@@ -30,6 +30,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleIT;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
+import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -59,22 +60,24 @@ public abstract class BaseDMLIT extends SingleIT {
     protected BaseDMLIT(final String parentPath, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
                         final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, ruleType, databaseType, caseType, sql);
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getRuleType()), getActualDataSources());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(ruleType), getActualDataSources());
     }
     
     @BeforeClass
-    public static void initDatabasesAndTables() {
-        setUpDatabasesAndTables();
+    public static void initDatabasesAndTables() throws IOException, JAXBException {
+        SchemaEnvironmentManager.createDatabases();
+        SchemaEnvironmentManager.dropTables();
+        SchemaEnvironmentManager.createTables();
     }
     
     @AfterClass
-    public static void destroyDatabasesAndTables() {
-        dropDatabases();
+    public static void destroyDatabasesAndTables() throws IOException, JAXBException {
+        SchemaEnvironmentManager.dropDatabases();
     }
     
     @Before
     public void insertData() throws SQLException, ParseException {
-        dataSetEnvironmentManager.initialize();
+        dataSetEnvironmentManager.load();
     }
     
     @After
