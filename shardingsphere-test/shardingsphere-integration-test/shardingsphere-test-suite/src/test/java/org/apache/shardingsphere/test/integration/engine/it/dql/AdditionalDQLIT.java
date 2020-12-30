@@ -130,7 +130,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     private void assertExecuteForStatementWithResultSetTypeAndResultSetConcurrency(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
-            assertTrue("Not a DQL statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
+            assertTrue("Not a query statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
             try (ResultSet resultSet = statement.getResultSet()) {
                 assertResultSet(resultSet);
             }
@@ -142,7 +142,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
             for (SQLValue each : assertion.getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
-            assertTrue("Not a DQL statement.", preparedStatement.execute());
+            assertTrue("Not a query statement.", preparedStatement.execute());
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 assertResultSet(resultSet);
             }
@@ -162,7 +162,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     private void assertExecuteForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
-            assertTrue("Not a DQL statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
+            assertTrue("Not a query statement.", statement.execute(String.format(getSql(), assertion.getSQLValues().toArray())));
             try (ResultSet resultSet = statement.getResultSet()) {
                 assertResultSet(resultSet);
             }
@@ -174,7 +174,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
             for (SQLValue each : assertion.getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
-            assertTrue("Not a DQL statement.", preparedStatement.execute());
+            assertTrue("Not a query statement.", preparedStatement.execute());
             try (ResultSet resultSet = preparedStatement.getResultSet()) {
                 assertResultSet(resultSet);
             }
