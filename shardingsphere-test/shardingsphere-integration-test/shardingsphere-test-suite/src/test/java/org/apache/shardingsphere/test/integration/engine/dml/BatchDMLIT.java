@@ -64,7 +64,7 @@ public final class BatchDMLIT extends BatchIT {
             return;
         }
         int[] actualUpdateCounts;
-        try (Connection connection = getDataSource().getConnection()) {
+        try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCounts = executeBatchForPreparedStatement(connection);
         }
         assertDataSet(actualUpdateCounts);
@@ -96,7 +96,7 @@ public final class BatchDMLIT extends BatchIT {
         if ("shadow".equals(getRuleType())) {
             return;
         }
-        try (Connection connection = getDataSource().getConnection()) {
+        try (Connection connection = getTargetDataSource().getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
                 for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getIntegrateTestCaseAssertions()) {
                     addBatch(preparedStatement, each);

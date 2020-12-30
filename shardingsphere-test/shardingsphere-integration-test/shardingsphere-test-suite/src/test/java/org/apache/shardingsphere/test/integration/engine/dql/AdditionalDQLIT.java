@@ -57,7 +57,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     @Test
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrency() throws SQLException, ParseException {
-        try (Connection connection = getDataSource().getConnection()) {
+        try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrency(connection);
             } else {
@@ -87,7 +87,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     @Test
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException, ParseException {
-        try (Connection connection = getDataSource().getConnection()) {
+        try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(connection);
             } else {
@@ -119,7 +119,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     @Test
     public void assertExecuteWithResultSetTypeAndResultSetConcurrency() throws SQLException, ParseException {
-        try (Connection connection = getDataSource().getConnection()) {
+        try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 assertExecuteForStatementWithResultSetTypeAndResultSetConcurrency(connection);
             } else {
@@ -151,7 +151,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     @Test
     public void assertExecuteWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException, ParseException {
-        try (Connection connection = getDataSource().getConnection()) {
+        try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 assertExecuteForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(connection);
             } else {

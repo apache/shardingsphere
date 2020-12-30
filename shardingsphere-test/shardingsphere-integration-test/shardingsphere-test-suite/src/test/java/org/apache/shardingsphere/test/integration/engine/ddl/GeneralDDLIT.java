@@ -57,7 +57,7 @@ public final class GeneralDDLIT extends BaseDDLIT {
     }
     
     private void assertExecute(final boolean isExecuteUpdate) throws SQLException {
-        try (Connection connection = getDataSource().getConnection()) {
+        try (Connection connection = getTargetDataSource().getConnection()) {
             dropTableIfExisted(connection);
             if (!Strings.isNullOrEmpty(((DDLIntegrateTestCaseAssertion) getAssertion()).getInitSQL())) {
                 for (String each : Splitter.on(";").trimResults().splitToList(((DDLIntegrateTestCaseAssertion) getAssertion()).getInitSQL())) {

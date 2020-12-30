@@ -59,7 +59,7 @@ public abstract class BaseDMLIT extends SingleIT {
     protected BaseDMLIT(final String parentPath, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
                         final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, ruleType, databaseType, caseType, sql);
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getRuleType()), getDataSourceMap());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getRuleType()), getActualDataSources());
     }
     
     @BeforeClass
@@ -91,14 +91,14 @@ public abstract class BaseDMLIT extends SingleIT {
                 DataNode dataNode = new DataNode(each);
                 String sql;
                 if (getDatabaseType() instanceof PostgreSQLDatabaseType) {
-                    try (Connection connection = getDataSourceMap().get(dataNode.getDataSourceName()).getConnection()) {
+                    try (Connection connection = getActualDataSources().get(dataNode.getDataSourceName()).getConnection()) {
                         String primaryKeyColumnName = getPostgreSQLTablePrimaryKeyColumnName(connection, dataNode.getTableName());
                         sql = String.format("SELECT * FROM %s ORDER BY %s ASC", dataNode.getTableName(), primaryKeyColumnName);
                     }
                 } else {
                     sql = String.format("SELECT * FROM %s", dataNode.getTableName());
                 }
-                try (Connection connection = getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
+                try (Connection connection = getActualDataSources().get(dataNode.getDataSourceName()).getConnection();
                      PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                     assertDataSet(preparedStatement, getDataSet().findRows(dataNode), expectedDataSetMetadata);
                 }

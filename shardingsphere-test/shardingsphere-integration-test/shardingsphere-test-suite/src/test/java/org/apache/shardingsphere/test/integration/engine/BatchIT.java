@@ -78,7 +78,7 @@ public abstract class BatchIT extends BaseIT {
         for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getIntegrateTestCaseAssertions()) {
             dataSets.add(DataSetLoader.load(testCaseContext.getParentPath(), ruleType, databaseType, each.getExpectedDataFile()));
         }
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(ruleType), getDataSourceMap());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(ruleType), getActualDataSources());
     }
     
     @BeforeClass
@@ -120,7 +120,7 @@ public abstract class BatchIT extends BaseIT {
         DataSetMetadata expectedDataSetMetadata = expected.getMetadataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
-            try (Connection connection = getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
+            try (Connection connection = getActualDataSources().get(dataNode.getDataSourceName()).getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s ORDER BY 1", dataNode.getTableName()))) {
                 assertDataSet(preparedStatement, expected.findRows(dataNode), expectedDataSetMetadata);
             }

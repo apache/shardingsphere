@@ -55,7 +55,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
     
     @Test
     public void assertExecuteQuery() throws SQLException, ParseException {
-        try (Connection connection = getDataSource().getConnection()) {
+        try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 assertExecuteQueryForStatement(connection);
             } else {
@@ -88,7 +88,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
-        try (Connection connection = getDataSource().getConnection()) {
+        try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLCaseType.Literal == getCaseType()) {
                 assertExecuteForStatement(connection);
             } else {
