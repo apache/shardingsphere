@@ -16,9 +16,9 @@
   -->
 
 <dataset>
-    <metadata table-name="t_log">
+    <metadata table-name="t_order_details">
         <column name="id" type="integer" />
-        <column name="status" type="varchar" />
+        <column name="description" type="varchar" />
         <column name="name" type="varchar" />
     </metadata>
 </dataset>

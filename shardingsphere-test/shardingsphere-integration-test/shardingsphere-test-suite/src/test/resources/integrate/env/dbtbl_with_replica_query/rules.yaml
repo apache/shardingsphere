@@ -43,6 +43,16 @@ rules:
       keyGenerateStrategy:
         column: item_id
         keyGeneratorName: constant
+    t_order_details:
+      actualDataNodes: pr_ds_${0..9}.t_order_details_${0..9}
+      databaseStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: standard_test
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: standard_test
   bindingTables:
     - t_order,t_order_item
   

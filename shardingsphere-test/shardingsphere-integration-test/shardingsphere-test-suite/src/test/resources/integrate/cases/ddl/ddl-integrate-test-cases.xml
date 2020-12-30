@@ -16,35 +16,37 @@
   -->
 
 <integrate-test-cases>
-<!--    <ddl-test-case sql="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10))">-->
-<!--        <assertion table="t_log" expected-data-file="create_table.xml" />-->
+    <ddl-test-case sql="CREATE TABLE t_order_details(id int PRIMARY KEY, description varchar(10))">
+        <assertion table="t_order_details" expected-data-file="create_table.xml" />
+    </ddl-test-case>
+    <!-- TODO fix create index -->
+<!--    <ddl-test-case sql="CREATE INDEX t_order_details_index ON t_order_details (id)">-->
+<!--        <assertion init-sql="CREATE TABLE t_order_details(id int, description varchar(10))" table="t_order_details" expected-data-file="create_index.xml" />-->
 <!--    </ddl-test-case>-->
 <!--    -->
-<!--    <ddl-test-case sql="CREATE INDEX t_log_index ON t_log (id)">-->
-<!--        <assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="create_index.xml" />-->
+<!--    <ddl-test-case sql="CREATE UNIQUE INDEX t_order_details_index ON t_order_details (id)">-->
+<!--        <assertion init-sql="CREATE TABLE t_order_details(id int, description varchar(10))" table="t_order_details" expected-data-file="create_unique_index.xml" />-->
 <!--    </ddl-test-case>-->
-<!--    -->
-<!--    <ddl-test-case sql="CREATE UNIQUE INDEX t_log_index ON t_log (id)">-->
-<!--        <assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="create_unique_index.xml" />-->
-<!--    </ddl-test-case>-->
-<!--    -->
-<!--    <ddl-test-case sql="ALTER TABLE t_log ADD name varchar(10)">-->
-<!--        <assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="alter_table.xml" />-->
-<!--    </ddl-test-case>-->
-<!--    -->
-<!--    <ddl-test-case sql="DROP TABLE t_log">-->
-<!--        <assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />-->
-<!--    </ddl-test-case>-->
-<!--    -->
-<!--    <ddl-test-case sql="DROP INDEX t_log_index ON t_log" db-types="MySQL,SQLServer">-->
-<!--        <assertion init-sql="CREATE TABLE t_log(id int, status varchar(10));CREATE INDEX t_log_index ON t_log(status)" table="t_log" expected-data-file="empty_log.xml" />-->
-<!--    </ddl-test-case>-->
-<!--    -->
-<!--    <ddl-test-case sql="DROP INDEX order_index" db-types="PostgreSQL,Oracle">-->
-<!--        <assertion init-sql="CREATE TABLE t_log(id int, status varchar(10));CREATE INDEX t_log_index ON t_log(status)" table="t_log" expected-data-file="empty_log.xml" />-->
-<!--    </ddl-test-case>-->
-<!--    -->
-<!--    <ddl-test-case sql="TRUNCATE TABLE t_log">-->
-<!--        <assertion init-sql="CREATE TABLE t_log(id int, status varchar(10))" table="t_log" expected-data-file="empty_log.xml" />-->
-<!--    </ddl-test-case>-->
+    
+    <ddl-test-case sql="ALTER TABLE t_order_details ADD name varchar(10)">
+        <assertion init-sql="CREATE TABLE t_order_details(id int, description varchar(10))" table="t_order_details" expected-data-file="alter_table.xml" />
+    </ddl-test-case>
+    
+    <ddl-test-case sql="DROP TABLE t_order_details">
+        <assertion init-sql="CREATE TABLE t_order_details(id int, description varchar(10))" table="t_order_details" expected-data-file="empty_table.xml" />
+    </ddl-test-case>
+    
+    <ddl-test-case sql="DROP INDEX t_order_details_index ON t_order_details" db-types="MySQL,SQLServer">
+        <assertion init-sql="CREATE TABLE t_order_details(id int, description varchar(10));CREATE INDEX t_order_details_index ON t_order_details(description)" table="t_order_details" expected-data-file="empty_table.xml" />
+    </ddl-test-case>
+    
+    <ddl-test-case sql="DROP INDEX order_index" db-types="PostgreSQL,Oracle">
+        <assertion init-sql="CREATE TABLE t_order_details(id int, description varchar(10));CREATE INDEX t_order_details_index ON t_order_details(description)" table="t_order_details" expected-data-file="empty_table.xml" />
+    </ddl-test-case>
+    
+    <ddl-test-case sql="TRUNCATE TABLE t_order_details">
+        <assertion init-sql="CREATE TABLE t_order_details(id int, description varchar(10))" table="t_order_details" expected-data-file="empty_table.xml" />
+    </ddl-test-case>
+    
+    <!-- TODO add single table DDL test cases -->
 </integrate-test-cases>
