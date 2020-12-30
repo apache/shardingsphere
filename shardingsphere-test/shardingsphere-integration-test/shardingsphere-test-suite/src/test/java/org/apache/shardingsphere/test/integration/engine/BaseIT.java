@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.engine;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -87,44 +86,7 @@ public abstract class BaseIT {
                 : YamlShardingSphereDataSourceFactory.createDataSource(actualDataSources, new File(EnvironmentPath.getRulesConfigurationFile(ruleType)));
     }
     
-    protected static void setUpDatabasesAndTables() {
-        createDatabases();
-        dropTables();
-        createTables();
-    }
-    
-    @SneakyThrows({JAXBException.class, IOException.class})
-    protected static void createDatabases() {
-        for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
-            SchemaEnvironmentManager.dropDatabases(each);
-        }
-        for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
-            SchemaEnvironmentManager.createDatabases(each);
-        }
-    }
-    
-    @SneakyThrows({JAXBException.class, IOException.class})
-    protected static void createTables() {
-        for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
-            SchemaEnvironmentManager.createTables(each);
-        }
-    }
-    
-    @SneakyThrows({JAXBException.class, IOException.class})
-    protected static void dropDatabases() {
-        for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
-            SchemaEnvironmentManager.dropDatabases(each);
-        }
-    }
-    
-    @SneakyThrows({JAXBException.class, IOException.class})
-    protected static void dropTables() {
-        for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
-            SchemaEnvironmentManager.dropTables(each);
-        }
-    }
-    
-    protected void resetTargetDataSource() throws IOException, SQLException {
+    protected final void resetTargetDataSource() throws IOException, SQLException {
         targetDataSource = createTargetDataSource();
     }
     

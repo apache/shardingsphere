@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.engine.SingleIT;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
+import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -60,25 +61,25 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     @BeforeClass
-    public static void initDatabases() {
-        createDatabases();
+    public static void initDatabases() throws IOException, JAXBException {
+        SchemaEnvironmentManager.createDatabases();
     }
     
     @AfterClass
-    public static void destroyDatabases() {
-        dropDatabases();
+    public static void destroyDatabases() throws IOException, JAXBException {
+        SchemaEnvironmentManager.dropDatabases();
     }
     
     @Before
-    public final void initTables() throws SQLException, ParseException, IOException {
-        createTables();
+    public final void initTables() throws SQLException, ParseException, IOException, JAXBException {
+        SchemaEnvironmentManager.createTables();
         resetTargetDataSource();
         dataSetEnvironmentManager.load();
     }
     
     @After
-    public final void destroyTables() {
-        dropTables();
+    public final void destroyTables() throws JAXBException, IOException {
+        SchemaEnvironmentManager.dropTables();
     }
     
     protected final void assertTableMetaData(final Connection connection) throws SQLException {

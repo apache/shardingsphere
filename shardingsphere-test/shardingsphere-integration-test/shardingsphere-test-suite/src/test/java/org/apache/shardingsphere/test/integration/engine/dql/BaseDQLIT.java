@@ -62,7 +62,9 @@ public abstract class BaseDQLIT extends SingleIT {
     
     @BeforeClass
     public static void insertData() throws IOException, JAXBException, SQLException, ParseException {
-        setUpDatabasesAndTables();
+        SchemaEnvironmentManager.createDatabases();
+        SchemaEnvironmentManager.dropTables();
+        SchemaEnvironmentManager.createTables();
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             insertData(each);
         }
@@ -75,8 +77,8 @@ public abstract class BaseDQLIT extends SingleIT {
     }
     
     @AfterClass
-    public static void clearData() {
-        dropDatabases();
+    public static void clearData() throws IOException, JAXBException {
+        SchemaEnvironmentManager.dropDatabases();
     }
     
     private static Map<String, DataSource> createDataSourceMap(final DatabaseType databaseType, final String ruleType) throws IOException, JAXBException {

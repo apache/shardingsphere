@@ -30,6 +30,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleIT;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
+import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -63,13 +64,15 @@ public abstract class BaseDMLIT extends SingleIT {
     }
     
     @BeforeClass
-    public static void initDatabasesAndTables() {
-        setUpDatabasesAndTables();
+    public static void initDatabasesAndTables() throws IOException, JAXBException {
+        SchemaEnvironmentManager.createDatabases();
+        SchemaEnvironmentManager.dropTables();
+        SchemaEnvironmentManager.createTables();
     }
     
     @AfterClass
-    public static void destroyDatabasesAndTables() {
-        dropDatabases();
+    public static void destroyDatabasesAndTables() throws IOException, JAXBException {
+        SchemaEnvironmentManager.dropDatabases();
     }
     
     @Before
