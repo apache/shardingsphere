@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.cases.dataset.metadata;
+package org.apache.shardingsphere.test.integration.engine.watcher;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
-@Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-@EqualsAndHashCode
-public final class DataSetColumn {
+/**
+ * Integration test watcher.
+ */
+@Slf4j
+public final class ITWatcher extends TestWatcher {
     
-    @XmlAttribute(required = true)
-    private String name;
-    
-    @XmlAttribute
-    private String type;
+    @Override
+    protected void failed(final Throwable ex, final Description description) {
+        log.error("Error case: {}", description.getMethodName());
+        super.failed(ex, description);
+    }
 }

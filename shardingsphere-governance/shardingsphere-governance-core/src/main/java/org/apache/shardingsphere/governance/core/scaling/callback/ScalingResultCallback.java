@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.cases.dataset.metadata;
+package org.apache.shardingsphere.governance.core.scaling.callback;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.service.ScalingCallback;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-
-@Getter
-@Setter
-@XmlAccessorType(XmlAccessType.FIELD)
-@EqualsAndHashCode
-public final class DataSetColumn {
+/**
+ * Scaling result callback.
+ */
+public final class ScalingResultCallback implements ScalingCallback {
     
-    @XmlAttribute(required = true)
-    private String name;
+    @Override
+    public void onSuccess() {
+        // TODO switch data source
+    }
     
-    @XmlAttribute
-    private String type;
+    @Override
+    public void onFailure() {
+    }
 }
