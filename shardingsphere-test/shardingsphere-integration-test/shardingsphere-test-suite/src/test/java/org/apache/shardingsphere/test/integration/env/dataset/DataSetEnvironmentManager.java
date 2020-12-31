@@ -60,13 +60,13 @@ public final class DataSetEnvironmentManager {
     
     private final DataSet dataSet;
     
-    private final Map<String, DataSource> dataSourceMap;
+    private final Map<String, DataSource> actualDataSources;
     
-    public DataSetEnvironmentManager(final String dataSetFile, final Map<String, DataSource> dataSourceMap) throws IOException, JAXBException {
+    public DataSetEnvironmentManager(final String dataSetFile, final Map<String, DataSource> actualDataSources) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(dataSetFile)) {
             dataSet = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
         }
-        this.dataSourceMap = dataSourceMap;
+        this.actualDataSources = actualDataSources;
     }
     
     private static String generateTableName(final String tableName, final DatabaseType databaseType) {
@@ -95,10 +95,10 @@ public final class DataSetEnvironmentManager {
                 sqlValueGroups.add(new SQLValueGroup(dataSetMetadata, row.getValues()));
             }
             String insertSQL;
-            try (Connection connection = dataSourceMap.get(dataNode.getDataSourceName()).getConnection()) {
+            try (Connection connection = actualDataSources.get(dataNode.getDataSourceName()).getConnection()) {
                 insertSQL = generateInsertSQL(generateTableName(dataNode.getTableName(), DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL())), dataSetMetadata.getColumns());
             }
-            insertTasks.add(new InsertTask(dataSourceMap.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
+            insertTasks.add(new InsertTask(actualDataSources.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
         }
         try {
             EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(insertTasks);
@@ -137,7 +137,7 @@ public final class DataSetEnvironmentManager {
     public void clearData() {
         List<Callable<Void>> deleteTasks = new LinkedList<>();
         for (Entry<String, Collection<String>> entry : getDataNodeMap().entrySet()) {
-            deleteTasks.add(new DeleteTask(dataSourceMap.get(entry.getKey()), entry.getValue()));
+            deleteTasks.add(new DeleteTask(actualDataSources.get(entry.getKey()), entry.getValue()));
         }
         try {
             EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(deleteTasks);
