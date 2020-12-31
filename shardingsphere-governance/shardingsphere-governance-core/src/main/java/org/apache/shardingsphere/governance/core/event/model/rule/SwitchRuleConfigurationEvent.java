@@ -15,33 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.scaling.callback;
+package org.apache.shardingsphere.governance.core.event.model.rule;
 
-import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.scaling.core.service.ScalingCallback;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Scaling result callback.
+ * Switch rule configuration event.
  */
-public final class ScalingResultCallback implements ScalingCallback {
+@RequiredArgsConstructor
+@Getter
+public final class SwitchRuleConfigurationEvent {
     
     private final String schemaName;
     
     private final String ruleConfigurationCacheId;
-    
-    public ScalingResultCallback(final String schemaName, final String ruleConfigurationCacheId) {
-        this.schemaName = schemaName;
-        this.ruleConfigurationCacheId = ruleConfigurationCacheId;
-    }
-    
-    @Override
-    public void onSuccess() {
-        ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(schemaName, ruleConfigurationCacheId));
-    }
-    
-    @Override
-    public void onFailure() {
-        // TODO
-    }
 }
