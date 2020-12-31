@@ -78,12 +78,12 @@ public final class DataSetEnvironmentManager {
     }
     
     /**
-     * Initialize data.
+     * Fill data.
      * 
      * @throws SQLException SQL exception
      * @throws ParseException parse exception
      */
-    public void initialize() throws SQLException, ParseException {
+    public void fillData() throws SQLException, ParseException {
         Map<DataNode, List<DataSetRow>> dataNodeListMap = getDataSetRowMap();
         List<Callable<Void>> insertTasks = new LinkedList<>();
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {
@@ -120,7 +120,7 @@ public final class DataSetEnvironmentManager {
         return result;
     }
     
-    private String generateInsertSQL(final String tableName, final List<DataSetColumn> columnMetadata) {
+    private String generateInsertSQL(final String tableName, final Collection<DataSetColumn> columnMetadata) {
         List<String> columnNames = new LinkedList<>();
         List<String> placeholders = new LinkedList<>();
         for (DataSetColumn each : columnMetadata) {

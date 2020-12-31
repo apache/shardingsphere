@@ -63,6 +63,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         initOpenTracing();
         setDatabaseServerInfo();
         initLockContext();
+        initScalingWorker(yamlConfig);
         shardingSphereProxy.start(port);
     }
     
@@ -121,4 +122,6 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     protected abstract TransactionContexts decorateTransactionContexts(TransactionContexts transactionContexts, String xaTransactionMangerType);
     
     protected abstract void initLockContext();
+    
+    protected abstract void initScalingWorker(YamlProxyConfiguration yamlConfig);
 }

@@ -25,7 +25,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.scaling.core.config.yaml.ServerConfigurationYamlSwapper;
+import org.apache.shardingsphere.scaling.core.config.yaml.YamlServerConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,14 +44,13 @@ public final class ServerConfigurationUtil {
     
     /**
      * Init scaling config.
-     *
      */
     @SneakyThrows(IOException.class)
     public static void initScalingConfig() {
         log.info("Init scaling config");
         File yamlFile = new File(Resources.getResource(DEFAULT_CONFIG_PATH + DEFAULT_CONFIG_FILE_NAME).getPath());
-        ServerConfiguration serverConfig = YamlEngine.unmarshal(yamlFile, ServerConfiguration.class);
+        YamlServerConfiguration serverConfig = YamlEngine.unmarshal(yamlFile, YamlServerConfiguration.class);
         Preconditions.checkNotNull(serverConfig, "Server configuration file `%s` is invalid.", yamlFile.getName());
-        ScalingContext.getInstance().init(serverConfig);
+        ScalingContext.getInstance().init(new ServerConfigurationYamlSwapper().swapToObject(serverConfig));
     }
 }

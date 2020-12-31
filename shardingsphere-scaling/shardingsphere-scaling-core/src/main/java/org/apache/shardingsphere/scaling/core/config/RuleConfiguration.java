@@ -23,7 +23,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 
@@ -39,7 +39,7 @@ public final class RuleConfiguration {
     
     private final DataSourceConfigurationWrapper target;
     
-    public RuleConfiguration(final DataSourceConfiguration source, final DataSourceConfiguration target) {
+    public RuleConfiguration(final ScalingDataSourceConfiguration source, final ScalingDataSourceConfiguration target) {
         this.source = new DataSourceConfigurationWrapper(source.getConfigType(), new Gson().toJsonTree(source));
         this.target = new DataSourceConfigurationWrapper(target.getConfigType(), new Gson().toJsonTree(target));
     }
@@ -56,10 +56,10 @@ public final class RuleConfiguration {
          *
          * @return {@code DataSourceConfiguration}
          */
-        public DataSourceConfiguration unwrap() {
+        public ScalingDataSourceConfiguration unwrap() {
             Map<String, Class<?>> instances = DataSourceConfigurationHolder.getInstances();
             Preconditions.checkArgument(instances.containsKey(type.toLowerCase()), "Unsupported Data Source Type:" + type);
-            return (DataSourceConfiguration) new Gson().fromJson(parameter, instances.get(type.toLowerCase()));
+            return (ScalingDataSourceConfiguration) new Gson().fromJson(parameter, instances.get(type.toLowerCase()));
         }
         
         private static class DataSourceConfigurationHolder {

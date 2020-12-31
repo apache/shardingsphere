@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.scaling.core.service.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
@@ -140,14 +140,8 @@ public final class DistributedScalingJobServiceTest {
     
     private ServerConfiguration mockServerConfiguration() {
         resetRegistryRepositoryAvailable();
-        YamlGovernanceConfiguration distributedScalingService = new YamlGovernanceConfiguration();
-        distributedScalingService.setName("test");
-        YamlGovernanceCenterConfiguration registryCenter = new YamlGovernanceCenterConfiguration();
-        registryCenter.setType("REG_FIXTURE");
-        registryCenter.setServerLists("");
-        distributedScalingService.setRegistryCenter(registryCenter);
         ServerConfiguration result = new ServerConfiguration();
-        result.setDistributedScalingService(distributedScalingService);
+        result.setDistributedScalingService(new GovernanceConfiguration("test", new GovernanceCenterConfiguration("REG_FIXTURE", "", null), false));
         return result;
     }
     

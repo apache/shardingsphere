@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.spi;
 
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -38,9 +36,8 @@ public final class ScalingWorkerLoader {
      */
     public static Optional<String> initScalingWorker() {
         ShardingSphereServiceLoader.register(ScalingWorker.class);
-        YamlGovernanceConfiguration distributedScalingService = ScalingContext.getInstance().getServerConfig().getDistributedScalingService();
-        if (null != distributedScalingService) {
-            GovernanceConfiguration governanceConfig = new GovernanceConfigurationYamlSwapper().swapToObject(distributedScalingService);
+        GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getDistributedScalingService();
+        if (null != governanceConfig) {
             Collection<ScalingWorker> scalingWorkers = ShardingSphereServiceLoader.newServiceInstances(ScalingWorker.class);
             for (ScalingWorker each : scalingWorkers) {
                 each.init(governanceConfig);

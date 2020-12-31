@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.test.integration.cases.dataset;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -34,7 +34,6 @@ import java.util.List;
  * Data sets root xml entry.
  */
 @Getter
-//@Setter
 @XmlRootElement(name = "dataset")
 public final class DataSet {
     
@@ -61,7 +60,7 @@ public final class DataSet {
         }
         throw new IllegalArgumentException(String.format("Cannot find expected metadata via table name: '%s'", tableName));
     }
-        
+    
     /**
      * Find data set meta data via data node.
      * 
