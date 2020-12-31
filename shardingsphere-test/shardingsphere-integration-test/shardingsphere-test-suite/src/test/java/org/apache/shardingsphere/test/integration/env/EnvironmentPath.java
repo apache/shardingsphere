@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.integration.env;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.io.File;
 import java.net.URL;
 
 import static org.junit.Assert.assertNotNull;
@@ -82,7 +81,7 @@ public final class EnvironmentPath {
     }
     
     private static String getFile(final String ruleType, final String fileName) {
-        URL url = EnvironmentPath.class.getClassLoader().getResource(String.join(File.separator, ROOT_PATH, ruleType, fileName));
+        URL url = EnvironmentPath.class.getClassLoader().getResource(String.join("/", ROOT_PATH, ruleType, fileName));
         assertNotNull(url);
         return url.getFile();
     }
