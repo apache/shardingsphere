@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.test.integration.engine.it.dml;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.test.integration.engine.param.IntegrateTestParameters;
 import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
+import org.apache.shardingsphere.test.integration.engine.param.IntegrateTestParameters;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -30,7 +30,6 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
@@ -61,9 +60,6 @@ public final class GeneralDMLIT extends BaseDMLIT {
         }
         // TODO fix shadow
         if ("shadow".equals(getRuleType())) {
-            return;
-        }
-        if (assertion.isDmlReturning()) {
             return;
         }
         int actualUpdateCount;
@@ -107,15 +103,6 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     private int executeForStatement(final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            if (assertion.isDmlReturning()) {
-                if (statement.execute(getSql())) {
-                    ResultSet resultSet = statement.getResultSet();
-                    boolean moreResults = statement.getMoreResults();
-                    // TODO resultSet is null
-                    return moreResults || null != resultSet ? statement.getUpdateCount() : 1;
-                }
-                return statement.getUpdateCount();
-            }
             assertFalse("Not a DML statement.", statement.execute(getSql()));
             return statement.getUpdateCount();
         }
@@ -125,15 +112,6 @@ public final class GeneralDMLIT extends BaseDMLIT {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
             for (SQLValue each : assertion.getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
-            }
-            if (assertion.isDmlReturning()) {
-                if (preparedStatement.execute()) {
-                    ResultSet resultSet = preparedStatement.getResultSet();
-                    boolean moreResults = preparedStatement.getMoreResults();
-                    // TODO resultSet is null
-                    return moreResults || null != resultSet ? preparedStatement.getUpdateCount() : 1;
-                }
-                return preparedStatement.getUpdateCount();
             }
             assertFalse("Not a DML statement.", preparedStatement.execute());
             return preparedStatement.getUpdateCount();

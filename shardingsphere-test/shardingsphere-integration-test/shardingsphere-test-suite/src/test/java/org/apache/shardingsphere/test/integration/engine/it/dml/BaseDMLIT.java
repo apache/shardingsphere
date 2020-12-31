@@ -65,23 +65,22 @@ public abstract class BaseDMLIT extends SingleIT {
     @BeforeClass
     public static void initDatabasesAndTables() throws IOException, JAXBException {
         SchemaEnvironmentManager.createDatabases();
-        SchemaEnvironmentManager.dropTables();
         SchemaEnvironmentManager.createTables();
     }
     
     @AfterClass
-    public static void destroyDatabasesAndTables() throws IOException, JAXBException {
+    public static void destroyDatabases() throws IOException, JAXBException {
         SchemaEnvironmentManager.dropDatabases();
     }
     
     @Before
-    public void fillData() throws SQLException, ParseException {
+    public final void fillData() throws SQLException, ParseException {
         dataSetEnvironmentManager.fillData();
     }
     
     @After
-    public void clearData() {
-        dataSetEnvironmentManager.clear();
+    public final void clearData() {
+        dataSetEnvironmentManager.clearData();
     }
     
     protected final void assertDataSet(final int actualUpdateCount) throws SQLException {
@@ -90,65 +89,71 @@ public abstract class BaseDMLIT extends SingleIT {
         DataSetMetadata expectedDataSetMetadata = getDataSet().getMetadataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
-            String sql;
-            if (getDatabaseType() instanceof PostgreSQLDatabaseType) {
-                try (Connection connection = getActualDataSources().get(dataNode.getDataSourceName()).getConnection()) {
-                    String primaryKeyColumnName = getPostgreSQLTablePrimaryKeyColumnName(connection, dataNode.getTableName());
-                    sql = String.format("SELECT * FROM %s ORDER BY %s ASC", dataNode.getTableName(), primaryKeyColumnName);
-                }
-            } else {
-                sql = String.format("SELECT * FROM %s", dataNode.getTableName());
-            }
-            try (Connection connection = getActualDataSources().get(dataNode.getDataSourceName()).getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                assertDataSet(preparedStatement, getDataSet().findRows(dataNode), expectedDataSetMetadata);
+            try (
+                    Connection connection = getActualDataSources().get(dataNode.getDataSourceName()).getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(dataNode))) {
+                assertDataSet(preparedStatement, expectedDataSetMetadata, getDataSet().findRows(dataNode));
             }
         }
     }
     
-    private void assertDataSet(final PreparedStatement actualPreparedStatement, final List<DataSetRow> expectedDataSetRows, final DataSetMetadata expectedDataSetMetadata) throws SQLException {
+    private void assertDataSet(final PreparedStatement actualPreparedStatement, final DataSetMetadata expectedDataSetMetadata, final List<DataSetRow> expectedDataSetRows) throws SQLException {
         try (ResultSet actualResultSet = actualPreparedStatement.executeQuery()) {
             assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetadata.getColumns());
             assertRows(actualResultSet, expectedDataSetRows);
         }
     }
     
-    private String getPostgreSQLTablePrimaryKeyColumnName(final Connection connection, final String tableName) throws SQLException {
-        String sql = "SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type FROM pg_index i JOIN pg_attribute a "
-            + "ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '"
-            + tableName + "'::regclass AND i.indisprimary";
-        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
-            if (!resultSet.next()) {
-                throw new SQLException("can not get primary key of " + tableName);
+    private String generateFetchActualDataSQL(final DataNode dataNode) throws SQLException {
+        if (getDatabaseType() instanceof PostgreSQLDatabaseType) {
+            String primaryKeyColumnName = getPrimaryKeyColumnNameForPostgreSQL(dataNode);
+            return String.format("SELECT * FROM %s ORDER BY %s ASC", dataNode.getTableName(), primaryKeyColumnName);
+        }
+        return String.format("SELECT * FROM %s", dataNode.getTableName());
+    }
+    
+    private String getPrimaryKeyColumnNameForPostgreSQL(final DataNode dataNode) throws SQLException {
+        String sql = String.format("SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type "
+                + "FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '%s'::regclass AND i.indisprimary", dataNode.getTableName());
+        try (
+                Connection connection = getActualDataSources().get(dataNode.getDataSourceName()).getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(sql)) {
+            if (resultSet.next()) {
+                return resultSet.getString("attname");
             }
-            return resultSet.getString("attname");
+            throw new SQLException(String.format("Can not get primary key of `%s`", dataNode.getTableName()));
         }
     }
     
-    private void assertMetaData(final ResultSetMetaData actualMetaData, final Collection<DataSetColumn> columnMetadataList) throws SQLException {
-        assertThat(actualMetaData.getColumnCount(), is(columnMetadataList.size()));
+    private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
+        assertThat(actual.getColumnCount(), is(expected.size()));
         int index = 1;
-        for (DataSetColumn each : columnMetadataList) {
-            assertThat(actualMetaData.getColumnLabel(index++), is(each.getName()));
+        for (DataSetColumn each : expected) {
+            assertThat(actual.getColumnLabel(index++), is(each.getName()));
         }
     }
     
-    private void assertRows(final ResultSet actualResultSet, final List<DataSetRow> expectedDatSetRows) throws SQLException {
-        int count = 0;
-        while (actualResultSet.next()) {
-            int index = 1;
-            for (String each : expectedDatSetRows.get(count).getValues()) {
-                if (Types.DATE == actualResultSet.getMetaData().getColumnType(index)) {
-                    if (!NOT_VERIFY_FLAG.equals(each)) {
-                        assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actualResultSet.getDate(index)), is(each));
-                    }
-                } else {
-                    assertThat(String.valueOf(actualResultSet.getObject(index)), is(each));
-                }
-                index++;
+    private void assertRows(final ResultSet actual, final List<DataSetRow> expected) throws SQLException {
+        int rowCount = 0;
+        while (actual.next()) {
+            int columnIndex = 1;
+            for (String each : expected.get(rowCount).getValues()) {
+                assertValue(actual, columnIndex, each);
+                columnIndex++;
             }
-            count++;
+            rowCount++;
         }
-        assertThat("Size of actual result set is different with size of expected dat set rows.", count, is(expectedDatSetRows.size()));
+        assertThat("Size of actual result set is different with size of expected dat set rows.", rowCount, is(expected.size()));
+    }
+    
+    private void assertValue(final ResultSet actual, final int columnIndex, final String expected) throws SQLException {
+        if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
+            if (!NOT_VERIFY_FLAG.equals(expected)) {
+                assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actual.getDate(columnIndex)), is(expected));
+            }
+        } else {
+            assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
+        }
     }
 }
