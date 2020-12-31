@@ -78,6 +78,7 @@ public final class SchemaEnvironmentManager {
     private static void createDatabases(final String ruleType) throws IOException, JAXBException {
         SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(ruleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
+            // TODO use multiple threads to improve performance
             DataSource dataSource = ActualDataSourceBuilder.build(null, each);
             executeSQLScript(dataSource, generateCreateDatabaseSQLs(each, schemaEnvironment.getDatabases()));
         }
@@ -109,6 +110,7 @@ public final class SchemaEnvironmentManager {
     private static void dropDatabases(final String ruleType) throws IOException, JAXBException {
         SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(ruleType));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
+            // TODO use multiple threads to improve performance
             DataSource dataSource = ActualDataSourceBuilder.build(null, each);
             executeSQLScript(dataSource, generatePrepareDropDatabaseSQLs(each, schemaEnvironment.getDatabases()));
             executeSQLScript(dataSource, generateDropDatabaseSQLs(each, schemaEnvironment.getDatabases()));
@@ -155,6 +157,7 @@ public final class SchemaEnvironmentManager {
     
     private static void createTables(final SchemaEnvironment schemaEnvironment, final DatabaseType databaseType) {
         for (String each : schemaEnvironment.getDatabases()) {
+            // TODO use multiple threads to improve performance
             DataSource dataSource = ActualDataSourceBuilder.build(each, databaseType);
             executeSQLScript(dataSource, schemaEnvironment.getTableCreateSQLs());
         }
@@ -181,6 +184,7 @@ public final class SchemaEnvironmentManager {
     
     private static void dropTables(final SchemaEnvironment schemaEnvironment, final DatabaseType databaseType) {
         for (String each : schemaEnvironment.getDatabases()) {
+            // TODO use multiple threads to improve performance
             DataSource dataSource = ActualDataSourceBuilder.build(each, databaseType);
             executeSQLScript(dataSource, schemaEnvironment.getTableDropSQLs());
         }
