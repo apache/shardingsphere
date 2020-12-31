@@ -56,14 +56,14 @@ rules:
         - primary_ds_0_replica_0
         - primary_ds_0_replica_1
       loadBalancerName: roundRobin
-      readWriteSplit: true
+      replicaQuery: true
     ds_1:
       primaryDataSourceName: primary_ds_1
       replicaDataSourceNames: 
         - primary_ds_1_replica_0
         - primary_ds_1_replica_1
       loadBalancerName: random
-      readWriteSplit: false
+      replicaQuery: false
   loadBalancers:
     roundRobin:
       type: ROUND_ROBIN
@@ -74,4 +74,5 @@ rules:
     type: MGR
     props:
       groupName: 92504d5b-6dec-11e8-91ea-246e9612aaf1
-      keepAliveSeconds: '5'
+      zkServerLists: 'localhost:2181'
+      keepAliveCron: '0/5 * * * * ?'

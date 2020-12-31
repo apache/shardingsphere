@@ -39,5 +39,5 @@ public final class HADataSourceRuleConfiguration {
     
     private final String loadBalancerName;
     
-    private final boolean readWriteSplit;
+    private final boolean replicaQuery;
 }
