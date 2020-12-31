@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.integration.env;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.io.File;
 import java.net.URL;
 
 import static org.junit.Assert.assertNotNull;
