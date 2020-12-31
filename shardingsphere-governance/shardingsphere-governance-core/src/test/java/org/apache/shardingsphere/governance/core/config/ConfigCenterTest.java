@@ -499,7 +499,7 @@ public final class ConfigCenterTest {
         DataSourcePersistEvent event = new DataSourcePersistEvent("sharding_db", createDataSourceConfigurations());
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
-        verify(configurationRepository).persist(startsWith("/metadata/sharding_db/datasource/cache"), anyString());
+        verify(configurationRepository).persist(startsWith("/metadata/sharding_db/datasource"), anyString());
     }
     
     @Test

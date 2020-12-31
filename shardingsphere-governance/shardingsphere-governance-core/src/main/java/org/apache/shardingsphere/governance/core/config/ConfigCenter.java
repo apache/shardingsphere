@@ -119,7 +119,7 @@ public final class ConfigCenter {
      */
     @Subscribe
     public synchronized void renew(final DataSourcePersistEvent event) {
-        cacheDataSourceConfigurations(event.getSchemaName(), event.getDataSourceConfigurations());
+        addDataSourceConfigurations(event.getSchemaName(), event.getDataSourceConfigurations());
     }
     
     /**
@@ -196,10 +196,10 @@ public final class ConfigCenter {
         repository.persist(node.getDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfigurationWrap(dataSourceConfigurations)));
     }
     
-    private void cacheDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+    private void addDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
         Map<String, DataSourceConfiguration> dataSourceConfigurationMap = loadDataSourceConfigurations(schemaName);
         dataSourceConfigurationMap.putAll(dataSourceConfigurations);
-        configCacheManager.cache(node.getDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfigurationWrap(dataSourceConfigurations)));
+        repository.persist(node.getDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfigurationWrap(dataSourceConfigurations)));
     }
     
     private YamlDataSourceConfigurationWrap createYamlDataSourceConfigurationWrap(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
