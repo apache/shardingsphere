@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.shardingsphere.mapper.UserMapper">
+    <resultMap id="BaseResultMap" type="org.shardingsphere.domain.User">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" property="name"/>
+        <result column="sex" property="sex"/>
+        <result column="age" property="age"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, name, sex, age, create_time, update_time
+    </sql>
+    <select id="showAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tab_user
+    </select>
+
+    <insert id="insert" parameterType="org.shardingsphere.domain.User">
+        insert into tab_user (id, name, sex,
+                              age, create_time, update_time)
+        values (#{id}, #{name}, #{sex},
+                #{age}, #{createTime}, #{updateTime})
+    </insert>
+    <delete id="deleteUser" parameterType="Long">
+        delete
+        from tab_user
+        where id = #{id}
+    </delete>
+</mapper>

@@ -1,0 +1,40 @@
+#spring:
+###################### datasource section #######################
+#  shardingsphere:
+#    datasource:
+#      names: master,slave0,slave1
+#      master:
+#        jdbcUrl: jdbc:mysql://localhost:3306/master?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+#        driverClassName: com.mysql.jdbc.Driver
+#        type: com.zaxxer.hikari.HikariDataSource
+#        username: root
+#        password: 123456
+#      slave0:
+#        jdbcUrl: jdbc:mysql://localhost:3306/slave0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+#        driverClassName: com.mysql.jdbc.Driver
+#        type: com.zaxxer.hikari.HikariDataSource
+#        username: root
+#        password: 123456
+#      slave1:
+#        jdbcUrl: jdbc:mysql://localhost:3306/slave1?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+#        driverClassName: com.mysql.jdbc.Driver
+#        type: com.zaxxer.hikari.HikariDataSource
+#        username: root
+#        password: 123456
+####################### part of rules configuration #######################
+#    rules:
+#      replica-query:
+#        dataSources:
+#          masterandslaves:
+#            primaryDataSourceName: master
+#            replicaDataSourceNames:
+#              - slave0
+#              - slave1
+#            loadBalancerName: round-robin
+#        loadBalancers:
+#          round-robin:
+#            type: ROUND_ROBIN
+#            work-id: 123
+####################### props section #######################
+#    props:
+#      sql-show: true
