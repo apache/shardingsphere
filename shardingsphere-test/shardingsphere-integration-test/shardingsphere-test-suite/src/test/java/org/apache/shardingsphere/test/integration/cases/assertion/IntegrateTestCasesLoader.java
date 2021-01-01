@@ -38,7 +38,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -78,18 +77,18 @@ public final class IntegrateTestCasesLoader {
         return loadIntegrateTestCaseContexts(url, caseType);
     }
     
-    private List<IntegrateTestCaseContext> loadIntegrateTestCaseContexts(final URL url, final IntegrateTestCaseType caseType) throws IOException, URISyntaxException, JAXBException {
-        List<File> files = getFiles(url, caseType);
+    private Collection<IntegrateTestCaseContext> loadIntegrateTestCaseContexts(final URL url, final IntegrateTestCaseType caseType) throws IOException, URISyntaxException, JAXBException {
+        Collection<File> files = getFiles(url, caseType);
         Preconditions.checkNotNull(files, "Can not find integrate test cases.");
-        List<IntegrateTestCaseContext> result = new LinkedList<>();
+        Collection<IntegrateTestCaseContext> result = new LinkedList<>();
         for (File each : files) {
             result.addAll(getIntegrateTestCaseContexts(each));
         }
         return result;
     }
     
-    private static List<File> getFiles(final URL url, final IntegrateTestCaseType caseType) throws IOException, URISyntaxException {
-        List<File> result = new LinkedList<>();
+    private static Collection<File> getFiles(final URL url, final IntegrateTestCaseType caseType) throws IOException, URISyntaxException {
+        Collection<File> result = new LinkedList<>();
         Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
             
             @Override
@@ -103,7 +102,7 @@ public final class IntegrateTestCasesLoader {
         return result;
     }
     
-    private List<IntegrateTestCaseContext> getIntegrateTestCaseContexts(final File file) throws IOException, JAXBException {
+    private Collection<IntegrateTestCaseContext> getIntegrateTestCaseContexts(final File file) throws IOException, JAXBException {
         return unmarshal(file.getPath()).getTestCases().stream().map(each -> new IntegrateTestCaseContext(each, file.getParent())).collect(Collectors.toList());
     }
     
