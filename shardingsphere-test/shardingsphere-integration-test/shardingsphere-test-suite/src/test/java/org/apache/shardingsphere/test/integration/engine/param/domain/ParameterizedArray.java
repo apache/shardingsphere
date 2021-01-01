@@ -15,12 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.parameterized;
+package org.apache.shardingsphere.test.integration.engine.param.domain;
 
 /**
- * SQL execute type.
+ * Parameterized array.
  */
-public enum SQLExecuteType {
+public interface ParameterizedArray {
     
-    Literal, Placeholder
+    /**
+     * To parameterized arrays.
+     *
+     * @return parameterized arrays
+     */
+    Object[] toArrays();
 }
