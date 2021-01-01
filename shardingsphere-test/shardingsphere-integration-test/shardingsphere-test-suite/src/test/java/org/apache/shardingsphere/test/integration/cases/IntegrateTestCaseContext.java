@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.cases.assertion.ddl;
+package org.apache.shardingsphere.test.integration.cases;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCase;
 
 /**
- * JAXB definition of DDL integrate test case.
+ * Integrate test case context.
  */
+@RequiredArgsConstructor
 @Getter
-public final class DDLIntegrateTestCase extends IntegrateTestCase {
+public final class IntegrateTestCaseContext {
     
-    @XmlElement(name = "assertion")
-    private List<DDLIntegrateTestCaseAssertion> integrateTestCaseAssertions = new LinkedList<>();
+    private final IntegrateTestCase testCase;
+    
+    private final String parentPath;
 }

@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.test.integration.engine.it.ddl;
 
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.test.integration.cases.assertion.ddl.DDLIntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
+import org.apache.shardingsphere.test.integration.engine.param.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
@@ -53,16 +52,19 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public abstract class BaseDDLIT extends SingleIT {
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    protected BaseDDLIT(final String parentPath, final DDLIntegrateTestCaseAssertion assertion, final String scenario, 
+    protected BaseDDLIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String scenario,
                         final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, scenario, databaseType, caseType, sql);
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(scenario), getActualDataSources());
+        assertNotNull("Expected affected table is required", assertion.getInitialSQL());
+        assertNotNull("Expected affected table is required", assertion.getInitialSQL().getAffectedTable());
     }
     
     @BeforeClass
@@ -86,10 +88,10 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     private void executeInitSQLs(final Connection connection) throws SQLException {
-        if (Strings.isNullOrEmpty(((DDLIntegrateTestCaseAssertion) getAssertion()).getInitSQL())) {
+        if (null == getAssertion().getInitialSQL().getSql()) {
             return;
         }
-        for (String each : Splitter.on(";").trimResults().splitToList(((DDLIntegrateTestCaseAssertion) getAssertion()).getInitSQL())) {
+        for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getSql())) {
             connection.prepareStatement(each).executeUpdate();
         }
     }
@@ -103,14 +105,14 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     private void dropInitializedTable(final Connection connection) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", ((DDLIntegrateTestCaseAssertion) getAssertion()).getTable()))) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", getAssertion().getInitialSQL().getAffectedTable()))) {
             preparedStatement.executeUpdate();
         } catch (final SQLException ignored) {
         }
     }
     
     protected final void assertTableMetaData() throws SQLException {
-        String tableName = ((DDLIntegrateTestCaseAssertion) getAssertion()).getTable();
+        String tableName = getAssertion().getInitialSQL().getAffectedTable();
         DataSetMetadata expected = getDataSet().findMetadata(tableName);
         Collection<DataNode> dataNodes = new InlineExpressionParser(expected.getDataNodes()).splitAndEvaluate().stream().map(DataNode::new).collect(Collectors.toList());
         if (expected.getColumns().isEmpty()) {

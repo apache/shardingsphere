@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.dml;
 
-import org.apache.shardingsphere.test.integration.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
+import org.apache.shardingsphere.test.integration.engine.param.SQLCaseType;
+import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.param.IntegrateTestParameters;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -41,9 +41,9 @@ import static org.junit.Assert.assertFalse;
 
 public final class AdditionalDMLIT extends BaseDMLIT {
     
-    private final DMLIntegrateTestCaseAssertion assertion;
+    private final IntegrateTestCaseAssertion assertion;
     
-    public AdditionalDMLIT(final String parentPath, final DMLIntegrateTestCaseAssertion assertion, final String scenario,
+    public AdditionalDMLIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String scenario,
                            final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, scenario, databaseType, caseType, sql);
         this.assertion = assertion;

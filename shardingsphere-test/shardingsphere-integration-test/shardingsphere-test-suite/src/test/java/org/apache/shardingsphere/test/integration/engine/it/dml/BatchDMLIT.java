@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.integration.engine.it.dml;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseContext;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
+import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseContext;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
+import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.it.BatchIT;
 import org.apache.shardingsphere.test.integration.engine.param.IntegrateTestParameters;
 import org.junit.Test;
@@ -71,7 +71,7 @@ public final class BatchDMLIT extends BatchIT {
     
     private int[] executeBatchForPreparedStatement(final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
-            for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getIntegrateTestCaseAssertions()) {
+            for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
                 addBatch(preparedStatement, each);
             }
             return preparedStatement.executeBatch();
@@ -97,7 +97,7 @@ public final class BatchDMLIT extends BatchIT {
         }
         try (Connection connection = getTargetDataSource().getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
-                for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getIntegrateTestCaseAssertions()) {
+                for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
                     addBatch(preparedStatement, each);
                 }
                 preparedStatement.clearBatch();

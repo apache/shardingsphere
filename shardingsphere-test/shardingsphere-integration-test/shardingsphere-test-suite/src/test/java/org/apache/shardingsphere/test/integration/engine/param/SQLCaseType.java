@@ -15,23 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.cases.assertion.dcl;
-
-import lombok.Getter;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCases;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.LinkedList;
-import java.util.List;
+package org.apache.shardingsphere.test.integration.engine.param;
 
 /**
- * JAXB definition of DCL integrate test cases.
+ * SQL case type.
  */
-@Getter
-@XmlRootElement(name = "integrate-test-cases")
-public final class DCLIntegrateTestCases implements IntegrateTestCases {
+public enum SQLCaseType {
     
-    @XmlElement(name = "dcl-test-case")
-    private List<DCLIntegrateTestCase> integrateTestCases = new LinkedList<>();
+    Literal, Placeholder
 }

@@ -22,8 +22,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseContext;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCaseAssertion;
+import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseContext;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
@@ -74,7 +74,7 @@ public abstract class BatchIT extends BaseIT {
         this.testCaseContext = testCaseContext;
         this.sql = sql;
         dataSets = new LinkedList<>();
-        for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getIntegrateTestCaseAssertions()) {
+        for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
             dataSets.add(DataSetLoader.load(testCaseContext.getParentPath(), scenario, databaseType, each.getExpectedDataFile()));
         }
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(scenario), getActualDataSources());

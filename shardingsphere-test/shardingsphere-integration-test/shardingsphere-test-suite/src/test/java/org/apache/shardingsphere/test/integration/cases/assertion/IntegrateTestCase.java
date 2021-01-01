@@ -15,23 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.cases.assertion.dql;
+package org.apache.shardingsphere.test.integration.cases.assertion;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCases;
+import lombok.Setter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
- * JAXB definition of DQL integrate test cases.
+ * JAXB definition of integrate test case.
  */
 @Getter
-@XmlRootElement(name = "integrate-test-cases")
-public final class DQLIntegrateTestCases implements IntegrateTestCases {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class IntegrateTestCase {
     
-    @XmlElement(name = "dql-test-case")
-    private List<DQLIntegrateTestCase> integrateTestCases = new LinkedList<>();
+    @XmlAttribute(name = "sql")
+    private String sql;
+    
+    @XmlAttribute(name = "db-types")
+    private String dbTypes;
+    
+    @XmlElement(name = "assertion")
+    private Collection<IntegrateTestCaseAssertion> assertions = new LinkedList<>();
 }

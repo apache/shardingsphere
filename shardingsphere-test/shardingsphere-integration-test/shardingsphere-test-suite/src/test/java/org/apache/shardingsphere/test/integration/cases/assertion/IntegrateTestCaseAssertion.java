@@ -15,15 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.cases.assertion.root;
+package org.apache.shardingsphere.test.integration.cases.assertion;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,7 +38,7 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class IntegrateTestCaseAssertion {
+public final class IntegrateTestCaseAssertion {
     
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
@@ -44,13 +46,16 @@ public abstract class IntegrateTestCaseAssertion {
     @XmlAttribute
     private String parameters;
     
+    @XmlElement(name = "initial-sql")
+    private IntegrateTestCaseAssertionInitialSQL initialSQL;
+    
     /**
      * Get SQL values.
      * 
      * @return SQL values
      * @throws ParseException parse exception
      */
-    public final Collection<SQLValue> getSQLValues() throws ParseException {
+    public Collection<SQLValue> getSQLValues() throws ParseException {
         if (null == parameters) {
             return Collections.emptyList();
         }

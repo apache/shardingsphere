@@ -27,10 +27,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseContext;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCasesLoader;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
+import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseContext;
+import org.apache.shardingsphere.test.integration.cases.IntegrateTestCasesLoader;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.junit.Test;
 
@@ -79,11 +78,11 @@ public final class IntegrateTestParameters {
     
     private static Collection<Object[]> getParametersWithAssertion(final DatabaseType databaseType, final SQLCaseType caseType, final IntegrateTestCaseContext testCaseContext) {
         Collection<Object[]> result = new LinkedList<>();
-        if (testCaseContext.getTestCase().getIntegrateTestCaseAssertions().isEmpty()) {
+        if (testCaseContext.getTestCase().getAssertions().isEmpty()) {
             result.addAll(getParametersWithAssertion(testCaseContext, null, databaseType, caseType));
             return result;
         }
-        for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getIntegrateTestCaseAssertions()) {
+        for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
             result.addAll(getParametersWithAssertion(testCaseContext, each, databaseType, caseType));
         }
         return result;
