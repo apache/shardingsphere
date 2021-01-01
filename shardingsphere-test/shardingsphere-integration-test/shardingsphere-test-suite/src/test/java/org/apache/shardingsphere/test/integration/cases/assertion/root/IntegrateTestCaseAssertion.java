@@ -20,10 +20,12 @@ package org.apache.shardingsphere.test.integration.cases.assertion.root;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.integration.cases.assertion.ddl.IntegrateTestCaseAssertionInitialSQL;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,6 +45,9 @@ public abstract class IntegrateTestCaseAssertion {
     
     @XmlAttribute
     private String parameters;
+    
+    @XmlElement(name = "initial-sql")
+    private IntegrateTestCaseAssertionInitialSQL initialSQL;
     
     /**
      * Get SQL values.

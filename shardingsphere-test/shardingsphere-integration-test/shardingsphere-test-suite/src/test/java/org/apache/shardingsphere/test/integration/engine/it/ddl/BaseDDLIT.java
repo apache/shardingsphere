@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.engine.it.ddl;
 
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
@@ -53,6 +52,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public abstract class BaseDDLIT extends SingleIT {
@@ -63,6 +63,8 @@ public abstract class BaseDDLIT extends SingleIT {
                         final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, scenario, databaseType, caseType, sql);
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(scenario), getActualDataSources());
+        assertNotNull("Expected affected table is required", assertion.getInitialSQL());
+        assertNotNull("Expected affected table is required", assertion.getInitialSQL().getTable());
     }
     
     @BeforeClass
@@ -86,10 +88,10 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     private void executeInitSQLs(final Connection connection) throws SQLException {
-        if (Strings.isNullOrEmpty(((DDLIntegrateTestCaseAssertion) getAssertion()).getInitSQL())) {
+        if (null == getAssertion().getInitialSQL().getInitSQL()) {
             return;
         }
-        for (String each : Splitter.on(";").trimResults().splitToList(((DDLIntegrateTestCaseAssertion) getAssertion()).getInitSQL())) {
+        for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getInitSQL())) {
             connection.prepareStatement(each).executeUpdate();
         }
     }
@@ -103,14 +105,14 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     private void dropInitializedTable(final Connection connection) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", ((DDLIntegrateTestCaseAssertion) getAssertion()).getTable()))) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", getAssertion().getInitialSQL().getTable()))) {
             preparedStatement.executeUpdate();
         } catch (final SQLException ignored) {
         }
     }
     
     protected final void assertTableMetaData() throws SQLException {
-        String tableName = ((DDLIntegrateTestCaseAssertion) getAssertion()).getTable();
+        String tableName = getAssertion().getInitialSQL().getTable();
         DataSetMetadata expected = getDataSet().findMetadata(tableName);
         Collection<DataNode> dataNodes = new InlineExpressionParser(expected.getDataNodes()).splitAndEvaluate().stream().map(DataNode::new).collect(Collectors.toList());
         if (expected.getColumns().isEmpty()) {
