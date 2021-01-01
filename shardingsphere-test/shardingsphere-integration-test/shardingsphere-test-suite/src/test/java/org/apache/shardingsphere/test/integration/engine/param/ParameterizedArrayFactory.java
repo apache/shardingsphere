@@ -57,10 +57,10 @@ public final class ParameterizedArrayFactory {
     private static final IntegrateTestEnvironment INTEGRATE_TEST_ENVIRONMENT = IntegrateTestEnvironment.getInstance();
     
     /**
-     * Get parameters of assertions.
+     * Get assertion parameterized array.
      * 
      * @param sqlCommandType SQL command type
-     * @return integrate test parameters
+     * @return assertion parameterized array
      */
     public static Collection<Object[]> getAssertionParameterizedArray(final SQLCommandType sqlCommandType) {
         Map<DatabaseType, Collection<ParameterizedArray>> assertionParameters = new LinkedHashMap<>(10, 1);
@@ -121,10 +121,10 @@ public final class ParameterizedArrayFactory {
     }
     
     /**
-     * Get parameters with test cases.
+     * Get case parameterized array.
      *
      * @param sqlCommandType SQL command type
-     * @return integrate test parameters
+     * @return case parameterized array
      */
     public static Collection<Object[]> getCaseParameterizedArray(final SQLCommandType sqlCommandType) {
         Map<DatabaseType, Collection<ParameterizedArray>> availableCases = new LinkedHashMap<>();
