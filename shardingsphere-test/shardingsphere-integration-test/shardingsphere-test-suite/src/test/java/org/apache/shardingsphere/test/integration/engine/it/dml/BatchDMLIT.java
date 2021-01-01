@@ -42,13 +42,12 @@ public final class BatchDMLIT extends BatchIT {
     
     private final IntegrateTestCaseContext testCaseContext;
     
-    public BatchDMLIT(final IntegrateTestCaseContext testCaseContext,
-                      final String ruleType, final String databaseType, final String sql) throws IOException, JAXBException, SQLException {
+    public BatchDMLIT(final IntegrateTestCaseContext testCaseContext, final String ruleType, final String databaseType, final String sql) throws IOException, JAXBException, SQLException {
         super(testCaseContext, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), sql);
         this.testCaseContext = testCaseContext;
     }
     
-    @Parameters(name = "Rule:{1} -> {2} -> {3}")
+    @Parameters(name = "{1} -> {2} -> {3}")
     public static Collection<Object[]> getParameters() {
         return IntegrateTestParameters.getParametersWithCase(IntegrateTestCaseType.DML);
     }
