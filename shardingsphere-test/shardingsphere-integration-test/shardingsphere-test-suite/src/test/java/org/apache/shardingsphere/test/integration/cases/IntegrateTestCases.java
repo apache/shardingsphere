@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.cases.assertion;
+package org.apache.shardingsphere.test.integration.cases;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.cases.IntegrateTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

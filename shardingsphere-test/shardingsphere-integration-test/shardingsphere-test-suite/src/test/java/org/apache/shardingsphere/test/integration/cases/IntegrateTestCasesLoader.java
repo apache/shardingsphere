@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.cases;
 
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCases;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
