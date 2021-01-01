@@ -23,6 +23,8 @@ import lombok.Setter;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -31,7 +33,7 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class IntegrateTestCase {
+public final class IntegrateTestCase {
     
     @XmlAttribute(name = "sql")
     private String sql;
@@ -39,10 +41,6 @@ public abstract class IntegrateTestCase {
     @XmlAttribute(name = "db-types")
     private String dbTypes;
     
-    /**
-     * Get integrate test case assertions.
-     * 
-     * @return integrate test case assertions
-     */
-    public abstract List<IntegrateTestCaseAssertion> getIntegrateTestCaseAssertions();
+    @XmlElement(name = "assertion")
+    private List<IntegrateTestCaseAssertion> integrateTestCaseAssertions = new LinkedList<>();
 }

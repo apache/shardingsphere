@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.integration.cases.assertion.dml;
 
 import lombok.Getter;
+import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCase;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCases;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -33,5 +34,5 @@ import java.util.List;
 public final class DMLIntegrateTestCases implements IntegrateTestCases {
     
     @XmlElement(name = "dml-test-case")
-    private List<DMLIntegrateTestCase> integrateTestCases = new LinkedList<>();
+    private List<IntegrateTestCase> integrateTestCases = new LinkedList<>();
 }
