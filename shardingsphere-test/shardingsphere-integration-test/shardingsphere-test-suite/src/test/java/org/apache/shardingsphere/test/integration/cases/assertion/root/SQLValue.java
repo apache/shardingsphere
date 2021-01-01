@@ -54,7 +54,7 @@ public final class SQLValue {
         if ("datetime".equals(type)) {
             return new Date(new SimpleDateFormat("yyyy-MM-dd").parse(value).getTime());
         }
-        throw new UnsupportedOperationException(String.format("Cannot support type: '%s'", type));
+        throw new UnsupportedOperationException(String.format("Cannot support type: `%s`", type));
     }
     
     @Override
