@@ -44,9 +44,9 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     private final DQLIntegrateTestCaseAssertion assertion;
     
-    public AdditionalDQLIT(final String parentPath, final DQLIntegrateTestCaseAssertion assertion, final String ruleType,
+    public AdditionalDQLIT(final String parentPath, final DQLIntegrateTestCaseAssertion assertion, final String scenario,
                            final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(parentPath, assertion, ruleType, databaseType, caseType, sql);
+        super(parentPath, assertion, scenario, databaseType, caseType, sql);
         this.assertion = assertion;
     }
     

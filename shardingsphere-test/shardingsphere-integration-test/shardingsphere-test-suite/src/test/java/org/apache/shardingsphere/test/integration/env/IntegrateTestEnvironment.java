@@ -43,7 +43,7 @@ public final class IntegrateTestEnvironment {
     
     private final boolean runAdditionalTestCases;
     
-    private final Collection<String> ruleTypes;
+    private final Collection<String> scenarios;
     
     private final Map<DatabaseType, DatabaseEnvironment> databaseEnvironments;
     
@@ -51,7 +51,7 @@ public final class IntegrateTestEnvironment {
         activeProfile = loadProperties("integrate/profile.properties").getProperty("mode");
         Properties envProps = loadProperties(IntegrateTestEnvironmentType.valueFromProfileName(activeProfile).getEnvFileName());
         runAdditionalTestCases = Boolean.parseBoolean(envProps.getProperty("run.additional.cases"));
-        ruleTypes = Splitter.on(",").trimResults().splitToList(envProps.getProperty("rule.types"));
+        scenarios = Splitter.on(",").trimResults().splitToList(envProps.getProperty("scenarios"));
         databaseEnvironments = createDatabaseEnvironments(envProps);
     }
     

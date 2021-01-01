@@ -34,9 +34,9 @@ import java.util.Collection;
 
 public final class GeneralDDLIT extends BaseDDLIT {
     
-    public GeneralDDLIT(final String parentPath, final DDLIntegrateTestCaseAssertion assertion, final String ruleType,
+    public GeneralDDLIT(final String parentPath, final DDLIntegrateTestCaseAssertion assertion, final String scenario,
                         final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(parentPath, assertion, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
+        super(parentPath, assertion, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
     }
     
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")

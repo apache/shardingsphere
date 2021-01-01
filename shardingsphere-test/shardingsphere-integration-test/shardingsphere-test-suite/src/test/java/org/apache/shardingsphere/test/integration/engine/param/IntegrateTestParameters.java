@@ -92,7 +92,7 @@ public final class IntegrateTestParameters {
     private static Collection<Object[]> getParametersWithAssertion(final IntegrateTestCaseContext testCaseContext, 
                                                                    final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) {
         Collection<Object[]> result = new LinkedList<>();
-        for (String each : INTEGRATE_TEST_ENVIRONMENT.getRuleTypes()) {
+        for (String each : INTEGRATE_TEST_ENVIRONMENT.getScenarios()) {
             Object[] data = new Object[6];
             data[0] = testCaseContext.getParentPath();
             data[1] = assertion;
@@ -129,7 +129,7 @@ public final class IntegrateTestParameters {
     
     private static Collection<Object[]> getParametersWithCase(final DatabaseType databaseType, final IntegrateTestCaseContext testCaseContext) {
         Collection<Object[]> result = new LinkedList<>();
-        for (String each : INTEGRATE_TEST_ENVIRONMENT.getRuleTypes()) {
+        for (String each : INTEGRATE_TEST_ENVIRONMENT.getScenarios()) {
             Object[] data = new Object[4];
             data[0] = testCaseContext;
             data[1] = each;

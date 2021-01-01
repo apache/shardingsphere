@@ -52,14 +52,14 @@ public abstract class SingleIT extends BaseIT {
     
     private final String sql;
     
-    protected SingleIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String ruleType, 
+    protected SingleIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String scenario, 
                        final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(ruleType, databaseType);
+        super(scenario, databaseType);
         caseIdentifier = sql;
         this.assertion = assertion;
         this.caseType = caseType;
         this.sql = caseType == SQLCaseType.Literal ? getLiteralSQL(sql) : sql;
-        dataSet = null == assertion ? null : DataSetLoader.load(parentPath, ruleType, databaseType, assertion.getExpectedDataFile());
+        dataSet = null == assertion ? null : DataSetLoader.load(parentPath, scenario, databaseType, assertion.getExpectedDataFile());
     }
     
     private String getLiteralSQL(final String sql) throws ParseException {

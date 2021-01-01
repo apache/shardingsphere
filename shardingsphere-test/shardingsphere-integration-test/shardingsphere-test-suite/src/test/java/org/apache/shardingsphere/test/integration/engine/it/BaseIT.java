@@ -47,7 +47,7 @@ public abstract class BaseIT {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
-    private final String ruleType;
+    private final String scenario;
     
     private final DatabaseType databaseType;
     
@@ -62,16 +62,16 @@ public abstract class BaseIT {
         }
     }
     
-    BaseIT(final String ruleType, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
-        this.ruleType = ruleType;
+    BaseIT(final String scenario, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
+        this.scenario = scenario;
         this.databaseType = databaseType;
-        actualDataSources = ActualDataSourceBuilder.createActualDataSources(ruleType, databaseType);
+        actualDataSources = ActualDataSourceBuilder.createActualDataSources(scenario, databaseType);
         targetDataSource = createTargetDataSource();
     }
     
     private DataSource createTargetDataSource() throws SQLException, IOException {
-        return IntegrateTestEnvironment.getInstance().isProxyEnvironment() ? ProxyDataSourceBuilder.build(String.format("proxy_%s", ruleType), databaseType) 
-                : YamlShardingSphereDataSourceFactory.createDataSource(actualDataSources, new File(EnvironmentPath.getRulesConfigurationFile(ruleType)));
+        return IntegrateTestEnvironment.getInstance().isProxyEnvironment() ? ProxyDataSourceBuilder.build(String.format("proxy_%s", scenario), databaseType) 
+                : YamlShardingSphereDataSourceFactory.createDataSource(actualDataSources, new File(EnvironmentPath.getRulesConfigurationFile(scenario)));
     }
     
     protected final void resetTargetDataSource() throws IOException, SQLException {

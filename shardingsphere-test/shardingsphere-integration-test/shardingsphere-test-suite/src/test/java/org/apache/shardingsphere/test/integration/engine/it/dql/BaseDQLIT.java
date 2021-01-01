@@ -50,9 +50,9 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDQLIT extends SingleIT {
     
-    protected BaseDQLIT(final String parentPath, final DQLIntegrateTestCaseAssertion assertion, final String ruleType,
+    protected BaseDQLIT(final String parentPath, final DQLIntegrateTestCaseAssertion assertion, final String scenario,
                         final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(parentPath, assertion, ruleType, databaseType, caseType, sql);
+        super(parentPath, assertion, scenario, databaseType, caseType, sql);
     }
     
     @BeforeClass
@@ -65,7 +65,7 @@ public abstract class BaseDQLIT extends SingleIT {
     }
     
     private static void fillData(final DatabaseType databaseType) throws SQLException, ParseException, IOException, JAXBException {
-        for (String each : IntegrateTestEnvironment.getInstance().getRuleTypes()) {
+        for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
             new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(each), ActualDataSourceBuilder.createActualDataSources(each, databaseType)).fillData();
         }
     }
@@ -90,7 +90,7 @@ public abstract class BaseDQLIT extends SingleIT {
     
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
         // TODO Fix shadow
-        if ("shadow".equals(getRuleType())) {
+        if ("shadow".equals(getScenario())) {
             return;
         }
         assertThat(actual.getColumnCount(), is(expected.size()));

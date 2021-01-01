@@ -42,9 +42,9 @@ public final class GeneralDQLIT extends BaseDQLIT {
     
     private final DQLIntegrateTestCaseAssertion assertion;
     
-    public GeneralDQLIT(final String parentPath, final DQLIntegrateTestCaseAssertion assertion, final String ruleType,
+    public GeneralDQLIT(final String parentPath, final DQLIntegrateTestCaseAssertion assertion, final String scenario,
                         final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(parentPath, assertion, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
+        super(parentPath, assertion, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
         this.assertion = assertion;
     }
     
