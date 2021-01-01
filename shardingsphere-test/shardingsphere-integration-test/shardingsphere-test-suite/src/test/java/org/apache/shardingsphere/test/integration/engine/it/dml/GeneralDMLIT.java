@@ -49,7 +49,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getAssertionParameters(SQLCommandType.DML);
+        return IntegrateTestParameters.getAssertionParameterizedArray(SQLCommandType.DML);
     }
     
     @Test

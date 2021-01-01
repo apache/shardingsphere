@@ -49,7 +49,7 @@ public final class BatchDMLIT extends BatchIT {
     
     @Parameters(name = "{1} -> {2} -> {3}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParametersWithCase(SQLCommandType.DML);
+        return IntegrateTestParameters.getCaseParameterizedArray(SQLCommandType.DML);
     }
     
     @Test
