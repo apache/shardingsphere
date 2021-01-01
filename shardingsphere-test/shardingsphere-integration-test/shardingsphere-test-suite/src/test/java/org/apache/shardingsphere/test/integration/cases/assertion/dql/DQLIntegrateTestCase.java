@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.cases.assertion.dql;
 
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCase;
+import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCaseAssertion;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
@@ -31,5 +32,5 @@ import java.util.List;
 public final class DQLIntegrateTestCase extends IntegrateTestCase {
     
     @XmlElement(name = "assertion")
-    private List<DQLIntegrateTestCaseAssertion> integrateTestCaseAssertions = new LinkedList<>();
+    private List<IntegrateTestCaseAssertion> integrateTestCaseAssertions = new LinkedList<>();
 }

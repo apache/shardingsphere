@@ -44,5 +44,5 @@ public abstract class IntegrateTestCase {
      * 
      * @return integrate test case assertions
      */
-    public abstract List<? extends IntegrateTestCaseAssertion> getIntegrateTestCaseAssertions();
+    public abstract List<IntegrateTestCaseAssertion> getIntegrateTestCaseAssertions();
 }

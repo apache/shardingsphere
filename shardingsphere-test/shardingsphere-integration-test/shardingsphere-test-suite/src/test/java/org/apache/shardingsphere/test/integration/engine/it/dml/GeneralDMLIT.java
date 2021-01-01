@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.engine.it.dml;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
-import org.apache.shardingsphere.test.integration.cases.assertion.dml.DMLIntegrateTestCaseAssertion;
+import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.param.IntegrateTestParameters;
@@ -39,9 +39,9 @@ import static org.junit.Assert.assertFalse;
 
 public final class GeneralDMLIT extends BaseDMLIT {
     
-    private final DMLIntegrateTestCaseAssertion assertion;
+    private final IntegrateTestCaseAssertion assertion;
     
-    public GeneralDMLIT(final String parentPath, final DMLIntegrateTestCaseAssertion assertion, final String scenario,
+    public GeneralDMLIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String scenario,
                         final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
         this.assertion = assertion;

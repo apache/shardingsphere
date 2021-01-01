@@ -37,7 +37,7 @@ import java.util.List;
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class IntegrateTestCaseAssertion {
+public final class IntegrateTestCaseAssertion {
     
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
@@ -54,7 +54,7 @@ public abstract class IntegrateTestCaseAssertion {
      * @return SQL values
      * @throws ParseException parse exception
      */
-    public final Collection<SQLValue> getSQLValues() throws ParseException {
+    public Collection<SQLValue> getSQLValues() throws ParseException {
         if (null == parameters) {
             return Collections.emptyList();
         }
