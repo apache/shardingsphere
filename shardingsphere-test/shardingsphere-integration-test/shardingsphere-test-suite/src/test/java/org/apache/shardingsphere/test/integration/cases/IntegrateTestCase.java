@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.cases.assertion;
+package org.apache.shardingsphere.test.integration.cases;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * JAXB definition of integrate test case.
@@ -42,5 +43,5 @@ public final class IntegrateTestCase {
     private String dbTypes;
     
     @XmlElement(name = "assertion")
-    private List<IntegrateTestCaseAssertion> integrateTestCaseAssertions = new LinkedList<>();
+    private Collection<IntegrateTestCaseAssertion> assertions = new LinkedList<>();
 }

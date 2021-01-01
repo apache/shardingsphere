@@ -79,11 +79,11 @@ public final class IntegrateTestParameters {
     
     private static Collection<Object[]> getParametersWithAssertion(final DatabaseType databaseType, final SQLCaseType caseType, final IntegrateTestCaseContext testCaseContext) {
         Collection<Object[]> result = new LinkedList<>();
-        if (testCaseContext.getTestCase().getIntegrateTestCaseAssertions().isEmpty()) {
+        if (testCaseContext.getTestCase().getAssertions().isEmpty()) {
             result.addAll(getParametersWithAssertion(testCaseContext, null, databaseType, caseType));
             return result;
         }
-        for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getIntegrateTestCaseAssertions()) {
+        for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
             result.addAll(getParametersWithAssertion(testCaseContext, each, databaseType, caseType));
         }
         return result;
