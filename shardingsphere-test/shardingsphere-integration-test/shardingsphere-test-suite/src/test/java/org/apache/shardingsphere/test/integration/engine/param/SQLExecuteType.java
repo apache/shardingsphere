@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.test.integration.engine.param;
 
 /**
- * SQL case type.
+ * SQL execute type.
  */
-public enum SQLCaseType {
+public enum SQLExecuteType {
     
     Literal, Placeholder
 }

@@ -93,26 +93,26 @@ public final class IntegrateTestParameters {
     
     private static Collection<Object[]> getAssertionParameters(final IntegrateTestCaseContext testCaseContext, final DatabaseType databaseType) {
         Collection<Object[]> result = new LinkedList<>();
-        for (SQLCaseType each : SQLCaseType.values()) {
+        for (SQLExecuteType each : SQLExecuteType.values()) {
             result.addAll(getAssertionParameters(testCaseContext, databaseType, each));
         }
         return result;
     }
     
-    private static Collection<Object[]> getAssertionParameters(final IntegrateTestCaseContext testCaseContext, final DatabaseType databaseType, final SQLCaseType caseType) {
+    private static Collection<Object[]> getAssertionParameters(final IntegrateTestCaseContext testCaseContext, final DatabaseType databaseType, final SQLExecuteType sqlExecuteType) {
         Collection<Object[]> result = new LinkedList<>();
         if (testCaseContext.getTestCase().getAssertions().isEmpty()) {
-            result.addAll(getAssertionParameters(testCaseContext, null, databaseType, caseType));
+            result.addAll(getAssertionParameters(testCaseContext, null, databaseType, sqlExecuteType));
             return result;
         }
         for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
-            result.addAll(getAssertionParameters(testCaseContext, each, databaseType, caseType));
+            result.addAll(getAssertionParameters(testCaseContext, each, databaseType, sqlExecuteType));
         }
         return result;
     }
     
     private static Collection<Object[]> getAssertionParameters(final IntegrateTestCaseContext testCaseContext,
-                                                               final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLCaseType caseType) {
+                                                               final IntegrateTestCaseAssertion assertion, final DatabaseType databaseType, final SQLExecuteType sqlExecuteType) {
         Collection<Object[]> result = new LinkedList<>();
         for (String each : INTEGRATE_TEST_ENVIRONMENT.getScenarios()) {
             Object[] data = new Object[6];
@@ -120,7 +120,7 @@ public final class IntegrateTestParameters {
             data[1] = assertion;
             data[2] = each;
             data[3] = databaseType.getName();
-            data[4] = caseType;
+            data[4] = sqlExecuteType;
             data[5] = testCaseContext.getTestCase().getSql();
             result.add(data);
         }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.engine.it.dml;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.engine.param.SQLCaseType;
+import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.param.IntegrateTestParameters;
 import org.junit.Test;
@@ -42,8 +42,8 @@ public final class GeneralDMLIT extends BaseDMLIT {
     private final IntegrateTestCaseAssertion assertion;
     
     public GeneralDMLIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String scenario,
-                        final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(parentPath, assertion, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
+                        final String databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+        super(parentPath, assertion, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), sqlExecuteType, sql);
         this.assertion = assertion;
     }
     
@@ -64,7 +64,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
         }
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
-            actualUpdateCount = SQLCaseType.Literal == getCaseType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
+            actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
         }
         assertDataSet(actualUpdateCount);
     }
@@ -96,7 +96,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
         }
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
-            actualUpdateCount = SQLCaseType.Literal == getCaseType() ? executeForStatement(connection) : executeForPreparedStatement(connection);
+            actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeForStatement(connection) : executeForPreparedStatement(connection);
         }
         assertDataSet(actualUpdateCount);
     }
