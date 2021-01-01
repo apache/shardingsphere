@@ -64,7 +64,7 @@ public abstract class BaseDDLIT extends SingleIT {
         super(parentPath, assertion, scenario, databaseType, caseType, sql);
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(scenario), getActualDataSources());
         assertNotNull("Expected affected table is required", assertion.getInitialSQL());
-        assertNotNull("Expected affected table is required", assertion.getInitialSQL().getTable());
+        assertNotNull("Expected affected table is required", assertion.getInitialSQL().getAffectedTable());
     }
     
     @BeforeClass
@@ -88,10 +88,10 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     private void executeInitSQLs(final Connection connection) throws SQLException {
-        if (null == getAssertion().getInitialSQL().getInitSQL()) {
+        if (null == getAssertion().getInitialSQL().getSql()) {
             return;
         }
-        for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getInitSQL())) {
+        for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getSql())) {
             connection.prepareStatement(each).executeUpdate();
         }
     }
@@ -105,14 +105,14 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     private void dropInitializedTable(final Connection connection) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", getAssertion().getInitialSQL().getTable()))) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", getAssertion().getInitialSQL().getAffectedTable()))) {
             preparedStatement.executeUpdate();
         } catch (final SQLException ignored) {
         }
     }
     
     protected final void assertTableMetaData() throws SQLException {
-        String tableName = getAssertion().getInitialSQL().getTable();
+        String tableName = getAssertion().getInitialSQL().getAffectedTable();
         DataSetMetadata expected = getDataSet().findMetadata(tableName);
         Collection<DataNode> dataNodes = new InlineExpressionParser(expected.getDataNodes()).splitAndEvaluate().stream().map(DataNode::new).collect(Collectors.toList());
         if (expected.getColumns().isEmpty()) {

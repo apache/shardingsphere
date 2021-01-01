@@ -32,9 +32,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class IntegrateTestCaseAssertionInitialSQL {
     
-    @XmlAttribute(name = "init-sql")
-    private String initSQL;
+    @XmlAttribute
+    private String sql;
     
-    @XmlAttribute(name = "table")
-    private String table;
+    @XmlAttribute(name = "affected-table")
+    private String affectedTable;
 }
