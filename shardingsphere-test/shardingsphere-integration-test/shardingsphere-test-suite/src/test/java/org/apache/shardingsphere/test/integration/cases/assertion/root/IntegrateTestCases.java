@@ -17,14 +17,20 @@
 
 package org.apache.shardingsphere.test.integration.cases.assertion.root;
 
+import lombok.Getter;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.LinkedList;
 import java.util.List;
 
-public interface IntegrateTestCases {
+/**
+ * JAXB definition of integrate test cases.
+ */
+@Getter
+@XmlRootElement(name = "integrate-test-cases")
+public final class IntegrateTestCases {
     
-    /**
-     * Get integrate test cases.
-     * 
-     * @return integrate test cases
-     */
-    List<? extends IntegrateTestCase> getTestCases();
+    @XmlElement(name = "test-case")
+    private List<IntegrateTestCase> testCases = new LinkedList<>();
 }

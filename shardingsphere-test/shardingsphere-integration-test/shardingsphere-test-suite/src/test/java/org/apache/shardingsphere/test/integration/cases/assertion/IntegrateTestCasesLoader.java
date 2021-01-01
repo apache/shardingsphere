@@ -20,10 +20,6 @@ package org.apache.shardingsphere.test.integration.cases.assertion;
 import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
-import org.apache.shardingsphere.test.integration.cases.assertion.dcl.DCLIntegrateTestCases;
-import org.apache.shardingsphere.test.integration.cases.assertion.ddl.DDLIntegrateTestCases;
-import org.apache.shardingsphere.test.integration.cases.assertion.dml.DMLIntegrateTestCases;
-import org.apache.shardingsphere.test.integration.cases.assertion.dql.DQLIntegrateTestCases;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCases;
 
 import javax.xml.bind.JAXBContext;
@@ -86,7 +82,7 @@ public final class IntegrateTestCasesLoader {
         Preconditions.checkNotNull(files, "Can not find integrate test cases.");
         List<IntegrateTestCaseContext> result = new LinkedList<>();
         for (File each : files) {
-            result.addAll(getIntegrateTestCaseContexts(each, caseType));
+            result.addAll(getIntegrateTestCaseContexts(each));
         }
         return result;
     }
@@ -106,24 +102,13 @@ public final class IntegrateTestCasesLoader {
         return result;
     }
     
-    private List<IntegrateTestCaseContext> getIntegrateTestCaseContexts(final File file, final IntegrateTestCaseType caseType) throws IOException, JAXBException {
-        return unmarshal(file.getPath(), caseType).getTestCases().stream().map(each -> new IntegrateTestCaseContext(each, file.getParent())).collect(Collectors.toList());
+    private List<IntegrateTestCaseContext> getIntegrateTestCaseContexts(final File file) throws IOException, JAXBException {
+        return unmarshal(file.getPath()).getTestCases().stream().map(each -> new IntegrateTestCaseContext(each, file.getParent())).collect(Collectors.toList());
     }
     
-    private static IntegrateTestCases unmarshal(final String integrateCasesFile, final IntegrateTestCaseType caseType) throws IOException, JAXBException {
+    private static IntegrateTestCases unmarshal(final String integrateCasesFile) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(integrateCasesFile)) {
-            switch (caseType) {
-                case DQL:
-                    return (DQLIntegrateTestCases) JAXBContext.newInstance(DQLIntegrateTestCases.class).createUnmarshaller().unmarshal(reader);
-                case DML:
-                    return (DMLIntegrateTestCases) JAXBContext.newInstance(DMLIntegrateTestCases.class).createUnmarshaller().unmarshal(reader);
-                case DDL:
-                    return (DDLIntegrateTestCases) JAXBContext.newInstance(DDLIntegrateTestCases.class).createUnmarshaller().unmarshal(reader);
-                case DCL:
-                    return (DCLIntegrateTestCases) JAXBContext.newInstance(DCLIntegrateTestCases.class).createUnmarshaller().unmarshal(reader);
-                default:
-                    throw new UnsupportedOperationException(caseType.getFilePrefix());
-            }
+            return (IntegrateTestCases) JAXBContext.newInstance(IntegrateTestCases.class).createUnmarshaller().unmarshal(reader);
         }
     }
 }
