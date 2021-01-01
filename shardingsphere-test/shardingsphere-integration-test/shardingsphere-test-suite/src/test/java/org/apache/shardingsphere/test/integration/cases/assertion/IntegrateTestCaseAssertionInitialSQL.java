@@ -15,22 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.cases.assertion.root;
+package org.apache.shardingsphere.test.integration.cases.assertion;
 
 import lombok.Getter;
+import lombok.Setter;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.LinkedList;
-import java.util.List;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * JAXB definition of integrate test cases.
+ * JAXB definition of integrate test case assertion initial SQL.
  */
 @Getter
-@XmlRootElement(name = "integrate-test-cases")
-public final class IntegrateTestCases {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class IntegrateTestCaseAssertionInitialSQL {
     
-    @XmlElement(name = "test-case")
-    private List<IntegrateTestCase> testCases = new LinkedList<>();
+    @XmlAttribute
+    private String sql;
+    
+    @XmlAttribute(name = "affected-table")
+    private String affectedTable;
 }

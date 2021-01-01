@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.cases;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCase;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCase;
 
 /**
  * Integrate test case context.

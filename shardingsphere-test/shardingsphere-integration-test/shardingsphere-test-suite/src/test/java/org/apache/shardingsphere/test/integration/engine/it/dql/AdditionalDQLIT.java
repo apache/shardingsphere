@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.integration.engine.it.dql;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLCaseType;
-import org.apache.shardingsphere.test.integration.cases.assertion.root.SQLValue;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
+import org.apache.shardingsphere.test.integration.cases.assertion.SQLCaseType;
+import org.apache.shardingsphere.test.integration.cases.assertion.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.param.IntegrateTestParameters;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.junit.Test;
