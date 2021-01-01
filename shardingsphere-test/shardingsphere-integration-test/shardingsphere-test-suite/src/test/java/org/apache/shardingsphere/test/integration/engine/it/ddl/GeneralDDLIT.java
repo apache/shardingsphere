@@ -41,7 +41,7 @@ public final class GeneralDDLIT extends BaseDDLIT {
     
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DDL);
+        return IntegrateTestParameters.getAssertionParameters(IntegrateTestCaseType.DDL);
     }
     
     @SuppressWarnings("JUnitTestMethodWithNoAssertions")

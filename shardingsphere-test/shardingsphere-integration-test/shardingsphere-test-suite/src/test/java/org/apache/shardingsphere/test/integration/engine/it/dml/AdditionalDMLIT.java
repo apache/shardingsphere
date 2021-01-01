@@ -51,7 +51,7 @@ public final class AdditionalDMLIT extends BaseDMLIT {
     
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestEnvironment.getInstance().isRunAdditionalTestCases() ? IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DML) : Collections.emptyList();
+        return IntegrateTestEnvironment.getInstance().isRunAdditionalTestCases() ? IntegrateTestParameters.getAssertionParameters(IntegrateTestCaseType.DML) : Collections.emptyList();
     }
     
     @Test

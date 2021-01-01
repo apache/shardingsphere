@@ -41,7 +41,7 @@ public final class GeneralDCLIT extends BaseDCLIT {
     
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DCL);
+        return IntegrateTestParameters.getAssertionParameters(IntegrateTestCaseType.DCL);
     }
     
     @Test

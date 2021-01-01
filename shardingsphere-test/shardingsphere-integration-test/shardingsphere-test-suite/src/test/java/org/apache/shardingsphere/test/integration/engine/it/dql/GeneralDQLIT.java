@@ -50,7 +50,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
     
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DQL);
+        return IntegrateTestParameters.getAssertionParameters(IntegrateTestCaseType.DQL);
     }
     
     @Test
