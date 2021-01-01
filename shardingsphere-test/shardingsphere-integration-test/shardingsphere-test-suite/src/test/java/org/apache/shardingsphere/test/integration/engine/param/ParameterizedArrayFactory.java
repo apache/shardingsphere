@@ -65,15 +65,8 @@ public final class ParameterizedArrayFactory {
      */
     public static Collection<Object[]> getAssertionParameterizedArray(final SQLCommandType sqlCommandType) {
         Map<DatabaseType, Collection<ParameterizedArray>> parameterizedArrays = loadAssertionParameterizedArray(sqlCommandType);
-        Map<DatabaseType, Collection<ParameterizedArray>> availableParameterizedArrays = new LinkedHashMap<>(parameterizedArrays.size(), 1);
-        Map<DatabaseType, Collection<ParameterizedArray>> disabledParameterizedArrays = new LinkedHashMap<>(parameterizedArrays.size(), 1);
-        for (Entry<DatabaseType, Collection<ParameterizedArray>> entry : parameterizedArrays.entrySet()) {
-            if (IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().containsKey(entry.getKey())) {
-                availableParameterizedArrays.put(entry.getKey(), entry.getValue());
-            } else {
-                disabledParameterizedArrays.put(entry.getKey(), entry.getValue());
-            }
-        }
+        Map<DatabaseType, Collection<ParameterizedArray>> availableParameterizedArrays = getAvailableParameterizedArrays(parameterizedArrays);
+        Map<DatabaseType, Collection<ParameterizedArray>> disabledParameterizedArrays = getDisabledParameterizedArrays(parameterizedArrays);
         printTestPlan(availableParameterizedArrays, disabledParameterizedArrays, calculateRunnableTestAnnotation());
         return toArrays(availableParameterizedArrays);
     }
@@ -130,15 +123,8 @@ public final class ParameterizedArrayFactory {
      */
     public static Collection<Object[]> getCaseParameterizedArray(final SQLCommandType sqlCommandType) {
         Map<DatabaseType, Collection<ParameterizedArray>> parameterizedArrays = loadCaseParameterizedArray(sqlCommandType);
-        Map<DatabaseType, Collection<ParameterizedArray>> availableParameterizedArrays = new LinkedHashMap<>(parameterizedArrays.size(), 1);
-        Map<DatabaseType, Collection<ParameterizedArray>> disabledParameterizedArrays = new LinkedHashMap<>(parameterizedArrays.size(), 1);
-        for (Entry<DatabaseType, Collection<ParameterizedArray>> entry : parameterizedArrays.entrySet()) {
-            if (IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().containsKey(entry.getKey())) {
-                availableParameterizedArrays.put(entry.getKey(), entry.getValue());
-            } else {
-                disabledParameterizedArrays.put(entry.getKey(), entry.getValue());
-            }
-        }
+        Map<DatabaseType, Collection<ParameterizedArray>> availableParameterizedArrays = getAvailableParameterizedArrays(parameterizedArrays);
+        Map<DatabaseType, Collection<ParameterizedArray>> disabledParameterizedArrays = getDisabledParameterizedArrays(parameterizedArrays);
         printTestPlan(availableParameterizedArrays, disabledParameterizedArrays, calculateRunnableTestAnnotation());
         return toArrays(availableParameterizedArrays);
     }
@@ -171,6 +157,26 @@ public final class ParameterizedArrayFactory {
     private static Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {
         String candidates = Strings.isNullOrEmpty(databaseTypes) ? "H2,MySQL,Oracle,SQLServer,PostgreSQL" : databaseTypes;
         return Splitter.on(',').trimResults().splitToList(candidates).stream().map(DatabaseTypeRegistry::getActualDatabaseType).collect(Collectors.toList());
+    }
+    
+    private static Map<DatabaseType, Collection<ParameterizedArray>> getAvailableParameterizedArrays(final Map<DatabaseType, Collection<ParameterizedArray>> parameterizedArrays) {
+        Map<DatabaseType, Collection<ParameterizedArray>> result = new LinkedHashMap<>(parameterizedArrays.size(), 1);
+        for (Entry<DatabaseType, Collection<ParameterizedArray>> entry : parameterizedArrays.entrySet()) {
+            if (IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().containsKey(entry.getKey())) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
+    }
+    
+    private static Map<DatabaseType, Collection<ParameterizedArray>> getDisabledParameterizedArrays(final Map<DatabaseType, Collection<ParameterizedArray>> parameterizedArrays) {
+        Map<DatabaseType, Collection<ParameterizedArray>> result = new LinkedHashMap<>(parameterizedArrays.size(), 1);
+        for (Entry<DatabaseType, Collection<ParameterizedArray>> entry : parameterizedArrays.entrySet()) {
+            if (!IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().containsKey(entry.getKey())) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
     }
     
     private static void printTestPlan(final Map<DatabaseType, 
