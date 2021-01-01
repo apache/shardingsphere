@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.param;
+package org.apache.shardingsphere.test.integration.engine.parameterized;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -30,9 +30,9 @@ import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseContext
 import org.apache.shardingsphere.test.integration.cases.IntegrateTestCasesLoader;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.engine.param.domain.AssertionParameterizedArray;
-import org.apache.shardingsphere.test.integration.engine.param.domain.CaseParameterizedArray;
-import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.engine.parameterized.domain.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.engine.parameterized.domain.CaseParameterizedArray;
+import org.apache.shardingsphere.test.integration.engine.parameterized.domain.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.junit.Test;
 

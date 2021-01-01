@@ -23,7 +23,7 @@ import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseContext
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.it.BatchIT;
-import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.engine.parameterized.ParameterizedArrayFactory;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.integration.engine.it.ddl;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.engine.parameterized.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.engine.parameterized.ParameterizedArrayFactory;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
