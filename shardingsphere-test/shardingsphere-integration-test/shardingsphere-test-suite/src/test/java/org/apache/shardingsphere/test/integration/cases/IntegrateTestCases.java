@@ -22,8 +22,8 @@ import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestC
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * JAXB definition of integrate test cases.
@@ -33,5 +33,5 @@ import java.util.List;
 public final class IntegrateTestCases {
     
     @XmlElement(name = "test-case")
-    private List<IntegrateTestCase> testCases = new LinkedList<>();
+    private final Collection<IntegrateTestCase> testCases = new LinkedList<>();
 }

@@ -59,9 +59,10 @@ public final class IntegrateTestParameters {
      * @return integrate test parameters
      */
     public static Collection<Object[]> getParametersWithAssertion(final IntegrateTestCaseType caseType) {
-        Map<DatabaseType, Collection<Object[]>> availableCases = new LinkedHashMap<>();
-        Map<DatabaseType, Collection<Object[]>> disabledCases = new LinkedHashMap<>();
-        INTEGRATE_TEST_CASES_LOADER.getTestCaseContexts(caseType).forEach(testCaseContext -> getDatabaseTypes(testCaseContext.getTestCase().getDbTypes()).forEach(databaseType -> {
+        Collection<IntegrateTestCaseContext> testCaseContexts = INTEGRATE_TEST_CASES_LOADER.getTestCaseContexts(caseType);
+        Map<DatabaseType, Collection<Object[]>> availableCases = new LinkedHashMap<>(testCaseContexts.size(), 1);
+        Map<DatabaseType, Collection<Object[]>> disabledCases = new LinkedHashMap<>(testCaseContexts.size(), 1);
+        testCaseContexts.forEach(testCaseContext -> getDatabaseTypes(testCaseContext.getTestCase().getDbTypes()).forEach(databaseType -> {
             if (IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().containsKey(databaseType)) {
                 availableCases.putIfAbsent(databaseType, new LinkedList<>());
                 Arrays.stream(
