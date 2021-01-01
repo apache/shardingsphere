@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.cases.assertion;
+package org.apache.shardingsphere.test.integration.cases;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
