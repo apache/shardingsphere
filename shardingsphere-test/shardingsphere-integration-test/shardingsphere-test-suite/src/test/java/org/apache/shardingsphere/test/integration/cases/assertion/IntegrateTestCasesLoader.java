@@ -49,7 +49,7 @@ public final class IntegrateTestCasesLoader {
     
     private static final IntegrateTestCasesLoader INSTANCE = new IntegrateTestCasesLoader();
     
-    private final Map<IntegrateTestCaseType, List<IntegrateTestCaseContext>> testCaseContexts = new LinkedHashMap<>();
+    private final Map<IntegrateTestCaseType, Collection<IntegrateTestCaseContext>> testCaseContexts = new LinkedHashMap<>();
     
     /**
      * Get singleton instance.
@@ -72,7 +72,7 @@ public final class IntegrateTestCasesLoader {
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
-    private List<IntegrateTestCaseContext> loadIntegrateTestCaseContexts(final IntegrateTestCaseType caseType) {
+    private Collection<IntegrateTestCaseContext> loadIntegrateTestCaseContexts(final IntegrateTestCaseType caseType) {
         URL url = IntegrateTestCasesLoader.class.getClassLoader().getResource("integrate/cases/");
         Preconditions.checkNotNull(url, "Can not find integrate test cases.");
         return loadIntegrateTestCaseContexts(url, caseType);
