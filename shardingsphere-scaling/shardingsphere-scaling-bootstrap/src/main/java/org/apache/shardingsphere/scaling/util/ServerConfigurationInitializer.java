@@ -32,23 +32,21 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Scaling config util.
+ * Scaling configuration initializer.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-public final class ServerConfigurationUtil {
+public final class ServerConfigurationInitializer {
     
-    private static final String DEFAULT_CONFIG_PATH = "conf/";
-    
-    private static final String DEFAULT_CONFIG_FILE_NAME = "server.yaml";
+    private static final String SERVER_FILE = "conf/server.yaml";
     
     /**
-     * Init scaling config.
+     * Init scaling configuration.
      */
     @SneakyThrows(IOException.class)
-    public static void initScalingConfig() {
-        log.info("Init scaling config");
-        File yamlFile = new File(Resources.getResource(DEFAULT_CONFIG_PATH + DEFAULT_CONFIG_FILE_NAME).getPath());
+    public static void init() {
+        log.info("Initialize scaling configuration.");
+        File yamlFile = new File(Resources.getResource(SERVER_FILE).getPath());
         YamlServerConfiguration serverConfig = YamlEngine.unmarshal(yamlFile, YamlServerConfiguration.class);
         Preconditions.checkNotNull(serverConfig, "Server configuration file `%s` is invalid.", yamlFile.getName());
         ScalingContext.getInstance().init(new ServerConfigurationYamlSwapper().swapToObject(serverConfig));

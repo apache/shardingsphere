@@ -35,5 +35,4 @@ public final class ScalingTaskExecuteException extends RuntimeException {
     public ScalingTaskExecuteException(final String message, final Throwable cause) {
         super(message, cause);
     }
-    
 }

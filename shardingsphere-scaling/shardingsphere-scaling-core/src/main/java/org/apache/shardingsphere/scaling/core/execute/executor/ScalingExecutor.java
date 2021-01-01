@@ -21,12 +21,12 @@ package org.apache.shardingsphere.scaling.core.execute.executor;
  * Scaling executor.
  */
 public interface ScalingExecutor extends Runnable {
-
+    
     /**
      * Start run execute.
      */
     void start();
-
+    
     /**
      * Stop running execute.
      */
