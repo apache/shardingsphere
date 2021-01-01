@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.cases.assertion;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

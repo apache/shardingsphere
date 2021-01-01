@@ -15,30 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.cases.assertion;
+package org.apache.shardingsphere.test.integration.cases.caze;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
+import lombok.Setter;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
 
-import java.text.ParseException;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Group of SQL value.
+ * JAXB definition of integrate test case.
  */
 @Getter
-public final class SQLValueGroup {
+@Setter
+@XmlAccessorType(XmlAccessType.FIELD)
+public final class IntegrateTestCase {
     
-    private final Collection<SQLValue> sqlValues;
+    @XmlAttribute(name = "sql")
+    private String sql;
     
-    public SQLValueGroup(final DataSetMetadata dataSetMetadata, final List<String> values) throws ParseException {
-        sqlValues = new LinkedList<>();
-        int count = 0;
-        for (String each : values) {
-            sqlValues.add(new SQLValue(each, dataSetMetadata.getColumns().get(count).getType(), count + 1));
-            count++;
-        }
-    }
+    @XmlAttribute(name = "db-types")
+    private String dbTypes;
+    
+    @XmlElement(name = "assertion")
+    private Collection<IntegrateTestCaseAssertion> assertions = new LinkedList<>();
 }

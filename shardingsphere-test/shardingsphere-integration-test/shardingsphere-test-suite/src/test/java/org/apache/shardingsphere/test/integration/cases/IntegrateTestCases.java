@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.integration.cases;
 
 import lombok.Getter;
+import org.apache.shardingsphere.test.integration.cases.caze.IntegrateTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
