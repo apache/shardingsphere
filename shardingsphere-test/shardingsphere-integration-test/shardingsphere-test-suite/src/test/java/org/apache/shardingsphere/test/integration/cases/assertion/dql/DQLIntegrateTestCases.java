@@ -33,6 +33,6 @@ import java.util.List;
 @XmlRootElement(name = "integrate-test-cases")
 public final class DQLIntegrateTestCases implements IntegrateTestCases {
     
-    @XmlElement(name = "dql-test-case")
-    private List<IntegrateTestCase> integrateTestCases = new LinkedList<>();
+    @XmlElement(name = "test-case")
+    private List<IntegrateTestCase> testCases = new LinkedList<>();
 }

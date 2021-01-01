@@ -107,7 +107,7 @@ public final class IntegrateTestCasesLoader {
     }
     
     private List<IntegrateTestCaseContext> getIntegrateTestCaseContexts(final File file, final IntegrateTestCaseType caseType) throws IOException, JAXBException {
-        return unmarshal(file.getPath(), caseType).getIntegrateTestCases().stream().map(each -> new IntegrateTestCaseContext(each, file.getParent())).collect(Collectors.toList());
+        return unmarshal(file.getPath(), caseType).getTestCases().stream().map(each -> new IntegrateTestCaseContext(each, file.getParent())).collect(Collectors.toList());
     }
     
     private static IntegrateTestCases unmarshal(final String integrateCasesFile, final IntegrateTestCaseType caseType) throws IOException, JAXBException {

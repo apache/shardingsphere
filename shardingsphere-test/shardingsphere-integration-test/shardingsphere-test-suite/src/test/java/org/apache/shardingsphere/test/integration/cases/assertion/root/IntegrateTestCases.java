@@ -26,5 +26,5 @@ public interface IntegrateTestCases {
      * 
      * @return integrate test cases
      */
-    List<? extends IntegrateTestCase> getIntegrateTestCases();
+    List<? extends IntegrateTestCase> getTestCases();
 }
