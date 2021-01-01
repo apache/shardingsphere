@@ -35,6 +35,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,7 +66,7 @@ public final class IntegrateTestCasesLoader {
      * @param caseType integration test case type
      * @return integrate test case contexts
      */
-    public List<IntegrateTestCaseContext> getTestCaseContexts(final IntegrateTestCaseType caseType) {
+    public Collection<IntegrateTestCaseContext> getTestCaseContexts(final IntegrateTestCaseType caseType) {
         testCaseContexts.putIfAbsent(caseType, loadIntegrateTestCaseContexts(caseType));
         return testCaseContexts.get(caseType);
     }
@@ -90,7 +91,7 @@ public final class IntegrateTestCasesLoader {
     private static List<File> getFiles(final URL url, final IntegrateTestCaseType caseType) throws IOException, URISyntaxException {
         List<File> result = new LinkedList<>();
         Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
-
+            
             @Override
             public FileVisitResult visitFile(final Path file, final BasicFileAttributes basicFileAttributes) {
                 if (file.getFileName().toString().startsWith(caseType.getFilePrefix()) && file.getFileName().toString().endsWith(".xml")) {
