@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.engine.param.SQLCaseType;
+import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
@@ -46,19 +46,19 @@ public abstract class SingleIT extends BaseIT {
     
     private final IntegrateTestCaseAssertion assertion;
     
-    private final SQLCaseType caseType;
+    private final SQLExecuteType sqlExecuteType;
     
     private final DataSet dataSet;
     
     private final String sql;
     
-    protected SingleIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String scenario, 
-                       final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+    protected SingleIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String scenario,
+                       final DatabaseType databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(scenario, databaseType);
         caseIdentifier = sql;
         this.assertion = assertion;
-        this.caseType = caseType;
-        this.sql = caseType == SQLCaseType.Literal ? getLiteralSQL(sql) : sql;
+        this.sqlExecuteType = sqlExecuteType;
+        this.sql = sqlExecuteType == SQLExecuteType.Literal ? getLiteralSQL(sql) : sql;
         dataSet = null == assertion ? null : DataSetLoader.load(parentPath, scenario, databaseType, assertion.getExpectedDataFile());
     }
     

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.engine.param.SQLCaseType;
+import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
@@ -60,8 +60,8 @@ public abstract class BaseDDLIT extends SingleIT {
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
     protected BaseDDLIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String scenario,
-                        final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(parentPath, assertion, scenario, databaseType, caseType, sql);
+                        final DatabaseType databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+        super(parentPath, assertion, scenario, databaseType, sqlExecuteType, sql);
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(scenario), getActualDataSources());
         assertNotNull("Expected affected table is required", assertion.getInitialSQL());
         assertNotNull("Expected affected table is required", assertion.getInitialSQL().getAffectedTable());

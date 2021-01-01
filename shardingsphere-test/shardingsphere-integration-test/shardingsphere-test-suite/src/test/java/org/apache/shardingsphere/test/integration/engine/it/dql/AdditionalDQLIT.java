@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.test.integration.engine.it.dql;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
+import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.engine.param.SQLCaseType;
+import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.engine.param.IntegrateTestParameters;
+import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
@@ -45,20 +45,20 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     private final IntegrateTestCaseAssertion assertion;
     
     public AdditionalDQLIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String scenario,
-                           final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(parentPath, assertion, scenario, databaseType, caseType, sql);
+                           final DatabaseType databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+        super(parentPath, assertion, scenario, databaseType, sqlExecuteType, sql);
         this.assertion = assertion;
     }
     
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestEnvironment.getInstance().isRunAdditionalTestCases() ? IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DQL) : Collections.emptyList();
+        return IntegrateTestEnvironment.getInstance().isRunAdditionalTestCases() ? ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DQL) : Collections.emptyList();
     }
     
     @Test
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrency() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
-            if (SQLCaseType.Literal == getCaseType()) {
+            if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrency(connection);
             } else {
                 assertExecuteQueryForPreparedStatementWithResultSetTypeAndResultSetConcurrency(connection);
@@ -88,7 +88,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     @Test
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
-            if (SQLCaseType.Literal == getCaseType()) {
+            if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(connection);
             } else {
                 assertExecuteQueryForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(connection);
@@ -120,7 +120,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     @Test
     public void assertExecuteWithResultSetTypeAndResultSetConcurrency() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
-            if (SQLCaseType.Literal == getCaseType()) {
+            if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 assertExecuteForStatementWithResultSetTypeAndResultSetConcurrency(connection);
             } else {
                 assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrency(connection);
@@ -152,7 +152,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     @Test
     public void assertExecuteWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
-            if (SQLCaseType.Literal == getCaseType()) {
+            if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 assertExecuteForStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(connection);
             } else {
                 assertExecuteForPreparedStatementWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability(connection);

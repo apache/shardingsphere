@@ -15,23 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.cases;
-
-import lombok.Getter;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
-import java.util.LinkedList;
+package org.apache.shardingsphere.test.integration.engine.param.domain;
 
 /**
- * JAXB definition of integrate test cases.
+ * Parameterized array.
  */
-@Getter
-@XmlRootElement(name = "integrate-test-cases")
-public final class IntegrateTestCases {
+public interface ParameterizedArray {
     
-    @XmlElement(name = "test-case")
-    private final Collection<IntegrateTestCase> testCases = new LinkedList<>();
+    /**
+     * To parameterized arrays.
+     *
+     * @return parameterized arrays
+     */
+    Object[] toArrays();
 }

@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.test.integration.engine.it.ddl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
+import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.engine.param.SQLCaseType;
-import org.apache.shardingsphere.test.integration.engine.param.IntegrateTestParameters;
+import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -35,20 +35,20 @@ import java.util.Collection;
 public final class GeneralDDLIT extends BaseDDLIT {
     
     public GeneralDDLIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String scenario,
-                        final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(parentPath, assertion, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
+                        final String databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+        super(parentPath, assertion, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), sqlExecuteType, sql);
     }
     
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DDL);
+        return ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DDL);
     }
     
     @SuppressWarnings("JUnitTestMethodWithNoAssertions")
     @Test
     public void assertExecuteUpdate() throws SQLException {
         try (Connection connection = getTargetDataSource().getConnection()) {
-            if (SQLCaseType.Literal == getCaseType()) {
+            if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 connection.createStatement().executeUpdate(getSql());
             } else {
                 connection.prepareStatement(getSql()).executeUpdate();
@@ -61,7 +61,7 @@ public final class GeneralDDLIT extends BaseDDLIT {
     @Test
     public void assertExecute() throws SQLException {
         try (Connection connection = getTargetDataSource().getConnection()) {
-            if (SQLCaseType.Literal == getCaseType()) {
+            if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 connection.createStatement().execute(getSql());
             } else {
                 connection.prepareStatement(getSql()).execute();

@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.test.integration.engine.it.dql;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
+import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.engine.param.SQLCaseType;
+import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.engine.param.IntegrateTestParameters;
+import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -43,20 +43,20 @@ public final class GeneralDQLIT extends BaseDQLIT {
     private final IntegrateTestCaseAssertion assertion;
     
     public GeneralDQLIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String scenario,
-                        final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(parentPath, assertion, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
+                        final String databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
+        super(parentPath, assertion, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), sqlExecuteType, sql);
         this.assertion = assertion;
     }
     
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParametersWithAssertion(IntegrateTestCaseType.DQL);
+        return ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DQL);
     }
     
     @Test
     public void assertExecuteQuery() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
-            if (SQLCaseType.Literal == getCaseType()) {
+            if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 assertExecuteQueryForStatement(connection);
             } else {
                 assertExecuteQueryForPreparedStatement(connection);
@@ -86,7 +86,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
     @Test
     public void assertExecute() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
-            if (SQLCaseType.Literal == getCaseType()) {
+            if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 assertExecuteForStatement(connection);
             } else {
                 assertExecuteForPreparedStatement(connection);
