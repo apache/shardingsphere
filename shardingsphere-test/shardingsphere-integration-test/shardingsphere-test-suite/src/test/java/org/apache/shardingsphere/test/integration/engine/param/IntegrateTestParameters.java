@@ -62,7 +62,11 @@ public final class IntegrateTestParameters {
     public static Collection<Object[]> getAssertionParameters(final IntegrateTestCaseType caseType) {
         Map<DatabaseType, Collection<Object[]>> assertionParameters = new LinkedHashMap<>(10, 1);
         for (IntegrateTestCaseContext each : INTEGRATE_TEST_CASES_LOADER.getTestCaseContexts(caseType)) {
-            assertionParameters.putAll(getAssertionParameters(each));
+            Map<DatabaseType, Collection<Object[]>> eachAssertionParameters = getAssertionParameters(each);
+            for (Entry<DatabaseType, Collection<Object[]>> entry : eachAssertionParameters.entrySet()) {
+                assertionParameters.putIfAbsent(entry.getKey(), new LinkedList<>());
+                assertionParameters.get(entry.getKey()).addAll(entry.getValue());
+            }
         }
         Map<DatabaseType, Collection<Object[]>> availableAssertionParameters = new LinkedHashMap<>(assertionParameters.size(), 1);
         Map<DatabaseType, Collection<Object[]>> disabledAssertionParameters = new LinkedHashMap<>(assertionParameters.size(), 1);
