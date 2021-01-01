@@ -34,7 +34,6 @@ import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskGr
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
 import org.apache.shardingsphere.scaling.core.service.AbstractScalingJobService;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
-import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 import org.apache.shardingsphere.scaling.core.utils.TaskConfigurationUtil;
 
@@ -45,7 +44,7 @@ import java.util.stream.Collectors;
 /**
  * Distributed scaling job service.
  */
-public final class DistributedScalingJobService extends AbstractScalingJobService implements ScalingJobService {
+public final class DistributedScalingJobService extends AbstractScalingJobService {
     
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
     

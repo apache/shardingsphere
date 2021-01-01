@@ -27,7 +27,6 @@ import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskPr
 import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
 import org.apache.shardingsphere.scaling.core.schedule.ScalingTaskScheduler;
 import org.apache.shardingsphere.scaling.core.service.AbstractScalingJobService;
-import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -39,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Standalone scaling job service.
  */
-public final class StandaloneScalingJobService extends AbstractScalingJobService implements ScalingJobService {
+public final class StandaloneScalingJobService extends AbstractScalingJobService {
     
     private final Map<Long, ScalingJob> scalingJobMap = new ConcurrentHashMap<>();
     
