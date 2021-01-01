@@ -34,11 +34,8 @@ import org.apache.shardingsphere.test.integration.engine.param.domain.Parameteri
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -106,33 +103,24 @@ public final class ParameterizedArrayFactory {
      * @return case parameterized array
      */
     public static Collection<Object[]> getCaseParameterizedArray(final SQLCommandType sqlCommandType) {
-        Map<DatabaseType, Collection<ParameterizedArray>> parameterizedArrays = loadCaseParameterizedArray(sqlCommandType);
-        Map<DatabaseType, Collection<ParameterizedArray>> availableParameterizedArrays = getAvailableParameterizedArrays(parameterizedArrays);
-        return toArrays(availableParameterizedArrays);
+        Collection<ParameterizedArray> result = new LinkedList<>();
+        for (IntegrateTestCaseContext each : INTEGRATE_TEST_CASES_LOADER.getTestCaseContexts(sqlCommandType)) {
+            result.addAll(getCaseParameterizedArray(each));
+        }
+        return toArrays(result);
     }
     
-    private static Map<DatabaseType, Collection<ParameterizedArray>> loadCaseParameterizedArray(final SQLCommandType sqlCommandType) {
-        Map<DatabaseType, Collection<ParameterizedArray>> result = new LinkedHashMap<>(10, 1);
-        for (IntegrateTestCaseContext testCaseContext : INTEGRATE_TEST_CASES_LOADER.getTestCaseContexts(sqlCommandType)) {
-            for (Entry<DatabaseType, Collection<ParameterizedArray>> entry : loadCaseParameterizedArray(testCaseContext).entrySet()) {
-                result.putIfAbsent(entry.getKey(), new LinkedList<>());
-                result.get(entry.getKey()).addAll(entry.getValue());
+    private static Collection<ParameterizedArray> getCaseParameterizedArray(final IntegrateTestCaseContext testCaseContext) {
+        Collection<ParameterizedArray> result = new LinkedList<>();
+        for (DatabaseType each : getDatabaseTypes(testCaseContext.getTestCase().getDbTypes())) {
+            if (IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().containsKey(each)) {
+                result.addAll(getCaseParameterizedArray(testCaseContext, each));
             }
         }
         return result;
     }
     
-    private static Map<DatabaseType, Collection<ParameterizedArray>> loadCaseParameterizedArray(final IntegrateTestCaseContext testCaseContext) {
-        Collection<DatabaseType> databaseTypes = getDatabaseTypes(testCaseContext.getTestCase().getDbTypes());
-        Map<DatabaseType, Collection<ParameterizedArray>> result = new LinkedHashMap<>(databaseTypes.size(), 1);
-        for (DatabaseType databaseType : databaseTypes) {
-            result.putIfAbsent(databaseType, new LinkedList<>());
-            result.get(databaseType).addAll(loadCaseParameterizedArray(testCaseContext, databaseType));
-        }
-        return result;
-    }
-    
-    private static Collection<ParameterizedArray> loadCaseParameterizedArray(final IntegrateTestCaseContext testCaseContext, final DatabaseType databaseType) {
+    private static Collection<ParameterizedArray> getCaseParameterizedArray(final IntegrateTestCaseContext testCaseContext, final DatabaseType databaseType) {
         return INTEGRATE_TEST_ENVIRONMENT.getScenarios().stream().map(each -> new CaseParameterizedArray(testCaseContext, each, databaseType)).collect(Collectors.toList());
     }
     
@@ -141,21 +129,7 @@ public final class ParameterizedArrayFactory {
         return Splitter.on(',').trimResults().splitToList(candidates).stream().map(DatabaseTypeRegistry::getActualDatabaseType).collect(Collectors.toList());
     }
     
-    private static Map<DatabaseType, Collection<ParameterizedArray>> getAvailableParameterizedArrays(final Map<DatabaseType, Collection<ParameterizedArray>> parameterizedArrays) {
-        Map<DatabaseType, Collection<ParameterizedArray>> result = new LinkedHashMap<>(parameterizedArrays.size(), 1);
-        for (Entry<DatabaseType, Collection<ParameterizedArray>> entry : parameterizedArrays.entrySet()) {
-            if (IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().containsKey(entry.getKey())) {
-                result.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return result;
-    }
-    
     private static List<Object[]> toArrays(final Collection<ParameterizedArray> parameterizedArrays) {
         return parameterizedArrays.stream().map(ParameterizedArray::toArrays).collect(Collectors.toList());
-    }
-    
-    private static List<Object[]> toArrays(final Map<DatabaseType, Collection<ParameterizedArray>> parameterizedArrays) {
-        return parameterizedArrays.values().stream().flatMap(Collection::stream).map(ParameterizedArray::toArrays).collect(Collectors.toList());
     }
 }
