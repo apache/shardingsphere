@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.util.ServerConfigurationUtil;
+import org.apache.shardingsphere.scaling.util.ServerConfigurationInitializer;
 import org.apache.shardingsphere.scaling.web.HttpServerInitializer;
 
 /**
@@ -48,7 +48,7 @@ public final class ServerBootstrap {
     public static void main(final String[] args) {
         // CHECKSTYLE:ON
         log.info("ShardingSphere-Scaling Server Startup");
-        ServerConfigurationUtil.initScalingConfig();
+        ServerConfigurationInitializer.init();
         startScalingServer();
     }
     
