@@ -32,18 +32,18 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Data source manager.
  */
-@Slf4j
 @NoArgsConstructor
+@Slf4j
 public final class DataSourceManager implements AutoCloseable {
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
-
+    
     @Getter
     private final Map<ScalingDataSourceConfiguration, DataSourceWrapper> cachedDataSources = new ConcurrentHashMap<>();
-
+    
     @Getter
     private final Map<ScalingDataSourceConfiguration, DataSourceWrapper> sourceDataSources = new ConcurrentHashMap<>();
-
+    
     public DataSourceManager(final List<TaskConfiguration> taskConfigs) {
         createDataSources(taskConfigs);
     }
