@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.engine.it.dql;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.cases.assertion.SQLCaseType;
+import org.apache.shardingsphere.test.integration.engine.param.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
