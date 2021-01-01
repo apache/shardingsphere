@@ -17,22 +17,10 @@
 
 package org.apache.shardingsphere.test.integration.cases.assertion.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.integration.cases.assertion.root.IntegrateTestCaseAssertion;
-
-import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * JAXB definition of DDL integrate test case assertion.
  */
-@Getter
-@Setter
 public final class DDLIntegrateTestCaseAssertion extends IntegrateTestCaseAssertion {
-    
-    @XmlAttribute(name = "init-sql")
-    private String initSQL;
-    
-    @XmlAttribute(name = "table")
-    private String table;
 }
