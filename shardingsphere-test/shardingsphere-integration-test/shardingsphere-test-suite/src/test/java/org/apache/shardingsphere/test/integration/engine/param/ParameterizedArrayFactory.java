@@ -104,10 +104,6 @@ public final class ParameterizedArrayFactory {
     
     private static Collection<ParameterizedArray> getAssertionParameterizedArray(final IntegrateTestCaseContext testCaseContext, final DatabaseType databaseType, final SQLExecuteType sqlExecuteType) {
         Collection<ParameterizedArray> result = new LinkedList<>();
-        if (testCaseContext.getTestCase().getAssertions().isEmpty()) {
-            result.addAll(getAssertionParameterizedArray(testCaseContext, null, databaseType, sqlExecuteType));
-            return result;
-        }
         for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
             result.addAll(getAssertionParameterizedArray(testCaseContext, each, databaseType, sqlExecuteType));
         }
