@@ -28,11 +28,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 
 /**
- * Integrate test case type.
+ * SQL command type.
  */
 @RequiredArgsConstructor
 @Getter
-public enum IntegrateTestCaseType {
+public enum SQLCommandType {
     
     /**
      * Data Query Language.

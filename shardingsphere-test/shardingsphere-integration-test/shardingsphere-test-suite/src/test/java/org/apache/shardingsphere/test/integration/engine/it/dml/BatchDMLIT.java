@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.integration.engine.it.dml;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
+import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseContext;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
@@ -49,7 +49,7 @@ public final class BatchDMLIT extends BatchIT {
     
     @Parameters(name = "{1} -> {2} -> {3}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getParametersWithCase(IntegrateTestCaseType.DML);
+        return IntegrateTestParameters.getParametersWithCase(SQLCommandType.DML);
     }
     
     @Test

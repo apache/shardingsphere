@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.integration.engine.it.ddl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
+import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.engine.param.SQLCaseType;
 import org.apache.shardingsphere.test.integration.engine.param.IntegrateTestParameters;
@@ -41,7 +41,7 @@ public final class GeneralDDLIT extends BaseDDLIT {
     
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestParameters.getAssertionParameters(IntegrateTestCaseType.DDL);
+        return IntegrateTestParameters.getAssertionParameters(SQLCommandType.DDL);
     }
     
     @SuppressWarnings("JUnitTestMethodWithNoAssertions")

@@ -46,7 +46,7 @@ public final class IntegrateTestCasesLoader {
     
     private static final IntegrateTestCasesLoader INSTANCE = new IntegrateTestCasesLoader();
     
-    private final Map<IntegrateTestCaseType, Collection<IntegrateTestCaseContext>> testCaseContexts = new LinkedHashMap<>();
+    private final Map<SQLCommandType, Collection<IntegrateTestCaseContext>> testCaseContexts = new LinkedHashMap<>();
     
     /**
      * Get singleton instance.
@@ -60,23 +60,23 @@ public final class IntegrateTestCasesLoader {
     /**
      * Get integrate test case contexts.
      * 
-     * @param caseType integration test case type
+     * @param sqlCommandType SQL command type
      * @return integrate test case contexts
      */
-    public Collection<IntegrateTestCaseContext> getTestCaseContexts(final IntegrateTestCaseType caseType) {
-        testCaseContexts.putIfAbsent(caseType, loadIntegrateTestCaseContexts(caseType));
-        return testCaseContexts.get(caseType);
+    public Collection<IntegrateTestCaseContext> getTestCaseContexts(final SQLCommandType sqlCommandType) {
+        testCaseContexts.putIfAbsent(sqlCommandType, loadIntegrateTestCaseContexts(sqlCommandType));
+        return testCaseContexts.get(sqlCommandType);
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
-    private Collection<IntegrateTestCaseContext> loadIntegrateTestCaseContexts(final IntegrateTestCaseType caseType) {
+    private Collection<IntegrateTestCaseContext> loadIntegrateTestCaseContexts(final SQLCommandType sqlCommandType) {
         URL url = IntegrateTestCasesLoader.class.getClassLoader().getResource("integrate/cases/");
         Preconditions.checkNotNull(url, "Can not find integrate test cases.");
-        return loadIntegrateTestCaseContexts(url, caseType);
+        return loadIntegrateTestCaseContexts(url, sqlCommandType);
     }
     
-    private Collection<IntegrateTestCaseContext> loadIntegrateTestCaseContexts(final URL url, final IntegrateTestCaseType caseType) throws IOException, URISyntaxException, JAXBException {
-        Collection<File> files = getFiles(url, caseType);
+    private Collection<IntegrateTestCaseContext> loadIntegrateTestCaseContexts(final URL url, final SQLCommandType sqlCommandType) throws IOException, URISyntaxException, JAXBException {
+        Collection<File> files = getFiles(url, sqlCommandType);
         Preconditions.checkNotNull(files, "Can not find integrate test cases.");
         Collection<IntegrateTestCaseContext> result = new LinkedList<>();
         for (File each : files) {
@@ -85,13 +85,13 @@ public final class IntegrateTestCasesLoader {
         return result;
     }
     
-    private static Collection<File> getFiles(final URL url, final IntegrateTestCaseType caseType) throws IOException, URISyntaxException {
+    private static Collection<File> getFiles(final URL url, final SQLCommandType sqlCommandType) throws IOException, URISyntaxException {
         Collection<File> result = new LinkedList<>();
         Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
             
             @Override
             public FileVisitResult visitFile(final Path file, final BasicFileAttributes basicFileAttributes) {
-                if (file.getFileName().toString().startsWith(caseType.getFilePrefix()) && file.getFileName().toString().endsWith(".xml")) {
+                if (file.getFileName().toString().startsWith(sqlCommandType.getFilePrefix()) && file.getFileName().toString().endsWith(".xml")) {
                     result.add(file.toFile());
                 }
                 return FileVisitResult.CONTINUE;

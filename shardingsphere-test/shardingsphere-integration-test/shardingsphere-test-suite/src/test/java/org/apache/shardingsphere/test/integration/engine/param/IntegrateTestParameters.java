@@ -26,7 +26,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
+import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseContext;
 import org.apache.shardingsphere.test.integration.cases.IntegrateTestCasesLoader;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
@@ -56,12 +56,12 @@ public final class IntegrateTestParameters {
     /**
      * Get parameters of assertions.
      * 
-     * @param caseType integrate test case type
+     * @param sqlCommandType SQL command type
      * @return integrate test parameters
      */
-    public static Collection<Object[]> getAssertionParameters(final IntegrateTestCaseType caseType) {
+    public static Collection<Object[]> getAssertionParameters(final SQLCommandType sqlCommandType) {
         Map<DatabaseType, Collection<Object[]>> assertionParameters = new LinkedHashMap<>(10, 1);
-        for (IntegrateTestCaseContext each : INTEGRATE_TEST_CASES_LOADER.getTestCaseContexts(caseType)) {
+        for (IntegrateTestCaseContext each : INTEGRATE_TEST_CASES_LOADER.getTestCaseContexts(sqlCommandType)) {
             Map<DatabaseType, Collection<Object[]>> eachAssertionParameters = getAssertionParameters(each);
             for (Entry<DatabaseType, Collection<Object[]>> entry : eachAssertionParameters.entrySet()) {
                 assertionParameters.putIfAbsent(entry.getKey(), new LinkedList<>());
@@ -130,13 +130,13 @@ public final class IntegrateTestParameters {
     /**
      * Get parameters with test cases.
      *
-     * @param caseType integrate test case type
+     * @param sqlCommandType SQL command type
      * @return integrate test parameters
      */
-    public static Collection<Object[]> getParametersWithCase(final IntegrateTestCaseType caseType) {
+    public static Collection<Object[]> getParametersWithCase(final SQLCommandType sqlCommandType) {
         Map<DatabaseType, Collection<Object[]>> availableCases = new LinkedHashMap<>();
         Map<DatabaseType, Collection<Object[]>> disabledCases = new LinkedHashMap<>();
-        INTEGRATE_TEST_CASES_LOADER.getTestCaseContexts(caseType).forEach(testCaseContext -> getDatabaseTypes(testCaseContext.getTestCase().getDbTypes()).forEach(databaseType -> {
+        INTEGRATE_TEST_CASES_LOADER.getTestCaseContexts(sqlCommandType).forEach(testCaseContext -> getDatabaseTypes(testCaseContext.getTestCase().getDbTypes()).forEach(databaseType -> {
             if (IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().containsKey(databaseType)) {
                 availableCases.putIfAbsent(databaseType, new LinkedList<>());
                 availableCases.get(databaseType).addAll(getParametersWithCase(databaseType, testCaseContext));

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.integration.engine.it.dml;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseType;
+import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.engine.param.SQLCaseType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
@@ -51,7 +51,7 @@ public final class AdditionalDMLIT extends BaseDMLIT {
     
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestEnvironment.getInstance().isRunAdditionalTestCases() ? IntegrateTestParameters.getAssertionParameters(IntegrateTestCaseType.DML) : Collections.emptyList();
+        return IntegrateTestEnvironment.getInstance().isRunAdditionalTestCases() ? IntegrateTestParameters.getAssertionParameters(SQLCommandType.DML) : Collections.emptyList();
     }
     
     @Test
