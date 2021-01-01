@@ -43,45 +43,45 @@ public final class EnvironmentPath {
     /**
      * Get schema file.
      * 
-     * @param ruleType rule type
+     * @param scenario scenario
      * @return schema file
      */
-    public static String getSchemaFile(final String ruleType) {
-        return getFile(ruleType, SCHEMA_FILE);
+    public static String getSchemaFile(final String scenario) {
+        return getFile(scenario, SCHEMA_FILE);
     }
     
     /**
      * Get data set file.
      *
-     * @param ruleType rule type
+     * @param scenario scenario
      * @return data set file
      */
-    public static String getDataSetFile(final String ruleType) {
-        return getFile(ruleType, DATASET_FILE);
+    public static String getDataSetFile(final String scenario) {
+        return getFile(scenario, DATASET_FILE);
     }
     
     /**
      * Get rules configuration file.
      *
-     * @param ruleType rule type
+     * @param scenario scenario
      * @return rules configuration file
      */
-    public static String getRulesConfigurationFile(final String ruleType) {
-        return getFile(ruleType, RULES_CONFIG_FILE);
+    public static String getRulesConfigurationFile(final String scenario) {
+        return getFile(scenario, RULES_CONFIG_FILE);
     }
     
     /**
      * Get authority file.
      *
-     * @param ruleType rule type
+     * @param scenario scenario
      * @return authority file
      */
-    public static String getAuthorityFile(final String ruleType) {
-        return getFile(ruleType, AUTHORITY_FILE);
+    public static String getAuthorityFile(final String scenario) {
+        return getFile(scenario, AUTHORITY_FILE);
     }
     
-    private static String getFile(final String ruleType, final String fileName) {
-        URL url = EnvironmentPath.class.getClassLoader().getResource(String.join("/", ROOT_PATH, ruleType, fileName));
+    private static String getFile(final String scenario, final String fileName) {
+        URL url = EnvironmentPath.class.getClassLoader().getResource(String.join("/", ROOT_PATH, scenario, fileName));
         assertNotNull(url);
         return url.getFile();
     }

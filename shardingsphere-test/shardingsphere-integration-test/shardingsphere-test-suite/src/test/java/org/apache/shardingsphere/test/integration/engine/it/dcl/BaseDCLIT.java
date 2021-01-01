@@ -48,15 +48,15 @@ public abstract class BaseDCLIT extends SingleIT {
     
     private final AuthorityEnvironmentManager authorityEnvironmentManager;
     
-    protected BaseDCLIT(final String parentPath, final DCLIntegrateTestCaseAssertion assertion, final String ruleType,
+    protected BaseDCLIT(final String parentPath, final DCLIntegrateTestCaseAssertion assertion, final String scenario,
                         final DatabaseType databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(parentPath, assertion, ruleType, databaseType, caseType, sql);
+        super(parentPath, assertion, scenario, databaseType, caseType, sql);
         authorityEnvironmentManager = new AuthorityEnvironmentManager(
-                EnvironmentPath.getAuthorityFile(ruleType), null == getActualDataSources() ? null : createInstanceDataSourceMap(), databaseType);
+                EnvironmentPath.getAuthorityFile(scenario), null == getActualDataSources() ? null : createInstanceDataSourceMap(), databaseType);
     }
     
     private Map<String, DataSource> createInstanceDataSourceMap() throws SQLException {
-        return "shadow".equals(getRuleType()) ? getActualDataSources() : getShardingInstanceDataSourceMap();
+        return "shadow".equals(getScenario()) ? getActualDataSources() : getShardingInstanceDataSourceMap();
     }
     
     private Map<String, DataSource> getShardingInstanceDataSourceMap() throws SQLException {

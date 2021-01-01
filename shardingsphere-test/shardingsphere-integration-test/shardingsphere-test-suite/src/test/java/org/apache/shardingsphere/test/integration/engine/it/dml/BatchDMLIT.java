@@ -42,8 +42,8 @@ public final class BatchDMLIT extends BatchIT {
     
     private final IntegrateTestCaseContext testCaseContext;
     
-    public BatchDMLIT(final IntegrateTestCaseContext testCaseContext, final String ruleType, final String databaseType, final String sql) throws IOException, JAXBException, SQLException {
-        super(testCaseContext, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), sql);
+    public BatchDMLIT(final IntegrateTestCaseContext testCaseContext, final String scenario, final String databaseType, final String sql) throws IOException, JAXBException, SQLException {
+        super(testCaseContext, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), sql);
         this.testCaseContext = testCaseContext;
     }
     
@@ -55,11 +55,11 @@ public final class BatchDMLIT extends BatchIT {
     @Test
     public void assertExecuteBatch() throws SQLException, ParseException {
         // TODO fix replica_query
-        if ("replica_query".equals(getRuleType())) {
+        if ("replica_query".equals(getScenario())) {
             return;
         }
         // TODO fix shadow
-        if ("shadow".equals(getRuleType())) {
+        if ("shadow".equals(getScenario())) {
             return;
         }
         int[] actualUpdateCounts;
@@ -88,11 +88,11 @@ public final class BatchDMLIT extends BatchIT {
     @Test
     public void assertClearBatch() throws SQLException, ParseException {
         // TODO fix replica_query
-        if ("replica_query".equals(getRuleType())) {
+        if ("replica_query".equals(getScenario())) {
             return;
         }
         // TODO fix shadow
-        if ("shadow".equals(getRuleType())) {
+        if ("shadow".equals(getScenario())) {
             return;
         }
         try (Connection connection = getTargetDataSource().getConnection()) {

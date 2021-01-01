@@ -41,9 +41,9 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     private final DMLIntegrateTestCaseAssertion assertion;
     
-    public GeneralDMLIT(final String parentPath, final DMLIntegrateTestCaseAssertion assertion, final String ruleType,
+    public GeneralDMLIT(final String parentPath, final DMLIntegrateTestCaseAssertion assertion, final String scenario,
                         final String databaseType, final SQLCaseType caseType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(parentPath, assertion, ruleType, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
+        super(parentPath, assertion, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), caseType, sql);
         this.assertion = assertion;
     }
     
@@ -55,11 +55,11 @@ public final class GeneralDMLIT extends BaseDMLIT {
     @Test
     public void assertExecuteUpdate() throws SQLException, ParseException {
         // TODO fix replica-query
-        if ("replica_query".equals(getRuleType())) {
+        if ("replica_query".equals(getScenario())) {
             return;
         }
         // TODO fix shadow
-        if ("shadow".equals(getRuleType())) {
+        if ("shadow".equals(getScenario())) {
             return;
         }
         int actualUpdateCount;
@@ -87,11 +87,11 @@ public final class GeneralDMLIT extends BaseDMLIT {
     @Test
     public void assertExecute() throws SQLException, ParseException {
         // TODO fix replica_query
-        if ("replica_query".equals(getRuleType())) {
+        if ("replica_query".equals(getScenario())) {
             return;
         }
         // TODO fix shadow
-        if ("shadow".equals(getRuleType())) {
+        if ("shadow".equals(getScenario())) {
             return;
         }
         int actualUpdateCount;

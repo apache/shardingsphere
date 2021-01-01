@@ -49,14 +49,14 @@ public final class ActualDataSourceBuilder {
     /**
      * Create actual data sources.
      * 
-     * @param ruleType rule type
+     * @param scenario scenario
      * @param databaseType database type
      * @return actual data sources map
      * @throws IOException IO exception
      * @throws JAXBException JAXB exception
      */
-    public static Map<String, DataSource> createActualDataSources(final String ruleType, final DatabaseType databaseType) throws IOException, JAXBException {
-        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(ruleType);
+    public static Map<String, DataSource> createActualDataSources(final String scenario, final DatabaseType databaseType) throws IOException, JAXBException {
+        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(scenario);
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
             result.put(each, build(each, databaseType));
