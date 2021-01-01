@@ -46,11 +46,11 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Integrate test parameters.
+ * Parameterized array factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-public final class IntegrateTestParameters {
+public final class ParameterizedArrayFactory {
     
     private static final IntegrateTestCasesLoader INTEGRATE_TEST_CASES_LOADER = IntegrateTestCasesLoader.getInstance();
     

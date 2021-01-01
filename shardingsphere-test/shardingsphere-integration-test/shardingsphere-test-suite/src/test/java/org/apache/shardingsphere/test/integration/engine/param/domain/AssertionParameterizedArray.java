@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.engine.param.domain;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseContext;
@@ -25,10 +24,9 @@ import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestC
 import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 
 /**
- * Assertion parameterized array.
+ * Parameterized array of assertion based integrate test.
  */
 @RequiredArgsConstructor
-@Getter
 public final class AssertionParameterizedArray implements ParameterizedArray {
     
     private final IntegrateTestCaseContext testCaseContext;

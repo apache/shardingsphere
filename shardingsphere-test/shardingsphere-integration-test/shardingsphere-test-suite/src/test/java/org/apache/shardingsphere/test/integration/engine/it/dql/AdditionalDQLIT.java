@@ -22,7 +22,7 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.engine.param.IntegrateTestParameters;
+import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
@@ -52,7 +52,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestEnvironment.getInstance().isRunAdditionalTestCases() ? IntegrateTestParameters.getAssertionParameterizedArray(SQLCommandType.DQL) : Collections.emptyList();
+        return IntegrateTestEnvironment.getInstance().isRunAdditionalTestCases() ? ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DQL) : Collections.emptyList();
     }
     
     @Test
