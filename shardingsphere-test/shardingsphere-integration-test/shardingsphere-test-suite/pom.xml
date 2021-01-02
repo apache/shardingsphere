@@ -117,6 +117,7 @@
                                 <configuration>
                                     <composeFile>${project.basedir}/src/test/resources/docker/docker-compose.yml</composeFile>
                                     <removeVolumes>true</removeVolumes>
+                                    <removeImages>true</removeImages>
                                 </configuration>
                             </execution>
                         </executions>
