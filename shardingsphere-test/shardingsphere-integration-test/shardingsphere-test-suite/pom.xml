@@ -39,7 +39,7 @@
             <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>
-    
+        
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
@@ -117,6 +117,7 @@
                                 <configuration>
                                     <composeFile>${project.basedir}/src/test/resources/docker/docker-compose.yml</composeFile>
                                     <removeVolumes>true</removeVolumes>
+                                    <removeImages>true</removeImages>
                                 </configuration>
                             </execution>
                         </executions>

@@ -99,7 +99,6 @@ public abstract class BaseDCLIT extends SingleIT {
     @BeforeClass
     public static void initDatabasesAndTables() throws JAXBException, IOException {
         SchemaEnvironmentManager.createDatabases();
-        SchemaEnvironmentManager.dropTables();
         SchemaEnvironmentManager.createTables();
     }
     
