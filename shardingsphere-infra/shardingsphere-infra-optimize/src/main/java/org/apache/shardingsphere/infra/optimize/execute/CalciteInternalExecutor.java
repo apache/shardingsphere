@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Calcite internal executor.
@@ -52,7 +54,7 @@ public final class CalciteInternalExecutor {
     
     private final ExecutionContext executionContext;
     
-    private final JDBCExecutorCallback<QueryResult> callback;
+    private final JDBCExecutorCallback<? extends ExecuteResult> callback;
     
     /**
      * Execute.
@@ -62,7 +64,7 @@ public final class CalciteInternalExecutor {
     public Collection<QueryResult> execute() {
         try {
             Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups(executionContext);
-            return jdbcExecutor.execute(executionGroups, callback);
+            return jdbcExecutor.execute(executionGroups, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         }
