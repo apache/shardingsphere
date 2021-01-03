@@ -81,12 +81,6 @@
             </properties>
         </profile>
         <profile>
-            <id>it-jdbc-ci</id>
-            <properties>
-                <it.mode>jdbc-ci</it.mode>
-            </properties>
-        </profile>
-        <profile>
             <id>it-proxy</id>
             <properties>
                 <it.mode>proxy</it.mode>

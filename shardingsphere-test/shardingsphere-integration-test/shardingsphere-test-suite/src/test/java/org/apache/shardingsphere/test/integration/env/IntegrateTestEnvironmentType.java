@@ -30,8 +30,6 @@ public enum IntegrateTestEnvironmentType {
     
     NATIVE("native", "integrate/env-native.properties"),
     
-    JDBC_CI("jdbc-ci", "integrate/env-jdbc-ci.properties"),
-    
     PROXY("proxy", "integrate/env-proxy.properties");
     
     private final String profileName;
