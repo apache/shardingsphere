@@ -52,9 +52,9 @@ public final class IntegrateTestEnvironment {
     private IntegrateTestEnvironment() {
         activeProfile = loadProperties("integrate/profile.properties").getProperty("mode");
         Properties envProps = IntegrateTestEnvironmentType.valueFromProfileName(activeProfile).loadProperties();
-        adapters = Splitter.on(",").trimResults().splitToList(envProps.getProperty("adapters"));
-        runAdditionalTestCases = Boolean.parseBoolean(envProps.getProperty("run.additional.cases"));
-        scenarios = Splitter.on(",").trimResults().splitToList(envProps.getProperty("scenarios"));
+        adapters = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.adapters"));
+        runAdditionalTestCases = Boolean.parseBoolean(envProps.getProperty("it.run.additional.cases"));
+        scenarios = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.scenarios"));
         databaseEnvironments = createDatabaseEnvironments(envProps);
     }
     
@@ -70,7 +70,7 @@ public final class IntegrateTestEnvironment {
     
     private Map<DatabaseType, DatabaseEnvironment> createDatabaseEnvironments(final Properties envProps) {
         Collection<DatabaseType> databaseTypes = Arrays.stream(
-                envProps.getProperty("databases", "H2").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
+                envProps.getProperty("it.databases", "H2").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
         Map<DatabaseType, DatabaseEnvironment> result = new LinkedHashMap<>(databaseTypes.size(), 1);
         for (DatabaseType each : databaseTypes) {
             result.put(each, createDatabaseEnvironment(each, envProps));
@@ -83,17 +83,17 @@ public final class IntegrateTestEnvironment {
             case "H2":
                 return new DatabaseEnvironment(databaseType, "", 0, "sa", "");
             case "MySQL":
-                return new DatabaseEnvironment(databaseType, envProps.getProperty("mysql.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("mysql.port", "3306")),
-                        envProps.getProperty("mysql.username", "root"), envProps.getProperty("mysql.password", ""));
+                return new DatabaseEnvironment(databaseType, envProps.getProperty("it.mysql.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("it.mysql.port", "3306")),
+                        envProps.getProperty("it.mysql.username", "root"), envProps.getProperty("it.mysql.password", ""));
             case "PostgreSQL":
-                return new DatabaseEnvironment(databaseType, envProps.getProperty("postgresql.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("postgresql.port", "5432")),
-                        envProps.getProperty("postgresql.username", "postgres"), envProps.getProperty("postgresql.password", ""));
+                return new DatabaseEnvironment(databaseType, envProps.getProperty("it.postgresql.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("it.postgresql.port", "5432")),
+                        envProps.getProperty("it.postgresql.username", "postgres"), envProps.getProperty("it.postgresql.password", ""));
             case "SQLServer":
-                return new DatabaseEnvironment(databaseType, envProps.getProperty("sqlserver.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("sqlserver.port", "1433")),
-                        envProps.getProperty("sqlserver.username", "sa"), envProps.getProperty("sqlserver.password", "Jdbc1234"));
+                return new DatabaseEnvironment(databaseType, envProps.getProperty("it.sqlserver.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("it.sqlserver.port", "1433")),
+                        envProps.getProperty("it.sqlserver.username", "sa"), envProps.getProperty("it.sqlserver.password", "Jdbc1234"));
             case "Oracle":
-                return new DatabaseEnvironment(databaseType, envProps.getProperty("oracle.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("oracle.port", "1521")),
-                        envProps.getProperty("oracle.username", "jdbc"), envProps.getProperty("oracle.password", "jdbc"));
+                return new DatabaseEnvironment(databaseType, envProps.getProperty("it.oracle.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("it.oracle.port", "1521")),
+                        envProps.getProperty("it.oracle.username", "jdbc"), envProps.getProperty("it.oracle.password", "jdbc"));
             default:
                 throw new UnsupportedOperationException(databaseType.getName());
         }

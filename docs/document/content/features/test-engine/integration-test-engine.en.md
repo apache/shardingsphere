@@ -29,37 +29,37 @@ Firstly, setup configuration file `/shardingsphere-test-suite/src/test/resources
 
 ```properties
 # the switch for PK, concurrent, column index testing and so on
-run.additional.cases=false
+it.run.additional.cases=false
 
-# sharding rule, could define multiple rules
-sharding.rule.type=db,tbl,dbtbl_with_replica_query_,replica_query_
+# test scenarios, could define multiple rules
+it.scenarios=db,tbl,dbtbl_with_replica_query_,replica_query_
 
 # database type, could define multiple databases(H2,MySQL,Oracle,SQLServer,PostgreSQL)
-databases=MySQL,PostgreSQL
+it.databases=MySQL,PostgreSQL
 
 # MySQL configuration
-mysql.host=127.0.0.1
-mysql.port=13306
-mysql.username=root
-mysql.password=root
+it.mysql.host=127.0.0.1
+it.mysql.port=13306
+it.mysql.username=root
+it.mysql.password=root
 
 ## PostgreSQL configuration
-postgresql.host=db.psql
-postgresql.port=5432
-postgresql.username=postgres
-postgresql.password=postgres
+it.postgresql.host=db.psql
+it.postgresql.port=5432
+it.postgresql.username=postgres
+it.postgresql.password=postgres
 
 ## SQLServer configuration
-sqlserver.host=db.mssql
-sqlserver.port=1433
-sqlserver.username=sa
-sqlserver.password=Jdbc1234
+it.sqlserver.host=db.mssql
+it.sqlserver.port=1433
+it.sqlserver.username=sa
+it.sqlserver.password=Jdbc1234
 
 ## Oracle configuration
-oracle.host=db.oracle
-oracle.port=1521
-oracle.username=jdbc
-oracle.password=jdbc
+it.oracle.host=db.oracle
+it.oracle.port=1521
+it.oracle.username=jdbc
+it.oracle.password=jdbc
 ```
 
 Secondly, setup configuration file `/shardingsphere-test-suite/src/test/resources/integrate/env/SQL-TYPE/dataset.xml`. 
