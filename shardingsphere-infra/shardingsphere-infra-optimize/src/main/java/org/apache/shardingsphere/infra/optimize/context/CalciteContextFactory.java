@@ -69,6 +69,7 @@ public final class CalciteContextFactory {
     }
     
     private Properties createProperties() {
+        // TODO Not only MySQL here.
         Properties result = new Properties();
         result.setProperty("lex", Lex.MYSQL.name());
         result.setProperty("conformance", SqlConformanceEnum.MYSQL_5.name());
