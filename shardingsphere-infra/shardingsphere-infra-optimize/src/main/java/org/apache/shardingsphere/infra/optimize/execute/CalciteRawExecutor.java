@@ -29,8 +29,7 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.optimize.context.CalciteContext;
 import org.apache.shardingsphere.infra.optimize.context.CalciteDataContext;
 
@@ -42,21 +41,19 @@ import java.util.List;
  * Calcite raw executor.
  */
 @RequiredArgsConstructor
-public final class CalciteRawExecutor {
+public final class CalciteRawExecutor implements CalciteExecutor {
     
     private final CalciteContext context;
     
-    /**
-     * Execute query.
-     *
-     * @param executionContext execution context
-     * @param callback JDBC execute callback
-     * @param <T> class type of return value
-     * @return execute result
-     * @throws SQLException SQL exception
-     */
-    public <T> List<T> executeQuery(final ExecutionContext executionContext, final JDBCExecutorCallback<T> callback) throws SQLException {
+    @Override
+    public List<QueryResult> executeQuery(final String sql, final List<Object> parameters) throws SQLException {
+        // TODO
         return Collections.emptyList();
+    }
+    
+    @Override
+    public void close() throws SQLException {
+        // TODO
     }
     
     private Enumerable<Object[]> execute(final String sql) throws SqlParseException {

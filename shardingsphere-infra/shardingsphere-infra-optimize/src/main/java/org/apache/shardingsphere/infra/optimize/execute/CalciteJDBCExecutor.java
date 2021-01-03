@@ -29,7 +29,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.sql.Statement;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -37,7 +37,7 @@ import java.util.Properties;
 /**
  * Calcite JDBC executor.
  */
-public final class CalciteJDBCExecutor {
+public final class CalciteJDBCExecutor implements CalciteExecutor {
     
     public static final String CONNECTION_URL = "jdbc:calcite:";
     
@@ -46,6 +46,8 @@ public final class CalciteJDBCExecutor {
     public static final Properties PROPERTIES = new Properties();
     
     private final CalciteContext context;
+    
+    private Statement statement;
     
     static {
         try {
@@ -61,22 +63,23 @@ public final class CalciteJDBCExecutor {
         PROPERTIES.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), context.getConnectionProperties().getProperty(CalciteConnectionProperty.CONFORMANCE.camelName()));
     }
     
-    /**
-     * Execute query.
-     *
-     * @param sql sql
-     * @param parameters parameters
-     * @return execute result
-     * @throws SQLException SQL exception
-     */
-    public Collection<QueryResult> executeQuery(final String sql, final List<Object> parameters) throws SQLException {
+    @Override
+    public List<QueryResult> executeQuery(final String sql, final List<Object> parameters) throws SQLException {
         QueryResult result = new JDBCStreamQueryResult(execute(sql, parameters));
         return Collections.singletonList(result);
+    }
+    
+    @Override
+    public void close() throws SQLException {
+        Connection connection = statement.getConnection();
+        connection.close();
+        statement.close();
     }
     
     private ResultSet execute(final String sql, final List<Object> parameters) throws SQLException {
         PreparedStatement statement = getConnection().prepareStatement(sql);
         setParameters(statement, parameters);
+        this.statement = statement;
         return statement.executeQuery();
     }
     
