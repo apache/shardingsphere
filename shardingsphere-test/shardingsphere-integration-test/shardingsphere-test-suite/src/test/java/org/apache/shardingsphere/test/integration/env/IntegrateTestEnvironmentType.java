@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum IntegrateTestEnvironmentType {
     
-    JDBC_LOCAL("jdbc-local", "integrate/env-jdbc-local.properties"),
+    JDBC_LOCAL("native", "integrate/env-native.properties"),
     
     JDBC_CI("jdbc-ci", "integrate/env-jdbc-ci.properties"),
     
