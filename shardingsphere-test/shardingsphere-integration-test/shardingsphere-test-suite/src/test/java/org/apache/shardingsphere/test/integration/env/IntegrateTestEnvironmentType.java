@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.test.integration.env;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Integrate test environment type.
@@ -26,15 +28,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum IntegrateTestEnvironmentType {
     
-    JDBC_LOCAL("jdbc-local", "integrate/env-jdbc-local.properties"),
-    
-    JDBC_CI("jdbc-ci", "integrate/env-jdbc-ci.properties"),
+    NATIVE("native", "integrate/env-native.properties"),
     
     PROXY("proxy", "integrate/env-proxy.properties");
     
     private final String profileName;
     
-    @Getter
     private final String envFileName;
     
     /**
@@ -49,6 +48,25 @@ public enum IntegrateTestEnvironmentType {
                 return each;
             }
         }
-        return JDBC_LOCAL;
+        return NATIVE;
+    }
+    
+    /**
+     * Load integrate test environment properties.
+     * 
+     * @return integrate test environment properties
+     */
+    @SuppressWarnings("AccessOfSystemProperties")
+    public Properties loadProperties() {
+        Properties result = new Properties();
+        try {
+            result.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream(envFileName));
+        } catch (final IOException ex) {
+            throw new RuntimeException(ex);
+        }
+        for (String each : System.getProperties().stringPropertyNames()) {
+            result.setProperty(each, System.getProperty(each));
+        }
+        return result;
     }
 }
