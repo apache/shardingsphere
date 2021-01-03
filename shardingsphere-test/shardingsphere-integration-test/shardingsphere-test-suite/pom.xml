@@ -81,7 +81,7 @@
             </properties>
         </profile>
         <profile>
-            <id>it-proxy</id>
+            <id>it.docker</id>
             <properties>
                 <it.mode>proxy</it.mode>
             </properties>
@@ -92,26 +92,26 @@
                         <artifactId>docker-compose-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>up</id>
+                                <id>db-up</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
                                     <goal>up</goal>
                                 </goals>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/docker-compose.yml</composeFile>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/db/docker-compose.yml</composeFile>
                                     <detachedMode>true</detachedMode>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>down</id>
+                                <id>db-down</id>
                                 <phase>post-integration-test</phase>
                                 <goals>
                                     <goal>down</goal>
                                 </goals>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/docker-compose.yml</composeFile>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/db/docker-compose.yml</composeFile>
                                     <removeVolumes>true</removeVolumes>
-                                    <removeImages>true</removeImages>
+<!--                                    <removeImages>true</removeImages>-->
                                 </configuration>
                             </execution>
                         </executions>

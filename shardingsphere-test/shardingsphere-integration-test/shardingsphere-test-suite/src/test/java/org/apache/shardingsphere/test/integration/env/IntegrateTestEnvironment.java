@@ -21,11 +21,17 @@ import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -48,6 +54,8 @@ public final class IntegrateTestEnvironment {
     private final Collection<String> scenarios;
     
     private final Map<DatabaseType, DatabaseEnvironment> databaseEnvironments;
+
+    private final Map<String, DatabaseEnvironment> proxyEnvironments;
     
     private IntegrateTestEnvironment() {
         activeProfile = loadProperties("integrate/profile.properties").getProperty("mode");
@@ -56,6 +64,7 @@ public final class IntegrateTestEnvironment {
         runAdditionalTestCases = Boolean.parseBoolean(envProps.getProperty("it.run.additional.cases"));
         scenarios = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.scenarios"));
         databaseEnvironments = createDatabaseEnvironments(envProps);
+        proxyEnvironments = createProxyEnvironments(envProps);
     }
     
     private Properties loadProperties(final String fileName) {
@@ -99,13 +108,21 @@ public final class IntegrateTestEnvironment {
         }
     }
     
-    /**
-     * Judge whether proxy environment.
-     *
-     * @return is proxy environment or not 
-     */
-    public boolean isProxyEnvironment() {
-        return "proxy".equals(activeProfile);
+    private Map<String, DatabaseEnvironment> createProxyEnvironments(final Properties envProps) {
+        Map<String, DatabaseEnvironment> result = new HashMap<>(scenarios.size(), 1);
+        for (String each : scenarios) {
+            // TODO hard code for MySQL, should configurable
+            result.put(each, createProxyEnvironment(envProps, each));
+        }
+        return result;
+    }
+    
+    private DatabaseEnvironment createProxyEnvironment(final Properties envProps, final String scenario) {
+        String host = envProps.getProperty(String.format("it.proxy.%s.host", scenario), "127.0.0.1");
+        int port = Integer.parseInt(envProps.getProperty(String.format("it.proxy.%s.port", scenario), "3307"));
+        String username = envProps.getProperty(String.format("it.proxy.%s.username", scenario), "root");
+        String password = envProps.getProperty(String.format("it.proxy.%s.password", scenario), "root");
+        return new DatabaseEnvironment(new MySQLDatabaseType(), host, port, username, password);
     }
     
     /**
@@ -114,6 +131,34 @@ public final class IntegrateTestEnvironment {
      * @return singleton instance
      */
     public static IntegrateTestEnvironment getInstance() {
+        if (INSTANCE.adapters.contains("proxy")) {
+            for (String each : INSTANCE.scenarios) {
+                waitForProxyReady(each);
+            }
+        }
         return INSTANCE;
+    }
+    
+    private static void waitForProxyReady(final String scenario) {
+        int retryCount = 0;
+        while (!isProxyReady(scenario) && retryCount < 30) {
+            try {
+                Thread.sleep(1000L);
+            } catch (final InterruptedException ignore) {
+            }
+            retryCount++;
+        }
+    }
+    
+    @SuppressWarnings("CallToDriverManagerGetConnection")
+    private static boolean isProxyReady(final String scenario) {
+        DatabaseEnvironment dbEnv = INSTANCE.proxyEnvironments.get(scenario);
+        try (Connection connection = DriverManager.getConnection(dbEnv.getURL(scenario), dbEnv.getUsername(), dbEnv.getPassword());
+             Statement statement = connection.createStatement()) {
+            statement.execute("SELECT 1");
+        } catch (final SQLException ignore) {
+            return false;
+        }
+        return true;
     }
 }

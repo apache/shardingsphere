@@ -23,6 +23,7 @@ import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFac
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
+import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ProxyDataSourceBuilder;
 import org.junit.After;
@@ -33,10 +34,7 @@ import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -66,39 +64,17 @@ public abstract class BaseIT {
         this.databaseType = databaseType;
         actualDataSources = ActualDataSourceBuilder.createActualDataSources(scenario, databaseType);
         targetDataSource = createTargetDataSource();
-        if ("proxy".equalsIgnoreCase(adapter)) {
-            waitForProxyReady();
-        }
     }
     
     private DataSource createTargetDataSource() throws SQLException, IOException {
-        return "proxy".equalsIgnoreCase(adapter) ? ProxyDataSourceBuilder.build(String.format("proxy_%s", scenario), databaseType) 
-                : YamlShardingSphereDataSourceFactory.createDataSource(actualDataSources, new File(EnvironmentPath.getRulesConfigurationFile(scenario)));
+        if ("proxy".equalsIgnoreCase(adapter)) {
+            return ProxyDataSourceBuilder.build(scenario, databaseType, IntegrateTestEnvironment.getInstance().getProxyEnvironments().get(scenario));
+        }
+        return YamlShardingSphereDataSourceFactory.createDataSource(actualDataSources, new File(EnvironmentPath.getRulesConfigurationFile(scenario)));
     }
     
     protected final void resetTargetDataSource() throws IOException, SQLException {
         targetDataSource = createTargetDataSource();
-    }
-    
-    private void waitForProxyReady() {
-        int retryCount = 0;
-        while (!isProxyReady() && retryCount < 30) {
-            try {
-                Thread.sleep(1000L);
-            } catch (final InterruptedException ignore) {
-            }
-            retryCount++;
-        }
-    }
-    
-    private boolean isProxyReady() {
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:33070/proxy_db/?serverTimezone=UTC&useSSL=false&useLocalSessionState=true");
-             Statement statement = connection.createStatement()) {
-            statement.execute("SELECT 1");
-        } catch (final SQLException ignore) {
-            return false;
-        }
-        return true;
     }
     
     @After

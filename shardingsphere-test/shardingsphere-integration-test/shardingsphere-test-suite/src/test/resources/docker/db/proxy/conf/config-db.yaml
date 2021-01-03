@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: proxy_db
+schemaName: db
 
 dataSources:
   ds_0:
