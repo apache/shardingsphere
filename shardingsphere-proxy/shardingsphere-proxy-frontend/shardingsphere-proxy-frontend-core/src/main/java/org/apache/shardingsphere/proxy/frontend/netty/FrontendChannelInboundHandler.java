@@ -94,6 +94,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
         backendConnection.closeResultSets();
         backendConnection.closeStatements();
         backendConnection.closeConnections(true);
+        backendConnection.closeCalciteExecutor();
         ChannelThreadExecutorGroup.getInstance().unregister(context.channel().id());
     }
     
