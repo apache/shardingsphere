@@ -51,9 +51,16 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         closed = true;
         try {
             forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::close);
-            getCalciteExecutor().close();
+            closeCalciteExecutor();
         } finally {
             getRoutedStatements().clear();
+        }
+    }
+    
+    private void closeCalciteExecutor() throws SQLException {
+        CalciteExecutor executor = getCalciteExecutor();
+        if (null != executor) {
+            executor.close();
         }
     }
     
