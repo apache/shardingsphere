@@ -84,9 +84,8 @@ public final class CalciteLogicTableGenerator {
      *
      * @param executor executor
      * @return table
-     * @exception SQLException sql exception
      */
-    public Table create(final CalciteInternalExecutor executor) throws SQLException {
+    public Table create(final CalciteInternalExecutor executor) {
         return new CalciteFilterableTable(tableMetaData, relProtoDataType, executor);
     }
 }
