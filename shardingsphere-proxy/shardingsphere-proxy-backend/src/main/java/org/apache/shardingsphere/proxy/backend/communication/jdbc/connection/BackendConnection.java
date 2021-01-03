@@ -292,6 +292,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
     /**
      * Close calcite executor.
      * 
+     * @return SQL exception when calcite executor close
      */
     public synchronized Collection<SQLException> closeCalciteExecutor() {
         Collection<SQLException> result = new LinkedList<>();
