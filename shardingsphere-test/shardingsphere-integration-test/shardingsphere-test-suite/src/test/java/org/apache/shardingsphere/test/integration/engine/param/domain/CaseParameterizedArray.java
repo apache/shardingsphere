@@ -29,17 +29,20 @@ public final class CaseParameterizedArray implements ParameterizedArray {
     
     private final IntegrateTestCaseContext testCaseContext;
     
+    private final String adapters;
+    
     private final String scenario;
     
     private final DatabaseType databaseType;
     
     @Override
     public Object[] toArrays() {
-        Object[] result = new Object[4];
+        Object[] result = new Object[5];
         result[0] = testCaseContext;
-        result[1] = scenario;
-        result[2] = databaseType.getName();
-        result[3] = testCaseContext.getTestCase().getSql();
+        result[1] = adapters;
+        result[2] = scenario;
+        result[3] = databaseType.getName();
+        result[4] = testCaseContext.getTestCase().getSql();
         return result;
     }
 }

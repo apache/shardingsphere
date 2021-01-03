@@ -33,6 +33,8 @@ public final class AssertionParameterizedArray implements ParameterizedArray {
     
     private final IntegrateTestCaseAssertion assertion;
     
+    private final String adapters;
+    
     private final String scenario;
     
     private final DatabaseType databaseType;
@@ -41,13 +43,14 @@ public final class AssertionParameterizedArray implements ParameterizedArray {
     
     @Override
     public Object[] toArrays() {
-        Object[] result = new Object[6];
+        Object[] result = new Object[7];
         result[0] = testCaseContext.getParentPath();
         result[1] = assertion;
-        result[2] = scenario;
-        result[3] = databaseType.getName();
-        result[4] = sqlExecuteType;
-        result[5] = testCaseContext.getTestCase().getSql();
+        result[2] = adapters;
+        result[3] = scenario;
+        result[4] = databaseType.getName();
+        result[5] = sqlExecuteType;
+        result[6] = testCaseContext.getTestCase().getSql();
         return result;
     }
 }

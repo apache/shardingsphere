@@ -40,6 +40,8 @@ public final class IntegrateTestEnvironment {
     private static final IntegrateTestEnvironment INSTANCE = new IntegrateTestEnvironment();
     
     private final String activeProfile;
+
+    private final Collection<String> adapters;
     
     private final boolean runAdditionalTestCases;
     
@@ -50,6 +52,7 @@ public final class IntegrateTestEnvironment {
     private IntegrateTestEnvironment() {
         activeProfile = loadProperties("integrate/profile.properties").getProperty("mode");
         Properties envProps = loadProperties(IntegrateTestEnvironmentType.valueFromProfileName(activeProfile).getEnvFileName());
+        adapters = Splitter.on(",").trimResults().splitToList(envProps.getProperty("adapters"));
         runAdditionalTestCases = Boolean.parseBoolean(envProps.getProperty("run.additional.cases"));
         scenarios = Splitter.on(",").trimResults().splitToList(envProps.getProperty("scenarios"));
         databaseEnvironments = createDatabaseEnvironments(envProps);
