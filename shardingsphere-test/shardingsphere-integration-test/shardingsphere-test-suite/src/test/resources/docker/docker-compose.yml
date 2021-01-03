@@ -25,6 +25,13 @@ services:
       - ./mysql:/docker-entrypoint-initdb.d/
     ports:
       - "33060:3306"
+  
+  zookeeper:
+    image: "zookeeper:3.6.2"
+    container_name: register_center
+    ports:
+      - "2181:21810"
+  
   shardingsphere-proxy:
     image: apache/shardingsphere-proxy-test
     container_name: shardingsphere-proxy
@@ -32,6 +39,7 @@ services:
       - "33070:3307"
     links:
       - "mysql:db.mysql"
+      - "zookeeper:zk"
     volumes:
       - ./proxy/conf:/opt/shardingsphere-proxy/conf
     depends_on:

@@ -15,6 +15,18 @@
 # limitations under the License.
 #
 
+#governance:
+#  name: governance_ds
+#  registryCenter:
+#    type: ZooKeeper
+#    serverLists: zk:2181
+#    props:
+#      retryIntervalMilliseconds: 500
+#      timeToLiveSeconds: 60
+#      maxRetries: 3
+#      operationTimeoutMilliseconds: 500
+#  overwrite: true
+
 authentication:
   users:
     root:
