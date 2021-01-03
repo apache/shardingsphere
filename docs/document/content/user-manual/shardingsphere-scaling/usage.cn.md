@@ -260,7 +260,7 @@ curl -X GET \
 
 #### 停止迁移任务
 
-接口描述：POST /scaling/job/stop
+接口描述：GET /scaling/job/stop
 
 请求体：
 
@@ -270,12 +270,8 @@ curl -X GET \
 
 示例：
 ```
-curl -X POST \
-  http://localhost:8888/scaling/job/stop \
-  -H 'content-type: application/json' \
-  -d '{
-   "jobId":1
-}'
+curl -X GET \
+  http://localhost:8888/scaling/job/stop/1
 ```
 返回信息：
 ```

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.scaling.core.utils.ConfigurationYamlConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
 import javax.sql.DataSource;
@@ -38,7 +37,7 @@ import java.util.Map;
 @Setter
 @Getter
 @EqualsAndHashCode(exclude = "databaseType")
-public final class ShardingSphereJDBCDataSourceConfiguration implements DataSourceConfiguration {
+public final class ShardingSphereJDBCDataSourceConfiguration implements ScalingDataSourceConfiguration {
     
     /**
      * Config type.

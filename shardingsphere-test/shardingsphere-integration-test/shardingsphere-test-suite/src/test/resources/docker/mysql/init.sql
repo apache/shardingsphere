@@ -17,6 +17,7 @@
 
 CREATE USER 'root'@'%' IDENTIFIED BY '';
 GRANT All privileges ON *.* TO 'root'@'%';
+
 CREATE DATABASE db_0;
 CREATE DATABASE db_1;
 CREATE DATABASE db_2;
@@ -53,6 +54,7 @@ CREATE DATABASE replica_1;
 CREATE DATABASE tbl;
 CREATE DATABASE db;
 CREATE DATABASE shadow_db;
+
 CREATE TABLE db_0.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE db_0.t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE db_0.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));

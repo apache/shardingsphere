@@ -22,9 +22,7 @@ import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
-import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
-import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
 
 import java.util.Collection;
 
@@ -51,9 +49,8 @@ public final class ScalingTaskUtil {
      * @return almost finished or not
      */
     public static boolean allTasksAlmostFinished(final JobProgress jobProgress, final JobConfiguration jobConfig) {
-        return jobProgress.getInventoryTaskProgress().values().stream().flatMap(Collection::stream).allMatch(each -> ((InventoryTaskProgress) each).isFinished())
-                && jobProgress.getIncrementalTaskProgress().values().stream().flatMap(Collection::stream)
-                .allMatch(each -> ((IncrementalTaskProgress) each).getDelayMillisecond() < jobConfig.getAllowDelay());
+        return jobProgress.getInventoryTaskProgress().stream().allMatch(each -> each.getTotal() == each.getFinished())
+                && jobProgress.getIncrementalTaskProgress().stream().allMatch(each -> each.getDelayMillisecond() < jobConfig.getAllowDelay());
     }
     
     /**

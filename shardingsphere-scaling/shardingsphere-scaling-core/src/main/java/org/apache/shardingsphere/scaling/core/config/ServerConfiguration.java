@@ -19,15 +19,14 @@ package org.apache.shardingsphere.scaling.core.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 
 /**
  * Global server configuration.
  */
 @Setter
 @Getter
-public final class ServerConfiguration implements YamlConfiguration {
+public final class ServerConfiguration {
     
     private int port = 8080;
     
@@ -37,5 +36,5 @@ public final class ServerConfiguration implements YamlConfiguration {
     
     private int workerThread = 30;
     
-    private YamlGovernanceConfiguration distributedScalingService;
+    private GovernanceConfiguration distributedScalingService;
 }

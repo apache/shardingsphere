@@ -21,6 +21,7 @@ import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataC
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.lock.strategy.GovernanceLockStrategy;
+import org.apache.shardingsphere.governance.core.scaling.ScalingServiceHolder;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
@@ -38,6 +39,9 @@ import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
+import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.scaling.core.service.impl.DistributedScalingJobService;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 import java.util.Collection;
@@ -129,5 +133,13 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     protected void initLockContext() {
         LockContext.init(LockStrategyType.GOVERNANCE);
         ((GovernanceLockStrategy) LockContext.getLockStrategy()).init(governanceFacade.getRegistryCenter());
+    }
+    
+    @Override
+    protected void initScalingWorker(final YamlProxyConfiguration yamlConfig) {
+        ServerConfiguration serverConfiguration = new ServerConfiguration();
+        serverConfiguration.setDistributedScalingService(new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance()));
+        ScalingContext.getInstance().init(serverConfiguration);
+        ScalingServiceHolder.getInstance().init(new DistributedScalingJobService());
     }
 }

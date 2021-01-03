@@ -22,8 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.execute.engine.ExecuteCallback;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
-import org.apache.shardingsphere.scaling.core.job.TaskProgress;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
+import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 
 import java.util.Collection;
@@ -135,10 +136,8 @@ public final class ScalingTaskScheduler implements Runnable {
      *
      * @return all inventory data task progress
      */
-    public Collection<TaskProgress> getInventoryTaskProgress() {
-        return scalingJob.getInventoryTasks().stream()
-                .map(ScalingTask::getProgress)
-                .collect(Collectors.toList());
+    public Collection<InventoryTaskProgress> getInventoryTaskProgress() {
+        return scalingJob.getInventoryTasks().stream().map(each -> (InventoryTaskProgress) each.getProgress()).collect(Collectors.toList());
     }
     
     /**
@@ -146,7 +145,7 @@ public final class ScalingTaskScheduler implements Runnable {
      *
      * @return all incremental data task progress
      */
-    public Collection<TaskProgress> getIncrementalTaskProgress() {
-        return scalingJob.getIncrementalTasks().stream().map(ScalingTask::getProgress).collect(Collectors.toList());
+    public Collection<IncrementalTaskProgress> getIncrementalTaskProgress() {
+        return scalingJob.getIncrementalTasks().stream().map(each -> (IncrementalTaskProgress) each.getProgress()).collect(Collectors.toList());
     }
 }

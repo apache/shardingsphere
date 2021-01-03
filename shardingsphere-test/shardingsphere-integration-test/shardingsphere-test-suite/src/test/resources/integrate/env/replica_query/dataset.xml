@@ -36,10 +36,6 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata data-nodes="primary_ds.key_word,replica_${0..1}.key_word">
-        <column name="id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
     <row data-node="primary_ds.t_order" values="1000, 10, init" />
     <row data-node="primary_ds.t_order" values="1001, 10, init" />
     <row data-node="primary_ds.t_order" values="1100, 11, init" />
@@ -161,7 +157,6 @@
     <row data-node="primary_ds.t_order_item" values="290101, 2901, 29, init, 2017-08-08" />
     <row data-node="primary_ds.t_order_item" values="290102, 2901, 29, init, 2017-08-08" />
     <row data-node="primary_ds.t_broadcast_table" values="1, init" />
-    <row data-node="primary_ds.key_word" values="1, init" />
     <row data-node="primary_ds.t_global" values="1, global_primary" />
     <row data-node="replica_0.t_order" values="1000, 10, init_replica" />
     <row data-node="replica_0.t_order" values="1001, 10, init_replica" />
@@ -284,7 +279,6 @@
     <row data-node="replica_0.t_order_item" values="290101, 2901, 29, init_replica, 2017-08-08" />
     <row data-node="replica_0.t_order_item" values="290102, 2901, 29, init_replica, 2017-08-08" />
     <row data-node="replica_0.t_broadcast_table" values="1, init_replica" />
-    <row data-node="replica_0.key_word" values="1, init_replica" />
     <row data-node="replica_0.t_global" values="1, global_replica_0" />
     <row data-node="replica_1.t_order" values="1000, 10, init_replica" />
     <row data-node="replica_1.t_order" values="1001, 10, init_replica" />
@@ -407,6 +401,5 @@
     <row data-node="replica_1.t_order_item" values="290101, 2901, 29, init_replica, 2017-08-08" />
     <row data-node="replica_1.t_order_item" values="290102, 2901, 29, init_replica, 2017-08-08" />
     <row data-node="replica_1.t_broadcast_table" values="1, init_replica" />
-    <row data-node="replica_1.key_word" values="1, init_replica" />
     <row data-node="replica_1.t_global" values="1, global_replica_1" />
 </dataset>

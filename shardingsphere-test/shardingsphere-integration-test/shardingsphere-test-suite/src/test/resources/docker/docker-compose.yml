@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-version: '3.7'
+version: "2.1"
 services:
   mysql:
     image: "mysql/mysql-server:5.7"
@@ -26,18 +26,18 @@ services:
     ports:
       - "33060:3306"
   shardingsphere-proxy:
-      image: apache/shardingsphere-proxy-test
-      container_name: shardingsphere-proxy
-      ports:
-        - "33070:3307"
-      links:
-        - "mysql:db.mysql"
-      volumes:
-        - ./proxy/conf:/opt/shardingsphere-proxy/conf
-      depends_on:
-        - mysql
-      environment:
-        - WAIT_HOSTS=mysql:3306
-        - WAIT_HOSTS_TIMEOUT=300
-        - WAIT_SLEEP_INTERVAL=5
-        - WAIT_HOST_CONNECT_TIMEOUT=30
+    image: apache/shardingsphere-proxy-test
+    container_name: shardingsphere-proxy
+    ports:
+      - "33070:3307"
+    links:
+      - "mysql:db.mysql"
+    volumes:
+      - ./proxy/conf:/opt/shardingsphere-proxy/conf
+    depends_on:
+      - mysql
+    environment:
+      - WAIT_HOSTS=mysql:3306
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_SLEEP_INTERVAL=5
+      - WAIT_HOST_CONNECT_TIMEOUT=30

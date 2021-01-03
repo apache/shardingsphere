@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.config;
 
 import com.google.gson.JsonObject;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration.DataSourceConfigurationWrapper;
-import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.fixture.FixtureShardingSphereJDBCConfiguration;
@@ -36,7 +36,7 @@ public final class RuleConfigurationTest {
         String jdbcUrl = "jdbc:h2:mem:test_db_2;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
         String username = "root";
         String password = "password";
-        DataSourceConfiguration actual = mockStandardJDBCDataSourceConfigWrapper(jdbcUrl, username, password).unwrap();
+        ScalingDataSourceConfiguration actual = mockStandardJDBCDataSourceConfigWrapper(jdbcUrl, username, password).unwrap();
         assertThat(actual, instanceOf(StandardJDBCDataSourceConfiguration.class));
         StandardJDBCDataSourceConfiguration jdbcDataSourceConfig = (StandardJDBCDataSourceConfiguration) actual;
         assertThat(jdbcDataSourceConfig.getJdbcUrl(), is(jdbcUrl));
@@ -49,7 +49,7 @@ public final class RuleConfigurationTest {
         String dataSource = FixtureShardingSphereJDBCConfiguration.DATA_SOURCE;
         String rule = FixtureShardingSphereJDBCConfiguration.RULE;
         DataSourceConfigurationWrapper dataSourceConfigurationWrapper = getDataSourceConfigurationWrapper(dataSource, rule);
-        DataSourceConfiguration actual = dataSourceConfigurationWrapper.unwrap();
+        ScalingDataSourceConfiguration actual = dataSourceConfigurationWrapper.unwrap();
         assertThat(actual, instanceOf(ShardingSphereJDBCDataSourceConfiguration.class));
         ShardingSphereJDBCDataSourceConfiguration shardingSphereJDBCConfig = (ShardingSphereJDBCDataSourceConfiguration) actual;
         assertThat(shardingSphereJDBCConfig.getDataSource(), is(dataSource));

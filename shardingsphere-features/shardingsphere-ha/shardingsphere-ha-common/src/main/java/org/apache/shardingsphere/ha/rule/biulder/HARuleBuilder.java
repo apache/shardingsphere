@@ -19,6 +19,7 @@ package org.apache.shardingsphere.ha.rule.biulder;
 
 import lombok.Setter;
 import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
+import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
 import org.apache.shardingsphere.ha.constant.HAOrder;
 import org.apache.shardingsphere.ha.rule.HARule;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -26,7 +27,9 @@ import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.aware.ResourceAware;
 
 import javax.sql.DataSource;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * HA rule builder.
@@ -42,6 +45,12 @@ public final class HARuleBuilder implements ShardingSphereRuleBuilder<HARule, HA
     
     @Override
     public HARule build(final HARuleConfiguration ruleConfig) {
+        Set<String> dataSourceSet = new HashSet<>(128, 1);
+        for (HADataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
+            dataSourceSet.add(each.getPrimaryDataSourceName());
+            dataSourceSet.addAll(each.getReplicaDataSourceNames());
+        }
+        dataSourceMap.entrySet().removeIf(stringDataSourceEntry -> !dataSourceSet.contains(stringDataSourceEntry.getKey()));
         return new HARule(ruleConfig, databaseType, dataSourceMap, schemaName);
     }
     

@@ -45,7 +45,7 @@ public enum IntegrateTestEnvironmentType {
      */
     public static IntegrateTestEnvironmentType valueFromProfileName(final String profileName) {
         for (IntegrateTestEnvironmentType each : values()) {
-            if (each.profileName.equals(profileName)) {
+            if (each.profileName.equalsIgnoreCase(profileName)) {
                 return each;
             }
         }

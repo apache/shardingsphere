@@ -18,23 +18,23 @@
 package org.apache.shardingsphere.test.integration.cases.dataset;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Data sets root xml entry.
  */
 @Getter
-//@Setter
 @XmlRootElement(name = "dataset")
 public final class DataSet {
     
@@ -54,14 +54,13 @@ public final class DataSet {
      * @return data set meta data belong to current table
      */
     public DataSetMetadata findMetadata(final String tableName) {
-        for (DataSetMetadata each : metadataList) {
-            if (tableName.equals(each.getTableName())) {
-                return each;
-            }
+        Optional<DataSetMetadata> result = metadataList.stream().filter(each -> tableName.equals(each.getTableName())).findFirst();
+        if (result.isPresent()) {
+            return result.get();
         }
         throw new IllegalArgumentException(String.format("Cannot find expected metadata via table name: '%s'", tableName));
     }
-        
+    
     /**
      * Find data set meta data via data node.
      * 
@@ -69,21 +68,15 @@ public final class DataSet {
      * @return data set meta data belong to current data node
      */
     public DataSetMetadata findMetadata(final DataNode dataNode) {
-        for (DataSetMetadata each : metadataList) {
-            if (contains(new InlineExpressionParser(each.getDataNodes()).splitAndEvaluate(), dataNode)) {
-                return each;
-            }
+        Optional<DataSetMetadata> result = metadataList.stream().filter(each -> contains(new InlineExpressionParser(each.getDataNodes()).splitAndEvaluate(), dataNode)).findFirst();
+        if (result.isPresent()) {
+            return result.get();
         }
         throw new IllegalArgumentException(String.format("Cannot find data node: %s", dataNode));
     }
     
     private boolean contains(final List<String> dataNodes, final DataNode dataNode) {
-        for (String each : dataNodes) {
-            if (new DataNode(each).equals(dataNode)) {
-                return true;
-            }
-        }
-        return false;
+        return dataNodes.stream().anyMatch(each -> new DataNode(each).equals(dataNode));
     }
     
     /**
@@ -93,12 +86,6 @@ public final class DataSet {
      * @return data set rows belong to current data node
      */
     public List<DataSetRow> findRows(final DataNode dataNode) {
-        List<DataSetRow> result = new ArrayList<>(rows.size());
-        for (DataSetRow each : rows) {
-            if (new DataNode(each.getDataNode()).equals(dataNode)) {
-                result.add(each);
-            }
-        }
-        return result;
+        return rows.stream().filter(each -> new DataNode(each.getDataNode()).equals(dataNode)).collect(Collectors.toList());
     }
 }

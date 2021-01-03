@@ -39,7 +39,7 @@ public final class HADataSourceRouter {
      * @return data source name
      */
     public String route(final SQLStatement sqlStatement) {
-        if (isPrimaryRoute(sqlStatement) || !rule.isReadWriteSplit()) {
+        if (isPrimaryRoute(sqlStatement) || !rule.isReplicaQuery()) {
             PrimaryVisitedManager.setPrimaryVisited();
             return rule.getPrimaryDataSourceName();
         }
