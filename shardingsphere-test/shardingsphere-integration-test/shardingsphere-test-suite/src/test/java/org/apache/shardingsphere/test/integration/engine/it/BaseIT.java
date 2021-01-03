@@ -23,7 +23,6 @@ import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFac
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ProxyDataSourceBuilder;
 import org.junit.After;
@@ -47,6 +46,8 @@ public abstract class BaseIT {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
+    private final String adapter;
+    
     private final String scenario;
     
     private final DatabaseType databaseType;
@@ -57,20 +58,21 @@ public abstract class BaseIT {
     
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        if (IntegrateTestEnvironment.getInstance().isProxyEnvironment()) {
-            waitForProxyReady();
-        }
     }
     
-    BaseIT(final String scenario, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
+    BaseIT(final String adapter, final String scenario, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
+        this.adapter = adapter;
         this.scenario = scenario;
         this.databaseType = databaseType;
         actualDataSources = ActualDataSourceBuilder.createActualDataSources(scenario, databaseType);
         targetDataSource = createTargetDataSource();
+        if ("proxy".equalsIgnoreCase(adapter)) {
+            waitForProxyReady();
+        }
     }
     
     private DataSource createTargetDataSource() throws SQLException, IOException {
-        return IntegrateTestEnvironment.getInstance().isProxyEnvironment() ? ProxyDataSourceBuilder.build(String.format("proxy_%s", scenario), databaseType) 
+        return "proxy".equalsIgnoreCase(adapter) ? ProxyDataSourceBuilder.build(String.format("proxy_%s", scenario), databaseType) 
                 : YamlShardingSphereDataSourceFactory.createDataSource(actualDataSources, new File(EnvironmentPath.getRulesConfigurationFile(scenario)));
     }
     
@@ -78,14 +80,7 @@ public abstract class BaseIT {
         targetDataSource = createTargetDataSource();
     }
     
-    @After
-    public final void tearDown() {
-        if (targetDataSource instanceof ShardingSphereDataSource) {
-            ((ShardingSphereDataSource) targetDataSource).getMetaDataContexts().getExecutorEngine().close();
-        }
-    }
-    
-    private static void waitForProxyReady() {
+    private void waitForProxyReady() {
         int retryCount = 0;
         while (!isProxyReady() && retryCount < 30) {
             try {
@@ -96,7 +91,7 @@ public abstract class BaseIT {
         }
     }
     
-    private static boolean isProxyReady() {
+    private boolean isProxyReady() {
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:33070/proxy_db/?serverTimezone=UTC&useSSL=false&useLocalSessionState=true");
              Statement statement = connection.createStatement()) {
             statement.execute("SELECT 1");
@@ -104,5 +99,12 @@ public abstract class BaseIT {
             return false;
         }
         return true;
+    }
+    
+    @After
+    public final void tearDown() {
+        if (targetDataSource instanceof ShardingSphereDataSource) {
+            ((ShardingSphereDataSource) targetDataSource).getMetaDataContexts().getExecutorEngine().close();
+        }
     }
 }

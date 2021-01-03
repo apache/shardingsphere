@@ -68,9 +68,9 @@ public abstract class BatchIT extends BaseIT {
     
     private final Collection<DataSet> dataSets;
     
-    protected BatchIT(final IntegrateTestCaseContext testCaseContext, 
-                      final String scenario, final DatabaseType databaseType, final String sql) throws IOException, JAXBException, SQLException {
-        super(scenario, databaseType);
+    protected BatchIT(final IntegrateTestCaseContext testCaseContext,
+                      final String adapter, final String scenario, final DatabaseType databaseType, final String sql) throws IOException, JAXBException, SQLException {
+        super(adapter, scenario, databaseType);
         this.testCaseContext = testCaseContext;
         this.sql = sql;
         dataSets = new LinkedList<>();
