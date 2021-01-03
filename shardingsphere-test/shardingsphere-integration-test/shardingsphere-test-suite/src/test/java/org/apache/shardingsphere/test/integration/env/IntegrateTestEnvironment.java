@@ -51,7 +51,7 @@ public final class IntegrateTestEnvironment {
     
     private IntegrateTestEnvironment() {
         activeProfile = loadProperties("integrate/profile.properties").getProperty("mode");
-        Properties envProps = loadProperties(IntegrateTestEnvironmentType.valueFromProfileName(activeProfile).getEnvFileName());
+        Properties envProps = IntegrateTestEnvironmentType.valueFromProfileName(activeProfile).loadProperties();
         adapters = Splitter.on(",").trimResults().splitToList(envProps.getProperty("adapters"));
         runAdditionalTestCases = Boolean.parseBoolean(envProps.getProperty("run.additional.cases"));
         scenarios = Splitter.on(",").trimResults().splitToList(envProps.getProperty("scenarios"));
