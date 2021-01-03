@@ -33,7 +33,7 @@ public final class CalciteDataContext implements DataContext {
     
     @Override
     public SchemaPlus getRootSchema() {
-        return context.getCatalogReader().getRootSchema().plus();
+        return context.getValidator().getCatalogReader().getRootSchema().plus();
     }
     
     @Override

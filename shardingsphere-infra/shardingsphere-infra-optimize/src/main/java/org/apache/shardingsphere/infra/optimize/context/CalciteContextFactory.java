@@ -19,24 +19,35 @@ package org.apache.shardingsphere.infra.optimize.context;
 
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.config.CalciteConnectionConfigImpl;
+import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.config.Lex;
+import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptPlanner;
+import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.volcano.VolcanoPlanner;
+import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexBuilder;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.parser.SqlParser.Config;
 import org.apache.calcite.sql.parser.impl.SqlParserImpl;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.sql.validate.SqlValidatorUtil;
+import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.calcite.sql2rel.StandardConvertletTable;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.optimize.execute.CalciteInternalExecutor;
 import org.apache.shardingsphere.infra.optimize.plan.PlannerInitializer;
+import org.apache.shardingsphere.infra.optimize.schema.CalciteLogicSchema;
 import org.apache.shardingsphere.infra.optimize.schema.CalciteLogicSchemaFactory;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -45,6 +56,8 @@ import java.util.Properties;
  *
  */
 public final class CalciteContextFactory {
+
+    private final Properties properties;
     
     private final CalciteConnectionConfig connectionConfig;
     
@@ -57,7 +70,8 @@ public final class CalciteContextFactory {
     private final RelOptCluster cluster;
     
     public CalciteContextFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
-        connectionConfig = new CalciteConnectionConfigImpl(createProperties());
+        properties = createProperties();
+        connectionConfig = new CalciteConnectionConfigImpl(properties);
         parserConfig = SqlParser.config()
                 .withLex(connectionConfig.lex())
                 .withIdentifierMaxLength(SqlParser.DEFAULT_IDENTIFIER_MAX_LENGTH)
@@ -71,8 +85,8 @@ public final class CalciteContextFactory {
     private Properties createProperties() {
         // TODO Not only MySQL here.
         Properties result = new Properties();
-        result.setProperty("lex", Lex.MYSQL.name());
-        result.setProperty("conformance", SqlConformanceEnum.MYSQL_5.name());
+        result.setProperty(CalciteConnectionProperty.LEX.camelName(), Lex.MYSQL.name());
+        result.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), SqlConformanceEnum.MYSQL_5.name());
         return result;
     }
     
@@ -91,9 +105,37 @@ public final class CalciteContextFactory {
      */
     public CalciteContext create(final String schema, final CalciteInternalExecutor executor) {
         try {
-            return new CalciteContext(connectionConfig, parserConfig, typeFactory, cluster, factory.create(schema, executor));
+            return create(connectionConfig, parserConfig, typeFactory, cluster, factory.create(schema, executor));
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         }
+    }
+
+    private CalciteContext create(final CalciteConnectionConfig config,
+                                  final SqlParser.Config parserConfig, final RelDataTypeFactory typeFactory, final RelOptCluster cluster, final CalciteLogicSchema calciteLogicSchema) {
+        CalciteCatalogReader catalogReader = createCalciteCatalogReader(config, typeFactory, calciteLogicSchema);
+        SqlValidator validator = createSqlValidator(config, typeFactory, catalogReader);
+        SqlToRelConverter relConverter = createSqlToRelConverter(cluster, validator, catalogReader);
+        return new CalciteContext(properties, calciteLogicSchema, parserConfig, validator, relConverter);
+    }
+
+    private CalciteCatalogReader createCalciteCatalogReader(final CalciteConnectionConfig config, final RelDataTypeFactory typeFactory, final CalciteLogicSchema calciteLogicSchema) {
+        CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
+        rootSchema.add(calciteLogicSchema.getName(), calciteLogicSchema);
+        return new CalciteCatalogReader(rootSchema, Collections.singletonList(config.schema()), typeFactory, config);
+    }
+
+    private SqlValidator createSqlValidator(final CalciteConnectionConfig config, final RelDataTypeFactory typeFactory, final CalciteCatalogReader catalogReader) {
+        return SqlValidatorUtil.newValidator(SqlStdOperatorTable.instance(), catalogReader, typeFactory, SqlValidator.Config.DEFAULT
+                .withLenientOperatorLookup(config.lenientOperatorLookup())
+                .withSqlConformance(config.conformance())
+                .withDefaultNullCollation(config.defaultNullCollation())
+                .withIdentifierExpansion(true));
+    }
+
+    private SqlToRelConverter createSqlToRelConverter(final RelOptCluster cluster, final SqlValidator validator, final CalciteCatalogReader catalogReader) {
+        SqlToRelConverter.Config config = SqlToRelConverter.config().withTrimUnusedFields(true);
+        RelOptTable.ViewExpander expander = (rowType, queryString, schemaPath, viewPath) -> null;
+        return new SqlToRelConverter(expander, validator, catalogReader, cluster, StandardConvertletTable.INSTANCE, config);
     }
 }

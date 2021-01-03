@@ -18,58 +18,29 @@
 package org.apache.shardingsphere.infra.optimize.context;
 
 import lombok.Getter;
-import org.apache.calcite.config.CalciteConnectionConfig;
-import org.apache.calcite.jdbc.CalciteSchema;
-import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.plan.RelOptTable.ViewExpander;
-import org.apache.calcite.prepare.CalciteCatalogReader;
-import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import lombok.RequiredArgsConstructor;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
-import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
-import org.apache.calcite.sql2rel.StandardConvertletTable;
 import org.apache.shardingsphere.infra.optimize.schema.CalciteLogicSchema;
 
-import java.util.Collections;
+import java.util.Properties;
 
 /**
  * Calcite context.
  *
  */
 @Getter
+@RequiredArgsConstructor
 public final class CalciteContext {
+
+    private final Properties connectionProperties;
     
     private final CalciteLogicSchema calciteLogicSchema;
-    
-    private final CalciteCatalogReader catalogReader;
     
     private final SqlParser.Config parserConfig;
     
     private final SqlValidator validator;
     
     private final SqlToRelConverter relConverter;
-    
-    public CalciteContext(final CalciteConnectionConfig config,
-                          final SqlParser.Config parserConfig, final RelDataTypeFactory typeFactory, final RelOptCluster cluster, final CalciteLogicSchema calciteLogicSchema) {
-        this.calciteLogicSchema = calciteLogicSchema;
-        CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
-        rootSchema.add(calciteLogicSchema.getName(), calciteLogicSchema);
-        catalogReader = new CalciteCatalogReader(rootSchema, Collections.singletonList(config.schema()), typeFactory, config);
-        this.parserConfig = parserConfig;
-        validator = SqlValidatorUtil.newValidator(SqlStdOperatorTable.instance(), catalogReader, typeFactory, SqlValidator.Config.DEFAULT
-                .withLenientOperatorLookup(config.lenientOperatorLookup())
-                .withSqlConformance(config.conformance())
-                .withDefaultNullCollation(config.defaultNullCollation())
-                .withIdentifierExpansion(true));
-        relConverter = createSqlToRelConverter(cluster);
-    }
-    
-    private SqlToRelConverter createSqlToRelConverter(final RelOptCluster cluster) {
-        Config config = SqlToRelConverter.config().withTrimUnusedFields(true);
-        ViewExpander expander = (rowType, queryString, schemaPath, viewPath) -> null;
-        return new SqlToRelConverter(expander, validator, catalogReader, cluster, StandardConvertletTable.INSTANCE, config);
-    }
 }
