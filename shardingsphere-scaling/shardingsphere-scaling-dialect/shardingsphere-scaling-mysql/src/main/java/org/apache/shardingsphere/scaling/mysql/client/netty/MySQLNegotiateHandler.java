@@ -17,21 +17,20 @@
 
 package org.apache.shardingsphere.scaling.mysql.client.netty;
 
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.concurrent.Promise;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
-import org.apache.shardingsphere.scaling.mysql.client.MySQLPasswordEncryptor;
+import org.apache.shardingsphere.scaling.mysql.client.PasswordEncryption;
 import org.apache.shardingsphere.scaling.mysql.client.ServerInfo;
 import org.apache.shardingsphere.scaling.mysql.client.ServerVersion;
-
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.util.concurrent.Promise;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -85,6 +84,6 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     
     @SneakyThrows(NoSuchAlgorithmException.class)
     private byte[] generateAuthResponse(final byte[] authPluginData) {
-        return (null == password || password.isEmpty()) ? new byte[0] : MySQLPasswordEncryptor.encryptWithMySQL41(password.getBytes(), authPluginData);
+        return (null == password || password.isEmpty()) ? new byte[0] : PasswordEncryption.encryptWithMySQL41(password.getBytes(), authPluginData);
     }
 }

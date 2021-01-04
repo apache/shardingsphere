@@ -23,13 +23,13 @@ import java.security.NoSuchAlgorithmException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class MySQLPasswordEncryptorTest {
+public final class PasswordEncryptorTest {
     
     @Test
     public void assertEncryptWithMySQL41() throws NoSuchAlgorithmException {
         byte[] passwordBytes = "password".getBytes();
         byte[] seed = getRandomSeed();
-        assertThat(MySQLPasswordEncryptor.encryptWithMySQL41(passwordBytes, seed), is(getExpectedPassword()));
+        assertThat(PasswordEncryption.encryptWithMySQL41(passwordBytes, seed), is(getExpectedPassword()));
     }
     
     private byte[] getRandomSeed() {

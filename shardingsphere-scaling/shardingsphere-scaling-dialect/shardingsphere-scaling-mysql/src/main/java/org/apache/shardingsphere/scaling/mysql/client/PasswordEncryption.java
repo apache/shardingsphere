@@ -24,10 +24,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * MySQL Password Encryptor.
+ * MySQL Password Encryption.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLPasswordEncryptor {
+public final class PasswordEncryption {
     
     /**
      * Encrypt password with MySQL protocol 41.

@@ -44,6 +44,7 @@ import org.apache.shardingsphere.scaling.mysql.client.netty.MySQLCommandPacketDe
 import org.apache.shardingsphere.scaling.mysql.client.netty.MySQLNegotiateHandler;
 
 import java.net.InetSocketAddress;
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -112,7 +113,7 @@ public final class MySQLClient {
         responseCallback = new DefaultPromise<>(eventLoopGroup.next());
         MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString);
         channel.writeAndFlush(comQueryPacket);
-        return (int) waitExpectedResponse(MySQLOKPacket.class).getAffectedRows();
+        return (int) Objects.requireNonNull(waitExpectedResponse(MySQLOKPacket.class)).getAffectedRows();
     }
     
     /**
