@@ -20,26 +20,26 @@ version: "2.1"
 services:
   mysql:
     image: "mysql/mysql-server:5.7"
-    container_name: db-mysql
+    container_name: tbl-mysql
     command: --default-authentication-plugin=mysql_native_password
     volumes:
       - ./mysql:/docker-entrypoint-initdb.d/
     ports:
-      - "33060:3306"
+      - "33160:3306"
   
 #  zookeeper:
 #    image: "zookeeper:3.6.2"
-#    container_name: db-register-center
+#    container_name: tbl-register-center
 #    ports:
-#      - "2181:21810"
+#      - "2181:22810"
   
   shardingsphere-proxy:
     image: apache/shardingsphere-proxy-test
-    container_name: db-shardingsphere-proxy
+    container_name: tbl-shardingsphere-proxy
     ports:
-      - "33070:3307"
+      - "33080:3308"
     links:
-      - "mysql:db.mysql"
+      - "mysql:tbl.mysql"
 #      - "zookeeper:zk"
     volumes:
       - ./proxy/conf:/opt/shardingsphere-proxy/conf
@@ -50,4 +50,4 @@ services:
       - WAIT_HOSTS_TIMEOUT=300
       - WAIT_SLEEP_INTERVAL=5
       - WAIT_HOST_CONNECT_TIMEOUT=30
-      - PORT=3307
+      - PORT=3308

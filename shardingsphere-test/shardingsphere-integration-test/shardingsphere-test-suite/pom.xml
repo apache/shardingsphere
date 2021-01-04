@@ -100,6 +100,7 @@
                                 <configuration>
                                     <composeFile>${project.basedir}/src/test/resources/docker/db/docker-compose.yml</composeFile>
                                     <detachedMode>true</detachedMode>
+                                    <verbose>true</verbose>
                                 </configuration>
                             </execution>
                             <execution>
@@ -112,6 +113,30 @@
                                     <composeFile>${project.basedir}/src/test/resources/docker/db/docker-compose.yml</composeFile>
                                     <removeVolumes>true</removeVolumes>
 <!--                                    <removeImages>true</removeImages>-->
+                                </configuration>
+                            </execution>
+                            
+                            <execution>
+                                <id>tbl-up</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>up</goal>
+                                </goals>
+                                <configuration>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/tbl/docker-compose.yml</composeFile>
+                                    <detachedMode>true</detachedMode>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>tbl-down</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>down</goal>
+                                </goals>
+                                <configuration>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/tbl/docker-compose.yml</composeFile>
+                                    <removeVolumes>true</removeVolumes>
+                                    <!--                                    <removeImages>true</removeImages>-->
                                 </configuration>
                             </execution>
                         </executions>
