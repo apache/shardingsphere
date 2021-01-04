@@ -39,12 +39,12 @@ public interface StaticMethodAroundAdvice {
     /**
      * Intercept the target method and weave the method after origin method. It will invoke after the origin calling.
      *
-     * @param klass the target class
+     * @param clazz the target class
      * @param method the target method
      * @param args all method arguments
      * @param result wrapped class of result to detect whether or not to execute the origin method
      */
-    default void afterMethod(Class<?> klass, Method method, Object[] args, MethodInvocationResult result) {
+    default void afterMethod(Class<?> clazz, Method method, Object[] args, MethodInvocationResult result) {
     }
     
     /**

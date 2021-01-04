@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.yaml;
+package org.apache.shardingsphere.agent.core.config.yaml.engine;
 
 import java.io.File;
 import java.io.FileInputStream;

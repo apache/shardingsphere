@@ -13,10 +13,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.core.path;
+package org.apache.shardingsphere.agent.core.config.path;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

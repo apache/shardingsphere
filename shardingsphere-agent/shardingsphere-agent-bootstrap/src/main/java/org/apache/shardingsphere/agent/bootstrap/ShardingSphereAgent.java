@@ -26,14 +26,14 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
+import org.apache.shardingsphere.agent.core.config.cache.AgentObjectPool;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
-import org.apache.shardingsphere.agent.core.listener.LoggingListener;
+import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
 import org.apache.shardingsphere.agent.core.plugin.loader.PluginLoader;
 import org.apache.shardingsphere.agent.core.plugin.service.PluginServiceManager;
-import org.apache.shardingsphere.agent.core.transformer.ShardingSphereTransformer;
+import org.apache.shardingsphere.agent.core.bytebuddy.transformer.ShardingSphereTransformer;
 
 /**
  * ShardingSphere agent.

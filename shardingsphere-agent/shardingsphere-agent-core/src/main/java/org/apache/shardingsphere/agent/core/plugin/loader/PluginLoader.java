@@ -28,9 +28,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
-import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
+import org.apache.shardingsphere.agent.core.config.cache.AgentObjectPool;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
+import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.plugin.definition.PluginDefinition;
 import org.apache.shardingsphere.agent.core.plugin.point.PluginInterceptorPoint;
 
