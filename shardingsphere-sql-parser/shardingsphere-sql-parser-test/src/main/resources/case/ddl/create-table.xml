@@ -76,7 +76,107 @@
             <column name="status" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_private_temporary_table">
+        <table name="t_temp_log" start-index="31" stop-index="40" />
+        <column-definition type="int" start-index="42" stop-index="47">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="50" stop-index="67">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_shared_table">
+        <table name="t_temp_log" start-index="21" stop-index="30" />
+        <column-definition type="int" start-index="32" stop-index="37">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="40" stop-index="57">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_duplicated_table">
+        <table name="t_temp_log" start-index="24" stop-index="33" />
+        <column-definition type="int" start-index="35" stop-index="40">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="43" stop-index="60">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_sharing_metadata">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="int" primary-key="true" start-index="39" stop-index="56">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="59" stop-index="76">
+            <column name="status" />
+        </column-definition>
+    </create-table>
     
+    <create-table sql-case-id="create_table_with_sharing_data">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="int" primary-key="true" start-index="35" stop-index="52">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="55" stop-index="72">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_sharing_extended_data">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="int" primary-key="true" start-index="44" stop-index="61">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="64" stop-index="81">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_sharing_none">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="int" primary-key="true" start-index="35" stop-index="52">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="55" stop-index="72">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_optimize_read">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="int" primary-key="true" start-index="19" stop-index="36">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="39" stop-index="56">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_optimize_write">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="int" primary-key="true" start-index="19" stop-index="36">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="39" stop-index="56">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_parent">
+        <table name="t_log" start-index="13" stop-index="17" />
+        <column-definition type="int" primary-key="true" start-index="19" stop-index="36">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="varchar" start-index="39" stop-index="56">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_local_temp_table">
         <table name="t_temp_log" start-index="24" stop-index="33" />
         <column-definition type="int" start-index="35" stop-index="40">

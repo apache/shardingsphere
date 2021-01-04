@@ -40,24 +40,24 @@ public final class DataSetLoader {
      * Load data set.
      *
      * @param parentPath parent path of data set file
-     * @param ruleType rule type
+     * @param scenario scenario
      * @param databaseType database type
      * @param dataSetFile name of data set file
      * @return data set
      */
     @SneakyThrows({JAXBException.class, IOException.class})
-    public static DataSet load(final String parentPath, final String ruleType, final DatabaseType databaseType, final String dataSetFile) {
-        try (FileReader reader = new FileReader(getFile(parentPath, ruleType, databaseType, dataSetFile))) {
+    public static DataSet load(final String parentPath, final String scenario, final DatabaseType databaseType, final String dataSetFile) {
+        try (FileReader reader = new FileReader(getFile(parentPath, scenario, databaseType, dataSetFile))) {
             return (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
         }
     }
     
-    private static String getFile(final String parentPath, final String ruleType, final DatabaseType databaseType, final String dataSetFile) {
-        String result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, ruleType, databaseType.getName().toLowerCase(), dataSetFile);
+    private static String getFile(final String parentPath, final String scenario, final DatabaseType databaseType, final String dataSetFile) {
+        String result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, scenario, databaseType.getName().toLowerCase(), dataSetFile);
         if (new File(result).exists()) {
             return result;
         }
-        result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, ruleType, dataSetFile);
+        result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, scenario, dataSetFile);
         if (new File(result).exists()) {
             return result;
         }
@@ -65,6 +65,6 @@ public final class DataSetLoader {
         if (new File(result).exists()) {
             return result;
         }
-        throw new IllegalArgumentException(String.format("%s not found, path=%s, ruleType=%s, databaseType=%s", dataSetFile, parentPath, ruleType, databaseType.getName()));
+        throw new IllegalArgumentException(String.format("%s not found, path=%s, scenario=%s, databaseType=%s", dataSetFile, parentPath, scenario, databaseType.getName()));
     }
 }

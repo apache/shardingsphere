@@ -51,13 +51,13 @@ public class StaticMethodAroundInterceptor {
      */
     @RuntimeType
     @SneakyThrows
-    public Object intercept(final @Origin Class<?> klass, final @Origin Method method, final @AllArguments Object[] args, final @SuperCall Callable<?> callable) {
-        final MethodInvocationResult invocationResult = new MethodInvocationResult();
-        final Object result;
+    public Object intercept(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
+        MethodInvocationResult invocationResult = new MethodInvocationResult();
+        Object result;
         try {
             advice.beforeMethod(klass, method, args, invocationResult);
             // CHECKSTYLE:OFF
-        } catch (Throwable ex) {
+        } catch (final Throwable ex) {
             // CHECKSTYLE:ON
             log.error("Failed to execute the pre-method of method[{}] in class[{}].", method.getName(), klass, ex);
         }

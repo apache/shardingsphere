@@ -116,7 +116,7 @@ public final class ConfigCenter {
      */
     @Subscribe
     public synchronized void renew(final DataSourcePersistEvent event) {
-        persistDataSourceConfigurations(event.getSchemaName(), event.getDataSourceConfigurations());
+        addDataSourceConfigurations(event.getSchemaName(), event.getDataSourceConfigurations());
     }
     
     /**
@@ -163,15 +163,12 @@ public final class ConfigCenter {
      */
     @Subscribe
     public synchronized void renew(final PrimaryDataSourceUpdateEvent event) {
-        Map<String, DataSourceConfiguration> dataSourceConfigurations = loadDataSourceConfigurations(event.getSchemaName());
-        dataSourceConfigurations.remove(event.getOldPrimaryDataSource());
         Collection<RuleConfiguration> ruleConfigurations = loadRuleConfigurations(event.getSchemaName());
         for (RuleConfiguration each : ruleConfigurations) {
             if (each instanceof HARuleConfiguration) {
                 updateHaDataSourceRuleConfigurations(event, (HARuleConfiguration) each);
             }
         }
-        persistDataSourceConfigurations(event.getSchemaName(), dataSourceConfigurations);
         persistRuleConfigurations(event.getSchemaName(), ruleConfigurations);
     }
     
@@ -193,12 +190,17 @@ public final class ConfigCenter {
     }
     
     private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        Preconditions.checkState(null != dataSourceConfigurations && !dataSourceConfigurations.isEmpty(), "No available data source in `%s` for governance.", schemaName);
         Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigurations = dataSourceConfigurations.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
             entry -> new DataSourceConfigurationYamlSwapper().swapToYamlConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         YamlDataSourceConfigurationWrap yamlDataSourceConfigWrap = new YamlDataSourceConfigurationWrap();
         yamlDataSourceConfigWrap.setDataSources(yamlDataSourceConfigurations);
         repository.persist(node.getDataSourcePath(schemaName), YamlEngine.marshal(yamlDataSourceConfigWrap));
+    }
+    
+    private void addDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+        Map<String, DataSourceConfiguration> dataSourceConfigurationMap = loadDataSourceConfigurations(schemaName);
+        dataSourceConfigurationMap.putAll(dataSourceConfigurations);
+        persistDataSourceConfigurations(schemaName, dataSourceConfigurationMap);
     }
     
     private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {

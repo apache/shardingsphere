@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.scaling.core.utils;
 
-import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.ConfigurationYamlConverter;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.metadata.JdbcUri;
@@ -34,14 +36,14 @@ public final class JDBCUtil {
     /**
      * Append jdbc parameter.
      *
-     * @param dataSourceConfiguration data source configuration
+     * @param scalingDataSourceConfiguration data source configuration
      * @param parameters parameters
      */
-    public static void appendJDBCParameter(final DataSourceConfiguration dataSourceConfiguration, final Map<String, String> parameters) {
-        if (dataSourceConfiguration instanceof StandardJDBCDataSourceConfiguration) {
-            append((StandardJDBCDataSourceConfiguration) dataSourceConfiguration, parameters);
-        } else if (dataSourceConfiguration instanceof ShardingSphereJDBCDataSourceConfiguration) {
-            append((ShardingSphereJDBCDataSourceConfiguration) dataSourceConfiguration, parameters);
+    public static void appendJDBCParameter(final ScalingDataSourceConfiguration scalingDataSourceConfiguration, final Map<String, String> parameters) {
+        if (scalingDataSourceConfiguration instanceof StandardJDBCDataSourceConfiguration) {
+            append((StandardJDBCDataSourceConfiguration) scalingDataSourceConfiguration, parameters);
+        } else if (scalingDataSourceConfiguration instanceof ShardingSphereJDBCDataSourceConfiguration) {
+            append((ShardingSphereJDBCDataSourceConfiguration) scalingDataSourceConfiguration, parameters);
         }
     }
     
@@ -50,13 +52,12 @@ public final class JDBCUtil {
     }
     
     private static void append(final ShardingSphereJDBCDataSourceConfiguration dataSourceConfig, final Map<String, String> parameters) {
-        Map<String, org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration> dataSourceConfigMap = ConfigurationYamlConverter.loadDataSourceConfigs(dataSourceConfig.getDataSource());
-        Map<String, org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration> tmp = new HashMap<>(dataSourceConfigMap);
-        tmp.entrySet().forEach(each -> {
-            String jdbcUrlKey = each.getValue().getProps().containsKey("url") ? "url" : "jdbcUrl";
-            each.getValue().getProps().replace(jdbcUrlKey, append(each.getValue().getProps().get(jdbcUrlKey).toString(), parameters));
+        Map<String, DataSourceConfiguration> dataSourceConfigMap = new HashMap<>(ConfigurationYamlConverter.loadDataSourceConfigs(dataSourceConfig.getDataSource()));
+        dataSourceConfigMap.forEach((key, value) -> {
+            String jdbcUrlKey = value.getProps().containsKey("url") ? "url" : "jdbcUrl";
+            value.getProps().replace(jdbcUrlKey, append(value.getProps().get(jdbcUrlKey).toString(), parameters));
         });
-        dataSourceConfig.setDataSource(ConfigurationYamlConverter.serializeDataSourceConfigs(tmp));
+        dataSourceConfig.setDataSource(ConfigurationYamlConverter.serializeDataSourceConfigs(dataSourceConfigMap));
     }
     
     private static String append(final String url, final Map<String, String> parameters) {

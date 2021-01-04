@@ -39,7 +39,7 @@
             <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>
-    
+        
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
@@ -72,18 +72,12 @@
     
     <profiles>
         <profile>
-            <id>it-jdbc-local</id>
+            <id>it.native</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <it.mode>jdbc-local</it.mode>
-            </properties>
-        </profile>
-        <profile>
-            <id>it-jdbc-ci</id>
-            <properties>
-                <it.mode>jdbc-ci</it.mode>
+                <it.mode>native</it.mode>
             </properties>
         </profile>
         <profile>
@@ -117,6 +111,7 @@
                                 <configuration>
                                     <composeFile>${project.basedir}/src/test/resources/docker/docker-compose.yml</composeFile>
                                     <removeVolumes>true</removeVolumes>
+                                    <removeImages>true</removeImages>
                                 </configuration>
                             </execution>
                         </executions>

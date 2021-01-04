@@ -23,6 +23,16 @@
     <sql-case id="create_table_if_not_exists" value="CREATE TABLE IF NOT EXISTS t_log(id int, status varchar(10))" db-types="MySQL,PostgreSQL" />
     <sql-case id="create_temporary_table_if_not_exists" value="CREATE TEMPORARY TABLE IF NOT EXISTS t_temp_log(id int, status varchar(10))" db-types="MySQL,PostgreSQL" />
     <sql-case id="create_global_temporary_table" value="CREATE GLOBAL TEMPORARY TABLE t_temp_log(id int, status varchar(10))" db-types="Oracle,PostgreSQL" />
+    <sql-case id="create_private_temporary_table" value="CREATE PRIVATE TEMPORARY TABLE t_temp_log(id int, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_shared_table" value="CREATE SHARDED TABLE t_temp_log(id int, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_duplicated_table" value="CREATE DUPLICATED TABLE t_temp_log(id int, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_sharing_metadata" value="CREATE TABLE t_log SHARING = METADATA (id int PRIMARY KEY, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_sharing_data" value="CREATE TABLE t_log SHARING = DATA (id int PRIMARY KEY, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_sharing_extended_data" value="CREATE TABLE t_log SHARING = EXTENDED DATA (id int PRIMARY KEY, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_sharing_none" value="CREATE TABLE t_log SHARING = NONE (id int PRIMARY KEY, status varchar(10))" db-types="Oracle" />
+    <sql-case id="create_table_with_optimize_read" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) MEMOPTIMIZE FOR READ" db-types="Oracle" />
+    <sql-case id="create_table_with_optimize_write" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) MEMOPTIMIZE FOR WRITE" db-types="Oracle" />
+    <sql-case id="create_table_with_parent" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) PARENT t_log_parent" db-types="Oracle" />
     <sql-case id="create_local_temp_table" value="CREATE LOCAL TEMP TABLE t_temp_log(id int, status varchar(10))" db-types="PostgreSQL" />
     <sql-case id="create_unlogged_table" value="CREATE UNLOGGED TABLE t_log(id int, status varchar(10))" db-types="PostgreSQL" />
     <sql-case id="create_index" value="CREATE INDEX t_log_index ON t_log (id)" db-types="H2,MySQL,PostgreSQL,Oracle,SQLServer" />

@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.execute.engine.TaskExecuteEngine;
@@ -132,7 +132,7 @@ public final class StandaloneScalingJobServiceTest {
         Optional<ScalingJob> scalingJobOptional = scalingJobService.start(mockScalingConfiguration());
         assertTrue(scalingJobOptional.isPresent());
         ScalingJob scalingJob = scalingJobOptional.get();
-        DataSourceConfiguration dataSourceConfig = scalingJob.getTaskConfigs().get(0).getImporterConfig().getDataSourceConfig();
+        ScalingDataSourceConfiguration dataSourceConfig = scalingJob.getTaskConfigs().get(0).getImporterConfig().getDataSourceConfig();
         initTableData(dataSourceConfig);
         assertThat(countTableData(dataSourceConfig), is(2L));
         scalingJobService.reset(scalingJob.getJobId());
@@ -144,7 +144,7 @@ public final class StandaloneScalingJobServiceTest {
         return ScalingConfigurationUtil.initConfig("/config.json");
     }
     
-    private void initTableData(final DataSourceConfiguration dataSourceConfig) throws SQLException {
+    private void initTableData(final ScalingDataSourceConfiguration dataSourceConfig) throws SQLException {
         DataSource dataSource = new DataSourceManager().getDataSource(dataSourceConfig);
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
@@ -154,7 +154,7 @@ public final class StandaloneScalingJobServiceTest {
         }
     }
     
-    private long countTableData(final DataSourceConfiguration dataSourceConfig) throws SQLException {
+    private long countTableData(final ScalingDataSourceConfiguration dataSourceConfig) throws SQLException {
         DataSource dataSource = new DataSourceManager().getDataSource(dataSourceConfig);
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {

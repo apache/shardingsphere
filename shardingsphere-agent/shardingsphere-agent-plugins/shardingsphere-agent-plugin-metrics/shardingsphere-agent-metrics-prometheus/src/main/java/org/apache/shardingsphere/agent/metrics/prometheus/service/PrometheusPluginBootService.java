@@ -20,12 +20,13 @@ package org.apache.shardingsphere.agent.metrics.prometheus.service;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
-import java.io.IOException;
-import java.net.InetSocketAddress;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.service.PluginBootService;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.BuildInfoCollector;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
 
 /**
  * Prometheus plugin boot service.
@@ -36,10 +37,10 @@ public class PrometheusPluginBootService implements PluginBootService {
     private HTTPServer httpServer;
     
     @Override
-    public void start(final PluginConfiguration configuration) {
-        boolean enabled = Boolean.parseBoolean(configuration.getProps().getProperty("jvmInformationCollectorEnabled"));
+    public void start(final PluginConfiguration pluginConfig) {
+        boolean enabled = Boolean.parseBoolean(pluginConfig.getProps().getProperty("jvmInformationCollectorEnabled"));
         registerJvm(enabled);
-        startServer(configuration);
+        startServer(pluginConfig);
     }
     
     @Override
@@ -72,9 +73,9 @@ public class PrometheusPluginBootService implements PluginBootService {
         }
         try {
             httpServer = new HTTPServer(inetSocketAddress, CollectorRegistry.defaultRegistry, true);
-            log.info(String.format("you start prometheus metrics http server host is: %s , port is: %s", inetSocketAddress.getHostString(), inetSocketAddress.getPort()));
-        } catch (final IOException exception) {
-            log.error("you start prometheus metrics http server is error", exception);
+            log.info(String.format("Prometheus metrics HTTP server `%s:%s` start success.", inetSocketAddress.getHostString(), inetSocketAddress.getPort()));
+        } catch (final IOException ex) {
+            log.error("Prometheus metrics HTTP server start fail", ex);
         }
     }
 }
