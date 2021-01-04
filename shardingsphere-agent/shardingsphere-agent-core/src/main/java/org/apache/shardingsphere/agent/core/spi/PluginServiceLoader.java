@@ -15,19 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api;
+package org.apache.shardingsphere.agent.core.spi;
 
-import org.apache.shardingsphere.agent.spi.type.AgentTypedSPI;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ServiceLoader;
+import org.apache.shardingsphere.agent.core.plugin.loader.PluginLoader;
 
 /**
- * Metrics register factory.
+ * Plugin service loader.
  */
-public interface MetricsRegisterFactory extends AgentTypedSPI {
+public final class PluginServiceLoader {
     
     /**
-     * New instance metrics register.
+     * New service instances.
      *
-     * @return the metrics register
+     * @param service service type
+     * @param <T> type of class
+     * @return service instances
      */
-    MetricsRegister newInstance();
+    public static <T> Collection<T> newServiceInstances(final Class<T> service) {
+        List<T> result = new LinkedList<>();
+        for (T each : ServiceLoader.load(service, PluginLoader.getInstance())) {
+            result.add(each);
+        }
+        return result;
+    }
 }

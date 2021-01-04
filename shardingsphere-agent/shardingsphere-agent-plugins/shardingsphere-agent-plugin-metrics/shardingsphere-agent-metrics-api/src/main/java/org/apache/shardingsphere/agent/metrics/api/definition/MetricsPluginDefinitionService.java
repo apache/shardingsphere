@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.agent.metrics.api.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.definition.PluginDefinition;
+import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
 import org.apache.shardingsphere.agent.metrics.api.constant.MethodNameConstant;
 
 /**
- * Metrics plugin definition.
+ * Metrics plugin definition service.
  */
-public final class MetricsPluginDefinition extends PluginDefinition {
+public final class MetricsPluginDefinitionService extends AbstractPluginDefinitionService {
     
     private static final String COMMAND_EXECUTOR_TASK_ENHANCE_CLASS = "org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask";
     
@@ -42,12 +42,8 @@ public final class MetricsPluginDefinition extends PluginDefinition {
     
     private static final String TRANSACTION_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.api.advice.TransactionAdvice";
     
-    public MetricsPluginDefinition() {
-        super("Metrics");
-    }
-    
     @Override
-    protected void define() {
+    public void define() {
         intercept(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(MethodNameConstant.COMMAND_EXECUTOR_RUN))
                 .implement(COMMAND_EXECUTOR_TASK_ADVICE_CLASS)
@@ -65,5 +61,10 @@ public final class MetricsPluginDefinition extends PluginDefinition {
                 .aroundInstanceMethod(ElementMatchers.named(MethodNameConstant.COMMIT).or(ElementMatchers.named(MethodNameConstant.ROLL_BACK)))
                 .implement(TRANSACTION_ADVICE_CLASS)
                 .build();
+    }
+    
+    @Override
+    public String getType() {
+        return "Metrics";
     }
 }

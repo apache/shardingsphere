@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.agent.plugin.logging.base.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.definition.PluginDefinition;
+import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
 
 /**
- * Base logging plugin definition.
+ * Base logging plugin definition service.
  */
-public final class BaseLoggingPluginDefinition extends PluginDefinition {
+public final class BaseLoggingPluginDefinitionService extends AbstractPluginDefinitionService {
     
     private static final String SCHEMA_METADATA_LOADER_CLASS = "org.apache.shardingsphere.infra.metadata.schema.builder.loader.SchemaMetaDataLoader";
     
@@ -31,15 +31,16 @@ public final class BaseLoggingPluginDefinition extends PluginDefinition {
     
     private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.logging.base.advice.SchemaMetaDataLoaderAdvice";
     
-    public BaseLoggingPluginDefinition() {
-        super("base-logging");
-    }
-    
     @Override
-    protected void define() {
+    public void define() {
         intercept(SCHEMA_METADATA_LOADER_CLASS)
                 .aroundClassStaticMethod(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME))
                 .implement(SCHEMA_METADATA_LOADER_ADVICE_CLASS)
                 .build();
+    }
+    
+    @Override
+    public String getType() {
+        return "Logging";
     }
 }

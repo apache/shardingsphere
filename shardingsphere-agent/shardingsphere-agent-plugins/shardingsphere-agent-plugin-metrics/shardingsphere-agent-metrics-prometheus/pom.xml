@@ -31,7 +31,6 @@
     <properties>
         <prometheus.version>0.6.0</prometheus.version>
         <prometheus.jmx.version>0.10</prometheus.jmx.version>
-        <entrypoint.class>org.apache.shardingsphere.agent.metrics.api.definition.MetricsPluginDefinition</entrypoint.class>
     </properties>
     
     <dependencies>
@@ -68,13 +67,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Entrypoint>${entrypoint.class}</Entrypoint>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>

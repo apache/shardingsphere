@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.definition.PluginDefinition;
+import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
 
 /**
- * Zipkin plugin definition.
+ * Zipkin plugin definition service.
  */
-public final class ZipkinPluginDefinition extends PluginDefinition {
+public final class ZipkinPluginDefinitionService extends AbstractPluginDefinitionService {
     
     private static final String COMMAND_EXECUTOR_TASK_ENHANCE_CLASS = "org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask";
     
@@ -45,12 +45,8 @@ public final class ZipkinPluginDefinition extends PluginDefinition {
     
     private static final String JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice.JDBCExecutorCallbackAdvice";
     
-    public ZipkinPluginDefinition() {
-        super("Zipkin");
-    }
-    
     @Override
-    protected void define() {
+    public void define() {
         intercept(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(COMMAND_EXECUTOR_METHOD_NAME))
                 .implement(COMMAND_EXECUTOR_TASK_ADVICE_CLASS)
@@ -65,5 +61,10 @@ public final class ZipkinPluginDefinition extends PluginDefinition {
                                 .and(ElementMatchers.takesArgument(0, ElementMatchers.named(JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS))))
                 .implement(JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS)
                 .build();
+    }
+    
+    @Override
+    public String getType() {
+        return "Zipkin";
     }
 }

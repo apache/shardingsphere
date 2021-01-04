@@ -34,7 +34,6 @@
     </modules>
     
     <properties>
-        <entrypoint.class />
         <logging.target.directory>${project.basedir}/../target/plugins</logging.target.directory>
     </properties>
     
@@ -50,13 +49,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Entrypoint>${entrypoint.class}</Entrypoint>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>

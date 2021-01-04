@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.definition;
+package org.apache.shardingsphere.agent.spi.definition;
 
 import com.google.common.collect.Maps;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 
 import java.util.List;
@@ -27,17 +25,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Plugin definition.
+ * Abstract plugin definition service.
  */
-@RequiredArgsConstructor
-public abstract class PluginDefinition {
+public abstract class AbstractPluginDefinitionService implements PluginDefinitionService {
     
     private final Map<String, PluginInterceptorPoint.Builder> interceptorPointMap = Maps.newHashMap();
-    
-    @Getter
-    private final String pluginName;
-    
-    protected abstract void define();
     
     protected PluginInterceptorPoint.Builder intercept(final String classNameOfTarget) {
         if (interceptorPointMap.containsKey(classNameOfTarget)) {
@@ -53,6 +45,7 @@ public abstract class PluginDefinition {
      *
      * @return Collection of pluginInterceptorPoint
      */
+    @Override
     public final List<PluginInterceptorPoint> build() {
         define();
         return interceptorPointMap.values().stream().map(PluginInterceptorPoint.Builder::install).collect(Collectors.toList());

@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.definition.PluginDefinition;
+import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
 
 /**
- * Jaeger plugin definition.
+ * Jaeger plugin definition service.
  */
-public final class JaegerPluginDefinition extends PluginDefinition {
+public final class JaegerPluginDefinitionService extends AbstractPluginDefinitionService {
     
     private static final String COMMAND_EXECUTOR_TASK_ENHANCE_CLASS = "org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask";
     
@@ -45,12 +45,8 @@ public final class JaegerPluginDefinition extends PluginDefinition {
     
     private static final String JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.advice.JDBCExecutorCallbackAdvice";
     
-    public JaegerPluginDefinition() {
-        super("Jaeger");
-    }
-    
     @Override
-    protected void define() {
+    public void define() {
         intercept(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(COMMAND_EXECUTOR_METHOD_NAME))
                 .implement(COMMAND_EXECUTOR_TASK_ADVICE_CLASS)
@@ -66,5 +62,10 @@ public final class JaegerPluginDefinition extends PluginDefinition {
                 )
                 .implement(JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS)
                 .build();
+    }
+    
+    @Override
+    public String getType() {
+        return "Jaeger";
     }
 }
