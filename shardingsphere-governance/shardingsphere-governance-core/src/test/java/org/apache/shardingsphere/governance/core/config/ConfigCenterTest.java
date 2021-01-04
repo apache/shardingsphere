@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaPersistEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
@@ -50,6 +51,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -101,6 +103,9 @@ public final class ConfigCenterTest {
     
     @Mock
     private ConfigurationRepository configurationRepository;
+    
+    @Mock
+    private ConfigCacheManager configCacheManager;
     
     @Test
     public void assertPersistConfigurationForShardingRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
@@ -574,5 +579,19 @@ public final class ConfigCenterTest {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.deleteSchema("sharding_db");
         verify(configurationRepository).delete(eq("/metadata/sharding_db"));
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertRenewSwitchRuleConfigurationEvent() {
+        ConfigCenter configCenter = new ConfigCenter(configurationRepository);
+        Field field = ConfigCenter.class.getDeclaredField("configCacheManager");
+        field.setAccessible(true);
+        field.set(configCenter, configCacheManager);
+        when(configCacheManager.loadCache(anyString(), eq("testCacheId"))).thenReturn(readYAML(SHARDING_RULE_YAML));
+        SwitchRuleConfigurationEvent event = new SwitchRuleConfigurationEvent("sharding_db", "testCacheId");
+        configCenter.renew(event);
+        verify(configurationRepository).persist(eq("/metadata/sharding_db/rule"), anyString());
+        verify(configCacheManager).deleteCache(eq("/metadata/sharding_db/rule"), eq("testCacheId"));
     }
 }
