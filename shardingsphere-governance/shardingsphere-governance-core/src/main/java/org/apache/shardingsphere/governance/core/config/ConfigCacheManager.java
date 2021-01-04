@@ -46,11 +46,37 @@ public final class ConfigCacheManager {
      */
     public String cache(final String key, final String configuration) {
         String cacheId = getCacheId();
-        repository.persist(Joiner.on(PATH_SEPARATOR).join(key, CACHE_KEY, cacheId), configuration);
+        repository.persist(getCacheKey(key, cacheId), configuration);
         return cacheId;
     }
     
     private String getCacheId() {
         return UUID.randomUUID().toString().replace("-", "");
     }
+    
+    /**
+     * Load cached configuration.
+     * 
+     * @param key key 
+     * @param cacheId cache id
+     * @return cached configuration
+     */
+    public String loadCache(final String key, final String cacheId) {
+        return repository.get(getCacheKey(key, cacheId));
+    }
+    
+    /**
+     * Delete cached configuration.
+     * 
+     * @param key key
+     * @param cacheId cache id
+     */
+    public void deleteCache(final String key, final String cacheId) {
+        repository.delete(getCacheKey(key, cacheId));
+    }
+    
+    private String getCacheKey(final String key, final String cacheId) {
+        return Joiner.on(PATH_SEPARATOR).join(key, CACHE_KEY, cacheId);
+    }
+    
 }
