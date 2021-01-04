@@ -83,7 +83,7 @@
         <profile>
             <id>it.docker</id>
             <properties>
-                <it.mode>proxy</it.mode>
+                <it.mode>docker</it.mode>
             </properties>
             <build>
                 <plugins>

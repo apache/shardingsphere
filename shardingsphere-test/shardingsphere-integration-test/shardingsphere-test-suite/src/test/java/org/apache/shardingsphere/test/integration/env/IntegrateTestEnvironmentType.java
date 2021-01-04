@@ -30,7 +30,7 @@ public enum IntegrateTestEnvironmentType {
     
     NATIVE("native", "integrate/env-native.properties"),
     
-    PROXY("proxy", "integrate/env-proxy.properties");
+    DOCKER("docker", "integrate/env-docker.properties");
     
     private final String profileName;
     
