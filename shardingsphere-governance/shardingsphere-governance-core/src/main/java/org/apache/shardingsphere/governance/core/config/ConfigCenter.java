@@ -76,9 +76,12 @@ public final class ConfigCenter {
     
     private final ConfigurationRepository repository;
     
+    private final ConfigCacheManager configCacheManager;
+    
     public ConfigCenter(final ConfigurationRepository repository) {
         node = new ConfigCenterNode();
         this.repository = repository;
+        configCacheManager = new ConfigCacheManager(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -126,7 +129,7 @@ public final class ConfigCenter {
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationsPersistEvent event) {
-        persistRuleConfigurations(event.getSchemaName(), event.getRuleConfigurations());
+        cacheRuleConfigurations(event.getSchemaName(), event.getRuleConfigurations());
     }
     
     /**
@@ -190,17 +193,21 @@ public final class ConfigCenter {
     }
     
     private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigurations = dataSourceConfigurations.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-            entry -> new DataSourceConfigurationYamlSwapper().swapToYamlConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        YamlDataSourceConfigurationWrap yamlDataSourceConfigWrap = new YamlDataSourceConfigurationWrap();
-        yamlDataSourceConfigWrap.setDataSources(yamlDataSourceConfigurations);
-        repository.persist(node.getDataSourcePath(schemaName), YamlEngine.marshal(yamlDataSourceConfigWrap));
+        repository.persist(node.getDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfigurationWrap(dataSourceConfigurations)));
     }
     
     private void addDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
         Map<String, DataSourceConfiguration> dataSourceConfigurationMap = loadDataSourceConfigurations(schemaName);
         dataSourceConfigurationMap.putAll(dataSourceConfigurations);
-        persistDataSourceConfigurations(schemaName, dataSourceConfigurationMap);
+        repository.persist(node.getDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfigurationWrap(dataSourceConfigurations)));
+    }
+    
+    private YamlDataSourceConfigurationWrap createYamlDataSourceConfigurationWrap(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+        Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigurations = dataSourceConfigurations.entrySet().stream().collect(Collectors.toMap(Entry::getKey, 
+            entry -> new DataSourceConfigurationYamlSwapper().swapToYamlConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        YamlDataSourceConfigurationWrap result = new YamlDataSourceConfigurationWrap();
+        result.setDataSources(yamlDataSourceConfigurations);
+        return result;
     }
     
     private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
@@ -210,6 +217,19 @@ public final class ConfigCenter {
     }
     
     private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
+        repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRootRuleConfigurations(schemaName, ruleConfigurations)));
+    }
+    
+    private void cacheRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
+        configCacheManager.cache(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRootRuleConfigurations(schemaName, ruleConfigurations)));
+    }
+    
+    private void checkDataSources(final String schemaName, final Collection<ReplicaQueryDataSourceRuleConfiguration> dataSources) {
+        dataSources.forEach(each -> Preconditions.checkState(
+                !each.getPrimaryDataSourceName().isEmpty(), "No available replica-query rule configuration in `%s` for governance.", schemaName));
+    }
+    
+    private YamlRootRuleConfigurations createYamlRootRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
         Collection<RuleConfiguration> configs = new LinkedList<>();
         for (RuleConfiguration each : ruleConfigurations) {
             if (each instanceof ShardingRuleConfiguration) {
@@ -249,14 +269,9 @@ public final class ConfigCenter {
                 configs.add(each);
             }
         }
-        YamlRootRuleConfigurations yamlRuleConfigs = new YamlRootRuleConfigurations();
-        yamlRuleConfigs.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(configs));
-        repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(yamlRuleConfigs));
-    }
-    
-    private void checkDataSources(final String schemaName, final Collection<ReplicaQueryDataSourceRuleConfiguration> dataSources) {
-        dataSources.forEach(each -> Preconditions.checkState(
-                !each.getPrimaryDataSourceName().isEmpty(), "No available replica-query rule configuration in `%s` for governance.", schemaName));
+        YamlRootRuleConfigurations result = new YamlRootRuleConfigurations();
+        result.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(configs));
+        return result;
     }
     
     private boolean hasAvailableTableConfigurations(final ShardingRuleConfiguration config) {

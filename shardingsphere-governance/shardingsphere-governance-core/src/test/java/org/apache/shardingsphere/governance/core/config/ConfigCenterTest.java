@@ -69,6 +69,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -498,7 +499,7 @@ public final class ConfigCenterTest {
         DataSourcePersistEvent event = new DataSourcePersistEvent("sharding_db", createDataSourceConfigurations());
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
-        verify(configurationRepository).persist(eq("/metadata/sharding_db/datasource"), anyString());
+        verify(configurationRepository).persist(startsWith("/metadata/sharding_db/datasource"), anyString());
     }
     
     @Test
@@ -506,7 +507,7 @@ public final class ConfigCenterTest {
         RuleConfigurationsPersistEvent event = new RuleConfigurationsPersistEvent("sharding_db", createRuleConfigurations());
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
-        verify(configurationRepository).persist(eq("/metadata/sharding_db/rule"), anyString());
+        verify(configurationRepository).persist(startsWith("/metadata/sharding_db/rule/cache"), anyString());
     }
     
     @Test
