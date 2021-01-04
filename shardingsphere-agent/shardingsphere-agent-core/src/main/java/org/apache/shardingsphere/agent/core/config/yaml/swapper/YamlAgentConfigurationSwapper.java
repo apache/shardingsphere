@@ -19,8 +19,8 @@ package org.apache.shardingsphere.agent.core.config.yaml.swapper;
 
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.config.AgentConfiguration;
+import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.YamlAgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.YamlPluginConfiguration;
 

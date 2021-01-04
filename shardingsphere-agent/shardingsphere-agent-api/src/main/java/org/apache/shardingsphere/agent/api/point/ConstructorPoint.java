@@ -13,22 +13,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package org.apache.shardingsphere.agent.core.config;
+package org.apache.shardingsphere.agent.api.point;
 
-import java.util.Properties;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Plugin configuration.
+ * Configuration of constructor intercepting point.
  */
 @Getter
-@Setter
-public final class PluginConfiguration extends RemotePluginConfiguration {
+@RequiredArgsConstructor
+public final class ConstructorPoint {
     
-    private String password;
+    private final ElementMatcher<? super MethodDescription> matcher;
     
-    private Properties props = new Properties();
+    private final String advice;
 }

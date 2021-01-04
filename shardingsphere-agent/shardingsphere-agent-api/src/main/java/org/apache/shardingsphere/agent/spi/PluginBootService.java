@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config;
+package org.apache.shardingsphere.agent.spi;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.agent.config.PluginConfiguration;
 
 /**
- * Remote plugin configuration.
+ * Plugin boot service that the lifecycle is from the agent start to shutdown.
  */
-@Getter
-@Setter
-public class RemotePluginConfiguration {
+public interface PluginBootService extends AgentTypedSPI, AutoCloseable {
     
-    private String host = "localhost";
-    
-    private int port = 5775;
+    /**
+     * Start plugin boot service.
+     *
+     * @param pluginConfig plugin configuration
+     */
+    void start(PluginConfiguration pluginConfig);
 }

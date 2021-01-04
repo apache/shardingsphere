@@ -27,12 +27,12 @@ import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.core.config.cache.AgentObjectPool;
-import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.config.AgentConfiguration;
+import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
 import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
 import org.apache.shardingsphere.agent.core.plugin.loader.PluginLoader;
-import org.apache.shardingsphere.agent.core.plugin.service.PluginServiceManager;
+import org.apache.shardingsphere.agent.core.plugin.manager.PluginBootServiceManager;
 import org.apache.shardingsphere.agent.core.bytebuddy.transformer.ShardingSphereTransformer;
 
 /**
@@ -63,8 +63,8 @@ public final class ShardingSphereAgent {
     }
     
     private static void setupPluginBootService(final Map<String, PluginConfiguration> pluginConfigurationMap) {
-        PluginServiceManager.startAllServices(pluginConfigurationMap);
-        Runtime.getRuntime().addShutdownHook(new Thread(PluginServiceManager::closeAllServices));
+        PluginBootServiceManager.startAllServices(pluginConfigurationMap);
+        Runtime.getRuntime().addShutdownHook(new Thread(PluginBootServiceManager::closeAllServices));
     }
     
     private static void setUpAgentBuilder(final Instrumentation instrumentation, final PluginLoader pluginLoader) {

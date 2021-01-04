@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.point;
+package org.apache.shardingsphere.agent.api.point;
 
 import com.google.common.collect.Lists;
 import java.util.Collections;
@@ -28,7 +28,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 import java.util.List;
 
 /**
- * Plugin interceptor Point.
+ * Plugin interceptor point.
  *
  * <code>
  * PluginInterceptorPoint.intercept("Target.class")

@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config;
+package org.apache.shardingsphere.agent.api.result;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
- * Agent configuration.
+ * The advice method invocation result.
  */
 @Getter
-@Setter
-public final class AgentConfiguration {
+public final class MethodInvocationResult {
     
-    private String applicationName;
+    private boolean rebased;
     
-    private String metricsType = "Prometheus";
+    private Object result;
     
-    private Set<String> ignoredPluginNames = new HashSet<>();
-    
-    private Map<String, PluginConfiguration> plugins = new HashMap<>();
+    /**
+     * To replace the origin result.
+     *
+     * @param result rebase the origin result
+     */
+    public void rebase(final Object result) {
+        rebased = true;
+        this.result = result;
+    }
 }

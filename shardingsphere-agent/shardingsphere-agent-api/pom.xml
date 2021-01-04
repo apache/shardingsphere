@@ -22,27 +22,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-agent-plugins</artifactId>
+        <artifactId>shardingsphere-agent</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-agent-plugin-metrics</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>shardingsphere-agent-api</artifactId>
     <name>${project.artifactId}</name>
-    
-    <modules>
-        <module>shardingsphere-agent-metrics-api</module>
-        <module>shardingsphere-agent-metrics-prometheus</module>
-    </modules>
-    
-    <properties>
-        <entrypoint.class/>
-        <metrics.target.directory>${project.basedir}/../target/plugins</metrics.target.directory>
-    </properties>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-api</artifactId>
-        </dependency>
-    </dependencies>
+
 </project>

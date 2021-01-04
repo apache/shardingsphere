@@ -13,30 +13,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.core.plugin.advice;
-
-import lombok.Getter;
+package org.apache.shardingsphere.agent.api.advice;
 
 /**
- * The advice method invocation result.
+ * Wrapped class for target and provide a context to store variable during invocation.
  */
-@Getter
-public final class MethodInvocationResult {
-    
-    private boolean rebased;
-    
-    private Object result;
+public interface TargetObject {
     
     /**
-     * To replace the origin result.
+     * Get the variable from context.
      *
-     * @param result rebase the origin result
+     * @return the attachment
      */
-    public void rebase(final Object result) {
-        rebased = true;
-        this.result = result;
-    }
+    Object getAttachment();
+    
+    /**
+     * Store a variable into context.
+     *
+     * @param attachment what variable you want to store
+     */
+    void setAttachment(Object attachment);
 }

@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.shardingsphere.agent.core.plugin.point;
+package org.apache.shardingsphere.agent.api.point;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +24,15 @@ import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Configuration of constructor intercepting point.
+ * Configuration of instance method intercepting point.
  */
 @Getter
 @RequiredArgsConstructor
-public final class ConstructorPoint {
+public final class InstanceMethodPoint {
     
     private final ElementMatcher<? super MethodDescription> matcher;
     
     private final String advice;
+    
+    private final boolean overrideArgs;
 }

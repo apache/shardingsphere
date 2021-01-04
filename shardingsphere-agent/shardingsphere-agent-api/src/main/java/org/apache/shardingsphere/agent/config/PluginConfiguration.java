@@ -13,21 +13,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.core.plugin.advice;
+package org.apache.shardingsphere.agent.config;
+
+import java.util.Properties;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Weaving the advice around the constructor of target class.
+ * Plugin configuration.
  */
-public interface ConstructorAdvice {
+@Getter
+@Setter
+public final class PluginConfiguration extends RemotePluginConfiguration {
     
-    /**
-     * Intercept the target's constructor. This method is weaved after the constructor execution.
-     *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
-     */
-    void onConstructor(TargetObject target, Object[] args);
+    private String password;
+    
+    private Properties props = new Properties();
 }

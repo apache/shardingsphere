@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.service;
+package org.apache.shardingsphere.agent.core.plugin.manager;
 
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.spi.AgentTypedSPIRegistry;
+import org.apache.shardingsphere.agent.spi.PluginBootService;
 
 /**
- * Plugin Service manager.
+ * Plugin boot service manager.
  */
 @Slf4j
-public final class PluginServiceManager {
+public final class PluginBootServiceManager {
     
     /**
      * Start all services.
      *
-     * @param pluginConfigurationMap plugin configurations
+     * @param pluginConfigurationMap plugin configuration map
      */
     public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigurationMap) {
         for (Map.Entry<String, PluginConfiguration> entry: pluginConfigurationMap.entrySet()) {

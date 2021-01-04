@@ -13,12 +13,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.core.plugin.advice;
+package org.apache.shardingsphere.agent.api.advice;
 
 import java.lang.reflect.Method;
+import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 
 /**
  * Weaving the advice around the target method.

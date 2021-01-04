@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition;
 
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.plugin.definition.PluginDefinition;
+import org.apache.shardingsphere.agent.api.definition.PluginDefinition;
 
 /**
  * Jaeger plugin definition.

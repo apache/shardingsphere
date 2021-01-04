@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.definition;
+package org.apache.shardingsphere.agent.api.definition;
 
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.core.plugin.point.PluginInterceptorPoint;
+import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 
 import java.util.List;
 import java.util.Map;
