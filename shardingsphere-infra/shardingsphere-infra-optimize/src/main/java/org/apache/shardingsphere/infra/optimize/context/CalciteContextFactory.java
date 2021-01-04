@@ -40,7 +40,7 @@ import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.optimize.plan.PlannerInitializer;
+import org.apache.shardingsphere.infra.optimize.execute.raw.plan.PlannerInitializer;
 import org.apache.shardingsphere.infra.optimize.schema.CalciteLogicSchema;
 import org.apache.shardingsphere.infra.optimize.schema.CalciteLogicSchemaFactory;
 import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;

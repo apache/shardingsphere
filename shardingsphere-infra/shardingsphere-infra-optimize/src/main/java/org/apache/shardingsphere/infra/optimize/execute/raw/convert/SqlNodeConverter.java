@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.convert;
+package org.apache.shardingsphere.infra.optimize.execute.raw.convert;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

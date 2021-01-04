@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.context;
+package org.apache.shardingsphere.infra.optimize.execute.raw.context;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
 import org.apache.calcite.adapter.java.JavaTypeFactory;
 import org.apache.calcite.linq4j.QueryProvider;
 import org.apache.calcite.schema.SchemaPlus;
+import org.apache.shardingsphere.infra.optimize.context.CalciteContext;
 
 /**
  * Calcite data context.
