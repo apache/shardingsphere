@@ -28,9 +28,7 @@ import lombok.Setter;
 @Setter
 public final class PluginConfiguration extends RemotePluginConfiguration {
     
-    private String host = "localhost";
-    
-    private int port = 5775;
+    private String password;
     
     private Properties props = new Properties();
 }

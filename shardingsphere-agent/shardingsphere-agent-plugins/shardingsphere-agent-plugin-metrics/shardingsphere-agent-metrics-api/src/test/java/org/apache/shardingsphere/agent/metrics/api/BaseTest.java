@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.net.URL;
 import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
-import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
-import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
+import org.apache.shardingsphere.agent.core.config.cache.AgentObjectPool;
+import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.metrics.api.util.ReflectiveUtil;
 import org.junit.Before;
 

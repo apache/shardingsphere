@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.core.config;
 
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
-import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
+import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.util.ReflectiveUtil;
 import org.junit.Test;
 

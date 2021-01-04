@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.cache;
+package org.apache.shardingsphere.agent.core.config.cache;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
