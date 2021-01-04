@@ -15,27 +15,4 @@
 # limitations under the License.
 #
 
-applicationName: shardingsphere-agent
-metricsType : Prometheus
-ignoredPluginNames:
-  - Jaeger
-
-plugins:
-  prometheus:
-    host:  "localhost"
-    port: 9090
-    props:
-      JVM_INFORMATION_COLLECTOR_ENABLED : "true"
-  Jaeger:
-    host: "localhost"
-    port: 5775
-    props:
-      JAEGER_SAMPLER_TYPE: "const"
-      JAEGER_SAMPLER_PARAM: "1"
-      JAEGER_REPORTER_LOG_SPANS: "true"
-      JAEGER_REPORTER_FLUSH_INTERVAL: "1"
-  Zipkin:
-    host: "localhost"
-    port: 15775
-    props:
-      NAME: "Zipkin"
+org.apache.shardingsphere.agent.metrics.api.definition.MetricsPluginDefinitionService

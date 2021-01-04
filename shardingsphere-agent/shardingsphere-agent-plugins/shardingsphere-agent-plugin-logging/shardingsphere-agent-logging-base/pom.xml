@@ -28,10 +28,6 @@
     <artifactId>shardingsphere-agent-logging-base</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <entrypoint.class>org.apache.shardingsphere.agent.plugin.logging.base.definition.BaseLoggingPluginDefinition</entrypoint.class>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

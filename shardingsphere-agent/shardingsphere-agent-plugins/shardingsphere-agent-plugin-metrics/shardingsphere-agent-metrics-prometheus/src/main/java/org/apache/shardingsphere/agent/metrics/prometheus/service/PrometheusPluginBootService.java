@@ -22,7 +22,7 @@ import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.spi.PluginBootService;
+import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
 import org.apache.shardingsphere.agent.metrics.prometheus.collector.BuildInfoCollector;
 
 import java.io.IOException;

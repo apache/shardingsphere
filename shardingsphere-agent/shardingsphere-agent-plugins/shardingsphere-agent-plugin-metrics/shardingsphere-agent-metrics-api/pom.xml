@@ -28,10 +28,6 @@
     <artifactId>shardingsphere-agent-metrics-api</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <entrypoint.class>org.apache.shardingsphere.agent.metrics.api.definition.MetricsPluginDefinition</entrypoint.class>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -52,13 +48,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Entrypoint>${entrypoint.class}</Entrypoint>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
             </plugin>
         </plugins>
     </build>

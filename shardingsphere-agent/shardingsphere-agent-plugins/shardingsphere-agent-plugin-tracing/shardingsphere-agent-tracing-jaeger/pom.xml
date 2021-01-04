@@ -31,7 +31,6 @@
     <properties>
         <jaeger-client.version>0.31.0</jaeger-client.version>
         <opentracing.version>0.31.0</opentracing.version>
-        <entrypoint.class>org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition.JaegerPluginDefinition</entrypoint.class>
     </properties>
     
     <dependencies>

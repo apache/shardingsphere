@@ -15,19 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.spi;
+package org.apache.shardingsphere.agent.spi.definition;
 
-import org.apache.shardingsphere.agent.config.PluginConfiguration;
+import java.util.Collection;
+import java.util.Collections;
+import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
+import org.apache.shardingsphere.agent.spi.type.AgentTypedSPI;
 
 /**
- * Plugin boot service that the lifecycle is from the agent start to shutdown.
+ * Plugin definition service.
  */
-public interface PluginBootService extends AgentTypedSPI, AutoCloseable {
+public interface PluginDefinitionService extends AgentTypedSPI {
     
     /**
-     * Start plugin boot service.
-     *
-     * @param pluginConfig plugin configuration
+     * Define.
      */
-    void start(PluginConfiguration pluginConfig);
+    void define();
+    
+    /**
+     * Build collection of plugin interceptor point.
+     *
+     * @return collection of plugin interceptor point
+     */
+    default Collection<PluginInterceptorPoint> build() {
+        return Collections.emptyList();
+    }
 }

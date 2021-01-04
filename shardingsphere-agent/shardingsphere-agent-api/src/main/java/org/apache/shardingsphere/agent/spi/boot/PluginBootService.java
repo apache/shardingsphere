@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api;
+package org.apache.shardingsphere.agent.spi.boot;
 
+import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.spi.type.AgentTypedSPI;
 
 /**
- * Metrics register factory.
+ * Plugin boot service that the lifecycle is from the agent start to shutdown.
  */
-public interface MetricsRegisterFactory extends AgentTypedSPI {
+public interface PluginBootService extends AgentTypedSPI, AutoCloseable {
     
     /**
-     * New instance metrics register.
+     * Start plugin boot service.
      *
-     * @return the metrics register
+     * @param pluginConfig plugin configuration
      */
-    MetricsRegister newInstance();
+    void start(PluginConfiguration pluginConfig);
 }
