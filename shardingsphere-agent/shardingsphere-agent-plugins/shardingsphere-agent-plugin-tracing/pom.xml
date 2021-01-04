@@ -42,7 +42,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-core</artifactId>
+            <artifactId>shardingsphere-agent-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

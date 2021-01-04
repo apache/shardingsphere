@@ -41,13 +41,13 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     private final IntegrateTestCaseAssertion assertion;
     
-    public GeneralDMLIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String scenario,
+    public GeneralDMLIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String adapter, final String scenario,
                         final String databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(parentPath, assertion, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), sqlExecuteType, sql);
+        super(parentPath, assertion, adapter, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), sqlExecuteType, sql);
         this.assertion = assertion;
     }
-    
-    @Parameters(name = "{2} -> {3} -> {4} -> {5}")
+
+    @Parameters(name = "{2}: {3} -> {4} -> {5} -> {6}")
     public static Collection<Object[]> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DML);
     }

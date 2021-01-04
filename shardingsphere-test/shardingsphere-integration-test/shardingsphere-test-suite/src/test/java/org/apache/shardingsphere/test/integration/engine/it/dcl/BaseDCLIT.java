@@ -48,9 +48,9 @@ public abstract class BaseDCLIT extends SingleIT {
     
     private final AuthorityEnvironmentManager authorityEnvironmentManager;
     
-    protected BaseDCLIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String scenario,
+    protected BaseDCLIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String adapter, final String scenario,
                         final DatabaseType databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(parentPath, assertion, scenario, databaseType, sqlExecuteType, sql);
+        super(parentPath, assertion, adapter, scenario, databaseType, sqlExecuteType, sql);
         authorityEnvironmentManager = new AuthorityEnvironmentManager(
                 EnvironmentPath.getAuthorityFile(scenario), null == getActualDataSources() ? null : createInstanceDataSourceMap(), databaseType);
     }

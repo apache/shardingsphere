@@ -35,7 +35,7 @@ public final class YamlAgentConfiguration {
     
     private String metricsType = "Prometheus";
     
-    private Set<String> ignorePlugins = new HashSet<>();
+    private Set<String> ignoredPluginNames = new HashSet<>();
     
     private Map<String, YamlPluginConfiguration> plugins = new HashMap<>();
 }

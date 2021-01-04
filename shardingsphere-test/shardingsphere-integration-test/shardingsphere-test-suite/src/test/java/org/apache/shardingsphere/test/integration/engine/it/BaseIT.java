@@ -34,10 +34,7 @@ import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -46,6 +43,8 @@ import java.util.TimeZone;
 public abstract class BaseIT {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
+    
+    private final String adapter;
     
     private final String scenario;
     
@@ -57,12 +56,10 @@ public abstract class BaseIT {
     
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        if (IntegrateTestEnvironment.getInstance().isProxyEnvironment()) {
-            waitForProxyReady();
-        }
     }
     
-    BaseIT(final String scenario, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
+    BaseIT(final String adapter, final String scenario, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
+        this.adapter = adapter;
         this.scenario = scenario;
         this.databaseType = databaseType;
         actualDataSources = ActualDataSourceBuilder.createActualDataSources(scenario, databaseType);
@@ -70,8 +67,10 @@ public abstract class BaseIT {
     }
     
     private DataSource createTargetDataSource() throws SQLException, IOException {
-        return IntegrateTestEnvironment.getInstance().isProxyEnvironment() ? ProxyDataSourceBuilder.build(String.format("proxy_%s", scenario), databaseType) 
-                : YamlShardingSphereDataSourceFactory.createDataSource(actualDataSources, new File(EnvironmentPath.getRulesConfigurationFile(scenario)));
+        if ("proxy".equalsIgnoreCase(adapter)) {
+            return ProxyDataSourceBuilder.build(scenario, databaseType, IntegrateTestEnvironment.getInstance().getProxyEnvironments().get(scenario));
+        }
+        return YamlShardingSphereDataSourceFactory.createDataSource(actualDataSources, new File(EnvironmentPath.getRulesConfigurationFile(scenario)));
     }
     
     protected final void resetTargetDataSource() throws IOException, SQLException {
@@ -83,26 +82,5 @@ public abstract class BaseIT {
         if (targetDataSource instanceof ShardingSphereDataSource) {
             ((ShardingSphereDataSource) targetDataSource).getMetaDataContexts().getExecutorEngine().close();
         }
-    }
-    
-    private static void waitForProxyReady() {
-        int retryCount = 0;
-        while (!isProxyReady() && retryCount < 30) {
-            try {
-                Thread.sleep(1000L);
-            } catch (final InterruptedException ignore) {
-            }
-            retryCount++;
-        }
-    }
-    
-    private static boolean isProxyReady() {
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:33070/proxy_db/?serverTimezone=UTC&useSSL=false&useLocalSessionState=true");
-             Statement statement = connection.createStatement()) {
-            statement.execute("SELECT 1");
-        } catch (final SQLException ignore) {
-            return false;
-        }
-        return true;
     }
 }

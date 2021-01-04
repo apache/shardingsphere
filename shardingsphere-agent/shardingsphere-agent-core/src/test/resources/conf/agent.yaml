@@ -17,7 +17,7 @@
 
 applicationName: shardingsphere-agent
 metricsType : Prometheus
-ignorePlugins:
+ignoredPluginNames:
   - test
 
 plugins:
@@ -25,7 +25,7 @@ plugins:
     host:  "localhost"
     port: 9090
     props:
-      jvmInformationCollectorEnabled : "true"
+      JVM_INFORMATION_COLLECTOR_ENABLED : "true"
   Jaeger:
     host: "localhost"
     port: 5775

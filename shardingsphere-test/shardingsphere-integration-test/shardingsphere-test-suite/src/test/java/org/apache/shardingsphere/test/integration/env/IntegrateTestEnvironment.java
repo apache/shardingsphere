@@ -21,11 +21,17 @@ import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -40,19 +46,25 @@ public final class IntegrateTestEnvironment {
     private static final IntegrateTestEnvironment INSTANCE = new IntegrateTestEnvironment();
     
     private final String activeProfile;
+
+    private final Collection<String> adapters;
     
     private final boolean runAdditionalTestCases;
     
     private final Collection<String> scenarios;
     
     private final Map<DatabaseType, DatabaseEnvironment> databaseEnvironments;
+
+    private final Map<String, DatabaseEnvironment> proxyEnvironments;
     
     private IntegrateTestEnvironment() {
         activeProfile = loadProperties("integrate/profile.properties").getProperty("mode");
-        Properties envProps = loadProperties(IntegrateTestEnvironmentType.valueFromProfileName(activeProfile).getEnvFileName());
-        runAdditionalTestCases = Boolean.parseBoolean(envProps.getProperty("run.additional.cases"));
-        scenarios = Splitter.on(",").trimResults().splitToList(envProps.getProperty("scenarios"));
+        Properties envProps = IntegrateTestEnvironmentType.valueFromProfileName(activeProfile).loadProperties();
+        adapters = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.adapters"));
+        runAdditionalTestCases = Boolean.parseBoolean(envProps.getProperty("it.run.additional.cases"));
+        scenarios = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.scenarios"));
         databaseEnvironments = createDatabaseEnvironments(envProps);
+        proxyEnvironments = createProxyEnvironments(envProps);
     }
     
     private Properties loadProperties(final String fileName) {
@@ -67,7 +79,7 @@ public final class IntegrateTestEnvironment {
     
     private Map<DatabaseType, DatabaseEnvironment> createDatabaseEnvironments(final Properties envProps) {
         Collection<DatabaseType> databaseTypes = Arrays.stream(
-                envProps.getProperty("databases", "H2").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
+                envProps.getProperty("it.databases", "H2").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
         Map<DatabaseType, DatabaseEnvironment> result = new LinkedHashMap<>(databaseTypes.size(), 1);
         for (DatabaseType each : databaseTypes) {
             result.put(each, createDatabaseEnvironment(each, envProps));
@@ -80,29 +92,37 @@ public final class IntegrateTestEnvironment {
             case "H2":
                 return new DatabaseEnvironment(databaseType, "", 0, "sa", "");
             case "MySQL":
-                return new DatabaseEnvironment(databaseType, envProps.getProperty("mysql.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("mysql.port", "3306")),
-                        envProps.getProperty("mysql.username", "root"), envProps.getProperty("mysql.password", ""));
+                return new DatabaseEnvironment(databaseType, envProps.getProperty("it.mysql.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("it.mysql.port", "3306")),
+                        envProps.getProperty("it.mysql.username", "root"), envProps.getProperty("it.mysql.password", ""));
             case "PostgreSQL":
-                return new DatabaseEnvironment(databaseType, envProps.getProperty("postgresql.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("postgresql.port", "5432")),
-                        envProps.getProperty("postgresql.username", "postgres"), envProps.getProperty("postgresql.password", ""));
+                return new DatabaseEnvironment(databaseType, envProps.getProperty("it.postgresql.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("it.postgresql.port", "5432")),
+                        envProps.getProperty("it.postgresql.username", "postgres"), envProps.getProperty("it.postgresql.password", ""));
             case "SQLServer":
-                return new DatabaseEnvironment(databaseType, envProps.getProperty("sqlserver.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("sqlserver.port", "1433")),
-                        envProps.getProperty("sqlserver.username", "sa"), envProps.getProperty("sqlserver.password", "Jdbc1234"));
+                return new DatabaseEnvironment(databaseType, envProps.getProperty("it.sqlserver.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("it.sqlserver.port", "1433")),
+                        envProps.getProperty("it.sqlserver.username", "sa"), envProps.getProperty("it.sqlserver.password", "Jdbc1234"));
             case "Oracle":
-                return new DatabaseEnvironment(databaseType, envProps.getProperty("oracle.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("oracle.port", "1521")),
-                        envProps.getProperty("oracle.username", "jdbc"), envProps.getProperty("oracle.password", "jdbc"));
+                return new DatabaseEnvironment(databaseType, envProps.getProperty("it.oracle.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("it.oracle.port", "1521")),
+                        envProps.getProperty("it.oracle.username", "jdbc"), envProps.getProperty("it.oracle.password", "jdbc"));
             default:
                 throw new UnsupportedOperationException(databaseType.getName());
         }
     }
     
-    /**
-     * Judge whether proxy environment.
-     *
-     * @return is proxy environment or not 
-     */
-    public boolean isProxyEnvironment() {
-        return "proxy".equals(activeProfile);
+    private Map<String, DatabaseEnvironment> createProxyEnvironments(final Properties envProps) {
+        Map<String, DatabaseEnvironment> result = new HashMap<>(scenarios.size(), 1);
+        for (String each : scenarios) {
+            // TODO hard code for MySQL, should configurable
+            result.put(each, createProxyEnvironment(envProps, each));
+        }
+        return result;
+    }
+    
+    private DatabaseEnvironment createProxyEnvironment(final Properties envProps, final String scenario) {
+        String host = envProps.getProperty(String.format("it.proxy.%s.host", scenario), "127.0.0.1");
+        int port = Integer.parseInt(envProps.getProperty(String.format("it.proxy.%s.port", scenario), "3307"));
+        String username = envProps.getProperty(String.format("it.proxy.%s.username", scenario), "root");
+        String password = envProps.getProperty(String.format("it.proxy.%s.password", scenario), "root");
+        return new DatabaseEnvironment(new MySQLDatabaseType(), host, port, username, password);
     }
     
     /**
@@ -111,6 +131,34 @@ public final class IntegrateTestEnvironment {
      * @return singleton instance
      */
     public static IntegrateTestEnvironment getInstance() {
+        if (INSTANCE.adapters.contains("proxy")) {
+            for (String each : INSTANCE.scenarios) {
+                waitForProxyReady(each);
+            }
+        }
         return INSTANCE;
+    }
+    
+    private static void waitForProxyReady(final String scenario) {
+        int retryCount = 0;
+        while (!isProxyReady(scenario) && retryCount < 30) {
+            try {
+                Thread.sleep(1000L);
+            } catch (final InterruptedException ignore) {
+            }
+            retryCount++;
+        }
+    }
+    
+    @SuppressWarnings("CallToDriverManagerGetConnection")
+    private static boolean isProxyReady(final String scenario) {
+        DatabaseEnvironment dbEnv = INSTANCE.proxyEnvironments.get(scenario);
+        try (Connection connection = DriverManager.getConnection(dbEnv.getURL(scenario), dbEnv.getUsername(), dbEnv.getPassword());
+             Statement statement = connection.createStatement()) {
+            statement.execute("SELECT 1");
+        } catch (final SQLException ignore) {
+            return false;
+        }
+        return true;
     }
 }

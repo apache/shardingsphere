@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
 import org.apache.shardingsphere.driver.governance.internal.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.driver.governance.internal.circuit.resultset.CircuitBreakerResultSet;
+import org.apache.shardingsphere.infra.optimize.execute.CalciteExecutor;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -267,6 +268,11 @@ public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOp
     @Override
     protected Collection<? extends Statement> getRoutedStatements() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    protected CalciteExecutor getCalciteExecutor() {
+        return null;
     }
     
     @Override

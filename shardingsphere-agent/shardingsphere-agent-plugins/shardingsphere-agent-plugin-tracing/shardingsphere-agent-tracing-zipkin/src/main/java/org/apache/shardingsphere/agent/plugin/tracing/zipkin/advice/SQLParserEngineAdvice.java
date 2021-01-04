@@ -20,9 +20,9 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 import brave.Span;
 import brave.Tracing;
 import brave.propagation.TraceContext;
-import org.apache.shardingsphere.agent.core.plugin.advice.MethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.advice.MethodInvocationResult;
-import org.apache.shardingsphere.agent.core.plugin.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.MethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.api.advice.TargetObject;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 
