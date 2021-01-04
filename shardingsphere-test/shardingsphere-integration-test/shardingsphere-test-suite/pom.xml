@@ -138,6 +138,30 @@
                                     <!--                                    <removeImages>true</removeImages>-->
                                 </configuration>
                             </execution>
+                            
+                            <execution>
+                                <id>replica-query-up</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>up</goal>
+                                </goals>
+                                <configuration>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/replica_query/docker-compose.yml</composeFile>
+                                    <detachedMode>true</detachedMode>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>replica-query-down</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>down</goal>
+                                </goals>
+                                <configuration>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/replica_query/docker-compose.yml</composeFile>
+                                    <removeVolumes>true</removeVolumes>
+                                    <!--                                    <removeImages>true</removeImages>-->
+                                </configuration>
+                            </execution>
                         </executions>
                     </plugin>
                 </plugins>
