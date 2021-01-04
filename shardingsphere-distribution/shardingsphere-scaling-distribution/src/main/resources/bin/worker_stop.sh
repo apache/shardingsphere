@@ -18,7 +18,7 @@
 
 SERVER_NAME=ShardingSphere-Scaling
 
-MAIN_CLASS=org.apache.shardingsphere.scaling.WorkerBootstrap
+MAIN_CLASS=org.apache.shardingsphere.scaling.ScalingWorkerBootstrap
 
 cd `dirname $0`
 cd ..

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling;
 
+import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -37,7 +38,7 @@ import org.apache.shardingsphere.scaling.web.HttpServerInitializer;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-public final class ServerBootstrap {
+public final class ScalingServerBootstrap {
     
     /**
      * Server Main entry.
@@ -58,7 +59,7 @@ public final class ServerBootstrap {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
-            io.netty.bootstrap.ServerBootstrap bootstrap = new io.netty.bootstrap.ServerBootstrap();
+            ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.option(ChannelOption.SO_BACKLOG, 1024);
             bootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)

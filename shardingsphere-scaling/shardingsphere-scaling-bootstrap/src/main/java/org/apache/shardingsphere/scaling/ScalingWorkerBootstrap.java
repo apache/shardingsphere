@@ -25,12 +25,13 @@ import org.apache.shardingsphere.scaling.util.ServerConfigurationInitializer;
 
 import java.util.Optional;
 
+
 /**
  * Bootstrap of ShardingSphere-Scaling worker.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-public final class WorkerBootstrap {
+public final class ScalingWorkerBootstrap {
     
     /**
      * Worker Main entry.
@@ -53,7 +54,7 @@ public final class WorkerBootstrap {
     
     private static synchronized void wait0() {
         try {
-            WorkerBootstrap.class.wait();
+            ScalingWorkerBootstrap.class.wait();
         } catch (final InterruptedException ignored) {
         }
     }
