@@ -23,7 +23,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
-import org.apache.shardingsphere.scaling.mysql.client.MySQLPasswordEncryptor;
+import org.apache.shardingsphere.scaling.mysql.client.PasswordEncryptor;
 import org.apache.shardingsphere.scaling.mysql.client.ServerInfo;
 import org.apache.shardingsphere.scaling.mysql.client.ServerVersion;
 
@@ -85,6 +85,6 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     
     @SneakyThrows(NoSuchAlgorithmException.class)
     private byte[] generateAuthResponse(final byte[] authPluginData) {
-        return (null == password || password.isEmpty()) ? new byte[0] : MySQLPasswordEncryptor.encryptWithMySQL41(password.getBytes(), authPluginData);
+        return (null == password || password.isEmpty()) ? new byte[0] : PasswordEncryptor.encryptWithMySQL41(password.getBytes(), authPluginData);
     }
 }

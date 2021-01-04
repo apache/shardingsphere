@@ -27,7 +27,7 @@ import java.security.NoSuchAlgorithmException;
  * MySQL Password Encryptor.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLPasswordEncryptor {
+public final class PasswordEncryptor {
     
     /**
      * Encrypt password with MySQL protocol 41.
