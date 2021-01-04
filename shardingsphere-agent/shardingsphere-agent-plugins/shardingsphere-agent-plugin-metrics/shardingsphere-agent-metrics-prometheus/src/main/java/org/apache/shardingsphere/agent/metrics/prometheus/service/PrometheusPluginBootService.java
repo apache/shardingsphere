@@ -32,14 +32,12 @@ import java.net.InetSocketAddress;
  * Prometheus plugin boot service.
  */
 @Slf4j
-public class PrometheusPluginBootService implements PluginBootService {
+public final class PrometheusPluginBootService implements PluginBootService {
     
     private HTTPServer httpServer;
     
     @Override
     public void start(final PluginConfiguration pluginConfig) {
-        boolean enabled = Boolean.parseBoolean(pluginConfig.getProps().getProperty("jvmInformationCollectorEnabled"));
-        registerJvm(enabled);
         startServer(pluginConfig);
     }
     
@@ -55,27 +53,24 @@ public class PrometheusPluginBootService implements PluginBootService {
         return "Prometheus";
     }
     
-    private void registerJvm(final boolean enabled) {
-        if (enabled) {
-            new BuildInfoCollector().register();
-            DefaultExports.initialize();
-        }
-    }
-    
     private void startServer(final PluginConfiguration configuration) {
+        boolean enabled = Boolean.parseBoolean(configuration.getProps().getProperty("JVM_INFORMATION_COLLECTOR_ENABLED"));
+        registerJvm(enabled);
         int port = configuration.getPort();
         String host = configuration.getHost();
-        InetSocketAddress inetSocketAddress;
-        if ("".equals(host) || null == host) {
-            inetSocketAddress = new InetSocketAddress(port);
-        } else {
-            inetSocketAddress = new InetSocketAddress(host, port);
-        }
+        InetSocketAddress inetSocketAddress = new InetSocketAddress(host, port);
         try {
             httpServer = new HTTPServer(inetSocketAddress, CollectorRegistry.defaultRegistry, true);
             log.info(String.format("Prometheus metrics HTTP server `%s:%s` start success.", inetSocketAddress.getHostString(), inetSocketAddress.getPort()));
         } catch (final IOException ex) {
             log.error("Prometheus metrics HTTP server start fail", ex);
+        }
+    }
+    
+    private void registerJvm(final boolean enabled) {
+        if (enabled) {
+            new BuildInfoCollector().register();
+            DefaultExports.initialize();
         }
     }
 }

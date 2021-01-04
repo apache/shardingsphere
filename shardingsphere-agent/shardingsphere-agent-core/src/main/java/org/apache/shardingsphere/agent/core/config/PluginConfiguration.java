@@ -26,7 +26,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PluginConfiguration extends RemotePluginConfiguration {
+public final class PluginConfiguration extends RemotePluginConfiguration {
     
     private String host = "localhost";
     

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.util;
 
-import com.google.common.base.Preconditions;
+import java.lang.reflect.Modifier;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -31,36 +31,20 @@ import java.lang.reflect.Field;
 public final class ReflectiveUtil {
     
     /**
-     * Get field.
-     * 
-     * @param target target
-     * @param fieldName field name
-     * @return field
-     */
-    private static Field getField(final Object target, final String fieldName) {
-        Class<?> clazz = target.getClass();
-        while (clazz != null) {
-            try {
-                return clazz.getDeclaredField(fieldName);
-            } catch (final NoSuchFieldException ignored) {
-            }
-            clazz = clazz.getSuperclass();
-        }
-        return null;
-    }
-    
-    /**
-     * Set value to specified field.
-     * 
+     * Set value to static field.
+     *
      * @param target target
      * @param fieldName field name
      * @param value value
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static void setProperty(final Object target, final String fieldName, final Object value) {
-        Field field = getField(target, fieldName);
-        Preconditions.checkNotNull(field);
-        field.setAccessible(true);
-        field.set(target, value);
+    public static void setStaticField(final Class<?> target, final String fieldName, final Object value) {
+        Field[] fields = target.getDeclaredFields();
+        for (Field each : fields) {
+            if (Modifier.isStatic(each.getModifiers()) && each.getName().equalsIgnoreCase(fieldName)) {
+                each.setAccessible(true);
+                each.set(null, value);
+            }
+        }
     }
 }

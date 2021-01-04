@@ -26,7 +26,6 @@
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-metrics-prometheus</artifactId>
-    <packaging>jar</packaging>
     <name>${project.artifactId}</name>
     
     <properties>

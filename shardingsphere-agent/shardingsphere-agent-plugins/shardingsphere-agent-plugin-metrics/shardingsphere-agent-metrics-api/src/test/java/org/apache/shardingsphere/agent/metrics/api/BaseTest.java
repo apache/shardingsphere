@@ -24,6 +24,7 @@ import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
 import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
 import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
+import org.apache.shardingsphere.agent.metrics.api.util.ReflectiveUtil;
 import org.junit.Before;
 
 public class BaseTest {
@@ -32,8 +33,7 @@ public class BaseTest {
     
     @Before
     public void assertLoad() throws IOException {
-        AgentPathBuilder builder = new AgentPathBuilder();
-        ReflectiveUtil.setProperty(builder, "agentPath", new File(getResourceUrl()));
+        ReflectiveUtil.setStaticField(AgentPathBuilder.class, "agentPath", new File(getResourceUrl()));
         AgentConfiguration configuration = AgentConfigurationLoader.load();
         AgentObjectPool.INSTANCE.put(configuration);
     }

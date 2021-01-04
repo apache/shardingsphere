@@ -31,7 +31,7 @@ public final class SchemaMetaDataLoaderAdvice implements StaticMethodAroundAdvic
     
     @Override
     @SuppressWarnings("unchecked")
-    public void afterMethod(final Class<?> klass, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
         Collection<String> results = (Collection<String>) result.getResult();
         log.info("Loading {} tables' meta data for unconfigured tables.", results.size());
     }

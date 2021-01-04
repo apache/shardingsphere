@@ -45,14 +45,14 @@ public final class AgentPathBuilder {
     }
     
     private static File buildAgentPath() {
-        String classResourcePath = AgentPathBuilder.class.getName().replaceAll("\\.", "/") + ".class";
+        String classResourcePath = String.join("", AgentPathBuilder.class.getName().replaceAll("\\.", "/"), ".class");
         URL resource = ClassLoader.getSystemClassLoader().getResource(classResourcePath);
         if (resource != null) {
             String url = resource.toString();
             log.debug("The beacon class location is {}.", url);
-            int insideIndex = url.indexOf('!');
-            boolean isInJar = insideIndex > -1;
-            return isInJar ? getFileInJar(url, insideIndex) : getFileInResource(url, classResourcePath);
+            int existFileInJarIndex = url.indexOf('!');
+            boolean isInJar = existFileInJarIndex > -1;
+            return isInJar ? getFileInJar(url, existFileInJarIndex) : getFileInResource(url, classResourcePath);
         }
         throw new ShardingSphereAgentException("Can not locate agent jar file.");
     }
@@ -63,8 +63,8 @@ public final class AgentPathBuilder {
         return new File(classLocation);
     }
     
-    private static File getFileInJar(final String url, final int insidePathIndex) {
-        String realUrl = url.substring(url.indexOf("file:"), insidePathIndex);
+    private static File getFileInJar(final String url, final int fileInJarIndex) {
+        String realUrl = url.substring(url.indexOf("file:"), fileInJarIndex);
         try {
             File agentJarFile = new File(new URL(realUrl).toURI());
             return agentJarFile.exists() ? agentJarFile.getParentFile() : null;
@@ -75,6 +75,6 @@ public final class AgentPathBuilder {
     }
     
     private static File buildAgentPluginPath() {
-        return new File(agentPath.getPath() + "/plugins");
+        return new File(String.join("", agentPath.getPath(), "/plugins"));
     }
 }
