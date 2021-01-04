@@ -13,26 +13,29 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.core.plugin.point;
+package org.apache.shardingsphere.agent.config;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import net.bytebuddy.description.method.MethodDescription;
-import net.bytebuddy.matcher.ElementMatcher;
+import lombok.Setter;
 
 /**
- * Configuration of instance method intercepting point.
+ * Agent configuration.
  */
 @Getter
-@RequiredArgsConstructor
-public final class InstanceMethodPoint {
+@Setter
+public final class AgentConfiguration {
     
-    private final ElementMatcher<? super MethodDescription> matcher;
+    private String applicationName;
     
-    private final String advice;
+    private String metricsType = "Prometheus";
     
-    private final boolean overrideArgs;
+    private Set<String> ignoredPluginNames = new HashSet<>();
+    
+    private Map<String, PluginConfiguration> plugins = new HashMap<>();
 }

@@ -34,6 +34,7 @@
         <module>shardingsphere-agent-core</module>
         <module>shardingsphere-agent-plugins</module>
         <module>shardingsphere-agent-distribution</module>
+        <module>shardingsphere-agent-api</module>
     </modules>
     
     <properties>

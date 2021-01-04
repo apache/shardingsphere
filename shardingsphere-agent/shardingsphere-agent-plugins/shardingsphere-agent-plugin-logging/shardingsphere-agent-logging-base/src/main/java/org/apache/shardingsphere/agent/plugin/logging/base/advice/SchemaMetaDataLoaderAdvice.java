@@ -20,8 +20,8 @@ package org.apache.shardingsphere.agent.plugin.logging.base.advice;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.core.plugin.advice.MethodInvocationResult;
-import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.api.advice.StaticMethodAroundAdvice;
 
 /**
  * Schema meta data loader advice.

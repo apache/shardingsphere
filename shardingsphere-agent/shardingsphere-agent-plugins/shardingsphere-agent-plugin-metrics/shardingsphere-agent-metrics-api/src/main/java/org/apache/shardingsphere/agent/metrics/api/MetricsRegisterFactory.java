@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.metrics.api;
 
-import org.apache.shardingsphere.agent.core.spi.AgentTypedSPI;
+import org.apache.shardingsphere.agent.spi.AgentTypedSPI;
 
 /**
  * Metrics register factory.

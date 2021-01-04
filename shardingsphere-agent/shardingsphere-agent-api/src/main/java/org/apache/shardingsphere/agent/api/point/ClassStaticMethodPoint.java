@@ -13,19 +13,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package org.apache.shardingsphere.agent.core.spi;
+package org.apache.shardingsphere.agent.api.point;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Agent typed SPI.
+ * Configuration of static method intercepting point.
  */
-public interface AgentTypedSPI {
+@Getter
+@RequiredArgsConstructor
+public final class ClassStaticMethodPoint {
     
-    /**
-     * Get type.
-     * 
-     * @return type
-     */
-    String getType();
+    private final ElementMatcher<? super MethodDescription> matcher;
+    
+    private final String advice;
+    
+    private final boolean overrideArgs;
 }

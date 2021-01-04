@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.agent.metrics.api.provider;
 
-import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.spi.AgentTypedSPIRegistry;
+import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.cache.AgentObjectPool;
+import org.apache.shardingsphere.agent.core.spi.AgentTypedSPIRegistry;
 import org.apache.shardingsphere.agent.metrics.api.MetricsRegister;
 import org.apache.shardingsphere.agent.metrics.api.MetricsRegisterFactory;
 

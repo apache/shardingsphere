@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.service;
-
-import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.spi.AgentTypedSPI;
+package org.apache.shardingsphere.agent.api.advice;
 
 /**
- * Plugin boot service that the lifecycle is from the agent startup to shutdown.
+ * Super(origin) method invoker for ByteBuddy only.
  */
-public interface PluginBootService extends AgentTypedSPI, AutoCloseable {
+public interface OverrideArgsInvoker {
     
     /**
-     * Start plugin boot service.
+     * Call invocation origin method.
      *
-     * @param pluginConfig plugin configuration
+     * @param args the origin method arguments
+     * @return the result of the origin method
      */
-    void start(PluginConfiguration pluginConfig);
+    Object call(Object[] args);
 }

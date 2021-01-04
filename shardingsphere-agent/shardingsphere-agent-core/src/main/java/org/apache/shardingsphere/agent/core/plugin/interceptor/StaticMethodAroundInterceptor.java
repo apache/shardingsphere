@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.shardingsphere.agent.core.plugin.advice;
+package org.apache.shardingsphere.agent.core.plugin.interceptor;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -24,27 +24,28 @@ import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
-import net.bytebuddy.implementation.bind.annotation.This;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
+import org.apache.shardingsphere.agent.api.advice.StaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 
 /**
  * Proxy class for ByteBuddy to intercept methods of target and weave pre- and post-method around the target method.
  */
 @Slf4j
-public class MethodAroundInterceptor {
+public class StaticMethodAroundInterceptor {
     
-    private final MethodAroundAdvice advice;
+    private final StaticMethodAroundAdvice staticMethodAroundAdvice;
     
-    public MethodAroundInterceptor(final MethodAroundAdvice advice) {
-        this.advice = advice;
+    public StaticMethodAroundInterceptor(final StaticMethodAroundAdvice staticMethodAroundAdvice) {
+        this.staticMethodAroundAdvice = staticMethodAroundAdvice;
     }
     
     /**
-     * Only intercept instance method.
+     * Only intercept static method.
      *
-     * @param target the target object
+     * @param klass the class of target
      * @param method the intercepted method
      * @param args the all arguments of method
      * @param callable the origin method invocation
@@ -52,42 +53,41 @@ public class MethodAroundInterceptor {
      */
     @RuntimeType
     @SneakyThrows
-    public Object intercept(@This final Object target, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
-        TargetObject instance = (TargetObject) target;
-        MethodInvocationResult methodResult = new MethodInvocationResult();
+    public Object intercept(@Origin final Class<?> klass, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
+        MethodInvocationResult invocationResult = new MethodInvocationResult();
         Object result;
         try {
-            advice.beforeMethod(instance, method, args, methodResult);
+            staticMethodAroundAdvice.beforeMethod(klass, method, args, invocationResult);
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
-            log.error("Failed to execute the pre-method of method[{}] in class[{}].", method.getName(), target.getClass(), ex);
+            log.error("Failed to execute the pre-method of method[{}] in class[{}].", method.getName(), klass, ex);
         }
         try {
-            if (methodResult.isRebased()) {
-                result = methodResult.getResult();
+            if (invocationResult.isRebased()) {
+                result = invocationResult.getResult();
             } else {
                 result = callable.call();
             }
-            methodResult.rebase(result);
+            invocationResult.rebase(result);
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
             try {
-                advice.onThrowing(instance, method, args, ex);
+                staticMethodAroundAdvice.onThrowing(klass, method, args, ex);
                 // CHECKSTYLE:OFF
             } catch (final Throwable ignored) {
                 // CHECKSTYLE:ON
-                log.error("Failed to execute the error handler of method[{}] in class[{}].", method.getName(), target.getClass(), ex);
+                log.error("Failed to execute the error handler of method[{}] in class[{}].", method.getName(), klass, ex);
             }
             throw ex;
         } finally {
             try {
-                advice.afterMethod(instance, method, args, methodResult);
+                staticMethodAroundAdvice.afterMethod(klass, method, args, invocationResult);
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to execute the post-method of method[{}] in class[{}].", method.getName(), target.getClass(), ex);
+                log.error("Failed to execute the post-method of method[{}] in class[{}].", method.getName(), klass, ex);
             }
         }
         return result;

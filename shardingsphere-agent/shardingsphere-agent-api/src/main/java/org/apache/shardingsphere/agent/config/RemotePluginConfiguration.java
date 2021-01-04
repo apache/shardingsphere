@@ -13,26 +13,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.core.plugin.point;
+package org.apache.shardingsphere.agent.config;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import net.bytebuddy.description.method.MethodDescription;
-import net.bytebuddy.matcher.ElementMatcher;
+import lombok.Setter;
 
 /**
- * Configuration of static method intercepting point.
+ * Remote plugin configuration.
  */
 @Getter
-@RequiredArgsConstructor
-public final class ClassStaticMethodPoint {
+@Setter
+public class RemotePluginConfiguration {
     
-    private final ElementMatcher<? super MethodDescription> matcher;
+    private String host = "localhost";
     
-    private final String advice;
-    
-    private final boolean overrideArgs;
+    private int port = 5775;
 }

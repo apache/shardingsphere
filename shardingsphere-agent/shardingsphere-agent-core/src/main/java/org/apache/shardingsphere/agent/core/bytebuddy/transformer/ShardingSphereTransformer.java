@@ -28,14 +28,14 @@ import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.utility.JavaModule;
 import org.apache.shardingsphere.agent.core.plugin.loader.PluginLoader;
-import org.apache.shardingsphere.agent.core.plugin.point.PluginInterceptorPoint;
-import org.apache.shardingsphere.agent.core.plugin.advice.ConstructorMethodInterceptor;
-import org.apache.shardingsphere.agent.core.plugin.advice.MethodAroundInterceptor;
-import org.apache.shardingsphere.agent.core.plugin.advice.StaticMethodAroundInterceptor;
-import org.apache.shardingsphere.agent.core.plugin.advice.TargetObject;
-import org.apache.shardingsphere.agent.core.plugin.point.ClassStaticMethodPoint;
-import org.apache.shardingsphere.agent.core.plugin.point.ConstructorPoint;
-import org.apache.shardingsphere.agent.core.plugin.point.InstanceMethodPoint;
+import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorMethodInterceptor;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.MethodAroundInterceptor;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.StaticMethodAroundInterceptor;
+import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.point.ClassStaticMethodPoint;
+import org.apache.shardingsphere.agent.api.point.ConstructorPoint;
+import org.apache.shardingsphere.agent.api.point.InstanceMethodPoint;
 
 /**
  * ShardingSphere transformer.
