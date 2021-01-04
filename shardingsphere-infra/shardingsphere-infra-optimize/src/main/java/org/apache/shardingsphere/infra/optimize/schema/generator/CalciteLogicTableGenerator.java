@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.schema;
+package org.apache.shardingsphere.infra.optimize.schema.generator;
 
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeImpl;
@@ -29,7 +29,8 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.optimize.execute.CalciteInternalExecutor;
+import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
+import org.apache.shardingsphere.infra.optimize.schema.table.CalciteFilterableTable;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -85,7 +86,7 @@ public final class CalciteLogicTableGenerator {
      * @param executor executor
      * @return table
      */
-    public Table create(final CalciteInternalExecutor executor) {
+    public Table create(final CalciteRowExecutor executor) {
         return new CalciteFilterableTable(tableMetaData, relProtoDataType, executor);
     }
 }

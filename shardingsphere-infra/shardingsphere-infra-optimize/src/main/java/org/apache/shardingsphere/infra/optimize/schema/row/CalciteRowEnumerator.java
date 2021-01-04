@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.schema;
+package org.apache.shardingsphere.infra.optimize.schema.row;
 
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;

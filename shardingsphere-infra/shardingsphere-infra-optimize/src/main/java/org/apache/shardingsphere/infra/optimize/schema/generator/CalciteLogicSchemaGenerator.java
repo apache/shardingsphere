@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.schema;
+package org.apache.shardingsphere.infra.optimize.schema.generator;
 
 import org.apache.calcite.schema.Table;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.optimize.execute.CalciteInternalExecutor;
+import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
+import org.apache.shardingsphere.infra.optimize.schema.CalciteLogicSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
@@ -89,9 +90,8 @@ public final class CalciteLogicSchemaGenerator {
      *
      * @param executor executor
      * @return schema
-     * @exception SQLException sql exception
      */
-    public CalciteLogicSchema create(final CalciteInternalExecutor executor) throws SQLException {
+    public CalciteLogicSchema create(final CalciteRowExecutor executor) {
         Map<String, Table> tables = new LinkedMap<>();
         for (Entry<String, CalciteLogicTableGenerator> entry : this.tables.entrySet()) {
             tables.put(entry.getKey(), entry.getValue().create(executor));
