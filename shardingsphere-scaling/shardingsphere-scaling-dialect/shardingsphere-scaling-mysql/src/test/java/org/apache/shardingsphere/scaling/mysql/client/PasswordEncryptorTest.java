@@ -29,7 +29,7 @@ public final class PasswordEncryptorTest {
     public void assertEncryptWithMySQL41() throws NoSuchAlgorithmException {
         byte[] passwordBytes = "password".getBytes();
         byte[] seed = getRandomSeed();
-        assertThat(PasswordEncryptor.encryptWithMySQL41(passwordBytes, seed), is(getExpectedPassword()));
+        assertThat(PasswordEncryption.encryptWithMySQL41(passwordBytes, seed), is(getExpectedPassword()));
     }
     
     private byte[] getRandomSeed() {
