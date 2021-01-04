@@ -24,7 +24,7 @@ import lombok.Getter;
  * The advice method invocation result.
  */
 @Getter
-public class MethodInvocationResult {
+public final class MethodInvocationResult {
     
     private boolean rebased;
     

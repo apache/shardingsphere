@@ -27,12 +27,13 @@ import org.apache.shardingsphere.agent.core.spi.AgentTypedSPIRegistry;
  */
 @Slf4j
 public final class PluginServiceManager {
+    
     /**
-     * Start all service.
+     * Start all services.
      *
      * @param pluginConfigurationMap plugin configurations
      */
-    public static void startAllService(final Map<String, PluginConfiguration> pluginConfigurationMap) {
+    public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigurationMap) {
         for (Map.Entry<String, PluginConfiguration> entry: pluginConfigurationMap.entrySet()) {
             AgentTypedSPIRegistry.getRegisteredServiceOptional(PluginBootService.class, entry.getKey()).ifPresent(pluginBootService -> {
                 try {
@@ -47,9 +48,9 @@ public final class PluginServiceManager {
     }
     
     /**
-     * Close all service.
+     * Close all services.
      */
-    public static void closeAllService() {
+    public static void closeAllServices() {
         AgentTypedSPIRegistry.getAllRegisteredService(PluginBootService.class).forEach(each -> {
             try {
                 each.close();

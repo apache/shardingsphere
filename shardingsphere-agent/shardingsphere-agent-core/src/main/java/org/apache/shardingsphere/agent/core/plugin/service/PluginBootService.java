@@ -26,7 +26,7 @@ import org.apache.shardingsphere.agent.core.spi.AgentTypedSPI;
 public interface PluginBootService extends AgentTypedSPI, AutoCloseable {
     
     /**
-     * Setup plugin boot service, like to configure or to initial.
+     * Start plugin boot service.
      *
      * @param pluginConfig plugin configuration
      */

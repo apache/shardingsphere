@@ -35,7 +35,7 @@ public final class AgentConfiguration {
     
     private String metricsType = "Prometheus";
     
-    private Set<String> ignorePlugins = new HashSet<>();
+    private Set<String> ignoredPluginNames = new HashSet<>();
     
     private Map<String, PluginConfiguration> plugins = new HashMap<>();
 }

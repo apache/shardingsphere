@@ -25,7 +25,6 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-
 import static org.junit.Assert.assertNotNull;
 
 public final class AgentConfigurationLoaderTest {
@@ -34,8 +33,7 @@ public final class AgentConfigurationLoaderTest {
     
     @Test
     public void assertLoad() throws IOException {
-        AgentPathBuilder builder = new AgentPathBuilder();
-        ReflectiveUtil.setProperty(builder, "agentPath", new File(getResourceUrl()));
+        ReflectiveUtil.setStaticField(AgentPathBuilder.class, "agentPath", new File(getResourceUrl()));
         AgentConfiguration configuration = AgentConfigurationLoader.load();
         assertNotNull(configuration);
     }

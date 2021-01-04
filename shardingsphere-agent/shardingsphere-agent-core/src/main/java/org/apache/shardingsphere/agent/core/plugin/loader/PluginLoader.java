@@ -105,7 +105,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             return;
         }
         Map<String, PluginInterceptorPoint> pointMap = Maps.newHashMap();
-        Set<String> ignorePlugins = AgentObjectPool.INSTANCE.get(AgentConfiguration.class).getIgnorePlugins();
+        Set<String> ignoredPluginNames = AgentObjectPool.INSTANCE.get(AgentConfiguration.class).getIgnoredPluginNames();
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             for (File jarFile : jarFiles) {
                 outputStream.reset();
@@ -121,7 +121,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
                 try {
                     ByteStreams.copy(jar.getInputStream(jar.getEntry(classNameToPath(entrypoint))), outputStream);
                     PluginDefinition pluginDefinition = (PluginDefinition) defineClass(entrypoint, outputStream.toByteArray(), 0, outputStream.size()).newInstance();
-                    if (!ignorePlugins.isEmpty() && ignorePlugins.contains(pluginDefinition.getPluginName())) {
+                    if (!ignoredPluginNames.isEmpty() && ignoredPluginNames.contains(pluginDefinition.getPluginName())) {
                         continue;
                     }
                     buildPluginInterceptorPointMap(pluginDefinition, pointMap);
@@ -213,9 +213,9 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             ZipEntry entry = each.jarFile.getEntry(path);
             if (Objects.nonNull(entry)) {
                 try {
-                    int i = name.lastIndexOf('.');
-                    if (i != -1) {
-                        String packageName = name.substring(0, i);
+                    int index = name.lastIndexOf('.');
+                    if (index != -1) {
+                        String packageName = name.substring(0, index);
                         definePackageInternal(packageName, each.jarFile.getManifest());
                     }
                     byte[] data = ByteStreams.toByteArray(each.jarFile.getInputStream(entry));
@@ -225,7 +225,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
                 }
             }
         }
-        throw new ClassNotFoundException("Class " + name + " not found.");
+        throw new ClassNotFoundException(String.format("Class name is %s not found.", name));
     }
     
     @Override
@@ -235,7 +235,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             JarEntry entry = each.jarFile.getJarEntry(name);
             if (Objects.nonNull(entry)) {
                 try {
-                    resources.add(new URL("jar:file:" + each.sourcePath.getAbsolutePath() + "!/" + name));
+                    resources.add(new URL(String.format("jar:file:%s!/%s", each.sourcePath.getAbsolutePath(), name)));
                 } catch (final MalformedURLException ignored) {
                 }
             }
@@ -249,7 +249,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             JarEntry entry = each.jarFile.getJarEntry(name);
             if (Objects.nonNull(entry)) {
                 try {
-                    return new URL("jar:file:" + each.sourcePath.getAbsolutePath() + "!/" + name);
+                    return new URL(String.format("jar:file:%s!/%s", each.sourcePath.getAbsolutePath(), name));
                 } catch (final MalformedURLException ignored) {
                 }
             }
@@ -269,7 +269,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     }
     
     private String classNameToPath(final String className) {
-        return className.replace(".", "/") + ".class";
+        return String.join("", className.replace(".", "/"), ".class");
     }
     
     private void definePackageInternal(final String packageName, final Manifest manifest) {

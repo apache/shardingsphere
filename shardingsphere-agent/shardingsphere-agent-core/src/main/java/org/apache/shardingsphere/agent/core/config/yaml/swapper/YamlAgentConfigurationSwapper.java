@@ -39,7 +39,7 @@ public final class YamlAgentConfigurationSwapper {
         AgentConfiguration result = new AgentConfiguration();
         result.setApplicationName(yamlConfig.getApplicationName());
         result.setMetricsType(yamlConfig.getMetricsType());
-        result.setIgnorePlugins(yamlConfig.getIgnorePlugins());
+        result.setIgnoredPluginNames(yamlConfig.getIgnoredPluginNames());
         Map<String, PluginConfiguration> configurationMap = yamlConfig.getPlugins().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> transform(entry.getValue())));
         result.setPlugins(configurationMap);
         return result;

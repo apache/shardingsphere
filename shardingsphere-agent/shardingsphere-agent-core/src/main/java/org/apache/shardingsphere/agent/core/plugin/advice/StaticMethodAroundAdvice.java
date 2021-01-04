@@ -28,12 +28,12 @@ public interface StaticMethodAroundAdvice {
     /**
      * Intercept the target method and weave the method before origin method. It will invoke before the origin calling.
      *
-     * @param klass the target class
+     * @param clazz the target class
      * @param method the target method
      * @param args all method arguments
      * @param result wrapped class of result to detect whether or not to execute the origin method
      */
-    default void beforeMethod(Class<?> klass, Method method, Object[] args, MethodInvocationResult result) {
+    default void beforeMethod(Class<?> clazz, Method method, Object[] args, MethodInvocationResult result) {
     }
     
     /**
@@ -50,11 +50,11 @@ public interface StaticMethodAroundAdvice {
     /**
      * Weaving the method after origin method throwing.
      *
-     * @param klass the target class
+     * @param clazz the target class
      * @param method the target method
      * @param args all method arguments
      * @param throwable exception from target method
      */
-    default void onThrowing(Class<?> klass, Method method, Object[] args, Throwable throwable) {
+    default void onThrowing(Class<?> clazz, Method method, Object[] args, Throwable throwable) {
     }
 }

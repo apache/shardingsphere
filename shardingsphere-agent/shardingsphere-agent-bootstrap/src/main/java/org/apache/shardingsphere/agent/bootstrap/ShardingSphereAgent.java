@@ -63,8 +63,8 @@ public final class ShardingSphereAgent {
     }
     
     private static void setupPluginBootService(final Map<String, PluginConfiguration> pluginConfigurationMap) {
-        PluginServiceManager.startAllService(pluginConfigurationMap);
-        Runtime.getRuntime().addShutdownHook(new Thread(PluginServiceManager::closeAllService));
+        PluginServiceManager.startAllServices(pluginConfigurationMap);
+        Runtime.getRuntime().addShutdownHook(new Thread(PluginServiceManager::closeAllServices));
     }
     
     private static void setUpAgentBuilder(final Instrumentation instrumentation, final PluginLoader pluginLoader) {
