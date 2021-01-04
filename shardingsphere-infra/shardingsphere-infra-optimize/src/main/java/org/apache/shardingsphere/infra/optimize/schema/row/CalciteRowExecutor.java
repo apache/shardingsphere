@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.execute;
+package org.apache.shardingsphere.infra.optimize.schema.row;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * Calcite internal executor.
  */
 @RequiredArgsConstructor
-public final class CalciteInternalExecutor {
+public final class CalciteRowExecutor {
     
     // TODO Consider use emptyList
     private final Collection<ShardingSphereRule> rules;

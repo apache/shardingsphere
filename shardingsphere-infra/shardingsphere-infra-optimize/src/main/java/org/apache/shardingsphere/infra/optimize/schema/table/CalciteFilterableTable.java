@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.schema;
+package org.apache.shardingsphere.infra.optimize.schema.table;
 
 import org.apache.calcite.DataContext;
 import org.apache.calcite.linq4j.AbstractEnumerable;
@@ -25,7 +25,8 @@ import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ProjectableFilterableTable;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.optimize.execute.CalciteInternalExecutor;
+import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
+import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowEnumerator;
 
 import java.util.List;
 
@@ -36,7 +37,7 @@ import java.util.List;
 public final class CalciteFilterableTable extends AbstractCalciteTable implements ProjectableFilterableTable {
     
     public CalciteFilterableTable(final TableMetaData tableMetaData, final RelProtoDataType relProtoDataType,
-                                  final CalciteInternalExecutor executor) {
+                                  final CalciteRowExecutor executor) {
         super(tableMetaData, relProtoDataType, executor);
     }
     

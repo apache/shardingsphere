@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.schema;
+package org.apache.shardingsphere.infra.optimize.schema.table;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,7 +25,7 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.optimize.execute.CalciteInternalExecutor;
+import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
 
 /**
  * Abstract calcite table.
@@ -38,7 +38,7 @@ public abstract class AbstractCalciteTable extends AbstractTable {
     
     private final RelProtoDataType relProtoDataType;
     
-    private final CalciteInternalExecutor executor;
+    private final CalciteRowExecutor executor;
     
     @Override
     public final RelDataType getRowType(final RelDataTypeFactory typeFactory) {
