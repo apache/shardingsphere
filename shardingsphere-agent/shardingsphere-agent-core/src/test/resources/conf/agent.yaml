@@ -38,4 +38,7 @@ plugins:
     host: "localhost"
     port: 15775
     props:
-      name: "Zipkin"
+      NAME: "Zipkin"
+  Logging:
+    props:
+      NAME: "Logging"
