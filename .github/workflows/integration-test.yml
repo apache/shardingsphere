@@ -28,7 +28,7 @@ on:
 
 jobs:
   build:
-    name: Run Proxy with scenario DB (MySQL)
+    name: MySQL-Proxy with DB scenario
     runs-on: ubuntu-latest
     steps:
       - name: Cache Maven Repos
@@ -46,8 +46,8 @@ jobs:
         with:
           java-version: 8
       
-      - name: Build with Maven
-        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -B -Drat.skip=true -Djacoco.skip=true -DskipITs
+      - name: Build Project
+        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs
       
       - name: Run Integration Test
         run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.docker -Dscenarios=db
