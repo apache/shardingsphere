@@ -19,6 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
 import brave.Span;
 import brave.Tracing;
+import java.lang.reflect.Field;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.MethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
@@ -48,7 +49,9 @@ public final class CommandExecutorTaskAdvice implements MethodAroundAdvice {
     @SneakyThrows
     @Override
     public void afterMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        BackendConnection connection = (BackendConnection) CommandExecutorTask.class.getDeclaredField("backendConnection").get(target);
+        Field field = CommandExecutorTask.class.getDeclaredField("backendConnection");
+        field.setAccessible(true);
+        BackendConnection connection = (BackendConnection) field.get(target);
         Span span = (Span) ExecutorDataMap.getValue().remove(ZipkinConstants.ROOT_SPAN);
         span.tag(ZipkinConstants.Tags.CONNECTION_COUNT, String.valueOf(connection.getConnectionSize()));
         span.flush();

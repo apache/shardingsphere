@@ -112,9 +112,9 @@ public final class PluginLoader extends ClassLoader implements Closeable {
                 JarFile jar = new JarFile(each, true);
                 jars.add(new PluginJar(jar, each));
                 log.info("Loaded jar {}.", each.getName());
-                loadPluginDefinitionServices(ignoredPluginNames, pointMap);
             }
         }
+        loadPluginDefinitionServices(ignoredPluginNames, pointMap);
         interceptorPointMap = ImmutableMap.<String, PluginInterceptorPoint>builder().putAll(pointMap).build();
     }
     
