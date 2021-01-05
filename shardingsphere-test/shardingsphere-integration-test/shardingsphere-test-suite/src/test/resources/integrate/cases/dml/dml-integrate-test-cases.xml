@@ -16,11 +16,11 @@
   -->
 
 <integrate-test-cases>
-   <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)">
-       <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
-       <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
-    </test-case>
-    
+<!--   <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)">-->
+<!--       <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />-->
+<!--       <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />-->
+<!--    </test-case>-->
+<!--    -->
 <!--    <test-case sql="INSERT INTO t_order_item (item_id, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', now())" db-types="MySQL">-->
 <!--        <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_now_function.xml" />-->
 <!--    </test-case>-->
