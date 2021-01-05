@@ -45,7 +45,7 @@ public final class OpenTracingPluginBootService implements PluginBootService {
     
     @Override
     public String getType() {
-        return "OpenTracing";
+        return "Opentracing";
     }
     
     private void init(final Tracer tracer) {
