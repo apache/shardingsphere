@@ -24,6 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AlterR
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateRepli
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateShardingRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropReplicaQueryRuleBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropShardingRuleBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
@@ -77,6 +79,9 @@ public final class RDLBackendHandlerFactory {
     private static Optional<TextProtocolBackendHandler> createRDLBackendHandler(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) {
         if (sqlStatement instanceof AddResourceStatement) {
             return Optional.of(new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, backendConnection));
+        }
+        if (sqlStatement instanceof DropResourceStatement) {
+            return Optional.of(new DropResourceBackendHandler((DropResourceStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof CreateDatabaseStatement) {
             return Optional.of(new CreateDatabaseBackendHandler((CreateDatabaseStatement) sqlStatement));

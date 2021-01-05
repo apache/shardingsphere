@@ -29,6 +29,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.C
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropReplicaQueryRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ReplicaQueryRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.SchemaNameContext;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AlterR
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleStatement;
@@ -77,7 +79,16 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         result.setName(ctx.dataSourceName().getText());
         return result;
     }
-    
+
+    @Override
+    public ASTNode visitDropResource(final DropResourceContext ctx) {
+        DropResourceStatement result = new DropResourceStatement();
+        for (TerminalNode each : ctx.IDENTIFIER()) {
+            result.getResourceNames().add(each.getText());
+        }
+        return result;
+    }
+
     @Override
     public ASTNode visitDataSourceDefinition(final DataSourceDefinitionContext ctx) {
         DataSourceSegment result = new DataSourceSegment();

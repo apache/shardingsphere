@@ -23,6 +23,10 @@ addResource
     : ADD RESOURCE LP dataSource (COMMA dataSource)* RP
     ;
 
+dropResource
+    : DROP RESOURCE LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    ;
+
 dataSource
     : dataSourceName EQ dataSourceDefinition
     ;

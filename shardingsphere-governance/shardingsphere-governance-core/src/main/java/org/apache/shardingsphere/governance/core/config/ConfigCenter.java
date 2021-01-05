@@ -24,6 +24,7 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePersistEvent;
@@ -117,6 +118,16 @@ public final class ConfigCenter {
     @Subscribe
     public synchronized void renew(final DataSourcePersistEvent event) {
         addDataSourceConfigurations(event.getSchemaName(), event.getDataSourceConfigurations());
+    }
+
+    /**
+     * change data source configurations.
+     * @param event Data source event.
+     */
+    @Subscribe
+    public synchronized void renew(final DataSourceChangedEvent event) {
+
+        persistDataSourceConfigurations(event.getSchemaName(), event.getDataSourceConfigurations());
     }
     
     /**
