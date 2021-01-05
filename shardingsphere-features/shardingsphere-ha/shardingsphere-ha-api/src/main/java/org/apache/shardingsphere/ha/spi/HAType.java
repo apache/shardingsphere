@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.ha.spi;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * HA type.
  */
-public interface HAType extends ShardingSphereAlgorithm {
+public interface HAType extends TypedSPI {
     
     /**
      * Check HA config.
@@ -46,15 +46,15 @@ public interface HAType extends ShardingSphereAlgorithm {
     void updatePrimaryDataSource(Map<String, DataSource> dataSourceMap, String schemaName);
     
     /**
-     * Start periodical monitor.
+     * Start periodical update.
      *
      * @param dataSourceMap data source map
      * @param schemaName schema name
      */
-    void startPeriodicalMonitor(Map<String, DataSource> dataSourceMap, String schemaName);
+    void startPeriodicalUpdate(Map<String, DataSource> dataSourceMap, String schemaName);
     
     /**
-     * Stop periodical monitor.
+     * Stop periodical update.
      */
-    void stopPeriodicalMonitor();
+    void stopPeriodicalUpdate();
 }

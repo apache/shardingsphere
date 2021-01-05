@@ -169,7 +169,7 @@ public final class MGRHAType implements HAType {
     }
     
     @Override
-    public void startPeriodicalMonitor(final Map<String, DataSource> dataSourceMap, final String schemaName) {
+    public void startPeriodicalUpdate(final Map<String, DataSource> dataSourceMap, final String schemaName) {
         if (null == coordinatorRegistryCenter) {
             ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("zkServerLists"), "mgr-elasticjob");
             coordinatorRegistryCenter = new ZookeeperRegistryCenter(zkConfig);
@@ -181,7 +181,7 @@ public final class MGRHAType implements HAType {
     }
     
     @Override
-    public void stopPeriodicalMonitor() {
+    public void stopPeriodicalUpdate() {
         scheduleJobBootstrap.shutdown();
     }
     

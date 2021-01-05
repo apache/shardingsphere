@@ -75,11 +75,11 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
             haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaType().getType(), config.getHaType().getProps());
             haType.updatePrimaryDataSource(dataSourceMap, schemaName);
         } else {
-            haType.stopPeriodicalMonitor();
+            haType.stopPeriodicalUpdate();
         }
         try {
             haType.checkHAConfig(dataSourceMap, schemaName);
-            haType.startPeriodicalMonitor(dataSourceMap, schemaName);
+            haType.startPeriodicalUpdate(dataSourceMap, schemaName);
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         }
@@ -101,11 +101,11 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
             haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaType().getType(), config.getHaType().getProps());
             haType.updatePrimaryDataSource(dataSourceMap, schemaName);
         } else {
-            haType.stopPeriodicalMonitor();
+            haType.stopPeriodicalUpdate();
         }
         try {
             haType.checkHAConfig(dataSourceMap, schemaName);
-            haType.startPeriodicalMonitor(dataSourceMap, schemaName);
+            haType.startPeriodicalUpdate(dataSourceMap, schemaName);
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         }
