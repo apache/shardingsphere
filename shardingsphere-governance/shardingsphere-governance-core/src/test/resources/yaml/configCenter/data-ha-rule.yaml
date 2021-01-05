@@ -21,8 +21,9 @@ rules:
     pr_ds:
       name: pr_ds
       dataSourceNames:
-        - replica_ds_0
-        - replica_ds_1
+        - ds_0
+        - ds_1
+        - ds_2
   haType:
     type: MGR
     props:
