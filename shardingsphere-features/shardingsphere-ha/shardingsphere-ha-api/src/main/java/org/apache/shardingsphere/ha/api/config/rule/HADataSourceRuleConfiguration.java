@@ -31,7 +31,7 @@ public final class HADataSourceRuleConfiguration {
     
     private final String name;
     
-    private final List<String> replicaDataSourceNames;
+    private final List<String> dataSourceNames;
     
     private final String loadBalancerName;
     

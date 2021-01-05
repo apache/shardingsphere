@@ -42,11 +42,6 @@ public final class HADataSourceRuleTest {
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertNewHADataSourceRuleWithoutPrimaryDataSourceName() {
-        new HADataSourceRule(new HADataSourceRuleConfiguration("ds", Collections.singletonList("replica_ds"), null, true), new RoundRobinReplicaLoadBalanceAlgorithm());
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
     public void assertNewHADataSourceRuleWithNullReplicaDataSourceName() {
         new HADataSourceRule(new HADataSourceRuleConfiguration("ds", null, null, true), new RoundRobinReplicaLoadBalanceAlgorithm());
     }
@@ -57,33 +52,33 @@ public final class HADataSourceRuleTest {
     }
     
     @Test
-    public void assertGetReplicaDataSourceNamesWithoutDisabledDataSourceNames() {
-        assertThat(haDataSourceRule.getReplicaDataSourceNames(), is(Arrays.asList("replica_ds_0", "replica_ds_1")));
+    public void assertGetDataSourceNamesWithoutDisabledDataSourceNames() {
+        assertThat(haDataSourceRule.getDataSourceNames(), is(Arrays.asList("replica_ds_0", "replica_ds_1")));
     }
     
     @Test
-    public void assertGetReplicaDataSourceNamesWithDisabledDataSourceNames() {
+    public void assertGetDataSourceNamesWithDisabledDataSourceNames() {
         haDataSourceRule.updateDisabledDataSourceNames("replica_ds_0", true);
-        assertThat(haDataSourceRule.getReplicaDataSourceNames(), is(Collections.singletonList("replica_ds_1")));
+        assertThat(haDataSourceRule.getDataSourceNames(), is(Collections.singletonList("replica_ds_1")));
     }
     
     @Test
     public void assertUpdateDisabledDataSourceNamesForDisabled() {
         haDataSourceRule.updateDisabledDataSourceNames("replica_ds_0", true);
-        assertThat(haDataSourceRule.getReplicaDataSourceNames(), is(Collections.singletonList("replica_ds_1")));
+        assertThat(haDataSourceRule.getDataSourceNames(), is(Collections.singletonList("replica_ds_1")));
     }
     
     @Test
     public void assertUpdateDisabledDataSourceNamesForEnabled() {
         haDataSourceRule.updateDisabledDataSourceNames("replica_ds_0", true);
         haDataSourceRule.updateDisabledDataSourceNames("replica_ds_0", false);
-        assertThat(haDataSourceRule.getReplicaDataSourceNames(), is(Arrays.asList("replica_ds_0", "replica_ds_1")));
+        assertThat(haDataSourceRule.getDataSourceNames(), is(Arrays.asList("replica_ds_0", "replica_ds_1")));
     }
     
     @Test
     public void assertGetDataSourceMapper() {
         Map<String, Collection<String>> actual = haDataSourceRule.getDataSourceMapper();
-        Map<String, Collection<String>> expected = ImmutableMap.of("test_pr", Arrays.asList("primary_ds", "replica_ds_0", "replica_ds_1"));
+        Map<String, Collection<String>> expected = ImmutableMap.of("test_pr", Arrays.asList("replica_ds_0", "replica_ds_1"));
         assertThat(actual, is(expected));
     }
 }

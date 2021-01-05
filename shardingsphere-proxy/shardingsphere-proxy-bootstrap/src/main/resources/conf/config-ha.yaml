@@ -111,7 +111,7 @@
 #  dataSources:
 #    pr_ds:
 #      name: pr_ds
-#      replicaDataSourceNames:
+#      dataSourceNames:
 #        - replica_ds_0
 #        - replica_ds_1
 #      replicaQuery: false

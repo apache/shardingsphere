@@ -46,7 +46,7 @@ public final class TestRouteHATypeFixture implements HAType {
     
     @Override
     public String getPrimaryDataSource() {
-        return null;
+        return "primary";
     }
     
     @Override

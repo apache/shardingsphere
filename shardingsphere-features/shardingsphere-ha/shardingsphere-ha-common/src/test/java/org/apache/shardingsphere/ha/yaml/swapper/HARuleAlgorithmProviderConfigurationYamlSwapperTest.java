@@ -47,7 +47,7 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapperTest {
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("name")));
         assertThat(actual.getDataSources().get("name").getName(), is("name"));
         assertThat(actual.getDataSources().get("name").getLoadBalancerName(), is("loadBalancerName"));
-        assertThat(actual.getDataSources().get("name").getReplicaDataSourceNames(), is(Collections.singletonList("replicaDataSourceName")));
+        assertThat(actual.getDataSources().get("name").getDataSourceNames(), is(Collections.singletonList("replicaDataSourceName")));
         assertNotNull(actual.getLoadBalancers());
         assertThat(actual.getLoadBalancers().keySet(), is(Collections.singleton("name")));
         assertNotNull(actual.getLoadBalancers().get("name"));
@@ -64,7 +64,7 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapperTest {
         assertNotNull(ruleConfig);
         assertThat(ruleConfig.getName(), is("name"));
         assertThat(ruleConfig.getLoadBalancerName(), is("loadBalancerName"));
-        assertThat(ruleConfig.getReplicaDataSourceNames(), is(Collections.singletonList("replicaDataSourceName")));
+        assertThat(ruleConfig.getDataSourceNames(), is(Collections.singletonList("replicaDataSourceName")));
         assertThat(actual.getLoadBalanceAlgorithms(), is(Collections.emptyMap()));
     }
     
