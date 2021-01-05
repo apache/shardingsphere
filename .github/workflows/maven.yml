@@ -27,7 +27,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build on windows:
+  windows:
     runs-on: windows-latest
     steps:
       - name: Cache Maven Repos
@@ -49,7 +49,7 @@ jobs:
       - name: Build examples with Maven
         run: ./mvnw -B -f examples/pom.xml clean package -DskipTests
 
-  build on unix:
+  unix:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
