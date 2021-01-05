@@ -47,7 +47,6 @@ public final class HARuleBuilder implements ShardingSphereRuleBuilder<HARule, HA
     public HARule build(final HARuleConfiguration ruleConfig) {
         Set<String> dataSourceSet = new HashSet<>(128, 1);
         for (HADataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
-            dataSourceSet.add(each.getPrimaryDataSourceName());
             dataSourceSet.addAll(each.getReplicaDataSourceNames());
         }
         dataSourceMap.entrySet().removeIf(stringDataSourceEntry -> !dataSourceSet.contains(stringDataSourceEntry.getKey()));

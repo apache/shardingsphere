@@ -27,8 +27,6 @@ import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.ha.spi.HAType;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceUpdateEvent;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -122,11 +120,6 @@ public final class MGRHAType implements HAType {
         if (newPrimaryDataSource.isEmpty()) {
             return;
         }
-        if (null == oldPrimaryDataSource) {
-            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, newPrimaryDataSource, newPrimaryDataSource));
-        } else if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
-            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, newPrimaryDataSource, oldPrimaryDataSource));
-        }
         oldPrimaryDataSource = newPrimaryDataSource;
     }
     
@@ -183,6 +176,11 @@ public final class MGRHAType implements HAType {
     @Override
     public void stopPeriodicalUpdate() {
         scheduleJobBootstrap.shutdown();
+    }
+    
+    @Override
+    public String getPrimaryDataSource() {
+        return oldPrimaryDataSource;
     }
     
     @Override

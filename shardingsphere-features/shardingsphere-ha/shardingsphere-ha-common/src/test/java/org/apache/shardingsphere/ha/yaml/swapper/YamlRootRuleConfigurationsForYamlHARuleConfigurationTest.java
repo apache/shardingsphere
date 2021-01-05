@@ -69,13 +69,11 @@ public final class YamlRootRuleConfigurationsForYamlHARuleConfigurationTest {
     }
     
     private void assertHARuleForDs0(final YamlHARuleConfiguration actual) {
-        assertThat(actual.getDataSources().get("ds_0").getPrimaryDataSourceName(), is("primary_ds_0"));
         assertThat(actual.getDataSources().get("ds_0").getReplicaDataSourceNames(), is(Arrays.asList("primary_ds_0_replica_0", "primary_ds_0_replica_1")));
         assertThat(actual.getDataSources().get("ds_0").getLoadBalancerName(), is("roundRobin"));
     }
     
     private void assertHARuleForDs1(final YamlHARuleConfiguration actual) {
-        assertThat(actual.getDataSources().get("ds_1").getPrimaryDataSourceName(), is("primary_ds_1"));
         assertThat(actual.getDataSources().get("ds_1").getReplicaDataSourceNames(), is(Arrays.asList("primary_ds_1_replica_0", "primary_ds_1_replica_1")));
         assertThat(actual.getDataSources().get("ds_1").getLoadBalancerName(), is("random"));
     }

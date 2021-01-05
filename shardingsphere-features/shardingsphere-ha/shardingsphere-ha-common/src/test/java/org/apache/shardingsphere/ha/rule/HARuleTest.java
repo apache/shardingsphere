@@ -61,7 +61,7 @@ public final class HARuleTest {
     
     private HARule createHARule() {
         HADataSourceRuleConfiguration config =
-                new HADataSourceRuleConfiguration("test_pr", "primary_ds", Arrays.asList("replica_ds_0", "replica_ds_1"), "random", true);
+                new HADataSourceRuleConfiguration("test_pr", Arrays.asList("replica_ds_0", "replica_ds_1"), "random", true);
         return new HARule(new HARuleConfiguration(
                 Collections.singleton(config), ImmutableMap.of("random", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties())),
                 new ShardingSphereAlgorithmConfiguration("Test", new Properties())),
@@ -70,7 +70,6 @@ public final class HARuleTest {
     
     private void assertDataSourceRule(final HADataSourceRule actual) {
         assertThat(actual.getName(), is("test_pr"));
-        assertThat(actual.getPrimaryDataSourceName(), is("primary_ds"));
         assertThat(actual.getReplicaDataSourceNames(), is(Arrays.asList("replica_ds_0", "replica_ds_1")));
         assertThat(actual.getLoadBalancer().getType(), is("RANDOM"));
     }

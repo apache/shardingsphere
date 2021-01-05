@@ -51,7 +51,6 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapper
     private YamlHADataSourceRuleConfiguration swapToYamlConfiguration(final HADataSourceRuleConfiguration dataSourceRuleConfig) {
         YamlHADataSourceRuleConfiguration result = new YamlHADataSourceRuleConfiguration();
         result.setName(dataSourceRuleConfig.getName());
-        result.setPrimaryDataSourceName(dataSourceRuleConfig.getPrimaryDataSourceName());
         result.setReplicaDataSourceNames(dataSourceRuleConfig.getReplicaDataSourceNames());
         result.setLoadBalancerName(dataSourceRuleConfig.getLoadBalancerName());
         result.setReplicaQuery(dataSourceRuleConfig.isReplicaQuery());
@@ -70,7 +69,7 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapper
     }
     
     private HADataSourceRuleConfiguration swapToObject(final String name, final YamlHADataSourceRuleConfiguration yamlDataSourceRuleConfig) {
-        return new HADataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getPrimaryDataSourceName(), yamlDataSourceRuleConfig.getReplicaDataSourceNames(),
+        return new HADataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getReplicaDataSourceNames(),
                 yamlDataSourceRuleConfig.getLoadBalancerName(), yamlDataSourceRuleConfig.isReplicaQuery());
     }
     

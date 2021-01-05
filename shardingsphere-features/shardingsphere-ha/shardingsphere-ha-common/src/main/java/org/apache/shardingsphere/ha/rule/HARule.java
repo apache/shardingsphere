@@ -19,6 +19,7 @@ package org.apache.shardingsphere.ha.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import lombok.Getter;
 import org.apache.shardingsphere.ha.spi.HAType;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -53,6 +54,7 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
         ShardingSphereServiceLoader.register(HAType.class);
     }
     
+    @Getter
     private static HAType haType;
     
     private final Map<String, ReplicaLoadBalanceAlgorithm> loadBalancers = new LinkedHashMap<>();

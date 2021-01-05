@@ -111,7 +111,6 @@
 #  dataSources:
 #    pr_ds:
 #      name: pr_ds
-#      primaryDataSourceName: primary_ds
 #      replicaDataSourceNames:
 #        - replica_ds_0
 #        - replica_ds_1

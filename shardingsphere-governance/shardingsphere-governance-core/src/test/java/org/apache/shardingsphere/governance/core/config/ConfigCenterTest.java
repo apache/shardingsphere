@@ -393,7 +393,6 @@ public final class ConfigCenterTest {
         Collection<RuleConfiguration> actual = configCenter.loadRuleConfigurations("sharding_db");
         HARuleConfiguration config = (HARuleConfiguration) actual.iterator().next();
         assertThat(config.getDataSources().size(), is(1));
-        assertThat(config.getDataSources().iterator().next().getPrimaryDataSourceName(), is("primary_ds"));
         assertThat(config.getDataSources().iterator().next().getReplicaDataSourceNames().size(), is(2));
         assertThat(config.getHaType().getType(), is("MGR"));
         assertThat(config.getHaType().getProps().getProperty("keepAliveSeconds"), is("5"));

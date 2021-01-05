@@ -44,6 +44,11 @@ public final class TestHATypeFixture implements HAType {
     }
     
     @Override
+    public String getPrimaryDataSource() {
+        return null;
+    }
+    
+    @Override
     public String getType() {
         return "Test";
     }

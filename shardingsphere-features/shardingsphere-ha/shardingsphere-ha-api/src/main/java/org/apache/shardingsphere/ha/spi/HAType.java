@@ -57,4 +57,12 @@ public interface HAType extends TypedSPI {
      * Stop periodical update.
      */
     void stopPeriodicalUpdate();
+    
+    /**
+     * Get primary data source.
+     *
+     * @return primary data source
+     */
+    String getPrimaryDataSource();
+    
 }

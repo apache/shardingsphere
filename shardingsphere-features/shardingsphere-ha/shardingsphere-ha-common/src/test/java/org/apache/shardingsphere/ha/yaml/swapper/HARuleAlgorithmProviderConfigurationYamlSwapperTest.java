@@ -46,7 +46,6 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapperTest {
         assertNotNull(actual.getDataSources());
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("name")));
         assertThat(actual.getDataSources().get("name").getName(), is("name"));
-        assertThat(actual.getDataSources().get("name").getPrimaryDataSourceName(), is("primaryDataSourceName"));
         assertThat(actual.getDataSources().get("name").getLoadBalancerName(), is("loadBalancerName"));
         assertThat(actual.getDataSources().get("name").getReplicaDataSourceNames(), is(Collections.singletonList("replicaDataSourceName")));
         assertNotNull(actual.getLoadBalancers());
@@ -64,7 +63,6 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapperTest {
         HADataSourceRuleConfiguration ruleConfig = actual.getDataSources().iterator().next();
         assertNotNull(ruleConfig);
         assertThat(ruleConfig.getName(), is("name"));
-        assertThat(ruleConfig.getPrimaryDataSourceName(), is("primaryDataSourceName"));
         assertThat(ruleConfig.getLoadBalancerName(), is("loadBalancerName"));
         assertThat(ruleConfig.getReplicaDataSourceNames(), is(Collections.singletonList("replicaDataSourceName")));
         assertThat(actual.getLoadBalanceAlgorithms(), is(Collections.emptyMap()));
@@ -86,7 +84,7 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapperTest {
     }
     
     private YamlHARuleConfiguration createYamlHARuleConfiguration() {
-        HADataSourceRuleConfiguration ruleConfig = new HADataSourceRuleConfiguration("name", "primaryDataSourceName",
+        HADataSourceRuleConfiguration ruleConfig = new HADataSourceRuleConfiguration("name",
                 Collections.singletonList("replicaDataSourceName"), "loadBalancerName", true);
         return swapper.swapToYamlConfiguration(
                 new AlgorithmProvidedHARuleConfiguration(Collections.singletonList(ruleConfig), ImmutableMap.of("name", new RandomReplicaLoadBalanceAlgorithm()),

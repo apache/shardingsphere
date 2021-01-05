@@ -40,8 +40,6 @@ public final class HADataSourceRule {
     
     private final String name;
     
-    private final String primaryDataSourceName;
-    
     private final List<String> replicaDataSourceNames;
     
     private final ReplicaLoadBalanceAlgorithm loadBalancer;
@@ -54,7 +52,6 @@ public final class HADataSourceRule {
     public HADataSourceRule(final HADataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer) {
         checkConfiguration(config);
         name = config.getName();
-        primaryDataSourceName = config.getPrimaryDataSourceName();
         replicaDataSourceNames = config.getReplicaDataSourceNames();
         this.loadBalancer = loadBalancer;
         this.replicaQuery = config.isReplicaQuery();
@@ -62,7 +59,6 @@ public final class HADataSourceRule {
     
     private void checkConfiguration(final HADataSourceRuleConfiguration config) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getPrimaryDataSourceName()), "Primary data source name is required.");
         Preconditions.checkArgument(null != config.getReplicaDataSourceNames() && !config.getReplicaDataSourceNames().isEmpty(), "Replica data source names are required.");
     }
     
@@ -97,7 +93,6 @@ public final class HADataSourceRule {
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>(1, 1);
         Collection<String> actualDataSourceNames = new LinkedList<>();
-        actualDataSourceNames.add(primaryDataSourceName);
         actualDataSourceNames.addAll(replicaDataSourceNames);
         result.put(name, actualDataSourceNames);
         return result;
