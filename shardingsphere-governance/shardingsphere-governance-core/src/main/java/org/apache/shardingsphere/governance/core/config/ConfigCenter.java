@@ -37,7 +37,6 @@ import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigur
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
-import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.AuthenticationYamlSwapper;
@@ -45,7 +44,6 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceUpdateEvent;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -162,22 +160,6 @@ public final class ConfigCenter {
     }
     
     /**
-     * Persist new HA rule configurations.
-     *
-     * @param event Data source name update event.
-     */
-    @Subscribe
-    public synchronized void renew(final PrimaryDataSourceUpdateEvent event) {
-        Collection<RuleConfiguration> ruleConfigurations = loadRuleConfigurations(event.getSchemaName());
-        for (RuleConfiguration each : ruleConfigurations) {
-            if (each instanceof HARuleConfiguration) {
-                updateHaDataSourceRuleConfigurations(event, (HARuleConfiguration) each);
-            }
-        }
-        persistRuleConfigurations(event.getSchemaName(), ruleConfigurations);
-    }
-    
-    /**
      * Switch rule configuration.
      * 
      * @param event switch rule configuration event
@@ -191,17 +173,6 @@ public final class ConfigCenter {
     private Collection<RuleConfiguration> loadCachedRuleConfigurations(final String schemaName, final String ruleConfigurationCacheId) {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
                 YamlEngine.unmarshal(configCacheManager.loadCache(node.getRulePath(schemaName), ruleConfigurationCacheId), YamlRootRuleConfigurations.class).getRules());
-    }
-    
-    private void updateHaDataSourceRuleConfigurations(final PrimaryDataSourceUpdateEvent event, final HARuleConfiguration haRuleConfiguration) {
-        Collection<HADataSourceRuleConfiguration> haDataSourceRuleConfigurations = haRuleConfiguration.getDataSources();
-        for (HADataSourceRuleConfiguration each : haDataSourceRuleConfigurations) {
-            if (each.getPrimaryDataSourceName().equals(event.getNewPrimaryDataSource())) {
-                break;
-            }
-            each.setPrimaryDataSourceName(event.getNewPrimaryDataSource());
-            each.getReplicaDataSourceNames().remove(event.getNewPrimaryDataSource());
-        }
     }
     
     private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
@@ -288,7 +259,7 @@ public final class ConfigCenter {
                 configs.add(each);
             } else if (each instanceof HARuleConfiguration) {
                 HARuleConfiguration config = (HARuleConfiguration) each;
-                Preconditions.checkState(!config.getHaType().getType().isEmpty(), "No available HA rule configuration in `%s` for governance.", schemaName);
+                Preconditions.checkState(!config.getHaConfiguration().getType().isEmpty(), "No available HA rule configuration in `%s` for governance.", schemaName);
                 configs.add(each);
             }
         }

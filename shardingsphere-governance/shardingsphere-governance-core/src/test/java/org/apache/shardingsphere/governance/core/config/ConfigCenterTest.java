@@ -393,11 +393,10 @@ public final class ConfigCenterTest {
         Collection<RuleConfiguration> actual = configCenter.loadRuleConfigurations("sharding_db");
         HARuleConfiguration config = (HARuleConfiguration) actual.iterator().next();
         assertThat(config.getDataSources().size(), is(1));
-        assertThat(config.getDataSources().iterator().next().getPrimaryDataSourceName(), is("primary_ds"));
-        assertThat(config.getDataSources().iterator().next().getReplicaDataSourceNames().size(), is(2));
-        assertThat(config.getHaType().getType(), is("MGR"));
-        assertThat(config.getHaType().getProps().getProperty("keepAliveSeconds"), is("5"));
-        assertThat(config.getHaType().getProps().getProperty("groupName"), is("92504d5b-6dec-11e8-91ea-246e9612aaf1"));
+        assertThat(config.getDataSources().iterator().next().getDataSourceNames().size(), is(3));
+        assertThat(config.getHaConfiguration().getType(), is("MGR"));
+        assertThat(config.getHaConfiguration().getProps().getProperty("keepAliveCron"), is("0/5 * * * * ?"));
+        assertThat(config.getHaConfiguration().getProps().getProperty("groupName"), is("92504d5b-6dec-11e8-91ea-246e9612aaf1"));
     }
     
     @Test

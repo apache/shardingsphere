@@ -55,10 +55,9 @@ public class HASpringBootStarterTest {
         assertThat(config.getDataSources().size(), is(1));
         HADataSourceRuleConfiguration dataSourceRuleConfig = config.getDataSources().stream().findFirst().get();
         assertThat(dataSourceRuleConfig.getName(), is("pr_ds"));
-        assertThat(dataSourceRuleConfig.getPrimaryDataSourceName(), is("primary_ds"));
         assertThat(dataSourceRuleConfig.getLoadBalancerName(), is("random"));
         assertTrue(dataSourceRuleConfig.isReplicaQuery());
-        assertThat(dataSourceRuleConfig.getReplicaDataSourceNames().size(), is(2));
+        assertThat(dataSourceRuleConfig.getDataSourceNames().size(), is(2));
         assertTrue(config.getDataSources().contains(dataSourceRuleConfig));
         assertThat(config.getLoadBalanceAlgorithms().size(), is(1));
         assertTrue(config.getLoadBalanceAlgorithms().containsKey("random"));

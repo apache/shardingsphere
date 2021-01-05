@@ -19,13 +19,14 @@ rules:
 - !HA
   dataSources:
     pr_ds:
-      primaryDataSourceName: primary_ds
       name: pr_ds
-      replicaDataSourceNames:
-        - replica_ds_0
-        - replica_ds_1
+      dataSourceNames:
+        - ds_0
+        - ds_1
+        - ds_2
   haType:
     type: MGR
     props:
       groupName: 92504d5b-6dec-11e8-91ea-246e9612aaf1
-      keepAliveSeconds: '5'
+      zkServerLists: 'localhost:2181'
+      keepAliveCron: '0/5 * * * * ?'
