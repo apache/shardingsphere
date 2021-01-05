@@ -21,7 +21,7 @@ package org.apache.shardingsphere.agent.core.exception;
 /**
  * Plugin definition not found exception.
  */
-public class PluginDefinitionNotFoundException extends RuntimeException {
+public final class PluginDefinitionNotFoundException extends RuntimeException {
     
     /**
      * Constructs an exception with formatted error message and arguments.

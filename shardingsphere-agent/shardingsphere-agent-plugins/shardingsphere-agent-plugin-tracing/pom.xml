@@ -35,14 +35,13 @@
     </modules>
     
     <properties>
-        <entrypoint.class/>
         <tracing.target.directory>${project.basedir}/../target/plugins</tracing.target.directory>
     </properties>
     
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-core</artifactId>
+            <artifactId>shardingsphere-agent-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -55,13 +54,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Entrypoint>${entrypoint.class}</Entrypoint>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>

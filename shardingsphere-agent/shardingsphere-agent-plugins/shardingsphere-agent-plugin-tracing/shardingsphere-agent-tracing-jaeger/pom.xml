@@ -26,13 +26,11 @@
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-tracing-jaeger</artifactId>
-    <packaging>jar</packaging>
     <name>${project.artifactId}</name>
     
     <properties>
         <jaeger-client.version>0.31.0</jaeger-client.version>
         <opentracing.version>0.31.0</opentracing.version>
-        <entrypoint.class>org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition.JaegerPluginDefinition</entrypoint.class>
     </properties>
     
     <dependencies>
