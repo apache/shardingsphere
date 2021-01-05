@@ -19,7 +19,6 @@ package org.apache.shardingsphere.agent.metrics.api.reporter;
 
 import java.util.Collection;
 import java.util.List;
-import org.apache.shardingsphere.agent.metrics.api.provider.MetricsProvider;
 import org.apache.shardingsphere.agent.metrics.api.MetricsRegister;
 import org.apache.shardingsphere.agent.metrics.api.entity.Metric;
 
@@ -28,7 +27,16 @@ import org.apache.shardingsphere.agent.metrics.api.entity.Metric;
  */
 public final class MetricsReporter {
     
-    private static final MetricsRegister METRICS_REGISTER = MetricsProvider.INSTANCE.newInstance();
+    private static MetricsRegister metricsRegister;
+    
+    /**
+     * Register.
+     *
+     * @param metricsRegister metrics register
+     */
+    public static void register(final MetricsRegister metricsRegister) {
+        MetricsReporter.metricsRegister = metricsRegister;
+    }
     
     /**
      * Register metrics.
@@ -56,74 +64,74 @@ public final class MetricsReporter {
     /**
      * Register counter.
      *
-     * @param name name
+     * @param name       name
      * @param labelNames label names
-     * @param document document for counter
+     * @param document   document for counter
      */
     public static void registerCounter(final String name, final String[] labelNames, final String document) {
-        METRICS_REGISTER.registerCounter(name, labelNames, document);
+        metricsRegister.registerCounter(name, labelNames, document);
     }
     
     /**
      * Register counter.
      *
-     * @param name name
+     * @param name     name
      * @param document document for counter
      */
     public static void registerCounter(final String name, final String document) {
-        METRICS_REGISTER.registerCounter(name, null, document);
+        metricsRegister.registerCounter(name, null, document);
     }
     
     /**
      * Register gauge.
      *
-     * @param name name
+     * @param name       name
      * @param labelNames label names
-     * @param document document for gauge
+     * @param document   document for gauge
      */
     public static void registerGauge(final String name, final String[] labelNames, final String document) {
-        METRICS_REGISTER.registerGauge(name, labelNames, document);
+        metricsRegister.registerGauge(name, labelNames, document);
     }
     
     /**
      * Register gauge.
      *
-     * @param name name
+     * @param name     name
      * @param document document for gauge
      */
     public static void registerGauge(final String name, final String document) {
-        METRICS_REGISTER.registerGauge(name, null, document);
+        metricsRegister.registerGauge(name, null, document);
     }
     
     /**
      * Register histogram by label names.
      *
-     * @param name name
+     * @param name       name
      * @param labelNames label names
-     * @param document document for histogram
+     * @param document   document for histogram
      */
     public static void registerHistogram(final String name, final String[] labelNames, final String document) {
-        METRICS_REGISTER.registerHistogram(name, labelNames, document);
+        metricsRegister.registerHistogram(name, labelNames, document);
     }
     
     /**
      * Register histogram.
      *
-     * @param name name
+     * @param name     name
      * @param document document for histogram
      */
     public static void registerHistogram(final String name, final String document) {
-        METRICS_REGISTER.registerHistogram(name, null, document);
+        metricsRegister.registerHistogram(name, null, document);
     }
     
     /**
      * Counter increment.
      *
-     * @param name name
+     * @param name        name
      * @param labelValues label values
      */
     public static void counterIncrement(final String name, final String[] labelValues) {
-        METRICS_REGISTER.counterIncrement(name, labelValues);
+        metricsRegister.counterIncrement(name, labelValues);
     }
     
     /**
@@ -138,22 +146,22 @@ public final class MetricsReporter {
     /**
      * Counter increment by count.
      *
-     * @param name name
+     * @param name        name
      * @param labelValues label values
-     * @param count count
+     * @param count       count
      */
     public static void counterIncrement(final String name, final String[] labelValues, final long count) {
-        METRICS_REGISTER.counterIncrement(name, labelValues, count);
+        metricsRegister.counterIncrement(name, labelValues, count);
     }
     
     /**
      * Gauge increment.
      *
-     * @param name name
+     * @param name        name
      * @param labelValues label values
      */
     public static void gaugeIncrement(final String name, final String[] labelValues) {
-        METRICS_REGISTER.gaugeIncrement(name, labelValues);
+        metricsRegister.gaugeIncrement(name, labelValues);
     }
     
     /**
@@ -168,11 +176,11 @@ public final class MetricsReporter {
     /**
      * Gauge decrement.
      *
-     * @param name name
+     * @param name        name
      * @param labelValues label values
      */
     public static void gaugeDecrement(final String name, final String[] labelValues) {
-        METRICS_REGISTER.gaugeDecrement(name, labelValues);
+        metricsRegister.gaugeDecrement(name, labelValues);
     }
     
     /**
@@ -187,18 +195,18 @@ public final class MetricsReporter {
     /**
      * Record time by duration.
      *
-     * @param name name
+     * @param name        name
      * @param labelValues label values
-     * @param duration duration
+     * @param duration    duration
      */
     public static void recordTime(final String name, final String[] labelValues, final long duration) {
-        METRICS_REGISTER.recordTime(name, labelValues, duration);
+        metricsRegister.recordTime(name, labelValues, duration);
     }
     
     /**
      * Record time by duration.
      *
-     * @param name name
+     * @param name     name
      * @param duration duration
      */
     public static void recordTime(final String name, final long duration) {

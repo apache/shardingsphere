@@ -16,7 +16,6 @@
 #
 
 applicationName: shardingsphere-agent
-metricsType : Prometheus
 ignoredPluginNames:
   - Jaeger
   - Opentracing
@@ -37,7 +36,7 @@ plugins:
       JAEGER_REPORTER_FLUSH_INTERVAL: "1"
   Zipkin:
     host: "localhost"
-    port: 15775
+    port: 9441
     props:
       NAME: "Zipkin"
   Opentracing:

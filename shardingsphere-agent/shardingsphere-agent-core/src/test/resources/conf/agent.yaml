@@ -16,7 +16,6 @@
 #
 
 applicationName: shardingsphere-agent
-metricsType : Prometheus
 ignoredPluginNames:
   - Jaeger
   - Opentracing
