@@ -44,5 +44,5 @@ public class CalciteContextFactoryTest {
         assertNotNull(calciteLogicSchema);
         assertThat(calciteLogicSchema.getName(), is("logic_db"));
     }
-
+    
 }

@@ -48,7 +48,7 @@ public final class CalciteLogicSchemaFactory {
     /**
      * Create schema.
      *
-     * @param name     name
+     * @param name name
      * @param executor executor
      * @return schema
      */
