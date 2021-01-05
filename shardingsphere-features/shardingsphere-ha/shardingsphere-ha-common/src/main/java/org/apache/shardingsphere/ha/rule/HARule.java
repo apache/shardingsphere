@@ -74,7 +74,7 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
             dataSourceRules.put(each.getName(), new HADataSourceRule(each, loadBalanceAlgorithm));
         }
         if (null == haType) {
-            haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaType().getType(), config.getHaType().getProps());
+            haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaConfiguration().getType(), config.getHaConfiguration().getProps());
             haType.updatePrimaryDataSource(dataSourceMap, schemaName);
         } else {
             haType.stopPeriodicalUpdate();

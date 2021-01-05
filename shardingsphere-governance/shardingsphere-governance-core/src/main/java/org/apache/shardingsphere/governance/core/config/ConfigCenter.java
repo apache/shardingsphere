@@ -259,7 +259,7 @@ public final class ConfigCenter {
                 configs.add(each);
             } else if (each instanceof HARuleConfiguration) {
                 HARuleConfiguration config = (HARuleConfiguration) each;
-                Preconditions.checkState(!config.getHaType().getType().isEmpty(), "No available HA rule configuration in `%s` for governance.", schemaName);
+                Preconditions.checkState(!config.getHaConfiguration().getType().isEmpty(), "No available HA rule configuration in `%s` for governance.", schemaName);
                 configs.add(each);
             }
         }
