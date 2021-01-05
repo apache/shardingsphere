@@ -110,3 +110,4 @@ jobs:
           run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs        
         - name: Run Integration Test
           run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.docker -Dit.scenarios=dbtbl_with_repilca_query
+
