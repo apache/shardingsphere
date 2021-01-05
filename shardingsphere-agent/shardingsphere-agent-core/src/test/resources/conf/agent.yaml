@@ -18,7 +18,8 @@
 applicationName: shardingsphere-agent
 metricsType : Prometheus
 ignoredPluginNames:
-  - test
+  - Jaeger
+  - Opentracing
 
 plugins:
   prometheus:
@@ -39,6 +40,9 @@ plugins:
     port: 15775
     props:
       NAME: "Zipkin"
+  Opentracing:
+    props:
+      OPENTRACING_TRACER_CLASS_NAME: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
   Logging:
     props:
       NAME: "Logging"
