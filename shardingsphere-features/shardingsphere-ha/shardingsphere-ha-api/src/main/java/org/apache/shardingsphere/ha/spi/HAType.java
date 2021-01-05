@@ -46,15 +46,15 @@ public interface HAType extends TypedSPI {
     void updatePrimaryDataSource(Map<String, DataSource> dataSourceMap, String schemaName);
     
     /**
-     * Start periodical monitor.
+     * Start periodical update.
      *
      * @param dataSourceMap data source map
      * @param schemaName schema name
      */
-    void startPeriodicalMonitor(Map<String, DataSource> dataSourceMap, String schemaName);
+    void startPeriodicalUpdate(Map<String, DataSource> dataSourceMap, String schemaName);
     
     /**
-     * Stop periodical monitor.
+     * Stop periodical update.
      */
-    void stopPeriodicalMonitor();
+    void stopPeriodicalUpdate();
 }
