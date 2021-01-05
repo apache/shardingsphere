@@ -64,9 +64,9 @@ public final class MetricsReporter {
     /**
      * Register counter.
      *
-     * @param name       name
+     * @param name name
      * @param labelNames label names
-     * @param document   document for counter
+     * @param document document for counter
      */
     public static void registerCounter(final String name, final String[] labelNames, final String document) {
         metricsRegister.registerCounter(name, labelNames, document);
@@ -75,7 +75,7 @@ public final class MetricsReporter {
     /**
      * Register counter.
      *
-     * @param name     name
+     * @param name name
      * @param document document for counter
      */
     public static void registerCounter(final String name, final String document) {
@@ -85,9 +85,9 @@ public final class MetricsReporter {
     /**
      * Register gauge.
      *
-     * @param name       name
+     * @param name name
      * @param labelNames label names
-     * @param document   document for gauge
+     * @param document document for gauge
      */
     public static void registerGauge(final String name, final String[] labelNames, final String document) {
         metricsRegister.registerGauge(name, labelNames, document);
@@ -96,7 +96,7 @@ public final class MetricsReporter {
     /**
      * Register gauge.
      *
-     * @param name     name
+     * @param name name
      * @param document document for gauge
      */
     public static void registerGauge(final String name, final String document) {
@@ -106,9 +106,9 @@ public final class MetricsReporter {
     /**
      * Register histogram by label names.
      *
-     * @param name       name
+     * @param name name
      * @param labelNames label names
-     * @param document   document for histogram
+     * @param document document for histogram
      */
     public static void registerHistogram(final String name, final String[] labelNames, final String document) {
         metricsRegister.registerHistogram(name, labelNames, document);
@@ -117,7 +117,7 @@ public final class MetricsReporter {
     /**
      * Register histogram.
      *
-     * @param name     name
+     * @param name name
      * @param document document for histogram
      */
     public static void registerHistogram(final String name, final String document) {
@@ -127,7 +127,7 @@ public final class MetricsReporter {
     /**
      * Counter increment.
      *
-     * @param name        name
+     * @param name name
      * @param labelValues label values
      */
     public static void counterIncrement(final String name, final String[] labelValues) {
@@ -146,9 +146,9 @@ public final class MetricsReporter {
     /**
      * Counter increment by count.
      *
-     * @param name        name
+     * @param name name
      * @param labelValues label values
-     * @param count       count
+     * @param count count
      */
     public static void counterIncrement(final String name, final String[] labelValues, final long count) {
         metricsRegister.counterIncrement(name, labelValues, count);
@@ -157,7 +157,7 @@ public final class MetricsReporter {
     /**
      * Gauge increment.
      *
-     * @param name        name
+     * @param name name
      * @param labelValues label values
      */
     public static void gaugeIncrement(final String name, final String[] labelValues) {
@@ -176,7 +176,7 @@ public final class MetricsReporter {
     /**
      * Gauge decrement.
      *
-     * @param name        name
+     * @param name name
      * @param labelValues label values
      */
     public static void gaugeDecrement(final String name, final String[] labelValues) {
@@ -195,9 +195,9 @@ public final class MetricsReporter {
     /**
      * Record time by duration.
      *
-     * @param name        name
+     * @param name name
      * @param labelValues label values
-     * @param duration    duration
+     * @param duration duration
      */
     public static void recordTime(final String name, final String[] labelValues, final long duration) {
         metricsRegister.recordTime(name, labelValues, duration);
@@ -206,7 +206,7 @@ public final class MetricsReporter {
     /**
      * Record time by duration.
      *
-     * @param name     name
+     * @param name name
      * @param duration duration
      */
     public static void recordTime(final String name, final long duration) {
