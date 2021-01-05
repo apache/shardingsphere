@@ -90,7 +90,7 @@ jobs:
         - name: Run Integration Test
           run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.docker -Dit.scenarios=repilca_query
   
-  mysql-dbtbl-with-proxy-repilca-query:
+  mysql-proxy-dbtbl-with-proxy-repilca-query:
     name: MySQL-Proxy with DBTBL-WITH-REPLICA-QUERY scenario
       runs-on: ubuntu-latest
       steps:
