@@ -69,7 +69,10 @@ public final class ShardingSphereTransformer implements Transformer {
         for (ConstructorPoint each : pluginInterceptorPoint.getConstructorPoints()) {
             try {
                 ConstructorMethodInterceptor interceptor = new ConstructorMethodInterceptor(pluginLoader.getOrCreateInstance(each.getAdvice()));
-                result = result.constructor(each.getMatcher()).intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(interceptor)));
+                result = result.constructor(each.getMatcher())
+                        .intercept(
+                                SuperMethodCall.INSTANCE.andThen(
+                                        MethodDelegation.withDefaultConfiguration().to(interceptor)));
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON

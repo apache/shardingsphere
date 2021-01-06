@@ -676,6 +676,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <configuration>
+                    <skipSource>true</skipSource>
+                </configuration>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -698,6 +701,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <skip>true</skip>
                     <aggregate>true</aggregate>
                     <charset>${project.build.sourceEncoding}</charset>
                     <encoding>${project.build.sourceEncoding}</encoding>
@@ -736,6 +740,7 @@
                     <configLocation>src/resources/checkstyle_ci.xml</configLocation>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     <excludes>**/autogen/**/*</excludes>
+                    <skip>true</skip>
                 </configuration>
                 <executions>
                     <execution>
@@ -751,6 +756,9 @@
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>${coveralls-maven-plugin.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -788,6 +796,9 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco-maven-plugin.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>

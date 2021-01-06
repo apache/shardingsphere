@@ -52,7 +52,6 @@
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy-agent</artifactId>
             <version>${bytebuddy.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
     
