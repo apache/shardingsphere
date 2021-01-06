@@ -168,7 +168,7 @@ public final class MySQLFrontendEngineTest {
     private MetaDataContexts getMetaDataContexts(final DefaultAuthentication authentication) {
         return new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), authentication, new ConfigurationProperties(new Properties()));
     }
-    
+
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
         Map<String, ShardingSphereMetaData> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
