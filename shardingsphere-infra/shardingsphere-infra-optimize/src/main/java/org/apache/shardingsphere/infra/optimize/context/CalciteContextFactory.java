@@ -80,21 +80,10 @@ public final class CalciteContextFactory {
     private final RelOptCluster cluster;
 
     public CalciteContextFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
+        final DatabaseType databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
         typeFactory = new JavaTypeFactoryImpl();
         cluster = newCluster();
-        if (metaDataMap.isEmpty()) {
-            this.connectionConfig = null;
-            this.parserConfig = null;
-            this.factory = null;
-            return;
-        }
         factory = new CalciteLogicSchemaFactory(metaDataMap);
-        DatabaseType databaseType = metaDataMap.values().iterator().next().getResource().getDatabaseType();
-        if (databaseType == null) {
-            parserConfig = null;
-            connectionConfig = null;
-            return;
-        }
         initProperties(databaseType);
         connectionConfig = new CalciteConnectionConfigImpl(properties);
         parserConfig = SqlParser.config()
@@ -106,6 +95,11 @@ public final class CalciteContextFactory {
 
     private void initProperties(final DatabaseType databaseType) {
         // TODO Logic could be improved.
+        if (databaseType instanceof MySQLDatabaseType || databaseType == null) {
+            this.properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
+            this.properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.MYSQL_5.name());
+            return;
+        }
         if (databaseType instanceof H2DatabaseType) {
             // TODO No suitable type of Lex
             this.properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
@@ -113,11 +107,6 @@ public final class CalciteContextFactory {
             return;
         }
         if (databaseType instanceof MariaDBDatabaseType) {
-            this.properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
-            this.properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.MYSQL_5.name());
-            return;
-        }
-        if (databaseType instanceof MySQLDatabaseType) {
             this.properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
             this.properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.MYSQL_5.name());
             return;
