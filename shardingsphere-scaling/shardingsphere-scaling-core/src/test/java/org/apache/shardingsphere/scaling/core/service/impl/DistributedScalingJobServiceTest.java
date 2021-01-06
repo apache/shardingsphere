@@ -149,11 +149,11 @@ public final class DistributedScalingJobServiceTest {
         return new ScalingCallback() {
             
             @Override
-            public void onSuccess() {
+            public void onSuccess(final long jobId) {
             }
             
             @Override
-            public void onFailure() {
+            public void onFailure(final long jobId) {
             }
         };
     }
