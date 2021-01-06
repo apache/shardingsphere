@@ -32,8 +32,6 @@ public final class ServerConfiguration {
     
     private int blockQueueSize = 10000;
     
-    private int pushTimeout = 1000;
-    
     private int workerThread = 30;
     
     private GovernanceConfiguration distributedScalingService;
