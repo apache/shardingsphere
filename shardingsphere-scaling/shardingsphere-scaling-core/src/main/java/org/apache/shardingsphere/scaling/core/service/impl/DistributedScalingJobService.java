@@ -24,11 +24,14 @@ import com.google.gson.JsonObject;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
+import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.TaskProgress;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionGroup;
+import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
+import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskGroupProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
@@ -65,6 +68,16 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
             return Optional.of(scalingJob);
         }
         return Optional.empty();
+    }
+    
+    protected void checkDataSources(final ScalingJob scalingJob) {
+        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(scalingJob.getDatabaseType());
+        try (DataSourceManager dataSourceManager = new DataSourceManager(scalingJob.getTaskConfigs())) {
+            dataSourceChecker.checkConnection(dataSourceManager.getCachedDataSources().values());
+            dataSourceChecker.checkPrivilege(dataSourceManager.getSourceDataSources().values());
+            dataSourceChecker.checkVariable(dataSourceManager.getSourceDataSources().values());
+            dataSourceChecker.checkTargetTable(dataSourceManager.getTargetDataSources().values(), scalingJob.getTaskConfigs().iterator().next().getImporterConfig().getShardingColumnsMap().keySet());
+        }
     }
     
     private boolean shouldScaling(final ScalingConfiguration scalingConfig) {

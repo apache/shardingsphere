@@ -46,23 +46,22 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
     public void checkTargetTable(final Collection<? extends DataSource> dataSources, final Collection<String> tableNames) {
         try {
             for (DataSource each : dataSources) {
-                if (isNotEmpty(each, tableNames)) {
-                    throw new PrepareFailedException(String.format("Target table [%s] not empty!", each));
-                }
+                checkEmpty(each, tableNames);
             }
         } catch (final SQLException ex) {
             throw new PrepareFailedException("Check target table failed!", ex);
         }
     }
     
-    private boolean isNotEmpty(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
+    private void checkEmpty(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
         for (String each : tableNames) {
             try (PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement(getSqlBuilder().buildCheckEmptySQL(each));
                  ResultSet resultSet = preparedStatement.executeQuery()) {
-                return resultSet.next();
+                if (resultSet.next()) {
+                    throw new PrepareFailedException(String.format("Target table [%s] not empty!", each));
+                }
             }
         }
-        return false;
     }
     
     protected abstract ScalingSQLBuilder getSqlBuilder();

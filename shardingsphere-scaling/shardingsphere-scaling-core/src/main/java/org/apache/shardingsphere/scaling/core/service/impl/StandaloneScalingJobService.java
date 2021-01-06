@@ -54,7 +54,6 @@ public final class StandaloneScalingJobService extends AbstractScalingJobService
     @Override
     public Optional<ScalingJob> start(final ScalingConfiguration scalingConfig) {
         ScalingJob scalingJob = new ScalingJob(scalingConfig);
-        checkDataSources(scalingJob);
         scalingJobMap.put(scalingJob.getJobId(), scalingJob);
         scalingJobPreparer.prepare(scalingJob);
         if (!JobStatus.PREPARING_FAILURE.name().equals(scalingJob.getStatus())) {

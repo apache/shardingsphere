@@ -59,11 +59,12 @@ public final class ScalingJobPreparer {
      */
     public void prepare(final ScalingJob scalingJob) {
         try (DataSourceManager dataSourceManager = new DataSourceManager(scalingJob.getTaskConfigs())) {
-            checkDataSources(scalingJob.getDatabaseType(), dataSourceManager);
+            checkSourceDataSources(scalingJob, dataSourceManager);
             ResumeBreakPointManager resumeBreakPointManager = getResumeBreakPointManager(scalingJob);
             if (resumeBreakPointManager.isResumable()) {
                 scalingPositionResumer.resumePosition(scalingJob, dataSourceManager, resumeBreakPointManager);
             } else {
+                checkTargetDataSources(scalingJob, dataSourceManager);
                 initIncrementalTasks(scalingJob, dataSourceManager);
                 initInventoryTasks(scalingJob, dataSourceManager);
                 scalingPositionResumer.persistPosition(scalingJob, resumeBreakPointManager);
@@ -79,11 +80,16 @@ public final class ScalingJobPreparer {
                 ScalingTaskUtil.getScalingListenerPath(scalingJob.getJobId(), ScalingConstant.POSITION, scalingJob.getShardingItem()));
     }
     
-    private void checkDataSources(final String databaseType, final DataSourceManager dataSourceManager) {
-        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(databaseType);
+    private void checkSourceDataSources(final ScalingJob scalingJob, final DataSourceManager dataSourceManager) {
+        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(scalingJob.getDatabaseType());
         dataSourceChecker.checkConnection(dataSourceManager.getCachedDataSources().values());
         dataSourceChecker.checkPrivilege(dataSourceManager.getSourceDataSources().values());
         dataSourceChecker.checkVariable(dataSourceManager.getSourceDataSources().values());
+    }
+    
+    private void checkTargetDataSources(final ScalingJob scalingJob, final DataSourceManager dataSourceManager) {
+        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(scalingJob.getDatabaseType());
+        dataSourceChecker.checkTargetTable(dataSourceManager.getTargetDataSources().values(), scalingJob.getTaskConfigs().iterator().next().getImporterConfig().getShardingColumnsMap().keySet());
     }
     
     private void initInventoryTasks(final ScalingJob scalingJob, final DataSourceManager dataSourceManager) {
