@@ -33,16 +33,17 @@ import java.util.concurrent.ConcurrentHashMap;
  * Data source manager.
  */
 @NoArgsConstructor
+@Getter
 @Slf4j
 public final class DataSourceManager implements AutoCloseable {
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
-    @Getter
     private final Map<ScalingDataSourceConfiguration, DataSourceWrapper> cachedDataSources = new ConcurrentHashMap<>();
     
-    @Getter
     private final Map<ScalingDataSourceConfiguration, DataSourceWrapper> sourceDataSources = new ConcurrentHashMap<>();
+    
+    private final Map<ScalingDataSourceConfiguration, DataSourceWrapper> targetDataSources = new ConcurrentHashMap<>();
     
     public DataSourceManager(final List<TaskConfiguration> taskConfigs) {
         createDataSources(taskConfigs);
@@ -63,7 +64,9 @@ public final class DataSourceManager implements AutoCloseable {
     }
     
     private void createTargetDataSources(final ScalingDataSourceConfiguration dataSourceConfig) {
-        cachedDataSources.put(dataSourceConfig, dataSourceFactory.newInstance(dataSourceConfig));
+        DataSourceWrapper dataSource = dataSourceFactory.newInstance(dataSourceConfig);
+        cachedDataSources.put(dataSourceConfig, dataSource);
+        targetDataSources.put(dataSourceConfig, dataSource);
     }
     
     /**

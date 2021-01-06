@@ -28,7 +28,7 @@ import org.apache.shardingsphere.scaling.core.job.position.PositionManagerFactor
 import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManager;
 import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManagerFactory;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
-import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceCheckerCheckerFactory;
+import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.preparer.resumer.ScalingPositionResumer;
 import org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryTaskSplitter;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
@@ -80,7 +80,7 @@ public final class ScalingJobPreparer {
     }
     
     private void checkDataSources(final String databaseType, final DataSourceManager dataSourceManager) {
-        DataSourceChecker dataSourceChecker = DataSourceCheckerCheckerFactory.newInstanceDataSourceChecker(databaseType);
+        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(databaseType);
         dataSourceChecker.checkConnection(dataSourceManager.getCachedDataSources().values());
         dataSourceChecker.checkPrivilege(dataSourceManager.getSourceDataSources().values());
         dataSourceChecker.checkVariable(dataSourceManager.getSourceDataSources().values());

@@ -45,4 +45,12 @@ public interface DataSourceChecker {
      * @param dataSources data sources
      */
     void checkVariable(Collection<? extends DataSource> dataSources);
+    
+    /**
+     * Check table is empty.
+     *
+     * @param dataSources data sources
+     * @param tableNames table names
+     */
+    void checkTargetTable(Collection<? extends DataSource> dataSources, Collection<String> tableNames);
 }

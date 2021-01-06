@@ -23,12 +23,15 @@ import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.environmental.ScalingEnvironmentalManager;
+import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
+import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceCheckerFactory;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 
 import java.sql.SQLException;
@@ -62,6 +65,16 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
                 new ShardingSphereJDBCDataSourceConfiguration(targetDataSource, targetRule)));
         scalingConfig.setJobConfiguration(new JobConfiguration());
         return start(scalingConfig);
+    }
+    
+    protected void checkDataSources(final ScalingJob scalingJob) {
+        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(scalingJob.getDatabaseType());
+        try (DataSourceManager dataSourceManager = new DataSourceManager(scalingJob.getTaskConfigs())) {
+            dataSourceChecker.checkConnection(dataSourceManager.getCachedDataSources().values());
+            dataSourceChecker.checkPrivilege(dataSourceManager.getSourceDataSources().values());
+            dataSourceChecker.checkVariable(dataSourceManager.getSourceDataSources().values());
+            dataSourceChecker.checkTargetTable(dataSourceManager.getTargetDataSources().values(), scalingJob.getTaskConfigs().iterator().next().getImporterConfig().getShardingColumnsMap().keySet());
+        }
     }
     
     @Override

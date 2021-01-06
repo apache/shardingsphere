@@ -59,7 +59,8 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
     public Optional<ScalingJob> start(final ScalingConfiguration scalingConfig) {
         TaskConfigurationUtil.fillInShardingTables(scalingConfig);
         if (shouldScaling(scalingConfig)) {
-            ScalingJob scalingJob = new ScalingJob();
+            ScalingJob scalingJob = new ScalingJob(scalingConfig);
+            checkDataSources(scalingJob);
             updateScalingConfig(scalingJob.getJobId(), scalingConfig);
             return Optional.of(scalingJob);
         }
