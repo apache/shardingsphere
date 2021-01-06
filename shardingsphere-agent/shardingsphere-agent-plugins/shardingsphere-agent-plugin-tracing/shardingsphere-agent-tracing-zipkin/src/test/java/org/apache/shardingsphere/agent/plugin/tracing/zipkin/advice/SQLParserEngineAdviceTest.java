@@ -26,7 +26,6 @@ import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinCons
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,6 +34,9 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class SQLParserEngineAdviceTest extends AdviceTestBase {
@@ -60,6 +62,7 @@ public final class SQLParserEngineAdviceTest extends AdviceTestBase {
     
     @Before
     @SneakyThrows
+    @SuppressWarnings("all")
     public void before() {
         parentSpan = Tracing.currentTracer().newTrace().name("parent").start();
         ExecutorDataMap.getValue().put(ZipkinConstants.ROOT_SPAN, parentSpan);
@@ -82,15 +85,14 @@ public final class SQLParserEngineAdviceTest extends AdviceTestBase {
     public void testMethod() {
         advice.beforeMethod(targetObject, parseMethod, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
         advice.afterMethod(targetObject, parseMethod, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
-        // ensure the parent span(mock) finished
         parentSpan.finish();
         zipkin2.Span span = SPANS.pollFirst();
-        Assert.assertNotNull(span);
-        Assert.assertNotNull(span.parentId());
+        assertNotNull(span);
+        assertNotNull(span.parentId());
         Map<String, String> tags = span.tags();
-        Assert.assertNotNull(tags);
-        Assert.assertEquals(ZipkinConstants.DB_TYPE_VALUE, tags.get(ZipkinConstants.Tags.DB_TYPE));
-        Assert.assertEquals(ZipkinConstants.COMPONENT_NAME, tags.get(ZipkinConstants.Tags.COMPONENT));
+        assertNotNull(tags);
+        assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is(ZipkinConstants.DB_TYPE_VALUE));
+        assertThat(tags.get(ZipkinConstants.Tags.COMPONENT), is(ZipkinConstants.COMPONENT_NAME));
     }
     
     @Test
@@ -101,18 +103,17 @@ public final class SQLParserEngineAdviceTest extends AdviceTestBase {
         // ensure the parent span(mock) finished
         parentSpan.finish();
         zipkin2.Span span = SPANS.pollFirst();
-        Assert.assertNotNull(span);
-        Assert.assertNotNull(span.parentId());
+        assertNotNull(span);
+        assertNotNull(span.parentId());
         Map<String, String> tags = span.tags();
-        Assert.assertNotNull(tags);
-        Assert.assertEquals("IOException", tags.get("error"));
-        Assert.assertEquals(ZipkinConstants.DB_TYPE_VALUE, tags.get(ZipkinConstants.Tags.DB_TYPE));
-        Assert.assertEquals(ZipkinConstants.COMPONENT_NAME, tags.get(ZipkinConstants.Tags.COMPONENT));
+        assertNotNull(tags);
+        assertThat(tags.get("error"), is("IOException"));
+        assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is(ZipkinConstants.DB_TYPE_VALUE));
+        assertThat(tags.get(ZipkinConstants.Tags.COMPONENT), is(ZipkinConstants.COMPONENT_NAME));
     }
     
     @After
     public void cleanup() {
         SPANS.clear();
     }
-    
 }

@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,6 +42,10 @@ import java.sql.DatabaseMetaData;
 import java.sql.Statement;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -69,6 +72,7 @@ public final class JDBCExecutorCallbackAdviceTest extends AdviceTestBase {
     
     @Before
     @SneakyThrows
+    @SuppressWarnings("all")
     public void before() {
         extraMap = Maps.newHashMap();
         extraMap.put(ZipkinConstants.ROOT_SPAN, null);
@@ -101,16 +105,16 @@ public final class JDBCExecutorCallbackAdviceTest extends AdviceTestBase {
         advice.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
         advice.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
         Span span = SPANS.pollFirst();
-        Assert.assertNotNull(span);
-        Assert.assertEquals("/ShardingSphere/executeSQL/".toLowerCase(), span.name());
+        assertNotNull(span);
+        assertThat(span.name(), is("/ShardingSphere/executeSQL/".toLowerCase()));
         Map<String, String> tags = span.tags();
-        Assert.assertFalse(tags == null || tags.isEmpty());
-        Assert.assertEquals("shardingsphere", tags.get(ZipkinConstants.Tags.COMPONENT));
-        Assert.assertEquals("mock.db", tags.get(ZipkinConstants.Tags.DB_INSTANCE));
-        Assert.assertEquals("select 1", tags.get(ZipkinConstants.Tags.DB_STATEMENT));
-        Assert.assertEquals("shardingsphere-proxy", tags.get(ZipkinConstants.Tags.DB_TYPE));
-        Assert.assertEquals("mock.host", tags.get(ZipkinConstants.Tags.PEER_HOSTNAME));
-        Assert.assertEquals("1000", tags.get(ZipkinConstants.Tags.PEER_PORT));
+        assertFalse(tags == null || tags.isEmpty());
+        assertThat(tags.get(ZipkinConstants.Tags.COMPONENT), is("shardingsphere"));
+        assertThat(tags.get(ZipkinConstants.Tags.DB_INSTANCE), is("mock.db"));
+        assertThat(tags.get(ZipkinConstants.Tags.DB_STATEMENT), is("select 1"));
+        assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is("shardingsphere-proxy"));
+        assertThat(tags.get(ZipkinConstants.Tags.PEER_HOSTNAME), is("mock.host"));
+        assertThat(tags.get(ZipkinConstants.Tags.PEER_PORT), is("1000"));
     }
     
     @Test
@@ -119,22 +123,21 @@ public final class JDBCExecutorCallbackAdviceTest extends AdviceTestBase {
         advice.onThrowing(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new IOException());
         advice.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
         Span span = SPANS.pollFirst();
-        Assert.assertNotNull(span);
-        Assert.assertEquals("/ShardingSphere/executeSQL/".toLowerCase(), span.name());
+        assertNotNull(span);
+        assertThat(span.name(), is("/ShardingSphere/executeSQL/".toLowerCase()));
         Map<String, String> tags = span.tags();
-        Assert.assertNotNull(tags);
-        Assert.assertEquals("shardingsphere", tags.get(ZipkinConstants.Tags.COMPONENT));
-        Assert.assertEquals("mock.db", tags.get(ZipkinConstants.Tags.DB_INSTANCE));
-        Assert.assertEquals("select 1", tags.get(ZipkinConstants.Tags.DB_STATEMENT));
-        Assert.assertEquals("shardingsphere-proxy", tags.get(ZipkinConstants.Tags.DB_TYPE));
-        Assert.assertEquals("mock.host", tags.get(ZipkinConstants.Tags.PEER_HOSTNAME));
-        Assert.assertEquals("1000", tags.get(ZipkinConstants.Tags.PEER_PORT));
-        Assert.assertEquals("IOException", tags.get("error"));
+        assertNotNull(tags);
+        assertThat(tags.get(ZipkinConstants.Tags.COMPONENT), is("shardingsphere"));
+        assertThat(tags.get(ZipkinConstants.Tags.DB_INSTANCE), is("mock.db"));
+        assertThat(tags.get(ZipkinConstants.Tags.DB_STATEMENT), is("select 1"));
+        assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is("shardingsphere-proxy"));
+        assertThat(tags.get(ZipkinConstants.Tags.PEER_HOSTNAME), is("mock.host"));
+        assertThat(tags.get(ZipkinConstants.Tags.PEER_PORT), is("1000"));
+        assertThat(tags.get("error"), is("IOException"));
     }
     
     @After
     public void cleanup() {
         SPANS.clear();
     }
-    
 }
