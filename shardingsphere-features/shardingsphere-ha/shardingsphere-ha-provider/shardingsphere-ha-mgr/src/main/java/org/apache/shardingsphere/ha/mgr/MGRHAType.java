@@ -27,12 +27,18 @@ import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.ha.spi.HAType;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -50,6 +56,8 @@ public final class MGRHAType implements HAType {
     private static final String GROUP_NAME = "SELECT * FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_group_name'";
     
     private static final String SINGLE_PRIMARY = "SELECT * FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_single_primary_mode'";
+    
+    private static final String MEMBER_LIST = "SELECT MEMBER_HOST, MEMBER_PORT, MEMBER_STATE FROM performance_schema.replication_group_members";
     
     private static CoordinatorRegistryCenter coordinatorRegistryCenter;
     
@@ -115,11 +123,19 @@ public final class MGRHAType implements HAType {
     }
     
     @Override
-    public void updatePrimaryDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName) {
-        String newPrimaryDataSource = determinePrimaryDataSource(dataSourceMap);
+    public void updatePrimaryDataSource(final Map<String, DataSource> originalDataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
+        Map<String, DataSource> activeDataSourceMap = new HashMap<>(originalDataSourceMap);
+        if (!disabledDataSourceNames.isEmpty()) {
+            activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
+        }
+        String newPrimaryDataSource = determinePrimaryDataSource(activeDataSourceMap);
         if (newPrimaryDataSource.isEmpty()) {
             return;
         }
+        // TODO post primary datasource event
+//        if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
+//             ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, newPrimaryDataSource, newPrimaryDataSource));
+//        }
         oldPrimaryDataSource = newPrimaryDataSource;
     }
     
@@ -149,8 +165,7 @@ public final class MGRHAType implements HAType {
     private String findPrimaryDataSourceName(final String primaryDataSourceURL, final Map<String, DataSource> dataSourceMap) {
         String result = "";
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            DataSource dataSource = entry.getValue();
-            try (Connection connection = dataSource.getConnection()) {
+            try (Connection connection = entry.getValue().getConnection()) {
                 if (connection.getMetaData().getURL().contains(primaryDataSourceURL)) {
                     return entry.getKey();
                 }
@@ -162,13 +177,97 @@ public final class MGRHAType implements HAType {
     }
     
     @Override
-    public void startPeriodicalUpdate(final Map<String, DataSource> dataSourceMap, final String schemaName) {
+    public void updateMemberState(final Map<String, DataSource> originalDataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
+        Map<String, DataSource> activeDataSourceMap = new HashMap<>(originalDataSourceMap);
+        if (!disabledDataSourceNames.isEmpty()) {
+            activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
+        }
+        List<String> memberDataSourceURLs = findMemberDataSourceURLs(activeDataSourceMap);
+        if (memberDataSourceURLs.isEmpty()) {
+            return;
+        }
+        Map<String, String> dataSourceURLs = new HashMap<>(16, 1);
+        determineDisabledDataSource(schemaName, activeDataSourceMap, memberDataSourceURLs, dataSourceURLs);
+        determineEnabledDataSource(originalDataSourceMap, schemaName, memberDataSourceURLs, dataSourceURLs);
+    }
+    
+    private List<String> findMemberDataSourceURLs(final Map<String, DataSource> activeDataSourceMap) {
+        List<String> result = new LinkedList<>();
+        try (Connection connection = activeDataSourceMap.get(oldPrimaryDataSource).getConnection();
+             Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery(MEMBER_LIST);
+            while (resultSet.next()) {
+                if (!"ONLINE".equals(resultSet.getString("MEMBER_STATE"))) {
+                    continue;
+                }
+                result.add(String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT")));
+            }
+        } catch (final SQLException ex) {
+            log.error("An exception occurred while find member data source urls", ex);
+        }
+        return result;
+    }
+    
+    private void determineDisabledDataSource(final String schemaName, final Map<String, DataSource> activeDataSourceMap,
+                                             final List<String> memberDataSourceURLs, final Map<String, String> dataSourceURLs) {
+        for (Entry<String, DataSource> entry : activeDataSourceMap.entrySet()) {
+            boolean disable = true;
+            String url = "";
+            try (Connection connection = entry.getValue().getConnection()) {
+                url = connection.getMetaData().getURL();
+                for (String each : memberDataSourceURLs) {
+                    if (url.contains(each)) {
+                        disable = false;
+                        break;
+                    }
+                }
+            } catch (final SQLException ex) {
+                log.error("An exception occurred while find data source urls", ex);
+            }
+            if (disable) {
+                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), true));
+            } else if (!"".equals(url)) {
+                dataSourceURLs.put(entry.getKey(), url);
+            }
+        }
+    }
+    
+    private void determineEnabledDataSource(final Map<String, DataSource> originalDataSourceMap, final String schemaName,
+                                            final List<String> memberDataSourceURLs, final Map<String, String> dataSourceURLs) {
+        for (String each : memberDataSourceURLs) {
+            boolean enable = true;
+            for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
+                if (entry.getValue().contains(each)) {
+                    enable = false;
+                    break;
+                }
+            }
+            if (!enable) {
+                continue;
+            }
+            for (Entry<String, DataSource> entry : originalDataSourceMap.entrySet()) {
+                String url;
+                try (Connection connection = entry.getValue().getConnection()) {
+                    url = connection.getMetaData().getURL();
+                    if (null != url && url.contains(each)) {
+                        ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), false));
+                        break;
+                    }
+                } catch (final SQLException ex) {
+                    log.error("An exception occurred while find enable data source urls", ex);
+                }
+            }
+        }
+    }
+    
+    @Override
+    public void startPeriodicalUpdate(final Map<String, DataSource> originalDataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
         if (null == coordinatorRegistryCenter) {
             ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("zkServerLists"), "mgr-elasticjob");
             coordinatorRegistryCenter = new ZookeeperRegistryCenter(zkConfig);
             coordinatorRegistryCenter.init();
         }
-        scheduleJobBootstrap = new ScheduleJobBootstrap(coordinatorRegistryCenter, new MGRPeriodicalJob(this, dataSourceMap, schemaName),
+        scheduleJobBootstrap = new ScheduleJobBootstrap(coordinatorRegistryCenter, new MGRPeriodicalJob(this, originalDataSourceMap, schemaName, disabledDataSourceNames),
                 JobConfiguration.newBuilder("MGRPeriodicalJob", 1).cron(props.getProperty("keepAliveCron")).build());
         scheduleJobBootstrap.schedule();
     }

@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import com.google.common.base.Strings;
+import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
@@ -51,6 +53,17 @@ public final class RegistryCenter {
         lockNode = new LockNode();
         registryRepository.initLock(lockNode.getGlobalLockNodePath());
         ShardingSphereEventBus.getInstance().register(this);
+    }
+    
+    /**
+     * Persist data source disabled state.
+     *
+     * @param event data source disabled event.
+     */
+    @Subscribe
+    public synchronized void renew(final DataSourceDisabledEvent event) {
+        String value = event.isDisabled() ? RegistryCenterNodeStatus.DISABLED.toString() : "";
+        repository.persist(node.getDataSourcePath(event.getSchemaName(), event.getDataSourceName()), value);
     }
     
     /**

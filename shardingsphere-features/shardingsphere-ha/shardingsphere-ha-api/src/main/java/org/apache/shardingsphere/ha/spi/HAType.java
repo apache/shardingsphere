@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -40,18 +41,29 @@ public interface HAType extends TypedSPI {
     /**
      * Update primary data source.
      *
-     * @param dataSourceMap data source map
+     * @param originalDataSourceMap original data source map
      * @param schemaName schema name
+     * @param disabledDataSourceNames disabled data source names
      */
-    void updatePrimaryDataSource(Map<String, DataSource> dataSourceMap, String schemaName);
+    void updatePrimaryDataSource(Map<String, DataSource> originalDataSourceMap, String schemaName, Collection<String> disabledDataSourceNames);
+    
+    /**
+     * Update member state.
+     *
+     * @param originalDataSourceMap original data source map
+     * @param schemaName schema name
+     * @param disabledDataSourceNames disabled data source names
+     */
+    void updateMemberState(Map<String, DataSource> originalDataSourceMap, String schemaName, Collection<String> disabledDataSourceNames);
     
     /**
      * Start periodical update.
      *
-     * @param dataSourceMap data source map
+     * @param originalDataSourceMap original data source map
      * @param schemaName schema name
+     * @param disabledDataSourceNames disabled data source names
      */
-    void startPeriodicalUpdate(Map<String, DataSource> dataSourceMap, String schemaName);
+    void startPeriodicalUpdate(Map<String, DataSource> originalDataSourceMap, String schemaName, Collection<String> disabledDataSourceNames);
     
     /**
      * Stop periodical update.
