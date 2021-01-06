@@ -27,7 +27,6 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,6 +35,10 @@ import zipkin2.Span;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 public final class CommandExecutorTaskAdviceTest extends AdviceTestBase {
     
@@ -53,6 +56,7 @@ public final class CommandExecutorTaskAdviceTest extends AdviceTestBase {
     
     @Before
     @SneakyThrows
+    @SuppressWarnings("all")
     public void before() {
         advice = new CommandExecutorTaskAdvice();
         Object executorTask = new CommandExecutorTask(null, new BackendConnection(TransactionType.BASE), null, null);
@@ -64,12 +68,12 @@ public final class CommandExecutorTaskAdviceTest extends AdviceTestBase {
         advice.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         advice.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         Span span = SPANS.poll();
-        Assert.assertNotNull(span);
+        assertNotNull(span);
         Map<String, String> tags = span.tags();
-        Assert.assertEquals(ZipkinConstants.DB_TYPE_VALUE, tags.get(ZipkinConstants.Tags.DB_TYPE));
-        Assert.assertEquals(ZipkinConstants.COMPONENT_NAME, tags.get(ZipkinConstants.Tags.COMPONENT));
-        Assert.assertEquals("0", tags.get(ZipkinConstants.Tags.CONNECTION_COUNT));
-        Assert.assertEquals("/ShardingSphere/rootInvoke/".toLowerCase(), span.name());
+        assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is(ZipkinConstants.DB_TYPE_VALUE));
+        assertThat(tags.get(ZipkinConstants.Tags.COMPONENT), is(ZipkinConstants.COMPONENT_NAME));
+        assertThat(tags.get(ZipkinConstants.Tags.CONNECTION_COUNT), is("0"));
+        assertThat(span.name(), is("/ShardingSphere/rootInvoke/".toLowerCase()));
     }
     
     @Test
@@ -78,18 +82,17 @@ public final class CommandExecutorTaskAdviceTest extends AdviceTestBase {
         advice.onThrowing(targetObject, executeCommandMethod, new Object[]{}, new IOException());
         advice.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         Span span = SPANS.poll();
-        Assert.assertNotNull(span);
+        assertNotNull(span);
         Map<String, String> tags = span.tags();
-        Assert.assertEquals("IOException", tags.get("error"));
-        Assert.assertEquals(ZipkinConstants.DB_TYPE_VALUE, tags.get(ZipkinConstants.Tags.DB_TYPE));
-        Assert.assertEquals(ZipkinConstants.COMPONENT_NAME, tags.get(ZipkinConstants.Tags.COMPONENT));
-        Assert.assertEquals("0", tags.get(ZipkinConstants.Tags.CONNECTION_COUNT));
-        Assert.assertEquals("/ShardingSphere/rootInvoke/".toLowerCase(), span.name());
+        assertThat(tags.get("error"), is("IOException"));
+        assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is(ZipkinConstants.DB_TYPE_VALUE));
+        assertThat(tags.get(ZipkinConstants.Tags.COMPONENT), is(ZipkinConstants.COMPONENT_NAME));
+        assertThat(tags.get(ZipkinConstants.Tags.CONNECTION_COUNT), is("0"));
+        assertThat(span.name(), is("/ShardingSphere/rootInvoke/".toLowerCase()));
     }
     
     @After
     public void cleanup() {
         SPANS.clear();
     }
-    
 }

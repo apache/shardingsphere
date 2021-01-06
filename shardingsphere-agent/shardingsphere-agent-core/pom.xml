@@ -33,6 +33,7 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-agent-api</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>

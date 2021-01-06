@@ -37,6 +37,10 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+
 public final class CommandExecutorTaskAdviceTest {
     
     private static final CommandExecutorTaskAdvice ADVICE = new CommandExecutorTaskAdvice();
@@ -67,9 +71,9 @@ public final class CommandExecutorTaskAdviceTest {
         ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         ADVICE.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = tracer.finishedSpans();
-        Assert.assertEquals(1, spans.size());
-        Assert.assertEquals(0, spans.get(0).logEntries().size());
-        Assert.assertEquals("/ShardingSphere/rootInvoke/", spans.get(0).operationName());
+        assertThat(spans.size(), is(1));
+        assertThat(spans.get(0).logEntries().size(), is(0));
+        assertThat(spans.get(0).operationName(), is("/ShardingSphere/rootInvoke/"));
     }
     
     @Test
@@ -81,14 +85,14 @@ public final class CommandExecutorTaskAdviceTest {
         List<MockSpan> spans = tracer.finishedSpans();
         Assert.assertEquals(1, spans.size());
         MockSpan span = spans.get(0);
-        Assert.assertTrue((boolean) span.tags().get("error"));
+        assertThat(span.tags().get("error"), is(true));
         List<MockSpan.LogEntry> entries = span.logEntries();
-        Assert.assertEquals(1, entries.size());
+        assertThat(entries.size(), is(1));
         Map<String, ?> fields = entries.get(0).fields();
-        Assert.assertEquals("error", fields.get("event"));
-        Assert.assertEquals(null, fields.get("message"));
-        Assert.assertEquals("java.io.IOException", fields.get("error.kind"));
-        Assert.assertEquals("/ShardingSphere/rootInvoke/", span.operationName());
+        assertThat(fields.get("event"), is("error"));
+        assertNull(fields.get("message"));
+        assertThat(fields.get("error.kind"), is("java.io.IOException"));
+        assertThat(span.operationName(), is("/ShardingSphere/rootInvoke/"));
     }
     
 }
