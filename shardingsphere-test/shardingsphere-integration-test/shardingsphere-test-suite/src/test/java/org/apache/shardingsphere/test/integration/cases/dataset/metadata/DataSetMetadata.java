@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.integration.cases.dataset.metadata;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -27,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Getter
+@Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class DataSetMetadata {
     
@@ -37,8 +39,8 @@ public final class DataSetMetadata {
     private String tableName;
     
     @XmlElement(name = "column")
-    private List<DataSetColumn> columns = new LinkedList<>();
+    private final List<DataSetColumn> columns = new LinkedList<>();
     
     @XmlElement(name = "index")
-    private List<DataSetIndex> indexes = new LinkedList<>();
+    private final List<DataSetIndex> indexes = new LinkedList<>();
 }

@@ -770,3 +770,43 @@ JSON
 DEC
     : D E C
     ;
+
+SHARING
+    : S H A R I N G
+    ;
+
+PRIVATE
+    : P R I V A T E
+    ;
+
+SHARDED
+    : S H A R D E D
+    ;
+
+DUPLICATED
+    : D U P L I C A T E D
+    ;
+
+METADATA
+    : M E T A D A T A
+    ;
+
+DATA
+    : D A T A
+    ;
+
+EXTENDED
+    : E X T E N D E D
+    ;
+
+NONE
+    : N O N E
+    ;
+
+MEMOPTIMIZE
+    : M E M O P T I M I Z E
+    ;
+
+PARENT
+    : P A R E N T
+    ;

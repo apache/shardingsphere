@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.distsql.parser.core;
 
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AddResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlgorithmPropertiesContext;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.C
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ReplicaQueryRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.SchemaNameContext;
@@ -41,6 +43,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddRes
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AlterReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleStatement;
@@ -130,6 +133,15 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
             replicaQueryRules.add((ReplicaQueryRuleSegment) visit(each));
         }
         return new AlterReplicaQueryRuleStatement(replicaQueryRules);
+    }
+
+    @Override
+    public ASTNode visitDropReplicaQueryRule(final DropReplicaQueryRuleContext ctx) {
+        DropReplicaQueryRuleStatement result = new DropReplicaQueryRuleStatement();
+        for (TerminalNode each : ctx.IDENTIFIER()) {
+            result.getRuleNames().add(each.getText());
+        }
+        return result;
     }
 
     @Override

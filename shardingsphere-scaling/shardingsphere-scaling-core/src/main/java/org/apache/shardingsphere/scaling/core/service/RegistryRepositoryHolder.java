@@ -21,8 +21,6 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
@@ -71,9 +69,8 @@ public final class RegistryRepositoryHolder {
         if (null != available) {
             return;
         }
-        YamlGovernanceConfiguration distributedScalingService = ScalingContext.getInstance().getServerConfig().getDistributedScalingService();
-        if (null != distributedScalingService) {
-            GovernanceConfiguration governanceConfig = new GovernanceConfigurationYamlSwapper().swapToObject(distributedScalingService);
+        GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getDistributedScalingService();
+        if (null != governanceConfig) {
             GovernanceCenterConfiguration registryCenterConfig = governanceConfig.getRegistryCenterConfiguration();
             Preconditions.checkNotNull(registryCenterConfig, "Registry center configuration cannot be null.");
             registryRepository = TypedSPIRegistry.getRegisteredService(RegistryRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());

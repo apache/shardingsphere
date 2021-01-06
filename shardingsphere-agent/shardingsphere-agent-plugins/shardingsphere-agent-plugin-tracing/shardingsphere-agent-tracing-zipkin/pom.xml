@@ -26,13 +26,11 @@
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-tracing-zipkin</artifactId>
-    <packaging>jar</packaging>
     <name>${project.artifactId}</name>
 
     <properties>
         <zipkin-reporter.version>2.16.2</zipkin-reporter.version>
         <zipkin-brave.version>5.13.2</zipkin-brave.version>
-        <entrypoint.class>org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition.ZipkinPluginDefinition</entrypoint.class>
     </properties>
 
     <dependencies>

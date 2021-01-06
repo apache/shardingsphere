@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
-import org.apache.shardingsphere.test.integration.env.datasource.builder.JdbcDataSourceBuilder;
+import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;
@@ -47,13 +47,13 @@ public final class SchemaEnvironmentManager {
     /**
      * Get data source names.
      * 
-     * @param ruleType rule type
+     * @param scenario scenario
      * @return data source names
      * @throws IOException IO exception
      * @throws JAXBException JAXB exception
      */
-    public static Collection<String> getDataSourceNames(final String ruleType) throws IOException, JAXBException {
-        return unmarshal(EnvironmentPath.getSchemaFile(ruleType)).getDatabases();
+    public static Collection<String> getDataSourceNames(final String scenario) throws IOException, JAXBException {
+        return unmarshal(EnvironmentPath.getSchemaFile(scenario)).getDatabases();
     }
     
     private static SchemaEnvironment unmarshal(final String schemaEnvironmentConfigFile) throws IOException, JAXBException {
@@ -65,14 +65,21 @@ public final class SchemaEnvironmentManager {
     /**
      * Create databases.
      *
-     * @param ruleType rule type
      * @throws IOException IO exception
      * @throws JAXBException JAXB exception
      */
-    public static void createDatabases(final String ruleType) throws IOException, JAXBException {
-        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(ruleType));
+    public static void createDatabases() throws IOException, JAXBException {
+        for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
+            dropDatabases(each);
+            createDatabases(each);
+        }
+    }
+    
+    private static void createDatabases(final String scenario) throws IOException, JAXBException {
+        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(scenario));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
-            DataSource dataSource = JdbcDataSourceBuilder.build(null, each);
+            // TODO use multiple threads to improve performance
+            DataSource dataSource = ActualDataSourceBuilder.build(null, each);
             executeSQLScript(dataSource, generateCreateDatabaseSQLs(each, schemaEnvironment.getDatabases()));
         }
     }
@@ -91,14 +98,20 @@ public final class SchemaEnvironmentManager {
     /**
      * Drop databases.
      *
-     * @param ruleType rule type
      * @throws IOException IO exception
      * @throws JAXBException JAXB exception
      */
-    public static void dropDatabases(final String ruleType) throws IOException, JAXBException {
-        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(ruleType));
+    public static void dropDatabases() throws IOException, JAXBException {
+        for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
+            dropDatabases(each);
+        }
+    }
+    
+    private static void dropDatabases(final String scenario) throws IOException, JAXBException {
+        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(scenario));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
-            DataSource dataSource = JdbcDataSourceBuilder.build(null, each);
+            // TODO use multiple threads to improve performance
+            DataSource dataSource = ActualDataSourceBuilder.build(null, each);
             executeSQLScript(dataSource, generatePrepareDropDatabaseSQLs(each, schemaEnvironment.getDatabases()));
             executeSQLScript(dataSource, generateDropDatabaseSQLs(each, schemaEnvironment.getDatabases()));
         }
@@ -126,12 +139,17 @@ public final class SchemaEnvironmentManager {
     /**
      * Create tables.
      *
-     * @param ruleType rule type
      * @throws JAXBException JAXB exception
      * @throws IOException IO exception
      */
-    public static void createTables(final String ruleType) throws JAXBException, IOException {
-        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(ruleType));
+    public static void createTables() throws JAXBException, IOException {
+        for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
+            createTables(each);
+        }
+    }
+    
+    private static void createTables(final String scenario) throws JAXBException, IOException {
+        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(scenario));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             createTables(schemaEnvironment, each);
         }
@@ -139,7 +157,8 @@ public final class SchemaEnvironmentManager {
     
     private static void createTables(final SchemaEnvironment schemaEnvironment, final DatabaseType databaseType) {
         for (String each : schemaEnvironment.getDatabases()) {
-            DataSource dataSource = JdbcDataSourceBuilder.build(each, databaseType);
+            // TODO use multiple threads to improve performance
+            DataSource dataSource = ActualDataSourceBuilder.build(each, databaseType);
             executeSQLScript(dataSource, schemaEnvironment.getTableCreateSQLs());
         }
     }
@@ -147,12 +166,17 @@ public final class SchemaEnvironmentManager {
     /**
      * Drop tables.
      *
-     * @param ruleType rule type
      * @throws JAXBException JAXB exception
      * @throws IOException IO exception
      */
-    public static void dropTables(final String ruleType) throws JAXBException, IOException {
-        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(ruleType));
+    public static void dropTables() throws JAXBException, IOException {
+        for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
+            dropTables(each);
+        }
+    }
+    
+    private static void dropTables(final String scenario) throws JAXBException, IOException {
+        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(scenario));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             dropTables(schemaEnvironment, each);
         }
@@ -160,7 +184,8 @@ public final class SchemaEnvironmentManager {
     
     private static void dropTables(final SchemaEnvironment schemaEnvironment, final DatabaseType databaseType) {
         for (String each : schemaEnvironment.getDatabases()) {
-            DataSource dataSource = JdbcDataSourceBuilder.build(each, databaseType);
+            // TODO use multiple threads to improve performance
+            DataSource dataSource = ActualDataSourceBuilder.build(each, databaseType);
             executeSQLScript(dataSource, schemaEnvironment.getTableDropSQLs());
         }
     }

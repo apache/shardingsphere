@@ -35,7 +35,7 @@ public final class JobConfiguration {
     
     private String[] shardingTables;
     
-    private int shardingItem;
+    private Integer shardingItem;
     
     private int shardingSize = 1000 * 10000;
     

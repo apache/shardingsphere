@@ -39,7 +39,7 @@
             <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>
-    
+        
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
@@ -72,24 +72,18 @@
     
     <profiles>
         <profile>
-            <id>it-jdbc-local</id>
+            <id>it.native</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <it.mode>jdbc-local</it.mode>
+                <it.mode>native</it.mode>
             </properties>
         </profile>
         <profile>
-            <id>it-jdbc-ci</id>
+            <id>it.docker</id>
             <properties>
-                <it.mode>jdbc-ci</it.mode>
-            </properties>
-        </profile>
-        <profile>
-            <id>it-proxy</id>
-            <properties>
-                <it.mode>proxy</it.mode>
+                <it.mode>docker</it.mode>
             </properties>
             <build>
                 <plugins>
@@ -98,25 +92,98 @@
                         <artifactId>docker-compose-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>up</id>
+                                <id>db-up</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
                                     <goal>up</goal>
                                 </goals>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/docker-compose.yml</composeFile>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/db/docker-compose.yml</composeFile>
                                     <detachedMode>true</detachedMode>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>down</id>
+                                <id>db-down</id>
                                 <phase>post-integration-test</phase>
                                 <goals>
                                     <goal>down</goal>
                                 </goals>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/docker-compose.yml</composeFile>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/db/docker-compose.yml</composeFile>
                                     <removeVolumes>true</removeVolumes>
+                                    <removeImages>true</removeImages>
+                                </configuration>
+                            </execution>
+                            
+                            <execution>
+                                <id>tbl-up</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>up</goal>
+                                </goals>
+                                <configuration>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/tbl/docker-compose.yml</composeFile>
+                                    <detachedMode>true</detachedMode>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>tbl-down</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>down</goal>
+                                </goals>
+                                <configuration>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/tbl/docker-compose.yml</composeFile>
+                                    <removeVolumes>true</removeVolumes>
+                                    <removeImages>true</removeImages>
+                                </configuration>
+                            </execution>
+                            
+                            <execution>
+                                <id>replica-query-up</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>up</goal>
+                                </goals>
+                                <configuration>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/replica_query/docker-compose.yml</composeFile>
+                                    <detachedMode>true</detachedMode>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>replica-query-down</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>down</goal>
+                                </goals>
+                                <configuration>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/replica_query/docker-compose.yml</composeFile>
+                                    <removeVolumes>true</removeVolumes>
+                                    <removeImages>true</removeImages>
+                                </configuration>
+                            </execution>
+                            
+                            <execution>
+                                <id>dbtbl-with-replica-query-up</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>up</goal>
+                                </goals>
+                                <configuration>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/dbtbl_with_replica_query/docker-compose.yml</composeFile>
+                                    <detachedMode>true</detachedMode>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>dbtbl-with-replica-query-down</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>down</goal>
+                                </goals>
+                                <configuration>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/dbtbl_with_replica_query/docker-compose.yml</composeFile>
+                                    <removeVolumes>true</removeVolumes>
+                                    <removeImages>true</removeImages>
                                 </configuration>
                             </execution>
                         </executions>

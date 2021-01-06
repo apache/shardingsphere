@@ -25,7 +25,9 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaPersistEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
@@ -35,7 +37,6 @@ import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigur
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
-import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.AuthenticationYamlSwapper;
@@ -43,7 +44,6 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceUpdateEvent;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -76,9 +76,12 @@ public final class ConfigCenter {
     
     private final ConfigurationRepository repository;
     
+    private final ConfigCacheManager configCacheManager;
+    
     public ConfigCenter(final ConfigurationRepository repository) {
         node = new ConfigCenterNode();
         this.repository = repository;
+        configCacheManager = new ConfigCacheManager(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -126,7 +129,7 @@ public final class ConfigCenter {
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationsPersistEvent event) {
-        persistRuleConfigurations(event.getSchemaName(), event.getRuleConfigurations());
+        cacheRuleConfigurations(event.getSchemaName(), event.getRuleConfigurations());
     }
     
     /**
@@ -157,33 +160,19 @@ public final class ConfigCenter {
     }
     
     /**
-     * Persist new HA rule configurations.
-     *
-     * @param event Data source name update event.
+     * Switch rule configuration.
+     * 
+     * @param event switch rule configuration event
      */
     @Subscribe
-    public synchronized void renew(final PrimaryDataSourceUpdateEvent event) {
-        Map<String, DataSourceConfiguration> dataSourceConfigurations = loadDataSourceConfigurations(event.getSchemaName());
-        dataSourceConfigurations.remove(event.getOldPrimaryDataSource());
-        Collection<RuleConfiguration> ruleConfigurations = loadRuleConfigurations(event.getSchemaName());
-        for (RuleConfiguration each : ruleConfigurations) {
-            if (each instanceof HARuleConfiguration) {
-                updateHaDataSourceRuleConfigurations(event, (HARuleConfiguration) each);
-            }
-        }
-        persistDataSourceConfigurations(event.getSchemaName(), dataSourceConfigurations);
-        persistRuleConfigurations(event.getSchemaName(), ruleConfigurations);
+    public synchronized void renew(final SwitchRuleConfigurationEvent event) {
+        persistRuleConfigurations(event.getSchemaName(), loadCachedRuleConfigurations(event.getSchemaName(), event.getRuleConfigurationCacheId()));
+        configCacheManager.deleteCache(node.getRulePath(event.getSchemaName()), event.getRuleConfigurationCacheId());
     }
     
-    private void updateHaDataSourceRuleConfigurations(final PrimaryDataSourceUpdateEvent event, final HARuleConfiguration haRuleConfiguration) {
-        Collection<HADataSourceRuleConfiguration> haDataSourceRuleConfigurations = haRuleConfiguration.getDataSources();
-        for (HADataSourceRuleConfiguration each : haDataSourceRuleConfigurations) {
-            if (each.getPrimaryDataSourceName().equals(event.getNewPrimaryDataSource())) {
-                break;
-            }
-            each.setPrimaryDataSourceName(event.getNewPrimaryDataSource());
-            each.getReplicaDataSourceNames().remove(event.getNewPrimaryDataSource());
-        }
+    private Collection<RuleConfiguration> loadCachedRuleConfigurations(final String schemaName, final String ruleConfigurationCacheId) {
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
+                YamlEngine.unmarshal(configCacheManager.loadCache(node.getRulePath(schemaName), ruleConfigurationCacheId), YamlRootRuleConfigurations.class).getRules());
     }
     
     private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations, final boolean isOverwrite) {
@@ -193,17 +182,21 @@ public final class ConfigCenter {
     }
     
     private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigurations = dataSourceConfigurations.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-            entry -> new DataSourceConfigurationYamlSwapper().swapToYamlConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-        YamlDataSourceConfigurationWrap yamlDataSourceConfigWrap = new YamlDataSourceConfigurationWrap();
-        yamlDataSourceConfigWrap.setDataSources(yamlDataSourceConfigurations);
-        repository.persist(node.getDataSourcePath(schemaName), YamlEngine.marshal(yamlDataSourceConfigWrap));
+        repository.persist(node.getDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfigurationWrap(dataSourceConfigurations)));
     }
     
     private void addDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
         Map<String, DataSourceConfiguration> dataSourceConfigurationMap = loadDataSourceConfigurations(schemaName);
         dataSourceConfigurationMap.putAll(dataSourceConfigurations);
-        persistDataSourceConfigurations(schemaName, dataSourceConfigurationMap);
+        repository.persist(node.getDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfigurationWrap(dataSourceConfigurations)));
+    }
+    
+    private YamlDataSourceConfigurationWrap createYamlDataSourceConfigurationWrap(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+        Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigurations = dataSourceConfigurations.entrySet().stream().collect(Collectors.toMap(Entry::getKey, 
+            entry -> new DataSourceConfigurationYamlSwapper().swapToYamlConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        YamlDataSourceConfigurationWrap result = new YamlDataSourceConfigurationWrap();
+        result.setDataSources(yamlDataSourceConfigurations);
+        return result;
     }
     
     private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations, final boolean isOverwrite) {
@@ -213,6 +206,24 @@ public final class ConfigCenter {
     }
     
     private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
+        repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRootRuleConfigurations(schemaName, ruleConfigurations)));
+    }
+    
+    private void cacheRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
+        String cacheId = configCacheManager.cache(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRootRuleConfigurations(schemaName, ruleConfigurations)));
+        RuleConfigurationsAlteredEvent event = new RuleConfigurationsAlteredEvent(schemaName,
+                repository.get(node.getDataSourcePath(schemaName)),
+                repository.get(node.getRulePath(schemaName)),
+                configCacheManager.loadCache(node.getRulePath(schemaName), cacheId), cacheId);
+        ShardingSphereEventBus.getInstance().post(event);
+    }
+    
+    private void checkDataSources(final String schemaName, final Collection<ReplicaQueryDataSourceRuleConfiguration> dataSources) {
+        dataSources.forEach(each -> Preconditions.checkState(
+                !each.getPrimaryDataSourceName().isEmpty(), "No available replica-query rule configuration in `%s` for governance.", schemaName));
+    }
+    
+    private YamlRootRuleConfigurations createYamlRootRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
         Collection<RuleConfiguration> configs = new LinkedList<>();
         for (RuleConfiguration each : ruleConfigurations) {
             if (each instanceof ShardingRuleConfiguration) {
@@ -248,18 +259,13 @@ public final class ConfigCenter {
                 configs.add(each);
             } else if (each instanceof HARuleConfiguration) {
                 HARuleConfiguration config = (HARuleConfiguration) each;
-                Preconditions.checkState(!config.getHaType().getType().isEmpty(), "No available HA rule configuration in `%s` for governance.", schemaName);
+                Preconditions.checkState(!config.getHaConfiguration().getType().isEmpty(), "No available HA rule configuration in `%s` for governance.", schemaName);
                 configs.add(each);
             }
         }
-        YamlRootRuleConfigurations yamlRuleConfigs = new YamlRootRuleConfigurations();
-        yamlRuleConfigs.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(configs));
-        repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(yamlRuleConfigs));
-    }
-    
-    private void checkDataSources(final String schemaName, final Collection<ReplicaQueryDataSourceRuleConfiguration> dataSources) {
-        dataSources.forEach(each -> Preconditions.checkState(
-                !each.getPrimaryDataSourceName().isEmpty(), "No available replica-query rule configuration in `%s` for governance.", schemaName));
+        YamlRootRuleConfigurations result = new YamlRootRuleConfigurations();
+        result.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(configs));
+        return result;
     }
     
     private boolean hasAvailableTableConfigurations(final ShardingRuleConfiguration config) {

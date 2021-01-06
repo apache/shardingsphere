@@ -123,6 +123,7 @@ public final class CommandExecutorTask implements Runnable {
         PrimaryVisitedManager.clear();
         result.addAll(backendConnection.closeResultSets());
         result.addAll(backendConnection.closeStatements());
+        result.addAll(backendConnection.closeCalciteExecutor());
         return result;
     }
     

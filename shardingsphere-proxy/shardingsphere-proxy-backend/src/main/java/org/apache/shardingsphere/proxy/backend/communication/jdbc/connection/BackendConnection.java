@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.optimize.execute.CalciteExecutor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
@@ -66,6 +67,9 @@ public final class BackendConnection implements ExecutorJDBCManager {
     
     @Setter
     private String username;
+    
+    @Setter
+    private CalciteExecutor calciteExecutor;
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
@@ -282,6 +286,23 @@ public final class BackendConnection implements ExecutorJDBCManager {
         cachedConnections.clear();
         methodInvocations.clear();
         connectionStatus.switchToReleased();
+        return result;
+    }
+    
+    /**
+     * Close calcite executor.
+     * 
+     * @return SQL exception when calcite executor close
+     */
+    public synchronized Collection<SQLException> closeCalciteExecutor() {
+        Collection<SQLException> result = new LinkedList<>();
+        if (null != calciteExecutor) {
+            try {
+                calciteExecutor.close();
+            } catch (final SQLException ex) {
+                result.add(ex);
+            }
+        }
         return result;
     }
 }

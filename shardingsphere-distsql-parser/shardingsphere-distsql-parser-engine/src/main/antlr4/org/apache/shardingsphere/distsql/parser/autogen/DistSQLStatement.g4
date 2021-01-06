@@ -25,6 +25,7 @@ execute
     | dropShardingRule
     | createReplicaQueryRule
     | alterReplicaQueryRule
+    | dropReplicaQueryRule
     | showResources
     | showRule
     ) SEMI?

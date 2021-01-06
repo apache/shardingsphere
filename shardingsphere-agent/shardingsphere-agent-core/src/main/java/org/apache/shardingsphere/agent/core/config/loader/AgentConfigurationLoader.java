@@ -20,11 +20,11 @@ package org.apache.shardingsphere.agent.core.config.loader;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
+import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.YamlAgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.yaml.swapper.YamlAgentConfigurationSwapper;
-import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
-import org.apache.shardingsphere.agent.core.yaml.YamlEngine;
+import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
+import org.apache.shardingsphere.agent.core.config.yaml.engine.YamlEngine;
 
 import java.io.File;
 import java.io.IOException;

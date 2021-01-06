@@ -31,6 +31,7 @@ import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
+import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
@@ -63,6 +64,7 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         initOpenTracing();
         setDatabaseServerInfo();
         initLockContext();
+        initScalingWorker(yamlConfig);
         shardingSphereProxy.start(port);
     }
     
@@ -79,7 +81,10 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     private static Map<String, DataSource> createDataSources(final Map<String, DataSourceParameter> dataSourceParameters) {
         Map<String, DataSource> result = new LinkedHashMap<>(dataSourceParameters.size(), 1);
         for (Entry<String, DataSourceParameter> entry : dataSourceParameters.entrySet()) {
-            result.put(entry.getKey(), JDBCRawBackendDataSourceFactory.getInstance().build(entry.getKey(), entry.getValue()));
+            DataSource dataSource = JDBCRawBackendDataSourceFactory.getInstance().build(entry.getKey(), entry.getValue());
+            if (null != dataSource) {
+                result.put(entry.getKey(), dataSource);
+            }
         }
         return result;
     }
@@ -111,6 +116,16 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         }
     }
     
+    protected Optional<ServerConfiguration> getScalingConfiguration(final YamlProxyConfiguration yamlConfig) {
+        if (null != yamlConfig.getServerConfiguration().getScaling()) {
+            ServerConfiguration result = new ServerConfiguration();
+            result.setBlockQueueSize(yamlConfig.getServerConfiguration().getScaling().getBlockQueueSize());
+            result.setWorkerThread(yamlConfig.getServerConfiguration().getScaling().getWorkerThread());
+            return Optional.of(result);
+        }
+        return Optional.empty();
+    }
+    
     protected abstract ProxyConfiguration getProxyConfiguration(YamlProxyConfiguration yamlConfig);
     
     protected abstract MetaDataContexts decorateMetaDataContexts(MetaDataContexts metaDataContexts);
@@ -118,4 +133,6 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     protected abstract TransactionContexts decorateTransactionContexts(TransactionContexts transactionContexts, String xaTransactionMangerType);
     
     protected abstract void initLockContext();
+    
+    protected abstract void initScalingWorker(YamlProxyConfiguration yamlConfig);
 }

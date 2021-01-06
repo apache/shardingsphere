@@ -31,11 +31,11 @@ public final class RoundRobinReplicaLoadBalanceAlgorithm implements ReplicaLoadB
     private static final ConcurrentHashMap<String, AtomicInteger> COUNTS = new ConcurrentHashMap<>();
     
     @Override
-    public String getDataSource(final String name, final String primaryDataSourceName, final List<String> replicaDataSourceNames) {
+    public String getDataSource(final String name, final String primaryDataSourceName, final List<String> dataSourceNames) {
         AtomicInteger count = COUNTS.containsKey(name) ? COUNTS.get(name) : new AtomicInteger(0);
         COUNTS.putIfAbsent(name, count);
-        count.compareAndSet(replicaDataSourceNames.size(), 0);
-        return replicaDataSourceNames.get(Math.abs(count.getAndIncrement()) % replicaDataSourceNames.size());
+        count.compareAndSet(dataSourceNames.size(), 0);
+        return dataSourceNames.get(Math.abs(count.getAndIncrement()) % dataSourceNames.size());
     }
     
     @Override

@@ -91,6 +91,10 @@ columnName
     : IDENTIFIER
     ;
 
+dropReplicaQueryRule
+    : DROP REPLICA_QUERY RULE LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    ;
+
 dropShardingRule
     : DROP SHARDING RULE LP tableName (COMMA tableName)* RP
     ;
