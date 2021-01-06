@@ -41,7 +41,7 @@ public final class ScalingJob {
     
     private long jobId;
     
-    private int shardingItem;
+    private Integer shardingItem;
     
     private String databaseType;
     

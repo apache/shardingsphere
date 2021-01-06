@@ -36,11 +36,16 @@ public final class TestHATypeFixture implements HAType {
     }
     
     @Override
-    public void startPeriodicalMonitor(final Map<String, DataSource> dataSourceMap, final String schemaName) {
+    public void startPeriodicalUpdate(final Map<String, DataSource> dataSourceMap, final String schemaName) {
     }
     
     @Override
-    public void stopPeriodicalMonitor() {
+    public void stopPeriodicalUpdate() {
+    }
+    
+    @Override
+    public String getPrimaryDataSource() {
+        return null;
     }
     
     @Override

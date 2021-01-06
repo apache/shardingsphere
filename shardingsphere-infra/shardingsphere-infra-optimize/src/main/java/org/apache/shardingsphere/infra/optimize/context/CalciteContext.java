@@ -28,7 +28,6 @@ import java.util.Properties;
 
 /**
  * Calcite context.
- *
  */
 @Getter
 @RequiredArgsConstructor

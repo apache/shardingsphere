@@ -75,7 +75,7 @@
 #schemaName: ha_db
 #
 #dataSources:
-#  primary_ds:
+#  ds_0:
 #    url: jdbc:mysql://127.0.0.1:3306/demo_primary_ds?serverTimezone=UTC&useSSL=false
 #    username: root
 #    password:
@@ -85,7 +85,7 @@
 #    maxPoolSize: 50
 #    minPoolSize: 1
 #    maintenanceIntervalMilliseconds: 30000
-#  replica_ds_0:
+#  ds_1:
 #    url: jdbc:mysql://127.0.0.1:3306/demo_replica_ds_0?serverTimezone=UTC&useSSL=false
 #    username: root
 #    password:
@@ -95,7 +95,7 @@
 #    maxPoolSize: 50
 #    minPoolSize: 1
 #    maintenanceIntervalMilliseconds: 30000
-#  replica_ds_1:
+#  ds_2:
 #    url: jdbc:mysql://127.0.0.1:3306/demo_replica_ds_1?serverTimezone=UTC&useSSL=false
 #    username: root
 #    password:
@@ -111,10 +111,10 @@
 #  dataSources:
 #    pr_ds:
 #      name: pr_ds
-#      primaryDataSourceName: primary_ds
-#      replicaDataSourceNames:
-#        - replica_ds_0
-#        - replica_ds_1
+#      dataSourceNames:
+#        - ds_0
+#        - ds_1
+#        - ds_2
 #      replicaQuery: false
 #  haType:
 #    type: MGR

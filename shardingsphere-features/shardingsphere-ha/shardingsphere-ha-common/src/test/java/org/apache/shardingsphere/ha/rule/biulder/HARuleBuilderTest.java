@@ -46,7 +46,7 @@ public final class HARuleBuilderTest {
     public void assertBuild() {
         HARuleConfiguration ruleConfig = mock(HARuleConfiguration.class);
         HADataSourceRuleConfiguration dataSourceRuleConfig = new HADataSourceRuleConfiguration(
-                "name", "primaryDataSourceName", Collections.singletonList("name"), "loadBalancerName", true);
+                "name", Collections.singletonList("name"), "loadBalancerName", true);
         when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(dataSourceRuleConfig));
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
         Map<String, DataSource> dataSourceMap = new HashMap<>();

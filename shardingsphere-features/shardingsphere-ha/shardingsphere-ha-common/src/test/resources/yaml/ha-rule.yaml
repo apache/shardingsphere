@@ -51,15 +51,13 @@ rules:
 - !HA
   dataSources:
     ds_0:
-      primaryDataSourceName: primary_ds_0
-      replicaDataSourceNames:
+      dataSourceNames:
         - primary_ds_0_replica_0
         - primary_ds_0_replica_1
       loadBalancerName: roundRobin
       replicaQuery: true
     ds_1:
-      primaryDataSourceName: primary_ds_1
-      replicaDataSourceNames: 
+      dataSourceNames:
         - primary_ds_1_replica_0
         - primary_ds_1_replica_1
       loadBalancerName: random

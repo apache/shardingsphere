@@ -70,6 +70,14 @@ public interface ScalingSQLBuilder {
     String buildCountSQL(String tableName);
     
     /**
+     * Build check empty SQL.
+     *
+     * @param tableName table name
+     * @return check SQL
+     */
+    String buildCheckEmptySQL(String tableName);
+    
+    /**
      * Build split by primary key range SQL.
      *
      * @param tableName table name

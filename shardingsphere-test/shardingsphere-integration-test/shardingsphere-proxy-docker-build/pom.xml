@@ -68,7 +68,7 @@
     
     <profiles>
         <profile>
-            <id>it-proxy</id>
+            <id>it.docker</id>
             <build>
                 <finalName>shardingsphere-proxy-${project.version}</finalName>
                 <plugins>

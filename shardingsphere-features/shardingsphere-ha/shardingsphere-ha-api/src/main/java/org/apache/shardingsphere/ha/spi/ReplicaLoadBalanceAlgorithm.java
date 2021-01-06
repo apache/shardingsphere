@@ -31,8 +31,8 @@ public interface ReplicaLoadBalanceAlgorithm extends ShardingSphereAlgorithm {
      * 
      * @param name HA logic data source name
      * @param primaryDataSourceName name of primary data sources
-     * @param replicaDataSourceNames names of replica data sources
+     * @param dataSourceNames names of replica data sources
      * @return name of selected data source
      */
-    String getDataSource(String name, String primaryDataSourceName, List<String> replicaDataSourceNames);
+    String getDataSource(String name, String primaryDataSourceName, List<String> dataSourceNames);
 }

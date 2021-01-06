@@ -17,29 +17,17 @@
 
 package org.apache.shardingsphere.agent.core.plugin.loader;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.matcher.ElementMatcher;
-import net.bytebuddy.matcher.ElementMatcher.Junction;
-import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
-import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.path.AgentPathBuilder;
-import org.apache.shardingsphere.agent.core.plugin.definition.PluginDefinition;
-import org.apache.shardingsphere.agent.core.plugin.point.PluginInterceptorPoint;
-
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -53,6 +41,18 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.matcher.ElementMatcher;
+import net.bytebuddy.matcher.ElementMatcher.Junction;
+import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
+import org.apache.shardingsphere.agent.config.AgentConfiguration;
+import org.apache.shardingsphere.agent.core.config.cache.AgentObjectPool;
+import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
+import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
+import org.apache.shardingsphere.agent.spi.definition.PluginDefinitionService;
 
 /**
  * Plugin loader.
@@ -105,33 +105,16 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             return;
         }
         Map<String, PluginInterceptorPoint> pointMap = Maps.newHashMap();
-        Set<String> ignorePlugins = AgentObjectPool.INSTANCE.get(AgentConfiguration.class).getIgnorePlugins();
+        Set<String> ignoredPluginNames = AgentObjectPool.INSTANCE.get(AgentConfiguration.class).getIgnoredPluginNames();
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            for (File jarFile : jarFiles) {
+            for (File each : jarFiles) {
                 outputStream.reset();
-                JarFile jar = new JarFile(jarFile, true);
-                jars.add(new PluginJar(jar, jarFile));
-                log.info("Loaded jar {}.", jarFile.getName());
-                Attributes attributes = jar.getManifest().getMainAttributes();
-                String entrypoint = attributes.getValue("Entrypoint");
-                if (Strings.isNullOrEmpty(entrypoint)) {
-                    log.warn("Entrypoint is not setting in {}.", jarFile.getName());
-                    continue;
-                }
-                try {
-                    ByteStreams.copy(jar.getInputStream(jar.getEntry(classNameToPath(entrypoint))), outputStream);
-                    PluginDefinition pluginDefinition = (PluginDefinition) defineClass(entrypoint, outputStream.toByteArray(), 0, outputStream.size()).newInstance();
-                    if (!ignorePlugins.isEmpty() && ignorePlugins.contains(pluginDefinition.getPluginName())) {
-                        continue;
-                    }
-                    buildPluginInterceptorPointMap(pluginDefinition, pointMap);
-                    // CHECKSTYLE:OFF
-                } catch (final Throwable ex) {
-                    // CHECKSTYLE:ON
-                    log.error("Failed to load plugin definition, {}.", entrypoint, ex);
-                }
+                JarFile jar = new JarFile(each, true);
+                jars.add(new PluginJar(jar, each));
+                log.info("Loaded jar {}.", each.getName());
             }
         }
+        loadPluginDefinitionServices(ignoredPluginNames, pointMap);
         interceptorPointMap = ImmutableMap.<String, PluginInterceptorPoint>builder().putAll(pointMap).build();
     }
     
@@ -213,9 +196,9 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             ZipEntry entry = each.jarFile.getEntry(path);
             if (Objects.nonNull(entry)) {
                 try {
-                    int i = name.lastIndexOf('.');
-                    if (i != -1) {
-                        String packageName = name.substring(0, i);
+                    int index = name.lastIndexOf('.');
+                    if (index != -1) {
+                        String packageName = name.substring(0, index);
                         definePackageInternal(packageName, each.jarFile.getManifest());
                     }
                     byte[] data = ByteStreams.toByteArray(each.jarFile.getInputStream(entry));
@@ -225,7 +208,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
                 }
             }
         }
-        throw new ClassNotFoundException("Class " + name + " not found.");
+        throw new ClassNotFoundException(String.format("Class name is %s not found.", name));
     }
     
     @Override
@@ -235,7 +218,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             JarEntry entry = each.jarFile.getJarEntry(name);
             if (Objects.nonNull(entry)) {
                 try {
-                    resources.add(new URL("jar:file:" + each.sourcePath.getAbsolutePath() + "!/" + name));
+                    resources.add(new URL(String.format("jar:file:%s!/%s", each.sourcePath.getAbsolutePath(), name)));
                 } catch (final MalformedURLException ignored) {
                 }
             }
@@ -249,7 +232,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             JarEntry entry = each.jarFile.getJarEntry(name);
             if (Objects.nonNull(entry)) {
                 try {
-                    return new URL("jar:file:" + each.sourcePath.getAbsolutePath() + "!/" + name);
+                    return new URL(String.format("jar:file:%s!/%s", each.sourcePath.getAbsolutePath(), name));
                 } catch (final MalformedURLException ignored) {
                 }
             }
@@ -268,8 +251,18 @@ public final class PluginLoader extends ClassLoader implements Closeable {
         }
     }
     
+    private void loadPluginDefinitionServices(final Set<String> ignoredPluginNames, final Map<String, PluginInterceptorPoint> pointMap) {
+        Collection<PluginDefinitionService> pluginDefinitionServices = PluginServiceLoader.newServiceInstances(PluginDefinitionService.class);
+        for (PluginDefinitionService each : pluginDefinitionServices) {
+            if (!ignoredPluginNames.isEmpty() && ignoredPluginNames.contains(each.getType())) {
+                continue;
+            }
+            buildPluginInterceptorPointMap(each, pointMap);
+        }
+    }
+    
     private String classNameToPath(final String className) {
-        return className.replace(".", "/") + ".class";
+        return String.join("", className.replace(".", "/"), ".class");
     }
     
     private void definePackageInternal(final String packageName, final Manifest manifest) {
@@ -286,8 +279,8 @@ public final class PluginLoader extends ClassLoader implements Closeable {
         definePackage(packageName, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor, null);
     }
     
-    private void buildPluginInterceptorPointMap(final PluginDefinition pluginDefinition, final Map<String, PluginInterceptorPoint> pointMap) {
-        pluginDefinition.build().forEach(each -> {
+    private void buildPluginInterceptorPointMap(final PluginDefinitionService pluginDefinitionService, final Map<String, PluginInterceptorPoint> pointMap) {
+        pluginDefinitionService.build().forEach(each -> {
             String target = each.getClassNameOfTarget();
             if (pointMap.containsKey(target)) {
                 PluginInterceptorPoint definition = pointMap.get(target);

@@ -84,7 +84,7 @@ public final class HASQLRouterTest {
     @Before
     public void setUp() {
         rule = new HARule(new HARuleConfiguration(Collections.singleton(
-                new HADataSourceRuleConfiguration(DATASOURCE_NAME, PRIMARY_DATASOURCE, Collections.singletonList(REPLICA_DATASOURCE), null, true)),
+                new HADataSourceRuleConfiguration(DATASOURCE_NAME, Collections.singletonList(REPLICA_DATASOURCE), null, true)),
                 Collections.emptyMap(), new ShardingSphereAlgorithmConfiguration("TestRoute", new Properties())), mock(DatabaseType.class),
                 Collections.singletonMap("ds", mock(DataSource.class)), "ha_db");
         sqlRouter = (HASQLRouter) OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLRouter.class).get(rule);

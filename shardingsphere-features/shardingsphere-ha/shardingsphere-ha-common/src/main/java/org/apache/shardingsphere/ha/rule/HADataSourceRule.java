@@ -40,9 +40,7 @@ public final class HADataSourceRule {
     
     private final String name;
     
-    private final String primaryDataSourceName;
-    
-    private final List<String> replicaDataSourceNames;
+    private final List<String> dataSourceNames;
     
     private final ReplicaLoadBalanceAlgorithm loadBalancer;
     
@@ -54,16 +52,14 @@ public final class HADataSourceRule {
     public HADataSourceRule(final HADataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer) {
         checkConfiguration(config);
         name = config.getName();
-        primaryDataSourceName = config.getPrimaryDataSourceName();
-        replicaDataSourceNames = config.getReplicaDataSourceNames();
+        dataSourceNames = config.getDataSourceNames();
         this.loadBalancer = loadBalancer;
         this.replicaQuery = config.isReplicaQuery();
     }
     
     private void checkConfiguration(final HADataSourceRuleConfiguration config) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getPrimaryDataSourceName()), "Primary data source name is required.");
-        Preconditions.checkArgument(null != config.getReplicaDataSourceNames() && !config.getReplicaDataSourceNames().isEmpty(), "Replica data source names are required.");
+        Preconditions.checkArgument(null != config.getDataSourceNames() && !config.getDataSourceNames().isEmpty(), "Replica data source names are required.");
     }
     
     /**
@@ -71,8 +67,8 @@ public final class HADataSourceRule {
      *
      * @return available replica data source names
      */
-    public List<String> getReplicaDataSourceNames() {
-        return replicaDataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toList());
+    public List<String> getDataSourceNames() {
+        return dataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toList());
     }
     
     /**
@@ -97,8 +93,7 @@ public final class HADataSourceRule {
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>(1, 1);
         Collection<String> actualDataSourceNames = new LinkedList<>();
-        actualDataSourceNames.add(primaryDataSourceName);
-        actualDataSourceNames.addAll(replicaDataSourceNames);
+        actualDataSourceNames.addAll(dataSourceNames);
         result.put(name, actualDataSourceNames);
         return result;
     }
