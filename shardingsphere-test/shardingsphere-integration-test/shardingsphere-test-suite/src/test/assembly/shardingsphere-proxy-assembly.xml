@@ -25,7 +25,7 @@
     
     <fileSets>
         <fileSet>
-            <directory>src/main/resources/bin</directory>
+            <directory>src/test/assembly/bin</directory>
             <outputDirectory>bin</outputDirectory>
             <fileMode>0755</fileMode>
         </fileSet>
