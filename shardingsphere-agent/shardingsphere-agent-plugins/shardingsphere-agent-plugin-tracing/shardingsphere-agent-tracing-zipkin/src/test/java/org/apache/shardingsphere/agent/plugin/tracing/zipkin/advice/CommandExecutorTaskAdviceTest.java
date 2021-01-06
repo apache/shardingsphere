@@ -40,7 +40,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public final class CommandExecutorTaskAdviceTest extends AdviceTestBase {
+public final class CommandExecutorTaskAdviceTest extends AdviceBaseTest {
     
     private static Method executeCommandMethod;
     
