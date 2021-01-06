@@ -32,8 +32,6 @@ public final class YamlServerConfiguration implements YamlConfiguration {
     
     private int blockQueueSize = 10000;
     
-    private int pushTimeout = 1000;
-    
     private int workerThread = 30;
     
     private YamlGovernanceConfiguration distributedScalingService;
