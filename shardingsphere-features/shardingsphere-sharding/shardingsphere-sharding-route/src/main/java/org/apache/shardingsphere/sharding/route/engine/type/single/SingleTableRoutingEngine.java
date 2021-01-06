@@ -30,8 +30,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTable
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 /**
  * Single table engine.
@@ -50,7 +53,7 @@ public final class SingleTableRoutingEngine implements ShardingRouteEngine {
         } else {
             Collection<RouteUnit> routeUnits = getTargetRouteUnits(shardingRule);
             routeContext.getRouteUnits().addAll(routeUnits);
-            if (isInSameDataSource(routeUnits)) {
+            if (1 < routeUnits.size()) {
                 routeContext.setToCalcite(true);
             }
         }
@@ -64,27 +67,22 @@ public final class SingleTableRoutingEngine implements ShardingRouteEngine {
     }
     
     private Collection<RouteUnit> getTargetRouteUnits(final ShardingRule shardingRule) {
-        Collection<RouteUnit> result = new LinkedHashSet<>();
+        Map<RouteMapper, Collection<RouteMapper>> result = new LinkedHashMap<>();
         for (String each : logicTables) {
             if (shardingRule.getSingleTableRules().containsKey(each)) {
-                String dataSource = shardingRule.getSingleTableRules().get(each).getDataSourceName();
-                result.add(new RouteUnit(new RouteMapper(dataSource, dataSource), Collections.singletonList(new RouteMapper(each, each))));
+                fillRouteUnits(each, shardingRule.getSingleTableRules().get(each).getDataSourceName(), result);
             } else {
                 throw new ShardingSphereException("`%s` single table does not exist.", each);
             }
         }
-        return result;
+        return result.entrySet().stream().map(entry -> new RouteUnit(entry.getKey(), entry.getValue())).collect(Collectors.toList());
     }
     
-    private boolean isInSameDataSource(final Collection<RouteUnit> routeUnits) {
-        RouteUnit sample = routeUnits.iterator().next();
-        for (RouteUnit each : routeUnits) {
-            if (sample.getDataSourceMapper().equals(each.getDataSourceMapper())) {
-                sample = each;
-            } else {
-                return false;
-            }
+    private void fillRouteUnits(final String each, final String dataSource, final Map<RouteMapper, Collection<RouteMapper>> routeMappers) {
+        RouteMapper dataSourceMapper = new RouteMapper(dataSource, dataSource);
+        if (!routeMappers.containsKey(dataSourceMapper)) {
+            routeMappers.put(dataSourceMapper, new LinkedHashSet<>());
         }
-        return true;
+        routeMappers.get(dataSourceMapper).add(new RouteMapper(each, each));
     }
 }
