@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.ha.route.fixture;
 
 import org.apache.shardingsphere.ha.spi.HAType;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -34,18 +33,15 @@ public final class TestRouteHATypeFixture implements HAType {
     }
     
     @Override
-    public void updatePrimaryDataSource(final Map<String, DataSource> activeDataSourceMap, final String schemaName,
-                                        final RuleConfiguration config, final Collection<String> disabledDataSourceNames) {
+    public void updatePrimaryDataSource(final Map<String, DataSource> activeDataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
     }
     
     @Override
-    public void updateMemberState(final Map<String, DataSource> originalDataSourceMap, final String schemaName,
-                                  final RuleConfiguration config, final Collection<String> disabledDataSourceNames) {
+    public void updateMemberState(final Map<String, DataSource> originalDataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
     }
     
     @Override
-    public void startPeriodicalUpdate(final Map<String, DataSource> originalDataSourceMap, final String schemaName,
-                                      final RuleConfiguration config, final Collection<String> disabledDataSourceNames) {
+    public void startPeriodicalUpdate(final Map<String, DataSource> originalDataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
     }
     
     @Override

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.ha.spi;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
 import javax.sql.DataSource;
@@ -44,31 +43,27 @@ public interface HAType extends TypedSPI {
      *
      * @param originalDataSourceMap original data source map
      * @param schemaName schema name
-     * @param config config
      * @param disabledDataSourceNames disabled data source names
      */
-    void updatePrimaryDataSource(Map<String, DataSource> originalDataSourceMap, String schemaName, RuleConfiguration config, Collection<String> disabledDataSourceNames);
+    void updatePrimaryDataSource(Map<String, DataSource> originalDataSourceMap, String schemaName, Collection<String> disabledDataSourceNames);
     
     /**
      * Update member state.
      *
      * @param originalDataSourceMap original data source map
      * @param schemaName schema name
-     * @param config config
      * @param disabledDataSourceNames disabled data source names
      */
-    void updateMemberState(Map<String, DataSource> originalDataSourceMap, String schemaName,
-                           RuleConfiguration config, Collection<String> disabledDataSourceNames);
+    void updateMemberState(Map<String, DataSource> originalDataSourceMap, String schemaName, Collection<String> disabledDataSourceNames);
     
     /**
      * Start periodical update.
      *
      * @param originalDataSourceMap original data source map
      * @param schemaName schema name
-     * @param config config
      * @param disabledDataSourceNames disabled data source names
      */
-    void startPeriodicalUpdate(Map<String, DataSource> originalDataSourceMap, String schemaName, RuleConfiguration config, Collection<String> disabledDataSourceNames);
+    void startPeriodicalUpdate(Map<String, DataSource> originalDataSourceMap, String schemaName, Collection<String> disabledDataSourceNames);
     
     /**
      * Stop periodical update.

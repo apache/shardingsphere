@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.ha.spi.HAType;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -39,8 +38,6 @@ public final class MGRPeriodicalJob implements SimpleJob {
     
     private final String schemaName;
     
-    private final RuleConfiguration config;
-    
     private final Collection<String> disabledDataSourceNames;
     
     @Override
@@ -49,8 +46,8 @@ public final class MGRPeriodicalJob implements SimpleJob {
         if (!disabledDataSourceNames.isEmpty()) {
             activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
         }
-        log.info("  +++  " + activeDataSourceMap.toString());
-        haType.updatePrimaryDataSource(originalDataSourceMap, schemaName, config, disabledDataSourceNames);
-        haType.updateMemberState(originalDataSourceMap, schemaName, config, disabledDataSourceNames);
+        log.info(" +++ " + activeDataSourceMap.toString());
+        haType.updatePrimaryDataSource(originalDataSourceMap, schemaName, disabledDataSourceNames);
+        haType.updateMemberState(originalDataSourceMap, schemaName, disabledDataSourceNames);
     }
 }

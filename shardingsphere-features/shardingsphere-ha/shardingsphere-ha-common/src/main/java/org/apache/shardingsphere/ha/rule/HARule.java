@@ -77,14 +77,14 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
         Collection<String> disabledDataSourceNames = dataSourceRules.values().iterator().next().getDisabledDataSourceNames();
         if (null == haType) {
             haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaConfiguration().getType(), config.getHaConfiguration().getProps());
-            haType.updatePrimaryDataSource(originalDataSourceMap, schemaName, config, disabledDataSourceNames);
-            haType.updateMemberState(originalDataSourceMap, schemaName, config, disabledDataSourceNames);
+            haType.updatePrimaryDataSource(originalDataSourceMap, schemaName, disabledDataSourceNames);
+            haType.updateMemberState(originalDataSourceMap, schemaName, disabledDataSourceNames);
         } else {
             haType.stopPeriodicalUpdate();
         }
         try {
             haType.checkHAConfig(dataSourceMap, schemaName);
-            haType.startPeriodicalUpdate(originalDataSourceMap, schemaName, config, disabledDataSourceNames);
+            haType.startPeriodicalUpdate(originalDataSourceMap, schemaName, disabledDataSourceNames);
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         }
@@ -106,14 +106,14 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
         Collection<String> disabledDataSourceNames = dataSourceRules.values().iterator().next().getDisabledDataSourceNames();
         if (null == haType) {
             haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaType().getType(), config.getHaType().getProps());
-            haType.updatePrimaryDataSource(originalDataSourceMap, schemaName, config, disabledDataSourceNames);
-            haType.updateMemberState(originalDataSourceMap, schemaName, config, disabledDataSourceNames);
+            haType.updatePrimaryDataSource(originalDataSourceMap, schemaName, disabledDataSourceNames);
+            haType.updateMemberState(originalDataSourceMap, schemaName, disabledDataSourceNames);
         } else {
             haType.stopPeriodicalUpdate();
         }
         try {
             haType.checkHAConfig(dataSourceMap, schemaName);
-            haType.startPeriodicalUpdate(originalDataSourceMap, schemaName, config, disabledDataSourceNames);
+            haType.startPeriodicalUpdate(originalDataSourceMap, schemaName, disabledDataSourceNames);
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         }
