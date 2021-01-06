@@ -80,16 +80,14 @@ public final class CalciteContextFactory {
     private final RelOptCluster cluster;
 
     public CalciteContextFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
+        typeFactory = new JavaTypeFactoryImpl();
+        cluster = newCluster();
         if (metaDataMap.isEmpty()) {
             this.connectionConfig = null;
             this.parserConfig = null;
             this.factory = null;
-            this.typeFactory = null;
-            this.cluster = null;
             return;
         }
-        typeFactory = new JavaTypeFactoryImpl();
-        cluster = newCluster();
         factory = new CalciteLogicSchemaFactory(metaDataMap);
         DatabaseType databaseType = metaDataMap.values().iterator().next().getResource().getDatabaseType();
         if (databaseType == null) {
