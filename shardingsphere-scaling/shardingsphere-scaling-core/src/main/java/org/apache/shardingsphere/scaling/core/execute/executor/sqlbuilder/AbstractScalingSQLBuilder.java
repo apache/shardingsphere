@@ -148,6 +148,11 @@ public abstract class AbstractScalingSQLBuilder implements ScalingSQLBuilder {
     }
     
     @Override
+    public String buildCheckEmptySQL(final String tableName) {
+        return String.format("SELECT * FROM %s LIMIT 1", quote(tableName));
+    }
+    
+    @Override
     public String buildSplitByPrimaryKeyRangeSQL(final String tableName, final String primaryKey) {
         return String.format("SELECT MAX(%s) FROM (SELECT %s FROM %s WHERE %s>=? limit ?) t", quote(primaryKey), quote(primaryKey), quote(tableName), quote(primaryKey));
     }

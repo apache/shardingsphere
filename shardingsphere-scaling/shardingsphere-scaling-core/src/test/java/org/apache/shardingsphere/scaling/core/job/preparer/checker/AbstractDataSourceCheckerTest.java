@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job.preparer.checker;
 
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,12 +50,18 @@ public final class AbstractDataSourceCheckerTest {
     @Before
     public void setUp() {
         dataSourceChecker = new AbstractDataSourceChecker() {
+    
             @Override
             public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
             }
             
             @Override
             public void checkVariable(final Collection<? extends DataSource> dataSources) {
+            }
+            
+            @Override
+            protected ScalingSQLBuilder getSqlBuilder() {
+                return null;
             }
         };
         dataSources = new LinkedList<>();

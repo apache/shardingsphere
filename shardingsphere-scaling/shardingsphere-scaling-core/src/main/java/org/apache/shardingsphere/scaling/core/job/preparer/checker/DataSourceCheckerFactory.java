@@ -27,7 +27,7 @@ import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
  * Data source checker factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceCheckerCheckerFactory {
+public final class DataSourceCheckerFactory {
     
     /**
      * New instance of data source checker.
@@ -36,7 +36,7 @@ public final class DataSourceCheckerCheckerFactory {
      * @return data source checker
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static DataSourceChecker newInstanceDataSourceChecker(final String databaseType) {
+    public static DataSourceChecker newInstance(final String databaseType) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
         return scalingEntry.getDataSourceCheckerClass().getConstructor().newInstance();
     }
