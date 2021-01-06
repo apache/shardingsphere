@@ -43,7 +43,7 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class JDBCExecutorCallbackAdviceTest {
+public final class JDBCExecutorCallbackAdviceTest {
     
     private static final JDBCExecutorCallbackAdvice ADVICE = new JDBCExecutorCallbackAdvice();
     

@@ -37,7 +37,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-public class CommandExecutorTaskAdviceTest {
+public final class CommandExecutorTaskAdviceTest {
     
     private static final CommandExecutorTaskAdvice ADVICE = new CommandExecutorTaskAdvice();
     

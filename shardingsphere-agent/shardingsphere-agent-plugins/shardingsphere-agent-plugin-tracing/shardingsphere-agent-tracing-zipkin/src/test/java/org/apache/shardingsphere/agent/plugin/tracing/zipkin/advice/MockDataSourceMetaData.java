@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 
-public class MockDataSourceMetaData implements DataSourceMetaData {
+public final class MockDataSourceMetaData implements DataSourceMetaData {
     
     @Override
     public String getHostName() {

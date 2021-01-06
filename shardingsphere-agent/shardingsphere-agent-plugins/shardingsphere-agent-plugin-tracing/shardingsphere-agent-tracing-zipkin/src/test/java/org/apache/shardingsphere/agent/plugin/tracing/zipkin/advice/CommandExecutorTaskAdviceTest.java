@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-public class CommandExecutorTaskAdviceTest extends AdviceTestBase {
+public final class CommandExecutorTaskAdviceTest extends AdviceTestBase {
     
     private static Method executeCommandMethod;
     

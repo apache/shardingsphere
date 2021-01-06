@@ -37,7 +37,7 @@ import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 
-public class SQLParserEngineAdviceTest extends AdviceTestBase {
+public final class SQLParserEngineAdviceTest extends AdviceTestBase {
     
     private static final String SQL_STMT = "select 1";
     

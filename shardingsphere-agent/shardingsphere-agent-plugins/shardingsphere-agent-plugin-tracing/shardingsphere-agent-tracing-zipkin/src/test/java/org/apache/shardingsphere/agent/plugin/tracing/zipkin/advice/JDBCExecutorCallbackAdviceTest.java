@@ -46,7 +46,7 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class JDBCExecutorCallbackAdviceTest extends AdviceTestBase {
+public final class JDBCExecutorCallbackAdviceTest extends AdviceTestBase {
     
     private static Method executeMethod;
     
