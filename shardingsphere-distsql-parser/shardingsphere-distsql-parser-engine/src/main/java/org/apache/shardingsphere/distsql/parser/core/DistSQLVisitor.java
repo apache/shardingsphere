@@ -79,7 +79,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         result.setName(ctx.dataSourceName().getText());
         return result;
     }
-
+    
     @Override
     public ASTNode visitDropResource(final DropResourceContext ctx) {
         DropResourceStatement result = new DropResourceStatement();
@@ -88,7 +88,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitDataSourceDefinition(final DataSourceDefinitionContext ctx) {
         DataSourceSegment result = new DataSourceSegment();
