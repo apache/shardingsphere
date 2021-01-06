@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 
 /**
- * datasource not existed exception.
+ * Resource not existed exception.
  */
 @RequiredArgsConstructor
 @Getter

@@ -126,7 +126,6 @@ public final class ConfigCenter {
      */
     @Subscribe
     public synchronized void renew(final DataSourceChangedEvent event) {
-
         persistDataSourceConfigurations(event.getSchemaName(), event.getDataSourceConfigurations());
     }
     

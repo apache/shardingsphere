@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 
 /**
- * datasource in used exception.
+ * Resource in used exception.
  */
 @RequiredArgsConstructor
 @Getter
