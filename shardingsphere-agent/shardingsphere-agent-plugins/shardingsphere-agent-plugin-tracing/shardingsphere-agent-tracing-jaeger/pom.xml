@@ -56,5 +56,11 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>io.opentracing</groupId>
+            <artifactId>opentracing-mock</artifactId>
+            <version>${opentracing.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
