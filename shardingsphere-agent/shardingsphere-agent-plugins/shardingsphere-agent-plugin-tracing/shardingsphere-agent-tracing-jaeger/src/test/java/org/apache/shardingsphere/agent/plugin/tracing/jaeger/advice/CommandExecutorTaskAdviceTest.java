@@ -66,8 +66,8 @@ public final class CommandExecutorTaskAdviceTest {
     }
     
     @Test
-    public void testMethod() {
-        final MockTargetObject targetObject = new MockTargetObject();
+    public void assertMethod() {
+        MockTargetObject targetObject = new MockTargetObject();
         ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         ADVICE.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = tracer.finishedSpans();
@@ -77,7 +77,7 @@ public final class CommandExecutorTaskAdviceTest {
     }
     
     @Test
-    public void testExceptionHandle() {
+    public void assertExceptionHandle() {
         MockTargetObject targetObject = new MockTargetObject();
         ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         ADVICE.onThrowing(targetObject, executeCommandMethod, new Object[]{}, new IOException());
@@ -94,5 +94,4 @@ public final class CommandExecutorTaskAdviceTest {
         assertThat(fields.get("error.kind"), is("java.io.IOException"));
         assertThat(span.operationName(), is("/ShardingSphere/rootInvoke/"));
     }
-    
 }

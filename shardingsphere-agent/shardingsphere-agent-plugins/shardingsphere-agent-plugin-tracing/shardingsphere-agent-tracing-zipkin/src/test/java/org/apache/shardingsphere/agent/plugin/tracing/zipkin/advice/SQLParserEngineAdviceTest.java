@@ -39,7 +39,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class SQLParserEngineAdviceTest extends AdviceTestBase {
+public final class SQLParserEngineAdviceTest extends AdviceBaseTest {
     
     private static final String SQL_STMT = "select 1";
     

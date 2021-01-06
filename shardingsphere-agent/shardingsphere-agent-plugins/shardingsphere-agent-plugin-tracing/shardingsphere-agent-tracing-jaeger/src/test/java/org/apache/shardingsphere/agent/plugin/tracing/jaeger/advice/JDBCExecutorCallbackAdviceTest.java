@@ -69,7 +69,7 @@ public final class JDBCExecutorCallbackAdviceTest {
     }
     
     @Test
-    public void testMethod() {
+    public void assertMethod() {
         MockTargetObject targetObject = new MockTargetObject();
         Map<String, Object> extraMap = Maps.newHashMap();
         extraMap.put("_root_span_", null);
@@ -90,7 +90,7 @@ public final class JDBCExecutorCallbackAdviceTest {
     }
     
     @Test
-    public void testExceptionHandle() {
+    public void assertExceptionHandle() {
         MockTargetObject targetObject = new MockTargetObject();
         Map<String, Object> extraMap = Maps.newHashMap();
         extraMap.put("_root_span_", null);

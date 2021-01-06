@@ -48,6 +48,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -137,9 +138,12 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     
     @Override
     protected void initScalingWorker(final YamlProxyConfiguration yamlConfig) {
-        ServerConfiguration serverConfiguration = new ServerConfiguration();
-        serverConfiguration.setDistributedScalingService(new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance()));
-        ScalingContext.getInstance().init(serverConfiguration);
-        ScalingServiceHolder.getInstance().init(new DistributedScalingJobService());
+        Optional<ServerConfiguration> scalingConfigurationOptional = getScalingConfiguration(yamlConfig);
+        if (scalingConfigurationOptional.isPresent()) {
+            ServerConfiguration serverConfiguration = scalingConfigurationOptional.get();
+            serverConfiguration.setDistributedScalingService(new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance()));
+            ScalingContext.getInstance().init(serverConfiguration);
+            ScalingServiceHolder.getInstance().init(new DistributedScalingJobService());
+        }
     }
 }
