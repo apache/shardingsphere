@@ -21,7 +21,6 @@ The binary package's directory is:`/shardingsphere-distribution/shardingsphere-s
 ```
 port: 8888
 blockQueueSize: 10000
-pushTimeout: 1000
 workerThread: 30
 
 resumeBreakPoint:
@@ -67,6 +66,5 @@ response:
 | -------------- | ----------------------------------------------------------------------------------------- | ------------- |
 | port           | Listening port of HTTP server                                                             | 8888          |
 | blockQueueSize | Queue size of data transmission channel                                                   | 10000         |
-| pushTimeout    | Data push timeout(ms)                                                                     | 1000          |
 | workerThread   | Worker thread pool size, the number of migration task threads allowed to run concurrently | 30            |
 | resumeBreakPoint   | Resume from break-point service                                                       |               |

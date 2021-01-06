@@ -32,7 +32,6 @@ public final class ServerConfigurationYamlSwapper implements YamlSwapper<YamlSer
         YamlServerConfiguration result = new YamlServerConfiguration();
         result.setPort(data.getPort());
         result.setBlockQueueSize(data.getBlockQueueSize());
-        result.setPushTimeout(data.getPushTimeout());
         result.setWorkerThread(data.getWorkerThread());
         if (null != data.getDistributedScalingService()) {
             result.setDistributedScalingService(governanceConfigurationYamlSwapper.swapToYamlConfiguration(data.getDistributedScalingService()));
@@ -45,7 +44,6 @@ public final class ServerConfigurationYamlSwapper implements YamlSwapper<YamlSer
         ServerConfiguration result = new ServerConfiguration();
         result.setPort(yamlConfig.getPort());
         result.setBlockQueueSize(yamlConfig.getBlockQueueSize());
-        result.setPushTimeout(yamlConfig.getPushTimeout());
         result.setWorkerThread(yamlConfig.getWorkerThread());
         if (null != yamlConfig.getDistributedScalingService()) {
             result.setDistributedScalingService(governanceConfigurationYamlSwapper.swapToObject(yamlConfig.getDistributedScalingService()));
