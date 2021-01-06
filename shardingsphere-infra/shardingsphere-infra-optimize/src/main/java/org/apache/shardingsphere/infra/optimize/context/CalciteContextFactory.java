@@ -80,9 +80,23 @@ public final class CalciteContextFactory {
     private final RelOptCluster cluster;
 
     public CalciteContextFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
+        if (metaDataMap.isEmpty()) {
+            this.connectionConfig = null;
+            this.parserConfig = null;
+            this.factory = null;
+            this.typeFactory = null;
+            this.cluster = null;
+            return;
+        }
+        typeFactory = new JavaTypeFactoryImpl();
+        cluster = newCluster();
         factory = new CalciteLogicSchemaFactory(metaDataMap);
         DatabaseType databaseType = metaDataMap.values().iterator().next().getResource().getDatabaseType();
-        assert databaseType != null;
+        if (databaseType == null) {
+            parserConfig = null;
+            connectionConfig = null;
+            return;
+        }
         initProperties(databaseType);
         connectionConfig = new CalciteConnectionConfigImpl(properties);
         parserConfig = SqlParser.config()
@@ -90,8 +104,6 @@ public final class CalciteContextFactory {
                 .withIdentifierMaxLength(SqlParser.DEFAULT_IDENTIFIER_MAX_LENGTH)
                 .withConformance(connectionConfig.conformance())
                 .withParserFactory(SqlParserImpl.FACTORY);
-        typeFactory = new JavaTypeFactoryImpl();
-        cluster = newCluster();
     }
 
     private void initProperties(final DatabaseType databaseType) {
@@ -146,7 +158,7 @@ public final class CalciteContextFactory {
     /**
      * Create.
      *
-     * @param schema  schema
+     * @param schema schema
      * @param executor executor
      * @return calcite context
      */
