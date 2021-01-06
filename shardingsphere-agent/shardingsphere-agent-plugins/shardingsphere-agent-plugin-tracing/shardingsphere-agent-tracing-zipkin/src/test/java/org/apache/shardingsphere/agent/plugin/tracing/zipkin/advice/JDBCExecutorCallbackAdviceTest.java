@@ -49,7 +49,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class JDBCExecutorCallbackAdviceTest extends AdviceTestBase {
+public final class JDBCExecutorCallbackAdviceTest extends AdviceBaseTest {
     
     private static Method executeMethod;
     

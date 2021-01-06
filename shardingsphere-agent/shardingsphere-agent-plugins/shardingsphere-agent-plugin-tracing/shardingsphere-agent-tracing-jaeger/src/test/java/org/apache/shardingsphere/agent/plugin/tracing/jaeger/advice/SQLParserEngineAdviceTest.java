@@ -23,7 +23,6 @@ import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.ErrorLogTagKeys;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -61,8 +60,8 @@ public final class SQLParserEngineAdviceTest {
     }
     
     @Test
-    public void testMethod() {
-        final MockTargetObject targetObject = new MockTargetObject();
+    public void assertMethod() {
+        MockTargetObject targetObject = new MockTargetObject();
         ADVICE.beforeMethod(targetObject, parserMethod, new Object[]{"select 1"}, new MethodInvocationResult());
         ADVICE.afterMethod(targetObject, parserMethod, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = tracer.finishedSpans();
@@ -72,7 +71,7 @@ public final class SQLParserEngineAdviceTest {
     }
     
     @Test
-    public void testExceptionHandle() {
+    public void assertExceptionHandle() {
         MockTargetObject targetObject = new MockTargetObject();
         ADVICE.beforeMethod(targetObject, parserMethod, new Object[]{"select 1"}, new MethodInvocationResult());
         ADVICE.onThrowing(targetObject, parserMethod, new Object[]{}, new IOException());
@@ -80,7 +79,7 @@ public final class SQLParserEngineAdviceTest {
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);
-        Assert.assertTrue((boolean) span.tags().get("error"));
+        assertThat(span.tags().get("error"), is(true));
         List<MockSpan.LogEntry> entries = span.logEntries();
         assertThat(entries.size(), is(1));
         Map<String, ?> fields = entries.get(0).fields();

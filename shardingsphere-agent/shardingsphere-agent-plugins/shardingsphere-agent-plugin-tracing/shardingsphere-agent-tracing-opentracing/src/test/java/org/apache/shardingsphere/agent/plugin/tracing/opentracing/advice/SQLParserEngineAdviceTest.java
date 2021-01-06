@@ -15,49 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
+package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 
-import io.netty.channel.ChannelHandlerContext;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
-import lombok.SneakyThrows;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
-import org.junit.Assert;
+import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ErrorLogTagKeys;
+import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.FieldReader;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public final class CommandExecutorTaskAdviceTest {
+public final class SQLParserEngineAdviceTest {
     
-    private static final CommandExecutorTaskAdvice ADVICE = new CommandExecutorTaskAdvice();
+    private static final SQLParserEngineAdvice ADVICE = new SQLParserEngineAdvice();
     
     private static MockTracer tracer;
     
-    private static Method executeCommandMethod;
+    private static Method parserMethod;
     
     @BeforeClass
-    @SneakyThrows
-    public static void setup() {
+    public static void setup() throws NoSuchMethodException, NoSuchFieldException {
         if (!GlobalTracer.isRegistered()) {
             GlobalTracer.register(new MockTracer());
         }
         FieldReader fieldReader = new FieldReader(GlobalTracer.get(), GlobalTracer.class.getDeclaredField("tracer"));
         tracer = (MockTracer) fieldReader.read();
-        executeCommandMethod = CommandExecutorTask.class.getDeclaredMethod("executeCommand", ChannelHandlerContext.class, PacketPayload.class, BackendConnection.class);
+        parserMethod = ShardingSphereSQLParserEngine.class.getDeclaredMethod("parse", String.class, boolean.class);
     }
     
     @Before
@@ -68,30 +62,29 @@ public final class CommandExecutorTaskAdviceTest {
     @Test
     public void assertMethod() {
         MockTargetObject targetObject = new MockTargetObject();
-        ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
-        ADVICE.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
+        ADVICE.beforeMethod(targetObject, parserMethod, new Object[]{"select 1"}, new MethodInvocationResult());
+        ADVICE.afterMethod(targetObject, parserMethod, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = tracer.finishedSpans();
         assertThat(spans.size(), is(1));
         assertThat(spans.get(0).logEntries().size(), is(0));
-        assertThat(spans.get(0).operationName(), is("/ShardingSphere/rootInvoke/"));
+        assertThat(spans.get(0).operationName(), is("/ShardingSphere/parseSQL/"));
     }
     
     @Test
     public void assertExceptionHandle() {
         MockTargetObject targetObject = new MockTargetObject();
-        ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
-        ADVICE.onThrowing(targetObject, executeCommandMethod, new Object[]{}, new IOException());
-        ADVICE.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
+        ADVICE.beforeMethod(targetObject, parserMethod, new Object[]{"select 1"}, new MethodInvocationResult());
+        ADVICE.onThrowing(targetObject, parserMethod, new Object[]{}, new IOException());
+        ADVICE.afterMethod(targetObject, parserMethod, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = tracer.finishedSpans();
-        Assert.assertEquals(1, spans.size());
+        assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);
         assertThat(span.tags().get("error"), is(true));
         List<MockSpan.LogEntry> entries = span.logEntries();
         assertThat(entries.size(), is(1));
         Map<String, ?> fields = entries.get(0).fields();
-        assertThat(fields.get("event"), is("error"));
-        assertNull(fields.get("message"));
-        assertThat(fields.get("error.kind"), is("java.io.IOException"));
-        assertThat(span.operationName(), is("/ShardingSphere/rootInvoke/"));
+        assertThat(fields.get(ErrorLogTagKeys.EVENT), is("error"));
+        assertThat(fields.get(ErrorLogTagKeys.ERROR_KIND), is("java.io.IOException"));
+        assertThat(span.operationName(), is("/ShardingSphere/parseSQL/"));
     }
 }
