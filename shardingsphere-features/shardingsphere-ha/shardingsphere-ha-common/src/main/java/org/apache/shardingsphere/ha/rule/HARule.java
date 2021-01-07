@@ -19,6 +19,7 @@ package org.apache.shardingsphere.ha.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import lombok.Getter;
 import org.apache.shardingsphere.ha.spi.HAType;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -53,6 +54,7 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
         ShardingSphereServiceLoader.register(HAType.class);
     }
     
+    @Getter
     private static HAType haType;
     
     private final Map<String, ReplicaLoadBalanceAlgorithm> loadBalancers = new LinkedHashMap<>();
@@ -71,15 +73,18 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
                     ? TypedSPIRegistry.getRegisteredService(ReplicaLoadBalanceAlgorithm.class) : loadBalancers.get(each.getLoadBalancerName());
             dataSourceRules.put(each.getName(), new HADataSourceRule(each, loadBalanceAlgorithm));
         }
+        Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
+        Collection<String> disabledDataSourceNames = dataSourceRules.values().iterator().next().getDisabledDataSourceNames();
         if (null == haType) {
-            haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaType().getType(), config.getHaType().getProps());
-            haType.updatePrimaryDataSource(dataSourceMap, schemaName);
+            haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaConfiguration().getType(), config.getHaConfiguration().getProps());
+            haType.updatePrimaryDataSource(originalDataSourceMap, schemaName, disabledDataSourceNames);
+            haType.updateMemberState(originalDataSourceMap, schemaName, disabledDataSourceNames);
         } else {
             haType.stopPeriodicalUpdate();
         }
         try {
             haType.checkHAConfig(dataSourceMap, schemaName);
-            haType.startPeriodicalUpdate(dataSourceMap, schemaName);
+            haType.startPeriodicalUpdate(originalDataSourceMap, schemaName, disabledDataSourceNames);
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         }
@@ -97,15 +102,18 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
                     ? TypedSPIRegistry.getRegisteredService(ReplicaLoadBalanceAlgorithm.class) : loadBalancers.get(each.getLoadBalancerName());
             dataSourceRules.put(each.getName(), new HADataSourceRule(each, loadBalanceAlgorithm));
         }
+        Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
+        Collection<String> disabledDataSourceNames = dataSourceRules.values().iterator().next().getDisabledDataSourceNames();
         if (null == haType) {
             haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaType().getType(), config.getHaType().getProps());
-            haType.updatePrimaryDataSource(dataSourceMap, schemaName);
+            haType.updatePrimaryDataSource(originalDataSourceMap, schemaName, disabledDataSourceNames);
+            haType.updateMemberState(originalDataSourceMap, schemaName, disabledDataSourceNames);
         } else {
             haType.stopPeriodicalUpdate();
         }
         try {
             haType.checkHAConfig(dataSourceMap, schemaName);
-            haType.startPeriodicalUpdate(dataSourceMap, schemaName);
+            haType.startPeriodicalUpdate(originalDataSourceMap, schemaName, disabledDataSourceNames);
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         }

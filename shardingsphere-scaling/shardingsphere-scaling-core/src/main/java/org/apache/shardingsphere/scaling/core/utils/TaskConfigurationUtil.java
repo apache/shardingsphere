@@ -105,7 +105,7 @@ public final class TaskConfigurationUtil {
     }
     
     private static void filterByShardingDataSourceTables(final Map<String, Map<String, String>> dataSourceTableNameMap, final JobConfiguration jobConfig) {
-        if (null == jobConfig.getShardingTables()) {
+        if (null == jobConfig.getShardingTables() || null == jobConfig.getShardingItem()) {
             return;
         }
         Map<String, Set<String>> shardingDataSourceTableMap = toDataSourceTableNameMap(getShardingDataSourceTables(jobConfig));

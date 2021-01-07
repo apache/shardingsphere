@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.mysql.component;
 
+import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.AbstractDataSourceChecker;
 
@@ -103,5 +104,10 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
                 throw new PrepareFailedException(String.format("Source data source required %s = %s, now is %s", entry.getKey(), entry.getValue(), value));
             }
         }
+    }
+    
+    @Override
+    protected MySQLScalingSQLBuilder getSqlBuilder() {
+        return new MySQLScalingSQLBuilder(Maps.newHashMap());
     }
 }

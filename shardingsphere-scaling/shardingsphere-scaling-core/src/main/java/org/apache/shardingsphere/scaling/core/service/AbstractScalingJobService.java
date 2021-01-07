@@ -97,10 +97,10 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
             JobProgress jobProgress = getProgress(scalingJob.getJobId());
             if (jobProgress.getStatus().contains("FAILURE")) {
                 finished = true;
-                scalingCallback.onFailure();
+                scalingCallback.onFailure(scalingJob.getJobId());
             } else if (ScalingTaskUtil.allTasksAlmostFinished(jobProgress, scalingJob.getScalingConfig().getJobConfiguration())) {
                 finished = true;
-                scalingCallback.onSuccess();
+                scalingCallback.onSuccess(scalingJob.getJobId());
             }
         }
     }

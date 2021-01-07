@@ -28,9 +28,8 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-test-fixture</module>
-        <module>shardingsphere-proxy-docker-build</module>
-        <module>shardingsphere-test-suite</module>
+        <module>shardingsphere-integration-test-fixture</module>
+        <module>shardingsphere-integration-test-suite</module>
     </modules>
     
     <properties>

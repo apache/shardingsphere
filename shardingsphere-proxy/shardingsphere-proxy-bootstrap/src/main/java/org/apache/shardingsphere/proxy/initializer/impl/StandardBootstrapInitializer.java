@@ -27,6 +27,8 @@ import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
+import java.util.Optional;
+
 /**
  * Standard bootstrap initializer.
  */
@@ -54,6 +56,9 @@ public final class StandardBootstrapInitializer extends AbstractBootstrapInitial
     
     @Override
     protected void initScalingWorker(final YamlProxyConfiguration yamlConfig) {
-        ScalingContext.getInstance().init(new ServerConfiguration());
+        Optional<ServerConfiguration> scalingConfigurationOptional = getScalingConfiguration(yamlConfig);
+        if (scalingConfigurationOptional.isPresent()) {
+            ScalingContext.getInstance().init(scalingConfigurationOptional.get());
+        }
     }
 }

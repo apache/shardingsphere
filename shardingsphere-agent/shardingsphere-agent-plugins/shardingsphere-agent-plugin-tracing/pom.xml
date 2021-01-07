@@ -32,6 +32,7 @@
     <modules>
         <module>shardingsphere-agent-tracing-jaeger</module>
         <module>shardingsphere-agent-tracing-zipkin</module>
+        <module>shardingsphere-agent-tracing-opentracing</module>
     </modules>
     
     <properties>

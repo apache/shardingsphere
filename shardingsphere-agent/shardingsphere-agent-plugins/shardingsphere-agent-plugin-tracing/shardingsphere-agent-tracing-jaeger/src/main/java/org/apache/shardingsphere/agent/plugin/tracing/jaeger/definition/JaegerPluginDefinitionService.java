@@ -29,13 +29,13 @@ public final class JaegerPluginDefinitionService extends AbstractPluginDefinitio
     
     private static final String COMMAND_EXECUTOR_METHOD_NAME = "executeCommand";
     
-    private static final String COMMAND_EXECUTOR_TASK_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.advice.CommandExecutorTaskAdvice";
+    private static final String COMMAND_EXECUTOR_TASK_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice.CommandExecutorTaskAdvice";
     
     private static final String SQL_PARSER_ENGINE_ENHANCE_CLASS = "org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine";
     
     private static final String SQL_PARSER_ENGINE_METHOD_NAME = "parse";
     
-    private static final String SQL_PARSER_ENGINE_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.advice.SQLParserEngineAdvice";
+    private static final String SQL_PARSER_ENGINE_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice.SQLParserEngineAdvice";
     
     private static final String JDBC_EXECUTOR_CALLBACK_ENGINE_ENHANCE_CLASS = "org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback";
     
@@ -43,7 +43,7 @@ public final class JaegerPluginDefinitionService extends AbstractPluginDefinitio
     
     private static final String JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS = "org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit";
     
-    private static final String JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.advice.JDBCExecutorCallbackAdvice";
+    private static final String JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice.JDBCExecutorCallbackAdvice";
     
     @Override
     public void define() {
