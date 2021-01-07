@@ -22,7 +22,7 @@ import org.apache.shardingsphere.agent.api.advice.TargetObject;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 
 import java.lang.reflect.Method;
-import java.util.Deque;
+import java.util.List;
 
 public final class MockMethodAroundAdvice implements MethodAroundAdvice {
     
@@ -38,7 +38,7 @@ public final class MockMethodAroundAdvice implements MethodAroundAdvice {
     
     @Override
     public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        Deque<String> queue = (Deque<String>) args[0];
+        List<String> queue = (List<String>) args[0];
         queue.add("before");
         if (rebase) {
             result.rebase("rebase invocation method");
@@ -47,13 +47,13 @@ public final class MockMethodAroundAdvice implements MethodAroundAdvice {
     
     @Override
     public void afterMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        Deque<String> queue = (Deque<String>) args[0];
+        List<String> queue = (List<String>) args[0];
         queue.add("after");
     }
     
     @Override
     public void onThrowing(final TargetObject target, final Method method, final Object[] args, final Throwable throwable) {
-        Deque<String> queue = (Deque<String>) args[0];
+        List<String> queue = (List<String>) args[0];
         queue.add("exception");
     }
 }

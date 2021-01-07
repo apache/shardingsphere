@@ -20,25 +20,25 @@ package org.apache.shardingsphere.agent.core.mock.advice;
 import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
 import org.apache.shardingsphere.agent.api.advice.TargetObject;
 
-import java.util.Deque;
+import java.util.List;
 
 public final class MockConstructor implements ConstructorAdvice {
     
-    private final Deque<String> queue;
+    private final List<String> queue;
     
     public MockConstructor() {
         this(null);
     }
     
-    public MockConstructor(final Deque<String> queue) {
+    public MockConstructor(final List<String> queue) {
         this.queue = queue;
     }
     
     @Override
     public void onConstructor(final TargetObject target, final Object[] args) {
-        final Deque<String> list;
+        final List<String> list;
         if (queue == null) {
-            list = (Deque<String>) args[0];
+            list = (List<String>) args[0];
         } else {
             list = queue;
         }

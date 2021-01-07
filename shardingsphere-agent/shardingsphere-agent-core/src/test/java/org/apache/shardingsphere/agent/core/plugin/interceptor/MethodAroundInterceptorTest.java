@@ -39,8 +39,8 @@ import org.junit.runners.Parameterized;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
@@ -97,7 +97,7 @@ public final class MethodAroundInterceptorTest {
                 .load(new MockClassLoader())
                 .getLoaded()
                 .newInstance();
-        Deque<String> queue = new LinkedList<>();
+        List<String> queue = new LinkedList<>();
         if ("mockWithException".equals(methodName)) {
             try {
                 material.mockWithException(queue);

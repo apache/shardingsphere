@@ -36,8 +36,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertThat;
@@ -48,7 +48,7 @@ public final class ConstructorMethodInterceptorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
-    private static final Deque<String> QUEUE = new LinkedList<>();
+    private static final List<String> QUEUE = new LinkedList<>();
     
     @BeforeClass
     public static void setup() {

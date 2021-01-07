@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.bytebuddy.transformer;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
 import net.bytebuddy.ByteBuddy;
@@ -38,8 +39,8 @@ import org.junit.experimental.categories.Category;
 import org.mockito.internal.util.reflection.FieldReader;
 import org.mockito.internal.util.reflection.FieldSetter;
 
-import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -51,7 +52,7 @@ public final class ShardingSphereTransformerTest {
     
     private static final PluginLoader PLUGIN_LOADER = PluginLoader.getInstance();
     
-    private final Deque<String> queue = new LinkedList<>();
+    private final List<String> queue = new LinkedList<>();
     
     @BeforeClass
     @SneakyThrows
@@ -88,7 +89,7 @@ public final class ShardingSphereTransformerTest {
     @Test
     public void assertInstanceMethod() {
         assertThat(new Material().mock(queue), is("invocation"));
-        assertThat(queue, hasItems("before", "on", "after"));
+        assertThat(queue, is(Lists.newArrayList("before", "on", "after")));
     }
     
     @Test

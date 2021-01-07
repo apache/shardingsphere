@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.agent.core.mock;
 
 import java.io.IOException;
-import java.util.Deque;
+import java.util.List;
 
 /**
  * Have to redefine this class dynamic, so never add `final` modifier.
@@ -31,7 +31,7 @@ public class StaticMaterial {
      * @param queue collector
      * @return result
      */
-    public static String staticMock(final Deque<String> queue) {
+    public static String staticMock(final List<String> queue) {
         queue.add("on");
         return "static invocation";
     }
@@ -43,7 +43,7 @@ public class StaticMaterial {
      * @return result
      * @throws IOException io exception
      */
-    public static String staticMockWithException(final Deque<String> queue) throws IOException {
+    public static String staticMockWithException(final List<String> queue) throws IOException {
         throw new IOException();
     }
     

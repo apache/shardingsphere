@@ -22,7 +22,7 @@ import org.apache.shardingsphere.agent.api.advice.StaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 
 import java.lang.reflect.Method;
-import java.util.Deque;
+import java.util.List;
 
 @RequiredArgsConstructor
 public final class MockStaticMethodAroundAdvice implements StaticMethodAroundAdvice {
@@ -35,7 +35,7 @@ public final class MockStaticMethodAroundAdvice implements StaticMethodAroundAdv
     
     @Override
     public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        Deque<String> queue = (Deque<String>) args[0];
+        List<String> queue = (List<String>) args[0];
         queue.add("before");
         if (rebase) {
             result.rebase("rebase static invocation method");
@@ -44,13 +44,13 @@ public final class MockStaticMethodAroundAdvice implements StaticMethodAroundAdv
     
     @Override
     public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        Deque<String> queue = (Deque<String>) args[0];
+        List<String> queue = (List<String>) args[0];
         queue.add("after");
     }
     
     @Override
     public void onThrowing(final Class<?> clazz, final Method method, final Object[] args, final Throwable throwable) {
-        Deque<String> queue = (Deque<String>) args[0];
+        List<String> queue = (List<String>) args[0];
         queue.add("exception");
     }
     

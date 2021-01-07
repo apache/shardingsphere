@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.mock;
 
-import java.util.Deque;
+import java.util.List;
 
 /**
  * Have to redefine this class dynamic, so never add `final` modifier.
@@ -28,7 +28,7 @@ public class ConstructorMaterial {
     
     }
 
-    public ConstructorMaterial(final Deque<String> queue) {
+    public ConstructorMaterial(final List<String> queue) {
         queue.add("constructor");
     }
     

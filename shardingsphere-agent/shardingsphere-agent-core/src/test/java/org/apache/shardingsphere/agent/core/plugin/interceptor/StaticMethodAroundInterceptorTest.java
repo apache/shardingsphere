@@ -38,8 +38,8 @@ import org.junit.runners.Parameterized;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
@@ -89,7 +89,7 @@ public final class StaticMethodAroundInterceptorTest {
     
     @Test
     public void assertInterceptedMethod() {
-        Deque<String> queue = new LinkedList<>();
+        List<String> queue = new LinkedList<>();
         if ("staticMockWithException".equals(methodName)) {
             try {
                 StaticMaterial.staticMockWithException(queue);
