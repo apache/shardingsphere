@@ -41,29 +41,29 @@ public interface HAType extends TypedSPI {
     /**
      * Update primary data source.
      *
-     * @param originalDataSourceMap original data source map
+     * @param dataSourceMap data source map
      * @param schemaName schema name
      * @param disabledDataSourceNames disabled data source names
      */
-    void updatePrimaryDataSource(Map<String, DataSource> originalDataSourceMap, String schemaName, Collection<String> disabledDataSourceNames);
+    void updatePrimaryDataSource(Map<String, DataSource> dataSourceMap, String schemaName, Collection<String> disabledDataSourceNames);
     
     /**
      * Update member state.
      *
-     * @param originalDataSourceMap original data source map
+     * @param dataSourceMap data source map
      * @param schemaName schema name
      * @param disabledDataSourceNames disabled data source names
      */
-    void updateMemberState(Map<String, DataSource> originalDataSourceMap, String schemaName, Collection<String> disabledDataSourceNames);
+    void updateMemberState(Map<String, DataSource> dataSourceMap, String schemaName, Collection<String> disabledDataSourceNames);
     
     /**
      * Start periodical update.
      *
-     * @param originalDataSourceMap original data source map
+     * @param dataSourceMap data source map
      * @param schemaName schema name
      * @param disabledDataSourceNames disabled data source names
      */
-    void startPeriodicalUpdate(Map<String, DataSource> originalDataSourceMap, String schemaName, Collection<String> disabledDataSourceNames);
+    void startPeriodicalUpdate(Map<String, DataSource> dataSourceMap, String schemaName, Collection<String> disabledDataSourceNames);
     
     /**
      * Stop periodical update.
