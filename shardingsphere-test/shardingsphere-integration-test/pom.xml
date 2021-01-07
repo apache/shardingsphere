@@ -29,7 +29,6 @@
     
     <modules>
         <module>shardingsphere-test-fixture</module>
-        <module>shardingsphere-proxy-docker-build</module>
         <module>shardingsphere-test-suite</module>
     </modules>
     
