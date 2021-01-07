@@ -24,6 +24,7 @@ import org.apache.shardingsphere.ha.spi.HAType;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
 import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.type.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
@@ -75,16 +76,18 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
         }
         Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
         Collection<String> disabledDataSourceNames = dataSourceRules.values().iterator().next().getDisabledDataSourceNames();
+        String groupName = dataSourceRules.values().iterator().next().getName();
+        String primaryDataSourceName = dataSourceRules.values().iterator().next().getPrimaryDataSourceName();
         if (null == haType) {
             haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaConfiguration().getType(), config.getHaConfiguration().getProps());
-            haType.updatePrimaryDataSource(originalDataSourceMap, schemaName, disabledDataSourceNames);
+            haType.updatePrimaryDataSource(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
             haType.updateMemberState(originalDataSourceMap, schemaName, disabledDataSourceNames);
         } else {
             haType.stopPeriodicalUpdate();
         }
         try {
             haType.checkHAConfig(dataSourceMap, schemaName);
-            haType.startPeriodicalUpdate(originalDataSourceMap, schemaName, disabledDataSourceNames);
+            haType.startPeriodicalUpdate(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         }
@@ -104,16 +107,18 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
         }
         Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
         Collection<String> disabledDataSourceNames = dataSourceRules.values().iterator().next().getDisabledDataSourceNames();
+        String groupName = config.getDataSources().iterator().next().getName();
+        String primaryDataSourceName = dataSourceRules.values().iterator().next().getPrimaryDataSourceName();
         if (null == haType) {
             haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaType().getType(), config.getHaType().getProps());
-            haType.updatePrimaryDataSource(originalDataSourceMap, schemaName, disabledDataSourceNames);
+            haType.updatePrimaryDataSource(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
             haType.updateMemberState(originalDataSourceMap, schemaName, disabledDataSourceNames);
         } else {
             haType.stopPeriodicalUpdate();
         }
         try {
             haType.checkHAConfig(dataSourceMap, schemaName);
-            haType.startPeriodicalUpdate(originalDataSourceMap, schemaName, disabledDataSourceNames);
+            haType.startPeriodicalUpdate(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         }
@@ -161,6 +166,12 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
         if (event instanceof DataSourceNameDisabledEvent) {
             for (Entry<String, HADataSourceRule> entry : dataSourceRules.entrySet()) {
                 entry.getValue().updateDisabledDataSourceNames(((DataSourceNameDisabledEvent) event).getDataSourceName(), ((DataSourceNameDisabledEvent) event).isDisabled());
+            }
+        } else if (event instanceof PrimaryDataSourceEvent) {
+            for (Entry<String, HADataSourceRule> entry : dataSourceRules.entrySet()) {
+                if (entry.getValue().getName().equals(((PrimaryDataSourceEvent) event).getGroupName())) {
+                    entry.getValue().updatePrimaryDataSourceName(((PrimaryDataSourceEvent) event).getDataSourceName());
+                }
             }
         }
     }

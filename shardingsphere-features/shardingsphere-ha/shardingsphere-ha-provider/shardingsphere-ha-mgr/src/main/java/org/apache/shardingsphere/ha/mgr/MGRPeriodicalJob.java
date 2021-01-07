@@ -40,14 +40,18 @@ public final class MGRPeriodicalJob implements SimpleJob {
     
     private final Collection<String> disabledDataSourceNames;
     
+    private final String groupName;
+    
+    private final String primaryDataSourceName;
+    
     @Override
     public void execute(final ShardingContext shardingContext) {
         Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
         if (!disabledDataSourceNames.isEmpty()) {
             activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
         }
-        log.info(" +++ " + activeDataSourceMap.toString());
-        haType.updatePrimaryDataSource(dataSourceMap, schemaName, disabledDataSourceNames);
+        log.info("|activeDataSourceMap| " + activeDataSourceMap.toString());
+        haType.updatePrimaryDataSource(dataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
         haType.updateMemberState(dataSourceMap, schemaName, disabledDataSourceNames);
     }
 }

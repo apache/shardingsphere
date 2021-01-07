@@ -20,6 +20,7 @@ package org.apache.shardingsphere.ha.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
 import org.apache.shardingsphere.ha.spi.ReplicaLoadBalanceAlgorithm;
 
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
  * HA data source rule.
  */
 @Getter
+@Slf4j
 public final class HADataSourceRule {
     
     private final String name;
@@ -46,6 +48,8 @@ public final class HADataSourceRule {
     private final boolean replicaQuery;
     
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
+    
+    private String primaryDataSourceName;
     
     public HADataSourceRule(final HADataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer) {
         checkConfiguration(config);
@@ -81,6 +85,15 @@ public final class HADataSourceRule {
         } else {
             disabledDataSourceNames.remove(dataSourceName);
         }
+    }
+    
+    /**
+     * Update primary data source name.
+     *
+     * @param dataSourceName data source name
+     */
+    public void updatePrimaryDataSourceName(final String dataSourceName) {
+        primaryDataSourceName = dataSourceName;
     }
     
     /**
