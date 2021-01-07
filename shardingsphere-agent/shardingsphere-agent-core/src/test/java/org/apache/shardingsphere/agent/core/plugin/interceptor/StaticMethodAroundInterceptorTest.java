@@ -34,7 +34,6 @@ import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAd
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -49,7 +48,6 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-@Category(StaticMethodAroundInterceptorTest.class)
 public final class StaticMethodAroundInterceptorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";

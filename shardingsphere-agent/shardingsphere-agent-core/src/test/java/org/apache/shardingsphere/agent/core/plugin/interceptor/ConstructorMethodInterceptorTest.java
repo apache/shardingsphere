@@ -30,13 +30,11 @@ import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.TargetObject;
 import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
 import org.apache.shardingsphere.agent.core.mock.ConstructorMaterial;
-import org.apache.shardingsphere.agent.core.mock.Material;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructor;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -44,7 +42,6 @@ import java.util.List;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 
-@Category(ConstructorMethodInterceptorTest.class)
 public final class ConstructorMethodInterceptorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
@@ -84,8 +81,8 @@ public final class ConstructorMethodInterceptorTest {
     
     @Test
     public void assertConstructor() {
-        new Material(QUEUE);
-        assertArrayEquals(new String[] {"constructor", "on constructor"}, QUEUE.toArray());
+        new ConstructorMaterial(QUEUE);
+        assertArrayEquals(new String[]{"constructor", "on constructor"}, QUEUE.toArray());
     }
     
     @After
