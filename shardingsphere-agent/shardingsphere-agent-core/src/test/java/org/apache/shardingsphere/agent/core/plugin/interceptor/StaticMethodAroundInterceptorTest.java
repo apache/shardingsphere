@@ -54,13 +54,13 @@ public final class StaticMethodAroundInterceptorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
+    private static ResettableClassFileTransformer byteBuddyAgent;
+    
     private final String methodName;
     
     private final String result;
     
     private final String[] expected;
-    
-    private static ResettableClassFileTransformer byteBuddyAgent;
     
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
