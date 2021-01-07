@@ -22,6 +22,7 @@ import lombok.SneakyThrows;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
+import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.agent.core.mock.advice.MockMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.loader.PluginLoader;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -51,14 +53,14 @@ public final class ShardingSphereTransformerTest {
     
     private static final PluginLoader PLUGIN_LOADER = PluginLoader.getInstance();
     
+    private static ResettableClassFileTransformer byteBuddyAgent;
+    
     private final List<String> queue = new LinkedList<>();
     
     @BeforeClass
     @SneakyThrows
     public static void setup() {
         ByteBuddyAgent.install();
-        final AgentBuilder agentBuilder = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED)).ignore(ElementMatchers.isSynthetic())
-                .or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.").and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.core.mock"))));
         FieldReader objectPoolReader = new FieldReader(PLUGIN_LOADER, PLUGIN_LOADER.getClass().getDeclaredField("objectPool"));
         Map<String, Object> objectPool = (Map<String, Object>) objectPoolReader.read();
         objectPool.put(MockConstructor.class.getTypeName(), new MockConstructor());
@@ -78,11 +80,15 @@ public final class ShardingSphereTransformerTest {
                 .install();
         interceptorPointMap.put(interceptorPoint.getClassNameOfTarget(), interceptorPoint);
         FieldSetter.setField(PLUGIN_LOADER, PLUGIN_LOADER.getClass().getDeclaredField("interceptorPointMap"), interceptorPointMap);
-        agentBuilder.type(PLUGIN_LOADER.typeMatcher())
-                .transform(new ShardingSphereTransformer(PLUGIN_LOADER))
+        byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
+                .ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.")
+                .and(ElementMatchers.not(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.core.mock"))))
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
                 .with(new LoggingListener())
-                .installOn(ByteBuddyAgent.getInstrumentation());
+                .type(PLUGIN_LOADER.typeMatcher())
+                .transform(new ShardingSphereTransformer(PLUGIN_LOADER))
+                .asTerminalTransformation()
+                .installOnByteBuddyAgent();
     }
     
     @Test
@@ -108,4 +114,8 @@ public final class ShardingSphereTransformerTest {
         queue.clear();
     }
     
+    @AfterClass
+    public static void destroy() {
+        byteBuddyAgent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
+    }
 }

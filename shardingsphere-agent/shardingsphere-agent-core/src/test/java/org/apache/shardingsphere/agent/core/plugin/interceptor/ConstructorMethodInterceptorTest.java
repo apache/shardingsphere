@@ -20,6 +20,7 @@ package org.apache.shardingsphere.agent.core.plugin.interceptor;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
+import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.MethodDelegation;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.agent.core.mock.ConstructorMaterial;
 import org.apache.shardingsphere.agent.core.mock.Material;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructor;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -49,10 +51,12 @@ public final class ConstructorMethodInterceptorTest {
     
     private static final List<String> QUEUE = new LinkedList<>();
     
+    private static ResettableClassFileTransformer byteBuddyAgent;
+    
     @BeforeClass
     public static void setup() {
         ByteBuddyAgent.install();
-        new AgentBuilder.Default()
+        byteBuddyAgent = new AgentBuilder.Default()
                 .with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic())
                 .with(new LoggingListener())
@@ -68,6 +72,7 @@ public final class ConstructorMethodInterceptorTest {
                     }
                     return builder;
                 })
+                .asTerminalTransformation()
                 .installOnByteBuddyAgent();
     }
     
@@ -86,5 +91,10 @@ public final class ConstructorMethodInterceptorTest {
     @After
     public void cleanup() {
         QUEUE.clear();
+    }
+    
+    @AfterClass
+    public static void destroy() {
+        byteBuddyAgent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
     }
 }

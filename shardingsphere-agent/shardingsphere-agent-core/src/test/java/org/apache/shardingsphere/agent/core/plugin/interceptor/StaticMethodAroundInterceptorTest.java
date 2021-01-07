@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
+import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.MethodDelegation;
@@ -30,6 +31,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.TargetObject;
 import org.apache.shardingsphere.agent.core.mock.StaticMaterial;
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -58,6 +60,8 @@ public final class StaticMethodAroundInterceptorTest {
     
     private final String[] expected;
     
+    private static ResettableClassFileTransformer byteBuddyAgent;
+    
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Lists.newArrayList(
@@ -69,7 +73,7 @@ public final class StaticMethodAroundInterceptorTest {
     @BeforeClass
     public static void setup() {
         ByteBuddyAgent.install();
-        new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
+        byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .with(new ByteBuddy())
                 .type(ElementMatchers.named("org.apache.shardingsphere.agent.core.mock.StaticMaterial"))
                 .transform((builder, typeDescription, classLoader, module) -> {
@@ -84,6 +88,7 @@ public final class StaticMethodAroundInterceptorTest {
                     }
                     return builder;
                 })
+                .asTerminalTransformation()
                 .installOnByteBuddyAgent();
     }
     
@@ -101,4 +106,8 @@ public final class StaticMethodAroundInterceptorTest {
         assertArrayEquals(expected, queue.toArray());
     }
     
+    @AfterClass
+    public static void destroy() {
+        byteBuddyAgent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
+    }
 }
