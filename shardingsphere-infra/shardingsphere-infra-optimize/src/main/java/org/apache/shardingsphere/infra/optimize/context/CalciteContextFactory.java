@@ -62,23 +62,23 @@ import java.util.Properties;
  * Calcite context factory.
  */
 public final class CalciteContextFactory {
-
+    
     private static final String LEX_CAMEL_NAME = CalciteConnectionProperty.LEX.camelName();
-
+    
     private static final String CONFORMANCE_CAMEL_NAME = CalciteConnectionProperty.CONFORMANCE.camelName();
-
+    
     private final Properties properties = new Properties();
-
+    
     private final CalciteConnectionConfig connectionConfig;
-
+    
     private final Config parserConfig;
-
+    
     private final RelDataTypeFactory typeFactory;
-
+    
     private final CalciteLogicSchemaFactory factory;
-
+    
     private final RelOptCluster cluster;
-
+    
     public CalciteContextFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
         DatabaseType databaseType = metaDataMap.isEmpty() ? null : metaDataMap.values().iterator().next().getResource().getDatabaseType();
         initProperties(databaseType);
@@ -92,7 +92,7 @@ public final class CalciteContextFactory {
                 .withConformance(connectionConfig.conformance())
                 .withParserFactory(SqlParserImpl.FACTORY);
     }
-
+    
     private void initProperties(final DatabaseType databaseType) {
         // TODO Logic could be improved.
         if (databaseType instanceof MySQLDatabaseType || databaseType == null) {
@@ -135,13 +135,13 @@ public final class CalciteContextFactory {
         }
         throw new ShardingSphereException("No matching DatabaseType found");
     }
-
+    
     private RelOptCluster newCluster() {
         RelOptPlanner planner = new VolcanoPlanner();
         PlannerInitializer.init(planner);
         return RelOptCluster.create(planner, new RexBuilder(typeFactory));
     }
-
+    
     /**
      * Create.
      *
@@ -156,14 +156,14 @@ public final class CalciteContextFactory {
         SqlToRelConverter relConverter = createSqlToRelConverter(cluster, validator, catalogReader);
         return new CalciteContext(properties, calciteLogicSchema, parserConfig, validator, relConverter);
     }
-
+    
     private CalciteCatalogReader createCalciteCatalogReader(final String schema, final CalciteConnectionConfig config,
                                                             final RelDataTypeFactory typeFactory, final CalciteLogicSchema calciteLogicSchema) {
         CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
         rootSchema.add(calciteLogicSchema.getName(), calciteLogicSchema);
         return new CalciteCatalogReader(rootSchema, Collections.singletonList(schema), typeFactory, config);
     }
-
+    
     private SqlValidator createSqlValidator(final CalciteConnectionConfig config, final RelDataTypeFactory typeFactory, final CalciteCatalogReader catalogReader) {
         return SqlValidatorUtil.newValidator(SqlStdOperatorTable.instance(), catalogReader, typeFactory, SqlValidator.Config.DEFAULT
                 .withLenientOperatorLookup(config.lenientOperatorLookup())
