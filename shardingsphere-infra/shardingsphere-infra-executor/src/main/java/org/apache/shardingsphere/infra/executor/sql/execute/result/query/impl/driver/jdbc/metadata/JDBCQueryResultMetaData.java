@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 
 /**
  * JDBC query result meta data.
@@ -73,7 +74,11 @@ public final class JDBCQueryResultMetaData implements QueryResultMetaData {
     
     @Override
     public boolean isSigned(final int columnIndex) throws SQLException {
-        return resultSetMetaData.isSigned(columnIndex);
+        try {
+            return resultSetMetaData.isSigned(columnIndex);
+        } catch (SQLFeatureNotSupportedException e) {
+            return false;
+        }
     }
     
     @Override

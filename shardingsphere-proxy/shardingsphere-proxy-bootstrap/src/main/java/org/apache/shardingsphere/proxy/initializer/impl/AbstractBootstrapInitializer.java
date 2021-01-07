@@ -113,6 +113,8 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
             DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSample.get());
             log.info(databaseServerInfo.toString());
             MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
+        } else {
+            MySQLServerInfo.setServerVersion(null);
         }
     }
     
