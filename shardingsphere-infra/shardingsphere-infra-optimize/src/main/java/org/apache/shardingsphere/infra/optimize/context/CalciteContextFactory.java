@@ -171,7 +171,7 @@ public final class CalciteContextFactory {
                 .withDefaultNullCollation(config.defaultNullCollation())
                 .withIdentifierExpansion(true));
     }
-
+    
     private SqlToRelConverter createSqlToRelConverter(final RelOptCluster cluster, final SqlValidator validator, final CalciteCatalogReader catalogReader) {
         SqlToRelConverter.Config config = SqlToRelConverter.config().withTrimUnusedFields(true);
         RelOptTable.ViewExpander expander = (rowType, queryString, schemaPath, viewPath) -> null;
