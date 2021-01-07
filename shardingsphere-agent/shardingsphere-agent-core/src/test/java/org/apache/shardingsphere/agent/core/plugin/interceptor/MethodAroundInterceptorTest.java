@@ -42,8 +42,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
@@ -106,7 +106,7 @@ public final class MethodAroundInterceptorTest {
         } else {
             assertThat(material.mock(queue), is(result));
         }
-        assertThat(queue, hasItems(expected));
+        assertArrayEquals(expected, queue.toArray());
     }
     
 }

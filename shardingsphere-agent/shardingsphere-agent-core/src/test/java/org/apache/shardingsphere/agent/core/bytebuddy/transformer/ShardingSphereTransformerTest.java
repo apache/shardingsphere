@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.core.bytebuddy.transformer;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
 import net.bytebuddy.ByteBuddy;
@@ -43,8 +42,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 @Category(ShardingSphereTransformerTest.class)
@@ -89,19 +88,19 @@ public final class ShardingSphereTransformerTest {
     @Test
     public void assertInstanceMethod() {
         assertThat(new Material().mock(queue), is("invocation"));
-        assertThat(queue, is(Lists.newArrayList("before", "on", "after")));
+        assertArrayEquals(new String[]{"before", "on", "after"}, queue.toArray());
     }
     
     @Test
     public void assertStaticMethod() {
         assertThat(Material.staticMock(queue), is("static invocation"));
-        assertThat(queue, hasItems("before", "on", "after"));
+        assertArrayEquals(new String[]{"before", "on", "after"}, queue.toArray());
     }
     
     @Test
     public void assertConstructor() {
         new Material(queue);
-        assertThat(queue, hasItems("constructor", "on constructor"));
+        assertArrayEquals(new String[]{"constructor", "on constructor"}, queue.toArray());
     }
     
     @After

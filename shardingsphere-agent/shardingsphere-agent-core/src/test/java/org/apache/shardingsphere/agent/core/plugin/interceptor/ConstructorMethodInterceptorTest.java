@@ -39,8 +39,7 @@ import org.junit.experimental.categories.Category;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 
 @Category(ConstructorMethodInterceptorTest.class)
@@ -81,7 +80,7 @@ public final class ConstructorMethodInterceptorTest {
     @Test
     public void assertConstructor() {
         new Material(QUEUE);
-        assertThat(QUEUE, hasItems("constructor", "on constructor"));
+        assertArrayEquals(new String[] {"constructor", "on constructor"}, QUEUE.toArray());
     }
     
     @After
