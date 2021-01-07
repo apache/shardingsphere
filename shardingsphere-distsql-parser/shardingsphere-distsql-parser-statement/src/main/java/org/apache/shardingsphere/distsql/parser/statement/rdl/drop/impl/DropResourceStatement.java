@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRDLStatement;
 
-execute
-    : (addResource
-    | dropResource
-    | createShardingRule
-    | dropShardingRule
-    | createReplicaQueryRule
-    | alterReplicaQueryRule
-    | dropReplicaQueryRule
-    | showResources
-    | showRule
-    ) SEMI?
-    ;
+import java.util.Collection;
+import java.util.LinkedList;
+
+/**
+ * Drop resource statement.
+ */
+@Getter
+public final class DropResourceStatement extends DropRDLStatement {
+    
+    private final Collection<String> resourceNames = new LinkedList<>();
+}

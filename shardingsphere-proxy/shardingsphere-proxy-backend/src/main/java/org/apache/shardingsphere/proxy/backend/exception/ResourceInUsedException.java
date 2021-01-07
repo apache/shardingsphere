@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-execute
-    : (addResource
-    | dropResource
-    | createShardingRule
-    | dropShardingRule
-    | createReplicaQueryRule
-    | alterReplicaQueryRule
-    | dropReplicaQueryRule
-    | showResources
-    | showRule
-    ) SEMI?
-    ;
+import java.util.Collection;
+
+/**
+ * Resource in used exception.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ResourceInUsedException extends BackendException {
+
+    private static final long serialVersionUID = -3427324685070457375L;
+
+    private final Collection<String> resourceNames;
+}
