@@ -1,0 +1,44 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset update-count="1">
+    <metadata data-nodes="tbl.t_order_${0..9}">
+        <column name="order_id" type="numeric" />
+        <column name="user_id" type="numeric" />
+        <column name="status" type="varchar" />
+    </metadata>
+    <row data-node="tbl.t_order_0" values="1000, 10, init" />
+    <row data-node="tbl.t_order_1" values="1001, 10, init" />
+    <row data-node="tbl.t_order_2" values="1002, 10, init" />
+    <row data-node="tbl.t_order_3" values="1003, 10, init" />
+    <row data-node="tbl.t_order_4" values="1004, 10, init" />
+    <row data-node="tbl.t_order_5" values="1005, 10, init" />
+    <row data-node="tbl.t_order_6" values="1006, 10, init" />
+    <row data-node="tbl.t_order_7" values="1007, 10, init" />
+    <row data-node="tbl.t_order_8" values="1008, 10, init" />
+    <row data-node="tbl.t_order_9" values="1009, 10, init" />
+    <row data-node="tbl.t_order_0" values="1100, 11, init" />
+    <row data-node="tbl.t_order_1" values="1101, 11, init" />
+    <row data-node="tbl.t_order_2" values="1102, 11, init" />
+    <row data-node="tbl.t_order_3" values="1103, 11, init" />
+    <row data-node="tbl.t_order_4" values="1104, 11, init" />
+    <row data-node="tbl.t_order_5" values="1105, 11, init" />
+    <row data-node="tbl.t_order_6" values="1106, 11, init" />
+    <row data-node="tbl.t_order_7" values="1107, 11, init" />
+    <row data-node="tbl.t_order_8" values="1108, 11, init" />
+    <row data-node="tbl.t_order_9" values="1109, 11, init" />
+</dataset>
