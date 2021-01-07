@@ -43,13 +43,13 @@ import java.util.Map;
  * Backend handler for show resources.
  */
 public final class DataSourcesQueryBackendHandler extends SchemaRequiredBackendHandler<ShowResourcesStatement> {
-
+    
     private Map<String, DataSourceParameter> dataSourceParameterMap;
-
+    
     private String schemaName;
-
+    
     private Iterator<String> dataSourceNames;
-
+    
     public DataSourcesQueryBackendHandler(final ShowResourcesStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
@@ -61,13 +61,12 @@ public final class DataSourcesQueryBackendHandler extends SchemaRequiredBackendH
         } else {
             this.schemaName = schemaName;
         }
-
         dataSourceParameterMap = DataSourceParameterConverter.getDataSourceParameterMap(
                 DataSourceConverter.getDataSourceConfigurationMap(ProxyContext.getInstance().getMetaData(this.schemaName).getResource().getDataSources()));
         dataSourceNames = dataSourceParameterMap.keySet().iterator();
         return new QueryResponseHeader(generateResponseHeader());
     }
-
+    
     private List<QueryHeader> generateResponseHeader() {
         List<QueryHeader> result = new LinkedList();
         result.add(new QueryHeader(schemaName, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
@@ -83,7 +82,7 @@ public final class DataSourcesQueryBackendHandler extends SchemaRequiredBackendH
     public boolean next() {
         return dataSourceNames.hasNext();
     }
-
+    
     @Override
     public Collection<Object> getRowData() {
         String dataSourceName = dataSourceNames.next();
