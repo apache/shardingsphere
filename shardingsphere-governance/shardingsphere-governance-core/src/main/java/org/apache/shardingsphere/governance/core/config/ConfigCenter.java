@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.governance.core.config;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.governance.core.config.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.governance.core.config.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
@@ -36,7 +35,6 @@ import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
-import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.AuthenticationYamlSwapper;
@@ -47,12 +45,6 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.replicaquery.algorithm.config.AlgorithmProvidedReplicaQueryRuleConfiguration;
-import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
-import org.apache.shardingsphere.replicaquery.api.config.rule.ReplicaQueryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -218,62 +210,18 @@ public final class ConfigCenter {
         ShardingSphereEventBus.getInstance().post(event);
     }
     
-    private void checkDataSources(final String schemaName, final Collection<ReplicaQueryDataSourceRuleConfiguration> dataSources) {
-        dataSources.forEach(each -> Preconditions.checkState(
-                !each.getPrimaryDataSourceName().isEmpty(), "No available replica-query rule configuration in `%s` for governance.", schemaName));
-    }
-    
     private YamlRootRuleConfigurations createYamlRootRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
         Collection<RuleConfiguration> configs = new LinkedList<>();
         for (RuleConfiguration each : ruleConfigurations) {
-            if (each instanceof ShardingRuleConfiguration) {
-                ShardingRuleConfiguration config = (ShardingRuleConfiguration) each;
-                Preconditions.checkState(hasAvailableTableConfigurations(config),
-                        "No available rule configs in `%s` for governance.", schemaName);
-                configs.add(each);
-            } else if (each instanceof AlgorithmProvidedShardingRuleConfiguration) {
-                AlgorithmProvidedShardingRuleConfiguration config = (AlgorithmProvidedShardingRuleConfiguration) each;
-                Preconditions.checkState(hasAvailableTableConfigurations(config),
-                        "No available rule configs in `%s` for governance.", schemaName);
-                configs.add(each);
-            } else if (each instanceof AlgorithmProvidedReplicaQueryRuleConfiguration) {
-                AlgorithmProvidedReplicaQueryRuleConfiguration config = (AlgorithmProvidedReplicaQueryRuleConfiguration) each;
-                checkDataSources(schemaName, config.getDataSources());
-                configs.add(each);
-            } else if (each instanceof AlgorithmProvidedEncryptRuleConfiguration) {
-                AlgorithmProvidedEncryptRuleConfiguration config = (AlgorithmProvidedEncryptRuleConfiguration) each;
-                Preconditions.checkState(!config.getEncryptors().isEmpty(), "No available encrypt rule configuration in `%s` for governance.", schemaName);
-                configs.add(each);
-            } else if (each instanceof ReplicaQueryRuleConfiguration) {
-                ReplicaQueryRuleConfiguration config = (ReplicaQueryRuleConfiguration) each;
-                checkDataSources(schemaName, config.getDataSources());
-                configs.add(each);
-            } else if (each instanceof EncryptRuleConfiguration) {
-                EncryptRuleConfiguration config = (EncryptRuleConfiguration) each;
-                Preconditions.checkState(!config.getEncryptors().isEmpty(), "No available encrypt rule configuration in `%s` for governance.", schemaName);
-                configs.add(each);
-            } else if (each instanceof ShadowRuleConfiguration) {
-                ShadowRuleConfiguration config = (ShadowRuleConfiguration) each;
-                boolean isShadow = !config.getColumn().isEmpty() && null != config.getSourceDataSourceNames() && null != config.getShadowDataSourceNames();
-                Preconditions.checkState(isShadow, "No available shadow rule configuration in `%s` for governance.", schemaName);
-                configs.add(each);
-            } else if (each instanceof HARuleConfiguration) {
-                HARuleConfiguration config = (HARuleConfiguration) each;
-                Preconditions.checkState(!config.getHaConfiguration().getType().isEmpty(), "No available HA rule configuration in `%s` for governance.", schemaName);
+            Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.newInstance(each);
+            if (checker.isPresent()) {
+                checker.get().check(schemaName, each);
                 configs.add(each);
             }
         }
         YamlRootRuleConfigurations result = new YamlRootRuleConfigurations();
         result.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(configs));
         return result;
-    }
-    
-    private boolean hasAvailableTableConfigurations(final ShardingRuleConfiguration config) {
-        return !config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategy() || !config.getAutoTables().isEmpty();
-    }
-    
-    private boolean hasAvailableTableConfigurations(final AlgorithmProvidedShardingRuleConfiguration config) {
-        return !config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategy() || !config.getAutoTables().isEmpty();
     }
     
     private void persistAuthentication(final DefaultAuthentication authentication, final boolean isOverwrite) {

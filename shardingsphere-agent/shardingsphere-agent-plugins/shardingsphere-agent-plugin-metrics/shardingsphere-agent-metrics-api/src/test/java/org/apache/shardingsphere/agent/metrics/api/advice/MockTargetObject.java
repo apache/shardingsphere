@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.service;
+package org.apache.shardingsphere.agent.metrics.api.advice;
 
-/**
- * Scaling callback.
- */
-public interface ScalingCallback {
+import org.apache.shardingsphere.agent.api.advice.TargetObject;
+
+public final class MockTargetObject implements TargetObject {
     
-    /**
-     * Callback when execute success.
-     *
-     * @param jobId job id
-     */
-    void onSuccess(long jobId);
-    
-    /**
-     * Callback when execute failure.
-     *
-     * @param jobId job id
-     */
-    void onFailure(long jobId);
+    private Object object;
+
+    @Override
+    public Object getAttachment() {
+        return object;
+    }
+
+    @Override
+    public void setAttachment(final Object attachment) {
+        this.object = attachment;
+    }
 }

@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.service;
+package org.apache.shardingsphere.governance.core.config.checker;
+
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 /**
- * Scaling callback.
+ * Rule configuration checker.
+ * 
+ * @param <T> type of rule configuration
  */
-public interface ScalingCallback {
+public interface RuleConfigurationChecker<T extends RuleConfiguration> {
     
     /**
-     * Callback when execute success.
-     *
-     * @param jobId job id
+     * Check rule configuration.
+     * 
+     * @param schemaName schema name
+     * @param ruleConfiguration rule configuration
      */
-    void onSuccess(long jobId);
-    
-    /**
-     * Callback when execute failure.
-     *
-     * @param jobId job id
-     */
-    void onFailure(long jobId);
+    void check(String schemaName, T ruleConfiguration);
 }

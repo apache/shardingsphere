@@ -15,24 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.service;
+package org.apache.shardingsphere.governance.core.config.checker;
+
+import org.apache.shardingsphere.replicaquery.algorithm.config.AlgorithmProvidedReplicaQueryRuleConfiguration;
 
 /**
- * Scaling callback.
+ * Algorithm provided replica query ruleConfiguration checker.
  */
-public interface ScalingCallback {
+public final class AlgorithmProvidedReplicaQueryRuleConfigurationChecker extends AbstractReplicaQueryRuleConfigurationChecker<AlgorithmProvidedReplicaQueryRuleConfiguration> { 
     
-    /**
-     * Callback when execute success.
-     *
-     * @param jobId job id
-     */
-    void onSuccess(long jobId);
-    
-    /**
-     * Callback when execute failure.
-     *
-     * @param jobId job id
-     */
-    void onFailure(long jobId);
+    @Override
+    public void check(final String schemaName, final AlgorithmProvidedReplicaQueryRuleConfiguration ruleConfiguration) {
+        checkDataSources(schemaName, ruleConfiguration.getDataSources());
+    }
 }

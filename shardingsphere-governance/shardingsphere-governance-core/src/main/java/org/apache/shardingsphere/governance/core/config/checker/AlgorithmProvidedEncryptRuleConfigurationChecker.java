@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.service;
+package org.apache.shardingsphere.governance.core.config.checker;
+
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 
 /**
- * Scaling callback.
+ * Algorithm provided encrypt rule configuration checker.
  */
-public interface ScalingCallback {
+public final class AlgorithmProvidedEncryptRuleConfigurationChecker extends AbstractEncryptRuleConfigurationChecker<AlgorithmProvidedEncryptRuleConfiguration> {
     
-    /**
-     * Callback when execute success.
-     *
-     * @param jobId job id
-     */
-    void onSuccess(long jobId);
-    
-    /**
-     * Callback when execute failure.
-     *
-     * @param jobId job id
-     */
-    void onFailure(long jobId);
+    @Override
+    public void check(final String schemaName, final AlgorithmProvidedEncryptRuleConfiguration ruleConfiguration) {
+        Preconditions.checkState(checkEncryptorsNotEmpty(ruleConfiguration), "No available encrypt rule configuration in `%s` for governance.", schemaName);
+    }
 }

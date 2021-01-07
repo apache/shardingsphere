@@ -36,12 +36,12 @@ public final class ScalingResultCallback implements ScalingCallback {
     }
     
     @Override
-    public void onSuccess() {
+    public void onSuccess(final long jobId) {
         ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(schemaName, ruleConfigurationCacheId));
     }
     
     @Override
-    public void onFailure() {
+    public void onFailure(final long jobId) {
         // TODO
     }
 }

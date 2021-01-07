@@ -19,7 +19,6 @@ package org.apache.shardingsphere.ha.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
 import org.apache.shardingsphere.ha.spi.ReplicaLoadBalanceAlgorithm;
@@ -46,7 +45,6 @@ public final class HADataSourceRule {
     
     private final boolean replicaQuery;
     
-    @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
     public HADataSourceRule(final HADataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer) {
@@ -92,8 +90,7 @@ public final class HADataSourceRule {
      */
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>(1, 1);
-        Collection<String> actualDataSourceNames = new LinkedList<>();
-        actualDataSourceNames.addAll(dataSourceNames);
+        Collection<String> actualDataSourceNames = new LinkedList<>(dataSourceNames);
         result.put(name, actualDataSourceNames);
         return result;
     }

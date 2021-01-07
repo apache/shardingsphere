@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.service;
+package org.apache.shardingsphere.governance.core.config.checker;
+
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 
 /**
- * Scaling callback.
+ * Shadow rule configuration checker.
  */
-public interface ScalingCallback {
+public final class ShadowRuleConfigurationChecker implements RuleConfigurationChecker<ShadowRuleConfiguration> {
     
-    /**
-     * Callback when execute success.
-     *
-     * @param jobId job id
-     */
-    void onSuccess(long jobId);
-    
-    /**
-     * Callback when execute failure.
-     *
-     * @param jobId job id
-     */
-    void onFailure(long jobId);
+    @Override
+    public void check(final String schemaName, final ShadowRuleConfiguration ruleConfiguration) {
+        boolean isShadow = !ruleConfiguration.getColumn().isEmpty() && null != ruleConfiguration.getSourceDataSourceNames() && null != ruleConfiguration.getShadowDataSourceNames();
+        Preconditions.checkState(isShadow, "No available shadow rule configuration in `%s` for governance.", schemaName);
+    }
 }

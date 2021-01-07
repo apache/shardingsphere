@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.service;
+package org.apache.shardingsphere.agent.metrics.api.definition;
 
-/**
- * Scaling callback.
- */
-public interface ScalingCallback {
+import java.util.List;
+import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class MetricsPluginDefinitionServiceTest {
     
-    /**
-     * Callback when execute success.
-     *
-     * @param jobId job id
-     */
-    void onSuccess(long jobId);
+    private final MetricsPluginDefinitionService metricsPluginDefinitionService = new MetricsPluginDefinitionService();
     
-    /**
-     * Callback when execute failure.
-     *
-     * @param jobId job id
-     */
-    void onFailure(long jobId);
+    @Test
+    public void assertDefine() {
+        List<PluginInterceptorPoint> interceptorPointList = metricsPluginDefinitionService.build();
+        assertThat(interceptorPointList.size(), is(4));
+    }
+    
+    @Test
+    public void assertType() {
+        assertThat(metricsPluginDefinitionService.getType(), is("Metrics"));
+    }
 }

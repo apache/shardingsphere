@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.service;
+package org.apache.shardingsphere.governance.core.config.checker;
+
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
 
 /**
- * Scaling callback.
+ * HA rule configuration checker.
  */
-public interface ScalingCallback {
+public final class HARuleConfigurationChecker implements RuleConfigurationChecker<HARuleConfiguration> {
     
-    /**
-     * Callback when execute success.
-     *
-     * @param jobId job id
-     */
-    void onSuccess(long jobId);
-    
-    /**
-     * Callback when execute failure.
-     *
-     * @param jobId job id
-     */
-    void onFailure(long jobId);
+    @Override
+    public void check(final String schemaName, final HARuleConfiguration ruleConfiguration) {
+        Preconditions.checkState(!ruleConfiguration.getHaConfiguration().getType().isEmpty(), "No available HA rule configuration in `%s` for governance.", schemaName);
+    }
 }

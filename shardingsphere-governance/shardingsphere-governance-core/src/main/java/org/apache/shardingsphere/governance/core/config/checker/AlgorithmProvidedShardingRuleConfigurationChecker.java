@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.service;
+package org.apache.shardingsphere.governance.core.config.checker;
+
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 
 /**
- * Scaling callback.
+ * Algorithm provided sharding ruleConfiguration checker.
  */
-public interface ScalingCallback {
+public final class AlgorithmProvidedShardingRuleConfigurationChecker extends AbstractShardingRuleConfigurationChecker<AlgorithmProvidedShardingRuleConfiguration> {
     
-    /**
-     * Callback when execute success.
-     *
-     * @param jobId job id
-     */
-    void onSuccess(long jobId);
-    
-    /**
-     * Callback when execute failure.
-     *
-     * @param jobId job id
-     */
-    void onFailure(long jobId);
+    @Override
+    public void check(final String schemaName, final AlgorithmProvidedShardingRuleConfiguration ruleConfiguration) {
+        Preconditions.checkState(hasAvailableTableConfigurations(ruleConfiguration),
+                "No available rule configs in `%s` for governance.", schemaName);
+    }
 }

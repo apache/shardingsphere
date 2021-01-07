@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.service;
+package org.apache.shardingsphere.infra.rule.event.impl;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 
 /**
- * Scaling callback.
+ * Data source disabled event.
  */
-public interface ScalingCallback {
+@RequiredArgsConstructor
+@Getter
+public final class DataSourceDisabledEvent implements RuleChangedEvent {
     
-    /**
-     * Callback when execute success.
-     *
-     * @param jobId job id
-     */
-    void onSuccess(long jobId);
+    private final String schemaName;
     
-    /**
-     * Callback when execute failure.
-     *
-     * @param jobId job id
-     */
-    void onFailure(long jobId);
+    private final String dataSourceName;
+    
+    private final boolean isDisabled;
 }

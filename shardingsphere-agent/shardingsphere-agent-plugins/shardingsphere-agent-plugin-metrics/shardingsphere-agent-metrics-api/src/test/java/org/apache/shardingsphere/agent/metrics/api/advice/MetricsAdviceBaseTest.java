@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.service;
+package org.apache.shardingsphere.agent.metrics.api.advice;
 
-/**
- * Scaling callback.
- */
-public interface ScalingCallback {
+import lombok.Getter;
+import org.apache.shardingsphere.agent.metrics.api.fixture.FixtureMetricsRegister;
+import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
+import org.junit.BeforeClass;
+
+public abstract class MetricsAdviceBaseTest {
     
-    /**
-     * Callback when execute success.
-     *
-     * @param jobId job id
-     */
-    void onSuccess(long jobId);
+    @Getter
+    private static FixtureMetricsRegister fixturemetricsregister = new FixtureMetricsRegister();
     
-    /**
-     * Callback when execute failure.
-     *
-     * @param jobId job id
-     */
-    void onFailure(long jobId);
+    @BeforeClass
+    public static void setup() {
+        MetricsReporter.register(fixturemetricsregister);
+    }
 }
