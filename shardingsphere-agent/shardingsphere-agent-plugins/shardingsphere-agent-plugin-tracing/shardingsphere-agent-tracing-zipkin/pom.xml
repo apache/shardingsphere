@@ -38,6 +38,12 @@
             <groupId>io.zipkin.brave</groupId>
             <artifactId>brave</artifactId>
             <version>${zipkin-brave.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>zipkin-reporter-brave</artifactId>
+                    <groupId>io.zipkin.reporter2</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.zipkin.reporter2</groupId>

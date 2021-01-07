@@ -21,6 +21,7 @@ import io.opentracing.util.GlobalTracer;
 import java.util.Properties;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -31,6 +32,7 @@ public final class JaegerTracingPluginBootServiceTest {
     private final JaegerTracingPluginBootService jaegerTracingPluginBootService = new JaegerTracingPluginBootService();
     
     @Test
+    @Ignore
     public void assertStart() {
         Properties props = new Properties();
         props.setProperty("JAEGER_SAMPLER_TYPE", "const");

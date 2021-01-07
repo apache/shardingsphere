@@ -30,18 +30,20 @@ plugins:
     host: "localhost"
     port: 5775
     props:
+      SERVICE_NAME: "shardingsphere-agent"
       JAEGER_SAMPLER_TYPE: "const"
       JAEGER_SAMPLER_PARAM: "1"
       JAEGER_REPORTER_LOG_SPANS: "true"
       JAEGER_REPORTER_FLUSH_INTERVAL: "1"
   Zipkin:
     host: "localhost"
-    port: 15775
+    port: 9411
     props:
-      NAME: "Zipkin"
+      SERVICE_NAME: "shardingsphere-agent"
+      URL_VERSION: "/api/v2/spans"
   Opentracing:
     props:
       OPENTRACING_TRACER_CLASS_NAME: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
   Logging:
     props:
-      NAME: "Logging"
+      LEVEL: "INFO"
