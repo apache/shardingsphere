@@ -81,7 +81,7 @@ public final class ScalingServiceHolder {
      * Check scaling result.
      * 
      * @param jobId job Id
-     * @return true if scaling result checked success, else false
+     * @return true if scaling result check successfully, else false
      */
     public boolean checkScalingResult(final long jobId) {
         return checkScalingResult(jobId, scalingJobService.check(jobId));
