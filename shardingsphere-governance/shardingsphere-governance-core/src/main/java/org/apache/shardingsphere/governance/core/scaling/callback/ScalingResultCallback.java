@@ -18,8 +18,12 @@
 package org.apache.shardingsphere.governance.core.scaling.callback;
 
 import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
+import org.apache.shardingsphere.governance.core.scaling.ScalingServiceHolder;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.scaling.core.service.ScalingCallback;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Scaling result callback.
@@ -37,7 +41,17 @@ public final class ScalingResultCallback implements ScalingCallback {
     
     @Override
     public void onSuccess(final long jobId) {
-        ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(schemaName, ruleConfigurationCacheId));
+        if (LockContext.getLockStrategy().tryLock(30L, TimeUnit.SECONDS) && LockContext.getLockStrategy().checkLock()) {
+            try {
+                Thread.sleep(30000L);
+                if (ScalingServiceHolder.getInstance().checkScalingResult(jobId)) {
+                    ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(schemaName, ruleConfigurationCacheId));
+                }  
+            } catch (final InterruptedException ignored) {
+            } finally {
+                LockContext.getLockStrategy().releaseLock();
+            }
+        }
     }
     
     @Override
