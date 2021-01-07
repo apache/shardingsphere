@@ -1,0 +1,62 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata>
+        <column name="exp" />
+    </metadata>
+    <row values="1002" />
+    <row values="1003" />
+    <row values="1102" />
+    <row values="1103" />
+    <row values="1202" />
+    <row values="1203" />
+    <row values="1302" />
+    <row values="1303" />
+    <row values="1402" />
+    <row values="1403" />
+    <row values="1502" />
+    <row values="1503" />
+    <row values="1602" />
+    <row values="1603" />
+    <row values="1702" />
+    <row values="1703" />
+    <row values="1802" />
+    <row values="1803" />
+    <row values="1902" />
+    <row values="1903" />
+    <row values="2002" />
+    <row values="2003" />
+    <row values="2102" />
+    <row values="2103" />
+    <row values="2202" />
+    <row values="2203" />
+    <row values="2302" />
+    <row values="2303" />
+    <row values="2402" />
+    <row values="2403" />
+    <row values="2502" />
+    <row values="2503" />
+    <row values="2602" />
+    <row values="2603" />
+    <row values="2702" />
+    <row values="2703" />
+    <row values="2802" />
+    <row values="2803" />
+    <row values="2902" />
+    <row values="2903" />
+</dataset>
