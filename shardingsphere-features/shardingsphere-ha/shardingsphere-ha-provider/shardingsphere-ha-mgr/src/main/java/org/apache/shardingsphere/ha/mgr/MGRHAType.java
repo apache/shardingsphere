@@ -123,8 +123,8 @@ public final class MGRHAType implements HAType {
     }
     
     @Override
-    public void updatePrimaryDataSource(final Map<String, DataSource> originalDataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
-        Map<String, DataSource> activeDataSourceMap = new HashMap<>(originalDataSourceMap);
+    public void updatePrimaryDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
+        Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
         if (!disabledDataSourceNames.isEmpty()) {
             activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
         }
@@ -165,8 +165,10 @@ public final class MGRHAType implements HAType {
     private String findPrimaryDataSourceName(final String primaryDataSourceURL, final Map<String, DataSource> dataSourceMap) {
         String result = "";
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            String url;
             try (Connection connection = entry.getValue().getConnection()) {
-                if (connection.getMetaData().getURL().contains(primaryDataSourceURL)) {
+                url = connection.getMetaData().getURL();
+                if (null != url && url.contains(primaryDataSourceURL)) {
                     return entry.getKey();
                 }
             } catch (final SQLException ex) {
@@ -177,8 +179,8 @@ public final class MGRHAType implements HAType {
     }
     
     @Override
-    public void updateMemberState(final Map<String, DataSource> originalDataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
-        Map<String, DataSource> activeDataSourceMap = new HashMap<>(originalDataSourceMap);
+    public void updateMemberState(final Map<String, DataSource> dataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
+        Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
         if (!disabledDataSourceNames.isEmpty()) {
             activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
         }
@@ -188,7 +190,7 @@ public final class MGRHAType implements HAType {
         }
         Map<String, String> dataSourceURLs = new HashMap<>(16, 1);
         determineDisabledDataSource(schemaName, activeDataSourceMap, memberDataSourceURLs, dataSourceURLs);
-        determineEnabledDataSource(originalDataSourceMap, schemaName, memberDataSourceURLs, dataSourceURLs);
+        determineEnabledDataSource(dataSourceMap, schemaName, memberDataSourceURLs, dataSourceURLs);
     }
     
     private List<String> findMemberDataSourceURLs(final Map<String, DataSource> activeDataSourceMap) {
@@ -212,11 +214,11 @@ public final class MGRHAType implements HAType {
                                              final List<String> memberDataSourceURLs, final Map<String, String> dataSourceURLs) {
         for (Entry<String, DataSource> entry : activeDataSourceMap.entrySet()) {
             boolean disable = true;
-            String url = "";
+            String url = null;
             try (Connection connection = entry.getValue().getConnection()) {
                 url = connection.getMetaData().getURL();
                 for (String each : memberDataSourceURLs) {
-                    if (url.contains(each)) {
+                    if (null != url && url.contains(each)) {
                         disable = false;
                         break;
                     }
@@ -232,7 +234,7 @@ public final class MGRHAType implements HAType {
         }
     }
     
-    private void determineEnabledDataSource(final Map<String, DataSource> originalDataSourceMap, final String schemaName,
+    private void determineEnabledDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName,
                                             final List<String> memberDataSourceURLs, final Map<String, String> dataSourceURLs) {
         for (String each : memberDataSourceURLs) {
             boolean enable = true;
@@ -245,7 +247,7 @@ public final class MGRHAType implements HAType {
             if (!enable) {
                 continue;
             }
-            for (Entry<String, DataSource> entry : originalDataSourceMap.entrySet()) {
+            for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
                 String url;
                 try (Connection connection = entry.getValue().getConnection()) {
                     url = connection.getMetaData().getURL();
@@ -261,13 +263,13 @@ public final class MGRHAType implements HAType {
     }
     
     @Override
-    public void startPeriodicalUpdate(final Map<String, DataSource> originalDataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
+    public void startPeriodicalUpdate(final Map<String, DataSource> dataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
         if (null == coordinatorRegistryCenter) {
             ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("zkServerLists"), "mgr-elasticjob");
             coordinatorRegistryCenter = new ZookeeperRegistryCenter(zkConfig);
             coordinatorRegistryCenter.init();
         }
-        scheduleJobBootstrap = new ScheduleJobBootstrap(coordinatorRegistryCenter, new MGRPeriodicalJob(this, originalDataSourceMap, schemaName, disabledDataSourceNames),
+        scheduleJobBootstrap = new ScheduleJobBootstrap(coordinatorRegistryCenter, new MGRPeriodicalJob(this, dataSourceMap, schemaName, disabledDataSourceNames),
                 JobConfiguration.newBuilder("MGRPeriodicalJob", 1).cron(props.getProperty("keepAliveCron")).build());
         scheduleJobBootstrap.schedule();
     }

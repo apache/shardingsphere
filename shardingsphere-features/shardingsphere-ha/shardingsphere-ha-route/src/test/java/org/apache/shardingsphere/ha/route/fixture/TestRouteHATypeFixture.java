@@ -37,11 +37,11 @@ public final class TestRouteHATypeFixture implements HAType {
     }
     
     @Override
-    public void updateMemberState(final Map<String, DataSource> originalDataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
+    public void updateMemberState(final Map<String, DataSource> dataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
     }
     
     @Override
-    public void startPeriodicalUpdate(final Map<String, DataSource> originalDataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
+    public void startPeriodicalUpdate(final Map<String, DataSource> dataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
     }
     
     @Override
