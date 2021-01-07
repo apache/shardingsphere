@@ -35,7 +35,7 @@ public enum CommonErrorCode implements SQLErrorCode {
 
     RESOURCE_IN_USED(11003, "C11003", "Can not drop resources, resources %s in the rule are still in used."),
     
-    RESOURCE_NOT_EXIST(11004, "C11004", "Can not drop resources, resources %s not exist."),
+    RESOURCE_NOT_EXIST(11004, "C11004", "Can not drop resources, resources %s do not exist."),
     
     UNSUPPORTED_COMMAND(19998, "C19998", "Unsupported command: [%s]"),
     
