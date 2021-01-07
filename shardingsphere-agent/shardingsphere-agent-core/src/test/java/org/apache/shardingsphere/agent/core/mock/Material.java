@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.core.mock;
 import java.io.IOException;
 import java.util.Deque;
 
-public class Material {
+public final class Material {
     
     public Material() {
     

@@ -43,7 +43,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class ShardingSphereTransformerTest {
+public final class ShardingSphereTransformerTest {
     
     private static final PluginLoader PLUGIN_LOADER = PluginLoader.getInstance();
     

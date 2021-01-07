@@ -39,7 +39,7 @@ import org.junit.Test;
 import java.util.Deque;
 import java.util.LinkedList;
 
-public class ConstructorMethodInterceptorTest {
+public final class ConstructorMethodInterceptorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
@@ -69,7 +69,8 @@ public class ConstructorMethodInterceptorTest {
     
     @Test
     public void assertNoArgConstructor() {
-        Assert.assertTrue(new Material() instanceof TargetObject);
+        Object material = new Material();
+        Assert.assertTrue(material instanceof TargetObject);
     }
     
     @Test

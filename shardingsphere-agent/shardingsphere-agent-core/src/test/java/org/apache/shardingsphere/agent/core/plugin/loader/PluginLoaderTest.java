@@ -35,7 +35,7 @@ import org.mockito.internal.util.reflection.FieldSetter;
 
 import java.util.Map;
 
-public class PluginLoaderTest {
+public final class PluginLoaderTest {
     
     private static final PluginLoader PLUGIN_LOADER = PluginLoader.getInstance();
     

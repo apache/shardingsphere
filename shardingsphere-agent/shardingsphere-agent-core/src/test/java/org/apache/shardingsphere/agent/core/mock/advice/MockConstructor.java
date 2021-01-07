@@ -22,7 +22,7 @@ import org.apache.shardingsphere.agent.api.advice.TargetObject;
 
 import java.util.Deque;
 
-public class MockConstructor implements ConstructorAdvice {
+public final class MockConstructor implements ConstructorAdvice {
     
     private final Deque<String> queue;
     

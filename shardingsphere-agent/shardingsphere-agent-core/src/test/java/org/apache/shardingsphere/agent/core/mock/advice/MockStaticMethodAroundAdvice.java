@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 import java.util.Deque;
 
 @RequiredArgsConstructor
-public class MockStaticMethodAroundAdvice implements StaticMethodAroundAdvice {
+public final class MockStaticMethodAroundAdvice implements StaticMethodAroundAdvice {
     
     private final boolean rebase;
     

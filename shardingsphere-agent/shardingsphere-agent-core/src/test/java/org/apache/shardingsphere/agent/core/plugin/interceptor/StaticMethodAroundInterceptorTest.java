@@ -41,7 +41,7 @@ import java.util.LinkedList;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public class StaticMethodAroundInterceptorTest {
+public final class StaticMethodAroundInterceptorTest {
     
     private final String methodName;
     

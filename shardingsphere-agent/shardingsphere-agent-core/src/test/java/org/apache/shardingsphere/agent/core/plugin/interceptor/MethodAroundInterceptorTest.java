@@ -45,7 +45,7 @@ import java.util.LinkedList;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public class MethodAroundInterceptorTest {
+public final class MethodAroundInterceptorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
