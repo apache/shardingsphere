@@ -116,7 +116,7 @@ public final class ConfigCenter {
     }
 
     /**
-     * change data source configurations.
+     * Change data source configurations.
      * @param event Data source event.
      */
     @Subscribe
