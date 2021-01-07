@@ -31,10 +31,7 @@ import org.apache.shardingsphere.agent.core.mock.advice.MockConstructor;
 import org.apache.shardingsphere.agent.core.mock.advice.MockMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.loader.PluginLoader;
-import org.apache.shardingsphere.agent.core.plugin.loader.PluginLoaderTest;
-import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -45,9 +42,11 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@Category({ShardingSphereTransformerTest.class})
+@Category(ShardingSphereTransformerTest.class)
 public final class ShardingSphereTransformerTest {
     
     private static final PluginLoader PLUGIN_LOADER = PluginLoader.getInstance();
@@ -88,20 +87,20 @@ public final class ShardingSphereTransformerTest {
     
     @Test
     public void assertInstanceMethod() {
-        assertThat(new Material().mock(queue), Matchers.is("invocation"));
-        assertThat(queue, Matchers.hasItems("before", "on", "after"));
+        assertThat(new Material().mock(queue), is("invocation"));
+        assertThat(queue, hasItems("before", "on", "after"));
     }
     
     @Test
     public void assertStaticMethod() {
-        assertThat(Material.staticMock(queue), Matchers.is("static invocation"));
-        assertThat(queue, Matchers.hasItems("before", "on", "after"));
+        assertThat(Material.staticMock(queue), is("static invocation"));
+        assertThat(queue, hasItems("before", "on", "after"));
     }
     
     @Test
     public void assertConstructor() {
         new Material(queue);
-        assertThat(queue, Matchers.hasItems("constructor", "on constructor"));
+        assertThat(queue, hasItems("constructor", "on constructor"));
     }
     
     @After

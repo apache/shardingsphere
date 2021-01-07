@@ -30,7 +30,6 @@ import org.apache.shardingsphere.agent.api.advice.TargetObject;
 import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
 import org.apache.shardingsphere.agent.core.mock.Material;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructor;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -39,6 +38,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Deque;
 import java.util.LinkedList;
 
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -80,7 +80,7 @@ public final class ConstructorMethodInterceptorTest {
     @Test
     public void assertConstructor() {
         new Material(QUEUE);
-        assertThat(QUEUE, Matchers.hasItems("constructor", "on constructor"));
+        assertThat(QUEUE, hasItems("constructor", "on constructor"));
     }
     
     @After
