@@ -28,7 +28,7 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.TargetObject;
-import org.apache.shardingsphere.agent.core.mock.Material;
+import org.apache.shardingsphere.agent.core.mock.StaticMaterial;
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -71,9 +71,9 @@ public final class StaticMethodAroundInterceptorTest {
         ByteBuddyAgent.install();
         new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .with(new ByteBuddy())
-                .type(ElementMatchers.named("org.apache.shardingsphere.agent.core.mock.Material"))
+                .type(ElementMatchers.named("org.apache.shardingsphere.agent.core.mock.StaticMaterial"))
                 .transform((builder, typeDescription, classLoader, module) -> {
-                    if ("org.apache.shardingsphere.agent.core.mock.Material".equals(typeDescription.getTypeName())) {
+                    if ("org.apache.shardingsphere.agent.core.mock.StaticMaterial".equals(typeDescription.getTypeName())) {
                         return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
                                 .implement(TargetObject.class)
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA))
@@ -92,11 +92,11 @@ public final class StaticMethodAroundInterceptorTest {
         Deque<String> queue = new LinkedList<>();
         if ("staticMockWithException".equals(methodName)) {
             try {
-                Material.staticMockWithException(queue);
+                StaticMaterial.staticMockWithException(queue);
             } catch (IOException ignore) {
             }
         } else {
-            assertThat(result, is(Material.staticMock(queue)));
+            assertThat(StaticMaterial.staticMock(queue), is(result));
         }
         assertThat(queue, hasItems(expected));
     }

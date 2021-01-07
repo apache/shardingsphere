@@ -29,7 +29,7 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.TargetObject;
-import org.apache.shardingsphere.agent.core.mock.Material;
+import org.apache.shardingsphere.agent.core.mock.InstanceMaterial;
 import org.apache.shardingsphere.agent.core.mock.advice.MockMethodAroundAdvice;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -75,9 +75,9 @@ public final class MethodAroundInterceptorTest {
         ByteBuddyAgent.install();
         new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .with(new ByteBuddy())
-                .type(ElementMatchers.named("org.apache.shardingsphere.agent.core.mock.Material"))
+                .type(ElementMatchers.named("org.apache.shardingsphere.agent.core.mock.InstanceMaterial"))
                 .transform((builder, typeDescription, classLoader, module) -> {
-                    if ("org.apache.shardingsphere.agent.core.mock.Material".equals(typeDescription.getTypeName())) {
+                    if ("org.apache.shardingsphere.agent.core.mock.InstanceMaterial".equals(typeDescription.getTypeName())) {
                         return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
                                 .implement(TargetObject.class)
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA));
@@ -89,8 +89,8 @@ public final class MethodAroundInterceptorTest {
     @Test
     @SneakyThrows
     public void assertInterceptedMethod() {
-        Material material = new ByteBuddy()
-                .subclass(Material.class)
+        InstanceMaterial material = new ByteBuddy()
+                .subclass(InstanceMaterial.class)
                 .method(ElementMatchers.named(methodName))
                 .intercept(MethodDelegation.withDefaultConfiguration().to(new MethodAroundInterceptor(new MockMethodAroundAdvice(rebase))))
                 .make()
@@ -104,7 +104,7 @@ public final class MethodAroundInterceptorTest {
             } catch (IOException ignore) {
             }
         } else {
-            assertThat(result, is(material.mock(queue)));
+            assertThat(material.mock(queue), is(result));
         }
         assertThat(queue, hasItems(expected));
     }

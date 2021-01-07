@@ -28,6 +28,7 @@ import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.TargetObject;
 import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
+import org.apache.shardingsphere.agent.core.mock.ConstructorMaterial;
 import org.apache.shardingsphere.agent.core.mock.Material;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructor;
 import org.junit.After;
@@ -57,9 +58,9 @@ public final class ConstructorMethodInterceptorTest {
                 .ignore(ElementMatchers.isSynthetic())
                 .with(new LoggingListener())
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
-                .type(ElementMatchers.named("org.apache.shardingsphere.agent.core.mock.Material"))
+                .type(ElementMatchers.named("org.apache.shardingsphere.agent.core.mock.ConstructorMaterial"))
                 .transform((builder, typeDescription, classLoader, module) -> {
-                    if ("org.apache.shardingsphere.agent.core.mock.Material".equals(typeDescription.getTypeName())) {
+                    if ("org.apache.shardingsphere.agent.core.mock.ConstructorMaterial".equals(typeDescription.getTypeName())) {
                         return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
                                 .implement(TargetObject.class)
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA))
@@ -73,7 +74,7 @@ public final class ConstructorMethodInterceptorTest {
     
     @Test
     public void assertNoArgConstructor() {
-        Object material = new Material();
+        Object material = new ConstructorMaterial();
         assertTrue(material instanceof TargetObject);
     }
     
