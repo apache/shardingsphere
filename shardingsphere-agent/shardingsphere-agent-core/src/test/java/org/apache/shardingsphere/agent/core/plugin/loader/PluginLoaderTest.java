@@ -26,15 +26,19 @@ import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructor;
 import org.apache.shardingsphere.agent.core.mock.advice.MockMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.mockito.internal.util.reflection.FieldReader;
 import org.mockito.internal.util.reflection.FieldSetter;
 
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+
+@Category(PluginLoaderTest.class)
 public final class PluginLoaderTest {
     
     private static final PluginLoader PLUGIN_LOADER = PluginLoader.getInstance();
@@ -71,19 +75,19 @@ public final class PluginLoaderTest {
     
     @Test
     public void assertTypeMatcher() {
-        Assert.assertThat(PLUGIN_LOADER.typeMatcher().matches(MATERIAL), Matchers.is(true));
-        Assert.assertThat(PLUGIN_LOADER.typeMatcher().matches(FAKE), Matchers.is(false));
+        assertThat(PLUGIN_LOADER.typeMatcher().matches(MATERIAL), is(true));
+        assertThat(PLUGIN_LOADER.typeMatcher().matches(FAKE), is(false));
     }
     
     @Test
     public void assertContainsType() {
-        Assert.assertThat(PLUGIN_LOADER.containsType(MATERIAL), Matchers.is(true));
-        Assert.assertThat(PLUGIN_LOADER.containsType(FAKE), Matchers.is(false));
+        assertThat(PLUGIN_LOADER.containsType(MATERIAL), is(true));
+        assertThat(PLUGIN_LOADER.containsType(FAKE), is(false));
     }
     
     @Test
     public void assertLoadPluginInterceptorPoint() {
-        Assert.assertNull(PLUGIN_LOADER.loadPluginInterceptorPoint(FAKE));
-        Assert.assertNotNull(PLUGIN_LOADER.loadPluginInterceptorPoint(MATERIAL));
+        assertNotNull(PLUGIN_LOADER.loadPluginInterceptorPoint(MATERIAL));
     }
+    
 }

@@ -23,14 +23,17 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
+import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.apache.shardingsphere.agent.api.advice.TargetObject;
 import org.apache.shardingsphere.agent.core.mock.Material;
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -39,9 +42,14 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 
+import static org.junit.Assert.assertThat;
+
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
+@Category(StaticMethodAroundInterceptorTest.class)
 public final class StaticMethodAroundInterceptorTest {
+    
+    private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
     private final String methodName;
     
@@ -65,7 +73,10 @@ public final class StaticMethodAroundInterceptorTest {
                 .type(ElementMatchers.named("org.apache.shardingsphere.agent.core.mock.Material"))
                 .transform((builder, typeDescription, classLoader, module) -> {
                     if ("org.apache.shardingsphere.agent.core.mock.Material".equals(typeDescription.getTypeName())) {
-                        return builder.method(ElementMatchers.named("staticMockWithException"))
+                        return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
+                                .implement(TargetObject.class)
+                                .intercept(FieldAccessor.ofField(EXTRA_DATA))
+                                .method(ElementMatchers.named("staticMockWithException"))
                                 .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAroundInterceptor(new MockStaticMethodAroundAdvice(false))))
                                 .method(ElementMatchers.named("staticMock"))
                                 .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAroundInterceptor(new MockStaticMethodAroundAdvice(true))));
@@ -84,9 +95,9 @@ public final class StaticMethodAroundInterceptorTest {
             } catch (IOException ignore) {
             }
         } else {
-            Assert.assertThat(result, Matchers.is(Material.staticMock(queue)));
+            assertThat(result, Matchers.is(Material.staticMock(queue)));
         }
-        Assert.assertThat(queue, Matchers.hasItems(expected));
+        assertThat(queue, Matchers.hasItems(expected));
     }
     
 }

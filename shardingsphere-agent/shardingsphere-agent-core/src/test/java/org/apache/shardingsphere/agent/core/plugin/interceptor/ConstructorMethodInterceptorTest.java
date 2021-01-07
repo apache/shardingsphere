@@ -32,13 +32,17 @@ import org.apache.shardingsphere.agent.core.mock.Material;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructor;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Deque;
 import java.util.LinkedList;
 
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+@Category(ConstructorMethodInterceptorTest.class)
 public final class ConstructorMethodInterceptorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
@@ -70,13 +74,13 @@ public final class ConstructorMethodInterceptorTest {
     @Test
     public void assertNoArgConstructor() {
         Object material = new Material();
-        Assert.assertTrue(material instanceof TargetObject);
+        assertTrue(material instanceof TargetObject);
     }
     
     @Test
     public void assertConstructor() {
         new Material(QUEUE);
-        Assert.assertThat(QUEUE, Matchers.hasItems("constructor", "on constructor"));
+        assertThat(QUEUE, Matchers.hasItems("constructor", "on constructor"));
     }
     
     @After

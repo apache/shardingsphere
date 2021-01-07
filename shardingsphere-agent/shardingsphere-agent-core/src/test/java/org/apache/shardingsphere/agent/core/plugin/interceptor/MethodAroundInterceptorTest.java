@@ -32,9 +32,9 @@ import org.apache.shardingsphere.agent.api.advice.TargetObject;
 import org.apache.shardingsphere.agent.core.mock.Material;
 import org.apache.shardingsphere.agent.core.mock.advice.MockMethodAroundAdvice;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -43,8 +43,11 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 
+import static org.junit.Assert.assertThat;
+
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
+@Category(MethodAroundInterceptorTest.class)
 public final class MethodAroundInterceptorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
@@ -100,9 +103,9 @@ public final class MethodAroundInterceptorTest {
             } catch (IOException ignore) {
             }
         } else {
-            Assert.assertThat(result, Matchers.is(material.mock(queue)));
+            assertThat(result, Matchers.is(material.mock(queue)));
         }
-        Assert.assertThat(queue, Matchers.hasItems(expected));
+        assertThat(queue, Matchers.hasItems(expected));
     }
     
 }

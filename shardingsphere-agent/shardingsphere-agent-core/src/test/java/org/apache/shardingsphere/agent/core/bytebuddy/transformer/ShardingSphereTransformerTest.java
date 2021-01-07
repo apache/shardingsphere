@@ -31,11 +31,13 @@ import org.apache.shardingsphere.agent.core.mock.advice.MockConstructor;
 import org.apache.shardingsphere.agent.core.mock.advice.MockMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.loader.PluginLoader;
+import org.apache.shardingsphere.agent.core.plugin.loader.PluginLoaderTest;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.mockito.internal.util.reflection.FieldReader;
 import org.mockito.internal.util.reflection.FieldSetter;
 
@@ -43,6 +45,9 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
 
+import static org.junit.Assert.assertThat;
+
+@Category({ShardingSphereTransformerTest.class})
 public final class ShardingSphereTransformerTest {
     
     private static final PluginLoader PLUGIN_LOADER = PluginLoader.getInstance();
@@ -83,20 +88,20 @@ public final class ShardingSphereTransformerTest {
     
     @Test
     public void assertInstanceMethod() {
-        Assert.assertThat(new Material().mock(queue), Matchers.is("invocation"));
-        Assert.assertThat(queue, Matchers.hasItems("before", "on", "after"));
+        assertThat(new Material().mock(queue), Matchers.is("invocation"));
+        assertThat(queue, Matchers.hasItems("before", "on", "after"));
     }
     
     @Test
     public void assertStaticMethod() {
-        Assert.assertThat(Material.staticMock(queue), Matchers.is("static invocation"));
-        Assert.assertThat(queue, Matchers.hasItems("before", "on", "after"));
+        assertThat(Material.staticMock(queue), Matchers.is("static invocation"));
+        assertThat(queue, Matchers.hasItems("before", "on", "after"));
     }
     
     @Test
     public void assertConstructor() {
         new Material(queue);
-        Assert.assertThat(queue, Matchers.hasItems("constructor", "on constructor"));
+        assertThat(queue, Matchers.hasItems("constructor", "on constructor"));
     }
     
     @After

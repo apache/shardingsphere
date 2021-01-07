@@ -20,7 +20,10 @@ package org.apache.shardingsphere.agent.core.mock;
 import java.io.IOException;
 import java.util.Deque;
 
-public final class Material {
+/**
+ * Have to redefine this class dynamic, so never add `final` modifier.
+ */
+public class Material {
     
     public Material() {
     
