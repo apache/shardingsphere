@@ -29,8 +29,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -46,25 +48,41 @@ public final class SingleTableRoutingEngine implements ShardingRouteEngine {
     
     @Override
     public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
-        Optional<String> dataSourceName = sqlStatement instanceof CreateTableStatement ? getRandomDataSourceName(shardingRule.getDataSourceNames()) : findDataSourceNameOfSingleTable(shardingRule);
-        if (!dataSourceName.isPresent()) {
-            throw new ShardingSphereException("Can not route tables for `%s`, please make sure the tables are in same schema.", logicTables);
-        }
-        List<RouteMapper> routingTables = logicTables.stream().map(table -> new RouteMapper(table, table)).collect(Collectors.toList());
-        routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName.get(), dataSourceName.get()), routingTables));
-    }
-    
-    private Optional<String> getRandomDataSourceName(final Collection<String> dataSourceNames) {
-        String dataSourceName = Lists.newArrayList(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
-        return Optional.of(dataSourceName);
-    }
-    
-    private Optional<String> findDataSourceNameOfSingleTable(final ShardingRule shardingRule) {
-        for (String each : logicTables) {
-            if (shardingRule.getSingleTableRules().containsKey(each)) {
-                return Optional.of(shardingRule.getSingleTableRules().get(each).getDataSourceName());
+        if (sqlStatement instanceof CreateTableStatement) {
+            routeContext.getRouteUnits().add(getRandomRouteUnit(shardingRule));
+        } else {
+            Collection<RouteUnit> routeUnits = getTargetRouteUnits(shardingRule);
+            routeContext.getRouteUnits().addAll(routeUnits);
+            if (1 < routeUnits.size()) {
+                routeContext.setToCalcite(true);
             }
         }
-        return Optional.empty();
+    }
+    
+    private RouteUnit getRandomRouteUnit(final ShardingRule shardingRule) {
+        Collection<String> dataSourceNames = shardingRule.getDataSourceNames();
+        String dataSource = Lists.newArrayList(dataSourceNames).get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
+        String table = logicTables.iterator().next();
+        return new RouteUnit(new RouteMapper(dataSource, dataSource), Collections.singletonList(new RouteMapper(table, table)));
+    }
+    
+    private Collection<RouteUnit> getTargetRouteUnits(final ShardingRule shardingRule) {
+        Map<RouteMapper, Collection<RouteMapper>> result = new LinkedHashMap<>();
+        for (String each : logicTables) {
+            if (shardingRule.getSingleTableRules().containsKey(each)) {
+                fillRouteUnits(each, shardingRule.getSingleTableRules().get(each).getDataSourceName(), result);
+            } else {
+                throw new ShardingSphereException("`%s` single table does not exist.", each);
+            }
+        }
+        return result.entrySet().stream().map(entry -> new RouteUnit(entry.getKey(), entry.getValue())).collect(Collectors.toList());
+    }
+    
+    private void fillRouteUnits(final String each, final String dataSource, final Map<RouteMapper, Collection<RouteMapper>> routeMappers) {
+        RouteMapper dataSourceMapper = new RouteMapper(dataSource, dataSource);
+        if (!routeMappers.containsKey(dataSourceMapper)) {
+            routeMappers.put(dataSourceMapper, new LinkedHashSet<>());
+        }
+        routeMappers.get(dataSourceMapper).add(new RouteMapper(each, each));
     }
 }

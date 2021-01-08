@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.scaling.postgresql.component;
 
+import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.AbstractDataSourceChecker;
 
 import javax.sql.DataSource;
@@ -54,5 +56,10 @@ public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker
     @Override
     public void checkVariable(final Collection<? extends DataSource> dataSources) {
     
+    }
+    
+    @Override
+    protected ScalingSQLBuilder getSqlBuilder() {
+        return new PostgreSQLScalingSQLBuilder(Maps.newHashMap());
     }
 }

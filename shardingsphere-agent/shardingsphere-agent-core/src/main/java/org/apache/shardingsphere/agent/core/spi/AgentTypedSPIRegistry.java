@@ -22,7 +22,7 @@ import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.core.exception.AgentServiceProviderNotFoundException;
-import org.apache.shardingsphere.agent.spi.AgentTypedSPI;
+import org.apache.shardingsphere.agent.spi.type.AgentTypedSPI;
 
 /**
  *  Agent typed SPI registry.

@@ -51,58 +51,61 @@ public final class ShardingSphereTransformer implements Transformer {
     @Override
     public Builder<?> transform(final Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module) {
         if (pluginLoader.containsType(typeDescription)) {
-            Builder<?> newBuilder = builder;
-            newBuilder = newBuilder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
+            Builder<?> result = builder;
+            result = result.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
                     .implement(TargetObject.class)
                     .intercept(FieldAccessor.ofField(EXTRA_DATA));
             PluginInterceptorPoint pluginInterceptorPoint = pluginLoader.loadPluginInterceptorPoint(typeDescription);
-            newBuilder = interceptorConstructorPoint(pluginInterceptorPoint, newBuilder);
-            newBuilder = interceptorClassStaticMethodPoint(pluginInterceptorPoint, newBuilder);
-            newBuilder = interceptorInstanceMethodPoint(pluginInterceptorPoint, newBuilder);
-            return newBuilder;
+            result = interceptorConstructorPoint(pluginInterceptorPoint, result);
+            result = interceptorClassStaticMethodPoint(pluginInterceptorPoint, result);
+            result = interceptorInstanceMethodPoint(pluginInterceptorPoint, result);
+            return result;
         }
         return builder;
     }
     
     private Builder<?> interceptorConstructorPoint(final PluginInterceptorPoint pluginInterceptorPoint, final Builder<?> builder) {
+        Builder<?> result = builder;
         for (ConstructorPoint each : pluginInterceptorPoint.getConstructorPoints()) {
             try {
                 ConstructorMethodInterceptor interceptor = new ConstructorMethodInterceptor(pluginLoader.getOrCreateInstance(each.getAdvice()));
-                return builder.constructor(each.getMatcher()).intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(interceptor)));
+                result = result.constructor(each.getMatcher()).intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(interceptor)));
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
                 log.error("Failed to load advice class: {}", each.getAdvice(), ex);
             }
         }
-        return builder;
+        return result;
     }
     
     private Builder<?> interceptorClassStaticMethodPoint(final PluginInterceptorPoint pluginInterceptorPoint, final Builder<?> builder) {
+        Builder<?> result = builder;
         for (ClassStaticMethodPoint each : pluginInterceptorPoint.getClassStaticMethodPoints()) {
             try {
                 StaticMethodAroundInterceptor interceptor = new StaticMethodAroundInterceptor(pluginLoader.getOrCreateInstance(each.getAdvice()));
-                return builder.method(each.getMatcher()).intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
+                result = result.method(each.getMatcher()).intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
                 log.error("Failed to load advice class: {}", each.getAdvice(), ex);
             }
         }
-        return builder;
+        return result;
     }
     
     private Builder<?> interceptorInstanceMethodPoint(final PluginInterceptorPoint pluginInterceptorPoint, final Builder<?> builder) {
+        Builder<?> result = builder;
         for (InstanceMethodPoint each : pluginInterceptorPoint.getInstanceMethodPoints()) {
             try {
                 MethodAroundInterceptor interceptor = new MethodAroundInterceptor(pluginLoader.getOrCreateInstance(each.getAdvice()));
-                return builder.method(each.getMatcher()).intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
+                result = result.method(each.getMatcher()).intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
                 log.error("Failed to load advice class: {}", each.getAdvice(), ex);
             }
         }
-        return builder;
+        return result;
     }
 }

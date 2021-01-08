@@ -24,6 +24,8 @@ import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.ha.spi.HAType;
 
 import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -36,10 +38,20 @@ public final class MGRPeriodicalJob implements SimpleJob {
     
     private final String schemaName;
     
+    private final Collection<String> disabledDataSourceNames;
+    
+    private final String groupName;
+    
+    private final String primaryDataSourceName;
+    
     @Override
     public void execute(final ShardingContext shardingContext) {
-        log.info("---------------MGRPeriodicalJob--------------");
-        log.info("dataSourceMap: " + dataSourceMap.toString());
-        haType.updatePrimaryDataSource(dataSourceMap, schemaName);
+        Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
+        if (!disabledDataSourceNames.isEmpty()) {
+            activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
+        }
+        log.info("|activeDataSourceMap| " + activeDataSourceMap.toString());
+        haType.updatePrimaryDataSource(dataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
+        haType.updateMemberState(dataSourceMap, schemaName, disabledDataSourceNames);
     }
 }

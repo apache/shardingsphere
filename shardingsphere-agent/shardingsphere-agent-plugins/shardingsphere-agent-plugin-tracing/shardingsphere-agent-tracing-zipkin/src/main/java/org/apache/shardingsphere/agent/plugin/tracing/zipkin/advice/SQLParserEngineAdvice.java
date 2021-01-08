@@ -21,8 +21,8 @@ import brave.Span;
 import brave.Tracing;
 import brave.propagation.TraceContext;
 import org.apache.shardingsphere.agent.api.advice.MethodAroundAdvice;
-import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 
@@ -40,6 +40,7 @@ public final class SQLParserEngineAdvice implements MethodAroundAdvice {
         TraceContext parentContext = ((Span) ExecutorDataMap.getValue().get(ZipkinConstants.ROOT_SPAN)).context();
         Span span = Tracing.currentTracer().newChild(parentContext).name(OPERATION_NAME);
         span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
+        span.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
         span.start();
         target.setAttachment(span);
     }

@@ -58,8 +58,10 @@ public final class RegistryCenterNodeTest {
     @Test
     public void assertGetAllSchemaPaths() {
         Collection<String> schemaPaths = registryCenterNode.getAllSchemaPaths(Arrays.asList("replica_query_db", "sharding_db"));
-        assertThat(schemaPaths.size(), is(2));
+        assertThat(schemaPaths.size(), is(4));
         assertThat(schemaPaths, hasItem("/states/datanodes/replica_query_db"));
         assertThat(schemaPaths, hasItem("/states/datanodes/sharding_db"));
+        assertThat(schemaPaths, hasItem("/states/primarynodes/replica_query_db"));
+        assertThat(schemaPaths, hasItem("/states/primarynodes/sharding_db"));
     }
 }

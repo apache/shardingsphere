@@ -39,6 +39,8 @@ public final class RegistryCenterNode {
     
     private static final String DATA_NODES_NAME = "datanodes";
     
+    private static final String PRIMARY_NODES_NAME = "primarynodes";
+    
     /**
      * Get proxy node path.
      *
@@ -59,6 +61,15 @@ public final class RegistryCenterNode {
     }
     
     /**
+     * Get primary nodes path.
+     *
+     * @return primary nodes path
+     */
+    public String getPrimaryNodesPath() {
+        return Joiner.on("/").join("", ROOT, PRIMARY_NODES_NAME);
+    }
+    
+    /**
      * Get schema path.
      * 
      * @param schemaName schema name
@@ -66,6 +77,16 @@ public final class RegistryCenterNode {
      */
     public String getSchemaPath(final String schemaName) {
         return Joiner.on("/").join("", ROOT, DATA_NODES_NAME, schemaName);
+    }
+    
+    /**
+     * Get primary nodes schema path.
+     *
+     * @param schemaName schema name
+     * @return schema path
+     */
+    public String getPrimaryNodesSchemaPath(final String schemaName) {
+        return Joiner.on("/").join("", ROOT, PRIMARY_NODES_NAME, schemaName);
     }
     
     /**
@@ -80,6 +101,17 @@ public final class RegistryCenterNode {
     }
     
     /**
+     * Get primary data source path.
+     *
+     * @param schemaName schema name
+     * @param groupName group name
+     * @return data source path
+     */
+    public String getPrimaryDataSourcePath(final String schemaName, final String groupName) {
+        return Joiner.on("/").join("", ROOT, PRIMARY_NODES_NAME, schemaName, groupName);
+    }
+    
+    /**
      * Get governance schema.
      *
      * @param dataSourceNodeFullPath data source node full path
@@ -89,6 +121,32 @@ public final class RegistryCenterNode {
         Pattern pattern = Pattern.compile(getDataNodesPath() + "/" + "(\\w+)/(\\w+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
         return matcher.find() ? Optional.of(new GovernanceSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
+    }
+    
+    
+    /**
+     * Get primary nodes governance schema.
+     *
+     * @param dataSourceNodeFullPath data source node full path
+     * @return primary nodes governance schema
+     */
+    public Optional<GovernanceSchema> getPrimaryNodesGovernanceSchema(final String dataSourceNodeFullPath) {
+        Pattern pattern = Pattern.compile(getPrimaryNodesPath() + "/" + "(\\w+)/(\\w+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
+        return matcher.find() ? Optional.of(new GovernanceSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
+    }
+    
+    
+    /**
+     * Is primary data source path.
+     *
+     * @param dataSourceNodeFullPath data source node full path
+     * @return is primary data source path
+     */
+    public boolean isPrimaryDataSourcePath(final String dataSourceNodeFullPath) {
+        Pattern pattern = Pattern.compile(getPrimaryNodesPath() + "/" + "(\\w+)/(\\w+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(dataSourceNodeFullPath);
+        return matcher.find();
     }
     
     /**
@@ -101,6 +159,7 @@ public final class RegistryCenterNode {
         Collection<String> result = new ArrayList<>(schemaNames.size());
         for (String schemaName : schemaNames) {
             result.add(getSchemaPath(schemaName));
+            result.add(getPrimaryNodesSchemaPath(schemaName));
         }
         return result;
     }

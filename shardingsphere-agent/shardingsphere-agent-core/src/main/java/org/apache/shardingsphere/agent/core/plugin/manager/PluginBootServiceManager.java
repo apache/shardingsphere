@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.agent.core.plugin.manager;
 
 import java.util.Map;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.core.config.cache.AgentObjectPool;
 import org.apache.shardingsphere.agent.core.spi.AgentTypedSPIRegistry;
-import org.apache.shardingsphere.agent.spi.PluginBootService;
+import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
 
 /**
  * Plugin boot service manager.
@@ -35,9 +38,13 @@ public final class PluginBootServiceManager {
      * @param pluginConfigurationMap plugin configuration map
      */
     public static void startAllServices(final Map<String, PluginConfiguration> pluginConfigurationMap) {
+        Set<String> ignoredPluginNames = AgentObjectPool.INSTANCE.get(AgentConfiguration.class).getIgnoredPluginNames();
         for (Map.Entry<String, PluginConfiguration> entry: pluginConfigurationMap.entrySet()) {
             AgentTypedSPIRegistry.getRegisteredServiceOptional(PluginBootService.class, entry.getKey()).ifPresent(pluginBootService -> {
                 try {
+                    if (!ignoredPluginNames.isEmpty() && ignoredPluginNames.contains(pluginBootService.getType())) {
+                        return;
+                    }
                     pluginBootService.start(entry.getValue());
                     // CHECKSTYLE:OFF
                 } catch (final Throwable ex) {

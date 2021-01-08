@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.ha.spi;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
 
 /**
  * HA type.
  */
-public interface HAType extends ShardingSphereAlgorithm {
+public interface HAType extends TypedSPI {
     
     /**
      * Check HA config.
@@ -42,19 +43,42 @@ public interface HAType extends ShardingSphereAlgorithm {
      *
      * @param dataSourceMap data source map
      * @param schemaName schema name
+     * @param disabledDataSourceNames disabled data source names
+     * @param primaryDataSourceName primary data source name
+     * @param groupName group name
      */
-    void updatePrimaryDataSource(Map<String, DataSource> dataSourceMap, String schemaName);
+    void updatePrimaryDataSource(Map<String, DataSource> dataSourceMap, String schemaName, Collection<String> disabledDataSourceNames, String groupName, String primaryDataSourceName);
     
     /**
-     * Start periodical monitor.
+     * Update member state.
      *
      * @param dataSourceMap data source map
      * @param schemaName schema name
+     * @param disabledDataSourceNames disabled data source names
      */
-    void startPeriodicalMonitor(Map<String, DataSource> dataSourceMap, String schemaName);
+    void updateMemberState(Map<String, DataSource> dataSourceMap, String schemaName, Collection<String> disabledDataSourceNames);
     
     /**
-     * Stop periodical monitor.
+     * Start periodical update.
+     *
+     * @param dataSourceMap data source map
+     * @param schemaName schema name
+     * @param disabledDataSourceNames disabled data source names
+     * @param primaryDataSourceName primary data source name
+     * @param groupName group name
      */
-    void stopPeriodicalMonitor();
+    void startPeriodicalUpdate(Map<String, DataSource> dataSourceMap, String schemaName, Collection<String> disabledDataSourceNames, String groupName, String primaryDataSourceName);
+    
+    /**
+     * Stop periodical update.
+     */
+    void stopPeriodicalUpdate();
+    
+    /**
+     * Get primary data source.
+     *
+     * @return primary data source
+     */
+    String getPrimaryDataSource();
+    
 }

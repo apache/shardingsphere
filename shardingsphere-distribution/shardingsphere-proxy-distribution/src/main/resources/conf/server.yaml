@@ -41,6 +41,10 @@
 #      password: sharding 
 #      authorizedSchemas: sharding_db
 
+#scaling:
+#  blockQueueSize: 10000
+#  workerThread: 40
+
 #props:
 #  max-connections-size-per-query: 1
 #  acceptor-size: 16  # The default value is available processors count * 2.

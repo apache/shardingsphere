@@ -32,10 +32,10 @@
     <modules>
         <module>shardingsphere-agent-tracing-jaeger</module>
         <module>shardingsphere-agent-tracing-zipkin</module>
+        <module>shardingsphere-agent-tracing-opentracing</module>
     </modules>
     
     <properties>
-        <entrypoint.class/>
         <tracing.target.directory>${project.basedir}/../target/plugins</tracing.target.directory>
     </properties>
     
@@ -55,13 +55,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Entrypoint>${entrypoint.class}</Entrypoint>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
