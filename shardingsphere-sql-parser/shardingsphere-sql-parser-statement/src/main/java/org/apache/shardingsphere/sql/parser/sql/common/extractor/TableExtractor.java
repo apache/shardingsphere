@@ -91,6 +91,7 @@ public final class TableExtractor {
      * Extract tables with from clause.
      *
      * @param selectStatement select statement
+     * @return tables with from clause
      */
     public Collection<SimpleTableSegment> extractTablesWithFromClause(final SelectStatement selectStatement) {
         if (null != selectStatement.getFrom()) {
