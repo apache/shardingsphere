@@ -33,7 +33,8 @@ public final class TestHATypeFixture implements HAType {
     }
     
     @Override
-    public void updatePrimaryDataSource(final Map<String, DataSource> activeDataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
+    public void updatePrimaryDataSource(final Map<String, DataSource> activeDataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames,
+                                        final String groupName, final String primaryDataSourceName) {
     }
     
     @Override
@@ -41,7 +42,8 @@ public final class TestHATypeFixture implements HAType {
     }
     
     @Override
-    public void startPeriodicalUpdate(final Map<String, DataSource> dataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
+    public void startPeriodicalUpdate(final Map<String, DataSource> dataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames,
+                                      final String groupName, final String primaryDataSourceName) {
     }
     
     @Override

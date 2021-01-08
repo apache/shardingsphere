@@ -19,7 +19,11 @@ package org.apache.shardingsphere.proxy.backend.text.distsql;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AlterReplicaQueryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -30,6 +34,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
@@ -182,6 +187,70 @@ public final class RDLBackendHandlerFactoryTest {
         }
         setGovernanceMetaDataContexts(true);
         Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CreateShardingRuleStatement.class), connection);
+        assertTrue(rdlBackendHandler.isPresent());
+        ResponseHeader response = rdlBackendHandler.get().execute();
+        assertThat(response, instanceOf(UpdateResponseHeader.class));
+    }
+
+    @Test(expected = ClassCastException.class)
+    public void assertExecuteDropResourceContext() throws SQLException {
+        BackendConnection connection = mock(BackendConnection.class);
+        when(connection.getSchemaName()).thenReturn("schema");
+        try {
+            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropResourceStatement.class), connection);
+        } catch (final SQLException ex) {
+            assertThat(ex.getMessage(), is("No Registry center to execute `DropResourceStatement` SQL"));
+        }
+        setGovernanceMetaDataContexts(true);
+        Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropResourceStatement.class), connection);
+        assertTrue(rdlBackendHandler.isPresent());
+        ResponseHeader response = rdlBackendHandler.get().execute();
+        assertThat(response, instanceOf(UpdateResponseHeader.class));
+    }
+
+    @Test(expected = ReplicaQueryRuleNotExistedException.class)
+    public void assertExecuteDropReplicaQueryRuleContext() throws SQLException {
+        BackendConnection connection = mock(BackendConnection.class);
+        when(connection.getSchemaName()).thenReturn("schema");
+        try {
+            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropReplicaQueryRuleStatement.class), connection);
+        } catch (final SQLException ex) {
+            assertThat(ex.getMessage(), is("No Registry center to execute `DropReplicaQueryRuleStatement` SQL"));
+        }
+        setGovernanceMetaDataContexts(true);
+        Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropReplicaQueryRuleStatement.class), connection);
+        assertTrue(rdlBackendHandler.isPresent());
+        ResponseHeader response = rdlBackendHandler.get().execute();
+        assertThat(response, instanceOf(UpdateResponseHeader.class));
+    }
+
+    @Test
+    public void assertExecuteCreateReplicaQueryRuleContext() throws SQLException {
+        BackendConnection connection = mock(BackendConnection.class);
+        when(connection.getSchemaName()).thenReturn("schema");
+        try {
+            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CreateReplicaQueryRuleStatement.class), connection);
+        } catch (final SQLException ex) {
+            assertThat(ex.getMessage(), is("No Registry center to execute `CreateReplicaQueryRuleStatement` SQL"));
+        }
+        setGovernanceMetaDataContexts(true);
+        Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(CreateReplicaQueryRuleStatement.class), connection);
+        assertTrue(rdlBackendHandler.isPresent());
+        ResponseHeader response = rdlBackendHandler.get().execute();
+        assertThat(response, instanceOf(UpdateResponseHeader.class));
+    }
+
+    @Test(expected = ReplicaQueryRuleNotExistedException.class)
+    public void assertExecuteAlterReplicaQueryRuleContext() throws SQLException {
+        BackendConnection connection = mock(BackendConnection.class);
+        when(connection.getSchemaName()).thenReturn("schema");
+        try {
+            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AlterReplicaQueryRuleStatement.class), connection);
+        } catch (final SQLException ex) {
+            assertThat(ex.getMessage(), is("No Registry center to execute `AlterReplicaQueryRuleStatement` SQL"));
+        }
+        setGovernanceMetaDataContexts(true);
+        Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AlterReplicaQueryRuleStatement.class), connection);
         assertTrue(rdlBackendHandler.isPresent());
         ResponseHeader response = rdlBackendHandler.get().execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));

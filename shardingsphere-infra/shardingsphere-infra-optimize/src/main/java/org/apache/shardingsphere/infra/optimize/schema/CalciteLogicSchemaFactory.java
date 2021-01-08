@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.optimize.schema;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
 import org.apache.shardingsphere.infra.optimize.schema.generator.CalciteLogicSchemaGenerator;
+import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -32,9 +32,9 @@ import java.util.Map.Entry;
  * Calcite logic schema factory.
  */
 public final class CalciteLogicSchemaFactory {
-    
+
     private final Map<String, CalciteLogicSchemaGenerator> schemas = new LinkedMap<>();
-    
+
     public CalciteLogicSchemaFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
         for (Entry<String, ShardingSphereMetaData> each : metaDataMap.entrySet()) {
             try {
@@ -44,7 +44,7 @@ public final class CalciteLogicSchemaFactory {
             }
         }
     }
-    
+
     /**
      * Create schema.
      *
@@ -59,3 +59,4 @@ public final class CalciteLogicSchemaFactory {
         return schemas.get(name).create(executor);
     }
 }
+

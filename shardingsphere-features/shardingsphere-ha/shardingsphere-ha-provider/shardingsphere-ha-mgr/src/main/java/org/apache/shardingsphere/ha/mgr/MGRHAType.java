@@ -29,6 +29,7 @@ import org.apache.shardingsphere.ha.spi.HAType;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
+import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -123,20 +124,24 @@ public final class MGRHAType implements HAType {
     }
     
     @Override
-    public void updatePrimaryDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
+    public void updatePrimaryDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames,
+                                        final String groupName, final String primaryDataSourceName) {
         Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
         if (!disabledDataSourceNames.isEmpty()) {
             activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
         }
-        String newPrimaryDataSource = determinePrimaryDataSource(activeDataSourceMap);
-        if (newPrimaryDataSource.isEmpty()) {
-            return;
+        if (null == primaryDataSourceName || primaryDataSourceName.equals(oldPrimaryDataSource)) {
+            String newPrimaryDataSource = determinePrimaryDataSource(activeDataSourceMap);
+            if (newPrimaryDataSource.isEmpty()) {
+                return;
+            }
+            if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
+                oldPrimaryDataSource = newPrimaryDataSource;
+                ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceEvent(schemaName, groupName, newPrimaryDataSource));
+            }
+        } else {
+            oldPrimaryDataSource = primaryDataSourceName;
         }
-        // TODO post primary datasource event
-//        if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
-//             ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceUpdateEvent(schemaName, newPrimaryDataSource, newPrimaryDataSource));
-//        }
-        oldPrimaryDataSource = newPrimaryDataSource;
     }
     
     private String determinePrimaryDataSource(final Map<String, DataSource> dataSourceMap) {
@@ -263,13 +268,14 @@ public final class MGRHAType implements HAType {
     }
     
     @Override
-    public void startPeriodicalUpdate(final Map<String, DataSource> dataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames) {
+    public void startPeriodicalUpdate(final Map<String, DataSource> dataSourceMap, final String schemaName, final Collection<String> disabledDataSourceNames,
+                                      final String groupName, final String primaryDataSourceName) {
         if (null == coordinatorRegistryCenter) {
             ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("zkServerLists"), "mgr-elasticjob");
             coordinatorRegistryCenter = new ZookeeperRegistryCenter(zkConfig);
             coordinatorRegistryCenter.init();
         }
-        scheduleJobBootstrap = new ScheduleJobBootstrap(coordinatorRegistryCenter, new MGRPeriodicalJob(this, dataSourceMap, schemaName, disabledDataSourceNames),
+        scheduleJobBootstrap = new ScheduleJobBootstrap(coordinatorRegistryCenter, new MGRPeriodicalJob(this, dataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName),
                 JobConfiguration.newBuilder("MGRPeriodicalJob", 1).cron(props.getProperty("keepAliveCron")).build());
         scheduleJobBootstrap.schedule();
     }

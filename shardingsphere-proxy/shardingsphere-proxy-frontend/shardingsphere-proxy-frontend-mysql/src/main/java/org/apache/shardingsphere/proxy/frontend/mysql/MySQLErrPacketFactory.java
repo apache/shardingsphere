@@ -28,6 +28,8 @@ import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.LockWaitTimeoutException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.proxy.backend.exception.ResourceInUsedException;
+import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
@@ -109,6 +111,12 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof LockWaitTimeoutException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_LOCKING_SERVICE_TIMEOUT, ((LockWaitTimeoutException) cause).getTimeoutMilliseconds());
+        }
+        if (cause instanceof ResourceNotExistedException) {
+            return new MySQLErrPacket(1, CommonErrorCode.RESOURCE_NOT_EXIST, cause.getMessage());
+        }
+        if (cause instanceof ResourceInUsedException) {
+            return new MySQLErrPacket(1, CommonErrorCode.RESOURCE_IN_USED, cause.getMessage());
         }
         return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }
