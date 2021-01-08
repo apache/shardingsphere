@@ -73,9 +73,9 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         Set<String> useResources = new HashSet<>();
         for (ShardingSphereRule each : ruleConfig) {
             if (each instanceof DataSourceContainedRule) {
-                useResources = getResouces((DataSourceContainedRule) each);
+                useResources = getResources((DataSourceContainedRule) each);
             } else if (each instanceof DataNodeContainedRule) {
-                useResources = getResouces((DataNodeContainedRule) each);
+                useResources = getResources((DataNodeContainedRule) each);
             }
         }
         Collection<String> conflictResources = new LinkedList<>();
@@ -89,7 +89,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         }
     }
 
-    private Set<String> getResouces(final DataSourceContainedRule rule) {
+    private Set<String> getResources(final DataSourceContainedRule rule) {
         Set<String> result = new HashSet<>();
         for (Collection<String> each : rule.getDataSourceMapper().values()) {
             result.addAll(each);
@@ -97,7 +97,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         return result;
     }
 
-    private Set<String> getResouces(final DataNodeContainedRule rule) {
+    private Set<String> getResources(final DataNodeContainedRule rule) {
         Set<String> result = new HashSet<>();
         for (Collection<DataNode> each : rule.getAllDataNodes().values()) {
             result.addAll(each.stream().map(DataNode::getDataSourceName).collect(Collectors.toList()));
