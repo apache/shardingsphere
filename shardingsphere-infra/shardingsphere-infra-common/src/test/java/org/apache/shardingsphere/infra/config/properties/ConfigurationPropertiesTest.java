@@ -39,7 +39,6 @@ public final class ConfigurationPropertiesTest {
         props.setProperty(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN.getKey(), Boolean.FALSE.toString());
         props.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD.getKey(), "20");
         props.setProperty(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE.getKey(), "XA");
-        props.setProperty(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED.getKey(), Boolean.TRUE.toString());
         props.setProperty(ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey(), Boolean.TRUE.toString());
         props.setProperty(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED.getKey(), Boolean.TRUE.toString());
         ConfigurationProperties actual = new ConfigurationProperties(props);
@@ -51,7 +50,6 @@ public final class ConfigurationPropertiesTest {
         assertFalse(actual.getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE), is("XA"));
-        assertTrue(actual.getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED));
         assertTrue(actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
         assertTrue(actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED));
     }
@@ -67,7 +65,6 @@ public final class ConfigurationPropertiesTest {
         assertTrue(actual.getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(128));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_TRANSACTION_TYPE), is("LOCAL"));
-        assertFalse(actual.getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED));
         assertFalse(actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
         assertFalse(actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED));
     }

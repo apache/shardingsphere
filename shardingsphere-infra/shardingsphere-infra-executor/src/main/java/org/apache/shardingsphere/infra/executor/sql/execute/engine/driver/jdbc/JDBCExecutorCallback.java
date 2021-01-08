@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
-import org.apache.shardingsphere.infra.executor.sql.hook.SPISQLExecutionHook;
-import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.DatabaseMetaData;
@@ -73,16 +71,10 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
      */
     private T execute(final JDBCExecutionUnit jdbcExecutionUnit, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
         SQLExecutorExceptionHandler.setExceptionThrown(isExceptionThrown);
-        DataSourceMetaData dataSourceMetaData = getDataSourceMetaData(jdbcExecutionUnit.getStorageResource().getConnection().getMetaData());
-        SQLExecutionHook sqlExecutionHook = new SPISQLExecutionHook();
         try {
             SQLUnit sqlUnit = jdbcExecutionUnit.getExecutionUnit().getSqlUnit();
-            sqlExecutionHook.start(jdbcExecutionUnit.getExecutionUnit().getDataSourceName(), sqlUnit.getSql(), sqlUnit.getParameters(), dataSourceMetaData, isTrunkThread, dataMap);
-            T result = executeSQL(sqlUnit.getSql(), jdbcExecutionUnit.getStorageResource(), jdbcExecutionUnit.getConnectionMode());
-            sqlExecutionHook.finishSuccess();
-            return result;
+            return executeSQL(sqlUnit.getSql(), jdbcExecutionUnit.getStorageResource(), jdbcExecutionUnit.getConnectionMode());
         } catch (final SQLException ex) {
-            sqlExecutionHook.finishFailure(ex);
             SQLExecutorExceptionHandler.handleException(ex);
             return isTrunkThread ? getSaneResult(sqlStatement) : null;
         }

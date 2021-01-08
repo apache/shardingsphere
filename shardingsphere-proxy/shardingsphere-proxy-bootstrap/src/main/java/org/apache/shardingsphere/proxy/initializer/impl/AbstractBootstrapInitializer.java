@@ -32,7 +32,6 @@ import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
@@ -61,7 +60,6 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         TransactionContexts transactionContexts = decorateTransactionContexts(createTransactionContexts(metaDataContexts), xaTransactionMangerType);
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
-        initOpenTracing();
         setDatabaseServerInfo();
         initLockContext();
         initScalingWorker(yamlConfig);
@@ -99,12 +97,6 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
             transactionManagerEngines.put(each, engine);
         }
         return new StandardTransactionContexts(transactionManagerEngines);
-    }
-    
-    private void initOpenTracing() {
-        if (ProxyContext.getInstance().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
-            OpenTracingTracer.init();
-        }
     }
     
     private void setDatabaseServerInfo() {
