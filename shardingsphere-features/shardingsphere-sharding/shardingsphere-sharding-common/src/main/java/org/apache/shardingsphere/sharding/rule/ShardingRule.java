@@ -80,7 +80,7 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
     private final Collection<BindingTableRule> bindingTableRules;
     
     private final Collection<String> broadcastTables;
-
+    
     private final Map<String, SingleTableRule> singleTableRules;
     
     @Getter(AccessLevel.NONE)
