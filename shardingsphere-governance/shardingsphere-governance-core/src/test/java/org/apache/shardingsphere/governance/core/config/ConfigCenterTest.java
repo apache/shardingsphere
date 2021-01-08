@@ -511,7 +511,7 @@ public final class ConfigCenterTest {
         RuleConfigurationsPersistEvent event = new RuleConfigurationsPersistEvent("sharding_db", createRuleConfigurations());
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
-        verify(configurationRepository).persist(startsWith("/metadata/sharding_db/rule/cache"), anyString());
+        verify(configurationRepository).persist(startsWith("/metadata/sharding_db/rule"), anyString());
     }
     
     @Test
