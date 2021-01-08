@@ -87,6 +87,18 @@ public final class TableExtractor {
         }
     }
     
+    /**
+     * Extract tables with from clause.
+     *
+     * @param selectStatement select statement
+     */
+    public Collection<SimpleTableSegment> extractTablesWithFromClause(final SelectStatement selectStatement) {
+        if (null != selectStatement.getFrom()) {
+            extractTablesFromTableSegment(selectStatement.getFrom());
+        }
+        return rewriteTables;
+    }
+    
     private void extractTablesFromTableSegment(final TableSegment tableSegment) {
         if (tableSegment instanceof SimpleTableSegment) {
             tableContext.add(tableSegment);

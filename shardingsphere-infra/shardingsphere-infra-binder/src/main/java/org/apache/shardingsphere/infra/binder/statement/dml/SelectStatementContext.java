@@ -73,7 +73,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     public SelectStatementContext(final SelectStatement sqlStatement, final GroupByContext groupByContext,
                                   final OrderByContext orderByContext, final ProjectionsContext projectionsContext, final PaginationContext paginationContext) {
         super(sqlStatement);
-        tablesContext = new TablesContext(getSimpleTableSegments());
+        tablesContext = new TablesContext(getAllSimpleTableSegments());
         this.groupByContext = groupByContext;
         this.orderByContext = orderByContext;
         this.projectionsContext = projectionsContext;
@@ -83,10 +83,10 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     public SelectStatementContext(final ShardingSphereSchema schema, final List<Object> parameters, final SelectStatement sqlStatement) {
         super(sqlStatement);
-        tablesContext = new TablesContext(getSimpleTableSegments());
+        tablesContext = new TablesContext(getAllSimpleTableSegments());
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
-        projectionsContext = new ProjectionsContextEngine(schema).createProjectionsContext(getSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
+        projectionsContext = new ProjectionsContextEngine(schema).createProjectionsContext(getFromSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         containsSubquery = containsSubquery();
     }
@@ -187,12 +187,22 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     /**
-     * get tables.
-     * @return tables.
+     * Get all tables.
+     * 
+     * @return all tables
      */
-    public Collection<SimpleTableSegment> getSimpleTableSegments() {
+    public Collection<SimpleTableSegment> getAllSimpleTableSegments() {
         TableExtractor tableExtractor = new TableExtractor();
         tableExtractor.extractTablesFromSelect(getSqlStatement());
         return tableExtractor.getRewriteTables();
+    }
+    
+    /**
+     * Get tables with from clause.
+     *
+     * @return tables with from clause
+     */
+    public Collection<SimpleTableSegment> getFromSimpleTableSegments() {
+        return new TableExtractor().extractTablesWithFromClause(getSqlStatement());
     }
 }
