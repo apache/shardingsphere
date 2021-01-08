@@ -18,5 +18,4 @@
 package org.apache.shardingsphere.agent.core.plugin.interceptor;
 
 public final class MockClassLoader extends ClassLoader {
-
 }

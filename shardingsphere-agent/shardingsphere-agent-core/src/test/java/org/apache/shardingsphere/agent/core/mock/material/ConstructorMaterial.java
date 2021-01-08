@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.mock;
+package org.apache.shardingsphere.agent.core.mock.material;
 
 import java.util.List;
+import lombok.NoArgsConstructor;
 
 /**
  * Have to redefine this class dynamic, so never add `final` modifier.
  */
+@NoArgsConstructor
 public class ConstructorMaterial {
     
-    public ConstructorMaterial() {
-    
+    public ConstructorMaterial(final List<String> queues) {
+        queues.add("constructor");
     }
-
-    public ConstructorMaterial(final List<String> queue) {
-        queue.add("constructor");
-    }
-    
 }

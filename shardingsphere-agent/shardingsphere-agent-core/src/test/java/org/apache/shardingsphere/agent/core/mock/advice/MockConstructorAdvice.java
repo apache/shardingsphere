@@ -15,36 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.mock;
+package org.apache.shardingsphere.agent.core.mock.advice;
 
-import java.io.IOException;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
+import org.apache.shardingsphere.agent.api.advice.TargetObject;
+
 import java.util.List;
 
-/**
- * Have to redefine this class dynamic, so never add `final` modifier.
- */
-public class InstanceMaterial {
+@RequiredArgsConstructor
+public final class MockConstructorAdvice implements ConstructorAdvice {
     
-    /**
-     * Mock method for testing.
-     *
-     * @param queue collector
-     * @return result
-     */
-    public String mock(final List<String> queue) {
-        queue.add("on");
-        return "invocation";
+    private final List<String> queues;
+    
+    public MockConstructorAdvice() {
+        this(null);
     }
     
-    /**
-     * Mock method for testing with exception.
-     *
-     * @param queue collector
-     * @return result
-     * @throws IOException io exception
-     */
-    public String mockWithException(final List<String> queue) throws IOException {
-        throw new IOException();
+    @Override
+    @SuppressWarnings("unchecked")
+    public void onConstructor(final TargetObject target, final Object[] args) {
+        if (null != args && args.length > 0) {
+            List<String> list = Optional.ofNullable(queues).orElse((List<String>) args[0]);
+            list.add("on constructor");
+        }
     }
-    
 }

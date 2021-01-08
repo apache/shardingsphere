@@ -29,8 +29,8 @@ import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.TargetObject;
 import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
-import org.apache.shardingsphere.agent.core.mock.ConstructorMaterial;
-import org.apache.shardingsphere.agent.core.mock.advice.MockConstructor;
+import org.apache.shardingsphere.agent.core.mock.material.ConstructorMaterial;
+import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -46,6 +46,8 @@ public final class ConstructorMethodInterceptorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
+    private static final String CLASS_PATH = "org.apache.shardingsphere.agent.core.mock.material.ConstructorMaterial";
+    
     private static final List<String> QUEUE = new LinkedList<>();
     
     private static ResettableClassFileTransformer byteBuddyAgent;
@@ -58,14 +60,14 @@ public final class ConstructorMethodInterceptorTest {
                 .ignore(ElementMatchers.isSynthetic())
                 .with(new LoggingListener())
                 .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
-                .type(ElementMatchers.named("org.apache.shardingsphere.agent.core.mock.ConstructorMaterial"))
+                .type(ElementMatchers.named(CLASS_PATH))
                 .transform((builder, typeDescription, classLoader, module) -> {
-                    if ("org.apache.shardingsphere.agent.core.mock.ConstructorMaterial".equals(typeDescription.getTypeName())) {
+                    if (CLASS_PATH.equals(typeDescription.getTypeName())) {
                         return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
                                 .implement(TargetObject.class)
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA))
                                 .constructor(ElementMatchers.isConstructor())
-                                .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(new ConstructorMethodInterceptor(new MockConstructor(QUEUE)))));
+                                .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(new ConstructorMethodInterceptor(new MockConstructorAdvice(QUEUE)))));
                     }
                     return builder;
                 })
@@ -74,6 +76,7 @@ public final class ConstructorMethodInterceptorTest {
     }
     
     @Test
+    @SuppressWarnings("all")
     public void assertNoArgConstructor() {
         Object material = new ConstructorMaterial();
         assertTrue(material instanceof TargetObject);
