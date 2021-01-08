@@ -131,7 +131,8 @@ public final class ConfigCenter {
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationsPersistEvent event) {
-        cacheRuleConfigurations(event.getSchemaName(), event.getRuleConfigurations());
+        //TODO
+        persistRuleConfigurations(event.getSchemaName(), event.getRuleConfigurations());
     }
     
     /**
