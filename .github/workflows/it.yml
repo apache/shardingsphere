@@ -43,7 +43,7 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs
       - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.docker -Dit.scenarios=db
+        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.docker -Dit.scenarios=proxy -Dit.scenarios=db
   
   mysql-proxy-tbl:
     name: MySQL-Proxy with TBL scenario
@@ -64,7 +64,7 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs
       - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.docker -Dit.scenarios=tbl
+        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.docker -Dit.scenarios=proxy -Dit.scenarios=tbl
   
   mysql-proxy-repilca-query:
     name: MySQL-Proxy with REPLICA-QUERY scenario
@@ -85,7 +85,7 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs
       - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.docker -Dit.scenarios=repilca_query
+        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.docker -Dit.scenarios=proxy -Dit.scenarios=repilca_query
   
   mysql-proxy-dbtbl-with-proxy-repilca-query:
     name: MySQL-Proxy with DBTBL-WITH-REPLICA-QUERY scenario
@@ -104,6 +104,6 @@ jobs:
         with:
           java-version: 8
       - name: Build Project
-        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs        
+        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs
       - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.docker -Dit.scenarios=dbtbl_with_repilca_query
+        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.docker -Dit.scenarios=proxy -Dit.scenarios=dbtbl_with_repilca_query
