@@ -43,12 +43,15 @@ import java.util.Optional;
  */
 public final class CalciteLogicTableGenerator {
     
+    private final String name;
+    
     private final TableMetaData tableMetaData;
     
     private final RelProtoDataType relProtoDataType;
     
-    public CalciteLogicTableGenerator(final Map<String, DataSource> dataSources, final Map<String, Collection<String>> dataSourceRules,
+    public CalciteLogicTableGenerator(final String name, final Map<String, DataSource> dataSources, final Map<String, Collection<String>> dataSourceRules,
                                       final Collection<DataNode> tableDataNodes, final DatabaseType databaseType) throws SQLException {
+        this.name = name;
         tableMetaData = createTableMetaData(dataSources, dataSourceRules, tableDataNodes, databaseType);
         relProtoDataType = createRelDataType();
     }
@@ -87,6 +90,6 @@ public final class CalciteLogicTableGenerator {
      * @return table
      */
     public Table create(final CalciteRowExecutor executor) {
-        return new CalciteFilterableTable(tableMetaData, relProtoDataType, executor);
+        return new CalciteFilterableTable(name, tableMetaData, relProtoDataType, executor);
     }
 }
