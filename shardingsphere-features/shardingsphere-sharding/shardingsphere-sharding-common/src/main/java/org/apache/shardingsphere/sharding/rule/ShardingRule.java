@@ -20,12 +20,16 @@ package org.apache.shardingsphere.sharding.rule;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import com.google.common.eventbus.Subscribe;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.event.CreateTableEvent;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.event.DropTableEvent;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -80,7 +84,7 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
     private final Collection<BindingTableRule> bindingTableRules;
     
     private final Collection<String> broadcastTables;
-
+    
     private final Map<String, SingleTableRule> singleTableRules;
     
     @Getter(AccessLevel.NONE)
@@ -106,6 +110,7 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
+        ShardingSphereEventBus.getInstance().register(this);
     }
     
     public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
@@ -412,6 +417,32 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
         Map<String, String> result = new LinkedHashMap<>();
         findBindingTableRule(logicTable).ifPresent(bindingTableRule -> result.putAll(bindingTableRule.getLogicAndActualTables(dataSourceName, logicTable, actualTable, availableLogicBindingTables)));
         return result;
+    }
+    
+    /**
+     * Add single table.
+     * 
+     * @param event create table event
+     */
+    @Subscribe
+    public void createSingleTable(final CreateTableEvent event) {
+        if (!isConfiguredTable(event.getTableName())) {
+            singleTableRules.put(event.getTableName(), new SingleTableRule(event.getTableName(), event.getDataSourceName()));
+        }
+    }
+    
+    private boolean isConfiguredTable(final String tableName) {
+        return findTableRule(tableName).isPresent() || findBindingTableRule(tableName).isPresent() || broadcastTables.contains(tableName) || singleTableRules.containsKey(tableName);
+    }
+    
+    /**
+     * Drop single table.
+     *
+     * @param event drop table event
+     */
+    @Subscribe
+    public void dropSingleTable(final DropTableEvent event) {
+        singleTableRules.remove(event.getTableName());
     }
     
     @Override
