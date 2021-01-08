@@ -25,8 +25,10 @@ import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ProjectableFilterableTable;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
 import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowEnumerator;
+import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
+import org.apache.shardingsphere.infra.optimize.schema.table.execute.CalciteExecutionContextGenerator;
+import org.apache.shardingsphere.infra.optimize.schema.table.execute.CalciteExecutionSQLGenerator;
 
 import java.util.List;
 
@@ -36,19 +38,20 @@ import java.util.List;
  */
 public final class CalciteFilterableTable extends AbstractCalciteTable implements ProjectableFilterableTable {
     
-    public CalciteFilterableTable(final TableMetaData tableMetaData, final RelProtoDataType relProtoDataType,
+    public CalciteFilterableTable(final String name, final TableMetaData tableMetaData, final RelProtoDataType relProtoDataType,
                                   final CalciteRowExecutor executor) {
-        super(tableMetaData, relProtoDataType, executor);
+        super(name, tableMetaData, relProtoDataType, executor);
     }
     
     @Override
     public Enumerable<Object[]> scan(final DataContext root, final List<RexNode> filters, final int[] projects) {
-        // TODO : use projects and filters
         return new AbstractEnumerable<Object[]>() {
 
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new CalciteRowEnumerator(getExecutor().execute());
+                CalciteExecutionContextGenerator generator =
+                        new CalciteExecutionContextGenerator(getName(), getExecutor().getInitialExecutionContext(), new CalciteExecutionSQLGenerator(root, filters, projects));
+                return new CalciteRowEnumerator(getExecutor().execute(generator.generate()));
             }
         };
     }
