@@ -85,7 +85,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
             }
         }
         if (!conflictResources.isEmpty()) {
-            throw new ResourceInUsedException(notExistedResourceNames);
+            throw new ResourceInUsedException(conflictResources);
         }
     }
 
