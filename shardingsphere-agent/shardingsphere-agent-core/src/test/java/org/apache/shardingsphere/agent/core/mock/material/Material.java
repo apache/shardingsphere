@@ -15,66 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.mock;
+package org.apache.shardingsphere.agent.core.mock.material;
 
-import java.io.IOException;
 import java.util.List;
+import lombok.NoArgsConstructor;
 
 /**
  * Have to redefine this class dynamic, so never add `final` modifier.
  */
+@NoArgsConstructor
 public class Material {
     
-    public Material() {
-    
-    }
-    
-    public Material(final List<String> queue) {
-        queue.add("constructor");
+    public Material(final List<String> queues) {
+        queues.add("constructor");
     }
     
     /**
      * Mock method for testing.
      *
-     * @param queue collector
+     * @param queues queues
      * @return result
      */
-    public String mock(final List<String> queue) {
-        queue.add("on");
+    public String mock(final List<String> queues) {
+        queues.add("on");
         return "invocation";
-    }
-    
-    /**
-     * Mock method for testing with exception.
-     *
-     * @param queue collector
-     * @return result
-     * @throws IOException io exception
-     */
-    public String mockWithException(final List<String> queue) throws IOException {
-        throw new IOException();
     }
     
     /**
      * Mock static method for testing.
      *
-     * @param queue collector
+     * @param queues queues
      * @return result
      */
-    public static String staticMock(final List<String> queue) {
-        queue.add("on");
+    public static String staticMock(final List<String> queues) {
+        queues.add("on");
         return "static invocation";
     }
-    
-    /**
-     * Mock static method for testing with exception.
-     *
-     * @param queue collector
-     * @return result
-     * @throws IOException io exception
-     */
-    public static String staticMockWithException(final List<String> queue) throws IOException {
-        throw new IOException();
-    }
-    
 }

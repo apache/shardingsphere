@@ -15,34 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.mock.advice;
+package org.apache.shardingsphere.agent.core.mock.material;
 
-import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
-
+import java.io.IOException;
 import java.util.List;
 
-public final class MockConstructor implements ConstructorAdvice {
-    
-    private final List<String> queue;
-    
-    public MockConstructor() {
-        this(null);
+/**
+ * Have to redefine this class dynamic, so never add `final` modifier.
+ */
+public class StaticMaterial {
+
+    /**
+     * Mock static method for testing.
+     *
+     * @param queues queues
+     * @return result
+     */
+    public static String staticMock(final List<String> queues) {
+        queues.add("on");
+        return "static invocation";
     }
     
-    public MockConstructor(final List<String> queue) {
-        this.queue = queue;
+    /**
+     * Mock static method for testing with exception.
+     *
+     * @param queues queues
+     * @throws IOException IO Exception
+     */
+    public static void staticMockWithException(final List<String> queues) throws IOException {
+        throw new IOException();
     }
-    
-    @Override
-    public void onConstructor(final TargetObject target, final Object[] args) {
-        final List<String> list;
-        if (queue == null) {
-            list = (List<String>) args[0];
-        } else {
-            list = queue;
-        }
-        list.add("on constructor");
-    }
-    
 }

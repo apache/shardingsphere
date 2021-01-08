@@ -23,7 +23,7 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.pool.TypePool;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
-import org.apache.shardingsphere.agent.core.mock.advice.MockConstructor;
+import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.junit.BeforeClass;
@@ -47,18 +47,19 @@ public final class PluginLoaderTest {
     
     private static final TypeDescription FAKE = POOL.describe("java.lang.String").resolve();
     
-    private static final TypeDescription MATERIAL = POOL.describe("org.apache.shardingsphere.agent.core.mock.Material").resolve();
+    private static final TypeDescription MATERIAL = POOL.describe("org.apache.shardingsphere.agent.core.mock.material.Material").resolve();
     
     @BeforeClass
     @SneakyThrows
+    @SuppressWarnings("unchecked")
     public static void setup() {
         FieldReader objectPoolReader = new FieldReader(PLUGIN_LOADER, PLUGIN_LOADER.getClass().getDeclaredField("objectPool"));
         Map<String, Object> objectPool = (Map<String, Object>) objectPoolReader.read();
-        objectPool.put(MockConstructor.class.getTypeName(), new MockConstructor());
+        objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
         objectPool.put(MockMethodAroundAdvice.class.getTypeName(), new MockMethodAroundAdvice());
         objectPool.put(MockStaticMethodAroundAdvice.class.getTypeName(), new MockStaticMethodAroundAdvice());
         Map<String, PluginInterceptorPoint> interceptorPointMap = Maps.newHashMap();
-        PluginInterceptorPoint interceptorPoint = PluginInterceptorPoint.intercept("org.apache.shardingsphere.agent.core.mock.Material")
+        PluginInterceptorPoint interceptorPoint = PluginInterceptorPoint.intercept("org.apache.shardingsphere.agent.core.mock.material.Material")
                 .aroundInstanceMethod(ElementMatchers.named("mock"))
                 .implement(MockMethodAroundAdvice.class.getTypeName())
                 .build()
@@ -66,7 +67,7 @@ public final class PluginLoaderTest {
                 .implement(MockStaticMethodAroundAdvice.class.getTypeName())
                 .build()
                 .onConstructor(ElementMatchers.takesArguments(1))
-                .implement(MockConstructor.class.getTypeName())
+                .implement(MockConstructorAdvice.class.getTypeName())
                 .build()
                 .install();
         interceptorPointMap.put(interceptorPoint.getClassNameOfTarget(), interceptorPoint);
@@ -89,5 +90,4 @@ public final class PluginLoaderTest {
     public void assertLoadPluginInterceptorPoint() {
         assertNotNull(PLUGIN_LOADER.loadPluginInterceptorPoint(MATERIAL));
     }
-    
 }

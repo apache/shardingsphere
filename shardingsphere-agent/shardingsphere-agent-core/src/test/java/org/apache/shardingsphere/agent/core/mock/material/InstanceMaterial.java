@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.mock;
+package org.apache.shardingsphere.agent.core.mock.material;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,28 +23,26 @@ import java.util.List;
 /**
  * Have to redefine this class dynamic, so never add `final` modifier.
  */
-public class StaticMaterial {
-
+public class InstanceMaterial {
+    
     /**
-     * Mock static method for testing.
+     * Mock method for testing.
      *
-     * @param queue collector
+     * @param queues queues
      * @return result
      */
-    public static String staticMock(final List<String> queue) {
-        queue.add("on");
-        return "static invocation";
+    public String mock(final List<String> queues) {
+        queues.add("on");
+        return "invocation";
     }
     
     /**
-     * Mock static method for testing with exception.
+     * Mock method for testing with exception.
      *
-     * @param queue collector
-     * @return result
-     * @throws IOException io exception
+     * @param queues queues
+     * @throws IOException IO Exception
      */
-    public static String staticMockWithException(final List<String> queue) throws IOException {
+    public void mockWithException(final List<String> queues) throws IOException {
         throw new IOException();
     }
-    
 }
