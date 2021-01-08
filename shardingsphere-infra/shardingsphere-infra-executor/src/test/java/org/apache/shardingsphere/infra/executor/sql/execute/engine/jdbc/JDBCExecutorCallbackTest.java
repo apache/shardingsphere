@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.jdbc;
 
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
@@ -31,15 +32,20 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class JDBCExecutorCallbackTest {
@@ -47,16 +53,26 @@ public final class JDBCExecutorCallbackTest {
     @Mock
     private PreparedStatement preparedStatement;
     
+    @Mock
+    private Connection connection;
+    
+    @Mock
+    private DatabaseMetaData metaData;
+    
     private Collection<JDBCExecutionUnit> units;
     
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
+        when(preparedStatement.getConnection()).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(metaData);
+        when(metaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
         units = Collections.singletonList(
                 new JDBCExecutionUnit(new ExecutionUnit("ds", new SQLUnit("SELECT now()", Collections.emptyList())), ConnectionMode.CONNECTION_STRICTLY, preparedStatement));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
-    public void assertExecute() throws SQLException {
+    public void assertExecute() throws SQLException, NoSuchFieldException, IllegalAccessException {
         JDBCExecutorCallback<?> jdbcExecutorCallback = new JDBCExecutorCallback<Integer>(DatabaseTypeRegistry.getActualDatabaseType("MySQL"), mock(SelectStatement.class), true) {
             
             @Override
@@ -69,7 +85,13 @@ public final class JDBCExecutorCallbackTest {
                 return 0;
             }
         };
-        Collection<?> result = jdbcExecutorCallback.execute(units, true, null);
-        assertThat(result.size(), is(1));
+        Field field = JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA");
+        field.setAccessible(true);
+        Map<String, DataSourceMetaData> cachedDataSourceMetaData = (Map<String, DataSourceMetaData>) field.get(jdbcExecutorCallback);
+        assertThat(cachedDataSourceMetaData.size(), is(0));
+        jdbcExecutorCallback.execute(units, true, null);
+        assertThat(cachedDataSourceMetaData.size(), is(1));
+        jdbcExecutorCallback.execute(units, true, null);
+        assertThat(cachedDataSourceMetaData.size(), is(1));
     }
 }
