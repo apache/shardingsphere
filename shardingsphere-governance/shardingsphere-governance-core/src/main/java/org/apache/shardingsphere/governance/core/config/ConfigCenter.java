@@ -25,6 +25,7 @@ import org.apache.shardingsphere.governance.core.config.checker.RuleConfiguratio
 import org.apache.shardingsphere.governance.core.config.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
@@ -74,7 +75,7 @@ public final class ConfigCenter {
     public ConfigCenter(final ConfigurationRepository repository) {
         node = new ConfigCenterNode();
         this.repository = repository;
-        configCacheManager = new ConfigCacheManager(repository);
+        configCacheManager = new ConfigCacheManager(repository, node);
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -171,6 +172,20 @@ public final class ConfigCenter {
     public synchronized void renew(final SwitchRuleConfigurationEvent event) {
         persistRuleConfigurations(event.getSchemaName(), loadCachedRuleConfigurations(event.getSchemaName(), event.getRuleConfigurationCacheId()));
         configCacheManager.deleteCache(node.getRulePath(event.getSchemaName()), event.getRuleConfigurationCacheId());
+    }
+    
+    /**
+     * Rule configuration cached.
+     * 
+     * @param event rule configuration cached event
+     */
+    @Subscribe
+    public synchronized void renew(final RuleConfigurationCachedEvent event) {
+        RuleConfigurationsAlteredEvent ruleConfigurationsAlteredEvent = new RuleConfigurationsAlteredEvent(event.getSchemaName(),
+                repository.get(node.getDataSourcePath(event.getSchemaName())),
+                repository.get(node.getRulePath(event.getSchemaName())),
+                configCacheManager.loadCache(node.getRulePath(event.getSchemaName()), event.getCacheId()), event.getCacheId());
+        ShardingSphereEventBus.getInstance().post(ruleConfigurationsAlteredEvent);
     }
     
     private Collection<RuleConfiguration> loadCachedRuleConfigurations(final String schemaName, final String ruleConfigurationCacheId) {
