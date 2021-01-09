@@ -39,7 +39,7 @@ services:
     ports:
       - "33070:3307"
     links:
-      - "mysql:db.mysql"
+      - "mysql:mysql.db.host"
 #      - "zookeeper:zk"
     volumes:
       - ./proxy/conf:/opt/shardingsphere-proxy/conf

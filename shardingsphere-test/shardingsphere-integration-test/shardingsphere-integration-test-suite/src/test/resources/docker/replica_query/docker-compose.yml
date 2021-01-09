@@ -39,7 +39,7 @@ services:
     ports:
       - "33090:3307"
     links:
-      - "mysql:replica-query.mysql"
+      - "mysql:mysql.replica-query.host"
 #      - "zookeeper:zk"
     volumes:
       - ./proxy/conf:/opt/shardingsphere-proxy/conf
