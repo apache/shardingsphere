@@ -28,9 +28,9 @@ import java.util.Properties;
 @RequiredArgsConstructor
 public enum IntegrateTestEnvironmentType {
     
-    NATIVE("native", "integrate/env-native.properties"),
+    NATIVE("native", "integrate/env.properties"),
     
-    DOCKER("docker", "integrate/env-docker.properties");
+    DOCKER("docker", "integrate/env.properties");
     
     private final String profileName;
     
