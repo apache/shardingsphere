@@ -62,7 +62,7 @@ public final class DataSourcesQueryBackendHandler extends SchemaRequiredBackendH
     @Override
     public ResponseHeader execute(final String schemaName, final ShowResourcesStatement sqlStatement) {
         dataSourceParameterMap = DataSourceParameterConverter.getDataSourceParameterMap(
-                DataSourceConverter.getDataSourceConfigurationMap(ProxyContext.getInstance().getMetaData(this.schema).getResource().getDataSources()));
+                DataSourceConverter.getDataSourceConfigurationMap(ProxyContext.getInstance().getMetaData(schema).getResource().getDataSources()));
         dataSourceNames = dataSourceParameterMap.keySet().iterator();
         return new QueryResponseHeader(generateResponseHeader());
     }
