@@ -45,8 +45,6 @@ public final class IntegrateTestEnvironment {
     
     private static final IntegrateTestEnvironment INSTANCE = new IntegrateTestEnvironment();
     
-    private final String activeProfile;
-
     private final Collection<String> adapters;
     
     private final boolean runAdditionalTestCases;
@@ -58,8 +56,7 @@ public final class IntegrateTestEnvironment {
     private final Map<String, DatabaseEnvironment> proxyEnvironments;
     
     private IntegrateTestEnvironment() {
-        activeProfile = loadProperties("integrate/profile.properties").getProperty("mode");
-        Properties envProps = IntegrateTestEnvironmentType.valueFromProfileName(activeProfile).loadProperties();
+        Properties envProps = loadProperties();
         adapters = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.adapters"));
         runAdditionalTestCases = Boolean.parseBoolean(envProps.getProperty("it.run.additional.cases"));
         scenarios = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.scenarios"));
@@ -67,12 +64,16 @@ public final class IntegrateTestEnvironment {
         proxyEnvironments = createProxyEnvironments(envProps);
     }
     
-    private Properties loadProperties(final String fileName) {
+    @SuppressWarnings("AccessOfSystemProperties")
+    private Properties loadProperties() {
         Properties result = new Properties();
         try {
-            result.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream(fileName));
+            result.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream("integrate/env.properties"));
         } catch (final IOException ex) {
             throw new RuntimeException(ex);
+        }
+        for (String each : System.getProperties().stringPropertyNames()) {
+            result.setProperty(each, System.getProperty(each));
         }
         return result;
     }
