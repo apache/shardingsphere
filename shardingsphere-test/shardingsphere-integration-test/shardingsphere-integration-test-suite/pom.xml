@@ -79,19 +79,7 @@
     
     <profiles>
         <profile>
-            <id>it.native</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <it.mode>native</it.mode>
-            </properties>
-        </profile>
-        <profile>
             <id>it.docker</id>
-            <properties>
-                <it.mode>docker</it.mode>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
