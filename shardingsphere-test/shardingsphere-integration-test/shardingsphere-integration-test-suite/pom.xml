@@ -79,7 +79,7 @@
     
     <profiles>
         <profile>
-            <id>it.docker</id>
+            <id>it.env.docker</id>
             <build>
                 <plugins>
                     <plugin>
