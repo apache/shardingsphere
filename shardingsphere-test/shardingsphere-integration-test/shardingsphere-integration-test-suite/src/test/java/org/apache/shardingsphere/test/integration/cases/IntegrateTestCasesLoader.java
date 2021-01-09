@@ -70,7 +70,7 @@ public final class IntegrateTestCasesLoader {
     
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
     private Collection<IntegrateTestCaseContext> loadIntegrateTestCaseContexts(final SQLCommandType sqlCommandType) {
-        URL url = IntegrateTestCasesLoader.class.getClassLoader().getResource("integrate/cases/");
+        URL url = IntegrateTestCasesLoader.class.getClassLoader().getResource("cases/");
         Preconditions.checkNotNull(url, "Can not find integrate test cases.");
         return loadIntegrateTestCaseContexts(url, sqlCommandType);
     }
