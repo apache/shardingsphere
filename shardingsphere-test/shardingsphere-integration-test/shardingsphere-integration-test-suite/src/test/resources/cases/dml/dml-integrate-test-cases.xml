@@ -127,15 +127,15 @@
     <test-case sql="UPDATE t_order SET status = 'update' WHERE order_id = 1000 AND user_id = 10">
         <assertion expected-data-file="update.xml" />
     </test-case>
-
+    
     <test-case sql="UPDATE t_order SET status = 'update' WHERE (order_id = ? OR order_id = ?) AND user_id = ?">
         <assertion parameters="1000:int, 0:int, 10:int" expected-data-file="update.xml" />
     </test-case>
-
+    
     <test-case sql="update t_order set status = status where user_id = user_id AND order_id = 1000">
         <assertion expected-data-file="update_with_column_equal_column.xml" />
     </test-case>
-
+    
     <test-case sql="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status=?">
         <assertion parameters="1000:int, 10:int, init:String" expected-data-file="delete_with_sharding_value.xml" />
     </test-case>
