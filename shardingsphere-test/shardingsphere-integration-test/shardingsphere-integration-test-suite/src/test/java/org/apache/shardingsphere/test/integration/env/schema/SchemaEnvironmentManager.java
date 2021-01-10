@@ -69,6 +69,9 @@ public final class SchemaEnvironmentManager {
      * @throws JAXBException JAXB exception
      */
     public static void createDatabases() throws IOException, JAXBException {
+        if (isDockerEnvironment()) {
+            return;
+        }
         for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
             dropDatabases(each);
             createDatabases(each);
@@ -102,6 +105,9 @@ public final class SchemaEnvironmentManager {
      * @throws JAXBException JAXB exception
      */
     public static void dropDatabases() throws IOException, JAXBException {
+        if (isDockerEnvironment()) {
+            return;
+        }
         for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
             dropDatabases(each);
         }
@@ -143,6 +149,9 @@ public final class SchemaEnvironmentManager {
      * @throws IOException IO exception
      */
     public static void createTables() throws JAXBException, IOException {
+        if (isDockerEnvironment()) {
+            return;
+        }
         for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
             createTables(each);
         }
@@ -170,6 +179,9 @@ public final class SchemaEnvironmentManager {
      * @throws IOException IO exception
      */
     public static void dropTables() throws JAXBException, IOException {
+        if (isDockerEnvironment()) {
+            return;
+        }
         for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
             dropTables(each);
         }
@@ -188,6 +200,11 @@ public final class SchemaEnvironmentManager {
             DataSource dataSource = ActualDataSourceBuilder.build(each, databaseType);
             executeSQLScript(dataSource, schemaEnvironment.getTableDropSQLs());
         }
+    }
+    
+    @SuppressWarnings("AccessOfSystemProperties")
+    private static boolean isDockerEnvironment() {
+        return "docker".equals(System.getProperty("it.env"));
     }
     
     private static void executeSQLScript(final DataSource dataSource, final Collection<String> sqls) {

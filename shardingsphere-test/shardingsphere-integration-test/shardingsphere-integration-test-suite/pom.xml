@@ -80,6 +80,9 @@
     <profiles>
         <profile>
             <id>it.env.docker</id>
+            <properties>
+                <it.env>docker</it.env>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
