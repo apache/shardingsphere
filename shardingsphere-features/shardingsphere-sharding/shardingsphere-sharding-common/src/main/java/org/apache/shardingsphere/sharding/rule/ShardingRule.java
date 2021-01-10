@@ -52,6 +52,7 @@ import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -447,7 +448,10 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
     
     @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
-        return tableRules.stream().collect(Collectors.toMap(TableRule::getLogicTable, TableRule::getActualDataNodes, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        Map<String, Collection<DataNode>> result = new LinkedHashMap<>();
+        singleTableRules.forEach((key, value) -> result.put(key, Collections.singleton(new DataNode(value.getDataSourceName(), value.getTableName()))));
+        result.putAll(tableRules.stream().collect(Collectors.toMap(TableRule::getLogicTable, TableRule::getActualDataNodes, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+        return result;
     }
     
     @Override
