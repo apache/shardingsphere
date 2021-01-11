@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.agent.core.config.path;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.core.exception.ShardingSphereAgentException;
 
@@ -29,24 +31,25 @@ import java.net.URL;
 /**
  * Agent path builder.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class AgentPathBuilder {
     
     @Getter
-    private static File agentPath;
+    private static final File AGENT_PATH;
     
     @Getter
-    private static File pluginPath;
+    private static final File PLUGIN_PATH;
     
     static {
-        agentPath = buildAgentPath();
-        pluginPath = buildAgentPluginPath();
+        AGENT_PATH = buildAgentPath();
+        PLUGIN_PATH = buildAgentPluginPath();
     }
     
     private static File buildAgentPath() {
         String classResourcePath = String.join("", AgentPathBuilder.class.getName().replaceAll("\\.", "/"), ".class");
         URL resource = ClassLoader.getSystemClassLoader().getResource(classResourcePath);
-        if (resource != null) {
+        if (null != resource) {
             String url = resource.toString();
             log.debug("The beacon class location is {}.", url);
             int existFileInJarIndex = url.indexOf('!');
@@ -74,6 +77,6 @@ public final class AgentPathBuilder {
     }
     
     private static File buildAgentPluginPath() {
-        return new File(String.join("", agentPath.getPath(), "/plugins"));
+        return new File(String.join("", AGENT_PATH.getPath(), "/plugins"));
     }
 }

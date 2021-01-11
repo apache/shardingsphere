@@ -18,29 +18,27 @@
 
 package org.apache.shardingsphere.agent.core.plugin.interceptor;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
+import org.apache.shardingsphere.agent.api.advice.StaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
-import org.apache.shardingsphere.agent.api.advice.StaticMethodAroundAdvice;
-import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 
 /**
  * Proxy class for ByteBuddy to intercept methods of target and weave pre- and post-method around the target method.
  */
+@RequiredArgsConstructor
 @Slf4j
-public class StaticMethodAroundInterceptor {
+public final class StaticMethodAroundInterceptor {
     
     private final StaticMethodAroundAdvice staticMethodAroundAdvice;
-    
-    public StaticMethodAroundInterceptor(final StaticMethodAroundAdvice staticMethodAroundAdvice) {
-        this.staticMethodAroundAdvice = staticMethodAroundAdvice;
-    }
     
     /**
      * Only intercept static method.
