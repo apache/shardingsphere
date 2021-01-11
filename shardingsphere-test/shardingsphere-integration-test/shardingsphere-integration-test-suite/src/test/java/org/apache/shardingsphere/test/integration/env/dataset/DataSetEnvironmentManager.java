@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.env.dataset;
 
 import com.google.common.base.Joiner;
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -85,7 +84,6 @@ public final class DataSetEnvironmentManager {
      * @throws ParseException parse exception
      */
     public void fillData() throws SQLException, ParseException {
-        System.out.println("++++++++++++jdbc url++++++++++++++++" + ((HikariDataSource) actualDataSources.values().iterator().next()).getJdbcUrl());
         Map<DataNode, List<DataSetRow>> dataNodeListMap = getDataSetRowMap();
         List<Callable<Void>> fillDataTasks = new LinkedList<>();
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {
