@@ -92,32 +92,12 @@ public final class IntegrateTestEnvironment {
     }
     
     private DatabaseEnvironment createDatabaseEnvironment(final DatabaseType databaseType, final String scenario, final Properties scenarioProps) {
-        switch (databaseType.getName()) {
-            case "H2":
-                return new DatabaseEnvironment(databaseType, "", 0, "sa", "");
-            case "MySQL":
-                return new DatabaseEnvironment(databaseType, scenarioProps.getProperty(String.format("it.%s.mysql.host", scenario), "127.0.0.1"), 
-                        Integer.parseInt(scenarioProps.getProperty(String.format("it.%s.mysql.port", scenario), "3306")),
-                        scenarioProps.getProperty(String.format("it.%s.mysql.username", scenario), "root"), 
-                        scenarioProps.getProperty(String.format("it.%s.mysql.password", scenario), ""));
-            case "PostgreSQL":
-                return new DatabaseEnvironment(databaseType, scenarioProps.getProperty(String.format("it.%s.postgresql.host", scenario), "127.0.0.1"), 
-                        Integer.parseInt(scenarioProps.getProperty(String.format("it.%s.postgresql.port", scenario), "5432")),
-                        scenarioProps.getProperty(String.format("it.%s.postgresql.username", scenario), "postgres"), 
-                        scenarioProps.getProperty(String.format("it.%s.postgresql.password", scenario), ""));
-            case "SQLServer":
-                return new DatabaseEnvironment(databaseType, scenarioProps.getProperty(String.format("it.%s.sqlserver.host", scenario), "127.0.0.1"), 
-                        Integer.parseInt(scenarioProps.getProperty(String.format("it.%s.sqlserver.port", scenario), "1433")),
-                        scenarioProps.getProperty(String.format("it.%s.sqlserver.username", scenario), "sa"), 
-                        scenarioProps.getProperty(String.format("it.%s.sqlserver.password", scenario), "Jdbc1234"));
-            case "Oracle":
-                return new DatabaseEnvironment(databaseType, scenarioProps.getProperty(String.format("it.%s.oracle.host", scenario), "127.0.0.1"), 
-                        Integer.parseInt(scenarioProps.getProperty(String.format("it.%s.oracle.port", scenario), "1521")),
-                        scenarioProps.getProperty(String.format("it.%s.oracle.username", scenario), "jdbc"),
-                        scenarioProps.getProperty(String.format("it.%s.oracle.password", scenario), "jdbc"));
-            default:
-                throw new UnsupportedOperationException(databaseType.getName());
+        if ("H2".equals(databaseType.getName())) {
+            return new DatabaseEnvironment(databaseType, "", 0, "sa", ""); 
         }
+        DatabaseScenarioProperties databaseProps = new DatabaseScenarioProperties(scenario, scenarioProps);
+        return new DatabaseEnvironment(databaseType, databaseProps.getDatabaseHost(databaseType), 
+                databaseProps.getDatabasePort(databaseType), databaseProps.getDatabaseUsername(databaseType), databaseProps.getDatabasePassword(databaseType));
     }
     
     private Map<String, DatabaseEnvironment> createProxyEnvironments(final Map<String, Properties> scenarioProps) {
@@ -129,12 +109,9 @@ public final class IntegrateTestEnvironment {
     }
     
     private DatabaseEnvironment createProxyEnvironment(final String scenario, final Properties scenarioProps) {
-        String host = scenarioProps.getProperty(String.format("it.%s.proxy.host", scenario), "127.0.0.1");
-        int port = Integer.parseInt(scenarioProps.getProperty(String.format("it.%s.proxy.port", scenario), "3307"));
-        String username = scenarioProps.getProperty(String.format("it.%s.proxy.username", scenario), "root");
-        String password = scenarioProps.getProperty(String.format("it.%s.proxy.password", scenario), "root");
+        DatabaseScenarioProperties databaseProps = new DatabaseScenarioProperties(scenario, scenarioProps);
         // TODO hard code for MySQL, should configurable
-        return new DatabaseEnvironment(new MySQLDatabaseType(), host, port, username, password);
+        return new DatabaseEnvironment(new MySQLDatabaseType(), databaseProps.getProxyHost(), databaseProps.getProxyPort(), databaseProps.getProxyUsername(), databaseProps.getProxyPassword());
     }
     
     /**

@@ -30,7 +30,7 @@ import java.util.Properties;
 public final class EnvironmentProperties {
     
     /**
-     * load properties.
+     * Load properties.
      * 
      * @param propsFileName properties file name
      * @return properties
