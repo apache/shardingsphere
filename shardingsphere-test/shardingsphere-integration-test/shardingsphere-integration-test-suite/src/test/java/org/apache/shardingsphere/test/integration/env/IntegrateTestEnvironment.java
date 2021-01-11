@@ -84,18 +84,17 @@ public final class IntegrateTestEnvironment {
         for (DatabaseType each : databaseTypes) {
             Map<String, DatabaseEnvironment> databaseEnvironments = new LinkedHashMap<>(scenarios.size(), 1);
             for (String scenario : scenarios) {
-                databaseEnvironments.put(scenario, createDatabaseEnvironment(each, scenario, scenarioProps.get(scenario)));
+                databaseEnvironments.put(scenario, createDatabaseEnvironment(each, new DatabaseScenarioProperties(scenario, scenarioProps.get(scenario))));
                 result.put(each, databaseEnvironments);
             }
         }
         return result;
     }
     
-    private DatabaseEnvironment createDatabaseEnvironment(final DatabaseType databaseType, final String scenario, final Properties scenarioProps) {
+    private DatabaseEnvironment createDatabaseEnvironment(final DatabaseType databaseType, final DatabaseScenarioProperties databaseProps) {
         if ("H2".equals(databaseType.getName())) {
             return new DatabaseEnvironment(databaseType, "", 0, "sa", ""); 
         }
-        DatabaseScenarioProperties databaseProps = new DatabaseScenarioProperties(scenario, scenarioProps);
         return new DatabaseEnvironment(databaseType, databaseProps.getDatabaseHost(databaseType), 
                 databaseProps.getDatabasePort(databaseType), databaseProps.getDatabaseUsername(databaseType), databaseProps.getDatabasePassword(databaseType));
     }
@@ -103,13 +102,12 @@ public final class IntegrateTestEnvironment {
     private Map<String, DatabaseEnvironment> createProxyEnvironments(final Map<String, Properties> scenarioProps) {
         Map<String, DatabaseEnvironment> result = new HashMap<>(scenarios.size(), 1);
         for (String each : scenarios) {
-            result.put(each, createProxyEnvironment(each, scenarioProps.get(each)));
+            result.put(each, createProxyEnvironment(new DatabaseScenarioProperties(each, scenarioProps.get(each))));
         }
         return result;
     }
     
-    private DatabaseEnvironment createProxyEnvironment(final String scenario, final Properties scenarioProps) {
-        DatabaseScenarioProperties databaseProps = new DatabaseScenarioProperties(scenario, scenarioProps);
+    private DatabaseEnvironment createProxyEnvironment(final DatabaseScenarioProperties databaseProps) {
         // TODO hard code for MySQL, should configurable
         return new DatabaseEnvironment(new MySQLDatabaseType(), databaseProps.getProxyHost(), databaseProps.getProxyPort(), databaseProps.getProxyUsername(), databaseProps.getProxyPassword());
     }
