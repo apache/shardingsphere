@@ -63,10 +63,15 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     }
     
     @Override
-    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
-        Closure<?> closure = createClosure();
-        closure.setProperty(shardingValue.getColumnName(), shardingValue.getValue());
-        return closure.call().toString();
+    public String doSharding(Collection<String> availableTargetNames, PreciseShardingValue<Comparable<?>> shardingValue) {
+        Closure closure = this.createClosure();
+        try {
+            closure.setProperty(shardingValue.getColumnName(), shardingValue.getValue());
+            return closure.call().toString();
+        } catch (NullPointerException var5) {
+            closure.setProperty(shardingValue.getColumnName().toUpperCase(), shardingValue.getValue());
+            return closure.call().toString();
+        }
     }
     
     @Override
