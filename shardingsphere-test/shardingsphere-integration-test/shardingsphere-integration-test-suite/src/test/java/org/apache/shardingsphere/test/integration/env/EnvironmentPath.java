@@ -30,7 +30,7 @@ import static org.junit.Assert.assertNotNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EnvironmentPath {
     
-    private static final String ROOT_PATH = "integrate/env";
+    private static final String ROOT_PATH = "env";
     
     private static final String SCHEMA_FILE = "schema.xml";
     

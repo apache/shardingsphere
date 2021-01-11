@@ -34,6 +34,8 @@ import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
 @RequiredArgsConstructor
 public abstract class AbstractCalciteTable extends AbstractTable {
     
+    private final String name;
+    
     private final TableMetaData tableMetaData;
     
     private final RelProtoDataType relProtoDataType;

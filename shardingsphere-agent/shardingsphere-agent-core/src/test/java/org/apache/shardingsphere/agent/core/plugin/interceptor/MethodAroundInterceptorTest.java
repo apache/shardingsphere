@@ -30,7 +30,7 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.TargetObject;
-import org.apache.shardingsphere.agent.core.mock.InstanceMaterial;
+import org.apache.shardingsphere.agent.core.mock.material.InstanceMaterial;
 import org.apache.shardingsphere.agent.core.mock.advice.MockMethodAroundAdvice;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -53,6 +53,8 @@ public final class MethodAroundInterceptorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
+    private static final String CLASS_PATH = "org.apache.shardingsphere.agent.core.mock.material.InstanceMaterial";
+    
     private static ResettableClassFileTransformer byteBuddyAgent;
     
     private final boolean rebase;
@@ -64,7 +66,7 @@ public final class MethodAroundInterceptorTest {
     private final String[] expected;
     
     @Parameterized.Parameters
-    public static Collection<Object[]> data() {
+    public static Collection<Object[]> prepareData() {
         return Lists.newArrayList(
                 new Object[]{false, "mock", "invocation", new String[]{"before", "on", "after"}},
                 new Object[]{true, "mock", "rebase invocation method", new String[]{"before", "after"}},
@@ -77,9 +79,9 @@ public final class MethodAroundInterceptorTest {
         ByteBuddyAgent.install();
         byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .with(new ByteBuddy())
-                .type(ElementMatchers.named("org.apache.shardingsphere.agent.core.mock.InstanceMaterial"))
+                .type(ElementMatchers.named(CLASS_PATH))
                 .transform((builder, typeDescription, classLoader, module) -> {
-                    if ("org.apache.shardingsphere.agent.core.mock.InstanceMaterial".equals(typeDescription.getTypeName())) {
+                    if (CLASS_PATH.equals(typeDescription.getTypeName())) {
                         return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
                                 .implement(TargetObject.class)
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA));
@@ -100,21 +102,20 @@ public final class MethodAroundInterceptorTest {
                 .load(new MockClassLoader())
                 .getLoaded()
                 .newInstance();
-        List<String> queue = new LinkedList<>();
+        List<String> queues = new LinkedList<>();
         if ("mockWithException".equals(methodName)) {
             try {
-                material.mockWithException(queue);
-            } catch (IOException ignore) {
+                material.mockWithException(queues);
+            } catch (IOException ignored) {
             }
         } else {
-            assertThat(material.mock(queue), is(result));
+            assertThat(material.mock(queues), is(result));
         }
-        assertArrayEquals(expected, queue.toArray());
+        assertArrayEquals(expected, queues.toArray());
     }
     
     @AfterClass
     public static void destroy() {
         byteBuddyAgent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
     }
-    
 }

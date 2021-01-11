@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.core.mock.advice;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.api.advice.MethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.advice.TargetObject;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
@@ -24,6 +25,8 @@ import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import java.lang.reflect.Method;
 import java.util.List;
 
+@RequiredArgsConstructor
+@SuppressWarnings("unchecked")
 public final class MockMethodAroundAdvice implements MethodAroundAdvice {
     
     private final boolean rebase;
@@ -32,14 +35,10 @@ public final class MockMethodAroundAdvice implements MethodAroundAdvice {
         this(false);
     }
     
-    public MockMethodAroundAdvice(final boolean rebase) {
-        this.rebase = rebase;
-    }
-    
     @Override
     public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        List<String> queue = (List<String>) args[0];
-        queue.add("before");
+        List<String> queues = (List<String>) args[0];
+        queues.add("before");
         if (rebase) {
             result.rebase("rebase invocation method");
         }
@@ -47,13 +46,13 @@ public final class MockMethodAroundAdvice implements MethodAroundAdvice {
     
     @Override
     public void afterMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        List<String> queue = (List<String>) args[0];
-        queue.add("after");
+        List<String> queues = (List<String>) args[0];
+        queues.add("after");
     }
     
     @Override
     public void onThrowing(final TargetObject target, final Method method, final Object[] args, final Throwable throwable) {
-        List<String> queue = (List<String>) args[0];
-        queue.add("exception");
+        List<String> queues = (List<String>) args[0];
+        queues.add("exception");
     }
 }

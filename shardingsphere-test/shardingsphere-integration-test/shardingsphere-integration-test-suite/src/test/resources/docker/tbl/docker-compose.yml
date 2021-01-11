@@ -23,7 +23,7 @@ services:
     container_name: tbl-mysql
     command: --default-authentication-plugin=mysql_native_password
     volumes:
-      - ./mysql:/docker-entrypoint-initdb.d/
+      - ../../env/tbl:/docker-entrypoint-initdb.d/
     ports:
       - "33160:3306"
   
@@ -39,7 +39,7 @@ services:
     ports:
       - "33080:3307"
     links:
-      - "mysql:tbl.mysql"
+      - "mysql:mysql.tbl.host"
 #      - "zookeeper:zk"
     volumes:
       - ./proxy/conf:/opt/shardingsphere-proxy/conf

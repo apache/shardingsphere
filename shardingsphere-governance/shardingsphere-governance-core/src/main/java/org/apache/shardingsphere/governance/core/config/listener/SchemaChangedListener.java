@@ -26,6 +26,7 @@ import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
+import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -75,6 +77,9 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
             return Optional.empty();
         }
         if (Type.ADDED == event.getType()) {
+            if (event.getKey().startsWith(configurationNode.getCachePath(configurationNode.getRulePath(schemaName)))) {
+                return Optional.of(createRuleConfigurationCachedEvent(schemaName, event));
+            }
             return Optional.of(createAddedEvent(schemaName));
         }
         if (Type.UPDATED == event.getType()) {
@@ -105,7 +110,8 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     private boolean isValidNodeChangedEvent(final String schemaName, final String nodeFullPath) {
         return !existedSchemaNames.contains(schemaName) || configurationNode.getDataSourcePath(schemaName).equals(nodeFullPath) 
                 || configurationNode.getRulePath(schemaName).equals(nodeFullPath)
-                || configurationNode.getSchemaPath(schemaName).equals(nodeFullPath);
+                || configurationNode.getSchemaPath(schemaName).equals(nodeFullPath)
+                || nodeFullPath.startsWith(configurationNode.getCachePath(configurationNode.getRulePath(schemaName)));
     }
     
     private GovernanceEvent createAddedEvent(final String schemaName) {
@@ -135,12 +141,24 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     }
     
     private GovernanceEvent createRuleChangedEvent(final String schemaName, final DataChangedEvent event) {
-        YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(event.getValue(), YamlRootRuleConfigurations.class);
-        Preconditions.checkState(null != configurations, "No available rule to load for governance.");
-        return new RuleConfigurationsChangedEvent(schemaName, new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules()));
+        return new RuleConfigurationsChangedEvent(schemaName, getRuleConfigurations(event.getValue()));
     }
     
     private GovernanceEvent createSchemaChangedEvent(final String schemaName, final DataChangedEvent event) {
         return new SchemaChangedEvent(schemaName, new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlSchema.class)));
+    }
+    
+    private GovernanceEvent createRuleConfigurationCachedEvent(final String schemaName, final DataChangedEvent event) {
+        return new RuleConfigurationCachedEvent(getCacheId(event.getKey()), schemaName, getRuleConfigurations(event.getValue()));
+    }
+    
+    private String getCacheId(final String path) {
+        return path.substring(path.lastIndexOf("/") + 1);
+    }
+    
+    private Collection<RuleConfiguration> getRuleConfigurations(final String yamlContent) {
+        YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlContent, YamlRootRuleConfigurations.class);
+        Preconditions.checkState(null != configurations, "No available rule to load for governance.");
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules());
     }
 }

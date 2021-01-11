@@ -23,7 +23,7 @@ services:
     container_name: db-mysql
     command: --default-authentication-plugin=mysql_native_password
     volumes:
-      - ./mysql:/docker-entrypoint-initdb.d/
+      - ../../env/db:/docker-entrypoint-initdb.d/
     ports:
       - "33060:3306"
   
@@ -39,7 +39,7 @@ services:
     ports:
       - "33070:3307"
     links:
-      - "mysql:db.mysql"
+      - "mysql:mysql.db.host"
 #      - "zookeeper:zk"
     volumes:
       - ./proxy/conf:/opt/shardingsphere-proxy/conf

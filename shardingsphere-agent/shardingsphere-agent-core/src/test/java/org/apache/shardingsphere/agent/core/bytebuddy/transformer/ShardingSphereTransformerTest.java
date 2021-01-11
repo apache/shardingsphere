@@ -27,8 +27,8 @@ import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
-import org.apache.shardingsphere.agent.core.mock.Material;
-import org.apache.shardingsphere.agent.core.mock.advice.MockConstructor;
+import org.apache.shardingsphere.agent.core.mock.material.Material;
+import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.loader.PluginLoader;
@@ -57,15 +57,16 @@ public final class ShardingSphereTransformerTest {
     
     @BeforeClass
     @SneakyThrows
+    @SuppressWarnings("unchecked")
     public static void setup() {
         ByteBuddyAgent.install();
         FieldReader objectPoolReader = new FieldReader(PLUGIN_LOADER, PLUGIN_LOADER.getClass().getDeclaredField("objectPool"));
         Map<String, Object> objectPool = (Map<String, Object>) objectPoolReader.read();
-        objectPool.put(MockConstructor.class.getTypeName(), new MockConstructor());
+        objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
         objectPool.put(MockMethodAroundAdvice.class.getTypeName(), new MockMethodAroundAdvice());
         objectPool.put(MockStaticMethodAroundAdvice.class.getTypeName(), new MockStaticMethodAroundAdvice());
         Map<String, PluginInterceptorPoint> interceptorPointMap = Maps.newHashMap();
-        PluginInterceptorPoint interceptorPoint = PluginInterceptorPoint.intercept("org.apache.shardingsphere.agent.core.mock.Material")
+        PluginInterceptorPoint interceptorPoint = PluginInterceptorPoint.intercept("org.apache.shardingsphere.agent.core.mock.material.Material")
                 .aroundInstanceMethod(ElementMatchers.named("mock"))
                 .implement(MockMethodAroundAdvice.class.getTypeName())
                 .build()
@@ -73,7 +74,7 @@ public final class ShardingSphereTransformerTest {
                 .implement(MockStaticMethodAroundAdvice.class.getTypeName())
                 .build()
                 .onConstructor(ElementMatchers.takesArguments(1))
-                .implement(MockConstructor.class.getTypeName())
+                .implement(MockConstructorAdvice.class.getTypeName())
                 .build()
                 .install();
         interceptorPointMap.put(interceptorPoint.getClassNameOfTarget(), interceptorPoint);

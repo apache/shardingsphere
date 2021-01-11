@@ -27,26 +27,27 @@ import java.util.UUID;
  */
 public final class ConfigCacheManager {
     
-    private static final String CACHE_KEY = "cache";
-    
     private static final String PATH_SEPARATOR = "/";
     
     private final ConfigurationRepository repository;
     
-    public ConfigCacheManager(final ConfigurationRepository repository) {
+    private final ConfigCenterNode node;
+    
+    public ConfigCacheManager(final ConfigurationRepository repository, final ConfigCenterNode node) {
         this.repository = repository;
+        this.node = node;
     }
     
     /**
      * Cache configuration.
      * 
-     * @param key key
+     * @param path path
      * @param configuration configuration
      * @return cache id
      */
-    public String cache(final String key, final String configuration) {
+    public String cache(final String path, final String configuration) {
         String cacheId = getCacheId();
-        repository.persist(getCacheKey(key, cacheId), configuration);
+        repository.persist(getCachePath(path, cacheId), configuration);
         return cacheId;
     }
     
@@ -57,26 +58,25 @@ public final class ConfigCacheManager {
     /**
      * Load cached configuration.
      * 
-     * @param key key 
+     * @param path path 
      * @param cacheId cache id
      * @return cached configuration
      */
-    public String loadCache(final String key, final String cacheId) {
-        return repository.get(getCacheKey(key, cacheId));
+    public String loadCache(final String path, final String cacheId) {
+        return repository.get(getCachePath(path, cacheId));
     }
     
     /**
      * Delete cached configuration.
      * 
-     * @param key key
+     * @param path path
      * @param cacheId cache id
      */
-    public void deleteCache(final String key, final String cacheId) {
-        repository.delete(getCacheKey(key, cacheId));
+    public void deleteCache(final String path, final String cacheId) {
+        repository.delete(getCachePath(path, cacheId));
     }
     
-    private String getCacheKey(final String key, final String cacheId) {
-        return Joiner.on(PATH_SEPARATOR).join(key, CACHE_KEY, cacheId);
+    private String getCachePath(final String path, final String cacheId) {
+        return Joiner.on(PATH_SEPARATOR).join(node.getCachePath(path), cacheId);
     }
-    
 }

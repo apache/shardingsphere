@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
-import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -28,8 +28,8 @@ import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceInUsedException;
+import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
@@ -73,9 +73,9 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         Set<String> useResources = new HashSet<>();
         for (ShardingSphereRule each : ruleConfig) {
             if (each instanceof DataSourceContainedRule) {
-                useResources = getResouces((DataSourceContainedRule) each);
+                useResources = getResources((DataSourceContainedRule) each);
             } else if (each instanceof DataNodeContainedRule) {
-                useResources = getResouces((DataNodeContainedRule) each);
+                useResources = getResources((DataNodeContainedRule) each);
             }
         }
         Collection<String> conflictResources = new LinkedList<>();
@@ -85,11 +85,11 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
             }
         }
         if (!conflictResources.isEmpty()) {
-            throw new ResourceInUsedException(notExistedResourceNames);
+            throw new ResourceInUsedException(conflictResources);
         }
     }
 
-    private Set<String> getResouces(final DataSourceContainedRule rule) {
+    private Set<String> getResources(final DataSourceContainedRule rule) {
         Set<String> result = new HashSet<>();
         for (Collection<String> each : rule.getDataSourceMapper().values()) {
             result.addAll(each);
@@ -97,7 +97,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
         return result;
     }
 
-    private Set<String> getResouces(final DataNodeContainedRule rule) {
+    private Set<String> getResources(final DataNodeContainedRule rule) {
         Set<String> result = new HashSet<>();
         for (Collection<DataNode> each : rule.getAllDataNodes().values()) {
             result.addAll(each.stream().map(DataNode::getDataSourceName).collect(Collectors.toList()));
@@ -115,6 +115,6 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
     
     private void post(final String schemaName, final Map<String, DataSource> resourceMap) {
         Map<String, DataSourceConfiguration> datasourceMap = DataSourceConverter.getDataSourceConfigurationMap(resourceMap);
-        ShardingSphereEventBus.getInstance().post(new DataSourceChangedEvent(schemaName, datasourceMap));
+        ShardingSphereEventBus.getInstance().post(new DataSourceAlteredEvent(schemaName, datasourceMap));
     }
 }

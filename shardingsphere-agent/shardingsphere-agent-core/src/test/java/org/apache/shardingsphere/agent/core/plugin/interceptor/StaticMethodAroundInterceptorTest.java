@@ -29,7 +29,7 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.TargetObject;
-import org.apache.shardingsphere.agent.core.mock.StaticMaterial;
+import org.apache.shardingsphere.agent.core.mock.material.StaticMaterial;
 import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -52,6 +52,8 @@ public final class StaticMethodAroundInterceptorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
+    private static final String CLASS_PATH = "org.apache.shardingsphere.agent.core.mock.material.StaticMaterial";
+    
     private static ResettableClassFileTransformer byteBuddyAgent;
     
     private final String methodName;
@@ -61,7 +63,7 @@ public final class StaticMethodAroundInterceptorTest {
     private final String[] expected;
     
     @Parameterized.Parameters
-    public static Collection<Object[]> data() {
+    public static Collection<Object[]> prepareData() {
         return Lists.newArrayList(
                 new Object[]{"staticMock", "rebase static invocation method", new String[]{"before", "after"}},
                 new Object[]{"staticMockWithException", null, new String[]{"before", "exception", "after"}}
@@ -73,9 +75,9 @@ public final class StaticMethodAroundInterceptorTest {
         ByteBuddyAgent.install();
         byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .with(new ByteBuddy())
-                .type(ElementMatchers.named("org.apache.shardingsphere.agent.core.mock.StaticMaterial"))
+                .type(ElementMatchers.named(CLASS_PATH))
                 .transform((builder, typeDescription, classLoader, module) -> {
-                    if ("org.apache.shardingsphere.agent.core.mock.StaticMaterial".equals(typeDescription.getTypeName())) {
+                    if (CLASS_PATH.equals(typeDescription.getTypeName())) {
                         return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
                                 .implement(TargetObject.class)
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA))
@@ -92,16 +94,16 @@ public final class StaticMethodAroundInterceptorTest {
     
     @Test
     public void assertInterceptedMethod() {
-        List<String> queue = new LinkedList<>();
+        List<String> queues = new LinkedList<>();
         if ("staticMockWithException".equals(methodName)) {
             try {
-                StaticMaterial.staticMockWithException(queue);
-            } catch (IOException ignore) {
+                StaticMaterial.staticMockWithException(queues);
+            } catch (IOException ignored) {
             }
         } else {
-            assertThat(StaticMaterial.staticMock(queue), is(result));
+            assertThat(StaticMaterial.staticMock(queues), is(result));
         }
-        assertArrayEquals(expected, queue.toArray());
+        assertArrayEquals(expected, queues.toArray());
     }
     
     @AfterClass

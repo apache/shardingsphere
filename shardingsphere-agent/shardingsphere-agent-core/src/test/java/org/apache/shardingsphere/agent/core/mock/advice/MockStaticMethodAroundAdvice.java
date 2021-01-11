@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 @RequiredArgsConstructor
+@SuppressWarnings("unchecked")
 public final class MockStaticMethodAroundAdvice implements StaticMethodAroundAdvice {
     
     private final boolean rebase;

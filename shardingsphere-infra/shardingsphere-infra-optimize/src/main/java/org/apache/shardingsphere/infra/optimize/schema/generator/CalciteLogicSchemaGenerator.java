@@ -53,7 +53,8 @@ public final class CalciteLogicSchemaGenerator {
         Map<String, Collection<DataNode>> tableDataNodes = getTableDataNodes(dataNodeRules);
         Map<String, Collection<String>> dataSourceRules = getDataSourceRules(metaData);
         for (Map.Entry<String, Collection<DataNode>> entry : tableDataNodes.entrySet()) {
-            tables.put(entry.getKey(), new CalciteLogicTableGenerator(metaData.getResource().getDataSources(), dataSourceRules, entry.getValue(), metaData.getResource().getDatabaseType()));
+            tables.put(entry.getKey(),
+                    new CalciteLogicTableGenerator(entry.getKey(), metaData.getResource().getDataSources(), dataSourceRules, entry.getValue(), metaData.getResource().getDatabaseType()));
         }
     }
     
