@@ -91,8 +91,11 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     
     private void startJob(final ChannelHandlerContext context, final String requestBody) {
         Optional<ScalingJob> scalingJob = SCALING_JOB_SERVICE.start(GSON.fromJson(requestBody, ScalingConfiguration.class));
-        Preconditions.checkState(scalingJob.isPresent());
-        response(ResponseContentUtil.build(scalingJob.get()), context, HttpResponseStatus.OK);
+        if (scalingJob.isPresent()) {
+            response(ResponseContentUtil.build(scalingJob.get()), context, HttpResponseStatus.OK);
+            return;
+        }
+        response(ResponseContentUtil.handleBadRequest("Invalid scaling job config!"), context, HttpResponseStatus.BAD_REQUEST);
     }
     
     private void listJobs(final ChannelHandlerContext context) {
