@@ -113,7 +113,6 @@ public final class IntegrateTestEnvironment {
     private Map<String, DatabaseEnvironment> createProxyEnvironments() {
         Map<String, DatabaseEnvironment> result = new HashMap<>(scenarios.size(), 1);
         for (String each : scenarios) {
-            // TODO hard code for MySQL, should configurable
             result.put(each, createProxyEnvironment(each));
         }
         return result;
@@ -125,6 +124,7 @@ public final class IntegrateTestEnvironment {
         int port = Integer.parseInt(envProps.getProperty(String.format("it.%s.proxy.port", scenario), "3307"));
         String username = envProps.getProperty(String.format("it.%s.proxy.username", scenario), "root");
         String password = envProps.getProperty(String.format("it.%s.proxy.password", scenario), "root");
+        // TODO hard code for MySQL, should configurable
         return new DatabaseEnvironment(new MySQLDatabaseType(), host, port, username, password);
     }
     
