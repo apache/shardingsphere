@@ -39,6 +39,12 @@ public final class OpenTracingPluginBootService implements PluginBootService {
         }
     }
     
+    private void init(final Tracer tracer) {
+        if (!GlobalTracer.isRegistered()) {
+            GlobalTracer.register(tracer);
+        }
+    }
+    
     @Override
     public void close() {
     }
@@ -46,11 +52,5 @@ public final class OpenTracingPluginBootService implements PluginBootService {
     @Override
     public String getType() {
         return "Opentracing";
-    }
-    
-    private void init(final Tracer tracer) {
-        if (!GlobalTracer.isRegistered()) {
-            GlobalTracer.register(tracer);
-        }
     }
 }

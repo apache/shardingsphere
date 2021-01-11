@@ -18,6 +18,7 @@
 
 package org.apache.shardingsphere.agent.core.plugin.interceptor;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
@@ -28,14 +29,11 @@ import org.apache.shardingsphere.agent.api.advice.TargetObject;
 /**
  * Proxy class for ByteBuddy to intercept methods of target and weave post-method after constructor.
  */
+@RequiredArgsConstructor
 @Slf4j
-public class ConstructorMethodInterceptor {
+public final class ConstructorMethodInterceptor {
     
     private final ConstructorAdvice constructorAdvice;
-    
-    public ConstructorMethodInterceptor(final ConstructorAdvice constructorAdvice) {
-        this.constructorAdvice = constructorAdvice;
-    }
     
     /**
      * Intercept constructor.

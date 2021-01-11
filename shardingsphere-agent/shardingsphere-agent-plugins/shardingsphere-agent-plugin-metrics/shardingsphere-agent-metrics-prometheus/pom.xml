@@ -59,7 +59,6 @@
             <artifactId>simpleclient_httpserver</artifactId>
             <version>${prometheus.version}</version>
         </dependency>
-
     </dependencies>
     
     <build>

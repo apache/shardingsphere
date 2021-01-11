@@ -18,25 +18,25 @@
 package org.apache.shardingsphere.agent.api.point;
 
 import com.google.common.collect.Lists;
-import java.util.Collections;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Plugin interceptor point.
  *
- * <code>
+ * {@code
  * PluginInterceptorPoint.intercept("Target.class")
  * .onConstructor(ElementMatchers.any()).implement("Advice.class").build()
  * .method(ElementMatchers.named("greet").implement("Advice.class").build()
  * .staticMethod(ElementMatchers.named("of").implement("OfAdvice.class").build()
  * .install();
- * </code>
+ * }
  */
 @Getter
 @RequiredArgsConstructor

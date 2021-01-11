@@ -27,7 +27,7 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.utility.JavaModule;
-import org.apache.shardingsphere.agent.core.plugin.loader.PluginLoader;
+import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorMethodInterceptor;
 import org.apache.shardingsphere.agent.core.plugin.interceptor.MethodAroundInterceptor;

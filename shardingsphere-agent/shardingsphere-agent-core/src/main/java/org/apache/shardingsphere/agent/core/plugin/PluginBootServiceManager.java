@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.plugin.manager;
+package org.apache.shardingsphere.agent.core.plugin;
 
-import java.util.Map;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.config.cache.AgentObjectPool;
 import org.apache.shardingsphere.agent.core.spi.AgentTypedSPIRegistry;
 import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Plugin boot service manager.
