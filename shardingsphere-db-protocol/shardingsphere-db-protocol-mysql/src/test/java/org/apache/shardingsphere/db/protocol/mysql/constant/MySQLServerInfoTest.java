@@ -33,6 +33,6 @@ public final class MySQLServerInfoTest {
     @Test
     public void assertSetServerVersionForNull() {
         MySQLServerInfo.setServerVersion(null);
-        assertThat(MySQLServerInfo.getServerVersion(), is("8.0.20-ShardingSphere-Proxy 5.0.0-beta"));
+        assertThat(MySQLServerInfo.getServerVersion(), is("5.7.22-ShardingSphere-Proxy 5.0.0-beta"));
     }
 }

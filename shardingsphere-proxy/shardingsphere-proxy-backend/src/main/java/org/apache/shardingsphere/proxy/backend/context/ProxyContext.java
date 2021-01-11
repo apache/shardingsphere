@@ -21,18 +21,14 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 
-import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Proxy context.
@@ -105,24 +101,5 @@ public final class ProxyContext {
     public List<String> getAllSchemaNames() {
         return new ArrayList<>(metaDataContexts.getAllSchemaNames());
     }
-    
-    /**
-     * Get data source sample.
-     * 
-     * @return data source sample
-     */
-    public Optional<DataSource> getDataSourceSample() {
-        List<String> schemaNames = getAllSchemaNames();
-        if (schemaNames.isEmpty()) {
-            return Optional.empty();
-        }
-        for (String schemaName : schemaNames) {
-            ShardingSphereResource shardingSphereResource = getMetaData(schemaName).getResource();
-            DatabaseType databaseType = shardingSphereResource.getDatabaseType();
-            if ("MySQL".equals(databaseType.getName())) {
-                return shardingSphereResource.getDataSources().values().stream().findFirst();
-            }
-        }
-        return Optional.empty();
-    }
+
 }
