@@ -103,6 +103,10 @@ dropShardingRule
     : DROP SHARDING RULE LP tableName (COMMA tableName)* RP
     ;
 
+showShardingRule
+    : SHOW SHARDING RULE (FROM schemaName)?
+    ;
+
 schemaNames
     : schemaName (COMMA schemaName)*
     ;
