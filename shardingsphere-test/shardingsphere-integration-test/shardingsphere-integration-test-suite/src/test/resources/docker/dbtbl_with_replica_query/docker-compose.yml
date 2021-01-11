@@ -37,7 +37,7 @@ services:
     image: apache/shardingsphere-proxy-test
     container_name: dbtbl-with-replica-query-shardingsphere-proxy
     ports:
-      - "33110:3307"
+      - "33370:3307"
     links:
       - "mysql:mysql.dbtbl-with-replica-query.host"
 #      - "zookeeper:zk"

@@ -26,12 +26,12 @@ import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceMan
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandler;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandlerFactory;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.cases.value.SQLValueGroup;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
+import org.apache.shardingsphere.test.integration.cases.value.SQLValueGroup;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;

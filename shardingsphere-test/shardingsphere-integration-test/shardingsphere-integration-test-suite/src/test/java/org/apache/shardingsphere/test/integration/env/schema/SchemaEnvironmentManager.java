@@ -82,7 +82,7 @@ public final class SchemaEnvironmentManager {
         SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(scenario));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             // TODO use multiple threads to improve performance
-            DataSource dataSource = ActualDataSourceBuilder.build(null, each);
+            DataSource dataSource = ActualDataSourceBuilder.build(null, scenario, each);
             executeSQLScript(dataSource, generateCreateDatabaseSQLs(each, schemaEnvironment.getDatabases()));
         }
     }
@@ -117,7 +117,7 @@ public final class SchemaEnvironmentManager {
         SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(scenario));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             // TODO use multiple threads to improve performance
-            DataSource dataSource = ActualDataSourceBuilder.build(null, each);
+            DataSource dataSource = ActualDataSourceBuilder.build(null, scenario, each);
             executeSQLScript(dataSource, generatePrepareDropDatabaseSQLs(each, schemaEnvironment.getDatabases()));
             executeSQLScript(dataSource, generateDropDatabaseSQLs(each, schemaEnvironment.getDatabases()));
         }
@@ -160,14 +160,14 @@ public final class SchemaEnvironmentManager {
     private static void createTables(final String scenario) throws JAXBException, IOException {
         SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(scenario));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
-            createTables(schemaEnvironment, each);
+            createTables(schemaEnvironment, scenario, each);
         }
     }
     
-    private static void createTables(final SchemaEnvironment schemaEnvironment, final DatabaseType databaseType) {
+    private static void createTables(final SchemaEnvironment schemaEnvironment, final String scenario, final DatabaseType databaseType) {
         for (String each : schemaEnvironment.getDatabases()) {
             // TODO use multiple threads to improve performance
-            DataSource dataSource = ActualDataSourceBuilder.build(each, databaseType);
+            DataSource dataSource = ActualDataSourceBuilder.build(each, scenario, databaseType);
             executeSQLScript(dataSource, schemaEnvironment.getTableCreateSQLs());
         }
     }
@@ -190,14 +190,14 @@ public final class SchemaEnvironmentManager {
     private static void dropTables(final String scenario) throws JAXBException, IOException {
         SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(scenario));
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
-            dropTables(schemaEnvironment, each);
+            dropTables(schemaEnvironment, scenario, each);
         }
     }
     
-    private static void dropTables(final SchemaEnvironment schemaEnvironment, final DatabaseType databaseType) {
+    private static void dropTables(final SchemaEnvironment schemaEnvironment, final String scenario, final DatabaseType databaseType) {
         for (String each : schemaEnvironment.getDatabases()) {
             // TODO use multiple threads to improve performance
-            DataSource dataSource = ActualDataSourceBuilder.build(each, databaseType);
+            DataSource dataSource = ActualDataSourceBuilder.build(each, scenario, databaseType);
             executeSQLScript(dataSource, schemaEnvironment.getTableDropSQLs());
         }
     }
