@@ -73,14 +73,15 @@ public final class IntegrateTestEnvironment {
         for (DatabaseType each : databaseTypes) {
             Map<String, DatabaseEnvironment> databaseEnvironments = new LinkedHashMap<>(scenarios.size(), 1);
             for (String scenario : scenarios) {
-                databaseEnvironments.put(scenario, createDatabaseEnvironment(each, envProps, scenario));
+                databaseEnvironments.put(scenario, createDatabaseEnvironment(each, scenario));
                 result.put(each, databaseEnvironments);
             }
         }
         return result;
     }
     
-    private DatabaseEnvironment createDatabaseEnvironment(final DatabaseType databaseType, final Properties envProps, final String scenario) {
+    private DatabaseEnvironment createDatabaseEnvironment(final DatabaseType databaseType, final String scenario) {
+        Properties envProps = EnvironmentProperties.loadProperties(String.format("env/%s/scenario-env.properties", scenario));
         switch (databaseType.getName()) {
             case "H2":
                 return new DatabaseEnvironment(databaseType, "", 0, "sa", "");
