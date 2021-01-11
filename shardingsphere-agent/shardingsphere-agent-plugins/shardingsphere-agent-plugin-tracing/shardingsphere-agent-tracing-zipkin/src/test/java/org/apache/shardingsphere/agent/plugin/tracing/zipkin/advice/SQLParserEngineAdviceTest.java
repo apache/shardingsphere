@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 import brave.Span;
 import brave.Tracing;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
@@ -45,9 +45,9 @@ public final class SQLParserEngineAdviceTest extends AdviceBaseTest {
     
     private static Method parseMethod;
     
-    private SQLParserEngineAdvice advice;
+    private SQLParserEngineAdviceInstance advice;
     
-    private TargetObject targetObject;
+    private AdviceTargetObject adviceTargetObject;
     
     private Object attachment;
     
@@ -77,14 +77,14 @@ public final class SQLParserEngineAdviceTest extends AdviceBaseTest {
                     return invocation.callRealMethod();
             }
         });
-        targetObject = (TargetObject) parserEngine;
-        advice = new SQLParserEngineAdvice();
+        adviceTargetObject = (AdviceTargetObject) parserEngine;
+        advice = new SQLParserEngineAdviceInstance();
     }
     
     @Test
     public void testMethod() {
-        advice.beforeMethod(targetObject, parseMethod, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
-        advice.afterMethod(targetObject, parseMethod, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
+        advice.beforeMethod(adviceTargetObject, parseMethod, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
+        advice.afterMethod(adviceTargetObject, parseMethod, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
         parentSpan.finish();
         zipkin2.Span span = SPANS.pollFirst();
         assertNotNull(span);
@@ -97,9 +97,9 @@ public final class SQLParserEngineAdviceTest extends AdviceBaseTest {
     
     @Test
     public void testExceptionHandle() {
-        advice.beforeMethod(targetObject, parseMethod, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
-        advice.onThrowing(targetObject, parseMethod, new Object[]{SQL_STMT, true}, new IOException());
-        advice.afterMethod(targetObject, parseMethod, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
+        advice.beforeMethod(adviceTargetObject, parseMethod, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
+        advice.onThrowing(adviceTargetObject, parseMethod, new Object[]{SQL_STMT, true}, new IOException());
+        advice.afterMethod(adviceTargetObject, parseMethod, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
         // ensure the parent span(mock) finished
         parentSpan.finish();
         zipkin2.Span span = SPANS.pollFirst();

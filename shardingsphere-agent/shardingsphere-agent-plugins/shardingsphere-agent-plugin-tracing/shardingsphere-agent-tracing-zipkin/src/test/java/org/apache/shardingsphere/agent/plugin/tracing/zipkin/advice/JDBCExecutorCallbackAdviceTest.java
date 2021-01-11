@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
@@ -53,9 +53,9 @@ public final class JDBCExecutorCallbackAdviceTest extends AdviceBaseTest {
     
     private static Method executeMethod;
     
-    private JDBCExecutorCallbackAdvice advice;
+    private JDBCExecutorCallbackAdviceInstance advice;
     
-    private TargetObject targetObject;
+    private AdviceTargetObject adviceTargetObject;
     
     private Object attachment;
     
@@ -96,14 +96,14 @@ public final class JDBCExecutorCallbackAdviceTest extends AdviceBaseTest {
         });
         Map<String, DataSourceMetaData> map = (Map<String, DataSourceMetaData>) new FieldReader(mock, JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA")).read();
         map.put("mock_url", new MockDataSourceMetaData());
-        targetObject = (TargetObject) mock;
-        advice = new JDBCExecutorCallbackAdvice();
+        adviceTargetObject = (AdviceTargetObject) mock;
+        advice = new JDBCExecutorCallbackAdviceInstance();
     }
     
     @Test
     public void testMethod() {
-        advice.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
-        advice.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
+        advice.beforeMethod(adviceTargetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
+        advice.afterMethod(adviceTargetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
         Span span = SPANS.pollFirst();
         assertNotNull(span);
         assertThat(span.name(), is("/ShardingSphere/executeSQL/".toLowerCase()));
@@ -119,9 +119,9 @@ public final class JDBCExecutorCallbackAdviceTest extends AdviceBaseTest {
     
     @Test
     public void testExceptionHandle() {
-        advice.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
-        advice.onThrowing(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new IOException());
-        advice.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
+        advice.beforeMethod(adviceTargetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
+        advice.onThrowing(adviceTargetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new IOException());
+        advice.afterMethod(adviceTargetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
         Span span = SPANS.pollFirst();
         assertNotNull(span);
         assertThat(span.name(), is("/ShardingSphere/executeSQL/".toLowerCase()));

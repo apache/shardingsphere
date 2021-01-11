@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
 import io.netty.channel.ChannelHandlerContext;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
@@ -44,9 +44,9 @@ public final class CommandExecutorTaskAdviceTest extends AdviceBaseTest {
     
     private static Method executeCommandMethod;
     
-    private CommandExecutorTaskAdvice advice;
+    private CommandExecutorTaskAdviceInstance advice;
     
-    private TargetObject targetObject;
+    private AdviceTargetObject adviceTargetObject;
     
     @BeforeClass
     public static void setup() throws NoSuchMethodException {
@@ -58,15 +58,15 @@ public final class CommandExecutorTaskAdviceTest extends AdviceBaseTest {
     @SneakyThrows
     @SuppressWarnings("all")
     public void before() {
-        advice = new CommandExecutorTaskAdvice();
+        advice = new CommandExecutorTaskAdviceInstance();
         Object executorTask = new CommandExecutorTask(null, new BackendConnection(TransactionType.BASE), null, null);
-        targetObject = (TargetObject) executorTask;
+        adviceTargetObject = (AdviceTargetObject) executorTask;
     }
     
     @Test
     public void testMethod() {
-        advice.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
-        advice.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
+        advice.beforeMethod(adviceTargetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
+        advice.afterMethod(adviceTargetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         Span span = SPANS.poll();
         assertNotNull(span);
         Map<String, String> tags = span.tags();
@@ -78,9 +78,9 @@ public final class CommandExecutorTaskAdviceTest extends AdviceBaseTest {
     
     @Test
     public void testExceptionHandle() {
-        advice.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
-        advice.onThrowing(targetObject, executeCommandMethod, new Object[]{}, new IOException());
-        advice.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
+        advice.beforeMethod(adviceTargetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
+        advice.onThrowing(adviceTargetObject, executeCommandMethod, new Object[]{}, new IOException());
+        advice.afterMethod(adviceTargetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         Span span = SPANS.poll();
         assertNotNull(span);
         Map<String, String> tags = span.tags();

@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.advice;
+package org.apache.shardingsphere.agent.core.bytebuddy.transformer;
 
-/**
- * Weaving the advice around the constructor of target class.
- */
-public interface ConstructorAdvice {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.bytebuddy.description.method.MethodDescription;
+
+@Getter
+@RequiredArgsConstructor
+public class ShardingSphereTransformationPoint<T> {
     
-    /**
-     * Intercept the target's constructor. This method is weaved after the constructor execution.
-     *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
-     */
-    void onConstructor(AdviceTargetObject target, Object[] args);
+    private final MethodDescription description;
+    
+    private final T interceptor;
+    
 }

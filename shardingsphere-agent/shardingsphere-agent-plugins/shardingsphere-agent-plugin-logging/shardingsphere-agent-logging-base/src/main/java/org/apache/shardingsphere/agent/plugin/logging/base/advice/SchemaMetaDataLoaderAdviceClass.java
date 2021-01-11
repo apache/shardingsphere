@@ -15,18 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.advice;
+package org.apache.shardingsphere.agent.plugin.logging.base.advice;
+
+import java.lang.reflect.Method;
+import java.util.Collection;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
 
 /**
- * Weaving the advice around the constructor of target class.
+ * Schema meta data loader advice.
  */
-public interface ConstructorAdvice {
+@Slf4j
+public final class SchemaMetaDataLoaderAdviceClass implements ClassStaticMethodAroundAdvice {
     
-    /**
-     * Intercept the target's constructor. This method is weaved after the constructor execution.
-     *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
-     */
-    void onConstructor(AdviceTargetObject target, Object[] args);
+    @Override
+    @SuppressWarnings("unchecked")
+    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
+        Collection<String> results = (Collection<String>) result.getResult();
+        log.info("Loading {} tables' meta data for unconfigured tables.", results.size());
+    }
 }

@@ -15,18 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.advice;
+package org.apache.shardingsphere.agent.core.mock.material;
+
+import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 /**
- * Weaving the advice around the constructor of target class.
+ * Have to redefine this class dynamic, so never add `final` modifier.
  */
-public interface ConstructorAdvice {
+@NoArgsConstructor
+public class RepeatedAdviceMaterial {
     
     /**
-     * Intercept the target's constructor. This method is weaved after the constructor execution.
+     * Mock method for testing.
      *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
+     * @param queues queues
+     * @return result
      */
-    void onConstructor(AdviceTargetObject target, Object[] args);
+    public String mock(final List<String> queues) {
+        queues.add("on");
+        return "invocation";
+    }
+    
 }

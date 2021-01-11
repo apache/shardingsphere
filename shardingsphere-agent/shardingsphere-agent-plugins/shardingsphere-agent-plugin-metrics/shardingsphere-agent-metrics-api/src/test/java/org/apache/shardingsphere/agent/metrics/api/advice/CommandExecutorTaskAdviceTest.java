@@ -29,12 +29,12 @@ import static org.junit.Assert.assertThat;
 
 public final class CommandExecutorTaskAdviceTest extends MetricsAdviceBaseTest {
     
-    private CommandExecutorTaskAdvice commandExecutorTaskAdvice = new CommandExecutorTaskAdvice();
+    private CommandExecutorTaskAdviceInstance commandExecutorTaskAdvice = new CommandExecutorTaskAdviceInstance();
     
     @Test
     @SuppressWarnings("unchecked")
     public void assertMethod() {
-        MockTargetObject targetObject = new MockTargetObject();
+        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         commandExecutorTaskAdvice.beforeMethod(targetObject, null, new Object[]{}, new MethodInvocationResult());
         commandExecutorTaskAdvice.afterMethod(targetObject, null, new Object[]{}, new MethodInvocationResult());
         Map<String, LongAdder> longAdderMap = (Map<String, LongAdder>) ReflectiveUtil.getFieldValue(getFixturemetricsregister(), "HISTOGRAM_MAP");

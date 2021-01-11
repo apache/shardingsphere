@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.advice;
+package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
 
-/**
- * Weaving the advice around the constructor of target class.
- */
-public interface ConstructorAdvice {
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+
+public final class MockAdviceTargetObject implements AdviceTargetObject {
     
-    /**
-     * Intercept the target's constructor. This method is weaved after the constructor execution.
-     *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
-     */
-    void onConstructor(AdviceTargetObject target, Object[] args);
+    private Object object;
+
+    @Override
+    public Object getAttachment() {
+        return object;
+    }
+
+    @Override
+    public void setAttachment(final Object attachment) {
+        this.object = attachment;
+    }
 }

@@ -20,6 +20,8 @@ package org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * Error log tag keys.
  */
@@ -30,7 +32,15 @@ public final class ErrorLogTagKeys {
     
     public static final String EVENT_ERROR_TYPE = "error";
     
-    public static final String ERROR_KIND = "error.kind";
+    /**
+     * Mock method for testing.
+     *
+     * @param queues queues
+     * @return result
+     */
+    public String mock(final List<String> queues) {
+        queues.add("on");
+        return "invocation";
+    }
     
-    public static final String MESSAGE = "message";
 }

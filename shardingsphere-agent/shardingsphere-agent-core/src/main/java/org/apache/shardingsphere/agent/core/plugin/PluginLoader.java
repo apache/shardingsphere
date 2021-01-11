@@ -286,8 +286,8 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             if (pointMap.containsKey(target)) {
                 PluginInterceptorPoint definition = pointMap.get(target);
                 definition.getConstructorPoints().addAll(each.getConstructorPoints());
-                definition.getInstanceMethodPoints().addAll(each.getInstanceMethodPoints());
-                definition.getClassStaticMethodPoints().addAll(each.getClassStaticMethodPoints());
+                definition.getInstanceMethodAroundPoints().addAll(each.getInstanceMethodAroundPoints());
+                definition.getClassStaticMethodAroundPoints().addAll(each.getClassStaticMethodAroundPoints());
             } else {
                 pointMap.put(target, each);
             }

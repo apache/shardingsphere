@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.advice;
+package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
-/**
- * Weaving the advice around the constructor of target class.
- */
-public interface ConstructorAdvice {
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
+
+import java.util.List;
+
+@RequiredArgsConstructor
+public final class ComposeConstructorAdvice implements ConstructorAdvice {
     
-    /**
-     * Intercept the target's constructor. This method is weaved after the constructor execution.
-     *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
-     */
-    void onConstructor(AdviceTargetObject target, Object[] args);
+    private final @NonNull List<ConstructorAdvice> adviceList;
+    
+    @Override
+    public void onConstructor(final AdviceTargetObject target, final Object[] args) {
+        adviceList.forEach(each -> each.onConstructor(target, args));
+    }
 }

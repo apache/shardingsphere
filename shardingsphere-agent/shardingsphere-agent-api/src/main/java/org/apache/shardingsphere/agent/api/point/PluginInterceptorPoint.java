@@ -46,9 +46,9 @@ public final class PluginInterceptorPoint {
     
     private final List<ConstructorPoint> constructorPoints;
     
-    private final List<InstanceMethodPoint> instanceMethodPoints;
+    private final List<InstanceMethodAroundPoint> instanceMethodAroundPoints;
     
-    private final List<ClassStaticMethodPoint> classStaticMethodPoints;
+    private final List<ClassStaticMethodAroundPoint> classStaticMethodAroundPoints;
     
     /**
      * Create default plugin advice definition.
@@ -76,9 +76,9 @@ public final class PluginInterceptorPoint {
         
         private final List<ConstructorPoint> constructorPoints = Lists.newArrayList();
         
-        private final List<InstanceMethodPoint> instanceMethodPoints = Lists.newArrayList();
+        private final List<InstanceMethodAroundPoint> instanceMethodAroundPoints = Lists.newArrayList();
         
-        private final List<ClassStaticMethodPoint> classStaticMethodPoints = Lists.newArrayList();
+        private final List<ClassStaticMethodAroundPoint> classStaticMethodAroundPoints = Lists.newArrayList();
         
         private final String classNameOfTarget;
         
@@ -122,7 +122,7 @@ public final class PluginInterceptorPoint {
          * @return plugin advice definition
          */
         public PluginInterceptorPoint install() {
-            return new PluginInterceptorPoint(classNameOfTarget, constructorPoints, instanceMethodPoints, classStaticMethodPoints);
+            return new PluginInterceptorPoint(classNameOfTarget, constructorPoints, instanceMethodAroundPoints, classStaticMethodAroundPoints);
         }
         
         /**
@@ -171,7 +171,7 @@ public final class PluginInterceptorPoint {
              * @return plugin advice builder
              */
             public Builder build() {
-                builder.instanceMethodPoints.add(new InstanceMethodPoint(matcher, classNameOfAdvice, overrideArgs));
+                builder.instanceMethodAroundPoints.add(new InstanceMethodAroundPoint(matcher, classNameOfAdvice, overrideArgs));
                 return builder;
             }
         }
@@ -222,7 +222,7 @@ public final class PluginInterceptorPoint {
              * @return builder
              */
             public Builder build() {
-                builder.classStaticMethodPoints.add(new ClassStaticMethodPoint(matcher, classNameOfAdvice, overrideArgs));
+                builder.classStaticMethodAroundPoints.add(new ClassStaticMethodAroundPoint(matcher, classNameOfAdvice, overrideArgs));
                 return builder;
             }
         }

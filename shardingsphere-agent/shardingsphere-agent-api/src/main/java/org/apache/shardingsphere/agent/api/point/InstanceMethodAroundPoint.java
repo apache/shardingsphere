@@ -13,20 +13,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package org.apache.shardingsphere.agent.api.advice;
+package org.apache.shardingsphere.agent.api.point;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.bytebuddy.description.method.MethodDescription;
+import net.bytebuddy.matcher.ElementMatcher;
 
 /**
- * Weaving the advice around the constructor of target class.
+ * Configuration of instance method intercepting point.
  */
-public interface ConstructorAdvice {
+@Getter
+@RequiredArgsConstructor
+public final class InstanceMethodAroundPoint {
     
-    /**
-     * Intercept the target's constructor. This method is weaved after the constructor execution.
-     *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
-     */
-    void onConstructor(AdviceTargetObject target, Object[] args);
+    private final ElementMatcher<? super MethodDescription> matcher;
+    
+    private final String advice;
+    
+    private final boolean overrideArgs;
 }
