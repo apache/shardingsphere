@@ -84,6 +84,9 @@ public final class DataSetEnvironmentManager {
      * @throws ParseException parse exception
      */
     public void fillData() throws SQLException, ParseException {
+        System.out.println("++++++++++++actualDataSources.size()++++++++++++++++" + actualDataSources.size());
+        System.out.println("++++++++++++actualDataSources.keySet()++++++++++++++++" + actualDataSources.keySet());
+        System.out.println("++++++++++++actualDataSources.values().iterator().next()++++++++++++++++" + actualDataSources.values().iterator().next());
         Map<DataNode, List<DataSetRow>> dataNodeListMap = getDataSetRowMap();
         List<Callable<Void>> fillDataTasks = new LinkedList<>();
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {
