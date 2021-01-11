@@ -31,7 +31,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public class CalciteLogicSchemaFactoryTest {
+public final class CalciteLogicSchemaFactoryTest {
 
     @Test
     public void assertCreate() {
