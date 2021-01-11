@@ -67,7 +67,7 @@ public final class CommandExecutorTaskAdviceTest {
     
     @Test
     public void assertMethod() {
-        MockTargetObject targetObject = new MockTargetObject();
+        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         ADVICE.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = tracer.finishedSpans();
@@ -78,7 +78,7 @@ public final class CommandExecutorTaskAdviceTest {
     
     @Test
     public void assertExceptionHandle() {
-        MockTargetObject targetObject = new MockTargetObject();
+        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         ADVICE.onThrowing(targetObject, executeCommandMethod, new Object[]{}, new IOException());
         ADVICE.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());

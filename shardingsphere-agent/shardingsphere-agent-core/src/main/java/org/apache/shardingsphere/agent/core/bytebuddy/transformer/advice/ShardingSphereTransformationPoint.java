@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.advice;
+package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
-/**
- * Wrapped class for target and provide a context to store variable during invocation.
- */
-public interface TargetObject {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.bytebuddy.description.method.MethodDescription;
+
+@Getter
+@RequiredArgsConstructor
+public class ShardingSphereTransformationPoint<T> {
     
-    /**
-     * Get the variable from context.
-     *
-     * @return the attachment
-     */
-    Object getAttachment();
+    private final MethodDescription description;
     
-    /**
-     * Store a variable into context.
-     *
-     * @param attachment what variable you want to store
-     */
-    void setAttachment(Object attachment);
+    private final T interceptor;
+    
 }

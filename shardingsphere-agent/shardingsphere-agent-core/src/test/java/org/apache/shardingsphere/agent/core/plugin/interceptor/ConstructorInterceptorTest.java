@@ -27,7 +27,7 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
 import org.apache.shardingsphere.agent.core.mock.material.ConstructorMaterial;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
@@ -42,7 +42,7 @@ import java.util.List;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 
-public final class ConstructorMethodInterceptorTest {
+public final class ConstructorInterceptorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
@@ -64,10 +64,10 @@ public final class ConstructorMethodInterceptorTest {
                 .transform((builder, typeDescription, classLoader, module) -> {
                     if (CLASS_PATH.equals(typeDescription.getTypeName())) {
                         return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
-                                .implement(TargetObject.class)
+                                .implement(AdviceTargetObject.class)
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA))
                                 .constructor(ElementMatchers.isConstructor())
-                                .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(new ConstructorMethodInterceptor(new MockConstructorAdvice(QUEUE)))));
+                                .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(new ConstructorInterceptor(new MockConstructorAdvice(QUEUE)))));
                     }
                     return builder;
                 })
@@ -79,7 +79,7 @@ public final class ConstructorMethodInterceptorTest {
     @SuppressWarnings("all")
     public void assertNoArgConstructor() {
         Object material = new ConstructorMaterial();
-        assertTrue(material instanceof TargetObject);
+        assertTrue(material instanceof AdviceTargetObject);
     }
     
     @Test

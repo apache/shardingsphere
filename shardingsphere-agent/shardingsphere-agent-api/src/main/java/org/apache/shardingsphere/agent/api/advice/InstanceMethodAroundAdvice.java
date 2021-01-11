@@ -22,40 +22,40 @@ import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import java.lang.reflect.Method;
 
 /**
- * Weaving the advice around the static methods of target class.
+ * Weaving the advice around the target method.
  */
-public interface StaticMethodAroundAdvice {
+public interface InstanceMethodAroundAdvice {
     
     /**
      * Intercept the target method and weave the method before origin method. It will invoke before the origin calling.
      *
-     * @param clazz the target class
+     * @param target the target object
      * @param method the target method
      * @param args all method arguments
      * @param result wrapped class of result to detect whether or not to execute the origin method
      */
-    default void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
+    default void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
     }
     
     /**
-     * Intercept the target method and weave the method after origin method. It will invoke after the origin calling.
+     * Intercept the target method and weave the method after origin method.  It will invoke after the origin calling
      *
-     * @param clazz the target class
+     * @param target the target object
      * @param method the target method
      * @param args all method arguments
-     * @param result wrapped class of result to detect whether or not to execute the origin method
+     * @param result wrapped class of result to detect whether or not to execute the origin method.
      */
-    default void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
+    default void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
     }
     
     /**
      * Weaving the method after origin method throwing.
      *
-     * @param clazz the target class
+     * @param target the target object
      * @param method the target method
      * @param args all method arguments
      * @param throwable exception from target method
      */
-    default void onThrowing(final Class<?> clazz, final Method method, final Object[] args, final Throwable throwable) {
+    default void onThrowing(final AdviceTargetObject target, final Method method, final Object[] args, final Throwable throwable) {
     }
 }

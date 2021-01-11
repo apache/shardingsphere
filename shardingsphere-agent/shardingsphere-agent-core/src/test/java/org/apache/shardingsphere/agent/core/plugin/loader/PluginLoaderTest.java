@@ -24,8 +24,8 @@ import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.pool.TypePool;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
-import org.apache.shardingsphere.agent.core.mock.advice.MockMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.mock.advice.MockClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -57,15 +57,15 @@ public final class PluginLoaderTest {
         FieldReader objectPoolReader = new FieldReader(PLUGIN_LOADER, PLUGIN_LOADER.getClass().getDeclaredField("objectPool"));
         Map<String, Object> objectPool = (Map<String, Object>) objectPoolReader.read();
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
-        objectPool.put(MockMethodAroundAdvice.class.getTypeName(), new MockMethodAroundAdvice());
-        objectPool.put(MockStaticMethodAroundAdvice.class.getTypeName(), new MockStaticMethodAroundAdvice());
+        objectPool.put(MockInstanceMethodAroundAdvice.class.getTypeName(), new MockInstanceMethodAroundAdvice());
+        objectPool.put(MockClassStaticMethodAroundAdvice.class.getTypeName(), new MockClassStaticMethodAroundAdvice());
         Map<String, PluginInterceptorPoint> interceptorPointMap = Maps.newHashMap();
         PluginInterceptorPoint interceptorPoint = PluginInterceptorPoint.intercept("org.apache.shardingsphere.agent.core.mock.material.Material")
                 .aroundInstanceMethod(ElementMatchers.named("mock"))
-                .implement(MockMethodAroundAdvice.class.getTypeName())
+                .implement(MockInstanceMethodAroundAdvice.class.getTypeName())
                 .build()
                 .aroundClassStaticMethod(ElementMatchers.named("staticMock"))
-                .implement(MockStaticMethodAroundAdvice.class.getTypeName())
+                .implement(MockClassStaticMethodAroundAdvice.class.getTypeName())
                 .build()
                 .onConstructor(ElementMatchers.takesArguments(1))
                 .implement(MockConstructorAdvice.class.getTypeName())

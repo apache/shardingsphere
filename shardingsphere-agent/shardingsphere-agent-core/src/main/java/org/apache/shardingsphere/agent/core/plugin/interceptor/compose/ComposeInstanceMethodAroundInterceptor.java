@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.advice;
+package org.apache.shardingsphere.agent.core.plugin.interceptor.compose;
 
-/**
- * Weaving the advice around the constructor of target class.
- */
-public interface ConstructorAdvice {
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodAroundInterceptor;
+import org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice.ComposeInstanceMethodAroundAdvice;
+
+import java.util.List;
+
+@Slf4j
+public final class ComposeInstanceMethodAroundInterceptor extends InstanceMethodAroundInterceptor {
     
-    /**
-     * Intercept the target's constructor. This method is weaved after the constructor execution.
-     *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
-     */
-    void onConstructor(AdviceTargetObject target, Object[] args);
+    public ComposeInstanceMethodAroundInterceptor(final List<InstanceMethodAroundAdvice> instanceMethodAroundAdvices) {
+        super(new ComposeInstanceMethodAroundAdvice(instanceMethodAroundAdvices));
+    }
+    
 }

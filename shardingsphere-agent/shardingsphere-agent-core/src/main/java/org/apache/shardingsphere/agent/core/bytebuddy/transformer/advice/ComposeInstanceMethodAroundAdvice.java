@@ -15,43 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
+package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
-import brave.Span;
-import brave.Tracing;
-import brave.propagation.TraceContext;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
-/**
- * SQL parser engine advice.
- */
-public final class SQLParserEngineAdvice implements InstanceMethodAroundAdvice {
+@RequiredArgsConstructor
+public class ComposeInstanceMethodAroundAdvice implements InstanceMethodAroundAdvice {
     
-    private static final String OPERATION_NAME = "/ShardingSphere/parseSQL/";
+    private @NonNull List<InstanceMethodAroundAdvice> adviceList;
     
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        TraceContext parentContext = ((Span) ExecutorDataMap.getValue().get(ZipkinConstants.ROOT_SPAN)).context();
-        Span span = Tracing.currentTracer().newChild(parentContext).name(OPERATION_NAME);
-        span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
-        span.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
-        span.start();
-        target.setAttachment(span);
+        adviceList.forEach(item -> item.beforeMethod(target, method, args, result));
     }
     
     @Override
     public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        ((Span) target.getAttachment()).finish();
+        adviceList.forEach(item -> item.afterMethod(target, method, args, result));
     }
     
     @Override
     public void onThrowing(final AdviceTargetObject target, final Method method, final Object[] args, final Throwable throwable) {
-        ((Span) target.getAttachment()).error(throwable);
+        adviceList.forEach(item -> item.onThrowing(target, method, args, throwable));
     }
 }

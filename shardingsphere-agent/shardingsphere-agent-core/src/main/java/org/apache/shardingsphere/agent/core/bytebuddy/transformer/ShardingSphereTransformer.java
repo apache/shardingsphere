@@ -20,22 +20,34 @@ package org.apache.shardingsphere.agent.core.bytebuddy.transformer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.agent.builder.AgentBuilder.Transformer;
+import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.jar.asm.Opcodes;
+import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
-import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
-import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorMethodInterceptor;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.MethodAroundInterceptor;
-import org.apache.shardingsphere.agent.core.plugin.interceptor.StaticMethodAroundInterceptor;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.point.ClassStaticMethodPoint;
 import org.apache.shardingsphere.agent.api.point.ConstructorPoint;
 import org.apache.shardingsphere.agent.api.point.InstanceMethodPoint;
+import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
+import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.ClassStaticMethodAroundInterceptor;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorInterceptor;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.InstanceMethodAroundInterceptor;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposeClassStaticMethodAroundInterceptor;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposeConstructorInterceptor;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.compose.ComposeInstanceMethodAroundInterceptor;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere transformer.
@@ -53,57 +65,120 @@ public final class ShardingSphereTransformer implements Transformer {
         if (pluginLoader.containsType(typeDescription)) {
             Builder<?> result = builder;
             result = result.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
-                    .implement(TargetObject.class)
+                    .implement(AdviceTargetObject.class)
                     .intercept(FieldAccessor.ofField(EXTRA_DATA));
             PluginInterceptorPoint pluginInterceptorPoint = pluginLoader.loadPluginInterceptorPoint(typeDescription);
-            result = interceptorConstructorPoint(pluginInterceptorPoint, result);
-            result = interceptorClassStaticMethodPoint(pluginInterceptorPoint, result);
-            result = interceptorInstanceMethodPoint(pluginInterceptorPoint, result);
+            result = interceptorConstructorPoint(typeDescription, pluginInterceptorPoint.getConstructorPoints(), result);
+            result = interceptorClassStaticMethodPoint(typeDescription, pluginInterceptorPoint.getClassStaticMethodPoints(), result);
+            result = interceptorInstanceMethodPoint(typeDescription, pluginInterceptorPoint.getInstanceMethodPoints(), result);
             return result;
         }
         return builder;
     }
     
-    private Builder<?> interceptorConstructorPoint(final PluginInterceptorPoint pluginInterceptorPoint, final Builder<?> builder) {
+    private Builder<?> interceptorConstructorPoint(final TypeDescription description, final List<ConstructorPoint> constructorPoints, final Builder<?> builder) {
+        List<ShardingSphereTransformationPoint<? extends ConstructorInterceptor>> constructorAdviceComposePoints = description.getDeclaredMethods().stream()
+                .filter(MethodDescription::isConstructor)
+                .map(md -> {
+                    List<ConstructorPoint> advices = constructorPoints.stream()
+                            .filter(point -> point.getMatcher().matches(md))
+                            .collect(Collectors.toList());
+                    if (advices.isEmpty()) {
+                        return null;
+                    }
+                    if (advices.size() == 1) {
+                        return new ShardingSphereTransformationPoint<>(md, new ConstructorInterceptor(pluginLoader.getOrCreateInstance(advices.get(0).getAdvice())));
+                    } else {
+                        List<ConstructorAdvice> collect = advices.stream()
+                                .map(ConstructorPoint::getAdvice)
+                                .map(advice -> (ConstructorAdvice) pluginLoader.getOrCreateInstance(advice))
+                                .collect(Collectors.toList());
+                        return new ShardingSphereTransformationPoint<>(md, new ComposeConstructorInterceptor(collect));
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
         Builder<?> result = builder;
-        for (ConstructorPoint each : pluginInterceptorPoint.getConstructorPoints()) {
+        for (ShardingSphereTransformationPoint<? extends ConstructorInterceptor> each : constructorAdviceComposePoints) {
             try {
-                ConstructorMethodInterceptor interceptor = new ConstructorMethodInterceptor(pluginLoader.getOrCreateInstance(each.getAdvice()));
-                result = result.constructor(each.getMatcher()).intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(interceptor)));
+                result = result.constructor(ElementMatchers.is(each.getDescription()))
+                        .intercept(SuperMethodCall.INSTANCE.andThen(MethodDelegation.withDefaultConfiguration().to(each.getInterceptor())));
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to load advice class: {}", each.getAdvice(), ex);
+                log.error("Failed to load advice class: {}", description.getTypeName(), ex);
             }
         }
         return result;
     }
     
-    private Builder<?> interceptorClassStaticMethodPoint(final PluginInterceptorPoint pluginInterceptorPoint, final Builder<?> builder) {
+    private Builder<?> interceptorClassStaticMethodPoint(final TypeDescription description, final List<ClassStaticMethodPoint> classStaticMethodAroundPoints, final Builder<?> builder) {
+        List<ShardingSphereTransformationPoint<? extends ClassStaticMethodAroundInterceptor>> classStaticMethodAdvicePoints = description.getDeclaredMethods().stream()
+                .filter(md -> md.isStatic() && !(md.isAbstract() || md.isSynthetic()))
+                .map(md -> {
+                    List<ClassStaticMethodPoint> advices = classStaticMethodAroundPoints.stream()
+                            .filter(point -> point.getMatcher().matches(md))
+                            .collect(Collectors.toList());
+                    if (advices.isEmpty()) {
+                        return null;
+                    }
+                    if (advices.size() == 1) {
+                        return new ShardingSphereTransformationPoint<>(md, new ClassStaticMethodAroundInterceptor(pluginLoader.getOrCreateInstance(advices.get(0).getAdvice())));
+                    } else {
+                        List<ClassStaticMethodAroundAdvice> collect = advices.stream()
+                                .map(ClassStaticMethodPoint::getAdvice)
+                                .map(advice -> (ClassStaticMethodAroundAdvice) pluginLoader.getOrCreateInstance(advice))
+                                .collect(Collectors.toList());
+                        return new ShardingSphereTransformationPoint<>(md, new ComposeClassStaticMethodAroundInterceptor(collect));
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
         Builder<?> result = builder;
-        for (ClassStaticMethodPoint each : pluginInterceptorPoint.getClassStaticMethodPoints()) {
+        for (ShardingSphereTransformationPoint<? extends ClassStaticMethodAroundInterceptor> each : classStaticMethodAdvicePoints) {
             try {
-                StaticMethodAroundInterceptor interceptor = new StaticMethodAroundInterceptor(pluginLoader.getOrCreateInstance(each.getAdvice()));
-                result = result.method(each.getMatcher()).intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
+                result = result.method(ElementMatchers.is(each.getDescription()))
+                        .intercept(MethodDelegation.withDefaultConfiguration().to(each.getInterceptor()));
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to load advice class: {}", each.getAdvice(), ex);
+                log.error("Failed to load advice class: {}", description.getTypeName(), ex);
             }
         }
         return result;
     }
     
-    private Builder<?> interceptorInstanceMethodPoint(final PluginInterceptorPoint pluginInterceptorPoint, final Builder<?> builder) {
+    private Builder<?> interceptorInstanceMethodPoint(final TypeDescription description, final List<InstanceMethodPoint> instanceMethodAroundPoints, final Builder<?> builder) {
+        List<ShardingSphereTransformationPoint<? extends InstanceMethodAroundInterceptor>> instanceMethodAdviceComposePoints = description.getDeclaredMethods().stream()
+                .filter(md -> !(md.isAbstract() || md.isSynthetic()))
+                .map(md -> {
+                    List<InstanceMethodPoint> advices = instanceMethodAroundPoints.stream()
+                            .filter(point -> point.getMatcher().matches(md))
+                            .collect(Collectors.toList());
+                    if (advices.isEmpty()) {
+                        return null;
+                    }
+                    if (advices.size() == 1) {
+                        return new ShardingSphereTransformationPoint<>(md, new InstanceMethodAroundInterceptor(pluginLoader.getOrCreateInstance(advices.get(0).getAdvice())));
+                    } else {
+                        List<InstanceMethodAroundAdvice> collect = advices.stream()
+                                .map(InstanceMethodPoint::getAdvice)
+                                .map(advice -> (InstanceMethodAroundAdvice) pluginLoader.getOrCreateInstance(advice))
+                                .collect(Collectors.toList());
+                        return new ShardingSphereTransformationPoint<>(md, new ComposeInstanceMethodAroundInterceptor(collect));
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
         Builder<?> result = builder;
-        for (InstanceMethodPoint each : pluginInterceptorPoint.getInstanceMethodPoints()) {
+        for (ShardingSphereTransformationPoint<? extends InstanceMethodAroundInterceptor> each : instanceMethodAdviceComposePoints) {
             try {
-                MethodAroundInterceptor interceptor = new MethodAroundInterceptor(pluginLoader.getOrCreateInstance(each.getAdvice()));
-                result = result.method(each.getMatcher()).intercept(MethodDelegation.withDefaultConfiguration().to(interceptor));
+                result = result.method(ElementMatchers.is(each.getDescription()))
+                        .intercept(MethodDelegation.withDefaultConfiguration().to(each.getInterceptor()));
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
-                log.error("Failed to load advice class: {}", each.getAdvice(), ex);
+                log.error("Failed to load advice class: {}", description.getTypeName(), ex);
             }
         }
         return result;

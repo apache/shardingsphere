@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 import brave.Span;
 import brave.Tracing;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
@@ -47,7 +47,7 @@ public final class SQLParserEngineAdviceTest extends AdviceBaseTest {
     
     private SQLParserEngineAdvice advice;
     
-    private TargetObject targetObject;
+    private AdviceTargetObject targetObject;
     
     private Object attachment;
     
@@ -77,7 +77,7 @@ public final class SQLParserEngineAdviceTest extends AdviceBaseTest {
                     return invocation.callRealMethod();
             }
         });
-        targetObject = (TargetObject) parserEngine;
+        targetObject = (AdviceTargetObject) parserEngine;
         advice = new SQLParserEngineAdvice();
     }
     
