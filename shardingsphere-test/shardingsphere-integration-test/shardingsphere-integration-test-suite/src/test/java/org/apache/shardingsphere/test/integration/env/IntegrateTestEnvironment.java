@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
+import org.apache.shardingsphere.test.integration.env.props.DatabaseScenarioProperties;
+import org.apache.shardingsphere.test.integration.env.props.EnvironmentProperties;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
