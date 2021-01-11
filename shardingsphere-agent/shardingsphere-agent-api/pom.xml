@@ -27,5 +27,4 @@
     </parent>
     <artifactId>shardingsphere-agent-api</artifactId>
     <name>${project.artifactId}</name>
-
 </project>

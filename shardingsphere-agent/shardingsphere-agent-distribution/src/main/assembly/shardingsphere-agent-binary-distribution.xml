@@ -24,7 +24,7 @@
         <format>tar.gz</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
-
+    
     <fileSets>
         <fileSet>
             <directory>src/main/resources/conf</directory>
@@ -39,7 +39,7 @@
             <outputDirectory>conf</outputDirectory>
             <fileMode>0644</fileMode>
         </fileSet>
-
+        
         <fileSet>
             <directory>${project.basedir}/../shardingsphere-agent-plugins/shardingsphere-agent-plugin-logging/target/plugins</directory>
             <outputDirectory>./plugins</outputDirectory>
@@ -47,7 +47,7 @@
                 <include>**.jar</include>
             </includes>
         </fileSet>
-
+        
         <fileSet>
             <directory>${project.basedir}/../shardingsphere-agent-plugins/shardingsphere-agent-plugin-tracing/target/plugins</directory>
             <outputDirectory>./plugins</outputDirectory>
@@ -63,7 +63,7 @@
             </includes>
         </fileSet>
     </fileSets>
-
+    
     <moduleSets>
         <moduleSet>
             <useAllReactorProjects>true</useAllReactorProjects>

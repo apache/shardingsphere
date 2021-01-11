@@ -44,18 +44,6 @@ public final class PrometheusPluginBootService implements PluginBootService {
         MetricsReporter.register(PrometheusMetricsRegister.getInstance());
     }
     
-    @Override
-    public void close() {
-        if (null != httpServer) {
-            httpServer.stop();
-        }
-    }
-    
-    @Override
-    public String getType() {
-        return "Prometheus";
-    }
-    
     private void startServer(final PluginConfiguration configuration) {
         boolean enabled = Boolean.parseBoolean(configuration.getProps().getProperty("JVM_INFORMATION_COLLECTOR_ENABLED"));
         registerJvm(enabled);
@@ -75,5 +63,17 @@ public final class PrometheusPluginBootService implements PluginBootService {
             new BuildInfoCollector().register();
             DefaultExports.initialize();
         }
+    }
+    
+    @Override
+    public void close() {
+        if (null != httpServer) {
+            httpServer.stop();
+        }
+    }
+    
+    @Override
+    public String getType() {
+        return "Prometheus";
     }
 }

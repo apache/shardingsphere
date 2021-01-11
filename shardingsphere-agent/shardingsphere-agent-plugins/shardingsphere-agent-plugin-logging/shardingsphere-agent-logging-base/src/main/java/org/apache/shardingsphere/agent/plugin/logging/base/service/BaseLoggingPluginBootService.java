@@ -30,11 +30,11 @@ public final class BaseLoggingPluginBootService implements PluginBootService {
     }
     
     @Override
-    public String getType() {
-        return "Logging";
+    public void close() {
     }
     
     @Override
-    public void close() {
+    public String getType() {
+        return "Logging";
     }
 }
