@@ -52,7 +52,7 @@ public final class IntegrateTestEnvironment {
     
     private final Collection<String> scenarios;
     
-    private final Map<DatabaseType, DatabaseEnvironment> databaseEnvironments;
+    private final Map<DatabaseType, Map<String, DatabaseEnvironment>> databaseEnvironments;
 
     private final Map<String, DatabaseEnvironment> proxyEnvironments;
     
@@ -66,32 +66,44 @@ public final class IntegrateTestEnvironment {
         proxyEnvironments = createProxyEnvironments();
     }
     
-    private Map<DatabaseType, DatabaseEnvironment> createDatabaseEnvironments(final Properties envProps) {
+    private Map<DatabaseType, Map<String, DatabaseEnvironment>> createDatabaseEnvironments(final Properties envProps) {
         Collection<DatabaseType> databaseTypes = Arrays.stream(
                 envProps.getProperty("it.databases", "H2").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
-        Map<DatabaseType, DatabaseEnvironment> result = new LinkedHashMap<>(databaseTypes.size(), 1);
+        Map<DatabaseType, Map<String, DatabaseEnvironment>> result = new LinkedHashMap<>(databaseTypes.size(), 1);
         for (DatabaseType each : databaseTypes) {
-            result.put(each, createDatabaseEnvironment(each, envProps));
+            Map<String, DatabaseEnvironment> databaseEnvironments = new LinkedHashMap<>(scenarios.size(), 1);
+            for (String scenario : scenarios) {
+                databaseEnvironments.put(scenario, createDatabaseEnvironment(each, envProps, scenario));
+                result.put(each, databaseEnvironments);
+            }
         }
         return result;
     }
     
-    private DatabaseEnvironment createDatabaseEnvironment(final DatabaseType databaseType, final Properties envProps) {
+    private DatabaseEnvironment createDatabaseEnvironment(final DatabaseType databaseType, final Properties envProps, final String scenario) {
         switch (databaseType.getName()) {
             case "H2":
                 return new DatabaseEnvironment(databaseType, "", 0, "sa", "");
             case "MySQL":
-                return new DatabaseEnvironment(databaseType, envProps.getProperty("it.mysql.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("it.mysql.port", "3306")),
-                        envProps.getProperty("it.mysql.username", "root"), envProps.getProperty("it.mysql.password", ""));
+                return new DatabaseEnvironment(databaseType, envProps.getProperty(String.format("it.%s.mysql.host", scenario), "127.0.0.1"), 
+                        Integer.parseInt(envProps.getProperty(String.format("it.%s.mysql.port", scenario), "3306")),
+                        envProps.getProperty(String.format("it.%s.mysql.username", scenario), "root"), 
+                        envProps.getProperty(String.format("it.%s.mysql.password", scenario), ""));
             case "PostgreSQL":
-                return new DatabaseEnvironment(databaseType, envProps.getProperty("it.postgresql.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("it.postgresql.port", "5432")),
-                        envProps.getProperty("it.postgresql.username", "postgres"), envProps.getProperty("it.postgresql.password", ""));
+                return new DatabaseEnvironment(databaseType, envProps.getProperty(String.format("it.%s.postgresql.host", scenario), "127.0.0.1"), 
+                        Integer.parseInt(envProps.getProperty(String.format("it.%s.postgresql.port", scenario), "5432")),
+                        envProps.getProperty(String.format("it.%s.postgresql.username", scenario), "postgres"), 
+                        envProps.getProperty(String.format("it.%s.postgresql.password", scenario), ""));
             case "SQLServer":
-                return new DatabaseEnvironment(databaseType, envProps.getProperty("it.sqlserver.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("it.sqlserver.port", "1433")),
-                        envProps.getProperty("it.sqlserver.username", "sa"), envProps.getProperty("it.sqlserver.password", "Jdbc1234"));
+                return new DatabaseEnvironment(databaseType, envProps.getProperty(String.format("it.%s.sqlserver.host", scenario), "127.0.0.1"), 
+                        Integer.parseInt(envProps.getProperty(String.format("it.%s.sqlserver.port", scenario), "1433")),
+                        envProps.getProperty(String.format("it.%s.sqlserver.username", scenario), "sa"), 
+                        envProps.getProperty(String.format("it.%s.sqlserver.password", scenario), "Jdbc1234"));
             case "Oracle":
-                return new DatabaseEnvironment(databaseType, envProps.getProperty("it.oracle.host", "127.0.0.1"), Integer.parseInt(envProps.getProperty("it.oracle.port", "1521")),
-                        envProps.getProperty("it.oracle.username", "jdbc"), envProps.getProperty("it.oracle.password", "jdbc"));
+                return new DatabaseEnvironment(databaseType, envProps.getProperty(String.format("it.%s.oracle.host", scenario), "127.0.0.1"), 
+                        Integer.parseInt(envProps.getProperty(String.format("it.%s.oracle.port", scenario), "1521")),
+                        envProps.getProperty(String.format("it.%s.oracle.username", scenario), "jdbc"),
+                        envProps.getProperty(String.format("it.%s.oracle.password", scenario), "jdbc"));
             default:
                 throw new UnsupportedOperationException(databaseType.getName());
         }
