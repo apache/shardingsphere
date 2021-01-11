@@ -79,18 +79,9 @@
     
     <profiles>
         <profile>
-            <id>it.native</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
+            <id>it.env.docker</id>
             <properties>
-                <it.mode>native</it.mode>
-            </properties>
-        </profile>
-        <profile>
-            <id>it.docker</id>
-            <properties>
-                <it.mode>docker</it.mode>
+                <it.env>docker</it.env>
             </properties>
             <build>
                 <plugins>

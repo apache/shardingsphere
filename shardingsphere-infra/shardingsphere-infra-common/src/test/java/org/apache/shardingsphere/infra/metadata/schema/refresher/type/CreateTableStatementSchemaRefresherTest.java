@@ -76,7 +76,7 @@ public final class CreateTableStatementSchemaRefresherTest {
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 3, new IdentifierValue("t_order_0"))));
         SchemaRefresher<CreateTableStatement> schemaRefresher = new CreateTableStatementSchemaRefresher();
         SchemaBuilderMaterials materials = mock(SchemaBuilderMaterials.class);
-        schemaRefresher.refresh(schema, Collections.emptyList(), createTableStatement, materials);
+        schemaRefresher.refresh(schema, Collections.singleton("ds"), createTableStatement, materials);
         assertTrue(schema.containsTable("t_order_0"));
     }
     

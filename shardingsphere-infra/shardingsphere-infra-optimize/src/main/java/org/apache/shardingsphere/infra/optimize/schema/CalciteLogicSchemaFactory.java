@@ -59,4 +59,3 @@ public final class CalciteLogicSchemaFactory {
         return schemas.get(name).create(executor);
     }
 }
-

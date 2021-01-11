@@ -15,35 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.optimize.schema.table;
+package org.apache.shardingsphere.infra.metadata.schema.refresher.event;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeFactory;
-import org.apache.calcite.rel.type.RelProtoDataType;
-import org.apache.calcite.schema.impl.AbstractTable;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
 
 /**
- * Abstract calcite table.
+ * Create table event.
  */
-@Getter(AccessLevel.PROTECTED)
 @RequiredArgsConstructor
-public abstract class AbstractCalciteTable extends AbstractTable {
+@Getter
+public final class CreateTableEvent {
     
-    private final String name;
+    private final String dataSourceName;
+    
+    private final String tableName;
     
     private final TableMetaData tableMetaData;
-    
-    private final RelProtoDataType relProtoDataType;
-    
-    private final CalciteRowExecutor executor;
-    
-    @Override
-    public final RelDataType getRowType(final RelDataTypeFactory typeFactory) {
-        return relProtoDataType.apply(typeFactory);
-    }
 }

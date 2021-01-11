@@ -50,6 +50,8 @@ public final class ConfigCenterNode {
     
     private static final String PATH_SEPARATOR = "/";
     
+    private static final String CACHE_NODE = "cache";
+    
     /**
      * Get metadata node path.
      *
@@ -162,5 +164,15 @@ public final class ConfigCenterNode {
             result.add(getSchemaPath(schemaName));
         }
         return result;
+    }
+    
+    /**
+     * Get cache path.
+     * 
+     * @param path path
+     * @return cache path
+     */
+    public String getCachePath(final String path) {
+        return Joiner.on(PATH_SEPARATOR).join(path, CACHE_NODE);
     }
 }

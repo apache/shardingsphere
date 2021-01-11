@@ -75,7 +75,11 @@ public final class DropReplicaQueryRuleBackendHandler extends SchemaRequiredBack
         for (String each : ruleNames) {
             yamlConfig.getDataSources().remove(each);
         }
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(yamlConfig));
+        if (yamlConfig.getDataSources().isEmpty()) {
+            return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.EMPTY_LIST);
+        } else {
+            return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(yamlConfig));
+        }
     }
     
     private void post(final String schemaName, final Collection<RuleConfiguration> rules) {
