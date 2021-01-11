@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.tracing.opentracing.constant;
+package org.apache.shardingsphere.governance.core.event.model.datasource;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import java.util.Map;
 
 /**
- * Sharding error log tag keys.
+ * Data source altered event.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingErrorLogTagKeys {
+@RequiredArgsConstructor
+@Getter
+public final class DataSourceAlteredEvent {
     
-    public static final String EVENT = "event";
+    private final String schemaName;
     
-    public static final String EVENT_ERROR_TYPE = "error";
-    
-    public static final String ERROR_KIND = "error.kind";
-    
-    public static final String MESSAGE = "message";
+    private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
 }

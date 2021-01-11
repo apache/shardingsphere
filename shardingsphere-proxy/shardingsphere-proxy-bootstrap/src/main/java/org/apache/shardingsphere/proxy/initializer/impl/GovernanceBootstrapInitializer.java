@@ -42,6 +42,7 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.service.impl.DistributedScalingJobService;
+import org.apache.shardingsphere.scaling.core.spi.ScalingWorkerLoader;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 import java.util.Collection;
@@ -143,6 +144,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
             ServerConfiguration serverConfiguration = scalingConfigurationOptional.get();
             serverConfiguration.setDistributedScalingService(new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance()));
             ScalingContext.getInstance().init(serverConfiguration);
+            ScalingWorkerLoader.initScalingWorker();
             ScalingServiceHolder.getInstance().init(new DistributedScalingJobService());
         }
     }
