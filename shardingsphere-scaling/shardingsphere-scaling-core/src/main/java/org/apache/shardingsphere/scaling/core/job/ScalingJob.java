@@ -68,7 +68,7 @@ public final class ScalingJob {
         this.scalingConfig = scalingConfig;
         shardingItem = scalingConfig.getJobConfiguration().getShardingItem();
         taskConfigs.addAll(TaskConfigurationUtil.toTaskConfigs(scalingConfig));
-        databaseType = taskConfigs.get(0).getDumperConfig().getDataSourceConfig().getDatabaseType().getName();
+        databaseType = taskConfigs.isEmpty() ? null : taskConfigs.get(0).getDumperConfig().getDataSourceConfig().getDatabaseType().getName();
     }
     
     private static SnowflakeKeyGenerateAlgorithm initIdAutoIncreaseGenerator() {

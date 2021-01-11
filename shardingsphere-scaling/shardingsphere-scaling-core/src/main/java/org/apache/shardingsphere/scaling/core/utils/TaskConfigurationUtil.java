@@ -250,7 +250,7 @@ public final class TaskConfigurationUtil {
             List<String> oldActualDataNodes = new InlineExpressionParser(oldShardingRuleConfigMap.get(each).getActualDataNodes()).splitAndEvaluate();
             List<String> newActualDataNodes = new InlineExpressionParser(newShardingRuleConfigMap.get(each).getActualDataNodes()).splitAndEvaluate();
             if (!CollectionUtils.isEqualCollection(oldActualDataNodes, newActualDataNodes) || includeModifiedDataSources(newActualDataNodes, modifiedDataSources)) {
-                result.add(newShardingRuleConfigMap.get(each).getActualDataNodes());
+                result.add(oldShardingRuleConfigMap.get(each).getActualDataNodes());
             }
         });
         return result;
