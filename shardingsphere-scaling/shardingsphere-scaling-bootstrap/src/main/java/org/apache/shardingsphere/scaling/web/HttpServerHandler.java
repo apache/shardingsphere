@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.web;
 
-import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.LongSerializationPolicy;
