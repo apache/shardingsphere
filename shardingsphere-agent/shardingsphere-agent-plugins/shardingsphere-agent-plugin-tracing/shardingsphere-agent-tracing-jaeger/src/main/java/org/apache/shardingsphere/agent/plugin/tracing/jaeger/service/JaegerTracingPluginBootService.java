@@ -19,9 +19,10 @@ package org.apache.shardingsphere.agent.plugin.tracing.jaeger.service;
 
 import io.jaegertracing.Configuration;
 import io.opentracing.util.GlobalTracer;
-import java.util.Optional;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
+
+import java.util.Optional;
 
 /**
  * Jaeger tracing plugin boot service.
@@ -30,6 +31,7 @@ public final class JaegerTracingPluginBootService implements PluginBootService {
     
     private Configuration configuration;
     
+    @SuppressWarnings("AccessOfSystemProperties")
     @Override
     public void start(final PluginConfiguration pluginConfig) {
         pluginConfig.getProps().forEach((key, value) -> System.setProperty(String.valueOf(key), String.valueOf(value)));
@@ -44,14 +46,14 @@ public final class JaegerTracingPluginBootService implements PluginBootService {
     }
     
     @Override
-    public String getType() {
-        return "Jaeger";
-    }
-    
-    @Override
     public void close() {
         if (null != configuration) {
             configuration.closeTracer();
         }
+    }
+    
+    @Override
+    public String getType() {
+        return "Jaeger";
     }
 }

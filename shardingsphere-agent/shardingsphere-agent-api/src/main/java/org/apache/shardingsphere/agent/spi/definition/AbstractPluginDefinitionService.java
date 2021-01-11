@@ -31,7 +31,7 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
     
     private final Map<String, PluginInterceptorPoint.Builder> interceptorPointMap = Maps.newHashMap();
     
-    protected PluginInterceptorPoint.Builder intercept(final String classNameOfTarget) {
+    protected final PluginInterceptorPoint.Builder intercept(final String classNameOfTarget) {
         if (interceptorPointMap.containsKey(classNameOfTarget)) {
             return interceptorPointMap.get(classNameOfTarget);
         }
@@ -40,11 +40,6 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
         return builder;
     }
     
-    /**
-     * Build collection of pluginInterceptorPoint.
-     *
-     * @return Collection of pluginInterceptorPoint
-     */
     @Override
     public final List<PluginInterceptorPoint> build() {
         define();
