@@ -71,7 +71,7 @@ public final class IntegrateTestEnvironment {
     private Properties loadProperties() {
         Properties result = new Properties();
         try {
-            result.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream("env/env.properties"));
+            result.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream("engine.properties"));
         } catch (final IOException ex) {
             throw new RuntimeException(ex);
         }
