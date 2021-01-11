@@ -62,15 +62,15 @@ public final class IntegrateTestEnvironment {
         adapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.adapters"));
         runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
         scenarios = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.scenarios"));
-        Map<String, Properties> scenarioProps = getScenarioProperties();
-        databaseEnvironments = createDatabaseEnvironments(getDatabaseTypes(engineEnvProps), scenarioProps);
-        proxyEnvironments = createProxyEnvironments(scenarioProps);
+        Map<String, DatabaseScenarioProperties> databaseProps = getDatabaseScenarioProperties();
+        databaseEnvironments = createDatabaseEnvironments(getDatabaseTypes(engineEnvProps), databaseProps);
+        proxyEnvironments = createProxyEnvironments(databaseProps);
     }
     
-    private Map<String, Properties> getScenarioProperties() {
-        Map<String, Properties> result = new HashMap<>(scenarios.size(), 1);
+    private Map<String, DatabaseScenarioProperties> getDatabaseScenarioProperties() {
+        Map<String, DatabaseScenarioProperties> result = new HashMap<>(scenarios.size(), 1);
         for (String each : scenarios) {
-            result.put(each, EnvironmentProperties.loadProperties(String.format("env/%s/scenario-env.properties", each)));
+            result.put(each, new DatabaseScenarioProperties(each, EnvironmentProperties.loadProperties(String.format("env/%s/scenario-env.properties", each))));
         }
         return result;
     }
@@ -79,12 +79,12 @@ public final class IntegrateTestEnvironment {
         return Arrays.stream(engineEnvProps.getProperty("it.databases", "H2").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
     }
 
-    private Map<DatabaseType, Map<String, DatabaseEnvironment>> createDatabaseEnvironments(final Collection<DatabaseType> databaseTypes, final Map<String, Properties> scenarioProps) {
+    private Map<DatabaseType, Map<String, DatabaseEnvironment>> createDatabaseEnvironments(final Collection<DatabaseType> databaseTypes, final Map<String, DatabaseScenarioProperties> databaseProps) {
         Map<DatabaseType, Map<String, DatabaseEnvironment>> result = new LinkedHashMap<>(databaseTypes.size(), 1);
         for (DatabaseType each : databaseTypes) {
             Map<String, DatabaseEnvironment> databaseEnvironments = new LinkedHashMap<>(scenarios.size(), 1);
             for (String scenario : scenarios) {
-                databaseEnvironments.put(scenario, createDatabaseEnvironment(each, new DatabaseScenarioProperties(scenario, scenarioProps.get(scenario))));
+                databaseEnvironments.put(scenario, createDatabaseEnvironment(each, databaseProps.get(scenario)));
                 result.put(each, databaseEnvironments);
             }
         }
@@ -99,10 +99,10 @@ public final class IntegrateTestEnvironment {
                 databaseProps.getDatabasePort(databaseType), databaseProps.getDatabaseUsername(databaseType), databaseProps.getDatabasePassword(databaseType));
     }
     
-    private Map<String, DatabaseEnvironment> createProxyEnvironments(final Map<String, Properties> scenarioProps) {
+    private Map<String, DatabaseEnvironment> createProxyEnvironments(final Map<String, DatabaseScenarioProperties> databaseProps) {
         Map<String, DatabaseEnvironment> result = new HashMap<>(scenarios.size(), 1);
         for (String each : scenarios) {
-            result.put(each, createProxyEnvironment(new DatabaseScenarioProperties(each, scenarioProps.get(each))));
+            result.put(each, createProxyEnvironment(databaseProps.get(each)));
         }
         return result;
     }
