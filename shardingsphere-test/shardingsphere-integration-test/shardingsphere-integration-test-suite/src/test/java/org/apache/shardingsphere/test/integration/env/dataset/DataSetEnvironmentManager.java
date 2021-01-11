@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.integration.env.dataset;
 
 import com.google.common.base.Joiner;
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
@@ -26,12 +27,12 @@ import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceMan
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandler;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandlerFactory;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.cases.value.SQLValueGroup;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
+import org.apache.shardingsphere.test.integration.cases.value.SQLValueGroup;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
@@ -86,7 +87,7 @@ public final class DataSetEnvironmentManager {
     public void fillData() throws SQLException, ParseException {
         System.out.println("++++++++++++actualDataSources.size()++++++++++++++++" + actualDataSources.size());
         System.out.println("++++++++++++actualDataSources.keySet()++++++++++++++++" + actualDataSources.keySet());
-        System.out.println("++++++++++++actualDataSources.values().iterator().next()++++++++++++++++" + actualDataSources.values().iterator().next());
+        System.out.println("++++++++++++jdbc url++++++++++++++++" + ((HikariDataSource) actualDataSources.values().iterator().next()).getJdbcUrl());
         Map<DataNode, List<DataSetRow>> dataNodeListMap = getDataSetRowMap();
         List<Callable<Void>> fillDataTasks = new LinkedList<>();
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {
