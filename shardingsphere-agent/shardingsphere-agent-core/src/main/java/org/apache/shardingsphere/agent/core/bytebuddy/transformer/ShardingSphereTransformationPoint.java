@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
+package org.apache.shardingsphere.agent.core.bytebuddy.transformer;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
