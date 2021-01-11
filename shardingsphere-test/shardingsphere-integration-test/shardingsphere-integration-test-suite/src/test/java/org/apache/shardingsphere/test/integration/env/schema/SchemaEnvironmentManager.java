@@ -69,6 +69,9 @@ public final class SchemaEnvironmentManager {
      * @throws JAXBException JAXB exception
      */
     public static void createDatabases() throws IOException, JAXBException {
+        if (IntegrateTestEnvironment.getInstance().isEnvironmentPrepared()) {
+            return;
+        }
         for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
             dropDatabases(each);
             createDatabases(each);
@@ -102,6 +105,9 @@ public final class SchemaEnvironmentManager {
      * @throws JAXBException JAXB exception
      */
     public static void dropDatabases() throws IOException, JAXBException {
+        if (IntegrateTestEnvironment.getInstance().isEnvironmentPrepared()) {
+            return;
+        }
         for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
             dropDatabases(each);
         }
@@ -143,6 +149,9 @@ public final class SchemaEnvironmentManager {
      * @throws IOException IO exception
      */
     public static void createTables() throws JAXBException, IOException {
+        if (IntegrateTestEnvironment.getInstance().isEnvironmentPrepared()) {
+            return;
+        }
         for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
             createTables(each);
         }
@@ -170,6 +179,9 @@ public final class SchemaEnvironmentManager {
      * @throws IOException IO exception
      */
     public static void dropTables() throws JAXBException, IOException {
+        if (IntegrateTestEnvironment.getInstance().isEnvironmentPrepared()) {
+            return;
+        }
         for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
             dropTables(each);
         }

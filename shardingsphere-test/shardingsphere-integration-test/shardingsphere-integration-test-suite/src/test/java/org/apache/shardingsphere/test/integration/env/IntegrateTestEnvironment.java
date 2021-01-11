@@ -44,6 +44,8 @@ import java.util.stream.Collectors;
 public final class IntegrateTestEnvironment {
     
     private static final IntegrateTestEnvironment INSTANCE = new IntegrateTestEnvironment();
+
+    private final boolean isEnvironmentPrepared;
     
     private final Collection<String> adapters;
     
@@ -57,6 +59,7 @@ public final class IntegrateTestEnvironment {
     
     private IntegrateTestEnvironment() {
         Properties envProps = loadProperties();
+        isEnvironmentPrepared = "docker".equals(envProps.getProperty("it.env.type"));
         adapters = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.adapters"));
         runAdditionalTestCases = Boolean.parseBoolean(envProps.getProperty("it.run.additional.cases"));
         scenarios = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.scenarios"));
