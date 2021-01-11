@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 public final class IntegrateTestEnvironment {
     
     private static final IntegrateTestEnvironment INSTANCE = new IntegrateTestEnvironment();
-
+    
     private final boolean isEnvironmentPrepared;
     
     private final Collection<String> adapters;
@@ -53,7 +53,7 @@ public final class IntegrateTestEnvironment {
     private final Collection<String> scenarios;
     
     private final Map<DatabaseType, Map<String, DatabaseEnvironment>> databaseEnvironments;
-
+    
     private final Map<String, DatabaseEnvironment> proxyEnvironments;
     
     private IntegrateTestEnvironment() {
