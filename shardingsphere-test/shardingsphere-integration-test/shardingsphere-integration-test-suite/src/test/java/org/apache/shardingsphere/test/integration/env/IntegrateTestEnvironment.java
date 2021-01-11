@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -58,27 +57,13 @@ public final class IntegrateTestEnvironment {
     private final Map<String, DatabaseEnvironment> proxyEnvironments;
     
     private IntegrateTestEnvironment() {
-        Properties envProps = loadProperties();
-        isEnvironmentPrepared = "docker".equals(envProps.getProperty("it.env.type"));
-        adapters = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.adapters"));
-        runAdditionalTestCases = Boolean.parseBoolean(envProps.getProperty("it.run.additional.cases"));
-        scenarios = Splitter.on(",").trimResults().splitToList(envProps.getProperty("it.scenarios"));
-        databaseEnvironments = createDatabaseEnvironments(envProps);
-        proxyEnvironments = createProxyEnvironments(envProps);
-    }
-    
-    @SuppressWarnings("AccessOfSystemProperties")
-    private Properties loadProperties() {
-        Properties result = new Properties();
-        try {
-            result.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream("engine.properties"));
-        } catch (final IOException ex) {
-            throw new RuntimeException(ex);
-        }
-        for (String each : System.getProperties().stringPropertyNames()) {
-            result.setProperty(each, System.getProperty(each));
-        }
-        return result;
+        Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
+        isEnvironmentPrepared = "docker".equals(engineEnvProps.getProperty("it.env.type"));
+        adapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.adapters"));
+        runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
+        scenarios = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.scenarios"));
+        databaseEnvironments = createDatabaseEnvironments(engineEnvProps);
+        proxyEnvironments = createProxyEnvironments();
     }
     
     private Map<DatabaseType, DatabaseEnvironment> createDatabaseEnvironments(final Properties envProps) {
@@ -112,20 +97,21 @@ public final class IntegrateTestEnvironment {
         }
     }
     
-    private Map<String, DatabaseEnvironment> createProxyEnvironments(final Properties envProps) {
+    private Map<String, DatabaseEnvironment> createProxyEnvironments() {
         Map<String, DatabaseEnvironment> result = new HashMap<>(scenarios.size(), 1);
         for (String each : scenarios) {
             // TODO hard code for MySQL, should configurable
-            result.put(each, createProxyEnvironment(envProps, each));
+            result.put(each, createProxyEnvironment(each));
         }
         return result;
     }
     
-    private DatabaseEnvironment createProxyEnvironment(final Properties envProps, final String scenario) {
-        String host = envProps.getProperty(String.format("it.proxy.%s.host", scenario), "127.0.0.1");
-        int port = Integer.parseInt(envProps.getProperty(String.format("it.proxy.%s.port", scenario), "3307"));
-        String username = envProps.getProperty(String.format("it.proxy.%s.username", scenario), "root");
-        String password = envProps.getProperty(String.format("it.proxy.%s.password", scenario), "root");
+    private DatabaseEnvironment createProxyEnvironment(final String scenario) {
+        Properties envProps = EnvironmentProperties.loadProperties(String.format("env/%s/scenario-env.properties", scenario));
+        String host = envProps.getProperty(String.format("it.%s.proxy.host", scenario), "127.0.0.1");
+        int port = Integer.parseInt(envProps.getProperty(String.format("it.%s.proxy.port", scenario), "3307"));
+        String username = envProps.getProperty(String.format("it.%s.proxy.username", scenario), "root");
+        String password = envProps.getProperty(String.format("it.%s.proxy.password", scenario), "root");
         return new DatabaseEnvironment(new MySQLDatabaseType(), host, port, username, password);
     }
     
