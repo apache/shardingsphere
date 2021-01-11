@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
+import org.apache.shardingsphere.test.integration.env.props.DatabaseScenarioProperties;
+import org.apache.shardingsphere.test.integration.env.props.EnvironmentProperties;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -62,70 +64,54 @@ public final class IntegrateTestEnvironment {
         adapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.adapters"));
         runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
         scenarios = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.scenarios"));
-        databaseEnvironments = createDatabaseEnvironments(engineEnvProps);
-        proxyEnvironments = createProxyEnvironments();
+        Map<String, DatabaseScenarioProperties> databaseProps = getDatabaseScenarioProperties();
+        databaseEnvironments = createDatabaseEnvironments(getDatabaseTypes(engineEnvProps), databaseProps);
+        proxyEnvironments = createProxyEnvironments(databaseProps);
     }
     
-    private Map<DatabaseType, Map<String, DatabaseEnvironment>> createDatabaseEnvironments(final Properties envProps) {
-        Collection<DatabaseType> databaseTypes = Arrays.stream(
-                envProps.getProperty("it.databases", "H2").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
+    private Map<String, DatabaseScenarioProperties> getDatabaseScenarioProperties() {
+        Map<String, DatabaseScenarioProperties> result = new HashMap<>(scenarios.size(), 1);
+        for (String each : scenarios) {
+            result.put(each, new DatabaseScenarioProperties(each, EnvironmentProperties.loadProperties(String.format("env/%s/scenario-env.properties", each))));
+        }
+        return result;
+    }
+    
+    private Collection<DatabaseType> getDatabaseTypes(final Properties engineEnvProps) {
+        return Arrays.stream(engineEnvProps.getProperty("it.databases", "H2").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
+    }
+
+    private Map<DatabaseType, Map<String, DatabaseEnvironment>> createDatabaseEnvironments(final Collection<DatabaseType> databaseTypes, final Map<String, DatabaseScenarioProperties> databaseProps) {
         Map<DatabaseType, Map<String, DatabaseEnvironment>> result = new LinkedHashMap<>(databaseTypes.size(), 1);
         for (DatabaseType each : databaseTypes) {
             Map<String, DatabaseEnvironment> databaseEnvironments = new LinkedHashMap<>(scenarios.size(), 1);
             for (String scenario : scenarios) {
-                databaseEnvironments.put(scenario, createDatabaseEnvironment(each, scenario));
+                databaseEnvironments.put(scenario, createDatabaseEnvironment(each, databaseProps.get(scenario)));
                 result.put(each, databaseEnvironments);
             }
         }
         return result;
     }
     
-    private DatabaseEnvironment createDatabaseEnvironment(final DatabaseType databaseType, final String scenario) {
-        Properties envProps = EnvironmentProperties.loadProperties(String.format("env/%s/scenario-env.properties", scenario));
-        switch (databaseType.getName()) {
-            case "H2":
-                return new DatabaseEnvironment(databaseType, "", 0, "sa", "");
-            case "MySQL":
-                return new DatabaseEnvironment(databaseType, envProps.getProperty(String.format("it.%s.mysql.host", scenario), "127.0.0.1"), 
-                        Integer.parseInt(envProps.getProperty(String.format("it.%s.mysql.port", scenario), "3306")),
-                        envProps.getProperty(String.format("it.%s.mysql.username", scenario), "root"), 
-                        envProps.getProperty(String.format("it.%s.mysql.password", scenario), ""));
-            case "PostgreSQL":
-                return new DatabaseEnvironment(databaseType, envProps.getProperty(String.format("it.%s.postgresql.host", scenario), "127.0.0.1"), 
-                        Integer.parseInt(envProps.getProperty(String.format("it.%s.postgresql.port", scenario), "5432")),
-                        envProps.getProperty(String.format("it.%s.postgresql.username", scenario), "postgres"), 
-                        envProps.getProperty(String.format("it.%s.postgresql.password", scenario), ""));
-            case "SQLServer":
-                return new DatabaseEnvironment(databaseType, envProps.getProperty(String.format("it.%s.sqlserver.host", scenario), "127.0.0.1"), 
-                        Integer.parseInt(envProps.getProperty(String.format("it.%s.sqlserver.port", scenario), "1433")),
-                        envProps.getProperty(String.format("it.%s.sqlserver.username", scenario), "sa"), 
-                        envProps.getProperty(String.format("it.%s.sqlserver.password", scenario), "Jdbc1234"));
-            case "Oracle":
-                return new DatabaseEnvironment(databaseType, envProps.getProperty(String.format("it.%s.oracle.host", scenario), "127.0.0.1"), 
-                        Integer.parseInt(envProps.getProperty(String.format("it.%s.oracle.port", scenario), "1521")),
-                        envProps.getProperty(String.format("it.%s.oracle.username", scenario), "jdbc"),
-                        envProps.getProperty(String.format("it.%s.oracle.password", scenario), "jdbc"));
-            default:
-                throw new UnsupportedOperationException(databaseType.getName());
+    private DatabaseEnvironment createDatabaseEnvironment(final DatabaseType databaseType, final DatabaseScenarioProperties databaseProps) {
+        if ("H2".equals(databaseType.getName())) {
+            return new DatabaseEnvironment(databaseType, "", 0, "sa", ""); 
         }
+        return new DatabaseEnvironment(databaseType, databaseProps.getDatabaseHost(databaseType), 
+                databaseProps.getDatabasePort(databaseType), databaseProps.getDatabaseUsername(databaseType), databaseProps.getDatabasePassword(databaseType));
     }
     
-    private Map<String, DatabaseEnvironment> createProxyEnvironments() {
+    private Map<String, DatabaseEnvironment> createProxyEnvironments(final Map<String, DatabaseScenarioProperties> databaseProps) {
         Map<String, DatabaseEnvironment> result = new HashMap<>(scenarios.size(), 1);
         for (String each : scenarios) {
-            result.put(each, createProxyEnvironment(each));
+            result.put(each, createProxyEnvironment(databaseProps.get(each)));
         }
         return result;
     }
     
-    private DatabaseEnvironment createProxyEnvironment(final String scenario) {
-        Properties envProps = EnvironmentProperties.loadProperties(String.format("env/%s/scenario-env.properties", scenario));
-        String host = envProps.getProperty(String.format("it.%s.proxy.host", scenario), "127.0.0.1");
-        int port = Integer.parseInt(envProps.getProperty(String.format("it.%s.proxy.port", scenario), "3307"));
-        String username = envProps.getProperty(String.format("it.%s.proxy.username", scenario), "root");
-        String password = envProps.getProperty(String.format("it.%s.proxy.password", scenario), "root");
+    private DatabaseEnvironment createProxyEnvironment(final DatabaseScenarioProperties databaseProps) {
         // TODO hard code for MySQL, should configurable
-        return new DatabaseEnvironment(new MySQLDatabaseType(), host, port, username, password);
+        return new DatabaseEnvironment(new MySQLDatabaseType(), databaseProps.getProxyHost(), databaseProps.getProxyPort(), databaseProps.getProxyUsername(), databaseProps.getProxyPassword());
     }
     
     /**

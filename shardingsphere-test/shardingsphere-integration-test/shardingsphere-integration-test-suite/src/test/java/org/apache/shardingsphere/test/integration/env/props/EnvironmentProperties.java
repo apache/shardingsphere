@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env;
+package org.apache.shardingsphere.test.integration.env.props;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -30,7 +31,7 @@ import java.util.Properties;
 public final class EnvironmentProperties {
     
     /**
-     * load properties.
+     * Load properties.
      * 
      * @param propsFileName properties file name
      * @return properties
