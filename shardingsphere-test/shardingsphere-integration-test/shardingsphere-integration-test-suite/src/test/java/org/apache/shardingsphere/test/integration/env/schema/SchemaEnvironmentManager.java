@@ -66,7 +66,6 @@ public final class SchemaEnvironmentManager {
     
     /**
      * Create databases.
-     *
      */
     public static void createDatabases() {
         if (IntegrateTestEnvironment.getInstance().isEnvironmentPrepared()) {
@@ -80,21 +79,11 @@ public final class SchemaEnvironmentManager {
     private static void createDatabases(final String scenario) {
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             // TODO use multiple threads to improve performance
+            File file = new File(EnvironmentPath.getInitSQLFile(each, scenario));
             DataSource dataSource = ActualDataSourceBuilder.build(null, scenario, each);
-            executeSQLScript(dataSource, new File(EnvironmentPath.getSQLInitFile(scenario)));
+            executeSQLScript(dataSource, file);
         }
     }
-    
-//    private static Collection<String> generateCreateDatabaseSQLs(final DatabaseType databaseType, final Collection<String> databaseNames) {
-//        switch (databaseType.getName()) {
-//            case "H2":
-//                return Collections.emptyList();
-//            case "Oracle":
-//                return databaseNames.stream().map(each -> String.format("CREATE SCHEMA %s", each)).collect(Collectors.toList());
-//            default:
-//                return databaseNames.stream().map(each -> String.format("CREATE DATABASE %s", each)).collect(Collectors.toList());
-//        }
-//    }
     
     /**
      * Drop databases.
