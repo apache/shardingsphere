@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
+import org.apache.shardingsphere.ha.spi.HAType;
 import org.apache.shardingsphere.ha.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.Collection;
@@ -47,16 +48,19 @@ public final class HADataSourceRule {
     
     private final boolean replicaQuery;
     
+    private final HAType haType;
+    
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
     private String primaryDataSourceName;
     
-    public HADataSourceRule(final HADataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer) {
+    public HADataSourceRule(final HADataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer, final HAType haType) {
         checkConfiguration(config);
         name = config.getName();
         dataSourceNames = config.getDataSourceNames();
         this.loadBalancer = loadBalancer;
         this.replicaQuery = config.isReplicaQuery();
+        this.haType = haType;
     }
     
     private void checkConfiguration(final HADataSourceRuleConfiguration config) {

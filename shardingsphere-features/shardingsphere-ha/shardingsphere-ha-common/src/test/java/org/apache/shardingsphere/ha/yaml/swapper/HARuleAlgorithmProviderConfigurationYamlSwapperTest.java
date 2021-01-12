@@ -22,12 +22,11 @@ import org.apache.shardingsphere.ha.algorithm.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.ha.algorithm.config.AlgorithmProvidedHARuleConfiguration;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
 import org.apache.shardingsphere.ha.constant.HAOrder;
+import org.apache.shardingsphere.ha.mgr.MGRHAType;
 import org.apache.shardingsphere.ha.yaml.config.YamlHARuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -85,9 +84,9 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapperTest {
     
     private YamlHARuleConfiguration createYamlHARuleConfiguration() {
         HADataSourceRuleConfiguration ruleConfig = new HADataSourceRuleConfiguration("name",
-                Collections.singletonList("replicaDataSourceName"), "loadBalancerName", true);
+                Collections.singletonList("replicaDataSourceName"), "loadBalancerName", true, "haTypeName");
         return swapper.swapToYamlConfiguration(
                 new AlgorithmProvidedHARuleConfiguration(Collections.singletonList(ruleConfig), ImmutableMap.of("name", new RandomReplicaLoadBalanceAlgorithm()),
-                        new ShardingSphereAlgorithmConfiguration("name", new Properties())));
+                        ImmutableMap.of("mgr", new MGRHAType())));
     }
 }

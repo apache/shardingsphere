@@ -107,16 +107,18 @@
 #    maintenanceIntervalMilliseconds: 30000
 #
 #rules:
-#- !HA
-#  dataSources:
-#    pr_ds:
-#      name: pr_ds
-#      dataSourceNames:
-#        - ds_0
-#        - ds_1
-#        - ds_2
-#      replicaQuery: false
-#      haType:
+#  - !HA
+#    dataSources:
+#      pr_ds:
+#        name: pr_ds
+#        dataSourceNames:
+#          - ds_0
+#          - ds_1
+#          - ds_2
+#        replicaQuery: false
+#        haTypeName: mgr
+#    haTypes:
+#      mgr:
 #        type: MGR
 #        props:
 #          groupName: 92504d5b-6dec-11e8-91ea-246e9612aaf1
