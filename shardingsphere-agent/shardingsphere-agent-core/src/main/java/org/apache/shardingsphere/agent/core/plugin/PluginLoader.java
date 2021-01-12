@@ -32,6 +32,7 @@ import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
+import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
 import org.apache.shardingsphere.agent.spi.definition.PluginDefinitionService;
 
 import java.io.ByteArrayOutputStream;
@@ -281,7 +282,8 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     }
     
     private void buildPluginInterceptorPointMap(final PluginDefinitionService pluginDefinitionService, final Map<String, PluginInterceptorPoint> pointMap) {
-        pluginDefinitionService.build().forEach(each -> {
+        AbstractPluginDefinitionService definitionService = (AbstractPluginDefinitionService) pluginDefinitionService;
+        definitionService.define().forEach(each -> {
             String target = each.getClassNameOfTarget();
             if (pointMap.containsKey(target)) {
                 PluginInterceptorPoint pluginInterceptorPoint = pointMap.get(target);

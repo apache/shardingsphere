@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition;
 
-import java.util.List;
+import java.util.Collection;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.junit.Test;
 
@@ -30,7 +30,7 @@ public final class ZipkinPluginDefinitionServiceTest {
     
     @Test
     public void assertDefine() {
-        List<PluginInterceptorPoint> interceptorPointList = zipkinPluginDefinitionService.build();
+        Collection<PluginInterceptorPoint> interceptorPointList = zipkinPluginDefinitionService.define();
         assertThat(interceptorPointList.size(), is(3));
     }
     

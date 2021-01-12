@@ -32,7 +32,6 @@ public final class JaegerTracingPluginBootServiceTest {
     private final JaegerTracingPluginBootService jaegerTracingPluginBootService = new JaegerTracingPluginBootService();
     
     @Test
-    @Ignore
     public void assertStart() {
         Properties props = new Properties();
         props.setProperty("JAEGER_SAMPLER_TYPE", "const");

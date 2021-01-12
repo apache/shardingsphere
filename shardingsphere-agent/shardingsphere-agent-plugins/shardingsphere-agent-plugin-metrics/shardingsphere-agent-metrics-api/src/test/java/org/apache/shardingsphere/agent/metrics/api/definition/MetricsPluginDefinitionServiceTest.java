@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.agent.metrics.api.definition;
 
-import java.util.List;
+import java.util.Collection;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.junit.Test;
 
@@ -30,7 +30,7 @@ public final class MetricsPluginDefinitionServiceTest {
     
     @Test
     public void assertDefine() {
-        List<PluginInterceptorPoint> interceptorPointList = metricsPluginDefinitionService.build();
+        Collection<PluginInterceptorPoint> interceptorPointList = metricsPluginDefinitionService.define();
         assertThat(interceptorPointList.size(), is(4));
     }
     
