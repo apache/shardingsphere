@@ -27,10 +27,12 @@ import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
-import org.apache.shardingsphere.agent.core.mock.material.Material;
+import org.apache.shardingsphere.agent.core.mock.advice.MockClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
-import org.apache.shardingsphere.agent.core.mock.advice.MockMethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundRepeatedAdvice;
+import org.apache.shardingsphere.agent.core.mock.material.Material;
+import org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial;
 import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -63,21 +65,30 @@ public final class ShardingSphereTransformerTest {
         FieldReader objectPoolReader = new FieldReader(PLUGIN_LOADER, PLUGIN_LOADER.getClass().getDeclaredField("objectPool"));
         Map<String, Object> objectPool = (Map<String, Object>) objectPoolReader.read();
         objectPool.put(MockConstructorAdvice.class.getTypeName(), new MockConstructorAdvice());
-        objectPool.put(MockMethodAroundAdvice.class.getTypeName(), new MockMethodAroundAdvice());
-        objectPool.put(MockStaticMethodAroundAdvice.class.getTypeName(), new MockStaticMethodAroundAdvice());
+        objectPool.put(MockInstanceMethodAroundAdvice.class.getTypeName(), new MockInstanceMethodAroundAdvice());
+        objectPool.put(MockClassStaticMethodAroundAdvice.class.getTypeName(), new MockClassStaticMethodAroundAdvice());
         Map<String, PluginInterceptorPoint> interceptorPointMap = Maps.newHashMap();
         PluginInterceptorPoint interceptorPoint = PluginInterceptorPoint.intercept("org.apache.shardingsphere.agent.core.mock.material.Material")
                 .aroundInstanceMethod(ElementMatchers.named("mock"))
-                .implement(MockMethodAroundAdvice.class.getTypeName())
+                .implement(MockInstanceMethodAroundAdvice.class.getTypeName())
                 .build()
                 .aroundClassStaticMethod(ElementMatchers.named("staticMock"))
-                .implement(MockStaticMethodAroundAdvice.class.getTypeName())
+                .implement(MockClassStaticMethodAroundAdvice.class.getTypeName())
                 .build()
                 .onConstructor(ElementMatchers.takesArguments(1))
                 .implement(MockConstructorAdvice.class.getTypeName())
                 .build()
                 .install();
         interceptorPointMap.put(interceptorPoint.getClassNameOfTarget(), interceptorPoint);
+        PluginInterceptorPoint interceptorPointInTwice = PluginInterceptorPoint.intercept("org.apache.shardingsphere.agent.core.mock.material.RepeatedAdviceMaterial")
+                .aroundInstanceMethod(ElementMatchers.named("mock"))
+                .implement(MockInstanceMethodAroundAdvice.class.getTypeName())
+                .build()
+                .aroundInstanceMethod(ElementMatchers.named("mock"))
+                .implement(MockInstanceMethodAroundRepeatedAdvice.class.getTypeName())
+                .build()
+                .install();
+        interceptorPointMap.put(interceptorPointInTwice.getClassNameOfTarget(), interceptorPointInTwice);
         FieldSetter.setField(PLUGIN_LOADER, PLUGIN_LOADER.getClass().getDeclaredField("interceptorPointMap"), interceptorPointMap);
         byteBuddyAgent = new AgentBuilder.Default().with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .ignore(ElementMatchers.isSynthetic()).or(ElementMatchers.nameStartsWith("org.apache.shardingsphere.agent.")
@@ -94,6 +105,12 @@ public final class ShardingSphereTransformerTest {
     public void assertInstanceMethod() {
         assertThat(new Material().mock(queue), is("invocation"));
         assertArrayEquals(new String[]{"before", "on", "after"}, queue.toArray());
+    }
+    
+    @Test
+    public void assertInstanceMethodInRepeatedAdvice() {
+        assertThat(new RepeatedAdviceMaterial().mock(queue), is("invocation"));
+        assertArrayEquals(new String[]{"before", "twice_before", "on", "after", "twice_after"}, queue.toArray());
     }
     
     @Test

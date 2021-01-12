@@ -61,7 +61,7 @@ public final class SQLParserEngineAdviceTest {
     
     @Test
     public void assertMethod() {
-        MockTargetObject targetObject = new MockTargetObject();
+        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         ADVICE.beforeMethod(targetObject, parserMethod, new Object[]{"select 1"}, new MethodInvocationResult());
         ADVICE.afterMethod(targetObject, parserMethod, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = tracer.finishedSpans();
@@ -72,7 +72,7 @@ public final class SQLParserEngineAdviceTest {
     
     @Test
     public void assertExceptionHandle() {
-        MockTargetObject targetObject = new MockTargetObject();
+        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         ADVICE.beforeMethod(targetObject, parserMethod, new Object[]{"select 1"}, new MethodInvocationResult());
         ADVICE.onThrowing(targetObject, parserMethod, new Object[]{}, new IOException());
         ADVICE.afterMethod(targetObject, parserMethod, new Object[]{}, new MethodInvocationResult());

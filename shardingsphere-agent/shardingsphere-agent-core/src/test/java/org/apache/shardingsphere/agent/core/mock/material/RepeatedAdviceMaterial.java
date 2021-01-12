@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
+package org.apache.shardingsphere.agent.core.mock.material;
 
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import lombok.NoArgsConstructor;
 
-public final class MockTargetObject implements TargetObject {
+import java.util.List;
+
+/**
+ * Have to redefine this class dynamic, so never add `final` modifier.
+ */
+@NoArgsConstructor
+public class RepeatedAdviceMaterial {
     
-    private Object object;
-
-    @Override
-    public Object getAttachment() {
-        return object;
+    /**
+     * Mock method for testing.
+     *
+     * @param queues queues
+     * @return result
+     */
+    public String mock(final List<String> queues) {
+        queues.add("on");
+        return "invocation";
     }
-
-    @Override
-    public void setAttachment(final Object attachment) {
-        this.object = attachment;
-    }
+    
 }

@@ -18,15 +18,21 @@
 package org.apache.shardingsphere.agent.api.advice;
 
 /**
- * Weaving the advice around the constructor of target class.
+ * Wrapped class for target and provide a context to store variable during invocation.
  */
-public interface ConstructorAdvice {
+public interface AdviceTargetObject {
     
     /**
-     * Intercept the target's constructor. This method is weaved after the constructor execution.
+     * Get the variable from context.
      *
-     * @param target intercepted target object
-     * @param args all arguments of the intercepted constructor
+     * @return the attachment
      */
-    void onConstructor(AdviceTargetObject target, Object[] args);
+    Object getAttachment();
+    
+    /**
+     * Store a variable into context.
+     *
+     * @param attachment what variable you want to store
+     */
+    void setAttachment(Object attachment);
 }

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.agent.core.mock.advice;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.api.advice.MethodAroundAdvice;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 
 import java.lang.reflect.Method;
@@ -27,16 +27,16 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @SuppressWarnings("unchecked")
-public final class MockMethodAroundAdvice implements MethodAroundAdvice {
+public final class MockInstanceMethodAroundAdvice implements InstanceMethodAroundAdvice {
     
     private final boolean rebase;
     
-    public MockMethodAroundAdvice() {
+    public MockInstanceMethodAroundAdvice() {
         this(false);
     }
     
     @Override
-    public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         List<String> queues = (List<String>) args[0];
         queues.add("before");
         if (rebase) {
@@ -45,13 +45,13 @@ public final class MockMethodAroundAdvice implements MethodAroundAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         List<String> queues = (List<String>) args[0];
         queues.add("after");
     }
     
     @Override
-    public void onThrowing(final TargetObject target, final Method method, final Object[] args, final Throwable throwable) {
+    public void onThrowing(final AdviceTargetObject target, final Method method, final Object[] args, final Throwable throwable) {
         List<String> queues = (List<String>) args[0];
         queues.add("exception");
     }

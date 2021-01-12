@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.advice;
+package org.apache.shardingsphere.agent.core.plugin.interceptor.compose;
 
-/**
- * Wrapped class for target and provide a context to store variable during invocation.
- */
-public interface TargetObject {
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
+import org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice.ComposeConstructorAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorInterceptor;
+
+import java.util.List;
+
+@Slf4j
+public final class ComposeConstructorInterceptor extends ConstructorInterceptor {
     
-    /**
-     * Get the variable from context.
-     *
-     * @return the attachment
-     */
-    Object getAttachment();
+    public ComposeConstructorInterceptor(final List<ConstructorAdvice> constructorAdvices) {
+        super(new ComposeConstructorAdvice(constructorAdvices));
+    }
     
-    /**
-     * Store a variable into context.
-     *
-     * @param attachment what variable you want to store
-     */
-    void setAttachment(Object attachment);
 }

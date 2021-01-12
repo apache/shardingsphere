@@ -37,7 +37,7 @@ services:
     image: apache/shardingsphere-proxy-test
     container_name: replica-query-shardingsphere-proxy
     ports:
-      - "33090:3307"
+      - "33270:3307"
     links:
       - "mysql:mysql.replica-query.host"
 #      - "zookeeper:zk"

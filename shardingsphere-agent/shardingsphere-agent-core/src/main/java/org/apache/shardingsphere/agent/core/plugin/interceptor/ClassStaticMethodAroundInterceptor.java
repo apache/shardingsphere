@@ -25,7 +25,7 @@ import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
-import org.apache.shardingsphere.agent.api.advice.StaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 
 import java.lang.reflect.Method;
@@ -36,9 +36,9 @@ import java.util.concurrent.Callable;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class StaticMethodAroundInterceptor {
+public class ClassStaticMethodAroundInterceptor {
     
-    private final StaticMethodAroundAdvice staticMethodAroundAdvice;
+    private final ClassStaticMethodAroundAdvice classStaticMethodAroundAdvice;
     
     /**
      * Only intercept static method.
@@ -55,7 +55,7 @@ public final class StaticMethodAroundInterceptor {
         MethodInvocationResult invocationResult = new MethodInvocationResult();
         Object result;
         try {
-            staticMethodAroundAdvice.beforeMethod(klass, method, args, invocationResult);
+            classStaticMethodAroundAdvice.beforeMethod(klass, method, args, invocationResult);
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
@@ -72,7 +72,7 @@ public final class StaticMethodAroundInterceptor {
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
             try {
-                staticMethodAroundAdvice.onThrowing(klass, method, args, ex);
+                classStaticMethodAroundAdvice.onThrowing(klass, method, args, ex);
                 // CHECKSTYLE:OFF
             } catch (final Throwable ignored) {
                 // CHECKSTYLE:ON
@@ -81,7 +81,7 @@ public final class StaticMethodAroundInterceptor {
             throw ex;
         } finally {
             try {
-                staticMethodAroundAdvice.afterMethod(klass, method, args, invocationResult);
+                classStaticMethodAroundAdvice.afterMethod(klass, method, args, invocationResult);
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON
