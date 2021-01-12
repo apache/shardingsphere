@@ -23,8 +23,6 @@
         <column name="status" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
-    <!--TODO It will happened "Out of range value for column 'item_id'" when you execute all the statements at once -->
-    <!--TODO Attempts to change all the type of autoincrement fields to BIGINT -->
     <row data-node="db_0.t_order_item" values="100001, 1000, 10, init, 2017-08-08" />
     <row data-node="db_0.t_order_item" values="100002, 1000, 10, init, 2017-08-08" />
     <row data-node="db_0.t_order_item" values="100101, 1001, 10, init, 2017-08-08" />
