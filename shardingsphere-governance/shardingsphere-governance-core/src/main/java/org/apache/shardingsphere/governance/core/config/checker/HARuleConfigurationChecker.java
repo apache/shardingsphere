@@ -27,6 +27,7 @@ public final class HARuleConfigurationChecker implements RuleConfigurationChecke
     
     @Override
     public void check(final String schemaName, final HARuleConfiguration ruleConfiguration) {
-        Preconditions.checkState(!ruleConfiguration.getHaConfiguration().getType().isEmpty(), "No available HA rule configuration in `%s` for governance.", schemaName);
+        ruleConfiguration.getDataSources().forEach(each -> Preconditions.checkState(
+                !each.getHaTypeName().isEmpty(), "No available HA rule configuration in `%s` for governance.", schemaName));
     }
 }

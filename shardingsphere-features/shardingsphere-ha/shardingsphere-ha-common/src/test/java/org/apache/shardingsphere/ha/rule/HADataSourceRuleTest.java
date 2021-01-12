@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
 import org.apache.shardingsphere.ha.algorithm.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.ha.algorithm.RoundRobinReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.ha.mgr.MGRHAType;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -34,21 +35,21 @@ import static org.junit.Assert.assertThat;
 public final class HADataSourceRuleTest {
     
     private final HADataSourceRule haDataSourceRule = new HADataSourceRule(
-            new HADataSourceRuleConfiguration("test_pr", Arrays.asList("replica_ds_0", "replica_ds_1"), "random", true), new RandomReplicaLoadBalanceAlgorithm());
+            new HADataSourceRuleConfiguration("test_pr", Arrays.asList("replica_ds_0", "replica_ds_1"), "random", true, "haTypeName"), new RandomReplicaLoadBalanceAlgorithm(), new MGRHAType());
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewHADataSourceRuleWithoutName() {
-        new HADataSourceRule(new HADataSourceRuleConfiguration("", Collections.singletonList("replica_ds"), null, true), new RoundRobinReplicaLoadBalanceAlgorithm());
+        new HADataSourceRule(new HADataSourceRuleConfiguration("", Collections.singletonList("replica_ds"), null, true, "haTypeName"), new RoundRobinReplicaLoadBalanceAlgorithm(), new MGRHAType());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewHADataSourceRuleWithNullReplicaDataSourceName() {
-        new HADataSourceRule(new HADataSourceRuleConfiguration("ds", null, null, true), new RoundRobinReplicaLoadBalanceAlgorithm());
+        new HADataSourceRule(new HADataSourceRuleConfiguration("ds", null, null, true, "haTypeName"), new RoundRobinReplicaLoadBalanceAlgorithm(), new MGRHAType());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewHADataSourceRuleWithEmptyReplicaDataSourceName() {
-        new HADataSourceRule(new HADataSourceRuleConfiguration("ds", Collections.emptyList(), null, true), new RoundRobinReplicaLoadBalanceAlgorithm());
+        new HADataSourceRule(new HADataSourceRuleConfiguration("ds", Collections.emptyList(), null, true, "haTypeName"), new RoundRobinReplicaLoadBalanceAlgorithm(), new MGRHAType());
     }
     
     @Test

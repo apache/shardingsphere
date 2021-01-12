@@ -36,15 +36,14 @@ public final class HADataSourceRouter {
      * Route.
      * 
      * @param sqlStatement SQL statement
-     * @param primaryDataSourceName primary data source name
      * @return data source name
      */
-    public String route(final SQLStatement sqlStatement, final String primaryDataSourceName) {
+    public String route(final SQLStatement sqlStatement) {
         if (isPrimaryRoute(sqlStatement) || !rule.isReplicaQuery()) {
             PrimaryVisitedManager.setPrimaryVisited();
-            return primaryDataSourceName;
+            return rule.getPrimaryDataSourceName();
         }
-        return rule.getLoadBalancer().getDataSource(rule.getName(), primaryDataSourceName, rule.getDataSourceNames());
+        return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getPrimaryDataSourceName(), rule.getDataSourceNames());
     }
     
     private boolean isPrimaryRoute(final SQLStatement sqlStatement) {
