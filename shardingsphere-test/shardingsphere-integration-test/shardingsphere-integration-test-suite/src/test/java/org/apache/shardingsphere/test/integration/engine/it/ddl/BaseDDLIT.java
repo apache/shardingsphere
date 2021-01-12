@@ -22,18 +22,15 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.engine.it.SingleIT;
+import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -67,19 +64,8 @@ public abstract class BaseDDLIT extends SingleIT {
         assertNotNull("Expected affected table is required", assertion.getInitialSQL().getAffectedTable());
     }
     
-    @BeforeClass
-    public static void initDatabases() throws IOException, JAXBException {
-        SchemaEnvironmentManager.createDatabases();
-    }
-    
-    @AfterClass
-    public static void destroyDatabases() throws IOException, JAXBException {
-        SchemaEnvironmentManager.dropDatabases();
-    }
-    
     @Before
-    public final void initTables() throws SQLException, ParseException, IOException, JAXBException {
-        SchemaEnvironmentManager.createTables();
+    public final void initTables() throws SQLException, ParseException, IOException {
         dataSetEnvironmentManager.fillData();
         try (Connection connection = getTargetDataSource().getConnection()) {
             executeInitSQLs(connection);
@@ -97,8 +83,7 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     @After
-    public final void destroyTables() throws JAXBException, IOException, SQLException {
-        SchemaEnvironmentManager.dropTables();
+    public final void destroyTables() throws SQLException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             dropInitializedTable(connection);
         }
