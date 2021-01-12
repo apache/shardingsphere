@@ -80,6 +80,11 @@ public final class ScalingJob {
         return (Long) ID_AUTO_INCREASE_GENERATOR.generateKey();
     }
     
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
     public String getDatabaseType() {
         if (null == databaseType && !taskConfigs.isEmpty()) {
             databaseType = taskConfigs.get(0).getDumperConfig().getDataSourceConfig().getDatabaseType().getName();

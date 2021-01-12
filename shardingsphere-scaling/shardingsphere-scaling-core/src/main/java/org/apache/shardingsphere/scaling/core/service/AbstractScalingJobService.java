@@ -101,7 +101,9 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
                     log.info("scaling job {} almost finished.", jobId);
                     scalingCallback.onSuccess(jobId);
                 }
-            } catch (Exception ex) {
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
                 log.error("scaling job {} finish check failed!", jobId, ex);
             }
         }
