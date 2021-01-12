@@ -175,7 +175,7 @@ public final class DatabaseCommunicationEngine {
     }
     
     private int getColumnCount(final ExecutionContext executionContext, final QueryResult queryResultSample) throws SQLException {
-        return executionContext.getSqlStatementContext() instanceof SelectStatementContext
+        return hasSelectExpandProjections(executionContext.getSqlStatementContext())
                 ? ((SelectStatementContext) executionContext.getSqlStatementContext()).getProjectionsContext().getExpandProjections().size() : queryResultSample.getMetaData().getColumnCount();
     }
     
@@ -248,7 +248,7 @@ public final class DatabaseCommunicationEngine {
         for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {
             Object data = mergedResult.getValue(columnIndex, Object.class);
             if (isBinary) {
-                cells.add(new BinaryQueryResponseCell(queryHeaders.get(columnIndex).getColumnType(), data));
+                cells.add(new BinaryQueryResponseCell(queryHeaders.get(columnIndex - 1).getColumnType(), data));
             } else {
                 cells.add(new TextQueryResponseCell(data));
             }

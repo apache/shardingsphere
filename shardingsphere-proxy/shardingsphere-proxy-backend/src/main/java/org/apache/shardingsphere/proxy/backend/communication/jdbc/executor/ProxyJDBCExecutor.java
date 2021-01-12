@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.executor;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
@@ -41,6 +42,7 @@ public final class ProxyJDBCExecutor {
     
     private final BackendConnection backendConnection;
     
+    @Getter
     private final JDBCExecutor jdbcExecutor;
     
     /**

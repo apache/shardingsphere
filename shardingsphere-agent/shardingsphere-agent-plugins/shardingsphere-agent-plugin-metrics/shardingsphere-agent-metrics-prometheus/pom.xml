@@ -26,13 +26,11 @@
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-metrics-prometheus</artifactId>
-    <packaging>jar</packaging>
     <name>${project.artifactId}</name>
     
     <properties>
         <prometheus.version>0.6.0</prometheus.version>
         <prometheus.jmx.version>0.10</prometheus.jmx.version>
-        <entrypoint.class>org.apache.shardingsphere.agent.metrics.api.definition.MetricsPluginDefinition</entrypoint.class>
     </properties>
     
     <dependencies>
@@ -61,7 +59,6 @@
             <artifactId>simpleclient_httpserver</artifactId>
             <version>${prometheus.version}</version>
         </dependency>
-
     </dependencies>
     
     <build>
@@ -69,13 +66,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Entrypoint>${entrypoint.class}</Entrypoint>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>

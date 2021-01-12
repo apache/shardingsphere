@@ -75,6 +75,14 @@ createDefinitionClause
 createRelationalTableClause
     : (LP_ relationalProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
     ;
+    
+createMemOptimizeClause
+    : (MEMOPTIMIZE FOR READ)? (MEMOPTIMIZE FOR WRITE)? 
+    ;    
+
+createParentClause
+    : (PARENT tableName)?
+    ;
 
 createObjectTableClause
     : OF objectName objectTableSubstitution? (LP_ objectProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?

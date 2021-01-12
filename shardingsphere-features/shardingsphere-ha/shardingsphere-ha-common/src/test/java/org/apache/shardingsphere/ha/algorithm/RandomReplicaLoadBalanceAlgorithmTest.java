@@ -33,9 +33,9 @@ public final class RandomReplicaLoadBalanceAlgorithmTest {
         String primaryDataSourceName = "test_primary_ds";
         String replicaDataSourceName1 = "test_replica_ds_1";
         String replicaDataSourceName2 = "test_replica_ds_2";
-        List<String> replicaDataSourceNames = Arrays.asList(replicaDataSourceName1, replicaDataSourceName2);
-        assertTrue(replicaDataSourceNames.contains(randomReplicaLoadBalanceAlgorithm.getDataSource("ds", primaryDataSourceName, replicaDataSourceNames)));
-        assertTrue(replicaDataSourceNames.contains(randomReplicaLoadBalanceAlgorithm.getDataSource("ds", primaryDataSourceName, replicaDataSourceNames)));
-        assertTrue(replicaDataSourceNames.contains(randomReplicaLoadBalanceAlgorithm.getDataSource("ds", primaryDataSourceName, replicaDataSourceNames)));
+        List<String> dataSourceNames = Arrays.asList(replicaDataSourceName1, replicaDataSourceName2);
+        assertTrue(dataSourceNames.contains(randomReplicaLoadBalanceAlgorithm.getDataSource("ds", primaryDataSourceName, dataSourceNames)));
+        assertTrue(dataSourceNames.contains(randomReplicaLoadBalanceAlgorithm.getDataSource("ds", primaryDataSourceName, dataSourceNames)));
+        assertTrue(dataSourceNames.contains(randomReplicaLoadBalanceAlgorithm.getDataSource("ds", primaryDataSourceName, dataSourceNames)));
     }
 }

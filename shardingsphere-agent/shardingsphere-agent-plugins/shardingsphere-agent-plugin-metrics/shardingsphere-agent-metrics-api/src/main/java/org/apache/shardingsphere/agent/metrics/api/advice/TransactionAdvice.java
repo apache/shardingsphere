@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
 import java.lang.reflect.Method;
-import org.apache.shardingsphere.agent.core.plugin.advice.MethodAroundAdvice;
-import org.apache.shardingsphere.agent.core.plugin.advice.MethodInvocationResult;
-import org.apache.shardingsphere.agent.core.plugin.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.MethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.api.advice.TargetObject;
 import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
 import org.apache.shardingsphere.agent.metrics.api.constant.MethodNameConstant;
 

@@ -20,26 +20,49 @@ package org.apache.shardingsphere.agent.metrics.prometheus.service;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.agent.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
+import org.apache.shardingsphere.agent.metrics.prometheus.register.PrometheusMetricsRegister;
+import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
+import org.apache.shardingsphere.agent.metrics.prometheus.collector.BuildInfoCollector;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.service.PluginBootService;
-import org.apache.shardingsphere.agent.metrics.prometheus.collector.BuildInfoCollector;
 
 /**
  * Prometheus plugin boot service.
  */
 @Slf4j
-public class PrometheusPluginBootService implements PluginBootService {
+public final class PrometheusPluginBootService implements PluginBootService {
     
     private HTTPServer httpServer;
     
     @Override
-    public void start(final PluginConfiguration configuration) {
-        boolean enabled = Boolean.parseBoolean(configuration.getProps().getProperty("jvmInformationCollectorEnabled"));
+    public void start(final PluginConfiguration pluginConfig) {
+        startServer(pluginConfig);
+        MetricsReporter.register(PrometheusMetricsRegister.getInstance());
+    }
+    
+    private void startServer(final PluginConfiguration configuration) {
+        boolean enabled = Boolean.parseBoolean(configuration.getProps().getProperty("JVM_INFORMATION_COLLECTOR_ENABLED"));
         registerJvm(enabled);
-        startServer(configuration);
+        int port = configuration.getPort();
+        String host = configuration.getHost();
+        InetSocketAddress inetSocketAddress = new InetSocketAddress(host, port);
+        try {
+            httpServer = new HTTPServer(inetSocketAddress, CollectorRegistry.defaultRegistry, true);
+            log.info(String.format("Prometheus metrics HTTP server `%s:%s` start success.", inetSocketAddress.getHostString(), inetSocketAddress.getPort()));
+        } catch (final IOException ex) {
+            log.error("Prometheus metrics HTTP server start fail", ex);
+        }
+    }
+    
+    private void registerJvm(final boolean enabled) {
+        if (enabled) {
+            new BuildInfoCollector().register();
+            DefaultExports.initialize();
+        }
     }
     
     @Override
@@ -52,29 +75,5 @@ public class PrometheusPluginBootService implements PluginBootService {
     @Override
     public String getType() {
         return "Prometheus";
-    }
-    
-    private void registerJvm(final boolean enabled) {
-        if (enabled) {
-            new BuildInfoCollector().register();
-            DefaultExports.initialize();
-        }
-    }
-    
-    private void startServer(final PluginConfiguration configuration) {
-        int port = configuration.getPort();
-        String host = configuration.getHost();
-        InetSocketAddress inetSocketAddress;
-        if ("".equals(host) || null == host) {
-            inetSocketAddress = new InetSocketAddress(port);
-        } else {
-            inetSocketAddress = new InetSocketAddress(host, port);
-        }
-        try {
-            httpServer = new HTTPServer(inetSocketAddress, CollectorRegistry.defaultRegistry, true);
-            log.info(String.format("you start prometheus metrics http server host is: %s , port is: %s", inetSocketAddress.getHostString(), inetSocketAddress.getPort()));
-        } catch (final IOException exception) {
-            log.error("you start prometheus metrics http server is error", exception);
-        }
     }
 }

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.scaling.core.job.position.resume;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
@@ -32,15 +32,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class RegistryRepositoryResumeBreakPointManagerTest {
-
+    
     private RegistryRepositoryResumeBreakPointManager resumeBreakPointManager;
-
+    
     @Before
     public void setUp() {
         ScalingContext.getInstance().init(mockServerConfiguration());
         resumeBreakPointManager = new RegistryRepositoryResumeBreakPointManager("H2", "/base");
     }
-
+    
     @Test
     public void assertPersistAndGetPosition() {
         resumeBreakPointManager.persistPosition();
@@ -56,14 +56,8 @@ public final class RegistryRepositoryResumeBreakPointManagerTest {
     
     private ServerConfiguration mockServerConfiguration() {
         resetRegistryRepositoryAvailable();
-        YamlGovernanceConfiguration distributedScalingService = new YamlGovernanceConfiguration();
-        distributedScalingService.setName("test");
-        YamlGovernanceCenterConfiguration registryCenter = new YamlGovernanceCenterConfiguration();
-        registryCenter.setType("REG_FIXTURE");
-        registryCenter.setServerLists("");
-        distributedScalingService.setRegistryCenter(registryCenter);
         ServerConfiguration result = new ServerConfiguration();
-        result.setDistributedScalingService(distributedScalingService);
+        result.setDistributedScalingService(new GovernanceConfiguration("test", new GovernanceCenterConfiguration("REG_FIXTURE", "", null), false));
         return result;
     }
     

@@ -85,4 +85,8 @@ public abstract class AbstractMemoryQueryResult implements QueryResult {
     public final boolean wasNull() {
         return null == currentRow;
     }
+    
+    @Override
+    public final void close() {
+    }
 }

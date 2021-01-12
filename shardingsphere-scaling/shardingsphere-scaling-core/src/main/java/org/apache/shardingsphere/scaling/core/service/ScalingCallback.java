@@ -24,11 +24,15 @@ public interface ScalingCallback {
     
     /**
      * Callback when execute success.
+     *
+     * @param jobId job id
      */
-    void onSuccess();
+    void onSuccess(long jobId);
     
     /**
      * Callback when execute failure.
+     *
+     * @param jobId job id
      */
-    void onFailure();
+    void onFailure(long jobId);
 }

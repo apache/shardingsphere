@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.service;
 
 import brave.Tracing;
-import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.core.plugin.service.PluginBootService;
+import java.util.Optional;
+import java.util.Properties;
+import org.apache.shardingsphere.agent.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.okhttp3.OkHttpSender;
 
@@ -35,10 +37,13 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
     private Tracing tracing;
     
     @Override
-    public void start(final PluginConfiguration configuration) {
-        sender = OkHttpSender.create(buildHttpPath(configuration));
+    public void start(final PluginConfiguration pluginConfig) {
+        Properties props = pluginConfig.getProps();
+        String urlVersion = Optional.ofNullable(props.getProperty("URL_VERSION")).orElse("/api/v2/spans");
+        String serviceName = Optional.ofNullable(props.getProperty("SERVICE_NAME")).orElse("shardingsphere-agent");
+        sender = OkHttpSender.create(String.format("http://%s:%s%s", pluginConfig.getHost(), pluginConfig.getPort(), urlVersion));
         zipkinSpanHandler = AsyncZipkinSpanHandler.create(sender);
-        tracing = Tracing.newBuilder().localServiceName("shardingsphere-agent").addSpanHandler(zipkinSpanHandler).build();
+        tracing = Tracing.newBuilder().localServiceName(serviceName).addSpanHandler(zipkinSpanHandler).build();
     }
     
     @Override
@@ -51,9 +56,5 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
     @Override
     public String getType() {
         return "Zipkin";
-    }
-    
-    private String buildHttpPath(final PluginConfiguration configuration) {
-        return String.format("http://%s:%s", configuration.getHost(), configuration.getPort());
     }
 }

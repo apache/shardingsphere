@@ -17,16 +17,19 @@
 
 package org.apache.shardingsphere.infra.optimize.execute;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.calcite.config.Lex;
-import org.apache.calcite.sql.validate.SqlConformanceEnum;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
+import org.apache.calcite.config.CalciteConnectionProperty;
+import org.apache.calcite.jdbc.CalciteConnection;
+import org.apache.calcite.schema.SchemaPlus;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
+import org.apache.shardingsphere.infra.optimize.context.CalciteContext;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -34,8 +37,7 @@ import java.util.Properties;
 /**
  * Calcite JDBC executor.
  */
-@RequiredArgsConstructor
-public final class CalciteJDBCExecutor {
+public final class CalciteJDBCExecutor implements CalciteExecutor {
     
     public static final String CONNECTION_URL = "jdbc:calcite:";
     
@@ -43,33 +45,51 @@ public final class CalciteJDBCExecutor {
     
     public static final Properties PROPERTIES = new Properties();
     
+    private final CalciteContext context;
+    
+    private Statement statement;
+    
     static {
         try {
             Class.forName(DRIVER_NAME);
         } catch (final ClassNotFoundException ex) {
             throw new RuntimeException(ex);
         }
-        PROPERTIES.setProperty("lex", Lex.MYSQL.name());
-        PROPERTIES.setProperty("conformance", SqlConformanceEnum.MYSQL_5.name());
+    }
+
+    public CalciteJDBCExecutor(final CalciteContext context) {
+        this.context = context;
+        PROPERTIES.setProperty(CalciteConnectionProperty.LEX.camelName(), context.getConnectionProperties().getProperty(CalciteConnectionProperty.LEX.camelName()));
+        PROPERTIES.setProperty(CalciteConnectionProperty.CONFORMANCE.camelName(), context.getConnectionProperties().getProperty(CalciteConnectionProperty.CONFORMANCE.camelName()));
     }
     
-    /**
-     * Execute query.
-     *
-     * @param executionContext execution context
-     * @param callback JDBC execute callback
-     * @param <T> class type of return value
-     * @return execute result
-     * @throws SQLException SQL exception
-     */
-    public <T> List<T> executeQuery(final ExecutionContext executionContext, final JDBCExecutorCallback<T> callback) throws SQLException {
-        return Collections.emptyList();
+    @Override
+    public List<QueryResult> executeQuery(final String sql, final List<Object> parameters) throws SQLException {
+        QueryResult result = new JDBCStreamQueryResult(execute(sql, parameters));
+        return Collections.singletonList(result);
+    }
+    
+    @Override
+    public void close() throws SQLException {
+        Connection connection = statement.getConnection();
+        connection.close();
+        statement.close();
     }
     
     private ResultSet execute(final String sql, final List<Object> parameters) throws SQLException {
-        PreparedStatement statement = DriverManager.getConnection(CONNECTION_URL, PROPERTIES).prepareStatement(sql);
+        PreparedStatement statement = getConnection().prepareStatement(sql);
         setParameters(statement, parameters);
+        this.statement = statement;
         return statement.executeQuery();
+    }
+    
+    private Connection getConnection() throws SQLException {
+        Connection result = DriverManager.getConnection(CONNECTION_URL, PROPERTIES);
+        CalciteConnection calciteConnection = result.unwrap(CalciteConnection.class);
+        SchemaPlus rootSchema = calciteConnection.getRootSchema();
+        rootSchema.add(context.getCalciteLogicSchema().getName(), context.getCalciteLogicSchema());
+        calciteConnection.setSchema(context.getCalciteLogicSchema().getName());
+        return result;
     }
     
     private void setParameters(final PreparedStatement preparedStatement, final List<Object> parameters) throws SQLException {
