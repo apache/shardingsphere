@@ -101,4 +101,13 @@ public final class ScalingServiceHolder {
         }
         return false;
     }
+    
+    /**
+     * Stop scaling job.
+     * 
+     * @param jobId job id
+     */
+    public void stopScalingJob(final long jobId) {
+        scalingJobService.stop(jobId);
+    }
 }
