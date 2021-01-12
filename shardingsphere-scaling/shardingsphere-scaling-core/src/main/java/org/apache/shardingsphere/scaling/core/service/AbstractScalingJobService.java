@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.core.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
@@ -41,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Abstract scaling job service.
  */
+@Slf4j
 public abstract class AbstractScalingJobService implements ScalingJobService {
     
     private static final ScheduledExecutorService FINISH_CHECK_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("Scaling-finish-check-%d"));
@@ -51,7 +53,7 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
         if (!result.isPresent()) {
             return result;
         }
-        FINISH_CHECK_EXECUTOR.scheduleWithFixedDelay(new JobFinishChecker(result.get(), scalingCallback), 3, 1, TimeUnit.MINUTES);
+        FINISH_CHECK_EXECUTOR.scheduleWithFixedDelay(new JobFinishChecker(result.get(), scalingCallback), 1, 1, TimeUnit.MINUTES);
         return result;
     }
     
@@ -87,20 +89,29 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
         
         private final ScalingCallback scalingCallback;
         
-        private boolean finished;
+        private boolean executed;
         
         @Override
         public void run() {
-            if (finished) {
+            if (executed) {
                 return;
             }
-            JobProgress jobProgress = getProgress(scalingJob.getJobId());
-            if (jobProgress.getStatus().contains("FAILURE")) {
-                finished = true;
-                scalingCallback.onFailure(scalingJob.getJobId());
-            } else if (ScalingTaskUtil.allTasksAlmostFinished(jobProgress, scalingJob.getScalingConfig().getJobConfiguration())) {
-                finished = true;
-                scalingCallback.onSuccess(scalingJob.getJobId());
+            long jobId = scalingJob.getJobId();
+            try {
+                JobProgress jobProgress = getProgress(jobId);
+                if (jobProgress.getStatus().contains("FAILURE")) {
+                    log.warn("scaling job {} failure.", jobId);
+                    executed = true;
+                    scalingCallback.onFailure(jobId);
+                } else if (ScalingTaskUtil.allTasksAlmostFinished(jobProgress, scalingJob.getScalingConfig().getJobConfiguration())) {
+                    log.info("scaling job {} almost finished.", jobId);
+                    executed = true;
+                    scalingCallback.onSuccess(jobId);
+                }
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                log.error("scaling job {} finish check failed!", jobId, ex);
             }
         }
     }
