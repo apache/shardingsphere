@@ -104,9 +104,9 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
         if (Strings.isNullOrEmpty(data)) {
             throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", jobId));
         }
-        ScalingJob result = new ScalingJob(jobId);
-        result.setScalingConfig(GSON.fromJson(data, ScalingConfiguration.class));
-        return result;
+        ScalingConfiguration scalingConfig = GSON.fromJson(data, ScalingConfiguration.class);
+        scalingConfig.getJobConfiguration().setJobId(jobId);
+        return new ScalingJob(scalingConfig);
     }
     
     @Override
