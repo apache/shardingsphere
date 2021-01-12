@@ -18,6 +18,8 @@
 CREATE USER 'root'@'%' IDENTIFIED BY '';
 GRANT All privileges ON *.* TO 'root'@'%';
 
+DROP DATABASE IF EXISTS tbl;
+
 CREATE DATABASE tbl;
 
 CREATE TABLE tbl.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));

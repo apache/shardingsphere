@@ -18,6 +18,10 @@
 CREATE USER 'root'@'%' IDENTIFIED BY '';
 GRANT All privileges ON *.* TO 'root'@'%';
 
+DROP DATABASE IF EXISTS primary_ds;
+DROP DATABASE IF EXISTS replica_0;
+DROP DATABASE IF EXISTS replica_1;
+
 CREATE DATABASE primary_ds;
 CREATE DATABASE replica_0;
 CREATE DATABASE replica_1;

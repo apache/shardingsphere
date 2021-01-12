@@ -33,6 +33,8 @@ public final class EnvironmentPath {
     private static final String ROOT_PATH = "env";
     
     private static final String SCHEMA_FILE = "schema.xml";
+
+    private static final String SQL_INIT_FILE = "init.sql";
     
     private static final String DATASET_FILE = "dataset.xml";
     
@@ -48,6 +50,16 @@ public final class EnvironmentPath {
      */
     public static String getSchemaFile(final String scenario) {
         return getFile(scenario, SCHEMA_FILE);
+    }
+    
+    /**
+     * Get SQL init file.
+     *
+     * @param scenario scenario
+     * @return SQL init file
+     */
+    public static String getSQLInitFile(final String scenario) {
+        return getFile(scenario, SQL_INIT_FILE);
     }
     
     /**

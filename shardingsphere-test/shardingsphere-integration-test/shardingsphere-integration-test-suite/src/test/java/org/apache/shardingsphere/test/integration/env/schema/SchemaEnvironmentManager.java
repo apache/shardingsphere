@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.env.schema;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
@@ -29,6 +30,7 @@ import org.h2.tools.RunScript;
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -65,38 +67,34 @@ public final class SchemaEnvironmentManager {
     /**
      * Create databases.
      *
-     * @throws IOException IO exception
-     * @throws JAXBException JAXB exception
      */
-    public static void createDatabases() throws IOException, JAXBException {
+    public static void createDatabases() {
         if (IntegrateTestEnvironment.getInstance().isEnvironmentPrepared()) {
             return;
         }
         for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
-            dropDatabases(each);
             createDatabases(each);
         }
     }
     
-    private static void createDatabases(final String scenario) throws IOException, JAXBException {
-        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(scenario));
+    private static void createDatabases(final String scenario) {
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             // TODO use multiple threads to improve performance
             DataSource dataSource = ActualDataSourceBuilder.build(null, scenario, each);
-            executeSQLScript(dataSource, generateCreateDatabaseSQLs(each, schemaEnvironment.getDatabases()));
+            executeSQLScript(dataSource, new File(EnvironmentPath.getSQLInitFile(scenario)));
         }
     }
     
-    private static Collection<String> generateCreateDatabaseSQLs(final DatabaseType databaseType, final Collection<String> databaseNames) {
-        switch (databaseType.getName()) {
-            case "H2":
-                return Collections.emptyList();
-            case "Oracle":
-                return databaseNames.stream().map(each -> String.format("CREATE SCHEMA %s", each)).collect(Collectors.toList());
-            default:
-                return databaseNames.stream().map(each -> String.format("CREATE DATABASE %s", each)).collect(Collectors.toList());
-        }
-    }
+//    private static Collection<String> generateCreateDatabaseSQLs(final DatabaseType databaseType, final Collection<String> databaseNames) {
+//        switch (databaseType.getName()) {
+//            case "H2":
+//                return Collections.emptyList();
+//            case "Oracle":
+//                return databaseNames.stream().map(each -> String.format("CREATE SCHEMA %s", each)).collect(Collectors.toList());
+//            default:
+//                return databaseNames.stream().map(each -> String.format("CREATE DATABASE %s", each)).collect(Collectors.toList());
+//        }
+//    }
     
     /**
      * Drop databases.
@@ -199,6 +197,16 @@ public final class SchemaEnvironmentManager {
             // TODO use multiple threads to improve performance
             DataSource dataSource = ActualDataSourceBuilder.build(each, scenario, databaseType);
             executeSQLScript(dataSource, schemaEnvironment.getTableDropSQLs());
+        }
+    }
+    
+    @SneakyThrows(IOException.class)
+    private static void executeSQLScript(final DataSource dataSource, final File file) {
+        try (Connection connection = dataSource.getConnection();
+             FileReader reader = new FileReader(file)) {
+            RunScript.execute(connection, reader);
+        } catch (final SQLException ignored) {
+            // TODO print err message if not drop not existed database/table
         }
     }
     
