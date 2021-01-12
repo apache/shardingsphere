@@ -20,8 +20,6 @@ package org.apache.shardingsphere.proxy.backend.exception;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-
 /**
  * Replica query rule not existed exception.
  */
@@ -30,6 +28,4 @@ import java.util.Collection;
 public final class ReplicaQueryRuleNotExistedException extends BackendException {
 
     private static final long serialVersionUID = -5119217255419990719L;
-
-    private final Collection<String> ruleNames;
 }

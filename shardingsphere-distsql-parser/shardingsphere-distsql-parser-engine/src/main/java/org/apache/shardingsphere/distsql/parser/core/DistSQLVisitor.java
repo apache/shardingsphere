@@ -139,11 +139,16 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
 
     @Override
     public ASTNode visitAlterReplicaQueryRule(final AlterReplicaQueryRuleContext ctx) {
-        Collection<ReplicaQueryRuleSegment> replicaQueryRules = new LinkedList<>();
+        Collection<ReplicaQueryRuleSegment> modifyReplicaQueryRules = new LinkedList<>();
+        Collection<ReplicaQueryRuleSegment> addReplicaQueryRules = new LinkedList<>();
         for (AlterReplicaQueryRuleDefinitionContext each : ctx.alterReplicaQueryRuleDefinition()) {
-            replicaQueryRules.add((ReplicaQueryRuleSegment) visit(each));
+            if (null != each.MODIFY()) {
+                modifyReplicaQueryRules.add((ReplicaQueryRuleSegment) visit(each));
+            } else {
+                addReplicaQueryRules.add((ReplicaQueryRuleSegment) visit(each));
+            }
         }
-        return new AlterReplicaQueryRuleStatement(replicaQueryRules);
+        return new AlterReplicaQueryRuleStatement(modifyReplicaQueryRules, addReplicaQueryRules);
     }
 
     @Override

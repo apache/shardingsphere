@@ -23,11 +23,14 @@ import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.proxy.backend.exception.AddReplicaQueryRuleDatasourcesExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.LockWaitTimeoutException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleDatasourcesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
@@ -113,10 +116,19 @@ public final class MySQLErrPacketFactory {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_LOCKING_SERVICE_TIMEOUT, ((LockWaitTimeoutException) cause).getTimeoutMilliseconds());
         }
         if (cause instanceof ResourceNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.RESOURCE_NOT_EXIST, cause.getMessage());
+            return new MySQLErrPacket(1, CommonErrorCode.RESOURCE_NOT_EXIST, ((ResourceNotExistedException) cause).getResourceNames());
         }
         if (cause instanceof ResourceInUsedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.RESOURCE_IN_USED, cause.getMessage());
+            return new MySQLErrPacket(1, CommonErrorCode.RESOURCE_IN_USED, ((ResourceInUsedException) cause).getResourceNames());
+        }
+        if (cause instanceof ReplicaQueryRuleNotExistedException) {
+            return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_NOT_EXIST);
+        }
+        if (cause instanceof ReplicaQueryRuleDatasourcesNotExistedException) {
+            return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_DATASOURCE_NOT_EXIST, ((ReplicaQueryRuleDatasourcesNotExistedException) cause).getRuleNames());
+        }
+        if (cause instanceof AddReplicaQueryRuleDatasourcesExistedException) {
+            return new MySQLErrPacket(1, CommonErrorCode.ADD_REPLICA_QUERY_RULE_DATASOURCE_EXIST, ((AddReplicaQueryRuleDatasourcesExistedException) cause).getRuleNames());
         }
         return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }
