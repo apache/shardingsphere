@@ -69,13 +69,17 @@ createSharingClause
     ;
 
 createDefinitionClause
-    : createRelationalTableClause 
+    : createRelationalTableClause | createObjectTableClause
     ;
-    
+
 createRelationalTableClause
     : (LP_ relationalProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
     ;
-    
+
+createObjectTableClause
+    : OF objectName objectTableSubstitution? (LP_ objectProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
+    ;
+
 createMemOptimizeClause
     : (MEMOPTIMIZE FOR READ)? (MEMOPTIMIZE FOR WRITE)? 
     ;    
@@ -361,4 +365,8 @@ objectProperty
 
 renameIndexClause
     : (RENAME TO indexName)?
+    ;
+    
+objectTableSubstitution
+    : NOT? SUBSTITUTABLE AT ALL LEVELS
     ;
