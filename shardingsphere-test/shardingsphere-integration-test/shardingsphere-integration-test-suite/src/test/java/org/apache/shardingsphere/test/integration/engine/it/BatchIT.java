@@ -33,7 +33,6 @@ import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
@@ -85,11 +84,6 @@ public abstract class BatchIT extends BaseIT {
         SchemaEnvironmentManager.createDatabases();
         SchemaEnvironmentManager.dropTables();
         SchemaEnvironmentManager.createTables();
-    }
-    
-    @AfterClass
-    public static void destroyDatabasesAndTables() throws IOException, JAXBException {
-        SchemaEnvironmentManager.dropDatabases();
     }
     
     @Before

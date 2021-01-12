@@ -37,8 +37,6 @@ import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.stream.Collectors;
 
 /**
  * Schema environment manager.
@@ -82,50 +80,6 @@ public final class SchemaEnvironmentManager {
             File file = new File(EnvironmentPath.getInitSQLFile(each, scenario));
             DataSource dataSource = ActualDataSourceBuilder.build(null, scenario, each);
             executeSQLScript(dataSource, file);
-        }
-    }
-    
-    /**
-     * Drop databases.
-     *
-     * @throws IOException IO exception
-     * @throws JAXBException JAXB exception
-     */
-    public static void dropDatabases() throws IOException, JAXBException {
-        if (IntegrateTestEnvironment.getInstance().isEnvironmentPrepared()) {
-            return;
-        }
-        for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
-            dropDatabases(each);
-        }
-    }
-    
-    private static void dropDatabases(final String scenario) throws IOException, JAXBException {
-        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(scenario));
-        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
-            // TODO use multiple threads to improve performance
-            DataSource dataSource = ActualDataSourceBuilder.build(null, scenario, each);
-            executeSQLScript(dataSource, generatePrepareDropDatabaseSQLs(each, schemaEnvironment.getDatabases()));
-            executeSQLScript(dataSource, generateDropDatabaseSQLs(each, schemaEnvironment.getDatabases()));
-        }
-    }
-    
-    private static Collection<String> generatePrepareDropDatabaseSQLs(final DatabaseType databaseType, final Collection<String> databaseNames) {
-        if ("PostgreSQL".equals(databaseType.getName())) {
-            String sql = "SELECT pg_terminate_backend (pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '%s'";
-            return databaseNames.stream().map(each -> String.format(sql, each)).collect(Collectors.toList());
-        }
-        return Collections.emptyList();
-    }
-    
-    private static Collection<String> generateDropDatabaseSQLs(final DatabaseType databaseType, final Collection<String> databaseNames) {
-        switch (databaseType.getName()) {
-            case "H2":
-                return Collections.emptyList();
-            case "Oracle":
-                return databaseNames.stream().map(each -> String.format("DROP SCHEMA %s", each)).collect(Collectors.toList());
-            default:
-                return databaseNames.stream().map(each -> String.format("DROP DATABASE IF EXISTS %s", each)).collect(Collectors.toList());
         }
     }
     

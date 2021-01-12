@@ -22,16 +22,15 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.engine.it.SingleIT;
+import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
@@ -71,11 +70,6 @@ public abstract class BaseDDLIT extends SingleIT {
     public static void initDatabases() throws JAXBException, IOException {
         SchemaEnvironmentManager.createDatabases();
         SchemaEnvironmentManager.createTables();
-    }
-    
-    @AfterClass
-    public static void destroyDatabases() throws IOException, JAXBException {
-        SchemaEnvironmentManager.dropDatabases();
     }
     
     @Before
