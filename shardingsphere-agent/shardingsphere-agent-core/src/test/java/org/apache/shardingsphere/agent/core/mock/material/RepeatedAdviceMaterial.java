@@ -37,5 +37,4 @@ public class RepeatedAdviceMaterial {
         queues.add("on");
         return "invocation";
     }
-    
 }

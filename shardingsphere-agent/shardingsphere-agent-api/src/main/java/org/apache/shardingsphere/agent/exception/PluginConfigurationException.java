@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.config;
-
-import lombok.Getter;
-import lombok.Setter;
+package org.apache.shardingsphere.agent.exception;
 
 /**
- * Remote plugin configuration.
+ * Plugin configuration exception.
  */
-@Getter
-@Setter
-public class RemotePluginConfiguration {
+public final class PluginConfigurationException extends RuntimeException {
     
-    private String host = "localhost";
-    
-    private int port = 5775;
+    /**
+     * Constructs an exception with formatted error message and arguments.
+     *
+     * @param errorMessage formatted error message
+     * @param args arguments of error message
+     */
+    public PluginConfigurationException(final String errorMessage, final Object... args) {
+        super(String.format(errorMessage, args));
+    }
 }

@@ -13,23 +13,43 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.core.exception;
+package org.apache.shardingsphere.agent.core.config.registry;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Plugin definition not found exception.
+ * Agent configuration registry.
  */
-public final class PluginDefinitionNotFoundException extends RuntimeException {
+public enum AgentConfigurationRegistry {
     
     /**
-     * Constructs an exception with formatted error message and arguments.
-     *
-     * @param errorMessage formatted error message
-     * @param args arguments of error message
+     * Instance singleton.
      */
-    public PluginDefinitionNotFoundException(final String errorMessage, final Object... args) {
-        super(String.format(errorMessage, args));
+    INSTANCE;
+    
+    private static final Map<String, Object> SINGLES = new ConcurrentHashMap<>();
+    
+    /**
+     * Put entity object.
+     *
+     * @param entity entity object
+     */
+    public void put(final Object entity) {
+        SINGLES.put(entity.getClass().getName(), entity);
+    }
+    
+    /**
+     * Get object.
+     *
+     * @param <T> type parameter
+     * @param clazz clazz
+     * @return object
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T get(final Class<T> clazz) {
+        return (T) SINGLES.get(clazz.getName());
     }
 }

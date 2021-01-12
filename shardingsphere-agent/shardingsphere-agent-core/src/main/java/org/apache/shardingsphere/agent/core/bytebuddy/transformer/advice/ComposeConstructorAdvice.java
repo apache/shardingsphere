@@ -24,6 +24,9 @@ import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
 
 import java.util.List;
 
+/**
+ * Compose Constructor advice.
+ */
 @RequiredArgsConstructor
 public final class ComposeConstructorAdvice implements ConstructorAdvice {
     
