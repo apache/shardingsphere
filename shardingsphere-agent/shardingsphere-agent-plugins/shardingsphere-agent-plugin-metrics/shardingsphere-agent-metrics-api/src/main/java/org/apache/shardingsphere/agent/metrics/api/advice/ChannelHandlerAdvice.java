@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
 import java.lang.reflect.Method;
-import org.apache.shardingsphere.agent.api.advice.MethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
 import org.apache.shardingsphere.agent.metrics.api.constant.MethodNameConstant;
 
 /**
  * Channel handler advice.
  */
-public final class ChannelHandlerAdvice implements MethodAroundAdvice {
+public final class ChannelHandlerAdvice implements InstanceMethodAroundAdvice {
     
     private static final String REQUEST_TOTAL = "proxy_request_total";
     
@@ -39,7 +39,7 @@ public final class ChannelHandlerAdvice implements MethodAroundAdvice {
     }
     
     @Override
-    public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         collectMetrics(method.getName());
     }
     

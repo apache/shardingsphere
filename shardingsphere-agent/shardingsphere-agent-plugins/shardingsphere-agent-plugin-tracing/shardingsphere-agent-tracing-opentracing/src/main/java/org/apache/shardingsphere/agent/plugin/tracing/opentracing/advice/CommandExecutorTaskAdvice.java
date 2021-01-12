@@ -21,8 +21,8 @@ import io.opentracing.Scope;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
 import java.lang.reflect.Method;
-import org.apache.shardingsphere.agent.api.advice.MethodAroundAdvice;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ShardingSphereTags;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.span.OpenTracingErrorSpan;
@@ -31,14 +31,14 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 /**
  * Command executor task advice.
  */
-public final class CommandExecutorTaskAdvice implements MethodAroundAdvice {
+public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvice {
 
     private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
     
     private static final String ROOT_SPAN = "_root_span_";
 
     @Override
-    public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
                 .withTag(Tags.COMPONENT.getKey(), ShardingSphereTags.COMPONENT_NAME)
                 .startActive(true);
@@ -46,13 +46,13 @@ public final class CommandExecutorTaskAdvice implements MethodAroundAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         GlobalTracer.get().scopeManager().active().close();
         ExecutorDataMap.getValue().remove(ROOT_SPAN);
     }
 
     @Override
-    public void onThrowing(final TargetObject target, final Method method, final Object[] args, final Throwable throwable) {
+    public void onThrowing(final AdviceTargetObject target, final Method method, final Object[] args, final Throwable throwable) {
         OpenTracingErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
     }
 }

@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
+package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 
-public final class MockTargetObject implements TargetObject {
+public final class MockAdviceTargetObject implements AdviceTargetObject {
     
     private Object object;
 

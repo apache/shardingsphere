@@ -19,9 +19,9 @@ package org.apache.shardingsphere.agent.metrics.api.advice;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
-import org.apache.shardingsphere.agent.api.advice.MethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -36,7 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateState
 /**
  * SQL route engine advice.
  */
-public final class SQLRouteEngineAdvice implements MethodAroundAdvice {
+public final class SQLRouteEngineAdvice implements InstanceMethodAroundAdvice {
     
     private static final String SELECT = "sql_select_total";
     
@@ -60,7 +60,7 @@ public final class SQLRouteEngineAdvice implements MethodAroundAdvice {
     }
     
     @Override
-    public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         LogicSQL logicSQL = (LogicSQL) args[0];
         SQLStatement sqlStatement = logicSQL.getSqlStatementContext().getSqlStatement();
         if (sqlStatement instanceof InsertStatement) {
@@ -75,7 +75,7 @@ public final class SQLRouteEngineAdvice implements MethodAroundAdvice {
     }
 
     @Override
-    public void afterMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         RouteContext routeContext = (RouteContext) result.getResult();
         if (null != routeContext) {
             Collection<RouteUnit> routeUnits = routeContext.getRouteUnits();

@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.advice;
+package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
 
-public final class MockTargetObject implements TargetObject {
+import java.util.List;
+
+@RequiredArgsConstructor
+public final class ComposeConstructorAdvice implements ConstructorAdvice {
     
-    private Object object;
-
+    private final @NonNull List<ConstructorAdvice> adviceList;
+    
     @Override
-    public Object getAttachment() {
-        return object;
-    }
-
-    @Override
-    public void setAttachment(final Object attachment) {
-        this.object = attachment;
+    public void onConstructor(final AdviceTargetObject target, final Object[] args) {
+        adviceList.forEach(each -> each.onConstructor(target, args));
     }
 }

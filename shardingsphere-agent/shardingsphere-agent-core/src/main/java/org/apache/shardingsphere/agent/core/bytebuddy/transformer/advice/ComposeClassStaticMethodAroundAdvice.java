@@ -1,8 +1,8 @@
 /*
- * Licensed to the Apache Software Foundation (final ASF) under one or more
+ * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, final Version 2.0
+ * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
@@ -15,44 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.mock.advice;
+package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.api.advice.StaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 
 import java.lang.reflect.Method;
 import java.util.List;
 
+/**
+ * Compose class static method around advice.
+ */
 @RequiredArgsConstructor
-@SuppressWarnings("unchecked")
-public final class MockStaticMethodAroundAdvice implements StaticMethodAroundAdvice {
+public class ComposeClassStaticMethodAroundAdvice implements ClassStaticMethodAroundAdvice {
     
-    private final boolean rebase;
-    
-    public MockStaticMethodAroundAdvice() {
-        this(false);
-    }
+    private @NonNull List<ClassStaticMethodAroundAdvice> adviceList;
     
     @Override
     public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        List<String> queue = (List<String>) args[0];
-        queue.add("before");
-        if (rebase) {
-            result.rebase("rebase static invocation method");
-        }
+        adviceList.forEach(each -> each.beforeMethod(clazz, method, args, result));
     }
     
     @Override
     public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        List<String> queue = (List<String>) args[0];
-        queue.add("after");
+        adviceList.forEach(each -> each.afterMethod(clazz, method, args, result));
     }
     
     @Override
     public void onThrowing(final Class<?> clazz, final Method method, final Object[] args, final Throwable throwable) {
-        List<String> queue = (List<String>) args[0];
-        queue.add("exception");
+        adviceList.forEach(each -> each.onThrowing(clazz, method, args, throwable));
     }
-    
 }

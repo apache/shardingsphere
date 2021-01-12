@@ -28,9 +28,9 @@ import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.core.mock.material.StaticMaterial;
-import org.apache.shardingsphere.agent.core.mock.advice.MockStaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.mock.advice.MockClassStaticMethodAroundAdvice;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -48,7 +48,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class StaticMethodAroundInterceptorTest {
+public final class ClassStaticMethodAroundInterceptorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
@@ -79,12 +79,12 @@ public final class StaticMethodAroundInterceptorTest {
                 .transform((builder, typeDescription, classLoader, module) -> {
                     if (CLASS_PATH.equals(typeDescription.getTypeName())) {
                         return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
-                                .implement(TargetObject.class)
+                                .implement(AdviceTargetObject.class)
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA))
                                 .method(ElementMatchers.named("staticMockWithException"))
-                                .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAroundInterceptor(new MockStaticMethodAroundAdvice(false))))
+                                .intercept(MethodDelegation.withDefaultConfiguration().to(new ClassStaticMethodAroundInterceptor(new MockClassStaticMethodAroundAdvice(false))))
                                 .method(ElementMatchers.named("staticMock"))
-                                .intercept(MethodDelegation.withDefaultConfiguration().to(new StaticMethodAroundInterceptor(new MockStaticMethodAroundAdvice(true))));
+                                .intercept(MethodDelegation.withDefaultConfiguration().to(new ClassStaticMethodAroundInterceptor(new MockClassStaticMethodAroundAdvice(true))));
                     }
                     return builder;
                 })
