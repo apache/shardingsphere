@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription;
 
+/**
+ * ShardingSphere transformer point.
+ */
 @Getter
 @RequiredArgsConstructor
 public class ShardingSphereTransformationPoint<T> {
@@ -28,5 +31,4 @@ public class ShardingSphereTransformationPoint<T> {
     private final MethodDescription description;
     
     private final T interceptor;
-    
 }

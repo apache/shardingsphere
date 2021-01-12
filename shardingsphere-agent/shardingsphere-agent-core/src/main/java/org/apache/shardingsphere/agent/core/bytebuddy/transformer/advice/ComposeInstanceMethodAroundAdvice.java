@@ -26,10 +26,13 @@ import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import java.lang.reflect.Method;
 import java.util.List;
 
+/**
+ * Compose instance method around advice.
+ */
 @RequiredArgsConstructor
-public class ComposeInstanceMethodAroundAdvice implements InstanceMethodAroundAdvice {
+public final class ComposeInstanceMethodAroundAdvice implements InstanceMethodAroundAdvice {
     
-    private @NonNull List<InstanceMethodAroundAdvice> adviceList;
+    private final @NonNull List<InstanceMethodAroundAdvice> adviceList;
     
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {

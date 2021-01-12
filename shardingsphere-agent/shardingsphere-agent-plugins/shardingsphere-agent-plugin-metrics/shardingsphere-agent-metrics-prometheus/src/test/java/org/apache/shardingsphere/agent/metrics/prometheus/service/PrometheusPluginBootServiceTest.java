@@ -38,9 +38,7 @@ public final class PrometheusPluginBootServiceTest {
     public void assertStart() {
         Properties props = new Properties();
         props.setProperty("JVM_INFORMATION_COLLECTOR_ENABLED", "true");
-        PluginConfiguration configuration = new PluginConfiguration();
-        configuration.setPort(8090);
-        configuration.setProps(props);
+        PluginConfiguration configuration = new PluginConfiguration("localhost", 8090, "", props);
         prometheusPluginBootService.start(configuration);
         Field field = PrometheusPluginBootService.class.getDeclaredField("httpServer");
         field.setAccessible(true);

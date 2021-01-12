@@ -36,20 +36,11 @@ public final class YamlAgentConfigurationSwapper {
      * @return agent configuration
      */
     public static AgentConfiguration swap(final YamlAgentConfiguration yamlConfig) {
-        AgentConfiguration result = new AgentConfiguration();
-        result.setApplicationName(yamlConfig.getApplicationName());
-        result.setIgnoredPluginNames(yamlConfig.getIgnoredPluginNames());
         Map<String, PluginConfiguration> configurationMap = yamlConfig.getPlugins().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> transform(entry.getValue())));
-        result.setPlugins(configurationMap);
-        return result;
+        return new AgentConfiguration(yamlConfig.getApplicationName(), yamlConfig.getIgnoredPluginNames(), configurationMap);
     }
     
     private static PluginConfiguration transform(final YamlPluginConfiguration yamlConfig) {
-        PluginConfiguration result = new PluginConfiguration();
-        result.setHost(yamlConfig.getHost());
-        result.setPort(yamlConfig.getPort());
-        result.setProps(yamlConfig.getProps());
-        result.setPassword(yamlConfig.getPassword());
-        return result;
+        return new PluginConfiguration(yamlConfig.getHost(), yamlConfig.getPort(), yamlConfig.getPassword(), yamlConfig.getProps());
     }
 }

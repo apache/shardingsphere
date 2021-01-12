@@ -395,9 +395,6 @@ public final class ConfigCenterTest {
         HARuleConfiguration config = (HARuleConfiguration) actual.iterator().next();
         assertThat(config.getDataSources().size(), is(1));
         assertThat(config.getDataSources().iterator().next().getDataSourceNames().size(), is(3));
-        assertThat(config.getHaConfiguration().getType(), is("MGR"));
-        assertThat(config.getHaConfiguration().getProps().getProperty("keepAliveCron"), is("0/5 * * * * ?"));
-        assertThat(config.getHaConfiguration().getProps().getProperty("groupName"), is("92504d5b-6dec-11e8-91ea-246e9612aaf1"));
     }
     
     @Test

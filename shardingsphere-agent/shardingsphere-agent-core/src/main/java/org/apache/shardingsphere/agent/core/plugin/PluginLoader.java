@@ -29,7 +29,7 @@ import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.config.cache.AgentObjectPool;
+import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
 import org.apache.shardingsphere.agent.spi.definition.PluginDefinitionService;
@@ -106,7 +106,7 @@ public final class PluginLoader extends ClassLoader implements Closeable {
             return;
         }
         Map<String, PluginInterceptorPoint> pointMap = Maps.newHashMap();
-        Set<String> ignoredPluginNames = AgentObjectPool.INSTANCE.get(AgentConfiguration.class).getIgnoredPluginNames();
+        Set<String> ignoredPluginNames = AgentConfigurationRegistry.INSTANCE.get(AgentConfiguration.class).getIgnoredPluginNames();
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             for (File each : jarFiles) {
                 outputStream.reset();
@@ -270,13 +270,13 @@ public final class PluginLoader extends ClassLoader implements Closeable {
         if (null != getPackage(packageName)) {
             return;
         }
-        Attributes attr = manifest.getMainAttributes();
-        String specTitle = attr.getValue(Attributes.Name.SPECIFICATION_TITLE);
-        String specVersion = attr.getValue(Attributes.Name.SPECIFICATION_VERSION);
-        String specVendor = attr.getValue(Attributes.Name.SPECIFICATION_VENDOR);
-        String implTitle = attr.getValue(Attributes.Name.IMPLEMENTATION_TITLE);
-        String implVersion = attr.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
-        String implVendor = attr.getValue(Attributes.Name.IMPLEMENTATION_VENDOR);
+        Attributes attributes = manifest.getMainAttributes();
+        String specTitle = attributes.getValue(Attributes.Name.SPECIFICATION_TITLE);
+        String specVersion = attributes.getValue(Attributes.Name.SPECIFICATION_VERSION);
+        String specVendor = attributes.getValue(Attributes.Name.SPECIFICATION_VENDOR);
+        String implTitle = attributes.getValue(Attributes.Name.IMPLEMENTATION_TITLE);
+        String implVersion = attributes.getValue(Attributes.Name.IMPLEMENTATION_VERSION);
+        String implVendor = attributes.getValue(Attributes.Name.IMPLEMENTATION_VENDOR);
         definePackage(packageName, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor, null);
     }
     
@@ -284,10 +284,10 @@ public final class PluginLoader extends ClassLoader implements Closeable {
         pluginDefinitionService.build().forEach(each -> {
             String target = each.getClassNameOfTarget();
             if (pointMap.containsKey(target)) {
-                PluginInterceptorPoint definition = pointMap.get(target);
-                definition.getConstructorPoints().addAll(each.getConstructorPoints());
-                definition.getInstanceMethodPoints().addAll(each.getInstanceMethodPoints());
-                definition.getClassStaticMethodPoints().addAll(each.getClassStaticMethodPoints());
+                PluginInterceptorPoint pluginInterceptorPoint = pointMap.get(target);
+                pluginInterceptorPoint.getConstructorPoints().addAll(each.getConstructorPoints());
+                pluginInterceptorPoint.getInstanceMethodPoints().addAll(each.getInstanceMethodPoints());
+                pluginInterceptorPoint.getClassStaticMethodPoints().addAll(each.getClassStaticMethodPoints());
             } else {
                 pointMap.put(target, each);
             }

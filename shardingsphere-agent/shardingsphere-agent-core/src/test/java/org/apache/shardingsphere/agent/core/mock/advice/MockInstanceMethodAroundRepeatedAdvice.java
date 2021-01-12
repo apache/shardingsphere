@@ -24,7 +24,8 @@ import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public class MockInstanceMethodAroundRepeatedAdvice implements InstanceMethodAroundAdvice {
+@SuppressWarnings("unchecked")
+public final class MockInstanceMethodAroundRepeatedAdvice implements InstanceMethodAroundAdvice {
     
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
