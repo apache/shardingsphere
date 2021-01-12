@@ -68,8 +68,9 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     @BeforeClass
-    public static void initDatabases() throws IOException, JAXBException {
+    public static void initDatabases() throws JAXBException, IOException {
         SchemaEnvironmentManager.createDatabases();
+        SchemaEnvironmentManager.createTables();
     }
     
     @AfterClass
@@ -78,8 +79,7 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     @Before
-    public final void initTables() throws SQLException, ParseException, IOException, JAXBException {
-        SchemaEnvironmentManager.createTables();
+    public final void initTables() throws SQLException, ParseException, IOException {
         dataSetEnvironmentManager.fillData();
         try (Connection connection = getTargetDataSource().getConnection()) {
             executeInitSQLs(connection);
@@ -97,8 +97,7 @@ public abstract class BaseDDLIT extends SingleIT {
     }
     
     @After
-    public final void destroyTables() throws JAXBException, IOException, SQLException {
-        SchemaEnvironmentManager.dropTables();
+    public final void destroyTables() throws SQLException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             dropInitializedTable(connection);
         }
