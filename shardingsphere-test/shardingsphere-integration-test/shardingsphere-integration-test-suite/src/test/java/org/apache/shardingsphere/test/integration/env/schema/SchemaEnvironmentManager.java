@@ -60,22 +60,19 @@ public final class SchemaEnvironmentManager {
     }
     
     /**
-     * Execute init SQL.
+     * Execute init SQLs.
      * 
      * @throws IOException IO exception
      * @throws JAXBException JAXB exception
      * @throws SQLException SQL exception
      */
-    public static void executeInitSQL() throws IOException, JAXBException, SQLException {
-        if (IntegrateTestEnvironment.getInstance().isEnvironmentPrepared()) {
-            return;
-        }
+    public static void executeInitSQLs() throws IOException, JAXBException, SQLException {
         for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
-            executeInitSQL(each);
+            executeInitSQLs(each);
         }
     }
     
-    private static void executeInitSQL(final String scenario) throws IOException, JAXBException, SQLException {
+    private static void executeInitSQLs(final String scenario) throws IOException, JAXBException, SQLException {
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             if ("H2".equals(each.getName())) {
                 executeInitSQLForSchemaNotSupportedDatabase(scenario, each);

@@ -29,10 +29,8 @@ import org.apache.shardingsphere.test.integration.engine.it.SingleIT;
 import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -64,11 +62,6 @@ public abstract class BaseDDLIT extends SingleIT {
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(scenario), getActualDataSources());
         assertNotNull("Expected affected table is required", assertion.getInitialSQL());
         assertNotNull("Expected affected table is required", assertion.getInitialSQL().getAffectedTable());
-    }
-    
-    @BeforeClass
-    public static void initDatabases() throws JAXBException, IOException, SQLException {
-        SchemaEnvironmentManager.executeInitSQL();
     }
     
     @Before

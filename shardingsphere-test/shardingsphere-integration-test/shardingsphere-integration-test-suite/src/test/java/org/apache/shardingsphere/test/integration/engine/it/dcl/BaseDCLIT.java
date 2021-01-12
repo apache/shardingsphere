@@ -25,10 +25,8 @@ import org.apache.shardingsphere.test.integration.engine.it.SingleIT;
 import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.authority.AuthorityEnvironmentManager;
-import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -93,11 +91,6 @@ public abstract class BaseDCLIT extends SingleIT {
     private boolean isInSameDatabaseInstance(final DataSourceMetaData sample, final DataSourceMetaData target) {
         return sample instanceof MemorizedDataSourceMetaData
                 ? (Objects.equals(target.getSchema(), sample.getSchema())) : target.getHostName().equals(sample.getHostName()) && target.getPort() == sample.getPort();
-    }
-    
-    @BeforeClass
-    public static void initDatabasesAndTables() throws JAXBException, IOException, SQLException {
-        SchemaEnvironmentManager.executeInitSQL();
     }
     
     @Before

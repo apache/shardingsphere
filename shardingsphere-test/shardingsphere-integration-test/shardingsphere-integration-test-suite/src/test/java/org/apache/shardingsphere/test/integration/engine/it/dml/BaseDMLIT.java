@@ -29,10 +29,8 @@ import org.apache.shardingsphere.test.integration.engine.it.SingleIT;
 import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -59,11 +57,6 @@ public abstract class BaseDMLIT extends SingleIT {
                         final DatabaseType databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, adapter, scenario, databaseType, sqlExecuteType, sql);
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(scenario), getActualDataSources());
-    }
-    
-    @BeforeClass
-    public static void initDatabasesAndTables() throws IOException, JAXBException, SQLException {
-        SchemaEnvironmentManager.executeInitSQL();
     }
     
     @Before

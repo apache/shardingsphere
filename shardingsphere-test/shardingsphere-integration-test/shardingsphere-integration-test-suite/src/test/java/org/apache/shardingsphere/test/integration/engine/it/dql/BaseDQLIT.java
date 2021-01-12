@@ -28,7 +28,6 @@ import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
-import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.BeforeClass;
 
 import javax.xml.bind.JAXBException;
@@ -56,7 +55,6 @@ public abstract class BaseDQLIT extends SingleIT {
     
     @BeforeClass
     public static void fillData() throws IOException, JAXBException, SQLException, ParseException {
-        SchemaEnvironmentManager.executeInitSQL();
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             fillData(each);
         }

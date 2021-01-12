@@ -31,10 +31,8 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -77,11 +75,6 @@ public abstract class BatchIT extends BaseIT {
             dataSets.add(DataSetLoader.load(testCaseContext.getParentPath(), scenario, databaseType, each.getExpectedDataFile()));
         }
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(scenario), getActualDataSources());
-    }
-    
-    @BeforeClass
-    public static void initDatabasesAndTables() throws JAXBException, IOException, SQLException {
-        SchemaEnvironmentManager.executeInitSQL();
     }
     
     @Before
