@@ -37,7 +37,7 @@ services:
     image: apache/shardingsphere-proxy-test
     container_name: tbl-shardingsphere-proxy
     ports:
-      - "33080:3307"
+      - "33170:3307"
     links:
       - "mysql:mysql.tbl.host"
 #      - "zookeeper:zk"
