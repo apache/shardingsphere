@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.net.URL;
 import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
-import org.apache.shardingsphere.agent.core.config.cache.AgentObjectPool;
+import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
 import org.apache.shardingsphere.agent.metrics.api.util.ReflectiveUtil;
 import org.junit.Before;
@@ -35,7 +35,7 @@ public class BaseTest {
     public void assertLoad() throws IOException {
         ReflectiveUtil.setStaticField(AgentPathBuilder.class, "agentPath", new File(getResourceUrl()));
         AgentConfiguration configuration = AgentConfigurationLoader.load();
-        AgentObjectPool.INSTANCE.put(configuration);
+        AgentConfigurationRegistry.INSTANCE.put(configuration);
     }
     
     private static String getResourceUrl() {
