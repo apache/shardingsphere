@@ -13,23 +13,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.apache.shardingsphere.agent.core.exception;
+package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
 
-/**
- * Plugin definition not found exception.
- */
-public final class PluginDefinitionNotFoundException extends RuntimeException {
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+
+public final class MockAdviceTargetObject implements AdviceTargetObject {
     
-    /**
-     * Constructs an exception with formatted error message and arguments.
-     *
-     * @param errorMessage formatted error message
-     * @param args arguments of error message
-     */
-    public PluginDefinitionNotFoundException(final String errorMessage, final Object... args) {
-        super(String.format(errorMessage, args));
+    private Object object;
+
+    @Override
+    public Object getAttachment() {
+        return object;
+    }
+
+    @Override
+    public void setAttachment(final Object attachment) {
+        this.object = attachment;
     }
 }

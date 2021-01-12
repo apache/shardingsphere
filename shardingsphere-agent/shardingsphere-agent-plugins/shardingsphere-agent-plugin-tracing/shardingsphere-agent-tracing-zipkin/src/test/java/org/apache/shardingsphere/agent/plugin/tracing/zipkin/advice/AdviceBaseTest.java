@@ -26,7 +26,7 @@ import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import zipkin2.Span;
 
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -49,7 +49,7 @@ public abstract class AdviceBaseTest {
                 .transform((builder, typeDescription, classLoader, module) -> {
                     if (klass.equals(typeDescription.getTypeName())) {
                         return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
-                                .implement(TargetObject.class)
+                                .implement(AdviceTargetObject.class)
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA));
                     }
                     return builder;

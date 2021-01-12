@@ -36,6 +36,8 @@ public final class ConfigCenterNode {
     
     private static final String METADATA_NODE = "metadata";
     
+    private static final String SCHEMAS_NODE = "schemas";
+    
     private static final String DATA_SOURCE_NODE = "datasource";
     
     private static final String RULE_NODE = "rule";
@@ -156,9 +158,8 @@ public final class ConfigCenterNode {
      * @return config paths list.
      */
     public Collection<String> getAllSchemaConfigPaths(final Collection<String> schemaNames) {
-        Collection<String> result = new ArrayList<>(Collections.singletonList(getMetadataNodePath()));
+        Collection<String> result = new ArrayList<>(Collections.singleton(getSchemasNodePath()));
         for (String schemaName : schemaNames) {
-            result.add(getSchemaNamePath(schemaName));
             result.add(getRulePath(schemaName));
             result.add(getDataSourcePath(schemaName));
             result.add(getSchemaPath(schemaName));
@@ -174,5 +175,14 @@ public final class ConfigCenterNode {
      */
     public String getCachePath(final String path) {
         return Joiner.on(PATH_SEPARATOR).join(path, CACHE_NODE);
+    }
+    
+    /**
+     * Get schemas node path.
+     * 
+     * @return schemas node path.
+     */
+    public String getSchemasNodePath() {
+        return Joiner.on(PATH_SEPARATOR).join("", SCHEMAS_NODE);
     }
 }

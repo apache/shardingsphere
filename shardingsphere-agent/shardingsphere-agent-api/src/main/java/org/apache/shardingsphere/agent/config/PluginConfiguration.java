@@ -19,16 +19,20 @@ package org.apache.shardingsphere.agent.config;
 
 import java.util.Properties;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Plugin configuration.
  */
 @Getter
-@Setter
-public final class PluginConfiguration extends RemotePluginConfiguration {
+@RequiredArgsConstructor
+public final class PluginConfiguration {
     
-    private String password;
+    private final String host;
     
-    private Properties props = new Properties();
+    private final int port;
+    
+    private final String password;
+    
+    private final Properties props;
 }

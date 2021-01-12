@@ -29,9 +29,9 @@ import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.core.mock.material.InstanceMaterial;
-import org.apache.shardingsphere.agent.core.mock.advice.MockMethodAroundAdvice;
+import org.apache.shardingsphere.agent.core.mock.advice.MockInstanceMethodAroundAdvice;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -49,7 +49,7 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
-public final class MethodAroundInterceptorTest {
+public final class InstanceMethodAroundInterceptorTest {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
@@ -83,7 +83,7 @@ public final class MethodAroundInterceptorTest {
                 .transform((builder, typeDescription, classLoader, module) -> {
                     if (CLASS_PATH.equals(typeDescription.getTypeName())) {
                         return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
-                                .implement(TargetObject.class)
+                                .implement(AdviceTargetObject.class)
                                 .intercept(FieldAccessor.ofField(EXTRA_DATA));
                     }
                     return builder;
@@ -97,7 +97,7 @@ public final class MethodAroundInterceptorTest {
         InstanceMaterial material = new ByteBuddy()
                 .subclass(InstanceMaterial.class)
                 .method(ElementMatchers.named(methodName))
-                .intercept(MethodDelegation.withDefaultConfiguration().to(new MethodAroundInterceptor(new MockMethodAroundAdvice(rebase))))
+                .intercept(MethodDelegation.withDefaultConfiguration().to(new InstanceMethodAroundInterceptor(new MockInstanceMethodAroundAdvice(rebase))))
                 .make()
                 .load(new MockClassLoader())
                 .getLoaded()

@@ -53,7 +53,6 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements ScalingD
     public ShardingSphereJDBCDataSourceConfiguration(final String dataSource, final String rule) {
         this.dataSource = dataSource;
         this.rule = rule;
-        databaseType = getDatabaseType();
     }
     
     @Override

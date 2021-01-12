@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.config;
+package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 
-/**
- * Remote plugin configuration.
- */
-@Getter
-@Setter
-public class RemotePluginConfiguration {
+public final class MockAdviceTargetObject implements AdviceTargetObject {
     
-    private String host = "localhost";
-    
-    private int port = 5775;
+    private Object object;
+
+    @Override
+    public Object getAttachment() {
+        return object;
+    }
+
+    @Override
+    public void setAttachment(final Object attachment) {
+        this.object = attachment;
+    }
 }

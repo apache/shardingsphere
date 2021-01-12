@@ -28,5 +28,5 @@ public interface ConstructorAdvice {
      * @param target intercepted target object
      * @param args all arguments of the intercepted constructor
      */
-    void onConstructor(TargetObject target, Object[] args);
+    void onConstructor(AdviceTargetObject target, Object[] args);
 }

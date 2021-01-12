@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.api.advice;
+package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
+
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
+
+import java.util.List;
 
 /**
- * Wrapped class for target and provide a context to store variable during invocation.
+ * Compose Constructor advice.
  */
-public interface TargetObject {
+@RequiredArgsConstructor
+public final class ComposeConstructorAdvice implements ConstructorAdvice {
     
-    /**
-     * Get the variable from context.
-     *
-     * @return the attachment
-     */
-    Object getAttachment();
+    private final @NonNull List<ConstructorAdvice> adviceList;
     
-    /**
-     * Store a variable into context.
-     *
-     * @param attachment what variable you want to store
-     */
-    void setAttachment(Object attachment);
+    @Override
+    public void onConstructor(final AdviceTargetObject target, final Object[] args) {
+        adviceList.forEach(each -> each.onConstructor(target, args));
+    }
 }

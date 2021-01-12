@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.ha.spi;
 
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * HA type.
  */
-public interface HAType extends TypedSPI {
+public interface HAType extends ShardingSphereAlgorithm {
     
     /**
      * Check HA config.

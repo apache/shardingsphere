@@ -15,41 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.config.cache;
+package org.apache.shardingsphere.agent.core.bytebuddy.transformer;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import net.bytebuddy.description.method.MethodDescription;
 
 /**
- * Agent object pool.
+ * ShardingSphere transformer point.
  */
-public enum AgentObjectPool {
+@Getter
+@RequiredArgsConstructor
+public class ShardingSphereTransformationPoint<T> {
     
-    /**
-     * Instance singleton.
-     */
-    INSTANCE;
+    private final MethodDescription description;
     
-    private static final Map<String, Object> SINGLES = new ConcurrentHashMap<>();
-    
-    /**
-     * Put entity object.
-     *
-     * @param entity entity object
-     */
-    public void put(final Object entity) {
-        SINGLES.put(entity.getClass().getName(), entity);
-    }
-    
-    /**
-     * Get object.
-     *
-     * @param <T> type parameter
-     * @param clazz clazz
-     * @return object
-     */
-    @SuppressWarnings("unchecked")
-    public <T> T get(final Class<T> clazz) {
-        return (T) SINGLES.get(clazz.getName());
-    }
+    private final T interceptor;
 }

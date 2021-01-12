@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.metrics.api.advice;
+package org.apache.shardingsphere.agent.core.plugin.interceptor.compose;
 
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
+import org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice.ComposeConstructorAdvice;
+import org.apache.shardingsphere.agent.core.plugin.interceptor.ConstructorInterceptor;
 
-public final class MockTargetObject implements TargetObject {
+import java.util.List;
+
+@Slf4j
+public final class ComposeConstructorInterceptor extends ConstructorInterceptor {
     
-    private Object object;
-
-    @Override
-    public Object getAttachment() {
-        return object;
+    public ComposeConstructorInterceptor(final List<ConstructorAdvice> constructorAdvices) {
+        super(new ComposeConstructorAdvice(constructorAdvices));
     }
-
-    @Override
-    public void setAttachment(final Object attachment) {
-        this.object = attachment;
-    }
+    
 }

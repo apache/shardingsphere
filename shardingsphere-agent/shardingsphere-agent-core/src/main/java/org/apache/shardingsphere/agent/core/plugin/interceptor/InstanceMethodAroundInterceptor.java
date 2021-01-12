@@ -26,8 +26,8 @@ import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.implementation.bind.annotation.This;
-import org.apache.shardingsphere.agent.api.advice.MethodAroundAdvice;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 
 import java.lang.reflect.Method;
@@ -38,9 +38,9 @@ import java.util.concurrent.Callable;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class MethodAroundInterceptor {
+public class InstanceMethodAroundInterceptor {
     
-    private final MethodAroundAdvice methodAroundAdvice;
+    private final InstanceMethodAroundAdvice instanceMethodAroundAdvice;
     
     /**
      * Only intercept instance method.
@@ -54,11 +54,11 @@ public final class MethodAroundInterceptor {
     @RuntimeType
     @SneakyThrows
     public Object intercept(@This final Object target, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
-        TargetObject instance = (TargetObject) target;
+        AdviceTargetObject instance = (AdviceTargetObject) target;
         MethodInvocationResult methodResult = new MethodInvocationResult();
         Object result;
         try {
-            methodAroundAdvice.beforeMethod(instance, method, args, methodResult);
+            instanceMethodAroundAdvice.beforeMethod(instance, method, args, methodResult);
             // CHECKSTYLE:OFF
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
@@ -75,7 +75,7 @@ public final class MethodAroundInterceptor {
         } catch (final Throwable ex) {
             // CHECKSTYLE:ON
             try {
-                methodAroundAdvice.onThrowing(instance, method, args, ex);
+                instanceMethodAroundAdvice.onThrowing(instance, method, args, ex);
                 // CHECKSTYLE:OFF
             } catch (final Throwable ignored) {
                 // CHECKSTYLE:ON
@@ -84,7 +84,7 @@ public final class MethodAroundInterceptor {
             throw ex;
         } finally {
             try {
-                methodAroundAdvice.afterMethod(instance, method, args, methodResult);
+                instanceMethodAroundAdvice.afterMethod(instance, method, args, methodResult);
                 // CHECKSTYLE:OFF
             } catch (final Throwable ex) {
                 // CHECKSTYLE:ON

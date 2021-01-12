@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
+package org.apache.shardingsphere.agent.exception;
 
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
-
-public final class MockTargetObject implements TargetObject {
+/**
+ * Plugin configuration exception.
+ */
+public final class PluginConfigurationException extends RuntimeException {
     
-    private Object object;
-
-    @Override
-    public Object getAttachment() {
-        return object;
-    }
-
-    @Override
-    public void setAttachment(final Object attachment) {
-        this.object = attachment;
+    /**
+     * Constructs an exception with formatted error message and arguments.
+     *
+     * @param errorMessage formatted error message
+     * @param args arguments of error message
+     */
+    public PluginConfigurationException(final String errorMessage, final Object... args) {
+        super(String.format(errorMessage, args));
     }
 }

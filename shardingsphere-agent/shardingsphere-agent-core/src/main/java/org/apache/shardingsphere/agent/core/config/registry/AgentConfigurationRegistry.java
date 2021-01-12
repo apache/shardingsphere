@@ -15,21 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.opentracing.advice;
+package org.apache.shardingsphere.agent.core.config.registry;
 
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-public final class MockTargetObject implements TargetObject {
+/**
+ * Agent configuration registry.
+ */
+public enum AgentConfigurationRegistry {
     
-    private Object object;
-
-    @Override
-    public Object getAttachment() {
-        return object;
+    /**
+     * Instance singleton.
+     */
+    INSTANCE;
+    
+    private static final Map<String, Object> SINGLES = new ConcurrentHashMap<>();
+    
+    /**
+     * Put entity object.
+     *
+     * @param entity entity object
+     */
+    public void put(final Object entity) {
+        SINGLES.put(entity.getClass().getName(), entity);
     }
-
-    @Override
-    public void setAttachment(final Object attachment) {
-        this.object = attachment;
+    
+    /**
+     * Get object.
+     *
+     * @param <T> type parameter
+     * @param clazz clazz
+     * @return object
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T get(final Class<T> clazz) {
+        return (T) SINGLES.get(clazz.getName());
     }
 }

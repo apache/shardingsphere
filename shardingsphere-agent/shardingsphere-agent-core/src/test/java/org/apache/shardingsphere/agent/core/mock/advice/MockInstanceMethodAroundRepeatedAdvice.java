@@ -17,42 +17,32 @@
 
 package org.apache.shardingsphere.agent.core.mock.advice;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.api.advice.StaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 
 import java.lang.reflect.Method;
 import java.util.List;
 
-@RequiredArgsConstructor
 @SuppressWarnings("unchecked")
-public final class MockStaticMethodAroundAdvice implements StaticMethodAroundAdvice {
+public final class MockInstanceMethodAroundRepeatedAdvice implements InstanceMethodAroundAdvice {
     
-    private final boolean rebase;
-    
-    public MockStaticMethodAroundAdvice() {
-        this(false);
+    @Override
+    public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+        List<String> queues = (List<String>) args[0];
+        queues.add("twice_before");
     }
     
     @Override
-    public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        List<String> queue = (List<String>) args[0];
-        queue.add("before");
-        if (rebase) {
-            result.rebase("rebase static invocation method");
-        }
+    public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+        List<String> queues = (List<String>) args[0];
+        queues.add("twice_after");
     }
     
     @Override
-    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        List<String> queue = (List<String>) args[0];
-        queue.add("after");
-    }
-    
-    @Override
-    public void onThrowing(final Class<?> clazz, final Method method, final Object[] args, final Throwable throwable) {
-        List<String> queue = (List<String>) args[0];
-        queue.add("exception");
+    public void onThrowing(final AdviceTargetObject target, final Method method, final Object[] args, final Throwable throwable) {
+        List<String> queues = (List<String>) args[0];
+        queues.add("twice_exception");
     }
     
 }
