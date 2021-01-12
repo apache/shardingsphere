@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.agent.metrics.api.definition;
 
+import java.util.Collection;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
 import org.apache.shardingsphere.agent.metrics.api.constant.MethodNameConstant;
 
@@ -43,7 +45,7 @@ public final class MetricsPluginDefinitionService extends AbstractPluginDefiniti
     private static final String TRANSACTION_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.api.advice.TransactionAdvice";
     
     @Override
-    public void define() {
+    public Collection<PluginInterceptorPoint> define() {
         intercept(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(MethodNameConstant.COMMAND_EXECUTOR_RUN))
                 .implement(COMMAND_EXECUTOR_TASK_ADVICE_CLASS)
@@ -61,6 +63,7 @@ public final class MetricsPluginDefinitionService extends AbstractPluginDefiniti
                 .aroundInstanceMethod(ElementMatchers.named(MethodNameConstant.COMMIT).or(ElementMatchers.named(MethodNameConstant.ROLL_BACK)))
                 .implement(TRANSACTION_ADVICE_CLASS)
                 .build();
+        return install();
     }
     
     @Override
