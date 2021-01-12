@@ -80,10 +80,8 @@ public abstract class BatchIT extends BaseIT {
     }
     
     @BeforeClass
-    public static void initDatabasesAndTables() throws JAXBException, IOException {
+    public static void initDatabasesAndTables() throws JAXBException, IOException, SQLException {
         SchemaEnvironmentManager.executeInitSQL();
-        SchemaEnvironmentManager.dropTables();
-        SchemaEnvironmentManager.createTables();
     }
     
     @Before

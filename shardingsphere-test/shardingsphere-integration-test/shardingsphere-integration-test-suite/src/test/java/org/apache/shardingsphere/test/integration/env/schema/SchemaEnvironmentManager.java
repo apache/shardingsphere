@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.test.integration.env.schema;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
@@ -33,7 +31,6 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -64,8 +61,12 @@ public final class SchemaEnvironmentManager {
     
     /**
      * Execute init SQL.
+     * 
+     * @throws IOException IO exception
+     * @throws JAXBException JAXB exception
+     * @throws SQLException SQL exception
      */
-    public static void executeInitSQL() {
+    public static void executeInitSQL() throws IOException, JAXBException, SQLException {
         if (IntegrateTestEnvironment.getInstance().isEnvironmentPrepared()) {
             return;
         }
@@ -74,8 +75,12 @@ public final class SchemaEnvironmentManager {
         }
     }
     
-    private static void executeInitSQL(final String scenario) {
+    private static void executeInitSQL(final String scenario) throws IOException, JAXBException, SQLException {
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
+            if ("H2".equals(each.getName())) {
+                executeInitSQLForSchemaNotSupportedDatabase(scenario, each);
+                return;
+            }
             // TODO use multiple threads to improve performance
             DataSource dataSource = ActualDataSourceBuilder.build(null, scenario, each);
             File file = new File(EnvironmentPath.getInitSQLFile(each, scenario));
@@ -83,85 +88,19 @@ public final class SchemaEnvironmentManager {
         }
     }
     
-    /**
-     * Create tables.
-     *
-     * @throws JAXBException JAXB exception
-     * @throws IOException IO exception
-     */
-    public static void createTables() throws JAXBException, IOException {
-        if (IntegrateTestEnvironment.getInstance().isEnvironmentPrepared()) {
-            return;
-        }
-        for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
-            createTables(each);
-        }
-    }
-    
-    private static void createTables(final String scenario) throws JAXBException, IOException {
-        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(scenario));
-        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
-            createTables(schemaEnvironment, scenario, each);
-        }
-    }
-    
-    private static void createTables(final SchemaEnvironment schemaEnvironment, final String scenario, final DatabaseType databaseType) {
-        for (String each : schemaEnvironment.getDatabases()) {
+    private static void executeInitSQLForSchemaNotSupportedDatabase(final String scenario, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
+        File file = new File(EnvironmentPath.getInitSQLFile(databaseType, scenario));
+        for (String each : getDataSourceNames(scenario)) {
             // TODO use multiple threads to improve performance
             DataSource dataSource = ActualDataSourceBuilder.build(each, scenario, databaseType);
-            executeSQLScript(dataSource, schemaEnvironment.getTableCreateSQLs());
+            executeSQLScript(dataSource, file);
         }
     }
     
-    /**
-     * Drop tables.
-     *
-     * @throws JAXBException JAXB exception
-     * @throws IOException IO exception
-     */
-    public static void dropTables() throws JAXBException, IOException {
-        if (IntegrateTestEnvironment.getInstance().isEnvironmentPrepared()) {
-            return;
-        }
-        for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
-            dropTables(each);
-        }
-    }
-    
-    private static void dropTables(final String scenario) throws JAXBException, IOException {
-        SchemaEnvironment schemaEnvironment = unmarshal(EnvironmentPath.getSchemaFile(scenario));
-        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
-            dropTables(schemaEnvironment, scenario, each);
-        }
-    }
-    
-    private static void dropTables(final SchemaEnvironment schemaEnvironment, final String scenario, final DatabaseType databaseType) {
-        for (String each : schemaEnvironment.getDatabases()) {
-            // TODO use multiple threads to improve performance
-            DataSource dataSource = ActualDataSourceBuilder.build(each, scenario, databaseType);
-            executeSQLScript(dataSource, schemaEnvironment.getTableDropSQLs());
-        }
-    }
-    
-    @SneakyThrows(IOException.class)
-    private static void executeSQLScript(final DataSource dataSource, final File file) {
+    private static void executeSQLScript(final DataSource dataSource, final File file) throws SQLException, IOException {
         try (Connection connection = dataSource.getConnection();
              FileReader reader = new FileReader(file)) {
             RunScript.execute(connection, reader);
-        } catch (final SQLException ignored) {
-            // TODO print err message if not drop not existed database/table
-        }
-    }
-    
-    private static void executeSQLScript(final DataSource dataSource, final Collection<String> sqls) {
-        if (sqls.isEmpty()) {
-            return;
-        }
-        try (Connection connection = dataSource.getConnection();
-             StringReader sqlScript = new StringReader(Joiner.on(";\n").skipNulls().join(sqls))) {
-            RunScript.execute(connection, sqlScript);
-        } catch (final SQLException ignored) {
-            // TODO print err message if not drop not existed database/table
         }
     }
 }
