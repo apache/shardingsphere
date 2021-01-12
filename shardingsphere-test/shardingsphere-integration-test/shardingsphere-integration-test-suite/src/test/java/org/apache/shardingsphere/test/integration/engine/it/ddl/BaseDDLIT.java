@@ -68,7 +68,7 @@ public abstract class BaseDDLIT extends SingleIT {
     
     @BeforeClass
     public static void initDatabases() throws JAXBException, IOException {
-        SchemaEnvironmentManager.createDatabases();
+        SchemaEnvironmentManager.executeInitSQL();
         SchemaEnvironmentManager.createTables();
     }
     

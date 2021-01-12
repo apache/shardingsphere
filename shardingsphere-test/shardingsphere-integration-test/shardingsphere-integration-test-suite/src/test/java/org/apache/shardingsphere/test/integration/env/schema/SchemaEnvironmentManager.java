@@ -63,22 +63,22 @@ public final class SchemaEnvironmentManager {
     }
     
     /**
-     * Create databases.
+     * Execute init SQL.
      */
-    public static void createDatabases() {
+    public static void executeInitSQL() {
         if (IntegrateTestEnvironment.getInstance().isEnvironmentPrepared()) {
             return;
         }
         for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
-            createDatabases(each);
+            executeInitSQL(each);
         }
     }
     
-    private static void createDatabases(final String scenario) {
+    private static void executeInitSQL(final String scenario) {
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             // TODO use multiple threads to improve performance
-            File file = new File(EnvironmentPath.getInitSQLFile(each, scenario));
             DataSource dataSource = ActualDataSourceBuilder.build(null, scenario, each);
+            File file = new File(EnvironmentPath.getInitSQLFile(each, scenario));
             executeSQLScript(dataSource, file);
         }
     }
