@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.schema;
+package org.apache.shardingsphere.test.integration.env.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -39,7 +39,7 @@ import java.util.Collection;
  * Schema environment manager.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaEnvironmentManager {
+public final class DatabaseEnvironmentManager {
     
     /**
      * Get data source names.
@@ -53,9 +53,9 @@ public final class SchemaEnvironmentManager {
         return unmarshal(EnvironmentPath.getDatabasesFile(scenario)).getDatabases();
     }
     
-    private static SchemaEnvironment unmarshal(final String schemaEnvironmentConfigFile) throws IOException, JAXBException {
+    private static DatabaseEnvironment unmarshal(final String schemaEnvironmentConfigFile) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(schemaEnvironmentConfigFile)) {
-            return (SchemaEnvironment) JAXBContext.newInstance(SchemaEnvironment.class).createUnmarshaller().unmarshal(reader);
+            return (DatabaseEnvironment) JAXBContext.newInstance(DatabaseEnvironment.class).createUnmarshaller().unmarshal(reader);
         }
     }
     

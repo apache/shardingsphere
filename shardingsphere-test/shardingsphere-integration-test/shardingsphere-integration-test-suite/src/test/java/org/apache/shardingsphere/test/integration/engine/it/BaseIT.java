@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ProxyDataSourceBuilder;
-import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
+import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -82,7 +82,7 @@ public abstract class BaseIT {
     @BeforeClass
     public static void executeInitSQLs() throws IOException, JAXBException, SQLException {
         if (!IntegrateTestEnvironment.getInstance().isEnvironmentPrepared()) {
-            SchemaEnvironmentManager.executeInitSQLs();
+            DatabaseEnvironmentManager.executeInitSQLs();
         }
     }
     

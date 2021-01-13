@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.schema;
+package org.apache.shardingsphere.test.integration.env.database;
 
 import lombok.Getter;
 
@@ -25,11 +25,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * XML definition of schema environment.
+ * XML definition of database environment.
  */
 @Getter
 @XmlRootElement(name = "databases")
-public final class SchemaEnvironment {
+public final class DatabaseEnvironment {
     
     @XmlElement(name = "database")
     private final Collection<String> databases = new LinkedList<>();
