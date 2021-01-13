@@ -56,7 +56,7 @@ public final class ActualDataSourceBuilder {
      * @throws JAXBException JAXB exception
      */
     public static Map<String, DataSource> createActualDataSources(final String scenario, final DatabaseType databaseType) throws IOException, JAXBException {
-        Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDataSourceNames(scenario);
+        Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
             result.put(each, build(each, scenario, databaseType));

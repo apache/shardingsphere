@@ -42,19 +42,19 @@ import java.util.Collection;
 public final class DatabaseEnvironmentManager {
     
     /**
-     * Get data source names.
+     * Get database names.
      * 
      * @param scenario scenario
-     * @return data source names
+     * @return database names
      * @throws IOException IO exception
      * @throws JAXBException JAXB exception
      */
-    public static Collection<String> getDataSourceNames(final String scenario) throws IOException, JAXBException {
+    public static Collection<String> getDatabaseNames(final String scenario) throws IOException, JAXBException {
         return unmarshal(EnvironmentPath.getDatabasesFile(scenario)).getDatabases();
     }
     
-    private static DatabaseEnvironment unmarshal(final String schemaEnvironmentConfigFile) throws IOException, JAXBException {
-        try (FileReader reader = new FileReader(schemaEnvironmentConfigFile)) {
+    private static DatabaseEnvironment unmarshal(final String databasesFile) throws IOException, JAXBException {
+        try (FileReader reader = new FileReader(databasesFile)) {
             return (DatabaseEnvironment) JAXBContext.newInstance(DatabaseEnvironment.class).createUnmarshaller().unmarshal(reader);
         }
     }
@@ -87,7 +87,7 @@ public final class DatabaseEnvironmentManager {
     
     private static void executeInitSQLForSchemaNotSupportedDatabase(final String scenario, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
         File file = new File(EnvironmentPath.getInitSQLFile(databaseType, scenario));
-        for (String each : getDataSourceNames(scenario)) {
+        for (String each : getDatabaseNames(scenario)) {
             // TODO use multiple threads to improve performance
             DataSource dataSource = ActualDataSourceBuilder.build(each, scenario, databaseType);
             executeSQLScript(dataSource, file);
