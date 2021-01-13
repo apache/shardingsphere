@@ -16,8 +16,6 @@
   ~ limitations under the License.
   -->
 
-<schema>
-    <databases>
-        <database>tbl</database>
-    </databases>
-</schema>
+<databases>
+    <database>tbl</database>
+</databases>

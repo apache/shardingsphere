@@ -16,9 +16,7 @@
   ~ limitations under the License.
   -->
 
-<schema>
-    <databases>
-        <database>db</database>
-        <database>shadow_db</database>
-    </databases>
-</schema>
+<databases>
+    <database>db</database>
+    <database>shadow_db</database>
+</databases>

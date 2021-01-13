@@ -16,10 +16,8 @@
   ~ limitations under the License.
   -->
 
-<schema>
-    <databases>
-        <database>primary_ds</database>
-        <database>replica_0</database>
-        <database>replica_1</database>
-    </databases>
-</schema>
+<databases>
+    <database>primary_ds</database>
+    <database>replica_0</database>
+    <database>replica_1</database>
+</databases>
