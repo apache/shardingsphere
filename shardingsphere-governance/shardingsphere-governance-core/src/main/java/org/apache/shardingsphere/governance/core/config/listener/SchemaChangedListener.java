@@ -86,6 +86,9 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
             return Optional.of(createUpdatedEvent(schemaName, event));
         }
         if (Type.DELETED == event.getType()) {
+            if (event.getKey().startsWith(configurationNode.getCachePath(configurationNode.getRulePath(schemaName)))) {
+                return Optional.empty();
+            }
             existedSchemaNames.remove(schemaName);
             return Optional.of(new MetaDataDeletedEvent(schemaName));
         }
