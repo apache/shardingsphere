@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Test;
@@ -34,9 +35,11 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -52,6 +55,19 @@ import static org.mockito.Mockito.when;
 public final class ProxyContextTest {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
+    
+    @Test
+    public void assertGetDataSourceSample() throws NoSuchFieldException, IllegalAccessException {
+        Map<String, DataSource> mockDataSourceMap = new HashMap<>(2, 1);
+        mockDataSourceMap.put("ds_1", new MockedDataSource());
+        mockDataSourceMap.put("ds_2", new MockedDataSource());
+        Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
+        metaDataContexts.setAccessible(true);
+        metaDataContexts.set(ProxyContext.getInstance(), 
+                new StandardMetaDataContexts(mockMetaDataMap(mockDataSourceMap), mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties())));
+        Optional<DataSource> actual = ProxyContext.getInstance().getDataSourceSample();
+        assertThat(actual, is(Optional.of(mockDataSourceMap.get("ds_1"))));
+    }
     
     @Test
     public void assertInit() {
