@@ -25,7 +25,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
-import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
+import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -56,7 +56,7 @@ public final class ActualDataSourceBuilder {
      * @throws JAXBException JAXB exception
      */
     public static Map<String, DataSource> createActualDataSources(final String scenario, final DatabaseType databaseType) throws IOException, JAXBException {
-        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(scenario);
+        Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
             result.put(each, build(each, scenario, databaseType));
