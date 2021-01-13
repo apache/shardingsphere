@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.engine.it.dcl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
 import org.junit.Test;
@@ -34,7 +34,7 @@ import java.util.Collection;
 
 public final class GeneralDCLIT extends BaseDCLIT {
     
-    public GeneralDCLIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String adapter, final String scenario,
+    public GeneralDCLIT(final String parentPath, final IntegrationTestCaseAssertion assertion, final String adapter, final String scenario,
                         final String databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, adapter, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), sqlExecuteType, sql);
     }

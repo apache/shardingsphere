@@ -76,11 +76,13 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
         }
         for (Entry<String, HADataSourceRule> entry : dataSourceRules.entrySet()) {
             String groupName = entry.getKey();
-            HAType haType = entry.getValue().getHaType();
+            HADataSourceRule haDataSourceRule = entry.getValue();
+            HAType haType = haDataSourceRule.getHaType();
             Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
-            Collection<String> disabledDataSourceNames = entry.getValue().getDisabledDataSourceNames();
-            String primaryDataSourceName = entry.getValue().getPrimaryDataSourceName();
+            Collection<String> disabledDataSourceNames = haDataSourceRule.getDisabledDataSourceNames();
+            String primaryDataSourceName = haDataSourceRule.getPrimaryDataSourceName();
             haType.updatePrimaryDataSource(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
+            haDataSourceRule.updatePrimaryDataSourceName(haType.getPrimaryDataSource());
             haType.updateMemberState(originalDataSourceMap, schemaName, disabledDataSourceNames);
             try {
                 haType.checkHAConfig(dataSourceMap, schemaName);
@@ -106,11 +108,13 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
         }
         for (Entry<String, HADataSourceRule> entry : dataSourceRules.entrySet()) {
             String groupName = entry.getKey();
-            HAType haType = entry.getValue().getHaType();
+            HADataSourceRule haDataSourceRule = entry.getValue();
+            HAType haType = haDataSourceRule.getHaType();
             Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
-            Collection<String> disabledDataSourceNames = entry.getValue().getDisabledDataSourceNames();
-            String primaryDataSourceName = entry.getValue().getPrimaryDataSourceName();
+            Collection<String> disabledDataSourceNames = haDataSourceRule.getDisabledDataSourceNames();
+            String primaryDataSourceName = haDataSourceRule.getPrimaryDataSourceName();
             haType.updatePrimaryDataSource(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
+            haDataSourceRule.updatePrimaryDataSourceName(haType.getPrimaryDataSource());
             haType.updateMemberState(originalDataSourceMap, schemaName, disabledDataSourceNames);
             try {
                 haType.checkHAConfig(dataSourceMap, schemaName);

@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.optimize.context.CalciteContext;
 import org.apache.shardingsphere.infra.optimize.execute.CalciteExecutor;
 import org.apache.shardingsphere.infra.optimize.execute.raw.context.CalciteDataContext;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
@@ -55,6 +56,11 @@ public final class CalciteRawExecutor implements CalciteExecutor {
     @Override
     public void close() throws SQLException {
         // TODO
+    }
+    
+    @Override
+    public ResultSet getResultSet() throws SQLException {
+        return null;
     }
     
     private Enumerable<Object[]> execute(final String sql) throws SqlParseException {

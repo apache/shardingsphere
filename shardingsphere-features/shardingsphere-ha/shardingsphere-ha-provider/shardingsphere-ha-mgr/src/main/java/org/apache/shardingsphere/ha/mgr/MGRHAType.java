@@ -62,7 +62,7 @@ public final class MGRHAType implements HAType {
     
     private static CoordinatorRegistryCenter coordinatorRegistryCenter;
     
-    private ScheduleJobBootstrap scheduleJobBootstrap;
+    private static final Map<String, ScheduleJobBootstrap> SCHEDULE_JOB_BOOTSTRAP_MAP = new HashMap<>(16, 1);
     
     private String oldPrimaryDataSource;
     
@@ -275,14 +275,12 @@ public final class MGRHAType implements HAType {
             coordinatorRegistryCenter = new ZookeeperRegistryCenter(zkConfig);
             coordinatorRegistryCenter.init();
         }
-        scheduleJobBootstrap = new ScheduleJobBootstrap(coordinatorRegistryCenter, new MGRPeriodicalJob(this, dataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName),
-                JobConfiguration.newBuilder("MGRPeriodicalJob", 1).cron(props.getProperty("keepAliveCron")).build());
-        scheduleJobBootstrap.schedule();
-    }
-    
-    @Override
-    public void stopPeriodicalUpdate() {
-        scheduleJobBootstrap.shutdown();
+        if (null != SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName)) {
+            SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName).shutdown();
+        }
+        SCHEDULE_JOB_BOOTSTRAP_MAP.put(groupName, new ScheduleJobBootstrap(coordinatorRegistryCenter, new MGRPeriodicalJob(this, dataSourceMap, schemaName, disabledDataSourceNames,
+                groupName, primaryDataSourceName), JobConfiguration.newBuilder("MGR-" + groupName, 1).cron(props.getProperty("keepAliveCron")).build()));
+        SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName).schedule();
     }
     
     @Override
