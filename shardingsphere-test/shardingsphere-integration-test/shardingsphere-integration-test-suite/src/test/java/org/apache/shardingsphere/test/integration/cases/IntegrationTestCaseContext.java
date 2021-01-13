@@ -19,16 +19,16 @@ package org.apache.shardingsphere.test.integration.cases;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCase;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
 
 /**
- * Integrate test case context.
+ * Integration test case context.
  */
 @RequiredArgsConstructor
 @Getter
-public final class IntegrateTestCaseContext {
+public final class IntegrationTestCaseContext {
     
-    private final IntegrateTestCase testCase;
+    private final IntegrationTestCase testCase;
     
     private final String parentPath;
 }

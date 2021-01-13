@@ -28,12 +28,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * JAXB definition of integrate test case.
+ * JAXB definition of integration test case.
  */
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class IntegrateTestCase {
+public final class IntegrationTestCase {
     
     @XmlAttribute(name = "sql")
     private String sql;
@@ -42,5 +42,5 @@ public final class IntegrateTestCase {
     private String dbTypes;
     
     @XmlElement(name = "assertion")
-    private Collection<IntegrateTestCaseAssertion> assertions = new LinkedList<>();
+    private Collection<IntegrationTestCaseAssertion> assertions = new LinkedList<>();
 }

@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<integrate-test-cases>
+<integration-test-cases>
    <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)">
        <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
        <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
@@ -156,4 +156,4 @@
     <!--<test-case sql="DELETE o FROM t_order AS o WHERE status=?" db-types="MySQL,Oracle,SQLServer">-->
         <!--<assertion parameters="init:String" expected-data-file="delete_with_alias.xml" />-->
     <!--</test-case>-->
-</integrate-test-cases>
+</integration-test-cases>

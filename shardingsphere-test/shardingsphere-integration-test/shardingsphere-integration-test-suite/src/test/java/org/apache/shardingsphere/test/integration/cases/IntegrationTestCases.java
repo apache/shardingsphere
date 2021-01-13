@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.integration.cases;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCase;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -26,12 +26,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * JAXB definition of integrate test cases.
+ * JAXB definition of integration test cases.
  */
 @Getter
-@XmlRootElement(name = "integrate-test-cases")
-public final class IntegrateTestCases {
+@XmlRootElement(name = "integration-test-cases")
+public final class IntegrationTestCases {
     
     @XmlElement(name = "test-case")
-    private final Collection<IntegrateTestCase> testCases = new LinkedList<>();
+    private final Collection<IntegrationTestCase> testCases = new LinkedList<>();
 }
