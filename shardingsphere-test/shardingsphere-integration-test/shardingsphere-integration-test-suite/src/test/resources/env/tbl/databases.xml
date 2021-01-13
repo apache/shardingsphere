@@ -16,20 +16,6 @@
   ~ limitations under the License.
   -->
 
-<schema>
-    <databases>
-        <database>db</database>
-        <database>shadow_db</database>
-    </databases>
-    <table-create>
-        <sql>CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))</sql>
-        <sql>CREATE INDEX order_index_t_order ON t_order (order_id)</sql>
-        <sql>CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id))</sql>
-        <sql>CREATE TABLE t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id))</sql>
-    </table-create>
-    <table-drop>
-        <sql>DROP TABLE t_order</sql>
-        <sql>DROP TABLE t_order_item</sql>
-        <sql>DROP TABLE t_broadcast_table</sql>
-    </table-drop>
-</schema>
+<databases>
+    <database>tbl</database>
+</databases>

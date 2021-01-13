@@ -26,7 +26,9 @@ import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ProxyDataSourceBuilder;
+import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -75,6 +77,13 @@ public abstract class BaseIT {
     
     protected final void resetTargetDataSource() throws IOException, SQLException {
         targetDataSource = createTargetDataSource();
+    }
+    
+    @BeforeClass
+    public static void executeInitSQLs() throws IOException, JAXBException, SQLException {
+        if (!IntegrateTestEnvironment.getInstance().isEnvironmentPrepared()) {
+            SchemaEnvironmentManager.executeInitSQLs();
+        }
     }
     
     @After

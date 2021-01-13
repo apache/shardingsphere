@@ -19,17 +19,15 @@ package org.apache.shardingsphere.test.integration.engine.it.dql;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.it.SingleIT;
+import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
-import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 import javax.xml.bind.JAXBException;
@@ -57,8 +55,6 @@ public abstract class BaseDQLIT extends SingleIT {
     
     @BeforeClass
     public static void fillData() throws IOException, JAXBException, SQLException, ParseException {
-        SchemaEnvironmentManager.createDatabases();
-        SchemaEnvironmentManager.createTables();
         for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             fillData(each);
         }
@@ -68,11 +64,6 @@ public abstract class BaseDQLIT extends SingleIT {
         for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
             new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(each), ActualDataSourceBuilder.createActualDataSources(each, databaseType)).fillData();
         }
-    }
-    
-    @AfterClass
-    public static void clearData() throws IOException, JAXBException {
-        SchemaEnvironmentManager.dropDatabases();
     }
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {

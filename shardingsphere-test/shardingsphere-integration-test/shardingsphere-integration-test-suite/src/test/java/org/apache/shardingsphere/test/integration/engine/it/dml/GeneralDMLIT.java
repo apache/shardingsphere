@@ -46,7 +46,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
         super(parentPath, assertion, adapter, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), sqlExecuteType, sql);
         this.assertion = assertion;
     }
-
+    
     @Parameters(name = "{2}: {3} -> {4} -> {5} -> {6}")
     public static Collection<Object[]> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DML);
