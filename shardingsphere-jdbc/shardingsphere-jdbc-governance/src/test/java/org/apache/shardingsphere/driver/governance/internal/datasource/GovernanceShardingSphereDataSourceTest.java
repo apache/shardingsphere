@@ -61,10 +61,10 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @BeforeClass
     public static void setUp() throws SQLException, IOException, URISyntaxException {
-        GovernanceShardingSphereDataSourceTest.metaDataContexts = (GovernanceMetaDataContexts) getShardingSphereDataSource().getMetaDataContexts();
+        GovernanceShardingSphereDataSourceTest.metaDataContexts = (GovernanceMetaDataContexts) getGovernanceShardingSphereDataSource().getMetaDataContexts();
     }
     
-    private static GovernanceShardingSphereDataSource getShardingSphereDataSource() throws IOException, SQLException, URISyntaxException {
+    private static GovernanceShardingSphereDataSource getGovernanceShardingSphereDataSource() throws IOException, SQLException, URISyntaxException {
         File yamlFile = new File(GovernanceShardingSphereDataSourceTest.class.getResource("/yaml/unit/sharding.yaml").toURI());
         return (GovernanceShardingSphereDataSource) YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
     }
