@@ -45,6 +45,7 @@ public final class ScalingResultCallback implements ScalingCallback {
             try {
                 Thread.sleep(30000L);
                 if (ScalingServiceHolder.getInstance().checkScalingResult(jobId)) {
+                    ScalingServiceHolder.getInstance().stopScalingJob(jobId);
                     ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(schemaName, ruleConfigurationCacheId));
                 }  
             } catch (final InterruptedException ignored) {

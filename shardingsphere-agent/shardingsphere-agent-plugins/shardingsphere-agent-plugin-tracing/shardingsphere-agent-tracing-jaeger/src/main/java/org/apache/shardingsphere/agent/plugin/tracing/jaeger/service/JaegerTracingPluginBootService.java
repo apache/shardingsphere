@@ -20,6 +20,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.jaeger.service;
 import io.jaegertracing.Configuration;
 import io.opentracing.util.GlobalTracer;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.exception.PluginConfigurationException;
 import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
 
 import java.util.Optional;
@@ -34,6 +35,9 @@ public final class JaegerTracingPluginBootService implements PluginBootService {
     @SuppressWarnings("AccessOfSystemProperties")
     @Override
     public void start(final PluginConfiguration pluginConfig) {
+        if (!checkConfig(pluginConfig)) {
+            throw new PluginConfigurationException("jaeger config error, host is null or port is %s", pluginConfig.getPort());
+        }
         pluginConfig.getProps().forEach((key, value) -> System.setProperty(String.valueOf(key), String.valueOf(value)));
         Configuration.SamplerConfiguration samplerConfig = Configuration.SamplerConfiguration.fromEnv();
         Configuration.ReporterConfiguration reporterConfig = Configuration.ReporterConfiguration.fromEnv()
@@ -55,5 +59,11 @@ public final class JaegerTracingPluginBootService implements PluginBootService {
     @Override
     public String getType() {
         return "Jaeger";
+    }
+    
+    private boolean checkConfig(final PluginConfiguration pluginConfiguration) {
+        String host = pluginConfiguration.getHost();
+        int port = pluginConfiguration.getPort();
+        return null != host && !"".equalsIgnoreCase(host) && port > 0;
     }
 }

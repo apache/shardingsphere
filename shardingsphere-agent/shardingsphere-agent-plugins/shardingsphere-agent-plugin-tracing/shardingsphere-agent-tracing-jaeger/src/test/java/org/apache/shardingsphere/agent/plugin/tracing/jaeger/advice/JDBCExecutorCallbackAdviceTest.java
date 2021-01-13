@@ -70,7 +70,7 @@ public final class JDBCExecutorCallbackAdviceTest {
     
     @Test
     public void assertMethod() {
-        MockTargetObject targetObject = new MockTargetObject();
+        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         Map<String, Object> extraMap = Maps.newHashMap();
         extraMap.put("_root_span_", null);
         JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);
@@ -91,7 +91,7 @@ public final class JDBCExecutorCallbackAdviceTest {
     
     @Test
     public void assertExceptionHandle() {
-        MockTargetObject targetObject = new MockTargetObject();
+        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         Map<String, Object> extraMap = Maps.newHashMap();
         extraMap.put("_root_span_", null);
         JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);

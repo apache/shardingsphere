@@ -19,6 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.service;
 
 import brave.Tracing;
 import java.lang.reflect.Field;
+import java.util.Properties;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 
@@ -36,8 +37,7 @@ public final class ZipkinTracingPluginBootServiceTest {
     @SneakyThrows
     @Test
     public void assertStart() {
-        PluginConfiguration configuration = new PluginConfiguration();
-        configuration.setPort(9441);
+        PluginConfiguration configuration = new PluginConfiguration("localhost", 9441, "", new Properties());
         zipkinTracingPluginBootService.start(configuration);
         Field field = ZipkinTracingPluginBootService.class.getDeclaredField("tracing");
         field.setAccessible(true);

@@ -177,6 +177,10 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_object_table">
+        <table name="t_log" start-index="13" stop-index="17" />
+    </create-table>
+  
     <create-table sql-case-id="create_local_temp_table">
         <table name="t_temp_log" start-index="24" stop-index="33" />
         <column-definition type="int" start-index="35" stop-index="40">

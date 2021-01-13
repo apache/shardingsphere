@@ -76,6 +76,11 @@ public final class CalciteJDBCExecutor implements CalciteExecutor {
         statement.close();
     }
     
+    @Override
+    public ResultSet getResultSet() throws SQLException {
+        return statement.getResultSet();
+    }
+    
     private ResultSet execute(final String sql, final List<Object> parameters) throws SQLException {
         PreparedStatement statement = getConnection().prepareStatement(sql);
         setParameters(statement, parameters);

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
@@ -55,7 +55,7 @@ public final class JDBCExecutorCallbackAdviceTest extends AdviceBaseTest {
     
     private JDBCExecutorCallbackAdvice advice;
     
-    private TargetObject targetObject;
+    private AdviceTargetObject targetObject;
     
     private Object attachment;
     
@@ -96,7 +96,7 @@ public final class JDBCExecutorCallbackAdviceTest extends AdviceBaseTest {
         });
         Map<String, DataSourceMetaData> map = (Map<String, DataSourceMetaData>) new FieldReader(mock, JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA")).read();
         map.put("mock_url", new MockDataSourceMetaData());
-        targetObject = (TargetObject) mock;
+        targetObject = (AdviceTargetObject) mock;
         advice = new JDBCExecutorCallbackAdvice();
     }
     

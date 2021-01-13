@@ -44,7 +44,7 @@ public final class HARuleTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewWithEmptyDataSourceRule() {
-        new HARule(new HARuleConfiguration(Collections.emptyList(), Collections.emptyMap(), mock(ShardingSphereAlgorithmConfiguration.class)), mock(DatabaseType.class), dataSourceMap, "ha_db");
+        new HARule(new HARuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()), mock(DatabaseType.class), dataSourceMap, "ha_db");
     }
     
     @Test
@@ -61,10 +61,10 @@ public final class HARuleTest {
     
     private HARule createHARule() {
         HADataSourceRuleConfiguration config =
-                new HADataSourceRuleConfiguration("test_pr", Arrays.asList("replica_ds_0", "replica_ds_1"), "random", true);
+                new HADataSourceRuleConfiguration("test_pr", Arrays.asList("replica_ds_0", "replica_ds_1"), "random", true, "haTypeName");
         return new HARule(new HARuleConfiguration(
                 Collections.singleton(config), ImmutableMap.of("random", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties())),
-                new ShardingSphereAlgorithmConfiguration("Test", new Properties())),
+                ImmutableMap.of("mgr", new ShardingSphereAlgorithmConfiguration("MGR", new Properties()))),
                 mock(DatabaseType.class), dataSourceMap, "ha_db");
     }
     

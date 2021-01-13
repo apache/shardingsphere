@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
@@ -47,6 +48,7 @@ import java.util.stream.Collectors;
 /**
  * Distributed scaling job service.
  */
+@Slf4j
 public final class DistributedScalingJobService extends AbstractScalingJobService {
     
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
@@ -65,6 +67,7 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
             ScalingJob scalingJob = new ScalingJob(scalingConfig);
             checkDataSources(scalingJob);
             updateScalingConfig(scalingJob.getJobId(), scalingConfig);
+            log.info("start scaling job {}", scalingJob.getJobId());
             return Optional.of(scalingJob);
         }
         return Optional.empty();
@@ -101,9 +104,9 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
         if (Strings.isNullOrEmpty(data)) {
             throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", jobId));
         }
-        ScalingJob result = new ScalingJob(jobId);
-        result.setScalingConfig(GSON.fromJson(data, ScalingConfiguration.class));
-        return result;
+        ScalingConfiguration scalingConfig = GSON.fromJson(data, ScalingConfiguration.class);
+        scalingConfig.getJobConfiguration().setJobId(jobId);
+        return new ScalingJob(scalingConfig);
     }
     
     @Override
