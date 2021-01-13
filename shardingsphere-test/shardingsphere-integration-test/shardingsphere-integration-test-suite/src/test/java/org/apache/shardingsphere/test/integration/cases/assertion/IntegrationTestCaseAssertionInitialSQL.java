@@ -25,12 +25,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * JAXB definition of integrate test case assertion initial SQL.
+ * JAXB definition of integration test case assertion initial SQL.
  */
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class IntegrateTestCaseAssertionInitialSQL {
+public final class IntegrationTestCaseAssertionInitialSQL {
     
     @XmlAttribute
     private String sql;

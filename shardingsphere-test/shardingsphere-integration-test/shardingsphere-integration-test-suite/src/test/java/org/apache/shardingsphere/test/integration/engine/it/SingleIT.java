@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.engine.it;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
@@ -44,7 +44,7 @@ public abstract class SingleIT extends BaseIT {
     
     private final String caseIdentifier;
     
-    private final IntegrateTestCaseAssertion assertion;
+    private final IntegrationTestCaseAssertion assertion;
     
     private final SQLExecuteType sqlExecuteType;
     
@@ -52,7 +52,7 @@ public abstract class SingleIT extends BaseIT {
     
     private final String sql;
     
-    protected SingleIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String adapter, final String scenario,
+    protected SingleIT(final String parentPath, final IntegrationTestCaseAssertion assertion, final String adapter, final String scenario,
                        final DatabaseType databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(adapter, scenario, databaseType);
         caseIdentifier = sql;

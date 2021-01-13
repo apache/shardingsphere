@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
+import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.h2.tools.RunScript;
 
@@ -67,13 +67,13 @@ public final class DatabaseEnvironmentManager {
      * @throws SQLException SQL exception
      */
     public static void executeInitSQLs() throws IOException, JAXBException, SQLException {
-        for (String each : IntegrateTestEnvironment.getInstance().getScenarios()) {
+        for (String each : IntegrationTestEnvironment.getInstance().getScenarios()) {
             executeInitSQLs(each);
         }
     }
     
     private static void executeInitSQLs(final String scenario) throws IOException, JAXBException, SQLException {
-        for (DatabaseType each : IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
+        for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
             if ("H2".equals(each.getName())) {
                 executeInitSQLForSchemaNotSupportedDatabase(scenario, each);
                 return;

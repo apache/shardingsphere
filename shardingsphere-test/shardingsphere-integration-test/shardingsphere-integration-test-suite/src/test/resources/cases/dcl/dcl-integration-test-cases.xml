@@ -14,7 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<integrate-test-cases>
+<integration-test-cases>
     <test-case sql="CREATE USER 'user_dev_new'@'localhost'" db-types="MySQL" />
     <test-case sql="CREATE USER user_dev_new" db-types="PostgreSQL" />
     <test-case sql="CREATE USER 'user_dev_new'@'localhost' identified by 'passwd_dev'" db-types="MySQL"/>
@@ -178,4 +178,4 @@
     <test-case sql="REVOKE SELECT ON t_order FROM user_dev" db-types="SQLServer"/>
     <test-case sql="SET ROLE ALL EXCEPT role_dev" db-types="MySQL"/>
     <test-case sql="SET ROLE ALL EXCEPT role_dev, role2" db-types="MySQL"/>
-</integrate-test-cases>
+</integration-test-cases>

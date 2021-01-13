@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<integrate-test-cases>
+<integration-test-cases>
     <test-case sql="CREATE TABLE t_order_details(id int PRIMARY KEY, description varchar(10))">
         <assertion expected-data-file="create_table.xml">
             <initial-sql affected-table="t_order_details" />
@@ -65,4 +65,4 @@
     </test-case>
     
     <!-- TODO add single table DDL test cases -->
-</integrate-test-cases>
+</integration-test-cases>
