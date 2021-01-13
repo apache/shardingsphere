@@ -201,11 +201,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             return rawExecutor.execute(createRawExecutionGroups(), new RawSQLExecutorCallback()).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
         }
         isToCalcite(isToCalcite);
-        Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
-        cacheStatements(executionGroups);
         if (executionContext.getRouteContext().isToCalcite()) {
             return executeQueryByCalcite();
         }
+        Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
+        cacheStatements(executionGroups);
         return driverJDBCExecutor.executeQuery(executionGroups, 
                 new PreparedStatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown()));
     }
@@ -408,7 +408,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 ? ((InsertStatementContext) executionContext.getSqlStatementContext()).getGeneratedKeyContext() : Optional.empty();
     }
 
-    private void isToCalcite(boolean isToCalcite){
+    private void isToCalcite(final boolean isToCalcite) {
         executionContext.getRouteContext().setToCalcite(isToCalcite);
     }
 
