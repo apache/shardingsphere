@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereA
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.AddReplicaQueryRuleDatasourcesExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleDatasourcesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.AddReplicaQueryRuleDataSourcesExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleDataSourcesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -70,8 +70,8 @@ public final class AlterReplicaQueryRuleBackendHandler extends SchemaRequiredBac
     
     private void check(final AlterReplicaQueryRuleStatement statement, final String schemaName) {
         checkRuleExist(schemaName);
-        checkAddDatasourceExist(statement, schemaName);
-        checkModifyDatasourceNotExist(statement, schemaName);
+        checkAddDataSourceExist(statement, schemaName);
+        checkModifyDataSourceNotExist(statement, schemaName);
         checkResourceExist(statement, schemaName);
     }
     
@@ -83,14 +83,14 @@ public final class AlterReplicaQueryRuleBackendHandler extends SchemaRequiredBac
         }
     }
     
-    private void checkAddDatasourceExist(final AlterReplicaQueryRuleStatement statement, final String schemaName) {
+    private void checkAddDataSourceExist(final AlterReplicaQueryRuleStatement statement, final String schemaName) {
         Optional<ReplicaQueryRuleConfiguration> replicaQueryRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ReplicaQueryRuleConfiguration).map(each -> (ReplicaQueryRuleConfiguration) each).findFirst();
         Set<String> existReplicaQueryDatasourceNames = replicaQueryRuleConfig.get().getDataSources().stream().map(each -> each.getName()).collect(Collectors.toSet());
         Collection<String> addExistReplicaQueryDatasourceNames = statement.getAddReplicaQueryRules().stream().map(each -> each.getName())
                 .filter(each -> existReplicaQueryDatasourceNames.contains(each)).collect(Collectors.toList());
         if (!addExistReplicaQueryDatasourceNames.isEmpty()) {
-            throw new AddReplicaQueryRuleDatasourcesExistedException(addExistReplicaQueryDatasourceNames);
+            throw new AddReplicaQueryRuleDataSourcesExistedException(addExistReplicaQueryDatasourceNames);
         }
     }
     
@@ -111,14 +111,14 @@ public final class AlterReplicaQueryRuleBackendHandler extends SchemaRequiredBac
         }
     }
     
-    private void checkModifyDatasourceNotExist(final AlterReplicaQueryRuleStatement statement, final String schemaName) {
+    private void checkModifyDataSourceNotExist(final AlterReplicaQueryRuleStatement statement, final String schemaName) {
         Optional<ReplicaQueryRuleConfiguration> replicaQueryRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ReplicaQueryRuleConfiguration).map(each -> (ReplicaQueryRuleConfiguration) each).findFirst();
         Set<String> existReplicaQueryDatasourceNames = replicaQueryRuleConfig.get().getDataSources().stream().map(each -> each.getName()).collect(Collectors.toSet());
         Collection<String> addExistReplicaQueryDatasourceNames = statement.getModifyReplicaQueryRules().stream().map(each -> each.getName())
                 .filter(each -> !existReplicaQueryDatasourceNames.contains(each)).collect(Collectors.toList());
         if (!addExistReplicaQueryDatasourceNames.isEmpty()) {
-            throw new ReplicaQueryRuleDatasourcesNotExistedException(addExistReplicaQueryDatasourceNames);
+            throw new ReplicaQueryRuleDataSourcesNotExistedException(addExistReplicaQueryDatasourceNames);
         }
     }
     

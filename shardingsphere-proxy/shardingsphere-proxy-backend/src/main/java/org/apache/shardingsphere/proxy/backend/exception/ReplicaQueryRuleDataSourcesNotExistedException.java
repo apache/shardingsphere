@@ -27,7 +27,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ReplicaQueryRuleDatasourcesNotExistedException extends BackendException {
+public final class ReplicaQueryRuleDataSourcesNotExistedException extends BackendException {
     
     private static final long serialVersionUID = -2151854349124198061L;
     
