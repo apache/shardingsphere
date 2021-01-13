@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.driver.executor.DriverJDBCExecutor;
 import org.apache.shardingsphere.driver.executor.batch.BatchExecutionUnit;
 import org.apache.shardingsphere.driver.executor.batch.BatchPreparedStatementExecutor;
@@ -129,7 +130,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Getter(AccessLevel.PROTECTED)
     private CalciteExecutor calciteExecutor;
-    
+
+    @Setter
+    private boolean isToCalcite;
+
     public ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql) throws SQLException {
         this(connection, sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, false);
     }
@@ -189,11 +193,12 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
             return rawExecutor.execute(createRawExecutionGroups(), new RawSQLExecutorCallback()).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
         }
+        isToCalcite(isToCalcite);
+        Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
+        cacheStatements(executionGroups);
         if (executionContext.getRouteContext().isToCalcite()) {
             return executeQueryByCalcite();
         }
-        Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups();
-        cacheStatements(executionGroups);
         return driverJDBCExecutor.executeQuery(executionGroups, 
                 new PreparedStatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown()));
     }
@@ -395,7 +400,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return executionContext.getSqlStatementContext() instanceof InsertStatementContext
                 ? ((InsertStatementContext) executionContext.getSqlStatementContext()).getGeneratedKeyContext() : Optional.empty();
     }
-    
+
+    private void isToCalcite(boolean isToCalcite){
+        executionContext.getRouteContext().setToCalcite(isToCalcite);
+    }
+
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKeyContext> generatedKey = findGeneratedKey(executionContext);
