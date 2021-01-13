@@ -177,12 +177,19 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             executionContext = createExecutionContext();
             List<QueryResult> queryResults = executeQuery0();
             MergedResult mergedResult = mergeQuery(queryResults);
-            result = new ShardingSphereResultSet(statements.stream().map(this::getResultSet).collect(Collectors.toList()), mergedResult, this, executionContext);
+            result = new ShardingSphereResultSet(getResultSetsForShardingSphereResultSet(), mergedResult, this, executionContext);
         } finally {
             clearBatch();
         }
         currentResultSet = result;
         return result;
+    }
+    
+    private List<ResultSet> getResultSetsForShardingSphereResultSet() throws SQLException {
+        if (null != calciteExecutor) {
+            return Collections.singletonList(calciteExecutor.getResultSet());
+        }
+        return statements.stream().map(this::getResultSet).collect(Collectors.toList());
     }
     
     private List<QueryResult> executeQuery0() throws SQLException {
