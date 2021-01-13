@@ -23,7 +23,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
+import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
 import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 
@@ -83,7 +83,7 @@ public final class ActualDataSourceBuilder {
     }
     
     private static DataSource createDataSource(final String name, final String scenario, final DatabaseType databaseType) {
-        DatabaseEnvironment databaseEnvironment = IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().get(databaseType).get(scenario);
+        DatabaseEnvironment databaseEnvironment = IntegrationTestEnvironment.getInstance().getDatabaseEnvironments().get(databaseType).get(scenario);
         switch (DATA_SOURCE_POOL_TYPE) {
             case DBCP:
                 return createDBCP(name, databaseType, databaseEnvironment);

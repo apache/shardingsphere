@@ -19,11 +19,11 @@ package org.apache.shardingsphere.test.integration.engine.it.dql;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
+import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -42,9 +42,9 @@ import static org.junit.Assert.assertTrue;
 
 public final class AdditionalDQLIT extends BaseDQLIT {
     
-    private final IntegrateTestCaseAssertion assertion;
+    private final IntegrationTestCaseAssertion assertion;
     
-    public AdditionalDQLIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String adapter, final String scenario,
+    public AdditionalDQLIT(final String parentPath, final IntegrationTestCaseAssertion assertion, final String adapter, final String scenario,
                            final DatabaseType databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, adapter, scenario, databaseType, sqlExecuteType, sql);
         this.assertion = assertion;
@@ -52,7 +52,7 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     
     @Parameters(name = "{2} -> {3} -> {4} -> {5}")
     public static Collection<Object[]> getParameters() {
-        return IntegrateTestEnvironment.getInstance().isRunAdditionalTestCases() ? ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DQL) : Collections.emptyList();
+        return IntegrationTestEnvironment.getInstance().isRunAdditionalTestCases() ? ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DQL) : Collections.emptyList();
     }
     
     @Test

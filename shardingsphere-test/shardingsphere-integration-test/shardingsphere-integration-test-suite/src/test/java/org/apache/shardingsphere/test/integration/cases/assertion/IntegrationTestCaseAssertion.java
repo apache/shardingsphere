@@ -33,12 +33,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * JAXB definition of integrate test case assertion.
+ * JAXB definition of integration test case assertion.
  */
 @Getter
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
-public final class IntegrateTestCaseAssertion {
+public final class IntegrationTestCaseAssertion {
     
     @XmlAttribute(name = "expected-data-file")
     private String expectedDataFile;
@@ -47,7 +47,7 @@ public final class IntegrateTestCaseAssertion {
     private String parameters;
     
     @XmlElement(name = "initial-sql")
-    private IntegrateTestCaseAssertionInitialSQL initialSQL;
+    private IntegrationTestCaseAssertionInitialSQL initialSQL;
     
     /**
      * Get SQL values.

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.env.props;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
+import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -40,7 +40,7 @@ public final class EnvironmentProperties {
     public static Properties loadProperties(final String propsFileName) {
         Properties result = new Properties();
         try {
-            result.load(IntegrateTestEnvironment.class.getClassLoader().getResourceAsStream(propsFileName));
+            result.load(IntegrationTestEnvironment.class.getClassLoader().getResourceAsStream(propsFileName));
         } catch (final IOException ex) {
             throw new RuntimeException(ex);
         }

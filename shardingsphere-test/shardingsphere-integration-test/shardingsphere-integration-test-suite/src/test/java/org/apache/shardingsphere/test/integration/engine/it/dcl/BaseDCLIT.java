@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.engine.it.dcl;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.MemorizedDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.engine.it.SingleIT;
 import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
@@ -45,7 +45,7 @@ public abstract class BaseDCLIT extends SingleIT {
     
     private final AuthorityEnvironmentManager authorityEnvironmentManager;
     
-    protected BaseDCLIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String adapter, final String scenario,
+    protected BaseDCLIT(final String parentPath, final IntegrationTestCaseAssertion assertion, final String adapter, final String scenario,
                         final DatabaseType databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, adapter, scenario, databaseType, sqlExecuteType, sql);
         authorityEnvironmentManager = new AuthorityEnvironmentManager(

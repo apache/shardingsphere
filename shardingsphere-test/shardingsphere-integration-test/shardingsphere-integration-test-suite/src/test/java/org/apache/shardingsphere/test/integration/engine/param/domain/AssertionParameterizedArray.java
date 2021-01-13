@@ -19,19 +19,19 @@ package org.apache.shardingsphere.test.integration.engine.param.domain;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseContext;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
+import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 
 /**
- * Parameterized array of assertion based integrate test.
+ * Parameterized array of assertion based integration test.
  */
 @RequiredArgsConstructor
 public final class AssertionParameterizedArray implements ParameterizedArray {
     
-    private final IntegrateTestCaseContext testCaseContext;
+    private final IntegrationTestCaseContext testCaseContext;
     
-    private final IntegrateTestCaseAssertion assertion;
+    private final IntegrationTestCaseAssertion assertion;
     
     private final String adapters;
     

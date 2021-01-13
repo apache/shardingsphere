@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
@@ -56,7 +56,7 @@ public abstract class BaseDDLIT extends SingleIT {
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    protected BaseDDLIT(final String parentPath, final IntegrateTestCaseAssertion assertion, final String adapter, final String scenario,
+    protected BaseDDLIT(final String parentPath, final IntegrationTestCaseAssertion assertion, final String adapter, final String scenario,
                         final DatabaseType databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, adapter, scenario, databaseType, sqlExecuteType, sql);
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(scenario), getActualDataSources());

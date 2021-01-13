@@ -39,12 +39,12 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Integrate test running environment.
+ * Integration test running environment.
  */
 @Getter
-public final class IntegrateTestEnvironment {
+public final class IntegrationTestEnvironment {
     
-    private static final IntegrateTestEnvironment INSTANCE = new IntegrateTestEnvironment();
+    private static final IntegrationTestEnvironment INSTANCE = new IntegrationTestEnvironment();
     
     private final boolean isEnvironmentPrepared;
     
@@ -58,7 +58,7 @@ public final class IntegrateTestEnvironment {
     
     private final Map<String, DatabaseEnvironment> proxyEnvironments;
     
-    private IntegrateTestEnvironment() {
+    private IntegrationTestEnvironment() {
         Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
         isEnvironmentPrepared = "docker".equals(engineEnvProps.getProperty("it.env.type"));
         adapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.adapters"));
@@ -119,7 +119,7 @@ public final class IntegrateTestEnvironment {
      *
      * @return singleton instance
      */
-    public static IntegrateTestEnvironment getInstance() {
+    public static IntegrationTestEnvironment getInstance() {
         if (INSTANCE.adapters.contains("proxy")) {
             for (String each : INSTANCE.scenarios) {
                 waitForProxyReady(each);

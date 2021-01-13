@@ -40,47 +40,47 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Integrate test cases loader.
+ * Integration test cases loader.
  */
-public final class IntegrateTestCasesLoader {
+public final class IntegrationTestCasesLoader {
     
-    private static final IntegrateTestCasesLoader INSTANCE = new IntegrateTestCasesLoader();
+    private static final IntegrationTestCasesLoader INSTANCE = new IntegrationTestCasesLoader();
     
-    private final Map<SQLCommandType, Collection<IntegrateTestCaseContext>> testCaseContexts = new LinkedHashMap<>();
+    private final Map<SQLCommandType, Collection<IntegrationTestCaseContext>> testCaseContexts = new LinkedHashMap<>();
     
     /**
      * Get singleton instance.
      *
      * @return singleton instance
      */
-    public static IntegrateTestCasesLoader getInstance() {
+    public static IntegrationTestCasesLoader getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Get integrate test case contexts.
+     * Get integration test case contexts.
      * 
      * @param sqlCommandType SQL command type
-     * @return integrate test case contexts
+     * @return integration test case contexts
      */
-    public Collection<IntegrateTestCaseContext> getTestCaseContexts(final SQLCommandType sqlCommandType) {
-        testCaseContexts.putIfAbsent(sqlCommandType, loadIntegrateTestCaseContexts(sqlCommandType));
+    public Collection<IntegrationTestCaseContext> getTestCaseContexts(final SQLCommandType sqlCommandType) {
+        testCaseContexts.putIfAbsent(sqlCommandType, loadIntegrationTestCaseContexts(sqlCommandType));
         return testCaseContexts.get(sqlCommandType);
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
-    private Collection<IntegrateTestCaseContext> loadIntegrateTestCaseContexts(final SQLCommandType sqlCommandType) {
-        URL url = IntegrateTestCasesLoader.class.getClassLoader().getResource("cases/");
-        Preconditions.checkNotNull(url, "Can not find integrate test cases.");
-        return loadIntegrateTestCaseContexts(url, sqlCommandType);
+    private Collection<IntegrationTestCaseContext> loadIntegrationTestCaseContexts(final SQLCommandType sqlCommandType) {
+        URL url = IntegrationTestCasesLoader.class.getClassLoader().getResource("cases/");
+        Preconditions.checkNotNull(url, "Can not find integration test cases.");
+        return loadIntegrationTestCaseContexts(url, sqlCommandType);
     }
     
-    private Collection<IntegrateTestCaseContext> loadIntegrateTestCaseContexts(final URL url, final SQLCommandType sqlCommandType) throws IOException, URISyntaxException, JAXBException {
+    private Collection<IntegrationTestCaseContext> loadIntegrationTestCaseContexts(final URL url, final SQLCommandType sqlCommandType) throws IOException, URISyntaxException, JAXBException {
         Collection<File> files = getFiles(url, sqlCommandType);
-        Preconditions.checkNotNull(files, "Can not find integrate test cases.");
-        Collection<IntegrateTestCaseContext> result = new LinkedList<>();
+        Preconditions.checkNotNull(files, "Can not find integration test cases.");
+        Collection<IntegrationTestCaseContext> result = new LinkedList<>();
         for (File each : files) {
-            result.addAll(getIntegrateTestCaseContexts(each));
+            result.addAll(getIntegrationTestCaseContexts(each));
         }
         return result;
     }
@@ -100,13 +100,13 @@ public final class IntegrateTestCasesLoader {
         return result;
     }
     
-    private Collection<IntegrateTestCaseContext> getIntegrateTestCaseContexts(final File file) throws IOException, JAXBException {
-        return unmarshal(file.getPath()).getTestCases().stream().map(each -> new IntegrateTestCaseContext(each, file.getParent())).collect(Collectors.toList());
+    private Collection<IntegrationTestCaseContext> getIntegrationTestCaseContexts(final File file) throws IOException, JAXBException {
+        return unmarshal(file.getPath()).getTestCases().stream().map(each -> new IntegrationTestCaseContext(each, file.getParent())).collect(Collectors.toList());
     }
     
-    private static IntegrateTestCases unmarshal(final String integrateCasesFile) throws IOException, JAXBException {
+    private static IntegrationTestCases unmarshal(final String integrateCasesFile) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(integrateCasesFile)) {
-            return (IntegrateTestCases) JAXBContext.newInstance(IntegrateTestCases.class).createUnmarshaller().unmarshal(reader);
+            return (IntegrationTestCases) JAXBContext.newInstance(IntegrationTestCases.class).createUnmarshaller().unmarshal(reader);
         }
     }
 }

@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<integrate-test-cases>
+<integration-test-cases>
     <test-case sql="SELECT 1 as a">
         <assertion expected-data-file="select_constant_without_table.xml" />
     </test-case>
@@ -477,4 +477,4 @@
     from t_order t left join t_order_item as o on o.order_id =t.order_id where t.order_id=1000 limit 1" db-types="MySQL,H2">
         <assertion expected-data-file="select_with_case_expression.xml" />
     </test-case>
-</integrate-test-cases>
+</integration-test-cases>
