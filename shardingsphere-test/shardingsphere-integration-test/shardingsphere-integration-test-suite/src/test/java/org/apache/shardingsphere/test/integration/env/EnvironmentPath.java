@@ -33,7 +33,7 @@ public final class EnvironmentPath {
     
     private static final String ROOT_PATH = "env";
     
-    private static final String SCHEMA_FILE = "schema.xml";
+    private static final String DATABASES_FILE = "databases.xml";
     
     private static final String INIT_SQL_FILE = "init.sql";
     
@@ -44,13 +44,13 @@ public final class EnvironmentPath {
     private static final String AUTHORITY_FILE = "authority.xml";
     
     /**
-     * Get schema file.
+     * Get databases file.
      * 
      * @param scenario scenario
-     * @return schema file
+     * @return databases file
      */
-    public static String getSchemaFile(final String scenario) {
-        return getFile(scenario, SCHEMA_FILE);
+    public static String getDatabasesFile(final String scenario) {
+        return getFile(scenario, DATABASES_FILE);
     }
     
     /**
