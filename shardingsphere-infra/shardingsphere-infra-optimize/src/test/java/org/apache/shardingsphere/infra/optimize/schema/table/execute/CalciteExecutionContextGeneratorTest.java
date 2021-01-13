@@ -47,16 +47,16 @@ public final class CalciteExecutionContextGeneratorTest {
     }
     
     private Collection<RouteUnit> getRouteUnits() {
-        Collection<RouteUnit> result = new LinkedHashSet<>();
         Collection<RouteMapper> tables = new LinkedList<>();
         tables.add(new RouteMapper("t_order", "t_order_0"));
         tables.add(new RouteMapper("t_order", "t_order_1"));
         RouteUnit unit1 = new RouteUnit(new RouteMapper("ds", "ds0"), tables);
+        Collection<RouteUnit> result = new LinkedHashSet<>();
+        result.add(unit1);
         tables = new LinkedList<>();
         tables.add(new RouteMapper("t_order", "t_order_3"));
         tables.add(new RouteMapper("t_order", "t_order_4"));
         RouteUnit unit2 = new RouteUnit(new RouteMapper("ds", "ds1"), tables);
-        result.add(unit1);
         result.add(unit2);
         return result;
     }
