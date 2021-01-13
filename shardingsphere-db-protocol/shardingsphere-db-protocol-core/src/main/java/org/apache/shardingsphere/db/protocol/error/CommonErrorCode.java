@@ -37,11 +37,11 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     RESOURCE_NOT_EXIST(11004, "C11004", "Can not drop resources, resources %s do not exist."),
     
-    REPLICA_QUERY_RULE_NOT_EXIST(11005, "C11005", "Replica query rule do not exist."),
+    REPLICA_QUERY_RULE_NOT_EXIST(11005, "C11005", "Replica query rule does not exist."),
     
-    REPLICA_QUERY_RULE_DATASOURCE_NOT_EXIST(11006, "C11006", "Datasource %s in Replica query rule do not exist."),
+    REPLICA_QUERY_RULE_DATASOURCE_NOT_EXIST(11006, "C11006", "Data sources %s in replica query rule do not exist."),
     
-    ADD_REPLICA_QUERY_RULE_DATASOURCE_EXIST(11007, "C11007", "Can not add replica query rule, datasource %s in Replica query rule already exists."),
+    ADD_REPLICA_QUERY_RULE_DATASOURCE_EXIST(11007, "C11007", "Can not add replica query rule, data sources %s in replica query rule already exists."),
     
     UNSUPPORTED_COMMAND(19998, "C19998", "Unsupported command: [%s]"),
     

@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 
 /**
- * Replica query rule datasource not existed exception.
+ * Replica query rule data source not existed exception.
  */
 @RequiredArgsConstructor
 @Getter
