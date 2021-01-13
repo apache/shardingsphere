@@ -50,7 +50,7 @@ public final class SchemaEnvironmentManager {
      * @throws JAXBException JAXB exception
      */
     public static Collection<String> getDataSourceNames(final String scenario) throws IOException, JAXBException {
-        return unmarshal(EnvironmentPath.getSchemaFile(scenario)).getDatabases();
+        return unmarshal(EnvironmentPath.getDatabasesFile(scenario)).getDatabases();
     }
     
     private static SchemaEnvironment unmarshal(final String schemaEnvironmentConfigFile) throws IOException, JAXBException {
