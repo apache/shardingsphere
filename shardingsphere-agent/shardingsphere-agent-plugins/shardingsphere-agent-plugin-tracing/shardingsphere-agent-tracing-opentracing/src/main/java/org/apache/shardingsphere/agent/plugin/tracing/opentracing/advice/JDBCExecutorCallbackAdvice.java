@@ -41,7 +41,7 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdv
     
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        Span root = (Span) ((Map<String, Object>) args[2]).get("_root_span_");
+        Span root = (Span) ((Map<String, Object>) args[2]).get("ot_root_span_");
         Tracer.SpanBuilder builder = GlobalTracer.get().buildSpan(OPERATION_NAME);
         if ((boolean) args[1]) {
             builder.asChildOf(root);

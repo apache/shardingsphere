@@ -15,22 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant;
+package org.apache.shardingsphere.agent.plugin.tracing.advice;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-/**
- * Error log tag keys.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ErrorLogTagKeys {
+public interface AdviceTestBase {
     
-    public static final String EVENT = "event";
+    /**
+     * Prepare env for testing.
+     */
+    void prepare();
     
-    public static final String EVENT_ERROR_TYPE = "error";
-    
-    public static final String ERROR_KIND = "error.kind";
-    
-    public static final String MESSAGE = "message";
 }

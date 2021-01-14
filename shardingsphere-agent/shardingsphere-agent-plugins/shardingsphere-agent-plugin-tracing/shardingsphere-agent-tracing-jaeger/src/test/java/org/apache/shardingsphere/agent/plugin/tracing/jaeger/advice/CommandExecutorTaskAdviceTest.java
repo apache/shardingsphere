@@ -17,23 +17,19 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
 
-import io.netty.channel.ChannelHandlerContext;
+import com.google.common.collect.Maps;
 import io.opentracing.mock.MockSpan;
-import io.opentracing.mock.MockTracer;
-import io.opentracing.util.GlobalTracer;
-import lombok.SneakyThrows;
+import io.opentracing.tag.Tags;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
+import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
+import org.apache.shardingsphere.agent.plugin.tracing.rule.JaegerCollector;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -41,48 +37,38 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public final class CommandExecutorTaskAdviceTest {
+public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
+    
+    @ClassRule
+    public static JaegerCollector collector = new JaegerCollector();
     
     private static final CommandExecutorTaskAdvice ADVICE = new CommandExecutorTaskAdvice();
     
-    private static MockTracer tracer;
-    
-    private static Method executeCommandMethod;
+    private static final Map<String, Object> EXPECTED = Maps.newHashMap();
     
     @BeforeClass
-    @SneakyThrows
     public static void setup() {
-        if (!GlobalTracer.isRegistered()) {
-            GlobalTracer.register(new MockTracer());
-        }
-        FieldReader fieldReader = new FieldReader(GlobalTracer.get(), GlobalTracer.class.getDeclaredField("tracer"));
-        tracer = (MockTracer) fieldReader.read();
-        executeCommandMethod = CommandExecutorTask.class.getDeclaredMethod("executeCommand", ChannelHandlerContext.class, PacketPayload.class, BackendConnection.class);
-    }
-    
-    @Before
-    public void reset() {
-        tracer.reset();
+        EXPECTED.put(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME);
+        EXPECTED.put(JaegerConstants.ShardingSphereTags.CONNECTION_COUNT.getKey(), 0);
     }
     
     @Test
     public void assertMethod() {
-        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
-        ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
-        ADVICE.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
-        List<MockSpan> spans = tracer.finishedSpans();
+        ADVICE.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        List<MockSpan> spans = collector.finishedSpans();
         assertThat(spans.size(), is(1));
         assertThat(spans.get(0).logEntries().size(), is(0));
         assertThat(spans.get(0).operationName(), is("/ShardingSphere/rootInvoke/"));
+        assertThat(spans.get(0).tags(), is(EXPECTED));
     }
     
     @Test
     public void assertExceptionHandle() {
-        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
-        ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
-        ADVICE.onThrowing(targetObject, executeCommandMethod, new Object[]{}, new IOException());
-        ADVICE.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
-        List<MockSpan> spans = tracer.finishedSpans();
+        ADVICE.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        ADVICE.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
+        ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        List<MockSpan> spans = collector.finishedSpans();
         Assert.assertEquals(1, spans.size());
         MockSpan span = spans.get(0);
         assertThat(span.tags().get("error"), is(true));
@@ -93,5 +79,9 @@ public final class CommandExecutorTaskAdviceTest {
         assertNull(fields.get("message"));
         assertThat(fields.get("error.kind"), is("java.io.IOException"));
         assertThat(span.operationName(), is("/ShardingSphere/rootInvoke/"));
+        Map<Object, Object> map = Maps.newHashMap(EXPECTED);
+        map.put(JaegerConstants.ErrorLogTagKeys.EVENT_ERROR_TYPE, true);
+        assertThat(spans.get(0).tags(), is(map));
     }
+    
 }

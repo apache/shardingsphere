@@ -17,94 +17,41 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractJDBCExecutorCallbackAdviceTest;
+import org.apache.shardingsphere.agent.plugin.tracing.rule.ZipkinCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
 import zipkin2.Span;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.Statement;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-public final class JDBCExecutorCallbackAdviceTest extends AdviceBaseTest {
+public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
     
-    private static Method executeMethod;
+    @ClassRule
+    public static ZipkinCollector collector = new ZipkinCollector();
     
     private JDBCExecutorCallbackAdvice advice;
     
-    private AdviceTargetObject targetObject;
-    
-    private Object attachment;
-    
-    private JDBCExecutionUnit executionUnit;
-    
-    private Map<String, Object> extraMap;
-    
-    @BeforeClass
-    @SneakyThrows
-    public static void setup() {
-        prepare("org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback");
-        executeMethod = JDBCExecutorCallback.class.getDeclaredMethod("execute", JDBCExecutionUnit.class, boolean.class, Map.class);
-    }
-    
     @Before
-    @SneakyThrows
-    @SuppressWarnings("all")
-    public void before() {
-        extraMap = Maps.newHashMap();
-        extraMap.put(ZipkinConstants.ROOT_SPAN, null);
-        Statement statement = mock(Statement.class);
-        Connection connection = mock(Connection.class);
-        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        when(metaData.getURL()).thenReturn("mock_url");
-        when(connection.getMetaData()).thenReturn(metaData);
-        when(statement.getConnection()).thenReturn(connection);
-        executionUnit = new JDBCExecutionUnit(new ExecutionUnit("mock.db", new SQLUnit("select 1", Lists.newArrayList())), null, statement);
-        JDBCExecutorCallback mock = mock(JDBCExecutorCallback.class, invocation -> {
-            switch (invocation.getMethod().getName()) {
-                case "getAttachment":
-                    return attachment;
-                case "setAttachment":
-                    attachment = invocation.getArguments()[0];
-                    return null;
-                default:
-                    return invocation.callRealMethod();
-            }
-        });
-        Map<String, DataSourceMetaData> map = (Map<String, DataSourceMetaData>) new FieldReader(mock, JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA")).read();
-        map.put("mock_url", new MockDataSourceMetaData());
-        targetObject = (AdviceTargetObject) mock;
+    public void setup() {
+        getExtraMap().put(ZipkinConstants.ROOT_SPAN, null);
         advice = new JDBCExecutorCallbackAdvice();
     }
     
     @Test
     public void testMethod() {
-        advice.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
-        advice.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
-        Span span = SPANS.pollFirst();
+        advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
+        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
+        Span span = collector.pop();
         assertNotNull(span);
         assertThat(span.name(), is("/ShardingSphere/executeSQL/".toLowerCase()));
         Map<String, String> tags = span.tags();
@@ -119,10 +66,10 @@ public final class JDBCExecutorCallbackAdviceTest extends AdviceBaseTest {
     
     @Test
     public void testExceptionHandle() {
-        advice.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
-        advice.onThrowing(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new IOException());
-        advice.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
-        Span span = SPANS.pollFirst();
+        advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
+        advice.onThrowing(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new IOException());
+        advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
+        Span span = collector.pop();
         assertNotNull(span);
         assertThat(span.name(), is("/ShardingSphere/executeSQL/".toLowerCase()));
         Map<String, String> tags = span.tags();
@@ -136,8 +83,4 @@ public final class JDBCExecutorCallbackAdviceTest extends AdviceBaseTest {
         assertThat(tags.get("error"), is("IOException"));
     }
     
-    @After
-    public void cleanup() {
-        SPANS.clear();
-    }
 }

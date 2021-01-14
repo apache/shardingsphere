@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
+package org.apache.shardingsphere.agent.plugin.tracing;
 
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 

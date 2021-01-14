@@ -15,21 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
+package org.apache.shardingsphere.agent.plugin.tracing.rule;
 
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
-
-public final class MockAdviceTargetObject implements AdviceTargetObject {
+public interface CollectorRule {
     
-    private Object object;
-
-    @Override
-    public Object getAttachment() {
-        return object;
-    }
-
-    @Override
-    public void setAttachment(final Object attachment) {
-        this.object = attachment;
-    }
+    /**
+     * Clean up the collector.
+     */
+    void cleanup();
+    
 }

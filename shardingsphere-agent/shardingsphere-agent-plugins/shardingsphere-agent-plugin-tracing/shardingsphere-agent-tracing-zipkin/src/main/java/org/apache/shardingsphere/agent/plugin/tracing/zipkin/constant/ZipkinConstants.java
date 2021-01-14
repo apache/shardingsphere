@@ -28,7 +28,7 @@ public final class ZipkinConstants {
     
     public static final String COMPONENT_NAME = "shardingsphere";
     
-    public static final String ROOT_SPAN = "_root_span_";
+    public static final String ROOT_SPAN = "zipkin_root_span";
     
     public static final String DB_TYPE_VALUE = "shardingsphere-proxy";
     
