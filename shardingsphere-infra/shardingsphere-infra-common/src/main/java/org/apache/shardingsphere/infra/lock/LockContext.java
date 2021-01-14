@@ -51,7 +51,7 @@ public final class LockContext {
      * @param lockStrategyType lock strategy type
      */
     public static void init(final LockStrategyType lockStrategyType) {
-        LOCK_STRATEGY.compareAndSet(null, TypedSPIRegistry.getRegisteredService(LockStrategy.class, lockStrategyType.name(), new Properties()));
+        LOCK_STRATEGY.set(TypedSPIRegistry.getRegisteredService(LockStrategy.class, lockStrategyType.name(), new Properties()));
     }
     
     /**
