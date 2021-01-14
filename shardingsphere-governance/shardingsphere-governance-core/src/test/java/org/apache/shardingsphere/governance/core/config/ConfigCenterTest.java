@@ -438,7 +438,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertGetAllSchemaNames() {
-        when(configurationRepository.get("/schemas")).thenReturn("sharding_db,replica_query_db");
+        when(configurationRepository.get("/metadata")).thenReturn("sharding_db,replica_query_db");
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         Collection<String> actual = configCenter.getAllSchemaNames();
         assertThat(actual.size(), is(2));
@@ -483,17 +483,17 @@ public final class ConfigCenterTest {
     @Test
     public void assertPersistSchemaNameWithExistSchema() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
-        when(configurationRepository.get("/schemas")).thenReturn("sharding_db");
+        when(configurationRepository.get("/metadata")).thenReturn("sharding_db");
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), true);
-        verify(configurationRepository, times(0)).persist(eq("/schemas"), eq("sharding_db"));
+        verify(configurationRepository, times(0)).persist(eq("/metadata"), eq("sharding_db"));
     }
     
     @Test
     public void assertPersistSchemaNameWithExistAndNewSchema() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
-        when(configurationRepository.get("/schemas")).thenReturn("replica_query_db");
+        when(configurationRepository.get("/metadata")).thenReturn("replica_query_db");
         configCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), true);
-        verify(configurationRepository).persist(eq("/schemas"), eq("replica_query_db,sharding_db"));
+        verify(configurationRepository).persist(eq("/metadata"), eq("replica_query_db,sharding_db"));
     }
     
     @Test
@@ -515,28 +515,28 @@ public final class ConfigCenterTest {
     @Test
     public void assertRenewSchemaNameEventWithDrop() {
         SchemaNamePersistEvent event = new SchemaNamePersistEvent("sharding_db", true);
-        when(configurationRepository.get("/schemas")).thenReturn("sharding_db,replica_query_db");
+        when(configurationRepository.get("/metadata")).thenReturn("sharding_db,replica_query_db");
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
-        verify(configurationRepository).persist(eq("/schemas"), eq("replica_query_db"));
+        verify(configurationRepository).persist(eq("/metadata"), eq("replica_query_db"));
     }
     
     @Test
     public void assertRenewSchemaNameEventWithAdd() {
         SchemaNamePersistEvent event = new SchemaNamePersistEvent("sharding_db", false);
-        when(configurationRepository.get("/schemas")).thenReturn("replica_query_db");
+        when(configurationRepository.get("/metadata")).thenReturn("replica_query_db");
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
-        verify(configurationRepository).persist(eq("/schemas"), eq("replica_query_db,sharding_db"));
+        verify(configurationRepository).persist(eq("/metadata"), eq("replica_query_db,sharding_db"));
     }
     
     @Test
     public void assertRenewSchemaNameEventWithAddAndExist() {
         SchemaNamePersistEvent event = new SchemaNamePersistEvent("sharding_db", false);
-        when(configurationRepository.get("/schemas")).thenReturn("sharding_db,replica_query_db");
+        when(configurationRepository.get("/metadata")).thenReturn("sharding_db,replica_query_db");
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
-        verify(configurationRepository).persist(eq("/schemas"), eq("sharding_db,replica_query_db"));
+        verify(configurationRepository).persist(eq("/metadata"), eq("sharding_db,replica_query_db"));
     }
     
     @Test

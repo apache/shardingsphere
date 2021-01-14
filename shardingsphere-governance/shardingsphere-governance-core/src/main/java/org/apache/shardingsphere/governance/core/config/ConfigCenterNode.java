@@ -36,8 +36,6 @@ public final class ConfigCenterNode {
     
     private static final String METADATA_NODE = "metadata";
     
-    private static final String SCHEMAS_NODE = "schemas";
-    
     private static final String DATA_SOURCE_NODE = "datasource";
     
     private static final String RULE_NODE = "rule";
@@ -158,7 +156,7 @@ public final class ConfigCenterNode {
      * @return config paths list.
      */
     public Collection<String> getAllSchemaConfigPaths(final Collection<String> schemaNames) {
-        Collection<String> result = new ArrayList<>(Collections.singleton(getSchemasNodePath()));
+        Collection<String> result = new ArrayList<>(Collections.singleton(getMetadataNodePath()));
         for (String schemaName : schemaNames) {
             result.add(getRulePath(schemaName));
             result.add(getDataSourcePath(schemaName));
@@ -178,11 +176,44 @@ public final class ConfigCenterNode {
     }
     
     /**
-     * Get schemas node path.
-     * 
-     * @return schemas node path.
+     * Get all schema paths.
+     *
+     * @param schemaNames schema names.
+     * @return list of schema path.
      */
-    public String getSchemasNodePath() {
-        return Joiner.on(PATH_SEPARATOR).join("", SCHEMAS_NODE);
+    public Collection<String> getAllSchemaPaths(final Collection<String> schemaNames) {
+        Collection<String> result = Collections.emptyList();
+        for (String schemaName : schemaNames) {
+            result.add(getSchemaPath(schemaName));
+        }
+        return result;
+    }
+    
+    /**
+     * Get all rule paths.
+     *
+     * @param schemaNames schema names.
+     * @return list of rule path.
+     */
+    public Collection<String> getAllRulePaths(final Collection<String> schemaNames) {
+        Collection<String> result = Collections.emptyList();
+        for (String schemaName : schemaNames) {
+            result.add(getRulePath(schemaName));
+        }
+        return result;
+    }
+    
+    /**
+     * Get all data source paths.
+     *
+     * @param schemaNames schema names.
+     * @return list of data source path.
+     */
+    public Collection<String> getAllDataSourcePaths(final Collection<String> schemaNames) {
+        Collection<String> result = Collections.emptyList();
+        for (String schemaName : schemaNames) {
+            result.add(getDataSourcePath(schemaName));
+        }
+        return result;
     }
 }

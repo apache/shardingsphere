@@ -224,7 +224,7 @@ public final class SchemaChangedListenerTest {
     
     @Test
     public void assertCreateSchemaNamesUpdatedEventForAdd() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas", "sharding_db,replica_query_db,encrypt_db,shadow_db", Type.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata", "sharding_db,replica_query_db,encrypt_db,shadow_db", Type.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(((MetaDataAddedEvent) actual.get()).getSchemaName(), is("shadow_db"));
@@ -232,7 +232,7 @@ public final class SchemaChangedListenerTest {
     
     @Test
     public void assertCreateSchemaNamesUpdatedEventForDelete() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas", "sharding_db,replica_query_db", Type.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata", "sharding_db,replica_query_db", Type.UPDATED);
         Optional<GovernanceEvent> actual = schemaChangedListener.createEvent(dataChangedEvent);
         assertTrue(actual.isPresent());
         assertThat(((MetaDataDeletedEvent) actual.get()).getSchemaName(), is("encrypt_db"));
@@ -240,7 +240,7 @@ public final class SchemaChangedListenerTest {
     
     @Test
     public void assertCreateSchemaNamesUpdatedEventForIgnore() {
-        DataChangedEvent dataChangedEvent = new DataChangedEvent("/schemas", "sharding_db,replica_query_db,encrypt_db", Type.UPDATED);
+        DataChangedEvent dataChangedEvent = new DataChangedEvent("/metadata", "sharding_db,replica_query_db,encrypt_db", Type.UPDATED);
         assertFalse(schemaChangedListener.createEvent(dataChangedEvent).isPresent());
     }
     
