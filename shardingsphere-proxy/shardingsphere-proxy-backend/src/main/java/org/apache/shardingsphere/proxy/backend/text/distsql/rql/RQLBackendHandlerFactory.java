@@ -53,10 +53,8 @@ public final class RQLBackendHandlerFactory {
                     return Optional.of(new ReplicaQueryRuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
                 case "ENCRYPT":
                     return Optional.of(new RuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
-    
                 case "SHADOW":
                     return Optional.of(new RuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
-    
                 default:
                     throw new UnsupportedOperationException(ruleType);
             }
