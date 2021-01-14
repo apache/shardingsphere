@@ -36,7 +36,9 @@ rules:
           shardingAlgorithmName: # Auto sharding algorithm name
   bindingTables (+): # Binding tables
     - <logic_table_name_1, logic_table_name_2, ...> 
+    - <logic_table_name_1, logic_table_name_2, ...> 
   broadcastTables (+): # Broadcast tables
+    - <table-name>
     - <table-name>
   defaultDatabaseStrategy: # Default strategy for database sharding
   defaultTableStrategy: # Default strategy for table sharding
