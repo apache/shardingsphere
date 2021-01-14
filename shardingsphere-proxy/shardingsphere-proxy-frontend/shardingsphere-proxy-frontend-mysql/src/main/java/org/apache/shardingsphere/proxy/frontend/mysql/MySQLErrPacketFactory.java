@@ -28,6 +28,7 @@ import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.LockWaitTimeoutException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
@@ -117,6 +118,9 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof ResourceInUsedException) {
             return new MySQLErrPacket(1, CommonErrorCode.RESOURCE_IN_USED, cause.getMessage());
+        }
+        if (cause instanceof ReplicaQueryRuleCreateExistsException) {
+            return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_EXIST);
         }
         return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }
