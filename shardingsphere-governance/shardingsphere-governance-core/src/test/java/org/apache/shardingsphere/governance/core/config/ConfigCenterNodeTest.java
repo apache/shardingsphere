@@ -60,7 +60,7 @@ public final class ConfigCenterNodeTest {
     public void assertGetAllSchemaConfigPaths() {
         Collection<String> actual = configurationNode.getAllSchemaConfigPaths(Collections.singletonList(DefaultSchema.LOGIC_NAME));
         assertThat(actual.size(), is(4));
-        assertThat(actual, hasItems("/schemas"));
+        assertThat(actual, hasItems("/metadata"));
         assertThat(actual, hasItems("/metadata/logic_db/rule"));
         assertThat(actual, hasItems("/metadata/logic_db/datasource"));
         assertThat(actual, hasItems("/metadata/logic_db/schema"));
