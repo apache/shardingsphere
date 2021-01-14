@@ -43,8 +43,8 @@ public final class AlterReplicaQueryRuleStatementConverter {
         for (ReplicaQueryRuleSegment each : rules) {
             YamlReplicaQueryDataSourceRuleConfiguration dataSourceRuleConfiguration = new YamlReplicaQueryDataSourceRuleConfiguration();
             dataSourceRuleConfiguration.setName(each.getName());
-            dataSourceRuleConfiguration.setPrimaryDataSourceName(each.getPrimaryDatasource());
-            dataSourceRuleConfiguration.getReplicaDataSourceNames().addAll(each.getReplicaDatasources());
+            dataSourceRuleConfiguration.setPrimaryDataSourceName(each.getPrimaryDataSource());
+            dataSourceRuleConfiguration.getReplicaDataSourceNames().addAll(each.getReplicaDataSources());
             dataSourceRuleConfiguration.setLoadBalancerName(each.getLoadBalancer());
             dataSourceRuleConfiguration.setProps(each.getProps());
             result.getDataSources().put(each.getName(), dataSourceRuleConfiguration);

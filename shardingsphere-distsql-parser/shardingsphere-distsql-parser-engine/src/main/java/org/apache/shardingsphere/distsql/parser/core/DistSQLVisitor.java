@@ -130,8 +130,8 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
             props.setProperty(each.key.getText(), each.value.getText());
         }
         result.setName(ctx.ruleName.getText());
-        result.setPrimaryDatasource(ctx.primary.getText());
-        result.setReplicaDatasources(replicaDatasources);
+        result.setPrimaryDataSource(ctx.primary.getText());
+        result.setReplicaDataSources(replicaDatasources);
         result.setLoadBalancer(ctx.loadBalancer.getText());
         result.setProps(props);
         return result;
@@ -168,8 +168,8 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
             replicaDatasources.add(each.getText());
         }
         result.setName(ctx.ruleName.getText());
-        result.setPrimaryDatasource(ctx.primary.getText());
-        result.setReplicaDatasources(replicaDatasources);
+        result.setPrimaryDataSource(ctx.primary.getText());
+        result.setReplicaDataSources(replicaDatasources);
         if (null != ctx.loadBalancer) {
             Properties props = new Properties();
             for (AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
