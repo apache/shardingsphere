@@ -41,7 +41,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     private CommandExecutorTaskAdvice advice;
     
     @Before
-    public void prepare() {
+    public void setup() {
         advice = new CommandExecutorTaskAdvice();
     }
     
