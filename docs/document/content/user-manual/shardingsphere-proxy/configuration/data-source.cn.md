@@ -4,7 +4,6 @@ weight = 1
 +++
 
 ## 配置项说明
-
 ```yaml
 schemaName: # 逻辑数据源名称
 
@@ -20,5 +19,7 @@ dataSources: # 数据源配置，可配置多个 <data-source-name>
     minPoolSize: 1  # 最小连接数     
 
 rules: # 与 ShardingSphere-JDBC 配置一致
-  # ...
+  # ...****
 ```
+
+更多的数据源配置参数详见[HikariCP](https://github.com/brettwooldridge/HikariCP) 。

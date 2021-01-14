@@ -12,7 +12,7 @@ rules:
 - !SHARDING
   tables: # 数据分片规则配置
     <logic-table-name> (+): # 逻辑表名称
-      actualDataNodes (?): #由数据源名 + 表名组成，以小数点分隔。多个表以逗号分隔，支持行表达式。缺省表示使用已知数据源与逻辑表名称生成数据节点，用于广播表（即每个库中都需要一个同样的表用于关联查询，多为字典表）或只分库不分表且所有库的表结构完全一致的情况
+      actualDataNodes (?): # 由数据源名 + 表名组成（参考Inline语法规则）
       databaseStrategy (?): # 分库策略，缺省表示使用默认分库策略，以下的分片策略只能选其一
         standard: # 用于单分片键的标准分片场景
           shardingColumn: # 分片列名称
