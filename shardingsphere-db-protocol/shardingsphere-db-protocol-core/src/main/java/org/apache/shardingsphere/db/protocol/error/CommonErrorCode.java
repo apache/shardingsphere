@@ -43,6 +43,8 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST(11007, "C11007", "Can not add replica query rule, data sources %s in replica query rule already exists."),
     
+    REPLICA_QUERY_RULE_EXIST(11008, "C11008", "Replica query rule already exists."),
+    
     UNSUPPORTED_COMMAND(19998, "C19998", "Unsupported command: [%s]"),
     
     UNKNOWN_EXCEPTION(19999, "C19999", "Unknown exception: [%s]");

@@ -26,7 +26,6 @@ import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.api.transaction.TransactionOp;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
-import org.apache.curator.framework.recipes.cache.CuratorCache.Options;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
@@ -249,7 +248,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     }
     
     private void addCacheData(final String cachePath) {
-        CuratorCache cache = CuratorCache.build(client, cachePath, Options.SINGLE_NODE_CACHE);
+        CuratorCache cache = CuratorCache.build(client, cachePath);
         try {
             cache.start();
             // CHECKSTYLE:OFF

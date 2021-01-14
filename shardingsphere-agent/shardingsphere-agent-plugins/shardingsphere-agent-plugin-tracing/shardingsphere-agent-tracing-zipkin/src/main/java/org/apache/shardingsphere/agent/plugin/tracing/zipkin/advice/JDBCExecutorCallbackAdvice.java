@@ -20,9 +20,9 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 import brave.Span;
 import brave.Tracing;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.api.advice.MethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -36,13 +36,13 @@ import java.util.Map;
 /**
  * JDBC executor callback advice.
  */
-public final class JDBCExecutorCallbackAdvice implements MethodAroundAdvice {
+public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdvice {
     
     private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     
     @SneakyThrows
     @Override
-    public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         final Span root = (Span) ((Map<String, Object>) args[2]).get(ZipkinConstants.ROOT_SPAN);
         if ((boolean) args[1]) {
             target.setAttachment(Tracing.currentTracer().newChild(root.context()).name(OPERATION_NAME).start());
@@ -66,12 +66,12 @@ public final class JDBCExecutorCallbackAdvice implements MethodAroundAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         ((Span) target.getAttachment()).finish();
     }
     
     @Override
-    public void onThrowing(final TargetObject target, final Method method, final Object[] args, final Throwable throwable) {
+    public void onThrowing(final AdviceTargetObject target, final Method method, final Object[] args, final Throwable throwable) {
         ((Span) target.getAttachment()).error(throwable);
     }
 }

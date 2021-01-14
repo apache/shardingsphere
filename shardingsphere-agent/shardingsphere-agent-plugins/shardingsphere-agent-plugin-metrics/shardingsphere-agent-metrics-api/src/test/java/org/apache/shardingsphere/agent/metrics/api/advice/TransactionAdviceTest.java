@@ -49,7 +49,7 @@ public final class TransactionAdviceTest extends MetricsAdviceBaseTest {
     public void assertMethod() {
         when(commit.getName()).thenReturn(MethodNameConstant.COMMIT);
         when(rollback.getName()).thenReturn(MethodNameConstant.ROLL_BACK);
-        MockTargetObject targetObject = new MockTargetObject();
+        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         transactionAdvice.beforeMethod(targetObject, commit, new Object[]{}, new MethodInvocationResult());
         transactionAdvice.beforeMethod(targetObject, rollback, new Object[]{}, new MethodInvocationResult());
         Map<String, DoubleAdder> doubleAdderMap = (Map<String, DoubleAdder>) ReflectiveUtil.getFieldValue(getFixturemetricsregister(), "COUNTER_MAP");

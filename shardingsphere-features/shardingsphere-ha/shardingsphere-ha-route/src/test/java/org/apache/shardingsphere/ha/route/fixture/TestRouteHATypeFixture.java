@@ -47,10 +47,6 @@ public final class TestRouteHATypeFixture implements HAType {
     }
     
     @Override
-    public void stopPeriodicalUpdate() {
-    }
-    
-    @Override
     public String getPrimaryDataSource() {
         return "primary";
     }

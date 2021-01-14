@@ -36,4 +36,6 @@ public final class HADataSourceRuleConfiguration {
     private final String loadBalancerName;
     
     private final boolean replicaQuery;
+    
+    private final String haTypeName;
 }

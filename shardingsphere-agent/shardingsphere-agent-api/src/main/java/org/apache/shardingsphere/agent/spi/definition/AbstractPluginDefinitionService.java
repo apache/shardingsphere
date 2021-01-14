@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.spi.definition;
 
 import com.google.common.collect.Maps;
+import java.util.Collection;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 
 import java.util.List;
@@ -31,6 +32,13 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
     
     private final Map<String, PluginInterceptorPoint.Builder> interceptorPointMap = Maps.newHashMap();
     
+    /**
+     * Define to collection of plugin interceptor point.
+     *
+     * @return collection of plugin interceptor point
+     */
+    public abstract Collection<PluginInterceptorPoint> define();
+    
     protected final PluginInterceptorPoint.Builder intercept(final String classNameOfTarget) {
         if (interceptorPointMap.containsKey(classNameOfTarget)) {
             return interceptorPointMap.get(classNameOfTarget);
@@ -40,9 +48,7 @@ public abstract class AbstractPluginDefinitionService implements PluginDefinitio
         return builder;
     }
     
-    @Override
-    public final List<PluginInterceptorPoint> build() {
-        define();
+    protected List<PluginInterceptorPoint> install() {
         return interceptorPointMap.values().stream().map(PluginInterceptorPoint.Builder::install).collect(Collectors.toList());
     }
 }

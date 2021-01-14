@@ -51,9 +51,9 @@ public final class PluginInterceptorPoint {
     private final List<ClassStaticMethodPoint> classStaticMethodPoints;
     
     /**
-     * Create default plugin advice definition.
+     * Create plugin interceptor point.
      *
-     * @return plugin advice definition
+     * @return plugin interceptor point
      */
     public static PluginInterceptorPoint createDefault() {
         return new PluginInterceptorPoint("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());

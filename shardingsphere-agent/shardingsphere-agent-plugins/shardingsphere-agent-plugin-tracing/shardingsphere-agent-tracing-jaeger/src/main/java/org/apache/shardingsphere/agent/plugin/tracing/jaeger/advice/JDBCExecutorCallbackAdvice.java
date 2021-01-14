@@ -22,9 +22,9 @@ import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
-import org.apache.shardingsphere.agent.api.advice.MethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.ShardingSphereTags;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -36,12 +36,12 @@ import java.util.Map;
 /**
  * JDBC executor callback advice.
  */
-public final class JDBCExecutorCallbackAdvice implements MethodAroundAdvice {
+public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdvice {
     
     private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     
     @Override
-    public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         Span root = (Span) ((Map<String, Object>) args[2]).get("_root_span_");
         Tracer.SpanBuilder builder = GlobalTracer.get().buildSpan(OPERATION_NAME);
         if ((boolean) args[1]) {
@@ -60,12 +60,12 @@ public final class JDBCExecutorCallbackAdvice implements MethodAroundAdvice {
     }
     
     @Override
-    public void afterMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         ((Scope) target.getAttachment()).close();
     }
     
     @Override
-    public void onThrowing(final TargetObject target, final Method method, final Object[] args, final Throwable throwable) {
+    public void onThrowing(final AdviceTargetObject target, final Method method, final Object[] args, final Throwable throwable) {
         JaegerErrorSpan.setError(GlobalTracer.get().activeSpan(), throwable);
     }
 }

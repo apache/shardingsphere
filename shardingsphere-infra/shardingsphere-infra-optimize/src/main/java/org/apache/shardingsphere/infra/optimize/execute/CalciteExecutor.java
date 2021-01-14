@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.optimize.execute;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -43,4 +44,12 @@ public interface CalciteExecutor {
      * @throws SQLException SQL exception
      */
     void close() throws SQLException;
+    
+    /**
+     * Get result set.
+     *
+     * @return result set
+     * @throws SQLException sql exception
+     */
+    ResultSet getResultSet() throws SQLException;
 }

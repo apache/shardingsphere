@@ -19,15 +19,15 @@ package org.apache.shardingsphere.test.integration.engine.param.domain;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseContext;
+import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
 
 /**
- * Parameterized array of case based integrate test.
+ * Parameterized array of case based integration test.
  */
 @RequiredArgsConstructor
 public final class CaseParameterizedArray implements ParameterizedArray {
     
-    private final IntegrateTestCaseContext testCaseContext;
+    private final IntegrationTestCaseContext testCaseContext;
     
     private final String adapters;
     

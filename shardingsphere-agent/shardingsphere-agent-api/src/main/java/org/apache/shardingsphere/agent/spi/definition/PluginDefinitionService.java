@@ -17,27 +17,10 @@
 
 package org.apache.shardingsphere.agent.spi.definition;
 
-import java.util.Collection;
-import java.util.Collections;
-import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.spi.type.AgentTypedSPI;
 
 /**
  * Plugin definition service.
  */
 public interface PluginDefinitionService extends AgentTypedSPI {
-    
-    /**
-     * Define.
-     */
-    void define();
-    
-    /**
-     * Build collection of plugin interceptor point.
-     *
-     * @return collection of plugin interceptor point
-     */
-    default Collection<PluginInterceptorPoint> build() {
-        return Collections.emptyList();
-    }
 }
