@@ -61,6 +61,7 @@ public final class ScalingJobPreparer {
         try (DataSourceManager dataSourceManager = new DataSourceManager(scalingJob.getTaskConfigs())) {
             checkSourceDataSources(scalingJob, dataSourceManager);
             ResumeBreakPointManager resumeBreakPointManager = getResumeBreakPointManager(scalingJob);
+            scalingJob.setResumeBreakPointManager(resumeBreakPointManager);
             if (resumeBreakPointManager.isResumable()) {
                 scalingPositionResumer.resumePosition(scalingJob, dataSourceManager, resumeBreakPointManager);
             } else {
