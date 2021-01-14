@@ -39,38 +39,38 @@ public enum SQLCommandType {
      * 
      * <p>Such as {@code SELECT}.</p>
      */
-    DQL(SelectStatement.class, "dql-integrate-test-cases"),
+    DQL(SelectStatement.class, "dql-integration-test-cases"),
     
     /**
      * Data Manipulation Language.
      *
      * <p>Such as {@code INSERT}, {@code UPDATE}, {@code DELETE}.</p>
      */
-    DML(DMLStatement.class, "dml-integrate-test-cases"),
+    DML(DMLStatement.class, "dml-integration-test-cases"),
     
     /**
      * Data Definition Language.
      *
      * <p>Such as {@code CREATE}, {@code ALTER}, {@code DROP}, {@code TRUNCATE}.</p>
      */
-    DDL(DDLStatement.class, "ddl-integrate-test-cases"),
+    DDL(DDLStatement.class, "ddl-integration-test-cases"),
     
     /**
      * Transaction Control Language.
      *
      * <p>Such as {@code SET}, {@code COMMIT}, {@code ROLLBACK}, {@code SAVEPOIINT}, {@code BEGIN}.</p>
      */
-    TCL(TCLStatement.class, "tcl-integrate-test-cases"),
+    TCL(TCLStatement.class, "tcl-integration-test-cases"),
     
     /**
      * Database administrator Language.
      */
-    DAL(DALStatement.class, "dal-integrate-test-cases"),
+    DAL(DALStatement.class, "dal-integration-test-cases"),
     
     /**
      * Database control Language.
      */
-    DCL(DCLStatement.class, "dcl-integrate-test-cases");
+    DCL(DCLStatement.class, "dcl-integration-test-cases");
     
     private final Class<? extends SQLStatement> sqlStatementClass;
     

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.service.impl;
 
+import com.google.gson.Gson;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
@@ -108,7 +109,7 @@ public final class DistributedScalingJobServiceTest {
     
     @Test
     public void assertGetProgress() {
-        registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/config"), "{'ruleConfiguration':{'source':{},'target':{}},'jobConfiguration':{'running':true}}");
+        registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/config"), new Gson().toJson(mockScalingConfiguration()));
         registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/position/0/inventory"),
                 "{'unfinished': {'ds1.table1#1':[0,100],'ds1.table1#2':[160,200],'ds1.table3':[]},'finished':['ds1.table2#1','ds1.table2#2']}");
         registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/position/0/incremental"),

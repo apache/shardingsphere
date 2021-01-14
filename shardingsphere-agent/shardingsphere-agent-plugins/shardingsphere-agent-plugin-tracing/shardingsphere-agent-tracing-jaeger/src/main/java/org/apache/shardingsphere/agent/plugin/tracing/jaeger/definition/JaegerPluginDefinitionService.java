@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.definition;
 
+import java.util.Collection;
 import net.bytebuddy.matcher.ElementMatchers;
+import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
 
 /**
@@ -46,7 +48,7 @@ public final class JaegerPluginDefinitionService extends AbstractPluginDefinitio
     private static final String JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice.JDBCExecutorCallbackAdvice";
     
     @Override
-    public void define() {
+    public Collection<PluginInterceptorPoint> define() {
         intercept(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(COMMAND_EXECUTOR_METHOD_NAME))
                 .implement(COMMAND_EXECUTOR_TASK_ADVICE_CLASS)
@@ -62,6 +64,7 @@ public final class JaegerPluginDefinitionService extends AbstractPluginDefinitio
                 )
                 .implement(JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS)
                 .build();
+        return install();
     }
     
     @Override

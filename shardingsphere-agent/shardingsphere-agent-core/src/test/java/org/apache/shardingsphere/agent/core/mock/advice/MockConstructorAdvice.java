@@ -20,7 +20,7 @@ package org.apache.shardingsphere.agent.core.mock.advice;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ public final class MockConstructorAdvice implements ConstructorAdvice {
     
     @Override
     @SuppressWarnings("unchecked")
-    public void onConstructor(final TargetObject target, final Object[] args) {
+    public void onConstructor(final AdviceTargetObject target, final Object[] args) {
         if (null != args && args.length > 0) {
             List<String> list = Optional.ofNullable(queues).orElse((List<String>) args[0]);
             list.add("on constructor");

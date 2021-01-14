@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
 import io.netty.channel.ChannelHandlerContext;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
@@ -46,7 +46,7 @@ public final class CommandExecutorTaskAdviceTest extends AdviceBaseTest {
     
     private CommandExecutorTaskAdvice advice;
     
-    private TargetObject targetObject;
+    private AdviceTargetObject targetObject;
     
     @BeforeClass
     public static void setup() throws NoSuchMethodException {
@@ -60,7 +60,7 @@ public final class CommandExecutorTaskAdviceTest extends AdviceBaseTest {
     public void before() {
         advice = new CommandExecutorTaskAdvice();
         Object executorTask = new CommandExecutorTask(null, new BackendConnection(TransactionType.BASE), null, null);
-        targetObject = (TargetObject) executorTask;
+        targetObject = (AdviceTargetObject) executorTask;
     }
     
     @Test
