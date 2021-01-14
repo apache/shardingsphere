@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.integration.env.props;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -39,8 +39,8 @@ public final class EnvironmentProperties {
     @SuppressWarnings("AccessOfSystemProperties")
     public static Properties loadProperties(final String propsFileName) {
         Properties result = new Properties();
-        try {
-            result.load(IntegrationTestEnvironment.class.getClassLoader().getResourceAsStream(propsFileName));
+        try (InputStream inputStream = EnvironmentProperties.class.getClassLoader().getResourceAsStream(propsFileName)) {
+            result.load(inputStream);
         } catch (final IOException ex) {
             throw new RuntimeException(ex);
         }

@@ -15,74 +15,21 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import Alphabet;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-WS
-    : [ \t\r\n] + ->skip
-    ;
+import java.util.Collection;
 
-ADD
-    : A D D
-    ;
-
-CREATE
-    : C R E A T E
-    ;
-
-ALTER
-    : A L T E R
-    ;
-
-MODIFY
-    : M O D I F Y
-    ;
-
-DROP
-    : D R O P
-    ;
-
-SHOW
-    : S H O W
-    ;
-
-RESOURCE
-    : R E S O U R C E
-    ;
-
-RESOURCES
-    : R E S O U R C E S
-    ;
-
-RULE
-    :  R U L E
-    ;
-
-FROM
-    : F R O M
-    ;
-
-SHARDING
-    : S H A R D I N G
-    ;
-   
-REPLICA_QUERY
-    : R E P L I C A UL_ Q U E R Y
-    ;
-
-ENCRYPT
-    : E N C R Y P T
-    ;
-
-SHADOW
-    : S H A D O W
-    ;
-
-PRIMARY
-    : P R I M A R Y
-    ;
-
-REPLICA
-    : R E P L I C A
-    ;
+/**
+ * Replica query rule data source not existed exception.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ReplicaQueryRuleDataSourcesNotExistedException extends BackendException {
+    
+    private static final long serialVersionUID = -2151854349124198061L;
+    
+    private final Collection<String> ruleNames;
+}

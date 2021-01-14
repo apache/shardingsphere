@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.service;
 
+import io.opentracing.noop.NoopTracerFactory;
 import io.opentracing.util.GlobalTracer;
+import java.lang.reflect.Field;
 import java.util.Properties;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.junit.After;
 import org.junit.Test;
@@ -47,8 +50,12 @@ public final class JaegerTracingPluginBootServiceTest {
         assertThat(jaegerTracingPluginBootService.getType(), is("Jaeger"));
     }
     
+    @SneakyThrows
     @After
     public void close() {
         jaegerTracingPluginBootService.close();
+        Field field = GlobalTracer.class.getDeclaredField("tracer");
+        field.setAccessible(true);
+        field.set(null, NoopTracerFactory.create());
     }
 }

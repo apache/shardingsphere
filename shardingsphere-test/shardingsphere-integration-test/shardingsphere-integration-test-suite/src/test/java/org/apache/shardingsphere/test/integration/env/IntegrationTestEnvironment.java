@@ -63,10 +63,18 @@ public final class IntegrationTestEnvironment {
         isEnvironmentPrepared = "docker".equals(engineEnvProps.getProperty("it.env.type"));
         adapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.adapters"));
         runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
-        scenarios = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.scenarios"));
+        scenarios = getScenarios(engineEnvProps);
         Map<String, DatabaseScenarioProperties> databaseProps = getDatabaseScenarioProperties();
         databaseEnvironments = createDatabaseEnvironments(getDatabaseTypes(engineEnvProps), databaseProps);
         proxyEnvironments = createProxyEnvironments(databaseProps);
+    }
+    
+    private Collection<String> getScenarios(final Properties engineEnvProps) {
+        Collection<String> result = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.scenarios"));
+        for (String each : result) {
+            EnvironmentPath.assertScenarioDirectoryExisted(each);
+        }
+        return result;
     }
     
     private Map<String, DatabaseScenarioProperties> getDatabaseScenarioProperties() {
@@ -80,7 +88,7 @@ public final class IntegrationTestEnvironment {
     private Collection<DatabaseType> getDatabaseTypes(final Properties engineEnvProps) {
         return Arrays.stream(engineEnvProps.getProperty("it.databases", "H2").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
     }
-
+    
     private Map<DatabaseType, Map<String, DatabaseEnvironment>> createDatabaseEnvironments(final Collection<DatabaseType> databaseTypes, final Map<String, DatabaseScenarioProperties> databaseProps) {
         Map<DatabaseType, Map<String, DatabaseEnvironment>> result = new LinkedHashMap<>(databaseTypes.size(), 1);
         for (DatabaseType each : databaseTypes) {

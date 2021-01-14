@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleDataSourcesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -58,12 +59,12 @@ public final class DropReplicaQueryRuleBackendHandler extends SchemaRequiredBack
         Optional<ReplicaQueryRuleConfiguration> replicaQueryRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ReplicaQueryRuleConfiguration).map(each -> (ReplicaQueryRuleConfiguration) each).findFirst();
         if (!replicaQueryRuleConfig.isPresent()) {
-            throw new ReplicaQueryRuleNotExistedException(ruleNames);
+            throw new ReplicaQueryRuleNotExistedException();
         }
         Collection<String> replicaQueryNames = replicaQueryRuleConfig.get().getDataSources().stream().map(each -> each.getName()).collect(Collectors.toList());
         Collection<String> notExistedRuleNames = ruleNames.stream().filter(each -> !replicaQueryNames.contains(each)).collect(Collectors.toList());
         if (!notExistedRuleNames.isEmpty()) {
-            throw new ReplicaQueryRuleNotExistedException(notExistedRuleNames);
+            throw new ReplicaQueryRuleDataSourcesNotExistedException(notExistedRuleNames);
         }
     }
 

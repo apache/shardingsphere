@@ -42,6 +42,17 @@ public final class EnvironmentPath {
     private static final String RULES_CONFIG_FILE = "rules.yaml";
     
     private static final String AUTHORITY_FILE = "authority.xml";
+
+    /**
+     * Assert scenario directory existed.
+     * 
+     * @param scenario scenario
+     */
+    public static void assertScenarioDirectoryExisted(final String scenario) {
+        String scenarioDirectory = String.join("/", ROOT_PATH, scenario);
+        URL url = EnvironmentPath.class.getClassLoader().getResource(scenarioDirectory);
+        assertNotNull(String.format("Scenario directory `%s` must exist.", scenarioDirectory), url);
+    }
     
     /**
      * Get databases file.
@@ -95,14 +106,16 @@ public final class EnvironmentPath {
     }
     
     private static String getFile(final String scenario, final String fileName) {
-        URL url = EnvironmentPath.class.getClassLoader().getResource(String.join("/", ROOT_PATH, scenario, fileName));
-        assertNotNull(url);
+        String path = String.join("/", ROOT_PATH, scenario, fileName);
+        URL url = EnvironmentPath.class.getClassLoader().getResource(path);
+        assertNotNull(String.format("File `%s` must exist.", path), url);
         return url.getFile();
     }
     
     private static String getFile(final DatabaseType databaseType, final String scenario, final String fileName) {
-        URL url = EnvironmentPath.class.getClassLoader().getResource(String.join("/", ROOT_PATH, scenario, databaseType.getName().toLowerCase(), fileName));
-        assertNotNull(url);
+        String path = String.join("/", ROOT_PATH, scenario, databaseType.getName().toLowerCase(), fileName);
+        URL url = EnvironmentPath.class.getClassLoader().getResource(path);
+        assertNotNull(String.format("File `%s` must exist.", path), url);
         return url.getFile();
     }
 }

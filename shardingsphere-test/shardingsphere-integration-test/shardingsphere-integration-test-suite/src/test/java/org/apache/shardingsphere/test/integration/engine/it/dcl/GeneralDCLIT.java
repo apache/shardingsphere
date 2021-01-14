@@ -38,7 +38,7 @@ public final class GeneralDCLIT extends BaseDCLIT {
                         final String databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
         super(parentPath, assertion, adapter, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), sqlExecuteType, sql);
     }
-
+    
     @Parameters(name = "{2}: {3} -> {4} -> {5} -> {6}")
     public static Collection<Object[]> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DCL);

@@ -12,7 +12,7 @@ rules:
 - !SHARDING
   tables: # Sharding table configuration
     <logic-table-name> (+): # Logic table name
-      actualDataNodes (?): # Describe data source names and actual tables, delimiter as point, multiple data nodes separated with comma, support inline expression. Absent means sharding databases only.
+      actualDataNodes (?): # Describe data source names and actual tables (refer to Inline syntax rules)
       databaseStrategy (?): # Databases sharding strategy, use default databases sharding strategy if absent. sharding strategy below can choose only one.
         standard: # For single sharding column scenario
           shardingColumn: # Sharding column name
@@ -36,7 +36,9 @@ rules:
           shardingAlgorithmName: # Auto sharding algorithm name
   bindingTables (+): # Binding tables
     - <logic_table_name_1, logic_table_name_2, ...> 
+    - <logic_table_name_1, logic_table_name_2, ...> 
   broadcastTables (+): # Broadcast tables
+    - <table-name>
     - <table-name>
   defaultDatabaseStrategy: # Default strategy for database sharding
   defaultTableStrategy: # Default strategy for table sharding
