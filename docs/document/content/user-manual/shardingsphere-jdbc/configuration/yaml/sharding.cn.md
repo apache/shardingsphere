@@ -36,7 +36,9 @@ rules:
           shardingAlgorithmName: # 自动分片算法名称
   bindingTables (+): # 绑定表规则列表
     - <logic_table_name_1, logic_table_name_2, ...> 
+    - <logic_table_name_1, logic_table_name_2, ...> 
   broadcastTables (+): # 广播表规则列表
+    - <table-name>
     - <table-name>
   defaultDatabaseStrategy: # 默认数据库分片策略
   defaultTableStrategy: # 默认表分片策略
