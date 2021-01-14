@@ -21,10 +21,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.GlobalTracer;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
@@ -35,6 +31,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.FieldReader;
+
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
@@ -66,7 +67,7 @@ public final class CommandExecutorTaskAdviceTest {
     
     @Test
     public void assertMethod() {
-        final MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
+        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
         ADVICE.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         ADVICE.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
         List<MockSpan> spans = tracer.finishedSpans();
