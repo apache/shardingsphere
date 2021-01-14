@@ -59,7 +59,7 @@ public final class JDBCExecutorCallbackAdviceTest {
             GlobalTracer.register(new MockTracer());
         }
         FieldReader fieldReader = new FieldReader(GlobalTracer.get(), GlobalTracer.class.getDeclaredField("tracer"));
-        JDBCExecutorCallbackAdviceTest.tracer = (MockTracer) fieldReader.read();
+        tracer = (MockTracer) fieldReader.read();
         executeMethod = JDBCExecutorCallback.class.getDeclaredMethod("execute", JDBCExecutionUnit.class, boolean.class, Map.class);
     }
     

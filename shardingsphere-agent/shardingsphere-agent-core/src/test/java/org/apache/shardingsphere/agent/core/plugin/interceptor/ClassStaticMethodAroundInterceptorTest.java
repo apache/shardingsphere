@@ -98,7 +98,7 @@ public final class ClassStaticMethodAroundInterceptorTest {
         if ("staticMockWithException".equals(methodName)) {
             try {
                 StaticMaterial.staticMockWithException(queues);
-            } catch (IOException ignored) {
+            } catch (final IOException ignored) {
             }
         } else {
             assertThat(StaticMaterial.staticMock(queues), is(result));
