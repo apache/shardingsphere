@@ -125,10 +125,10 @@ public final class MySQLErrPacketFactory {
             return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_NOT_EXIST);
         }
         if (cause instanceof ReplicaQueryRuleDataSourcesNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_DATASOURCE_NOT_EXIST, ((ReplicaQueryRuleDataSourcesNotExistedException) cause).getRuleNames());
+            return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_DATA_SOURCE_NOT_EXIST, ((ReplicaQueryRuleDataSourcesNotExistedException) cause).getRuleNames());
         }
         if (cause instanceof AddReplicaQueryRuleDataSourcesExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.ADD_REPLICA_QUERY_RULE_DATASOURCE_EXIST, ((AddReplicaQueryRuleDataSourcesExistedException) cause).getRuleNames());
+            return new MySQLErrPacket(1, CommonErrorCode.ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST, ((AddReplicaQueryRuleDataSourcesExistedException) cause).getRuleNames());
         }
         return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }
