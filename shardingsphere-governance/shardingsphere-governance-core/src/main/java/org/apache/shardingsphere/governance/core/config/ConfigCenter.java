@@ -145,14 +145,14 @@ public final class ConfigCenter {
      */
     @Subscribe
     public synchronized void renew(final SchemaNamePersistEvent event) {
-        String schemaNames = repository.get(node.getSchemasNodePath());
+        String schemaNames = repository.get(node.getMetadataNodePath());
         Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
         if (event.isDrop()) {
             schemas.remove(event.getSchemaName());
         } else if (!schemas.contains(event.getSchemaName())) {
             schemas.add(event.getSchemaName());
         }
-        repository.persist(node.getSchemasNodePath(), Joiner.on(",").join(schemas));
+        repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(schemas));
     }
     
     /**
@@ -269,9 +269,9 @@ public final class ConfigCenter {
     }
     
     private void persistSchemaName(final String schemaName) {
-        String schemaNames = repository.get(node.getSchemasNodePath());
+        String schemaNames = repository.get(node.getMetadataNodePath());
         if (Strings.isNullOrEmpty(schemaNames)) {
-            repository.persist(node.getSchemasNodePath(), schemaName);
+            repository.persist(node.getMetadataNodePath(), schemaName);
             return;
         }
         List<String> schemaNameList = Splitter.on(",").splitToList(schemaNames);
@@ -280,7 +280,7 @@ public final class ConfigCenter {
         }
         List<String> newArrayList = new ArrayList<>(schemaNameList);
         newArrayList.add(schemaName);
-        repository.persist(node.getSchemasNodePath(), Joiner.on(",").join(newArrayList));
+        repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(newArrayList));
     }
     
     /**
@@ -335,7 +335,7 @@ public final class ConfigCenter {
      * @return all schema names
      */
     public Collection<String> getAllSchemaNames() {
-        String schemaNames = repository.get(node.getSchemasNodePath());
+        String schemaNames = repository.get(node.getMetadataNodePath());
         return Strings.isNullOrEmpty(schemaNames) ? new LinkedList<>() : node.splitSchemaName(schemaNames);
     }
     

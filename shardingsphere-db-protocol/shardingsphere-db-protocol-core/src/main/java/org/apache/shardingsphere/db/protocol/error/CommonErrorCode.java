@@ -37,6 +37,8 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     RESOURCE_NOT_EXIST(11004, "C11004", "Can not drop resources, resources %s do not exist."),
     
+    REPLICA_QUERY_RULE_EXIST(11008, "C11008", "Replica query rule already exists."),
+    
     UNSUPPORTED_COMMAND(19998, "C19998", "Unsupported command: [%s]"),
     
     UNKNOWN_EXCEPTION(19999, "C19999", "Unknown exception: [%s]");

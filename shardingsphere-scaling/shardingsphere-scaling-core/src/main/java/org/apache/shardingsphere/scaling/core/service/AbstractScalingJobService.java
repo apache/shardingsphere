@@ -49,6 +49,11 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
     
     @Override
     public Optional<ScalingJob> start(final String sourceDataSource, final String sourceRule, final String targetDataSource, final String targetRule, final ScalingCallback scalingCallback) {
+        log.info("start scaling job...");
+        log.info("sourceDataSource = {}", sourceDataSource);
+        log.info("sourceRule = {}", sourceRule);
+        log.info("targetDataSource = {}", targetDataSource);
+        log.info("targetRule = {}", targetRule);
         Optional<ScalingJob> result = start(sourceDataSource, sourceRule, targetDataSource, targetRule);
         if (!result.isPresent()) {
             return result;
@@ -68,12 +73,14 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
     
     @Override
     public Map<String, DataConsistencyCheckResult> check(final long jobId) {
+        log.info("scaling job {} start data consistency check.", jobId);
         DataConsistencyChecker dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance(getJob(jobId));
         Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.countCheck();
         if (result.values().stream().allMatch(DataConsistencyCheckResult::isCountValid)) {
             Map<String, Boolean> dataCheckResult = dataConsistencyChecker.dataCheck();
             result.forEach((key, value) -> value.setDataValid(dataCheckResult.getOrDefault(key, false)));
         }
+        log.info("scaling job {} data consistency checker result {}", jobId, result);
         return result;
     }
     

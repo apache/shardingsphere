@@ -15,31 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.check;
+package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Data consistency check result.
+ * Replica query rule create exists exception.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@ToString
-public final class DataConsistencyCheckResult {
+public final class ReplicaQueryRuleCreateExistsException extends BackendException {
     
-    private final long sourceCount;
-    
-    private final long targetCount;
-    
-    private final boolean countValid;
-    
-    private boolean dataValid;
-    
-    public DataConsistencyCheckResult(final long sourceCount, final long targetCount) {
-        this.sourceCount = sourceCount;
-        this.targetCount = targetCount;
-        countValid = sourceCount == targetCount;
-    }
+    private static final long serialVersionUID = -6902287715467426449L;
 }
