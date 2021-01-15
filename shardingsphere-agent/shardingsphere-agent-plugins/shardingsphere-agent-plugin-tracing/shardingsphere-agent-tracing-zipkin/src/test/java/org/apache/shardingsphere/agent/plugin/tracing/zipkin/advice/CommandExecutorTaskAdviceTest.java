@@ -46,7 +46,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     }
     
     @Test
-    public void testMethod() {
+    public void assertMethod() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         Span span = collector.pop();
@@ -59,7 +59,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     }
     
     @Test
-    public void testExceptionHandle() {
+    public void assertExceptionHandle() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
         advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
@@ -72,5 +72,4 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
         assertThat(tags.get(ZipkinConstants.Tags.CONNECTION_COUNT), is("0"));
         assertThat(span.name(), is("/ShardingSphere/rootInvoke/".toLowerCase()));
     }
-    
 }

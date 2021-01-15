@@ -48,7 +48,7 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     }
     
     @Test
-    public void testMethod() {
+    public void assertMethod() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
         advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
         Span span = collector.pop();
@@ -65,7 +65,7 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     }
     
     @Test
-    public void testExceptionHandle() {
+    public void assertExceptionHandle() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
         advice.onThrowing(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new IOException());
         advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
@@ -82,5 +82,4 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
         assertThat(tags.get(ZipkinConstants.Tags.PEER_PORT), is("1000"));
         assertThat(tags.get("error"), is("IOException"));
     }
-    
 }

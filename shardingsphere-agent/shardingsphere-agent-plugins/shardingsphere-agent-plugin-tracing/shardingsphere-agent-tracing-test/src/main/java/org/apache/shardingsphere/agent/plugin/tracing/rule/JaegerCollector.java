@@ -27,6 +27,7 @@ import org.mockito.internal.util.reflection.FieldReader;
 import java.util.List;
 
 public class JaegerCollector extends ExternalResource implements CollectorRule {
+    
     private MockTracer tracer;
     
     @Override
