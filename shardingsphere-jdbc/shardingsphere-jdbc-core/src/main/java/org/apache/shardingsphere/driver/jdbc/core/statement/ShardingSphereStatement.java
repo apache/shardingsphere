@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.driver.executor.DriverJDBCExecutor;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteCallback;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteUpdateCallback;
@@ -117,9 +116,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     @Getter(AccessLevel.PROTECTED)
     private CalciteExecutor calciteExecutor;
 
-    @Setter
-    private boolean isToCalcite;
-
     public ShardingSphereStatement(final ShardingSphereConnection connection) {
         this(connection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
@@ -169,7 +165,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         if (metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
             return rawExecutor.execute(createRawExecutionGroups(), new RawSQLExecutorCallback()).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
         }
-        isToCalcite(isToCalcite);
         if (executionContext.getRouteContext().isToCalcite()) {
             return executeQueryByCalcite();
         }
@@ -389,10 +384,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             }
         };
         return driverJDBCExecutor.execute(executionGroups, sqlStatement, routeUnits, jdbcExecutorCallback);
-    }
-
-    private void isToCalcite(final boolean isToCalcite) {
-        executionContext.getRouteContext().setToCalcite(isToCalcite);
     }
 
     private ExecutionContext createExecutionContext(final String sql) throws SQLException {

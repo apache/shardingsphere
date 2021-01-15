@@ -15,11 +15,8 @@
  * limitations under the License.
  */
 
-DELETE FROM t_order_calcite;
 DELETE FROM t_order_item_calcite;
 
-INSERT INTO t_order_calcite VALUES(1000, 10, 'init');
-INSERT INTO t_order_calcite VALUES(1001, 10, 'init');
 INSERT INTO t_order_item_calcite VALUES(100000, 1000, 10, 'init');
 INSERT INTO t_order_item_calcite VALUES(100001, 1000, 10, 'init');
 INSERT INTO t_order_item_calcite VALUES(100100, 1001, 10, 'init');

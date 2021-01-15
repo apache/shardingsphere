@@ -20,23 +20,29 @@ package org.apache.shardingsphere.driver.common.base;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.h2.tools.RunScript;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-public class AbstractShardingSphereDataSourceForCalciteTest extends AbstractSQLTest {
+public class AbstractShardingSphereDataSourceForCalciteTest extends AbstractSQLCalciteTest {
 
     private static ShardingSphereDataSource dataSource;
 
-    private static final List<String> CALCITE_DB_NAMES = Arrays.asList("jdbc_0");
+    private static final List<String> CALCITE_DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1");
 
     private static final String CONFIG_CALCITE = "config-calcite.yaml";
 
@@ -50,6 +56,21 @@ public class AbstractShardingSphereDataSourceForCalciteTest extends AbstractSQLT
 
     private static Map<String, DataSource> getDataSourceMap() {
         return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), CALCITE_DB_NAMES::contains);
+    }
+
+    @Before
+    public void initTable() {
+        try {
+            ShardingSphereConnection conn = dataSource.getConnection();
+            Map<String, DataSource> dataSourceMap = conn.getDataSourceMap();
+            Connection database0 = dataSourceMap.get("jdbc_0").getConnection();
+            Connection database1 = dataSourceMap.get("jdbc_1").getConnection();
+            RunScript.execute(database0, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("calcite_data_0.sql"))));
+            RunScript.execute(database1, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("calcite_data_1.sql"))));
+            conn.close();
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     private static File getFile(final String fileName) {

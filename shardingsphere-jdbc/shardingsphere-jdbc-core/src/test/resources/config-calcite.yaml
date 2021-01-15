@@ -17,18 +17,5 @@
 
 rules:
   - !SHARDING
-    tables:
-      t_order_calcite:
-        actualDataNodes: jdbc_0.t_order_calcite
-        databaseStrategy:
-          none:
-        tableStrategy:
-          none:
-      t_order_item_calcite:
-        actualDataNodes: jdbc_0.t_order_item_calcite
-        databaseStrategy:
-          none:
-        tableStrategy:
-          none:
     defaultTableStrategy:
       none:

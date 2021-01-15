@@ -18,42 +18,36 @@
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForCalciteTest;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public final class CalcitePrepareStatement extends AbstractShardingSphereDataSourceForCalciteTest {
+public final class CalcitePrepareStatementTest extends AbstractShardingSphereDataSourceForCalciteTest {
 
-    private static final String INSERT_SQL = "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd) VALUES (?, ?, ?)";
-
-    private static final String SELECT_SQL_BY_ID = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt WHERE id = ?";
-
-    @Before
-    public void init() throws SQLException {
-        try (PreparedStatement statement = getShardingSphereDataSource().getConnection().prepareStatement(INSERT_SQL)) {
-            statement.setInt(1, 99);
-            statement.setString(2, "cipher");
-            statement.setString(3, "plain");
-            statement.execute();
-        }
-    }
+    private static final String SELECT_SQL_BY_ID = "select o.*, i.* from t_order_calcite o, t_order_item_calcite i where o.order_id = ? and i.item_id = ?";
 
     @Test
-    public void assertQueryWithCalciteInSingleTable() throws SQLException {
+    public void assertQueryWithCalciteInSingleTables() throws SQLException {
         ShardingSpherePreparedStatement preparedStatement = (ShardingSpherePreparedStatement) getShardingSphereDataSource().getConnection().prepareStatement(SELECT_SQL_BY_ID);
-        preparedStatement.setToCalcite(true);
-        preparedStatement.setInt(1, 99);
+        preparedStatement.setInt(1, 1000);
+        preparedStatement.setInt(2, 100000);
         ResultSet resultSet = preparedStatement.executeQuery();
+        assertNotNull(resultSet);
         assertTrue(resultSet.next());
-        assertThat(resultSet.getInt(1), is(99));
-        assertThat(resultSet.getString(2), is("cipher"));
-        assertThat(resultSet.getString(3), is("plain"));
+        assertThat(resultSet.getInt(1), is(1000));
+        assertThat(resultSet.getInt(2), is(10));
+        assertThat(resultSet.getString(3), is("init"));
+        assertThat(resultSet.getInt(4), is(100000));
+        assertThat(resultSet.getInt(5), is(1000));
+        assertThat(resultSet.getInt(6), is(10));
+        assertThat(resultSet.getString(7), is("init"));
+        assertFalse(resultSet.next());
     }
 }
