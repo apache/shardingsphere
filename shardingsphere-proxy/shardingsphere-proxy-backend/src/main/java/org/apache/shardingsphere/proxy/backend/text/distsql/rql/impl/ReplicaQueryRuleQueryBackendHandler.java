@@ -44,7 +44,7 @@ public final class ReplicaQueryRuleQueryBackendHandler extends SchemaRequiredBac
     
     private Iterator<ReplicaQueryDataSourceRuleConfiguration> data;
     
-    private String schema;
+    private final String schema;
     
     public ReplicaQueryRuleQueryBackendHandler(final ShowRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
