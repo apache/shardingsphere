@@ -26,6 +26,8 @@ services:
       - ../../env/dbtbl_with_replica_query/mysql:/docker-entrypoint-initdb.d/
     ports:
       - "33360:3306"
+    environment:
+      - LANG=C.UTF-8
   
 #  zookeeper:
 #    image: "zookeeper:3.6.2"

@@ -26,6 +26,8 @@ services:
       - ../../env/db/mysql:/docker-entrypoint-initdb.d/
     ports:
       - "33060:3306"
+    environment:
+      - LANG=C.UTF-8
   
 #  zookeeper:
 #    image: "zookeeper:3.6.2"
