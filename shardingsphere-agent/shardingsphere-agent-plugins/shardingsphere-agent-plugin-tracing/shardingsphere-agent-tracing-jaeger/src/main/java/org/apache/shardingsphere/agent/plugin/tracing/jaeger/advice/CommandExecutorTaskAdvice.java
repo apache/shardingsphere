@@ -20,13 +20,17 @@ package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
 import io.opentracing.Scope;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
-import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.ShardingSphereTags;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
@@ -36,20 +40,24 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvi
     
     private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
     
-    private static final String ROOT_SPAN = "_root_span_";
-    
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
-                .withTag(Tags.COMPONENT.getKey(), ShardingSphereTags.COMPONENT_NAME)
+                .withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
                 .startActive(true);
-        ExecutorDataMap.getValue().put(ROOT_SPAN, scope.span());
+        ExecutorDataMap.getValue().put(JaegerConstants.ROOT_SPAN, scope.span());
     }
     
     @Override
+    @SneakyThrows
     public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        GlobalTracer.get().scopeManager().active().close();
-        ExecutorDataMap.getValue().remove(ROOT_SPAN);
+        ExecutorDataMap.getValue().remove(JaegerConstants.ROOT_SPAN);
+        Field field = CommandExecutorTask.class.getDeclaredField("backendConnection");
+        field.setAccessible(true);
+        BackendConnection connection = (BackendConnection) field.get(target);
+        Scope scope = GlobalTracer.get().scopeManager().active();
+        scope.span().setTag(JaegerConstants.ShardingSphereTags.CONNECTION_COUNT.getKey(), connection.getConnectionSize());
+        scope.close();
     }
     
     @Override

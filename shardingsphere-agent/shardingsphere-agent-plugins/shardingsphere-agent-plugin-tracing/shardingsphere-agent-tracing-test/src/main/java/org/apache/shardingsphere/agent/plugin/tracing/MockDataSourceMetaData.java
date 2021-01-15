@@ -15,74 +15,29 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+package org.apache.shardingsphere.agent.plugin.tracing;
 
-import Alphabet;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 
-WS
-    : [ \t\r\n] + ->skip
-    ;
-
-ADD
-    : A D D
-    ;
-
-CREATE
-    : C R E A T E
-    ;
-
-ALTER
-    : A L T E R
-    ;
-
-MODIFY
-    : M O D I F Y
-    ;
-
-DROP
-    : D R O P
-    ;
-
-SHOW
-    : S H O W
-    ;
-
-RESOURCE
-    : R E S O U R C E
-    ;
-
-RESOURCES
-    : R E S O U R C E S
-    ;
-
-RULE
-    :  R U L E
-    ;
-
-FROM
-    : F R O M
-    ;
-
-SHARDING
-    : S H A R D I N G
-    ;
-   
-REPLICA_QUERY
-    : R E P L I C A UL_ Q U E R Y
-    ;
-
-ENCRYPT
-    : E N C R Y P T
-    ;
-
-SHADOW
-    : S H A D O W
-    ;
-
-PRIMARY
-    : P R I M A R Y
-    ;
-
-REPLICA
-    : R E P L I C A
-    ;
+public final class MockDataSourceMetaData implements DataSourceMetaData {
+    
+    @Override
+    public String getHostName() {
+        return "mock.host";
+    }
+    
+    @Override
+    public int getPort() {
+        return 1000;
+    }
+    
+    @Override
+    public String getCatalog() {
+        return null;
+    }
+    
+    @Override
+    public String getSchema() {
+        return "mock.schema";
+    }
+}

@@ -30,6 +30,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>shardingsphere-agent-tracing-test</module>
         <module>shardingsphere-agent-tracing-jaeger</module>
         <module>shardingsphere-agent-tracing-zipkin</module>
         <module>shardingsphere-agent-tracing-opentracing</module>
@@ -37,6 +38,10 @@
     
     <properties>
         <tracing.target.directory>${project.basedir}/../target/plugins</tracing.target.directory>
+        <opentracing.version>0.31.0</opentracing.version>
+        <jaeger-client.version>0.31.0</jaeger-client.version>
+        <zipkin-brave.version>5.13.2</zipkin-brave.version>
+        <zipkin-reporter.version>2.16.2</zipkin-reporter.version>
     </properties>
     
     <dependencies>
@@ -49,6 +54,17 @@
             <artifactId>shardingsphere-proxy-common</artifactId>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-agent-tracing-test</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     
     <build>
         <plugins>

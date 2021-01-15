@@ -15,74 +15,13 @@
  * limitations under the License.
  */
 
-lexer grammar Keyword;
+package org.apache.shardingsphere.agent.plugin.tracing.advice;
 
-import Alphabet;
-
-WS
-    : [ \t\r\n] + ->skip
-    ;
-
-ADD
-    : A D D
-    ;
-
-CREATE
-    : C R E A T E
-    ;
-
-ALTER
-    : A L T E R
-    ;
-
-MODIFY
-    : M O D I F Y
-    ;
-
-DROP
-    : D R O P
-    ;
-
-SHOW
-    : S H O W
-    ;
-
-RESOURCE
-    : R E S O U R C E
-    ;
-
-RESOURCES
-    : R E S O U R C E S
-    ;
-
-RULE
-    :  R U L E
-    ;
-
-FROM
-    : F R O M
-    ;
-
-SHARDING
-    : S H A R D I N G
-    ;
-   
-REPLICA_QUERY
-    : R E P L I C A UL_ Q U E R Y
-    ;
-
-ENCRYPT
-    : E N C R Y P T
-    ;
-
-SHADOW
-    : S H A D O W
-    ;
-
-PRIMARY
-    : P R I M A R Y
-    ;
-
-REPLICA
-    : R E P L I C A
-    ;
+public interface AdviceTestBase {
+    
+    /**
+     * Prepare env for testing.
+     */
+    void prepare();
+    
+}

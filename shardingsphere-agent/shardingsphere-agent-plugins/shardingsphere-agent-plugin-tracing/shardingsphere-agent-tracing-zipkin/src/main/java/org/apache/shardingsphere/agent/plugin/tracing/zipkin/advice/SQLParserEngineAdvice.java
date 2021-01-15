@@ -41,6 +41,7 @@ public final class SQLParserEngineAdvice implements InstanceMethodAroundAdvice {
         Span span = Tracing.currentTracer().newChild(parentContext).name(OPERATION_NAME);
         span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
         span.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
+        span.tag(ZipkinConstants.Tags.DB_STATEMENT, String.valueOf(args[0]));
         span.start();
         target.setAttachment(span);
     }

@@ -17,57 +17,39 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
-import io.netty.channel.ChannelHandlerContext;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
+import org.apache.shardingsphere.agent.plugin.tracing.rule.ZipkinCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
-import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
-import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import zipkin2.Span;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public final class CommandExecutorTaskAdviceTest extends AdviceBaseTest {
+public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
     
-    private static Method executeCommandMethod;
+    @ClassRule
+    public static ZipkinCollector collector = new ZipkinCollector();
     
     private CommandExecutorTaskAdvice advice;
     
-    private AdviceTargetObject targetObject;
-    
-    @BeforeClass
-    public static void setup() throws NoSuchMethodException {
-        prepare("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask");
-        executeCommandMethod = CommandExecutorTask.class.getDeclaredMethod("executeCommand", ChannelHandlerContext.class, PacketPayload.class, BackendConnection.class);
-    }
-    
     @Before
-    @SneakyThrows
-    @SuppressWarnings("all")
-    public void before() {
+    public void setup() {
         advice = new CommandExecutorTaskAdvice();
-        Object executorTask = new CommandExecutorTask(null, new BackendConnection(TransactionType.BASE), null, null);
-        targetObject = (AdviceTargetObject) executorTask;
     }
     
     @Test
     public void testMethod() {
-        advice.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
-        advice.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
-        Span span = SPANS.poll();
+        advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        Span span = collector.pop();
         assertNotNull(span);
         Map<String, String> tags = span.tags();
         assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is(ZipkinConstants.DB_TYPE_VALUE));
@@ -78,10 +60,10 @@ public final class CommandExecutorTaskAdviceTest extends AdviceBaseTest {
     
     @Test
     public void testExceptionHandle() {
-        advice.beforeMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
-        advice.onThrowing(targetObject, executeCommandMethod, new Object[]{}, new IOException());
-        advice.afterMethod(targetObject, executeCommandMethod, new Object[]{}, new MethodInvocationResult());
-        Span span = SPANS.poll();
+        advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
+        advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
+        Span span = collector.pop();
         assertNotNull(span);
         Map<String, String> tags = span.tags();
         assertThat(tags.get("error"), is("IOException"));
@@ -91,8 +73,4 @@ public final class CommandExecutorTaskAdviceTest extends AdviceBaseTest {
         assertThat(span.name(), is("/ShardingSphere/rootInvoke/".toLowerCase()));
     }
     
-    @After
-    public void cleanup() {
-        SPANS.clear();
-    }
 }

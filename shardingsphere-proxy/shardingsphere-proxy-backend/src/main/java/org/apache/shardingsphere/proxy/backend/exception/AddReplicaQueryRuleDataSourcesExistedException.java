@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
 
 /**
- * Error log tag keys.
+ * Add replica query rule data source existed exception.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ErrorLogTagKeys {
+@RequiredArgsConstructor
+@Getter
+public final class AddReplicaQueryRuleDataSourcesExistedException extends BackendException {
     
-    public static final String EVENT = "event";
+    private static final long serialVersionUID = -4169758880611482863L;
     
-    public static final String EVENT_ERROR_TYPE = "error";
-    
-    public static final String ERROR_KIND = "error.kind";
-    
-    public static final String MESSAGE = "message";
+    private final Collection<String> ruleNames;
 }

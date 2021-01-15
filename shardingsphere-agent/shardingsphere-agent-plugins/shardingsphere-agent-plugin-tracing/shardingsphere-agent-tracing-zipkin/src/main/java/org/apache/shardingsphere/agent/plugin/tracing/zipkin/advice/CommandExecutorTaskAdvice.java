@@ -54,7 +54,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvi
         BackendConnection connection = (BackendConnection) field.get(target);
         Span span = (Span) ExecutorDataMap.getValue().remove(ZipkinConstants.ROOT_SPAN);
         span.tag(ZipkinConstants.Tags.CONNECTION_COUNT, String.valueOf(connection.getConnectionSize()));
-        span.flush();
+        span.finish();
     }
     
     @Override

@@ -15,29 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-public final class MockDataSourceMetaData implements DataSourceMetaData {
+import java.util.Collection;
+
+/**
+ * Replica query rule data source not existed exception.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ReplicaQueryRuleDataSourcesNotExistedException extends BackendException {
     
-    @Override
-    public String getHostName() {
-        return "mock.host";
-    }
+    private static final long serialVersionUID = -2151854349124198061L;
     
-    @Override
-    public int getPort() {
-        return 1000;
-    }
-    
-    @Override
-    public String getCatalog() {
-        return null;
-    }
-    
-    @Override
-    public String getSchema() {
-        return "mock.schema";
-    }
+    private final Collection<String> ruleNames;
 }
