@@ -17,99 +17,66 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import io.opentracing.mock.MockSpan;
-import io.opentracing.mock.MockTracer;
-import io.opentracing.util.GlobalTracer;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.ErrorLogTagKeys;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
+import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractJDBCExecutorCallbackAdviceTest;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
+import org.apache.shardingsphere.agent.plugin.tracing.rule.JaegerCollector;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.FieldReader;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-public final class JDBCExecutorCallbackAdviceTest {
+public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
+    
+    @ClassRule
+    public static JaegerCollector collector = new JaegerCollector();
     
     private static final JDBCExecutorCallbackAdvice ADVICE = new JDBCExecutorCallbackAdvice();
     
-    private static MockTracer tracer;
-    
-    private static Method executeMethod;
-    
-    @BeforeClass
-    @SneakyThrows
-    public static void setup() {
-        if (!GlobalTracer.isRegistered()) {
-            GlobalTracer.register(new MockTracer());
-        }
-        FieldReader fieldReader = new FieldReader(GlobalTracer.get(), GlobalTracer.class.getDeclaredField("tracer"));
-        tracer = (MockTracer) fieldReader.read();
-        executeMethod = JDBCExecutorCallback.class.getDeclaredMethod("execute", JDBCExecutionUnit.class, boolean.class, Map.class);
-    }
-    
     @Before
-    public void reset() {
-        tracer.reset();
+    public void setup() {
+        getExtraMap().put(JaegerConstants.ROOT_SPAN, null);
     }
     
     @Test
     public void assertMethod() {
-        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
-        Map<String, Object> extraMap = Maps.newHashMap();
-        extraMap.put("_root_span_", null);
-        JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);
-        when(executionUnit.getExecutionUnit()).thenReturn(new ExecutionUnit("mock.db", new SQLUnit("select 1", Lists.newArrayList())));
-        ADVICE.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
-        ADVICE.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
-        List<MockSpan> spans = tracer.finishedSpans();
+        ADVICE.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
+        ADVICE.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
+        List<MockSpan> spans = collector.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);
         Map<String, Object> tags = span.tags();
         assertThat(spans.get(0).logEntries().size(), is(0));
         assertThat(span.operationName(), is("/ShardingSphere/executeSQL/"));
         assertThat(tags.get("db.instance"), is("mock.db"));
-        assertThat(tags.get("db.type"), is("sql"));
+        assertThat(tags.get("db.type"), is(JaegerConstants.DB_TYPE_VALUE));
         assertThat(tags.get("span.kind"), is("client"));
         assertThat(tags.get("db.statement"), is("select 1"));
     }
     
     @Test
     public void assertExceptionHandle() {
-        MockAdviceTargetObject targetObject = new MockAdviceTargetObject();
-        Map<String, Object> extraMap = Maps.newHashMap();
-        extraMap.put("_root_span_", null);
-        JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);
-        when(executionUnit.getExecutionUnit()).thenReturn(new ExecutionUnit("mock.db", new SQLUnit("select 1", Lists.newArrayList())));
-        ADVICE.beforeMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
-        ADVICE.onThrowing(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new IOException());
-        ADVICE.afterMethod(targetObject, executeMethod, new Object[]{executionUnit, false, extraMap}, new MethodInvocationResult());
-        List<MockSpan> spans = tracer.finishedSpans();
+        ADVICE.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
+        ADVICE.onThrowing(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new IOException());
+        ADVICE.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
+        List<MockSpan> spans = collector.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);
         List<MockSpan.LogEntry> entries = span.logEntries();
         Map<String, ?> fields = entries.get(0).fields();
-        assertThat(fields.get(ErrorLogTagKeys.EVENT), is("error"));
-        assertThat(fields.get(ErrorLogTagKeys.ERROR_KIND), is("java.io.IOException"));
+        assertThat(fields.get(JaegerConstants.ErrorLogTagKeys.EVENT), is("error"));
+        assertThat(fields.get(JaegerConstants.ErrorLogTagKeys.ERROR_KIND), is("java.io.IOException"));
         Map<String, Object> tags = span.tags();
         assertThat(span.operationName(), is("/ShardingSphere/executeSQL/"));
         assertThat(tags.get("db.instance"), is("mock.db"));
-        assertThat(tags.get("db.type"), is("sql"));
+        assertThat(tags.get("db.type"), is(JaegerConstants.DB_TYPE_VALUE));
         assertThat(tags.get("span.kind"), is("client"));
         assertThat(tags.get("db.statement"), is("select 1"));
     }

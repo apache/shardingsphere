@@ -15,29 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
+package org.apache.shardingsphere.agent.plugin.tracing.advice;
 
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-
-public final class MockDataSourceMetaData implements DataSourceMetaData {
+public interface AdviceTestBase {
     
-    @Override
-    public String getHostName() {
-        return "mock.host";
-    }
+    /**
+     * Prepare env for testing.
+     */
+    void prepare();
     
-    @Override
-    public int getPort() {
-        return 1000;
-    }
-    
-    @Override
-    public String getCatalog() {
-        return null;
-    }
-    
-    @Override
-    public String getSchema() {
-        return "mock.schema";
-    }
 }

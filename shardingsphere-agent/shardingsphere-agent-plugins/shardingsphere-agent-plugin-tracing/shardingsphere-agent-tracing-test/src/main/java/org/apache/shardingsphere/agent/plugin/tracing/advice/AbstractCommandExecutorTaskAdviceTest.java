@@ -15,21 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
+package org.apache.shardingsphere.agent.plugin.tracing.advice;
 
+import lombok.Getter;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.plugin.tracing.AgentRunner;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
+import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.junit.runner.RunWith;
 
-public final class MockAdviceTargetObject implements AdviceTargetObject {
+@RunWith(AgentRunner.class)
+public abstract class AbstractCommandExecutorTaskAdviceTest implements AdviceTestBase {
     
-    private Object object;
-    
-    @Override
-    public Object getAttachment() {
-        return object;
-    }
+    @Getter
+    private AdviceTargetObject targetObject;
     
     @Override
-    public void setAttachment(final Object attachment) {
-        this.object = attachment;
+    @SuppressWarnings("all")
+    public void prepare() {
+        Object executorTask = new CommandExecutorTask(null, new BackendConnection(TransactionType.BASE), null, null);
+        targetObject = (AdviceTargetObject) executorTask;
     }
 }

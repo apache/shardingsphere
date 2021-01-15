@@ -20,11 +20,11 @@ package org.apache.shardingsphere.agent.plugin.tracing.jaeger.advice;
 import io.opentracing.Scope;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.ShardingSphereTags;
 
 import java.lang.reflect.Method;
 
@@ -38,7 +38,7 @@ public final class SQLParserEngineAdvice implements InstanceMethodAroundAdvice {
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         Scope scope = GlobalTracer.get().buildSpan(OPERATION_NAME)
-                .withTag(Tags.COMPONENT.getKey(), ShardingSphereTags.COMPONENT_NAME)
+                .withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
                 .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
                 .withTag(Tags.DB_STATEMENT.getKey(), String.valueOf(args[0]))
                 .startActive(true);

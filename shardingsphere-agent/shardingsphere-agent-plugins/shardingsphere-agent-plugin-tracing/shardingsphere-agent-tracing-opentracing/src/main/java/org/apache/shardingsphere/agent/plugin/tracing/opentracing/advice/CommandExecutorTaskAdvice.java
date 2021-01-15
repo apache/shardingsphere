@@ -36,7 +36,7 @@ public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvi
     
     private static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
     
-    private static final String ROOT_SPAN = "_root_span_";
+    private static final String ROOT_SPAN = "ot_root_span_";
     
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
