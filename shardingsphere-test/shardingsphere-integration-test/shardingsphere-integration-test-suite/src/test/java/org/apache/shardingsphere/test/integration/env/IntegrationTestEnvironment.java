@@ -128,15 +128,15 @@ public final class IntegrationTestEnvironment {
      * @return singleton instance
      */
     public static IntegrationTestEnvironment getInstance() {
-        if (INSTANCE.adapters.contains("proxy")) {
+        if (INSTANCE.isEnvironmentPrepared) {
             for (String each : INSTANCE.scenarios) {
-                waitForProxyReady(each);
+                waitForEnvironmentReady(each);
             }
         }
         return INSTANCE;
     }
     
-    private static void waitForProxyReady(final String scenario) {
+    private static void waitForEnvironmentReady(final String scenario) {
         int retryCount = 0;
         while (!isProxyReady(scenario) && retryCount < 30) {
             try {
