@@ -32,7 +32,7 @@ Firstly, setup configuration file `/shardingsphere-integration-test-suite/src/te
 it.run.additional.cases=false
 
 # test scenarios, could define multiple rules
-it.scenarios=db,tbl,dbtbl_with_replica_query_,replica_query_
+it.scenarios=db,tbl,dbtbl_with_replica_query,replica_query
 
 # database type, could define multiple databases(H2,MySQL,Oracle,SQLServer,PostgreSQL)
 it.databases=MySQL,PostgreSQL
