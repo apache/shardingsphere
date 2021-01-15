@@ -61,15 +61,6 @@ public final class ReplicaQueryRuleQueryBackendHandler extends SchemaRequiredBac
         return new QueryResponseHeader(getQueryHeader());
     }
     
-    private List<QueryHeader> getQueryHeader() {
-        List<QueryHeader> result = new LinkedList();
-        result.add(new QueryHeader(schema, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "primaryDataSourceName", "primaryDataSourceName", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "replicaDataSourceNames", "replicaDataSourceNames", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "loadBalancerName", "loadBalancerName", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        return result;
-    }
-    
     private void loadRuleConfiguration(final String schemaName) {
         Optional<ReplicaQueryRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ReplicaQueryRuleConfiguration).map(each -> (ReplicaQueryRuleConfiguration) each).findAny();
@@ -78,6 +69,15 @@ public final class ReplicaQueryRuleQueryBackendHandler extends SchemaRequiredBac
         } else {
             data = Collections.emptyIterator();
         }
+    }
+    
+    private List<QueryHeader> getQueryHeader() {
+        List<QueryHeader> result = new LinkedList();
+        result.add(new QueryHeader(schema, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schema, "", "primaryDataSourceName", "primaryDataSourceName", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schema, "", "replicaDataSourceNames", "replicaDataSourceNames", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schema, "", "loadBalancerName", "loadBalancerName", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        return result;
     }
     
     @Override
