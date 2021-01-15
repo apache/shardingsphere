@@ -17,27 +17,22 @@
 
 package org.apache.shardingsphere.scaling.core.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
+import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
+import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.environmental.ScalingEnvironmentalManager;
-import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Abstract scaling job service.
@@ -45,29 +40,15 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public abstract class AbstractScalingJobService implements ScalingJobService {
     
-    private static final ScheduledExecutorService FINISH_CHECK_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("Scaling-finish-check-%d"));
-    
     @Override
-    public Optional<ScalingJob> start(final String sourceDataSource, final String sourceRule, final String targetDataSource, final String targetRule, final ScalingCallback scalingCallback) {
-        log.info("start scaling job...");
-        log.info("sourceDataSource = {}", sourceDataSource);
-        log.info("sourceRule = {}", sourceRule);
-        log.info("targetDataSource = {}", targetDataSource);
-        log.info("targetRule = {}", targetRule);
-        Optional<ScalingJob> result = start(sourceDataSource, sourceRule, targetDataSource, targetRule);
-        if (!result.isPresent()) {
-            return result;
-        }
-        FINISH_CHECK_EXECUTOR.scheduleWithFixedDelay(new JobFinishChecker(result.get(), scalingCallback), 1, 1, TimeUnit.MINUTES);
-        return result;
-    }
-    
-    private Optional<ScalingJob> start(final String sourceDataSource, final String sourceRule, final String targetDataSource, final String targetRule) {
+    public Optional<ScalingJob> start(final RuleConfigurationsAlteredEvent event) {
         ScalingConfiguration scalingConfig = new ScalingConfiguration();
         scalingConfig.setRuleConfiguration(new RuleConfiguration(
-                new ShardingSphereJDBCDataSourceConfiguration(sourceDataSource, sourceRule),
-                new ShardingSphereJDBCDataSourceConfiguration(targetDataSource, targetRule)));
-        scalingConfig.setJobConfiguration(new JobConfiguration());
+                new ShardingSphereJDBCDataSourceConfiguration(event.getSourceDataSource(), event.getSourceRule()),
+                new ShardingSphereJDBCDataSourceConfiguration(event.getTargetDataSource(), event.getTargetRule())));
+        JobConfiguration jobConfig = new JobConfiguration();
+        jobConfig.setWorkflowConfig(new WorkflowConfiguration(event.getSchemaName(), event.getRuleCacheId()));
+        scalingConfig.setJobConfiguration(jobConfig);
         return start(scalingConfig);
     }
     
@@ -87,39 +68,5 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
     @Override
     public void reset(final long jobId) throws SQLException {
         new ScalingEnvironmentalManager().resetTargetTable(getJob(jobId));
-    }
-    
-    @RequiredArgsConstructor
-    private class JobFinishChecker implements Runnable {
-        
-        private final ScalingJob scalingJob;
-        
-        private final ScalingCallback scalingCallback;
-        
-        private boolean executed;
-        
-        @Override
-        public void run() {
-            if (executed) {
-                return;
-            }
-            long jobId = scalingJob.getJobId();
-            try {
-                JobProgress jobProgress = getProgress(jobId);
-                if (jobProgress.getStatus().contains("FAILURE")) {
-                    log.warn("scaling job {} failure.", jobId);
-                    executed = true;
-                    scalingCallback.onFailure(jobId);
-                } else if (ScalingTaskUtil.allTasksAlmostFinished(jobProgress, scalingJob.getScalingConfig().getJobConfiguration())) {
-                    log.info("scaling job {} almost finished.", jobId);
-                    executed = true;
-                    scalingCallback.onSuccess(jobId);
-                }
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                log.error("scaling job {} finish check failed!", jobId, ex);
-            }
-        }
     }
 }

@@ -29,11 +29,17 @@ public final class RuleConfigurationsAlteredEvent {
     
     private final String schemaName;
     
-    private final String yamlDataSourceContent;
+    private final String sourceDataSource;
     
-    private final String yamlRuleConfigurationsContent;
+    private final String sourceRule;
     
-    private final String cachedYamlRuleConfigurationsContent;
+    private final String targetDataSource;
     
-    private final String ruleConfigurationCacheId;
+    private final String targetRule;
+    
+    private final String ruleCacheId;
+    
+    public RuleConfigurationsAlteredEvent(final String schemaName, final String sourceDataSource, final String sourceRule, final String targetRule, final String ruleCacheId) {
+        this(schemaName, sourceDataSource, sourceRule, sourceDataSource, targetRule, ruleCacheId);
+    }
 }

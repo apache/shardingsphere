@@ -65,13 +65,8 @@ public final class ElasticJobScalingWorker implements ScalingWorker {
     private CoordinatorRegistryCenter registryCenter;
     
     @Override
-    public String getType() {
-        return "ElasticJob";
-    }
-    
-    @Override
     public void init(final GovernanceConfiguration governanceConfig) {
-        log.info("Scaling elastic job init...");
+        log.info("Init elastic job scaling worker.");
         this.governanceConfig = governanceConfig;
         registryCenter = ElasticJobUtils.createRegistryCenter(governanceConfig);
         watchConfigRepository();
