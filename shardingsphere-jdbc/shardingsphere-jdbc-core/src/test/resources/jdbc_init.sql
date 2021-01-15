@@ -33,3 +33,6 @@ CREATE TABLE IF NOT EXISTS t_encrypt_contains_column (id INT NOT NULL AUTO_INCRE
 
 CREATE TABLE IF NOT EXISTS t_user_0 (id INT NOT NULL, name VARCHAR(45) NULL, PRIMARY KEY (id));
 CREATE TABLE IF NOT EXISTS t_user_1 (id INT NOT NULL, name VARCHAR(45) NULL, PRIMARY KEY (id));
+
+CREATE TABLE IF NOT EXISTS t_order_calcite (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order_item_calcite (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));

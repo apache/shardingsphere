@@ -18,5 +18,7 @@
 rules:
   - !SHARDING
     tables:
-      t_encrypt:
-        actualDataNodes: jdbc_0.t_encrypt
+      t_order:
+        actualDataNodes: jdbc_0.t_order_calcite
+      t_order_item:
+        actualDataNodes: jdbc_0.t_order_item_calcite
