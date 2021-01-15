@@ -40,7 +40,6 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.service.impl.DistributedScalingJobService;
 import org.apache.shardingsphere.scaling.core.spi.ScalingWorkerLoader;
 import org.apache.shardingsphere.scaling.core.workflow.ScalingServiceHolder;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
