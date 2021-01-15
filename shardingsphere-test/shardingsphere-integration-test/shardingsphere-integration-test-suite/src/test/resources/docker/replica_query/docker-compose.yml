@@ -28,6 +28,7 @@ services:
       - "33260:3306"
     environment:
       - LANG=C.UTF-8
+  
 #  zookeeper:
 #    image: "zookeeper:3.6.2"
 #    container_name: replica-query-register-center
