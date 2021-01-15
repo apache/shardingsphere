@@ -23,5 +23,4 @@ public interface CollectorRule {
      * Clean up the collector.
      */
     void cleanup();
-    
 }

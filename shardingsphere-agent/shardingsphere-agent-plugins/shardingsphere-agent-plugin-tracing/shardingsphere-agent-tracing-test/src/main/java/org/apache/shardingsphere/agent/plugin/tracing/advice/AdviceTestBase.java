@@ -23,5 +23,4 @@ public interface AdviceTestBase {
      * Prepare env for testing.
      */
     void prepare();
-    
 }

@@ -56,7 +56,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     }
     
     @Test
-    public void testMethod() {
+    public void assertMethod() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
         advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
         parentSpan.finish();
@@ -70,11 +70,10 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
     }
     
     @Test
-    public void testExceptionHandle() {
+    public void assertExceptionHandle() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
         advice.onThrowing(getTargetObject(), null, new Object[]{SQL_STMT, true}, new IOException());
         advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
-        // ensure the parent span(mock) finished
         parentSpan.finish();
         zipkin2.Span span = collector.pop();
         assertNotNull(span);
@@ -85,5 +84,4 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
         assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is(ZipkinConstants.DB_TYPE_VALUE));
         assertThat(tags.get(ZipkinConstants.Tags.COMPONENT), is(ZipkinConstants.COMPONENT_NAME));
     }
-    
 }
