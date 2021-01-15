@@ -48,9 +48,9 @@ t_item=mod(item_id, 2)
 
 ### 前置工作
 
-1. 开启MySQL服务
+1. 启动MySQL服务
 2. 创建MySQl数据库(参考ShardingProxy数据源配置规则)
-3. 为ShardingProxy创建一个拥有创建权限角色或者用户。
+3. 为ShardingProxy创建一个拥有创建权限角色或者用户
 4. 开启Zookeeper服务 (为了持久化配置)
 
 ### 启动ShardingProxy
