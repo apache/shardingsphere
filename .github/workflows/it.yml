@@ -43,7 +43,7 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs
       - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=proxy -Dit.scenarios=db -Dit.databases=MySQL -Dit.mysql.host=127.0.0.1 -Dit.mysql.port=33060
+        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=proxy -Dit.scenarios=db -Dit.databases=MySQL
   
   mysql-proxy-tbl:
     name: MySQL-Proxy with TBL
@@ -64,7 +64,7 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs
       - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=proxy -Dit.scenarios=tbl -Dit.databases=MySQL -Dit.mysql.host=127.0.0.1 -Dit.mysql.port=33160
+        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=proxy -Dit.scenarios=tbl -Dit.databases=MySQL
   
   mysql-proxy-repilca-query:
     name: MySQL-Proxy with REPLICA-QUERY
@@ -85,7 +85,7 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs
       - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=proxy -Dit.scenarios=replica_query -Dit.databases=MySQL -Dit.mysql.host=127.0.0.1 -Dit.mysql.port=33260
+        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=proxy -Dit.scenarios=replica_query -Dit.databases=MySQL
   
   mysql-proxy-dbtbl-with-proxy-repilca-query:
     name: MySQL-Proxy with DBTBL-WITH-REPLICA-QUERY
@@ -106,7 +106,7 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs
       - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=proxy -Dit.scenarios=dbtbl_with_replica_query -Dit.databases=MySQL -Dit.mysql.host=127.0.0.1 -Dit.mysql.port=33360
+        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=proxy -Dit.scenarios=dbtbl_with_replica_query -Dit.databases=MySQL
   
   mysql-jdbc-db:
     name: MySQL-JDBC with DB
@@ -127,7 +127,7 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs
       - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=jdbc -Dit.scenarios=db -Dit.databases=MySQL -Dit.mysql.host=127.0.0.1 -Dit.mysql.port=33060
+        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=jdbc -Dit.scenarios=db -Dit.databases=MySQL
   
   mysql-jdbc-tbl:
     name: MySQL-JDBC with TBL
@@ -148,7 +148,7 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs
       - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=jdbc -Dit.scenarios=tbl -Dit.databases=MySQL -Dit.mysql.host=127.0.0.1 -Dit.mysql.port=33160
+        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=jdbc -Dit.scenarios=tbl -Dit.databases=MySQL
   
   mysql-jdbc-repilca-query:
     name: MySQL-JDBC with REPLICA-QUERY
@@ -169,7 +169,7 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs
       - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=jdbc -Dit.scenarios=replica_query -Dit.databases=MySQL -Dit.mysql.host=127.0.0.1 -Dit.mysql.port=33260
+        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=jdbc -Dit.scenarios=replica_query -Dit.databases=MySQL
   
   mysql-jdbc-dbtbl-with-proxy-repilca-query:
     name: MySQL-JDBC with DBTBL-WITH-REPLICA-QUERY
@@ -190,4 +190,4 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs
       - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=jdbc -Dit.scenarios=dbtbl_with_replica_query -Dit.databases=MySQL -Dit.mysql.host=127.0.0.1 -Dit.mysql.port=33360
+        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=jdbc -Dit.scenarios=dbtbl_with_replica_query -Dit.databases=MySQL
