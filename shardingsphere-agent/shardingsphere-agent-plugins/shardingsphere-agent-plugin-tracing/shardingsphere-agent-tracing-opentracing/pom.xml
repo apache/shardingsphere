@@ -28,10 +28,6 @@
     <artifactId>shardingsphere-agent-tracing-opentracing</artifactId>
     <name>${project.artifactId}</name>
 
-    <properties>
-        <opentracing.version>0.31.0</opentracing.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>io.opentracing</groupId>
@@ -51,8 +47,10 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-proxy-frontend-core</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-agent-tracing-test</artifactId>
         </dependency>
     </dependencies>
 

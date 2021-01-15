@@ -19,14 +19,15 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentracing.span;
 
 import io.opentracing.Span;
 import io.opentracing.tag.Tags;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ErrorLogTagKeys;
+import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.OpenTracingConstants;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Open tracing error span.
+ * Jaeger error span.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OpenTracingErrorSpan {
@@ -43,9 +44,9 @@ public final class OpenTracingErrorSpan {
     
     private static Map<String, ?> getReason(final Throwable cause) {
         Map<String, String> result = new HashMap<>(3, 1);
-        result.put(ErrorLogTagKeys.EVENT, ErrorLogTagKeys.EVENT_ERROR_TYPE);
-        result.put(ErrorLogTagKeys.ERROR_KIND, cause.getClass().getName());
-        result.put(ErrorLogTagKeys.MESSAGE, cause.getMessage());
+        result.put(OpenTracingConstants.ErrorLogTagKeys.EVENT, OpenTracingConstants.ErrorLogTagKeys.EVENT_ERROR_TYPE);
+        result.put(OpenTracingConstants.ErrorLogTagKeys.ERROR_KIND, cause.getClass().getName());
+        result.put(OpenTracingConstants.ErrorLogTagKeys.MESSAGE, cause.getMessage());
         return result;
     }
 }

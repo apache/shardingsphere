@@ -28,11 +28,6 @@
     <artifactId>shardingsphere-agent-tracing-jaeger</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <opentracing.version>0.31.0</opentracing.version>
-        <jaeger-client.version>0.31.0</jaeger-client.version>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>io.jaegertracing</groupId>
@@ -40,30 +35,13 @@
             <version>${jaeger-client.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.opentracing</groupId>
-            <artifactId>opentracing-api</artifactId>
-            <version>${opentracing.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.opentracing</groupId>
-            <artifactId>opentracing-util</artifactId>
-            <version>${opentracing.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-proxy-frontend-core</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.opentracing</groupId>
-            <artifactId>opentracing-mock</artifactId>
-            <version>${opentracing.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-tracing-test</artifactId>
+            <artifactId>shardingsphere-agent-tracing-opentracing</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

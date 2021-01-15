@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant;
+package org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant;
 
 import io.opentracing.tag.StringTag;
 
-public class JaegerConstants {
+public class OpenTracingConstants {
     
-    public static final String ROOT_SPAN = "jaeger_root_span";
+    public static final String ROOT_SPAN = "ot_root_span";
     
     /**
      * Component name of ShardingSphere's open tracing tag.

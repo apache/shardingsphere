@@ -22,15 +22,20 @@ import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
-import java.lang.reflect.Method;
-import java.util.Map;
-import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ShardingSphereTags;
+import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.OpenTracingConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.span.OpenTracingErrorSpan;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
+
+import java.lang.reflect.Method;
+import java.sql.DatabaseMetaData;
+import java.util.Map;
 
 /**
  * JDBC executor callback advice.
@@ -40,20 +45,27 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdv
     private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     
     @Override
+    @SneakyThrows
+    @SuppressWarnings("all")
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        Span root = (Span) ((Map<String, Object>) args[2]).get("ot_root_span_");
+        Span root = (Span) ((Map<String, Object>) args[2]).get(OpenTracingConstants.ROOT_SPAN);
         Tracer.SpanBuilder builder = GlobalTracer.get().buildSpan(OPERATION_NAME);
         if ((boolean) args[1]) {
             builder.asChildOf(root);
         } else {
-            JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
-            ExecutionUnit unit = executionUnit.getExecutionUnit();
-            builder.withTag(Tags.COMPONENT.getKey(), ShardingSphereTags.COMPONENT_NAME)
-                    .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
-                    .withTag(Tags.DB_TYPE.getKey(), "sql")
+            final JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
+            final ExecutionUnit unit = executionUnit.getExecutionUnit();
+            Method getMetadataMethod = JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class);
+            getMetadataMethod.setAccessible(true);
+            DataSourceMetaData metaData = (DataSourceMetaData) getMetadataMethod.invoke(target, new Object[]{executionUnit.getStorageResource().getConnection().getMetaData()});
+            builder.withTag(Tags.COMPONENT.getKey(), OpenTracingConstants.COMPONENT_NAME)
+                    .withTag(Tags.DB_TYPE.getKey(), OpenTracingConstants.DB_TYPE_VALUE)
                     .withTag(Tags.DB_INSTANCE.getKey(), unit.getDataSourceName())
+                    .withTag(Tags.PEER_HOSTNAME.getKey(), metaData.getHostName())
+                    .withTag(Tags.PEER_PORT.getKey(), metaData.getPort())
+                    .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
                     .withTag(Tags.DB_STATEMENT.getKey(), unit.getSqlUnit().getSql())
-                    .withTag(ShardingSphereTags.DB_BIND_VARIABLES.getKey(), unit.getSqlUnit().getParameters().toString());
+                    .withTag(OpenTracingConstants.ShardingSphereTags.DB_BIND_VARIABLES.getKey(), unit.getSqlUnit().getParameters().toString());
         }
         target.setAttachment(builder.startActive(true));
     }
