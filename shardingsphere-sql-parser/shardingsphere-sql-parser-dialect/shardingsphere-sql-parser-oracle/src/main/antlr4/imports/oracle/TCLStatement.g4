@@ -17,7 +17,7 @@
 
 grammar TCLStatement;
 
-import Symbol, Keyword, OracleKeyword, Literals;
+import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
 
 setTransaction
     : SET TRANSACTION
@@ -28,9 +28,13 @@ commit
     ;
 
 rollback
-    : ROLLBACK
+    : ROLLBACK (WORK)? savepointClause
     ;
 
 savepoint
     : SAVEPOINT 
+    ;
+
+savepointClause
+    : (TO (SAVEPOINT)? savepoint | FORCE stringLiterals)?
     ;

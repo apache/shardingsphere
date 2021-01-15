@@ -814,3 +814,7 @@ PARENT
 IDENTIFIER
     : I D E N T I F I E R
     ;
+
+WORK
+    : W O R K
+    ;
