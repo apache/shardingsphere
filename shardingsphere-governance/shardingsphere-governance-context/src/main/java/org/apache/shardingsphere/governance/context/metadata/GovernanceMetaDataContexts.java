@@ -29,8 +29,8 @@ import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurat
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
-import org.apache.shardingsphere.governance.core.state.GovernedStateContext;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -43,10 +43,13 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
+import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
 import org.apache.shardingsphere.infra.rule.type.StatusContainedRule;
 import org.apache.shardingsphere.infra.state.StateContext;
+import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.infra.state.StateType;
 
 import javax.sql.DataSource;
@@ -113,6 +116,11 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     @Override
     public ExecutorEngine getExecutorEngine() {
         return metaDataContexts.getExecutorEngine();
+    }
+    
+    @Override
+    public CalciteContextFactory getCalciteContextFactory() {
+        return metaDataContexts.getCalciteContextFactory();
     }
     
     @Override
@@ -199,7 +207,8 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
             metaDataContexts = new StandardMetaDataContexts(newMetaDataMap, metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), metaDataContexts.getProps());
         } finally {
             if (StateContext.getCurrentState() == StateType.LOCK) {
-                GovernedStateContext.unlock();
+                StateContext.switchState(new StateEvent(StateType.LOCK, false));
+                governanceFacade.getRegistryCenter().persistInstanceData("");
             }
         }
     }
@@ -249,6 +258,22 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         for (ShardingSphereRule each : rules) {
             if (each instanceof StatusContainedRule) {
                 ((StatusContainedRule) each).updateRuleStatus(new DataSourceNameDisabledEvent(governanceSchema.getDataSourceName(), event.isDisabled()));
+            }
+        }
+    }
+    
+    /**
+     * Renew primary data source names.
+     *
+     * @param event primary state changed event
+     */
+    @Subscribe
+    public synchronized void renew(final PrimaryStateChangedEvent event) {
+        GovernanceSchema governanceSchema = event.getGovernanceSchema();
+        Collection<ShardingSphereRule> rules = metaDataContexts.getMetaDataMap().get(governanceSchema.getSchemaName()).getRuleMetaData().getRules();
+        for (ShardingSphereRule each : rules) {
+            if (each instanceof StatusContainedRule) {
+                ((StatusContainedRule) each).updateRuleStatus(new PrimaryDataSourceEvent(governanceSchema.getSchemaName(), governanceSchema.getDataSourceName(), event.getPrimaryDataSourceName()));
             }
         }
     }

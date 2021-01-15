@@ -34,9 +34,9 @@ import java.util.Optional;
 public final class MySQLUpdateStatement extends UpdateStatement implements MySQLStatement {
     
     private OrderBySegment orderBy;
-
+    
     private LimitSegment limit;
-
+    
     /**
      * Get order by segment.
      *
@@ -45,7 +45,7 @@ public final class MySQLUpdateStatement extends UpdateStatement implements MySQL
     public Optional<OrderBySegment> getOrderBy() {
         return Optional.ofNullable(orderBy);
     }
-
+    
     /**
      * Get order by segment.
      *

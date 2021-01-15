@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.core.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
@@ -28,8 +29,10 @@ import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckerFactory;
+import org.apache.shardingsphere.scaling.core.job.environmental.ScalingEnvironmentalManager;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Executors;
@@ -39,47 +42,51 @@ import java.util.concurrent.TimeUnit;
 /**
  * Abstract scaling job service.
  */
+@Slf4j
 public abstract class AbstractScalingJobService implements ScalingJobService {
     
     private static final ScheduledExecutorService FINISH_CHECK_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("Scaling-finish-check-%d"));
     
     @Override
     public Optional<ScalingJob> start(final String sourceDataSource, final String sourceRule, final String targetDataSource, final String targetRule, final ScalingCallback scalingCallback) {
+        log.info("start scaling job...");
+        log.info("sourceDataSource = {}", sourceDataSource);
+        log.info("sourceRule = {}", sourceRule);
+        log.info("targetDataSource = {}", targetDataSource);
+        log.info("targetRule = {}", targetRule);
         Optional<ScalingJob> result = start(sourceDataSource, sourceRule, targetDataSource, targetRule);
         if (!result.isPresent()) {
             return result;
         }
-        FINISH_CHECK_EXECUTOR.scheduleWithFixedDelay(new JobFinishChecker(result.get(), scalingCallback), 3, 1, TimeUnit.MINUTES);
+        FINISH_CHECK_EXECUTOR.scheduleWithFixedDelay(new JobFinishChecker(result.get(), scalingCallback), 1, 1, TimeUnit.MINUTES);
         return result;
     }
     
     private Optional<ScalingJob> start(final String sourceDataSource, final String sourceRule, final String targetDataSource, final String targetRule) {
         ScalingConfiguration scalingConfig = new ScalingConfiguration();
-        scalingConfig.setRuleConfiguration(
-                new RuleConfiguration(new ShardingSphereJDBCDataSourceConfiguration(sourceDataSource, sourceRule), new ShardingSphereJDBCDataSourceConfiguration(targetDataSource, targetRule)));
+        scalingConfig.setRuleConfiguration(new RuleConfiguration(
+                new ShardingSphereJDBCDataSourceConfiguration(sourceDataSource, sourceRule),
+                new ShardingSphereJDBCDataSourceConfiguration(targetDataSource, targetRule)));
         scalingConfig.setJobConfiguration(new JobConfiguration());
         return start(scalingConfig);
     }
     
     @Override
-    public void reset(final long jobId) {
-        // TODO reset target tables.
-    }
-    
-    /**
-     * Do data consistency check.
-     *
-     * @param scalingJob scaling job
-     * @return data consistency check result
-     */
-    protected Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final ScalingJob scalingJob) {
-        DataConsistencyChecker dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance(scalingJob);
+    public Map<String, DataConsistencyCheckResult> check(final long jobId) {
+        log.info("scaling job {} start data consistency check.", jobId);
+        DataConsistencyChecker dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance(getJob(jobId));
         Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.countCheck();
         if (result.values().stream().allMatch(DataConsistencyCheckResult::isCountValid)) {
             Map<String, Boolean> dataCheckResult = dataConsistencyChecker.dataCheck();
             result.forEach((key, value) -> value.setDataValid(dataCheckResult.getOrDefault(key, false)));
         }
+        log.info("scaling job {} data consistency checker result {}", jobId, result);
         return result;
+    }
+    
+    @Override
+    public void reset(final long jobId) throws SQLException {
+        new ScalingEnvironmentalManager().resetTargetTable(getJob(jobId));
     }
     
     @RequiredArgsConstructor
@@ -89,20 +96,29 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
         
         private final ScalingCallback scalingCallback;
         
-        private boolean finished;
+        private boolean executed;
         
         @Override
         public void run() {
-            if (finished) {
+            if (executed) {
                 return;
             }
-            JobProgress jobProgress = getProgress(scalingJob.getJobId());
-            if (jobProgress.getStatus().contains("FAILURE")) {
-                finished = true;
-                scalingCallback.onFailure();
-            } else if (ScalingTaskUtil.allTasksAlmostFinished(jobProgress, scalingJob.getScalingConfig().getJobConfiguration())) {
-                finished = true;
-                scalingCallback.onSuccess();
+            long jobId = scalingJob.getJobId();
+            try {
+                JobProgress jobProgress = getProgress(jobId);
+                if (jobProgress.getStatus().contains("FAILURE")) {
+                    log.warn("scaling job {} failure.", jobId);
+                    executed = true;
+                    scalingCallback.onFailure(jobId);
+                } else if (ScalingTaskUtil.allTasksAlmostFinished(jobProgress, scalingJob.getScalingConfig().getJobConfiguration())) {
+                    log.info("scaling job {} almost finished.", jobId);
+                    executed = true;
+                    scalingCallback.onSuccess(jobId);
+                }
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                log.error("scaling job {} finish check failed!", jobId, ex);
             }
         }
     }

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.ha.route.engine.impl.PrimaryVisitedManager;
 import org.apache.shardingsphere.ha.rule.HARule;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -84,8 +83,8 @@ public final class HASQLRouterTest {
     @Before
     public void setUp() {
         rule = new HARule(new HARuleConfiguration(Collections.singleton(
-                new HADataSourceRuleConfiguration(DATASOURCE_NAME, PRIMARY_DATASOURCE, Collections.singletonList(REPLICA_DATASOURCE), null, true)),
-                Collections.emptyMap(), new ShardingSphereAlgorithmConfiguration("TestRoute", new Properties())), mock(DatabaseType.class),
+                new HADataSourceRuleConfiguration(DATASOURCE_NAME, Collections.singletonList(REPLICA_DATASOURCE), null, true, "haTypeName")),
+                Collections.emptyMap(), Collections.emptyMap()), mock(DatabaseType.class),
                 Collections.singletonMap("ds", mock(DataSource.class)), "ha_db");
         sqlRouter = (HASQLRouter) OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLRouter.class).get(rule);
     }

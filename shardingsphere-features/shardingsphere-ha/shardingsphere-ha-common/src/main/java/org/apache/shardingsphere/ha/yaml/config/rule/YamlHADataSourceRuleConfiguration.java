@@ -34,13 +34,13 @@ public final class YamlHADataSourceRuleConfiguration implements YamlConfiguratio
     
     private String name;
     
-    private String primaryDataSourceName;
-    
-    private List<String> replicaDataSourceNames = new ArrayList<>();
+    private List<String> dataSourceNames = new ArrayList<>();
     
     private String loadBalancerName;
     
-    private Boolean readWriteSplit;
+    private boolean replicaQuery;
+    
+    private String haTypeName;
     
     private Properties props = new Properties();
 }

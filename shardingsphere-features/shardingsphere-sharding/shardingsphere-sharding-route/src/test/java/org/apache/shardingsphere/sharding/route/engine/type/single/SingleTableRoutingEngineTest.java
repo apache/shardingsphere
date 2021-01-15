@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 public final class SingleTableRoutingEngineTest {
     
     @Test
-    public void assertRoute() {
+    public void assertRouteInSameDataSource() {
         SingleTableRoutingEngine singleTableRoutingEngine = new SingleTableRoutingEngine(Arrays.asList("t_order", "t_order_item"), null);
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap());
@@ -62,6 +62,31 @@ public final class SingleTableRoutingEngineTest {
         RouteMapper tableMapper1 = tableMappers.next();
         assertThat(tableMapper1.getActualName(), is("t_order_item"));
         assertThat(tableMapper1.getLogicName(), is("t_order_item"));
+        assertThat(routeContext.isToCalcite(), is(false));
+    }
+    
+    @Test
+    public void assertRouteInDifferentDataSource() {
+        SingleTableRoutingEngine singleTableRoutingEngine = new SingleTableRoutingEngine(Arrays.asList("t_order", "t_order_item"), null);
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        ShardingRule shardingRule = new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap());
+        shardingRule.getSingleTableRules().put("t_order", new SingleTableRule("t_order", "ds_0"));
+        shardingRule.getSingleTableRules().put("t_order_item", new SingleTableRule("t_order_item", "ds_1"));
+        RouteContext routeContext = new RouteContext();
+        singleTableRoutingEngine.route(routeContext, shardingRule);
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(2));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        RouteMapper tableMapper0 = routeUnits.get(0).getTableMappers().iterator().next();
+        assertThat(tableMapper0.getActualName(), is("t_order"));
+        assertThat(tableMapper0.getLogicName(), is("t_order"));
+        assertThat(routeUnits.get(1).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(1).getTableMappers().size(), is(1));
+        RouteMapper tableMapper1 = routeUnits.get(1).getTableMappers().iterator().next();
+        assertThat(tableMapper1.getActualName(), is("t_order_item"));
+        assertThat(tableMapper1.getLogicName(), is("t_order_item"));
+        assertThat(routeContext.isToCalcite(), is(true));
     }
     
     @Test
@@ -73,14 +98,11 @@ public final class SingleTableRoutingEngineTest {
         singleTableRoutingEngine.route(routeContext, shardingRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
-        assertThat(routeUnits.get(0).getTableMappers().size(), is(2));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
         Iterator<RouteMapper> tableMappers = routeUnits.get(0).getTableMappers().iterator();
         RouteMapper tableMapper0 = tableMappers.next();
         assertThat(tableMapper0.getActualName(), is("t_order"));
         assertThat(tableMapper0.getLogicName(), is("t_order"));
-        RouteMapper tableMapper1 = tableMappers.next();
-        assertThat(tableMapper1.getActualName(), is("t_order_item"));
-        assertThat(tableMapper1.getLogicName(), is("t_order_item"));
     }
     
     private Map<String, DataSource> createDataSourceMap() {

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
+import org.apache.shardingsphere.governance.core.registry.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
@@ -43,6 +44,9 @@ public final class DataSourceStateChangedListener extends PostGovernanceReposito
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
+        if (registryCenterNode.isPrimaryDataSourcePath(event.getKey())) {
+            return registryCenterNode.getPrimaryNodesGovernanceSchema(event.getKey()).map(schema -> new PrimaryStateChangedEvent(schema, event.getValue()));
+        }
         return registryCenterNode.getGovernanceSchema(event.getKey()).map(schema -> new DisabledStateChangedEvent(schema, isDataSourceDisabled(event)));
     }
     

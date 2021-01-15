@@ -31,6 +31,12 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-distsql-parser-statement</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-replica-query-api</artifactId>
             <version>${project.version}</version>
         </dependency>

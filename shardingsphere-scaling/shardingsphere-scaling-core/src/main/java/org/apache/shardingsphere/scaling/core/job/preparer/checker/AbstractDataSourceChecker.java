@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.scaling.core.job.preparer.checker;
 
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
+import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
 
 import javax.sql.DataSource;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
@@ -38,4 +41,28 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
             throw new PrepareFailedException("Data sources can't connected!", ex);
         }
     }
+    
+    @Override
+    public void checkTargetTable(final Collection<? extends DataSource> dataSources, final Collection<String> tableNames) {
+        try {
+            for (DataSource each : dataSources) {
+                checkEmpty(each, tableNames);
+            }
+        } catch (final SQLException ex) {
+            throw new PrepareFailedException("Check target table failed!", ex);
+        }
+    }
+    
+    private void checkEmpty(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
+        for (String each : tableNames) {
+            try (PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement(getSqlBuilder().buildCheckEmptySQL(each));
+                 ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    throw new PrepareFailedException(String.format("Target table [%s] not empty!", each));
+                }
+            }
+        }
+    }
+    
+    protected abstract ScalingSQLBuilder getSqlBuilder();
 }

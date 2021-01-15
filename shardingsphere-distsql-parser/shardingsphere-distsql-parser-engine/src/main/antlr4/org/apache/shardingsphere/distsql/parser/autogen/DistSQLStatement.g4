@@ -21,8 +21,12 @@ import Symbol, RDLStatement, RQLStatement;
 
 execute
     : (addResource
+    | dropResource
     | createShardingRule
     | dropShardingRule
+    | createReplicaQueryRule
+    | alterReplicaQueryRule
+    | dropReplicaQueryRule
     | showResources
     | showRule
     ) SEMI?

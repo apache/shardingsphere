@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.agent.metrics.api.enums;
 
-import io.prometheus.client.Counter;
-import io.prometheus.client.Gauge;
-import io.prometheus.client.Histogram;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -33,17 +30,16 @@ public enum MetricType {
     /**
      * Counter metric type.
      */
-    COUNTER(Counter.class),
+    COUNTER,
     
     /**
      * Gauge metric type.
      */
-    GAUGE(Gauge.class),
+    GAUGE,
     
     /**
      * Histogram metric type.
      */
-    HISTOGRAM(Histogram.class);
+    HISTOGRAM;
     
-    private final Class<?> type;
 }

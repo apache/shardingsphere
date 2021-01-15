@@ -117,6 +117,8 @@ public final class MetaDataContextsBuilder {
     private DatabaseType getDatabaseType(final DataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
+        } catch (final SQLException ex) {
+            return null;
         }
     }
     

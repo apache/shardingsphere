@@ -23,6 +23,10 @@ addResource
     : ADD RESOURCE LP dataSource (COMMA dataSource)* RP
     ;
 
+dropResource
+    : DROP RESOURCE LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    ;
+
 dataSource
     : dataSourceName EQ dataSourceDefinition
     ;
@@ -56,49 +60,61 @@ user
     ;
 
 password
-    : IDENTIFIER | NUMBER | STRING
+    : IDENTIFIER | INT | STRING
     ;
 
 createShardingRule
     : CREATE SHARDING RULE LP shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)* RP
     ;
 
+createReplicaQueryRule
+    : CREATE REPLICA_QUERY RULE LP replicaQueryRuleDefinition (COMMA replicaQueryRuleDefinition)* RP
+    ;
+
+replicaQueryRuleDefinition
+    : ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP loadBalancer=IDENTIFIER LP algorithmProperties RP
+    ;
+
+alterReplicaQueryRule
+    : ALTER REPLICA_QUERY RULE LP alterReplicaQueryRuleDefinition (COMMA alterReplicaQueryRuleDefinition)* RP
+    ;
+
+alterReplicaQueryRuleDefinition
+    : (MODIFY | ADD) ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP (loadBalancer=IDENTIFIER LP algorithmProperties RP)?
+    ;
+
 shardingTableRuleDefinition
-    : tableName columName shardingAlgorithmDefinition
-    ;
-
-shardingAlgorithmDefinition
-    : shardingAlgorithmType LP shardingAlgorithmProperties RP
-    ;
-
-shardingAlgorithmType
-    : IDENTIFIER
-    ;
-
-shardingAlgorithmProperties
-    : shardingAlgorithmProperty (COMMA shardingAlgorithmProperty)*
-    ;
-
-shardingAlgorithmProperty
-    : shardingAlgorithmPropertyKey EQ shardingAlgorithmPropertyValue
-    ;
-
-shardingAlgorithmPropertyKey
-    : IDENTIFIER
-    ;
-
-shardingAlgorithmPropertyValue
-    : NUMBER | INT | STRING
+    : tableName columnName shardingAlgorithmType=IDENTIFIER LP algorithmProperties RP
     ;
 
 tableName
     : IDENTIFIER
     ;
 
-columName
+columnName
     : IDENTIFIER
+    ;
+
+dropReplicaQueryRule
+    : DROP REPLICA_QUERY RULE LP IDENTIFIER (COMMA IDENTIFIER)* RP
     ;
 
 dropShardingRule
     : DROP SHARDING RULE LP tableName (COMMA tableName)* RP
+    ;
+
+schemaNames
+    : schemaName (COMMA schemaName)*
+    ;
+
+schemaName
+    : IDENTIFIER
+    ;
+
+algorithmProperties
+    : algorithmProperty (COMMA algorithmProperty)*
+    ;
+
+algorithmProperty
+    : key=IDENTIFIER EQ value=(NUMBER | INT | STRING)
     ;

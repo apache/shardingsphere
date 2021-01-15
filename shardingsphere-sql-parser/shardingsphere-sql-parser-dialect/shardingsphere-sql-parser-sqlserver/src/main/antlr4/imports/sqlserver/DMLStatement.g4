@@ -22,7 +22,7 @@ import Symbol, Keyword, SQLServerKeyword, Literals, BaseRule;
 insert
     : withClause? INSERT top? INTO? tableName (AS? alias)? (insertDefaultValue | insertValuesClause | insertSelectClause)
     ;
-    
+
 insertDefaultValue
     : columnNames? outputClause? DEFAULT VALUES
     ;
@@ -57,7 +57,7 @@ assignmentValue
     ;
 
 delete
-    : withClause? DELETE top? (singleTableClause | multipleTablesClause) outputClause? whereClause?
+    : withClause? DELETE top? (singleTableClause | multipleTablesClause) outputClause? whereClause? (OPTION queryHint)?
     ;
 
 singleTableClause
@@ -72,7 +72,7 @@ multipleTableNames
     : tableName DOT_ASTERISK_? (COMMA_ tableName DOT_ASTERISK_?)*
     ;
 
-select 
+select
     : aggregationClause
     ;
 
@@ -183,4 +183,52 @@ outputWithAaterisk
 
 outputTableName
     : (AT_ name) | tableName
+    ;
+
+queryHint
+    : (HASH | ORDER) GROUP
+    | (CONCAT | HASH | MERGE) UNION
+    | (LOOP | MERGE | HASH) JOIN
+    | EXPAND VIEWS
+    | FAST INT_NUM_
+    | FORCE ORDER
+    | (FORCE | DISABLE) EXTERNALPUSHDOWN
+    | (FORCE | DISABLE) SCALEOUTEXECUTION
+    | IGNORE_NONCLUSTERED_COLUMNSTORE_INDEX
+    | KEEP PLAN
+    | KEEPFIXED PLAN
+    | MAX_GRANT_PERCENT EQ_ DECIMAL_NUM_
+    | MIN_GRANT_PERCENT EQ_ DECIMAL_NUM_
+    | MAXDOP INT_NUM_
+    | MAXRECURSION INT_NUM_
+    | NO_PERFORMANCE_SPOOL
+    | OPTIMIZE FOR LP_ AT_ name (UNKNOWN | EQ_ identifier)* RP_
+    | OPTIMIZE FOR UNKNOWN
+    | PARAMETERIZATION (SIMPLE | FORCED)
+    | QUERYTRACEON INT_NUM_
+    | RECOMPILE
+    | ROBUST PLAN
+    | USE HINT LP_ useHitName* RP_
+    | USE PLAN N STRING_
+    ;
+
+useHitName
+    : SQ_ ASSUME_JOIN_PREDICATE_DEPENDS_ON_FILTERS SQ_
+    | SQ_ ASSUME_MIN_SELECTIVITY_FOR_FILTER_ESTIMATES SQ_
+    | SQ_ DISABLE_BATCH_MODE_ADAPTIVE_JOINS SQ_
+    | SQ_ DISABLE_BATCH_MODE_MEMORY_GRANT_FEEDBACK SQ_
+    | SQ_ DISABLE_DEFERRED_COMPILATION_TV SQ_
+    | SQ_ DISABLE_INTERLEAVED_EXECUTION_TVF SQ_
+    | SQ_ DISABLE_OPTIMIZED_NESTED_LOOP SQ_
+    | SQ_ DISABLE_OPTIMIZER_ROWGOAL SQ_
+    | SQ_ DISABLE_PARAMETER_SNIFFING SQ_
+    | SQ_ DISABLE_ROW_MODE_MEMORY_GRANT_FEEDBACK SQ_
+    | SQ_ DISABLE_TSQL_SCALAR_UDF_INLINING SQ_
+    | SQ_ DISALLOW_BATCH_MODE SQ_
+    | SQ_ ENABLE_HIST_AMENDMENT_FOR_ASC_KEYS SQ_
+    | SQ_ ENABLE_QUERY_OPTIMIZER_HOTFIXES SQ_
+    | SQ_ FORCE_DEFAULT_CARDINALITY_ESTIMATION SQ_
+    | SQ_ FORCE_LEGACY_CARDINALITY_ESTIMATION SQ_
+    | SQ_ QUERY_OPTIMIZER_COMPATIBILITY_LEVEL_n SQ_
+    | SQ_ QUERY_PLAN_PROFILE SQ_
     ;

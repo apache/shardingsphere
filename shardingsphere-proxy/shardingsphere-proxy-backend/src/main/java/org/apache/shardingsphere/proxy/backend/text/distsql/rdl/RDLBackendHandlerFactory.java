@@ -20,7 +20,11 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AlterReplicaQueryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -28,9 +32,13 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.AddResourceBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.AlterReplicaQueryRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateReplicaQueryRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.CreateShardingRuleBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropReplicaQueryRuleBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl.DropShardingRuleBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
@@ -72,11 +80,23 @@ public final class RDLBackendHandlerFactory {
         if (sqlStatement instanceof AddResourceStatement) {
             return Optional.of(new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, backendConnection));
         }
+        if (sqlStatement instanceof DropResourceStatement) {
+            return Optional.of(new DropResourceBackendHandler((DropResourceStatement) sqlStatement, backendConnection));
+        }
         if (sqlStatement instanceof CreateDatabaseStatement) {
             return Optional.of(new CreateDatabaseBackendHandler((CreateDatabaseStatement) sqlStatement));
         }
         if (sqlStatement instanceof CreateShardingRuleStatement) {
             return Optional.of(new CreateShardingRuleBackendHandler((CreateShardingRuleStatement) sqlStatement, backendConnection));
+        }
+        if (sqlStatement instanceof CreateReplicaQueryRuleStatement) {
+            return Optional.of(new CreateReplicaQueryRuleBackendHandler((CreateReplicaQueryRuleStatement) sqlStatement, backendConnection));
+        }
+        if (sqlStatement instanceof AlterReplicaQueryRuleStatement) {
+            return Optional.of(new AlterReplicaQueryRuleBackendHandler((AlterReplicaQueryRuleStatement) sqlStatement, backendConnection));
+        }
+        if (sqlStatement instanceof DropReplicaQueryRuleStatement) {
+            return Optional.of(new DropReplicaQueryRuleBackendHandler((DropReplicaQueryRuleStatement) sqlStatement, backendConnection));
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
             return Optional.of(new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement));

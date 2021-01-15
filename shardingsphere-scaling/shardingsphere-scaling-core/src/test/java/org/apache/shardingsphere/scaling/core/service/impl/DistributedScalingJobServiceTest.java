@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.scaling.core.service.impl;
 
+import com.google.gson.Gson;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
+import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
-import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
-import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 import org.apache.shardingsphere.scaling.core.service.ScalingCallback;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
@@ -102,9 +102,14 @@ public final class DistributedScalingJobServiceTest {
         assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(scalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":false"));
     }
     
+    @Test(expected = ScalingJobNotFoundException.class)
+    public void assertGetNotExistJob() {
+        scalingJobService.getJob(0);
+    }
+    
     @Test
     public void assertGetProgress() {
-        registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/config"), "{'ruleConfiguration':{'source':{},'target':{}},'jobConfiguration':{'running':true}}");
+        registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/config"), new Gson().toJson(mockScalingConfiguration()));
         registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/position/0/inventory"),
                 "{'unfinished': {'ds1.table1#1':[0,100],'ds1.table1#2':[160,200],'ds1.table3':[]},'finished':['ds1.table2#1','ds1.table2#2']}");
         registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/position/0/incremental"),
@@ -114,13 +119,11 @@ public final class DistributedScalingJobServiceTest {
         registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/position/1/incremental"),
                 "{'ds2':{'filename':binlog1,'position':4,'delay':2},'ds4':{'filename':binlog2,'position':4,'delay':4}}");
         JobProgress actual = scalingJobService.getProgress(1);
-        assertThat(actual.getInventoryTaskProgress().get("0").stream()
-                .map(each -> (InventoryTaskProgress) each)
-                .filter(InventoryTaskProgress::isFinished).count(), is(2L));
-        assertTrue(actual.getIncrementalTaskProgress().get("1").stream()
-                .map(each -> (IncrementalTaskProgress) each)
-                .filter(each -> "ds2".equals(each.getId()))
-                .allMatch(each -> 2 == each.getDelayMillisecond()));
+        assertThat(actual.getInventoryTaskProgress().size(), is(2));
+        assertThat(actual.getIncrementalTaskProgress().size(), is(4));
+        assertThat(actual.getInventoryTaskProgress().get(0).getTotal(), is(5));
+        assertThat(actual.getInventoryTaskProgress().get(0).getFinished(), is(2));
+        assertThat(actual.getIncrementalTaskProgress().get(0).getDelayMillisecond(), is(1L));
     }
     
     @Test
@@ -138,14 +141,8 @@ public final class DistributedScalingJobServiceTest {
     
     private ServerConfiguration mockServerConfiguration() {
         resetRegistryRepositoryAvailable();
-        YamlGovernanceConfiguration distributedScalingService = new YamlGovernanceConfiguration();
-        distributedScalingService.setName("test");
-        YamlGovernanceCenterConfiguration registryCenter = new YamlGovernanceCenterConfiguration();
-        registryCenter.setType("REG_FIXTURE");
-        registryCenter.setServerLists("");
-        distributedScalingService.setRegistryCenter(registryCenter);
         ServerConfiguration result = new ServerConfiguration();
-        result.setDistributedScalingService(distributedScalingService);
+        result.setDistributedScalingService(new GovernanceConfiguration("test", new GovernanceCenterConfiguration("REG_FIXTURE", "", null), false));
         return result;
     }
     
@@ -153,11 +150,11 @@ public final class DistributedScalingJobServiceTest {
         return new ScalingCallback() {
             
             @Override
-            public void onSuccess() {
+            public void onSuccess(final long jobId) {
             }
             
             @Override
-            public void onFailure() {
+            public void onFailure(final long jobId) {
             }
         };
     }

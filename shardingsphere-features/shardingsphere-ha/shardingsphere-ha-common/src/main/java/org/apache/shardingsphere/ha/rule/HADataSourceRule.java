@@ -19,9 +19,10 @@ package org.apache.shardingsphere.ha.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
+import org.apache.shardingsphere.ha.spi.HAType;
 import org.apache.shardingsphere.ha.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.Collection;
@@ -36,34 +37,35 @@ import java.util.stream.Collectors;
  * HA data source rule.
  */
 @Getter
+@Slf4j
 public final class HADataSourceRule {
     
     private final String name;
     
-    private final String primaryDataSourceName;
-    
-    private final List<String> replicaDataSourceNames;
+    private final List<String> dataSourceNames;
     
     private final ReplicaLoadBalanceAlgorithm loadBalancer;
     
-    private final Boolean readWriteSplit;
+    private final boolean replicaQuery;
     
-    @Getter(AccessLevel.NONE)
+    private final HAType haType;
+    
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public HADataSourceRule(final HADataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer) {
+    private String primaryDataSourceName;
+    
+    public HADataSourceRule(final HADataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer, final HAType haType) {
         checkConfiguration(config);
         name = config.getName();
-        primaryDataSourceName = config.getPrimaryDataSourceName();
-        replicaDataSourceNames = config.getReplicaDataSourceNames();
+        dataSourceNames = config.getDataSourceNames();
         this.loadBalancer = loadBalancer;
-        this.readWriteSplit = config.getReadWriteSplit();
+        this.replicaQuery = config.isReplicaQuery();
+        this.haType = haType;
     }
     
     private void checkConfiguration(final HADataSourceRuleConfiguration config) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getPrimaryDataSourceName()), "Primary data source name is required.");
-        Preconditions.checkArgument(null != config.getReplicaDataSourceNames() && !config.getReplicaDataSourceNames().isEmpty(), "Replica data source names are required.");
+        Preconditions.checkArgument(null != config.getDataSourceNames() && !config.getDataSourceNames().isEmpty(), "Replica data source names are required.");
     }
     
     /**
@@ -71,8 +73,8 @@ public final class HADataSourceRule {
      *
      * @return available replica data source names
      */
-    public List<String> getReplicaDataSourceNames() {
-        return replicaDataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toList());
+    public List<String> getDataSourceNames() {
+        return dataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toList());
     }
     
     /**
@@ -90,15 +92,22 @@ public final class HADataSourceRule {
     }
     
     /**
+     * Update primary data source name.
+     *
+     * @param dataSourceName data source name
+     */
+    public void updatePrimaryDataSourceName(final String dataSourceName) {
+        primaryDataSourceName = dataSourceName;
+    }
+    
+    /**
      * Get data source mapper.
      *
      * @return data source mapper
      */
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>(1, 1);
-        Collection<String> actualDataSourceNames = new LinkedList<>();
-        actualDataSourceNames.add(primaryDataSourceName);
-        actualDataSourceNames.addAll(replicaDataSourceNames);
+        Collection<String> actualDataSourceNames = new LinkedList<>(dataSourceNames);
         result.put(name, actualDataSourceNames);
         return result;
     }

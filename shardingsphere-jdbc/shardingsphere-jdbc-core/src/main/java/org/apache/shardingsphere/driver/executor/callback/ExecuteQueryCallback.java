@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -33,14 +34,19 @@ import java.sql.Statement;
  */
 public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryResult> {
     
-    protected ExecuteQueryCallback(final DatabaseType databaseType, final boolean isExceptionThrown) {
-        super(databaseType, isExceptionThrown);
+    protected ExecuteQueryCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
+        super(databaseType, sqlStatement, isExceptionThrown);
     }
     
     @Override
     protected final QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
         ResultSet resultSet = executeQuery(sql, statement);
         return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new JDBCStreamQueryResult(resultSet) : new JDBCMemoryQueryResult(resultSet);
+    }
+    
+    @Override
+    protected final QueryResult getSaneResult(final SQLStatement sqlStatement) {
+        return null;
     }
     
     protected abstract ResultSet executeQuery(String sql, Statement statement) throws SQLException;

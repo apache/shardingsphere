@@ -41,7 +41,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-governance-core</artifactId>
+            <artifactId>shardingsphere-governance-repository-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -64,6 +64,12 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+        </dependency>
+        
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>

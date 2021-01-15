@@ -49,8 +49,8 @@ public final class HARuleConfigurationYamlSwapper
         if (null != data.getLoadBalancers()) {
             data.getLoadBalancers().forEach((key, value) -> result.getLoadBalancers().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         }
-        if (null != data.getHaType()) {
-            result.setHaType(algorithmSwapper.swapToYamlConfiguration(data.getHaType()));
+        if (null != data.getHaTypes()) {
+            data.getHaTypes().forEach((key, value) -> result.getHaTypes().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         }
         return result;
     }
@@ -58,10 +58,10 @@ public final class HARuleConfigurationYamlSwapper
     private YamlHADataSourceRuleConfiguration swapToYamlConfiguration(final HADataSourceRuleConfiguration dataSourceRuleConfig) {
         YamlHADataSourceRuleConfiguration result = new YamlHADataSourceRuleConfiguration();
         result.setName(dataSourceRuleConfig.getName());
-        result.setPrimaryDataSourceName(dataSourceRuleConfig.getPrimaryDataSourceName());
-        result.setReplicaDataSourceNames(dataSourceRuleConfig.getReplicaDataSourceNames());
+        result.setDataSourceNames(dataSourceRuleConfig.getDataSourceNames());
         result.setLoadBalancerName(dataSourceRuleConfig.getLoadBalancerName());
-        result.setReadWriteSplit(dataSourceRuleConfig.getReadWriteSplit());
+        result.setReplicaQuery(dataSourceRuleConfig.isReplicaQuery());
+        result.setHaTypeName(dataSourceRuleConfig.getHaTypeName());
         return result;
     }
     
@@ -75,13 +75,16 @@ public final class HARuleConfigurationYamlSwapper
         if (null != yamlConfig.getLoadBalancers()) {
             yamlConfig.getLoadBalancers().forEach((key, value) -> loadBalancers.put(key, algorithmSwapper.swapToObject(value)));
         }
-        ShardingSphereAlgorithmConfiguration haType = algorithmSwapper.swapToObject(yamlConfig.getHaType());
-        return new HARuleConfiguration(dataSources, loadBalancers, haType);
+        Map<String, ShardingSphereAlgorithmConfiguration> haTypes = new LinkedHashMap<>(yamlConfig.getHaTypes().entrySet().size(), 1);
+        if (null != yamlConfig.getHaTypes()) {
+            yamlConfig.getHaTypes().forEach((key, value) -> haTypes.put(key, algorithmSwapper.swapToObject(value)));
+        }
+        return new HARuleConfiguration(dataSources, loadBalancers, haTypes);
     }
     
     private HADataSourceRuleConfiguration swapToObject(final String name, final YamlHADataSourceRuleConfiguration yamlDataSourceRuleConfig) {
-        return new HADataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getPrimaryDataSourceName(), yamlDataSourceRuleConfig.getReplicaDataSourceNames(),
-                yamlDataSourceRuleConfig.getLoadBalancerName(), yamlDataSourceRuleConfig.getReadWriteSplit());
+        return new HADataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getDataSourceNames(),
+                yamlDataSourceRuleConfig.getLoadBalancerName(), yamlDataSourceRuleConfig.isReplicaQuery(), yamlDataSourceRuleConfig.getHaTypeName());
     }
     
     @Override

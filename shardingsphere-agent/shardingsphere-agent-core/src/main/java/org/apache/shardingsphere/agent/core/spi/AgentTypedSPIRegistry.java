@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.agent.core.spi;
 
+import java.util.Collection;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.core.exception.AgentServiceProviderNotFoundException;
+import org.apache.shardingsphere.agent.spi.type.AgentTypedSPI;
 
 /**
  *  Agent typed SPI registry.
@@ -42,5 +44,28 @@ public final class AgentTypedSPIRegistry {
             return serviceInstance.get();
         }
         throw new AgentServiceProviderNotFoundException(typedSPIClass, type);
+    }
+    
+    /**
+     * Get registered service.
+     *
+     * @param typedSPIClass typed SPI class
+     * @param type type
+     * @param <T> type
+     * @return registered service
+     */
+    public static <T extends AgentTypedSPI> Optional<T> getRegisteredServiceOptional(final Class<T> typedSPIClass, final String type) {
+        return AgentServiceLoader.getServiceLoader(typedSPIClass).newServiceInstances().stream().filter(each -> each.getType().equalsIgnoreCase(type)).findFirst();
+    }
+    
+    /**
+     * Get all registered service.
+     *
+     * @param typedSPIClass typed SPI class
+     * @param <T> type
+     * @return registered service
+     */
+    public static <T extends AgentTypedSPI> Collection<T> getAllRegisteredService(final Class<T> typedSPIClass) {
+        return AgentServiceLoader.getServiceLoader(typedSPIClass).newServiceInstances();
     }
 }

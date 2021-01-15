@@ -19,20 +19,18 @@ package org.apache.shardingsphere.driver.governance.internal.datasource;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.driver.governance.api.yaml.YamlGovernanceShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
-import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
 import org.apache.shardingsphere.replicaquery.api.config.rule.ReplicaQueryDataSourceRuleConfiguration;
@@ -63,15 +61,12 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @BeforeClass
     public static void setUp() throws SQLException, IOException, URISyntaxException {
-        MetaDataContexts metaDataContexts = getShardingSphereDataSource().getMetaDataContexts();
-        GovernanceShardingSphereDataSource governanceDataSource = new GovernanceShardingSphereDataSource(metaDataContexts.getDefaultMetaData().getResource().getDataSources(),
-                metaDataContexts.getDefaultMetaData().getRuleMetaData().getConfigurations(), metaDataContexts.getProps().getProps(), getGovernanceConfiguration());
-        GovernanceShardingSphereDataSourceTest.metaDataContexts = (GovernanceMetaDataContexts) governanceDataSource.getMetaDataContexts();
+        GovernanceShardingSphereDataSourceTest.metaDataContexts = (GovernanceMetaDataContexts) getGovernanceShardingSphereDataSource().getMetaDataContexts();
     }
     
-    private static ShardingSphereDataSource getShardingSphereDataSource() throws IOException, SQLException, URISyntaxException {
+    private static GovernanceShardingSphereDataSource getGovernanceShardingSphereDataSource() throws IOException, SQLException, URISyntaxException {
         File yamlFile = new File(GovernanceShardingSphereDataSourceTest.class.getResource("/yaml/unit/sharding.yaml").toURI());
-        return (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
+        return (GovernanceShardingSphereDataSource) YamlGovernanceShardingSphereDataSourceFactory.createDataSource(yamlFile);
     }
     
     private static GovernanceConfiguration getGovernanceConfiguration() {

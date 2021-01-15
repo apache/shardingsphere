@@ -23,6 +23,7 @@ import org.apache.shardingsphere.ha.spi.HAType;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
 import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.type.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
@@ -55,6 +56,8 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
     
     private final Map<String, ReplicaLoadBalanceAlgorithm> loadBalancers = new LinkedHashMap<>();
     
+    private final Map<String, HAType> haTypes = new LinkedHashMap<>();
+    
     private final Map<String, HADataSourceRule> dataSourceRules;
     
     public HARule(final HARuleConfiguration config, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String schemaName) {
@@ -62,20 +65,31 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
         Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
         Preconditions.checkArgument(null != databaseType, "Database type cannot be null.");
         config.getLoadBalancers().forEach((key, value) -> loadBalancers.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ReplicaLoadBalanceAlgorithm.class)));
+        config.getHaTypes().forEach((key, value) -> haTypes.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, HAType.class)));
         dataSourceRules = new HashMap<>(config.getDataSources().size(), 1);
         for (HADataSourceRuleConfiguration each : config.getDataSources()) {
-            // TODO check if can not find load balancer should throw exception.
             ReplicaLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
                     ? TypedSPIRegistry.getRegisteredService(ReplicaLoadBalanceAlgorithm.class) : loadBalancers.get(each.getLoadBalancerName());
-            dataSourceRules.put(each.getName(), new HADataSourceRule(each, loadBalanceAlgorithm));
+            HAType haType = Strings.isNullOrEmpty(each.getHaTypeName()) || !haTypes.containsKey(each.getHaTypeName())
+                    ? TypedSPIRegistry.getRegisteredService(HAType.class) : haTypes.get(each.getHaTypeName());
+            dataSourceRules.put(each.getName(), new HADataSourceRule(each, loadBalanceAlgorithm, haType));
         }
-        HAType haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaType().getType(), config.getHaType().getProps());
-        try {
-            haType.updatePrimaryDataSource(dataSourceMap, schemaName);
-            haType.checkHAConfig(dataSourceMap, schemaName);
-            haType.periodicalMonitor(dataSourceMap, schemaName);
-        } catch (final SQLException ex) {
-            throw new ShardingSphereException(ex);
+        for (Entry<String, HADataSourceRule> entry : dataSourceRules.entrySet()) {
+            String groupName = entry.getKey();
+            HADataSourceRule haDataSourceRule = entry.getValue();
+            HAType haType = haDataSourceRule.getHaType();
+            Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
+            Collection<String> disabledDataSourceNames = haDataSourceRule.getDisabledDataSourceNames();
+            String primaryDataSourceName = haDataSourceRule.getPrimaryDataSourceName();
+            haType.updatePrimaryDataSource(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
+            haDataSourceRule.updatePrimaryDataSourceName(haType.getPrimaryDataSource());
+            haType.updateMemberState(originalDataSourceMap, schemaName, disabledDataSourceNames);
+            try {
+                haType.checkHAConfig(dataSourceMap, schemaName);
+                haType.startPeriodicalUpdate(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
+            } catch (final SQLException ex) {
+                throw new ShardingSphereException(ex);
+            }
         }
     }
     
@@ -86,18 +100,28 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
         loadBalancers.putAll(config.getLoadBalanceAlgorithms());
         dataSourceRules = new HashMap<>(config.getDataSources().size(), 1);
         for (HADataSourceRuleConfiguration each : config.getDataSources()) {
-            // TODO check if can not find load balancer should throw exception.
             ReplicaLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
                     ? TypedSPIRegistry.getRegisteredService(ReplicaLoadBalanceAlgorithm.class) : loadBalancers.get(each.getLoadBalancerName());
-            dataSourceRules.put(each.getName(), new HADataSourceRule(each, loadBalanceAlgorithm));
+            HAType haType = Strings.isNullOrEmpty(each.getHaTypeName()) || !haTypes.containsKey(each.getHaTypeName())
+                    ? TypedSPIRegistry.getRegisteredService(HAType.class) : haTypes.get(each.getHaTypeName());
+            dataSourceRules.put(each.getName(), new HADataSourceRule(each, loadBalanceAlgorithm, haType));
         }
-        HAType haType = TypedSPIRegistry.getRegisteredService(HAType.class, config.getHaType().getType(), config.getHaType().getProps());
-        try {
-            haType.updatePrimaryDataSource(dataSourceMap, schemaName);
-            haType.checkHAConfig(dataSourceMap, schemaName);
-            haType.periodicalMonitor(dataSourceMap, schemaName);
-        } catch (final SQLException ex) {
-            throw new ShardingSphereException(ex);
+        for (Entry<String, HADataSourceRule> entry : dataSourceRules.entrySet()) {
+            String groupName = entry.getKey();
+            HADataSourceRule haDataSourceRule = entry.getValue();
+            HAType haType = haDataSourceRule.getHaType();
+            Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
+            Collection<String> disabledDataSourceNames = haDataSourceRule.getDisabledDataSourceNames();
+            String primaryDataSourceName = haDataSourceRule.getPrimaryDataSourceName();
+            haType.updatePrimaryDataSource(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
+            haDataSourceRule.updatePrimaryDataSourceName(haType.getPrimaryDataSource());
+            haType.updateMemberState(originalDataSourceMap, schemaName, disabledDataSourceNames);
+            try {
+                haType.checkHAConfig(dataSourceMap, schemaName);
+                haType.startPeriodicalUpdate(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
+            } catch (final SQLException ex) {
+                throw new ShardingSphereException(ex);
+            }
         }
     }
     
@@ -143,6 +167,12 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
         if (event instanceof DataSourceNameDisabledEvent) {
             for (Entry<String, HADataSourceRule> entry : dataSourceRules.entrySet()) {
                 entry.getValue().updateDisabledDataSourceNames(((DataSourceNameDisabledEvent) event).getDataSourceName(), ((DataSourceNameDisabledEvent) event).isDisabled());
+            }
+        } else if (event instanceof PrimaryDataSourceEvent) {
+            for (Entry<String, HADataSourceRule> entry : dataSourceRules.entrySet()) {
+                if (entry.getValue().getName().equals(((PrimaryDataSourceEvent) event).getGroupName())) {
+                    entry.getValue().updatePrimaryDataSourceName(((PrimaryDataSourceEvent) event).getDataSourceName());
+                }
             }
         }
     }

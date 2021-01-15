@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.call
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.executor.callback.ProxyJDBCExecutorCallback;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -30,9 +31,9 @@ import java.sql.Statement;
  */
 public final class ProxyPreparedStatementExecutorCallback extends ProxyJDBCExecutorCallback {
     
-    public ProxyPreparedStatementExecutorCallback(final DatabaseType databaseType, final BackendConnection backendConnection,
+    public ProxyPreparedStatementExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection,
                                                   final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
-        super(databaseType, backendConnection, isExceptionThrown, isReturnGeneratedKeys, fetchMetaData);
+        super(databaseType, sqlStatement, backendConnection, isExceptionThrown, isReturnGeneratedKeys, fetchMetaData);
     }
     
     @Override

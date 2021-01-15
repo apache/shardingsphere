@@ -36,18 +36,18 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class MySQLDMLStatementSQLVisitor extends MySQLStatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
-
+    
     public MySQLDMLStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @Override
     public ASTNode visitCall(final CallContext ctx) {
         List<ExpressionSegment> parameters = new ArrayList<>();
         ctx.expr().forEach(each -> parameters.add((ExpressionSegment) visit(each)));
         return new MySQLCallStatement(ctx.identifier().getText(), parameters);
     }
-
+    
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
         return new MySQLDoStatement();

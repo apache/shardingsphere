@@ -156,15 +156,16 @@ public abstract class AbstractJDBCImporter extends AbstractScalingExecutor imple
     
     private void executeBatchInsert(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
         String insertSql = scalingSqlBuilder.buildInsertSQL(dataRecords.get(0));
-        PreparedStatement ps = connection.prepareStatement(insertSql);
-        ps.setQueryTimeout(30);
-        for (DataRecord each : dataRecords) {
-            for (int i = 0; i < each.getColumnCount(); i++) {
-                ps.setObject(i + 1, each.getColumn(i).getValue());
+        try (PreparedStatement ps = connection.prepareStatement(insertSql)) {
+            ps.setQueryTimeout(30);
+            for (DataRecord each : dataRecords) {
+                for (int i = 0; i < each.getColumnCount(); i++) {
+                    ps.setObject(i + 1, each.getColumn(i).getValue());
+                }
+                ps.addBatch();
             }
-            ps.addBatch();
+            ps.executeBatch();
         }
-        ps.executeBatch();
     }
     
     private void executeUpdate(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
@@ -177,31 +178,31 @@ public abstract class AbstractJDBCImporter extends AbstractScalingExecutor imple
         List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, importerConfig.getShardingColumnsMap().get(record.getTableName()));
         List<Column> updatedColumns = RecordUtil.extractUpdatedColumns(record);
         String updateSql = scalingSqlBuilder.buildUpdateSQL(record, conditionColumns);
-        PreparedStatement ps = connection.prepareStatement(updateSql);
-        for (int i = 0; i < updatedColumns.size(); i++) {
-            ps.setObject(i + 1, updatedColumns.get(i).getValue());
+        try (PreparedStatement ps = connection.prepareStatement(updateSql)) {
+            for (int i = 0; i < updatedColumns.size(); i++) {
+                ps.setObject(i + 1, updatedColumns.get(i).getValue());
+            }
+            for (int i = 0; i < conditionColumns.size(); i++) {
+                Column keyColumn = conditionColumns.get(i);
+                ps.setObject(updatedColumns.size() + i + 1, (keyColumn.isPrimaryKey() && keyColumn.isUpdated()) ? keyColumn.getOldValue() : keyColumn.getValue());
+            }
+            ps.execute();
         }
-        for (int i = 0; i < conditionColumns.size(); i++) {
-            Column keyColumn = conditionColumns.get(i);
-            ps.setObject(updatedColumns.size() + i + 1,
-                    // sharding column can not be updated
-                    (keyColumn.isPrimaryKey() && keyColumn.isUpdated()) ? keyColumn.getOldValue() : keyColumn.getValue());
-        }
-        ps.execute();
     }
     
     private void executeBatchDelete(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
         List<Column> conditionColumns = RecordUtil.extractConditionColumns(dataRecords.get(0), importerConfig.getShardingColumnsMap().get(dataRecords.get(0).getTableName()));
         String deleteSQL = scalingSqlBuilder.buildDeleteSQL(dataRecords.get(0), conditionColumns);
-        PreparedStatement ps = connection.prepareStatement(deleteSQL);
-        ps.setQueryTimeout(30);
-        for (DataRecord each : dataRecords) {
-            conditionColumns = RecordUtil.extractConditionColumns(each, importerConfig.getShardingColumnsMap().get(each.getTableName()));
-            for (int i = 0; i < conditionColumns.size(); i++) {
-                ps.setObject(i + 1, conditionColumns.get(i).getValue());
+        try (PreparedStatement ps = connection.prepareStatement(deleteSQL)) {
+            ps.setQueryTimeout(30);
+            for (DataRecord each : dataRecords) {
+                conditionColumns = RecordUtil.extractConditionColumns(each, importerConfig.getShardingColumnsMap().get(each.getTableName()));
+                for (int i = 0; i < conditionColumns.size(); i++) {
+                    ps.setObject(i + 1, conditionColumns.get(i).getValue());
+                }
+                ps.addBatch();
             }
-            ps.addBatch();
+            ps.executeBatch();
         }
-        ps.executeBatch();
     }
 }

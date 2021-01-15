@@ -31,6 +31,14 @@ CREATE
     : C R E A T E
     ;
 
+ALTER
+    : A L T E R
+    ;
+
+MODIFY
+    : M O D I F Y
+    ;
+
 DROP
     : D R O P
     ;
@@ -69,4 +77,12 @@ ENCRYPT
 
 SHADOW
     : S H A D O W
+    ;
+
+PRIMARY
+    : P R I M A R Y
+    ;
+
+REPLICA
+    : R E P L I C A
     ;

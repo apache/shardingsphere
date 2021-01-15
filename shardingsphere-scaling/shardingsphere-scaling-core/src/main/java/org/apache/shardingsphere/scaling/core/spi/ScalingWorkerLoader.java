@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.spi;
 
-import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
-import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
@@ -29,6 +28,7 @@ import java.util.Optional;
 /**
  * Scaling worker loader.
  */
+@Slf4j
 public final class ScalingWorkerLoader {
     
     /**
@@ -37,15 +37,16 @@ public final class ScalingWorkerLoader {
      * @return worker type
      */
     public static Optional<String> initScalingWorker() {
+        log.info("Init scaling worker");
         ShardingSphereServiceLoader.register(ScalingWorker.class);
-        YamlGovernanceConfiguration distributedScalingService = ScalingContext.getInstance().getServerConfig().getDistributedScalingService();
-        if (null != distributedScalingService) {
-            GovernanceConfiguration governanceConfig = new GovernanceConfigurationYamlSwapper().swapToObject(distributedScalingService);
+        GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getDistributedScalingService();
+        if (null != governanceConfig) {
             Collection<ScalingWorker> scalingWorkers = ShardingSphereServiceLoader.newServiceInstances(ScalingWorker.class);
             for (ScalingWorker each : scalingWorkers) {
                 each.init(governanceConfig);
                 return Optional.of(each.getType());
             }
+            log.error("None worker found.");
         }
         return Optional.empty();
     }

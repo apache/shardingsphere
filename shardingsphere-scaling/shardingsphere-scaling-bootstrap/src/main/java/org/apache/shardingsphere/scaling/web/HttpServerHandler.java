@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.scaling.web;
 
-import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.LongSerializationPolicy;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -41,6 +41,7 @@ import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobServiceFactory;
 import org.apache.shardingsphere.scaling.util.ResponseContentUtil;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,7 +51,7 @@ import java.util.Optional;
 @Slf4j
 public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     
-    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
+    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().setLongSerializationPolicy(LongSerializationPolicy.STRING).create();
     
     private static final ScalingJobService SCALING_JOB_SERVICE = ScalingJobServiceFactory.getInstance();
     
@@ -80,13 +81,20 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
             checkJob(context, requestPath);
             return;
         }
+        if (requestPath.contains("/scaling/job/reset/")) {
+            resetJob(context, requestPath);
+            return;
+        }
         response(ResponseContentUtil.handleBadRequest("Not support request!"), context, HttpResponseStatus.BAD_REQUEST);
     }
     
     private void startJob(final ChannelHandlerContext context, final String requestBody) {
         Optional<ScalingJob> scalingJob = SCALING_JOB_SERVICE.start(GSON.fromJson(requestBody, ScalingConfiguration.class));
-        Preconditions.checkState(scalingJob.isPresent());
-        response(ResponseContentUtil.build(scalingJob.get()), context, HttpResponseStatus.OK);
+        if (scalingJob.isPresent()) {
+            response(ResponseContentUtil.build(scalingJob.get()), context, HttpResponseStatus.OK);
+            return;
+        }
+        response(ResponseContentUtil.handleBadRequest("Invalid scaling job config!"), context, HttpResponseStatus.BAD_REQUEST);
     }
     
     private void listJobs(final ChannelHandlerContext context) {
@@ -111,6 +119,15 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
         try {
             response(ResponseContentUtil.build(SCALING_JOB_SERVICE.check(getJobId(requestPath))), context, HttpResponseStatus.OK);
         } catch (final ScalingJobNotFoundException ex) {
+            response(ResponseContentUtil.handleBadRequest(ex.getMessage()), context, HttpResponseStatus.BAD_REQUEST);
+        }
+    }
+    
+    private void resetJob(final ChannelHandlerContext context, final String requestPath) {
+        try {
+            SCALING_JOB_SERVICE.reset(getJobId(requestPath));
+            response(ResponseContentUtil.success(), context, HttpResponseStatus.OK);
+        } catch (final ScalingJobNotFoundException | SQLException ex) {
             response(ResponseContentUtil.handleBadRequest(ex.getMessage()), context, HttpResponseStatus.BAD_REQUEST);
         }
     }

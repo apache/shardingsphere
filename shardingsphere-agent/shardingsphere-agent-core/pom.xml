@@ -19,16 +19,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
-
     <artifactId>shardingsphere-agent-core</artifactId>
-
+    <name>${project.artifactId}</name>
+    
     <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-agent-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
@@ -49,6 +55,7 @@
                             <artifactSet>
                                 <excludes>
                                     <exclude>org.slf4j:*</exclude>
+                                    <exclude>net.bytebuddy:*</exclude>
                                     <exclude>com.google.errorprone:error_prone_annotations:jar:</exclude>
                                     <exclude>com.google.code.findbugs:jsr305:jar:</exclude>
                                     <exclude>org.checkerframework:checker-qual:jar:</exclude>
