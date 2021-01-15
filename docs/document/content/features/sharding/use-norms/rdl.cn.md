@@ -48,14 +48,14 @@ t_item=mod(item_id, 2)
 
 ### 前置工作
 
-1. 开启MySQL服务。
-2. 创建MySQl数据库。 (参考ShardingProxy数据源配置规则)
+1. 开启MySQL服务
+2. 创建MySQl数据库(参考ShardingProxy数据源配置规则)
 3. 为ShardingProxy创建一个拥有创建权限角色或者用户。
-4. 开启Zookeeper服务。 (为了持久化配置)
+4. 开启Zookeeper服务 (为了持久化配置)
 
 ### 启动ShardingProxy
 
-1. 添加 `governance` 和 `authentication` 配置参数到 `server.yaml`。  (请参考相关example案例)
+1. 添加 `governance` 和 `authentication` 配置参数到 `server.yaml` (请参考相关example案例)
 2. 启动 ShardingProxy ([相关介绍](/ch/quick-start/shardingsphere-proxy-quick-start.cn.md))
 
 ### 创建分布式数据库和分片表
