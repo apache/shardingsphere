@@ -15,7 +15,7 @@
 -- limitations under the License.
 --
 
-CREATE USER 'root'@'%' IDENTIFIED BY '';
+CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '';
 GRANT All privileges ON *.* TO 'root'@'%';
 
 DROP DATABASE IF EXISTS db_0;
