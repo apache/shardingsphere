@@ -41,5 +41,5 @@ public final class JobConfiguration {
     
     private boolean running = true;
     
-    private long allowDelay = 60 * 1000L;
+    private WorkflowConfiguration workflowConfig;
 }
