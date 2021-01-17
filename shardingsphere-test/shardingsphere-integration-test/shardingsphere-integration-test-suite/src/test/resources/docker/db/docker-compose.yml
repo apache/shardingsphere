@@ -40,6 +40,7 @@ services:
     container_name: db-shardingsphere-proxy
     ports:
       - "33070:3307"
+      - "33080:3308"
     links:
       - "mysql:mysql.db.host"
 #      - "zookeeper:zk"
