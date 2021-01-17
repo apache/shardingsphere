@@ -40,6 +40,7 @@ services:
     container_name: tbl-shardingsphere-proxy
     ports:
       - "33170:3307"
+      - "33180:3308"
     links:
       - "mysql:mysql.tbl.host"
 #      - "zookeeper:zk"
