@@ -51,7 +51,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     private boolean hasMetaData;
     
     public ProxyJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection,
-                                     final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
+                                     final boolean isReturnGeneratedKeys, final boolean isExceptionThrown, final boolean fetchMetaData) {
         super(databaseType, sqlStatement, isExceptionThrown);
         this.backendConnection = backendConnection;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
