@@ -21,7 +21,7 @@ services:
   mysql:
     image: "mysql/mysql-server:5.7"
     container_name: dbtbl-with-replica-query-mysql
-    command: --default-authentication-plugin=mysql_native_password
+    command: ['--sql_mode=', '--default-authentication-plugin=mysql_native_password']
     volumes:
       - ../../env/dbtbl_with_replica_query/mysql:/docker-entrypoint-initdb.d/
     ports:

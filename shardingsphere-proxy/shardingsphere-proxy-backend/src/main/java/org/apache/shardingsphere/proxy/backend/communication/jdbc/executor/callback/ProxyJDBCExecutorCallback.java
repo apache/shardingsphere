@@ -90,8 +90,24 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     @Override
     protected final ExecuteResult getSaneResult(final SQLStatement sqlStatement) {
-        String configuredDatabaseType = ProxyContext.getInstance().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
-        Optional<QueryResult> queryResult = JDBCSaneQueryResultEngineFactory.newInstance(DatabaseTypeRegistry.getTrunkDatabaseType(configuredDatabaseType)).getSaneQueryResult(sqlStatement);
+        Optional<QueryResult> queryResult = JDBCSaneQueryResultEngineFactory.newInstance(getFrontendDatabaseType()).getSaneQueryResult(sqlStatement);
         return queryResult.isPresent() ? queryResult.get() : new UpdateResult(0, 0);
+    }
+    
+    private DatabaseType getFrontendDatabaseType() {
+        Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType();
+        if (configuredDatabaseType.isPresent()) {
+            return configuredDatabaseType.get();
+        }
+        if (ProxyContext.getInstance().getMetaDataContexts().getAllSchemaNames().isEmpty()) {
+            return DatabaseTypeRegistry.getTrunkDatabaseType("MySQL");
+        }
+        String schemaName = ProxyContext.getInstance().getMetaDataContexts().getAllSchemaNames().iterator().next();
+        return ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getResource().getDatabaseType();
+    }
+    
+    private static Optional<DatabaseType> findConfiguredDatabaseType() {
+        String configuredDatabaseType = ProxyContext.getInstance().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
+        return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeRegistry.getTrunkDatabaseType(configuredDatabaseType));
     }
 }
