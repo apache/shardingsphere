@@ -50,11 +50,11 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class PostgreSQLDCLStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements DCLSQLVisitor, SQLStatementVisitor {
-
+    
     public PostgreSQLDCLStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         PostgreSQLGrantStatement result = new PostgreSQLGrantStatement();

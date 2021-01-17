@@ -71,11 +71,11 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisitor implements DDLSQLVisitor, SQLStatementVisitor {
-
+    
     public OracleDDLStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
