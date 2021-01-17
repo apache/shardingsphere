@@ -71,7 +71,7 @@ public final class DatabaseEnvironment {
             case "H2":
                 return "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
             case "MySQL":
-                return String.format("jdbc:mysql://%s:%s?serverTimezone=UTC&useSSL=false&useLocalSessionState=true", host, port);
+                return String.format("jdbc:mysql://%s:%s?serverTimezone=UTC&useSSL=false&useLocalSessionState=true&characterEncoding=utf-8", host, port);
             case "PostgreSQL":
                 return String.format("jdbc:postgresql://%s:%s/", host, port);
             case "SQLServer":
