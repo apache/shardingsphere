@@ -18,6 +18,9 @@
 CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '';
 GRANT All privileges ON *.* TO 'root'@'%';
 
+SET character_set_database='utf8';
+SET character_set_server='utf8';
+
 DROP DATABASE IF EXISTS tbl;
 
 CREATE DATABASE tbl;
