@@ -109,10 +109,10 @@ import java.util.Properties;
 public abstract class SQL92StatementSQLVisitor extends SQL92StatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
-
+    
     public SQL92StatementSQLVisitor(final Properties props) {
     }
-
+    
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
         return new ParameterMarkerValue(currentParameterIndex++);
