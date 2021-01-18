@@ -67,8 +67,8 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.optimize.execute.CalciteExecutor;
-import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
 import org.apache.shardingsphere.infra.optimize.execute.CalciteJDBCExecutor;
+import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.RawExecutionRule;
@@ -260,8 +260,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             
             @Override
-            protected Integer getSaneResult(final SQLStatement sqlStatement) {
-                return 0;
+            protected Optional<Integer> getSaneResult(final SQLStatement sqlStatement) {
+                return Optional.of(0);
             }
         };
     }
@@ -308,8 +308,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             
             @Override
-            protected Boolean getSaneResult(final SQLStatement sqlStatement) {
-                return sqlStatement instanceof SelectStatement;
+            protected Optional<Boolean> getSaneResult(final SQLStatement sqlStatement) {
+                return Optional.of(sqlStatement instanceof SelectStatement);
             }
         };
     }

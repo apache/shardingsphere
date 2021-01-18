@@ -89,9 +89,8 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     }
     
     @Override
-    protected final ExecuteResult getSaneResult(final SQLStatement sqlStatement) {
-        Optional<QueryResult> queryResult = JDBCSaneQueryResultEngineFactory.newInstance(getFrontendDatabaseType()).getSaneQueryResult(sqlStatement);
-        return queryResult.isPresent() ? queryResult.get() : new UpdateResult(0, 0);
+    protected final Optional<ExecuteResult> getSaneResult(final SQLStatement sqlStatement) {
+        return JDBCSaneQueryResultEngineFactory.newInstance(getFrontendDatabaseType()).getSaneQueryResult(sqlStatement);
     }
     
     private DatabaseType getFrontendDatabaseType() {

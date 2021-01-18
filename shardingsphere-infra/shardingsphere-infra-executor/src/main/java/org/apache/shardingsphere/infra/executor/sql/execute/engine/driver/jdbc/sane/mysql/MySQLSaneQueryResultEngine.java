@@ -18,15 +18,18 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.mysql;
 
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.SaneQueryResultEngine;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOtherStatement;
 
 import java.sql.Types;
@@ -41,17 +44,20 @@ import java.util.Optional;
 public final class MySQLSaneQueryResultEngine implements SaneQueryResultEngine {
     
     @Override
-    public Optional<QueryResult> getSaneQueryResult(final SQLStatement sqlStatement) {
+    public Optional<ExecuteResult> getSaneQueryResult(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
             return createQueryResult((SelectStatement) sqlStatement);
         }
         if (sqlStatement instanceof MySQLShowOtherStatement) {
             return Optional.of(createQueryResult((MySQLShowOtherStatement) sqlStatement));
         }
+        if (sqlStatement instanceof MySQLSetStatement) {
+            return Optional.of(new UpdateResult(0, 0));
+        }
         return Optional.empty();
     }
     
-    private Optional<QueryResult> createQueryResult(final SelectStatement sqlStatement) {
+    private Optional<ExecuteResult> createQueryResult(final SelectStatement sqlStatement) {
         List<RawQueryResultColumnMetaData> queryResultColumnMetaDataList = new ArrayList<>(sqlStatement.getProjections().getProjections().size());
         List<Object> data = new ArrayList<>(sqlStatement.getProjections().getProjections().size());
         for (ProjectionSegment each : sqlStatement.getProjections().getProjections()) {
