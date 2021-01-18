@@ -31,10 +31,11 @@ rollback
     : ROLLBACK (WORK)? savepointClause
     ;
 
-savepoint
-    : SAVEPOINT 
+savepointClause
+    : (TO (SAVEPOINT)? savepointName | FORCE stringLiterals)?
     ;
 
-savepointClause
-    : (TO (SAVEPOINT)? savepoint | FORCE stringLiterals)?
+savepoint
+    : SAVEPOINT savepointName
     ;
+
