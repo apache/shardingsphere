@@ -21,20 +21,27 @@
         <table name="t_log" start-index="26" stop-index="30" />
     </drop-index>
     
-    <drop-index sql-case-id="drop_index_without_on" />
+    <drop-index sql-case-id="drop_index_without_on">
+        <index name="order_index" start-index="11" stop-index="21" />
+    </drop-index>
     <drop-index sql-case-id="drop_index_if_exists" />
     
     <drop-index sql-case-id="drop_index_with_space">
         <table name="t_order" start-index="50" stop-index="56" />
     </drop-index>
     
-    <drop-index sql-case-id="drop_index_only_with_name" />
+    <drop-index sql-case-id="drop_index_only_with_name">
+        <index name="order_index" start-index="11" stop-index="21" />
+    </drop-index>
     
     <drop-index sql-case-id="drop_index_with_back_quota">
         <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="28" stop-index="36" />
     </drop-index>
     
-    <drop-index sql-case-id="drop_index_with_quota" />
+    <drop-index sql-case-id="drop_index_with_quota">
+        <index name="order_index" start-delimiter="&quot;" end-delimiter="&quot;" start-index="11" stop-index="23" />
+    </drop-index>
+    
     <drop-index sql-case-id="drop_index_with_double_quota" />
     <drop-index sql-case-id="drop_index_concurrently" />
     
