@@ -278,7 +278,7 @@ public final class MGRHAType implements HAType {
         if (null != SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName)) {
             SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName).shutdown();
         }
-        SCHEDULE_JOB_BOOTSTRAP_MAP.put(groupName, new ScheduleJobBootstrap(coordinatorRegistryCenter, new MGRPeriodicalJob(this, dataSourceMap, schemaName, disabledDataSourceNames,
+        SCHEDULE_JOB_BOOTSTRAP_MAP.put(groupName, new ScheduleJobBootstrap(coordinatorRegistryCenter, new MGRHeartbeatJob(this, dataSourceMap, schemaName, disabledDataSourceNames,
                 groupName, primaryDataSourceName), JobConfiguration.newBuilder("MGR-" + groupName, 1).cron(props.getProperty("keepAliveCron")).build()));
         SCHEDULE_JOB_BOOTSTRAP_MAP.get(groupName).schedule();
     }

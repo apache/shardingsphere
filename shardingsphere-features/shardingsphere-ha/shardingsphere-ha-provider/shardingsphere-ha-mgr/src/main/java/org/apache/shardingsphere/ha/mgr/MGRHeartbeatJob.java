@@ -25,12 +25,14 @@ import org.apache.shardingsphere.ha.spi.HAType;
 
 import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * MGR heartbeat job.
+ */
 @RequiredArgsConstructor
 @Slf4j
-public final class MGRPeriodicalJob implements SimpleJob {
+public final class MGRHeartbeatJob implements SimpleJob {
     
     private final HAType haType;
     
@@ -46,11 +48,6 @@ public final class MGRPeriodicalJob implements SimpleJob {
     
     @Override
     public void execute(final ShardingContext shardingContext) {
-        Map<String, DataSource> activeDataSourceMap = new HashMap<>(dataSourceMap);
-        if (!disabledDataSourceNames.isEmpty()) {
-            activeDataSourceMap.entrySet().removeIf(each -> disabledDataSourceNames.contains(each.getKey()));
-        }
-        log.info("|activeDataSourceMap| " + activeDataSourceMap.toString());
         haType.updatePrimaryDataSource(dataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
         haType.updateMemberState(dataSourceMap, schemaName, disabledDataSourceNames);
     }
