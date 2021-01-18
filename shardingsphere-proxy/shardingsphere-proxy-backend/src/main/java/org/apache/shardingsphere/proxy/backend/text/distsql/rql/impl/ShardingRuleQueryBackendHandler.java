@@ -128,8 +128,6 @@ public final class ShardingRuleQueryBackendHandler extends SchemaRequiredBackend
             result.append("shardingColumn:");
             result.append(((StandardShardingStrategyConfiguration) shardingStrategy).getShardingColumn());
             result.append(" ");
-        } else if (shardingStrategy instanceof HintShardingStrategyConfiguration) {
-        } else if (shardingStrategy instanceof NoneShardingStrategyConfiguration) {
         }
         result.append((new Gson()).toJson(ruleConfig.getShardingAlgorithms().get(shardingStrategy.getShardingAlgorithmName())));
         return result.toString();
