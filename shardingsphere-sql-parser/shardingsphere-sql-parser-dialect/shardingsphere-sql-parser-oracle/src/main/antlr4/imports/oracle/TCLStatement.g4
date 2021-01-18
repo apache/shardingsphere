@@ -38,4 +38,3 @@ savepointClause
 savepoint
     : SAVEPOINT savepointName
     ;
-
