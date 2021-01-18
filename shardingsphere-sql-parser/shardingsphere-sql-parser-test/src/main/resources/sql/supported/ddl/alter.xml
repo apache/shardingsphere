@@ -89,11 +89,6 @@
     <sql-case id="alter_table_drop_constraint" value="ALTER TABLE t_order DROP CONSTRAINT order_index" db-types="Oracle,PostgreSQL,SQLServer" />
     <sql-case id="alter_table_drop_primary_key_unique_key" value="ALTER TABLE t_order DROP PRIMARY KEY DROP UNIQUE (order_id) DROP CONSTRAINT order_index" db-types="Oracle" />
     <sql-case id="alter_table_rename_constraint" value="ALTER TABLE t_order RENAME CONSTRAINT order_index_bak TO order_index" db-types="Oracle" />
-    <sql-case id="alter_index" value="ALTER INDEX order_index REBUILD PARALLEL" db-types="Oracle" />
-    <sql-case id="alter_index_with_space" value="    ALTER INDEX
-        order_index
-    REBUILD PARALLEL    " db-types="Oracle" />
-    <sql-case id="alter_index_with_quota" value="ALTER INDEX &quot;order_index&quot; REBUILD PARALLEL" db-types="Oracle" />
     <sql-case id="alter_table_with_row_level" value="ALTER TABLE t_order FORCE ROW LEVEL SECURITY" db-types="PostgreSQL" />
     <sql-case id="alter_table_with_double_quota" value="ALTER TABLE &quot;t_order&quot; FORCE ROW LEVEL SECURITY" db-types="PostgreSQL" />
     <sql-case id="alter_table_alter_columns" value="ALTER TABLE t_order ALTER column4 TYPE VARCHAR(20), ALTER column5 TYPE VARCHAR(20), ALTER column6 TYPE VARCHAR(20)" db-types="PostgreSQL" />    
@@ -108,18 +103,25 @@
     <sql-case id="alter_table_drop_columns_sqlserver" value="ALTER TABLE t_order DROP COLUMN user_id, column5" db-types="SQLServer" />
     <sql-case id="alter_table_add_composite_primary_key_sqlserver" value="ALTER TABLE t_order ADD CONSTRAINT pk_order_id_user_id_status PRIMARY KEY (order_id, user_id, status)" db-types="SQLServer" />    
     <sql-case id="alter_table_add_constraints_sqlserver" value="ALTER TABLE t_order_item ADD PRIMARY KEY (order_id), UNIQUE (order_id), CHECK (order_id > 0), FOREIGN KEY (order_id) REFERENCES t_order (order_id) ON UPDATE CASCADE ON DELETE CASCADE" db-types="SQLServer" />
-    <sql-case id="alter_table_drop_constraints_sqlserver" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id, uk_order_id, order_index" db-types="SQLServer" />    
-    <sql-case id="alter_index_rebuild" value="ALTER INDEX order_index ON t_order REBUILD" db-types="SQLServer" />
-    <sql-case id="alter_index_with_quota_bracket" value="ALTER INDEX [order_index] ON [t_order] REBUILD" db-types="SQLServer" />
+    <sql-case id="alter_table_drop_constraints_sqlserver" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id, uk_order_id, order_index" db-types="SQLServer" />
     <sql-case id="alter_table_alter_column_for_postgresql" value="ALTER TABLE t_order ALTER column4 TYPE VARCHAR(20)" db-types="PostgreSQL" />
     <sql-case id="alter_table_alter_column_for_sqlserver" value="ALTER TABLE t_order ALTER COLUMN column4 VARCHAR(20)" db-types="SQLServer" />
     <sql-case id="alter_table_set_schema" value="ALTER TABLE t_order SET SCHEMA yourschema" db-types="PostgreSQL" />
     <sql-case id="alter_table_attach_partition" value="ALTER TABLE t_order ATTACH PARTITION measurement_y2016m07 FOR VALUES FROM ('2016-07-01') TO ('2016-08-01')" db-types="PostgreSQL"/>
     <sql-case id="alter_table_detach_partition" value="ALTER TABLE t_order ATTACH PARTITION measurement_y2016m07 FOR VALUES FROM ('2016-07-01') TO ('2016-08-01')" db-types="PostgreSQL"/>
     <sql-case id="alter_table_in_hash_partitioned_table" value="ALTER TABLE t_order ATTACH PARTITION orders_p4 FOR VALUES WITH (MODULUS 4, REMAINDER 3)" db-types="PostgreSQL" />
+    
+<!--    alter index test-->
+    <sql-case id="alter_index" value="ALTER INDEX order_index REBUILD PARALLEL" db-types="Oracle" />
+    <sql-case id="alter_index_with_space" value="    ALTER INDEX
+        order_index
+    REBUILD PARALLEL    " db-types="Oracle" />
+    <sql-case id="alter_index_with_quota" value="ALTER INDEX &quot;order_index&quot; REBUILD PARALLEL" db-types="Oracle" />
+    <sql-case id="alter_index_rebuild" value="ALTER INDEX order_index ON t_order REBUILD" db-types="SQLServer" />
+    <sql-case id="alter_index_with_quota_bracket" value="ALTER INDEX [order_index] ON [t_order] REBUILD" db-types="SQLServer" />
     <sql-case id="alter_index_set_tablespace" value="ALTER INDEX distributors SET TABLESPACE fasttablespace" db-types="PostgreSQL" />
     <sql-case id="alter_index_alter_column" value="ALTER INDEX t_order_idx ALTER COLUMN 3 SET STATISTICS 1000" db-types="PostgreSQL"/>
-
+    
 <!--    alter function test-->
     <sql-case id="alter_function_rename" value="ALTER FUNCTION sqrt(integer) RENAME TO square_root" db-types="PostgreSQL"/>
     <sql-case id="alter_function_set" value="ALTER FUNCTION check_password(text) SET search_path = admin,pg_temp" db-types="PostgreSQL" />

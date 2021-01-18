@@ -19,7 +19,7 @@ schemaName: db
 
 dataSources:
   ds_0:
-    url: jdbc:mysql://mysql.db.host:3306/db_0?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://mysql.db.host:3306/db_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -29,7 +29,7 @@ dataSources:
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   ds_1:
-    url: jdbc:mysql://mysql.db.host:3306/db_1?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://mysql.db.host:3306/db_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -39,7 +39,7 @@ dataSources:
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   ds_2:
-    url: jdbc:mysql://mysql.db.host:3306/db_2?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://mysql.db.host:3306/db_2?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -49,7 +49,7 @@ dataSources:
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   ds_3:
-    url: jdbc:mysql://mysql.db.host:3306/db_3?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://mysql.db.host:3306/db_3?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -59,7 +59,7 @@ dataSources:
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   ds_4:
-    url: jdbc:mysql://mysql.db.host:3306/db_4?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://mysql.db.host:3306/db_4?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -69,7 +69,7 @@ dataSources:
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   ds_5:
-    url: jdbc:mysql://mysql.db.host:3306/db_5?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://mysql.db.host:3306/db_5?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -79,7 +79,7 @@ dataSources:
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   ds_6:
-    url: jdbc:mysql://mysql.db.host:3306/db_6?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://mysql.db.host:3306/db_6?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -89,7 +89,7 @@ dataSources:
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   ds_7:
-    url: jdbc:mysql://mysql.db.host:3306/db_7?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://mysql.db.host:3306/db_7?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -99,7 +99,7 @@ dataSources:
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   ds_8:
-    url: jdbc:mysql://mysql.db.host:3306/db_8?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://mysql.db.host:3306/db_8?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -109,7 +109,7 @@ dataSources:
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   ds_9:
-    url: jdbc:mysql://mysql.db.host:3306/db_9?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://mysql.db.host:3306/db_9?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000

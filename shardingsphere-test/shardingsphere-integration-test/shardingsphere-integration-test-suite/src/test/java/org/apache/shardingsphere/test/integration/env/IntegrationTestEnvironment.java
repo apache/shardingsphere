@@ -67,6 +67,11 @@ public final class IntegrationTestEnvironment {
         Map<String, DatabaseScenarioProperties> databaseProps = getDatabaseScenarioProperties();
         databaseEnvironments = createDatabaseEnvironments(getDatabaseTypes(engineEnvProps), databaseProps);
         proxyEnvironments = createProxyEnvironments(databaseProps);
+        if (isEnvironmentPrepared) {
+            for (String each : scenarios) {
+                waitForEnvironmentReady(each);
+            }
+        }
     }
     
     private Collection<String> getScenarios(final Properties engineEnvProps) {
@@ -122,21 +127,7 @@ public final class IntegrationTestEnvironment {
         return new DatabaseEnvironment(new MySQLDatabaseType(), databaseProps.getProxyHost(), databaseProps.getProxyPort(), databaseProps.getProxyUsername(), databaseProps.getProxyPassword());
     }
     
-    /**
-     * Get instance.
-     *
-     * @return singleton instance
-     */
-    public static IntegrationTestEnvironment getInstance() {
-        if (INSTANCE.adapters.contains("proxy")) {
-            for (String each : INSTANCE.scenarios) {
-                waitForProxyReady(each);
-            }
-        }
-        return INSTANCE;
-    }
-    
-    private static void waitForProxyReady(final String scenario) {
+    private void waitForEnvironmentReady(final String scenario) {
         int retryCount = 0;
         while (!isProxyReady(scenario) && retryCount < 30) {
             try {
@@ -148,8 +139,8 @@ public final class IntegrationTestEnvironment {
     }
     
     @SuppressWarnings("CallToDriverManagerGetConnection")
-    private static boolean isProxyReady(final String scenario) {
-        DatabaseEnvironment dbEnv = INSTANCE.proxyEnvironments.get(scenario);
+    private boolean isProxyReady(final String scenario) {
+        DatabaseEnvironment dbEnv = proxyEnvironments.get(scenario);
         try (Connection connection = DriverManager.getConnection(dbEnv.getURL(scenario), dbEnv.getUsername(), dbEnv.getPassword());
              Statement statement = connection.createStatement()) {
             statement.execute("SELECT 1");
@@ -157,5 +148,14 @@ public final class IntegrationTestEnvironment {
             return false;
         }
         return true;
+    }
+    
+    /**
+     * Get instance.
+     *
+     * @return singleton instance
+     */
+    public static IntegrationTestEnvironment getInstance() {
+        return INSTANCE;
     }
 }

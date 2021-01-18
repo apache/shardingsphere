@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * Scaling worker loader.
@@ -33,10 +32,8 @@ public final class ScalingWorkerLoader {
     
     /**
      * Init scaling worker.
-     *
-     * @return worker type
      */
-    public static Optional<String> initScalingWorker() {
+    public static void initScalingWorker() {
         log.info("Init scaling worker");
         ShardingSphereServiceLoader.register(ScalingWorker.class);
         GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getDistributedScalingService();
@@ -44,10 +41,7 @@ public final class ScalingWorkerLoader {
             Collection<ScalingWorker> scalingWorkers = ShardingSphereServiceLoader.newServiceInstances(ScalingWorker.class);
             for (ScalingWorker each : scalingWorkers) {
                 each.init(governanceConfig);
-                return Optional.of(each.getType());
             }
-            log.error("None worker found.");
         }
-        return Optional.empty();
     }
 }

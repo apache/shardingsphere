@@ -104,10 +104,10 @@ import java.util.Properties;
 public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
-
+    
     public PostgreSQLStatementSQLVisitor(final Properties props) {
     }
-
+    
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
         return new ParameterMarkerValue(currentParameterIndex++);

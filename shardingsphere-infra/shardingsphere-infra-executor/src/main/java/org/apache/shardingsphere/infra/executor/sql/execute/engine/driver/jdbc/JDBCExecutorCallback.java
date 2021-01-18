@@ -34,6 +34,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -82,9 +83,16 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
             sqlExecutionHook.finishSuccess();
             return result;
         } catch (final SQLException ex) {
+            if (!isTrunkThread) {
+                return null;
+            }
+            Optional<T> saneResult = getSaneResult(sqlStatement);
+            if (saneResult.isPresent()) {
+                return saneResult.get();
+            }
             sqlExecutionHook.finishFailure(ex);
             SQLExecutorExceptionHandler.handleException(ex);
-            return isTrunkThread ? getSaneResult(sqlStatement) : null;
+            return null;
         }
     }
     
@@ -100,5 +108,5 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     
     protected abstract T executeSQL(String sql, Statement statement, ConnectionMode connectionMode) throws SQLException;
     
-    protected abstract T getSaneResult(SQLStatement sqlStatement);
+    protected abstract Optional<T> getSaneResult(SQLStatement sqlStatement);
 }

@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.scaling.elasticjob.ElasticJobScalingWorker
+org.apache.shardingsphere.scaling.elasticjob.FinishedCheckWorker

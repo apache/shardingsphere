@@ -41,11 +41,11 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class SQLServerTCLStatementSQLVisitor extends SQLServerStatementSQLVisitor implements TCLSQLVisitor, SQLStatementVisitor {
-
+    
     public SQLServerTCLStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
         return new SQLServerSetTransactionStatement();

@@ -100,11 +100,11 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
-
+    
     public SQL92DMLStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         SQL92InsertStatement result = (SQL92InsertStatement) visit(ctx.insertValuesClause());

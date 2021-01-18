@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.fixture;
+package org.apache.shardingsphere.scaling.core.config;
 
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.scaling.core.spi.ScalingWorker;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-public final class FixtureScalingWorker implements ScalingWorker {
+@Getter
+@Setter
+@RequiredArgsConstructor
+public final class WorkflowConfiguration {
     
-    @Override
-    public String getType() {
-        return "Fixture";
-    }
+    private long allowDelay = 60 * 1000L;
     
-    @Override
-    public void init(final GovernanceConfiguration governanceConfig) {
-    }
+    private final String schemaName;
+    
+    private final String ruleCacheId;
 }

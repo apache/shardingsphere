@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.core.service.impl;
 
 import com.google.gson.Gson;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundExcept
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
-import org.apache.shardingsphere.scaling.core.service.ScalingCallback;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
@@ -81,7 +81,8 @@ public final class DistributedScalingJobServiceTest {
     public void assertStartWithCallbackImmediately() {
         ScalingConfiguration scalingConfig = mockScalingConfiguration();
         ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfiguration().getSource().unwrap();
-        Optional<ScalingJob> scalingJob = scalingJobService.start(source.getDataSource(), source.getRule(), source.getDataSource(), source.getRule(), mockScalingCallback());
+        RuleConfigurationsAlteredEvent event = new RuleConfigurationsAlteredEvent("schema", source.getDataSource(), source.getRule(), source.getRule(), "cacheId");
+        Optional<ScalingJob> scalingJob = scalingJobService.start(event);
         assertFalse(scalingJob.isPresent());
     }
     
@@ -90,7 +91,9 @@ public final class DistributedScalingJobServiceTest {
         ScalingConfiguration scalingConfig = ScalingConfigurationUtil.initConfig("/config_sharding_sphere_jdbc_target.json");
         ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfiguration().getSource().unwrap();
         ShardingSphereJDBCDataSourceConfiguration target = (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfiguration().getTarget().unwrap();
-        Optional<ScalingJob> scalingJob = scalingJobService.start(source.getDataSource(), source.getRule(), target.getDataSource(), target.getRule(), mockScalingCallback());
+        RuleConfigurationsAlteredEvent event = new RuleConfigurationsAlteredEvent(
+                "schema", source.getDataSource(), source.getRule(), target.getDataSource(), target.getRule(), "cacheId");
+        Optional<ScalingJob> scalingJob = scalingJobService.start(event);
         assertTrue(scalingJob.isPresent());
     }
     
@@ -144,19 +147,6 @@ public final class DistributedScalingJobServiceTest {
         ServerConfiguration result = new ServerConfiguration();
         result.setDistributedScalingService(new GovernanceConfiguration("test", new GovernanceCenterConfiguration("REG_FIXTURE", "", null), false));
         return result;
-    }
-    
-    private ScalingCallback mockScalingCallback() {
-        return new ScalingCallback() {
-            
-            @Override
-            public void onSuccess(final long jobId) {
-            }
-            
-            @Override
-            public void onFailure(final long jobId) {
-            }
-        };
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
