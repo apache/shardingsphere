@@ -37,11 +37,11 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class OracleTCLStatementSQLVisitor extends OracleStatementSQLVisitor implements TCLSQLVisitor, SQLStatementVisitor {
-
+    
     public OracleTCLStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
         return new OracleSetTransactionStatement();

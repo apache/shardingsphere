@@ -40,5 +40,7 @@ public final class YamlHADataSourceRuleConfiguration implements YamlConfiguratio
     
     private boolean replicaQuery;
     
+    private String haTypeName;
+    
     private Properties props = new Properties();
 }

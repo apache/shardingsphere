@@ -71,11 +71,11 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisitor implements DDLSQLVisitor, SQLStatementVisitor {
-
+    
     public OracleDDLStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
@@ -97,6 +97,9 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
         CollectionValue<CreateDefinitionSegment> result = new CollectionValue<>();
+        if (null == ctx.createRelationalTableClause()) {
+            return result;
+        }
         for (RelationalPropertyContext each : ctx.createRelationalTableClause().relationalProperties().relationalProperty()) {
             if (null != each.columnDefinition()) {
                 result.getValue().add((ColumnDefinitionSegment) visit(each.columnDefinition()));

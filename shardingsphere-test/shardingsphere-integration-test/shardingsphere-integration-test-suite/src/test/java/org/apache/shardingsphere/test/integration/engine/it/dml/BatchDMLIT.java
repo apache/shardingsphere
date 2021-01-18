@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.integration.engine.it.dml;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseContext;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
+import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.it.BatchIT;
 import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
@@ -40,9 +40,9 @@ import static org.junit.Assert.assertThat;
 
 public final class BatchDMLIT extends BatchIT {
     
-    private final IntegrateTestCaseContext testCaseContext;
+    private final IntegrationTestCaseContext testCaseContext;
     
-    public BatchDMLIT(final IntegrateTestCaseContext testCaseContext, final String adapter, 
+    public BatchDMLIT(final IntegrationTestCaseContext testCaseContext, final String adapter,
                       final String scenario, final String databaseType, final String sql) throws IOException, JAXBException, SQLException {
         super(testCaseContext, adapter, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), sql);
         this.testCaseContext = testCaseContext;
@@ -72,14 +72,14 @@ public final class BatchDMLIT extends BatchIT {
     
     private int[] executeBatchForPreparedStatement(final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
-            for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
+            for (IntegrationTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
                 addBatch(preparedStatement, each);
             }
             return preparedStatement.executeBatch();
         }
     }
     
-    private void addBatch(final PreparedStatement preparedStatement, final IntegrateTestCaseAssertion assertion) throws ParseException, SQLException {
+    private void addBatch(final PreparedStatement preparedStatement, final IntegrationTestCaseAssertion assertion) throws ParseException, SQLException {
         for (SQLValue each : assertion.getSQLValues()) {
             preparedStatement.setObject(each.getIndex(), each.getValue());
         }
@@ -98,7 +98,7 @@ public final class BatchDMLIT extends BatchIT {
         }
         try (Connection connection = getTargetDataSource().getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
-                for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
+                for (IntegrationTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
                     addBatch(preparedStatement, each);
                 }
                 preparedStatement.clearBatch();

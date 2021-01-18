@@ -76,7 +76,7 @@ public final class RegistryRepositoryHolder {
             registryRepository = TypedSPIRegistry.getRegisteredService(RegistryRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
             registryRepository.init(governanceConfig.getName(), registryCenterConfig);
         }
-        log.info("distributed scaling service available = " + available);
         available = null != registryRepository;
+        log.info("distributed scaling service available = " + available);
     }
 }

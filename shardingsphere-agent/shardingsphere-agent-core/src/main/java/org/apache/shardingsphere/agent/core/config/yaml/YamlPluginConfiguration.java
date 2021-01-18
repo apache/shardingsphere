@@ -26,7 +26,11 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public final class YamlPluginConfiguration extends YamlRemotePluginConfiguration {
+public final class YamlPluginConfiguration {
+    
+    private String host = "localhost";
+    
+    private int port = 5775;
     
     private String password;
     

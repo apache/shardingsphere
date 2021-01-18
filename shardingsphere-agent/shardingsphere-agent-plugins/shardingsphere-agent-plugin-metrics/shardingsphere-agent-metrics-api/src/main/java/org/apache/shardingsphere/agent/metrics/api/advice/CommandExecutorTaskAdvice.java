@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
 import java.lang.reflect.Method;
-import org.apache.shardingsphere.agent.api.advice.MethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
 import org.apache.shardingsphere.agent.metrics.api.threadlocal.ElapsedTimeThreadLocal;
 
 /**
  * Command executor task advice.
  */
-public final class CommandExecutorTaskAdvice implements MethodAroundAdvice {
+public final class CommandExecutorTaskAdvice implements InstanceMethodAroundAdvice {
     
     private static final String METRICS_NAME = "proxy_execute_latency_millis";
     
@@ -36,12 +36,12 @@ public final class CommandExecutorTaskAdvice implements MethodAroundAdvice {
     }
     
     @Override
-    public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         ElapsedTimeThreadLocal.INSTANCE.set(System.currentTimeMillis());
     }
 
     @Override
-    public void afterMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         try {
             long elapsedTime = System.currentTimeMillis() - ElapsedTimeThreadLocal.INSTANCE.get();
             MetricsReporter.recordTime(METRICS_NAME, elapsedTime);

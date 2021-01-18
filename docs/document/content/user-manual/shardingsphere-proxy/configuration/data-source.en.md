@@ -22,3 +22,4 @@ dataSources: # Data sources configuration, multiple <data-source-name> available
 rules: # Keep consist with ShardingSphere-JDBC configuration
   # ...
 ```
+For more data source configuration parameters, see [HikariCP](https://github.com/brettwooldridge/HikariCP).

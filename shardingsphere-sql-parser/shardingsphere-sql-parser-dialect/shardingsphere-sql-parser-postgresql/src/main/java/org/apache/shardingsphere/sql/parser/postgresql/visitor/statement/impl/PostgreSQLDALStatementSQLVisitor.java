@@ -42,11 +42,11 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class PostgreSQLDALStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements DALSQLVisitor, SQLStatementVisitor {
-
+    
     public PostgreSQLDALStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @Override
     public ASTNode visitShow(final ShowContext ctx) {
         return new PostgreSQLShowStatement();

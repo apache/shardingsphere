@@ -23,10 +23,12 @@ import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFac
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
+import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ProxyDataSourceBuilder;
+import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -68,13 +70,20 @@ public abstract class BaseIT {
     
     private DataSource createTargetDataSource() throws SQLException, IOException {
         if ("proxy".equalsIgnoreCase(adapter)) {
-            return ProxyDataSourceBuilder.build(scenario, databaseType, IntegrateTestEnvironment.getInstance().getProxyEnvironments().get(scenario));
+            return ProxyDataSourceBuilder.build(scenario, databaseType, IntegrationTestEnvironment.getInstance().getProxyEnvironments().get(scenario));
         }
         return YamlShardingSphereDataSourceFactory.createDataSource(actualDataSources, new File(EnvironmentPath.getRulesConfigurationFile(scenario)));
     }
     
     protected final void resetTargetDataSource() throws IOException, SQLException {
         targetDataSource = createTargetDataSource();
+    }
+    
+    @BeforeClass
+    public static void executeInitSQLs() throws IOException, JAXBException, SQLException {
+        if (!IntegrationTestEnvironment.getInstance().isEnvironmentPrepared()) {
+            DatabaseEnvironmentManager.executeInitSQLs();
+        }
     }
     
     @After

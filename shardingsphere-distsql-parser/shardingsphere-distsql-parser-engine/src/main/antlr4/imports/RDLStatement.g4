@@ -60,7 +60,7 @@ user
     ;
 
 password
-    : IDENTIFIER | NUMBER | STRING
+    : IDENTIFIER | INT | STRING
     ;
 
 createShardingRule
@@ -80,7 +80,7 @@ alterReplicaQueryRule
     ;
 
 alterReplicaQueryRuleDefinition
-    : ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP (loadBalancer=IDENTIFIER LP algorithmProperties RP)?
+    : (MODIFY | ADD) ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP (loadBalancer=IDENTIFIER LP algorithmProperties RP)?
     ;
 
 shardingTableRuleDefinition

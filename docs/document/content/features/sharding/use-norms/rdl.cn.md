@@ -48,15 +48,15 @@ t_item=mod(item_id, 2)
 
 ### 前置工作
 
-1. Start the service of MySQL instances 
-2. Create MySQL databases (Viewed as the resources for ShardingProxy)
-3. Create a role or user with creating privileges for ShardingProxy
-4. Start the service of Zookeeper (For persisting configuration)
+1. 启动MySQL服务
+2. 创建MySQL数据库(参考ShardingProxy数据源配置规则)
+3. 为ShardingProxy创建一个拥有创建权限的角色或者用户
+4. 启动Zookeeper服务 (为了持久化配置)
 
 ### 启动ShardingProxy
 
-1. Add `governance` and `authentication` setting item to the `server.yaml`  (Please refer to the example in this file)
-2. Start the ShardingProxy ([Instruction](/en/quick-start/shardingsphere-proxy-quick-start/))
+1. 添加 `governance` 和 `authentication` 配置参数到 `server.yaml` (请参考相关example案例)
+2. 启动 ShardingProxy ([相关介绍](/ch/quick-start/shardingsphere-proxy-quick-start/))
 
 ### 创建分布式数据库和分片表
 

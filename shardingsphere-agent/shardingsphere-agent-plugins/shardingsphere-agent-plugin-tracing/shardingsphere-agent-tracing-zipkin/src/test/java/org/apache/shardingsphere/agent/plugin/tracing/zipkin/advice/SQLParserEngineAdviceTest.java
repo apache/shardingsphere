@@ -20,73 +20,47 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 import brave.Span;
 import brave.Tracing;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractSQLParserEngineAdviceTest;
+import org.apache.shardingsphere.agent.plugin.tracing.rule.ZipkinCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
-public final class SQLParserEngineAdviceTest extends AdviceBaseTest {
+public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdviceTest {
+    
+    @ClassRule
+    public static ZipkinCollector collector = new ZipkinCollector();
     
     private static final String SQL_STMT = "select 1";
     
-    private static Method parseMethod;
-    
     private SQLParserEngineAdvice advice;
-    
-    private TargetObject targetObject;
-    
-    private Object attachment;
     
     private Span parentSpan;
     
-    @BeforeClass
-    @SneakyThrows
-    public static void setup() {
-        prepare("org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine");
-        parseMethod = ShardingSphereSQLParserEngine.class.getDeclaredMethod("parse", String.class, boolean.class);
-    }
-    
     @Before
     @SneakyThrows
-    @SuppressWarnings("all")
-    public void before() {
+    public void setup() {
         parentSpan = Tracing.currentTracer().newTrace().name("parent").start();
         ExecutorDataMap.getValue().put(ZipkinConstants.ROOT_SPAN, parentSpan);
-        Object parserEngine = mock(ShardingSphereSQLParserEngine.class, invocation -> {
-            switch (invocation.getMethod().getName()) {
-                case "getAttachment":
-                    return attachment;
-                case "setAttachment":
-                    attachment = invocation.getArguments()[0];
-                    return null;
-                default:
-                    return invocation.callRealMethod();
-            }
-        });
-        targetObject = (TargetObject) parserEngine;
         advice = new SQLParserEngineAdvice();
     }
     
     @Test
-    public void testMethod() {
-        advice.beforeMethod(targetObject, parseMethod, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
-        advice.afterMethod(targetObject, parseMethod, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
+    public void assertMethod() {
+        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
+        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
         parentSpan.finish();
-        zipkin2.Span span = SPANS.pollFirst();
+        zipkin2.Span span = collector.pop();
         assertNotNull(span);
         assertNotNull(span.parentId());
         Map<String, String> tags = span.tags();
@@ -96,13 +70,12 @@ public final class SQLParserEngineAdviceTest extends AdviceBaseTest {
     }
     
     @Test
-    public void testExceptionHandle() {
-        advice.beforeMethod(targetObject, parseMethod, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
-        advice.onThrowing(targetObject, parseMethod, new Object[]{SQL_STMT, true}, new IOException());
-        advice.afterMethod(targetObject, parseMethod, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
-        // ensure the parent span(mock) finished
+    public void assertExceptionHandle() {
+        advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
+        advice.onThrowing(getTargetObject(), null, new Object[]{SQL_STMT, true}, new IOException());
+        advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
         parentSpan.finish();
-        zipkin2.Span span = SPANS.pollFirst();
+        zipkin2.Span span = collector.pop();
         assertNotNull(span);
         assertNotNull(span.parentId());
         Map<String, String> tags = span.tags();
@@ -110,10 +83,5 @@ public final class SQLParserEngineAdviceTest extends AdviceBaseTest {
         assertThat(tags.get("error"), is("IOException"));
         assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is(ZipkinConstants.DB_TYPE_VALUE));
         assertThat(tags.get(ZipkinConstants.Tags.COMPONENT), is(ZipkinConstants.COMPONENT_NAME));
-    }
-    
-    @After
-    public void cleanup() {
-        SPANS.clear();
     }
 }

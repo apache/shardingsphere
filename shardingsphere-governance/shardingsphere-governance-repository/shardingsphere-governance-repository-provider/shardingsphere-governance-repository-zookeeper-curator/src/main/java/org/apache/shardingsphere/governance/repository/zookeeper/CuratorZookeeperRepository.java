@@ -26,7 +26,6 @@ import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.api.transaction.TransactionOp;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
-import org.apache.curator.framework.recipes.cache.CuratorCache.Options;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
 import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
@@ -48,11 +47,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -61,6 +62,8 @@ import java.util.concurrent.TimeUnit;
 public final class CuratorZookeeperRepository implements ConfigurationRepository, RegistryRepository {
     
     private final Map<String, CuratorCache> caches = new HashMap<>();
+    
+    private final Set<String> watchedKeys = new HashSet<>();
     
     private CuratorFramework client;
     
@@ -234,6 +237,9 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
         String path = key + PATH_SEPARATOR;
+        if (isDuplicate(path)) {
+            return;
+        }
         if (!caches.containsKey(path)) {
             addCacheData(key);
         }
@@ -248,8 +254,16 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         });
     }
     
+    private boolean isDuplicate(final String key) {
+        if (!watchedKeys.isEmpty()) {
+            return watchedKeys.stream().filter(each -> key.startsWith(each)).findFirst().isPresent();
+        }
+        watchedKeys.add(key);
+        return false;
+    }
+    
     private void addCacheData(final String cachePath) {
-        CuratorCache cache = CuratorCache.build(client, cachePath, Options.SINGLE_NODE_CACHE);
+        CuratorCache cache = CuratorCache.build(client, cachePath);
         try {
             cache.start();
             // CHECKSTYLE:OFF

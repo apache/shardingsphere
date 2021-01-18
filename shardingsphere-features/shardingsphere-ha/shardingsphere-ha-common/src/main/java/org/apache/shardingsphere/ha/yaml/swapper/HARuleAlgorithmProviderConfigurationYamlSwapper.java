@@ -70,7 +70,7 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapper
     
     private HADataSourceRuleConfiguration swapToObject(final String name, final YamlHADataSourceRuleConfiguration yamlDataSourceRuleConfig) {
         return new HADataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getDataSourceNames(),
-                yamlDataSourceRuleConfig.getLoadBalancerName(), yamlDataSourceRuleConfig.isReplicaQuery());
+                yamlDataSourceRuleConfig.getLoadBalancerName(), yamlDataSourceRuleConfig.isReplicaQuery(), yamlDataSourceRuleConfig.getHaTypeName());
     }
     
     @Override

@@ -43,7 +43,7 @@ public final class MySQLSaneQueryResultEngine implements SaneQueryResultEngine {
     @Override
     public Optional<QueryResult> getSaneQueryResult(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof SelectStatement) {
-            return Optional.of(createQueryResult((SelectStatement) sqlStatement));
+            return createQueryResult((SelectStatement) sqlStatement);
         }
         if (sqlStatement instanceof MySQLShowOtherStatement) {
             return Optional.of(createQueryResult((MySQLShowOtherStatement) sqlStatement));
@@ -51,7 +51,7 @@ public final class MySQLSaneQueryResultEngine implements SaneQueryResultEngine {
         return Optional.empty();
     }
     
-    private QueryResult createQueryResult(final SelectStatement sqlStatement) {
+    private Optional<QueryResult> createQueryResult(final SelectStatement sqlStatement) {
         List<RawQueryResultColumnMetaData> queryResultColumnMetaDataList = new ArrayList<>(sqlStatement.getProjections().getProjections().size());
         List<Object> data = new ArrayList<>(sqlStatement.getProjections().getProjections().size());
         for (ProjectionSegment each : sqlStatement.getProjections().getProjections()) {
@@ -62,7 +62,8 @@ public final class MySQLSaneQueryResultEngine implements SaneQueryResultEngine {
                 data.add(MySQLDefaultVariable.containsVariable(alias) ? MySQLDefaultVariable.getVariable(alias) : "1");
             }
         }
-        return new RawMemoryQueryResult(new RawQueryResultMetaData(queryResultColumnMetaDataList), Collections.singletonList(new MemoryQueryResultDataRow(data)));
+        return queryResultColumnMetaDataList.isEmpty()
+                ? Optional.empty() : Optional.of(new RawMemoryQueryResult(new RawQueryResultMetaData(queryResultColumnMetaDataList), Collections.singletonList(new MemoryQueryResultDataRow(data))));
     }
     
     private QueryResult createQueryResult(final MySQLShowOtherStatement sqlStatement) {

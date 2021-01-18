@@ -24,7 +24,7 @@ import java.util.List;
  * Have to redefine this class dynamic, so never add `final` modifier.
  */
 public class StaticMaterial {
-
+    
     /**
      * Mock static method for testing.
      *

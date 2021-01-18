@@ -58,11 +58,11 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class SQLServerDCLStatementSQLVisitor extends SQLServerStatementSQLVisitor implements DCLSQLVisitor, SQLStatementVisitor {
-
+    
     public SQLServerDCLStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         SQLServerGrantStatement result = new SQLServerGrantStatement();

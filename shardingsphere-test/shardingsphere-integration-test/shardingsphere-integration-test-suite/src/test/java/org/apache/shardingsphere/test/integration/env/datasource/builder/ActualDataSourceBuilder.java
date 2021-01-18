@@ -23,9 +23,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.env.IntegrateTestEnvironment;
+import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
-import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
+import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -56,10 +56,10 @@ public final class ActualDataSourceBuilder {
      * @throws JAXBException JAXB exception
      */
     public static Map<String, DataSource> createActualDataSources(final String scenario, final DatabaseType databaseType) throws IOException, JAXBException {
-        Collection<String> dataSourceNames = SchemaEnvironmentManager.getDataSourceNames(scenario);
+        Collection<String> dataSourceNames = DatabaseEnvironmentManager.getDatabaseNames(scenario);
         Map<String, DataSource> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
-            result.put(each, build(each, databaseType));
+            result.put(each, build(each, scenario, databaseType));
         }
         return result;
     }
@@ -68,21 +68,22 @@ public final class ActualDataSourceBuilder {
      * Build actual data source.
      *
      * @param name actual data source name
+     * @param scenario scenario
      * @param databaseType database type
      * @return actual data source
      */
-    public static DataSource build(final String name, final DatabaseType databaseType) {
+    public static DataSource build(final String name, final String scenario, final DatabaseType databaseType) {
         DataSourceCacheKey cacheKey = new DataSourceCacheKey(name, databaseType);
         if (CACHE.containsKey(cacheKey)) {
             return CACHE.get(cacheKey);
         }
-        DataSource result = createDataSource(name, databaseType);
+        DataSource result = createDataSource(name, scenario, databaseType);
         CACHE.put(cacheKey, result);
         return result;
     }
     
-    private static DataSource createDataSource(final String name, final DatabaseType databaseType) {
-        DatabaseEnvironment databaseEnvironment = IntegrateTestEnvironment.getInstance().getDatabaseEnvironments().get(databaseType);
+    private static DataSource createDataSource(final String name, final String scenario, final DatabaseType databaseType) {
+        DatabaseEnvironment databaseEnvironment = IntegrationTestEnvironment.getInstance().getDatabaseEnvironments().get(databaseType).get(scenario);
         switch (DATA_SOURCE_POOL_TYPE) {
             case DBCP:
                 return createDBCP(name, databaseType, databaseEnvironment);

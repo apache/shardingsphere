@@ -28,7 +28,7 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class SQLServerDALStatementSQLVisitor extends SQLServerStatementSQLVisitor implements DALSQLVisitor, SQLStatementVisitor {
-
+    
     public SQLServerDALStatementSQLVisitor(final Properties props) {
         super(props);
     }
