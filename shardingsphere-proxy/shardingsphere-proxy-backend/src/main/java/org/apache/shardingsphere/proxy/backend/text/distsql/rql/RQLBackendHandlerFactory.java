@@ -26,6 +26,7 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DataSourcesQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ReplicaQueryRuleQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.RuleQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingRuleQueryBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Optional;
@@ -48,7 +49,7 @@ public final class RQLBackendHandlerFactory {
             String ruleType = ((ShowRuleStatement) sqlStatement).getRuleType();
             switch (ruleType.toUpperCase()) {
                 case "SHARDING":
-                    return Optional.of(new RuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
+                    return Optional.of(new ShardingRuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
                 case "REPLICA_QUERY":
                     return Optional.of(new ReplicaQueryRuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
                 case "ENCRYPT":

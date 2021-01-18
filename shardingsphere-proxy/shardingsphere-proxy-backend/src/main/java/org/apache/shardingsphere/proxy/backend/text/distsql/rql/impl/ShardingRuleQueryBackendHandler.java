@@ -17,36 +17,42 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
+import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleStatement;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
-import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * Backend handler for show rules.
+ * Backend handler for show sharding rules.
  */
 public final class ShardingRuleQueryBackendHandler extends SchemaRequiredBackendHandler<ShowRuleStatement> {
     
-    private Iterator<RuleConfiguration> data;
+    private Iterator<Map<String, Object>> data;
     
     private final String schema;
     
@@ -61,9 +67,8 @@ public final class ShardingRuleQueryBackendHandler extends SchemaRequiredBackend
     
     @Override
     protected ResponseHeader execute(final String schemaName, final ShowRuleStatement sqlStatement) {
-        String ruleType = sqlStatement.getRuleType();
         List<QueryHeader> queryHeader = getQueryHeader();
-        data = loadRuleConfiguration(schemaName, ruleType);
+        data = loadRuleConfiguration();
         return new QueryResponseHeader(queryHeader);
     }
     
@@ -78,26 +83,67 @@ public final class ShardingRuleQueryBackendHandler extends SchemaRequiredBackend
         return result;
     }
     
-    private Iterator<RuleConfiguration> loadRuleConfiguration(final String schemaName, final String ruleType) {
-        Class<? extends RuleConfiguration> ruleConfigurationClass = getRuleConfigurationClass(ruleType);
-        Optional<RuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
-                .stream().filter(each -> ruleConfigurationClass.isAssignableFrom(each.getClass())).findAny();
-        return ruleConfig.map(optional -> Collections.singleton(optional).iterator()).orElse(Collections.emptyIterator());
+    private Iterator<Map<String, Object>> loadRuleConfiguration() {
+        List<Map<String, Object>> result = new LinkedList<>();
+        Optional<ShardingRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schema).getRuleMetaData().getConfigurations()
+                .stream().map(each -> (ShardingRuleConfiguration) each).findFirst();
+        if (ruleConfig.isPresent()) {
+            List<List<String>> bindingTables = ruleConfig.get().getBindingTableGroups().stream().filter(each -> null != each && !"".equals(each)).map(each -> Arrays.asList(each.split(",")))
+                    .collect(Collectors.toList());
+            for (ShardingTableRuleConfiguration each : ruleConfig.get().getTables()) {
+                Map<String, Object> table = new HashMap<>();
+                table.put("name", each.getLogicTable());
+                table.put("actualDataNodes", each.getActualDataNodes());
+                table.put("tableStrategy", generateShardingStrategy(ruleConfig.get(), each.getTableShardingStrategy()));
+                table.put("databaseStrategy", generateShardingStrategy(ruleConfig.get(), each.getDatabaseShardingStrategy()));
+                table.put("keyGenerateStrategy", generateKeyGenerateStrategy(ruleConfig.get(), each.getKeyGenerateStrategy()));
+                table.put("bindingTable", generateBindingTable(bindingTables, each.getLogicTable()));
+                result.add(table);
+            }
+        }
+        return result.iterator();
     }
     
-    private Class<? extends RuleConfiguration> getRuleConfigurationClass(final String ruleType) {
-        switch (ruleType.toUpperCase()) {
-            case "SHARDING":
-                return ShardingRuleConfiguration.class;
-            case "REPLICA_QUERY":
-                return ReplicaQueryRuleConfiguration.class;
-            case "ENCRYPT":
-                return EncryptRuleConfiguration.class;
-            case "SHADOW":
-                return ShadowRuleConfiguration.class;
-            default:
-                throw new UnsupportedOperationException(ruleType);
+    private String generateBindingTable(final List<List<String>> bindingTableGroups, final String tableName) {
+        Set<String> bindingTable = new HashSet<>();
+        for (List<String> each : bindingTableGroups) {
+            if (each.contains(tableName)) {
+                for (String table : each) {
+                    if (!table.equals(tableName)) {
+                        bindingTable.add(table);
+                    }
+                }
+            }
         }
+        return (new Gson()).toJson(bindingTable);
+    }
+    
+    private String generateShardingStrategy(final ShardingRuleConfiguration ruleConfig, final ShardingStrategyConfiguration shardingStrategy) {
+        StringBuilder result = new StringBuilder();
+        if (shardingStrategy instanceof ComplexShardingStrategyConfiguration) {
+            result.append("shardingColumns:");
+            result.append(((ComplexShardingStrategyConfiguration) shardingStrategy).getShardingColumns());
+            result.append(" ");
+        } else if (shardingStrategy instanceof StandardShardingStrategyConfiguration) {
+            result.append("shardingColumn:");
+            result.append(((StandardShardingStrategyConfiguration) shardingStrategy).getShardingColumn());
+            result.append(" ");
+        } else if (shardingStrategy instanceof HintShardingStrategyConfiguration) {
+        
+        } else if (shardingStrategy instanceof NoneShardingStrategyConfiguration) {
+        
+        }
+        result.append((new Gson()).toJson(ruleConfig.getShardingAlgorithms().get(shardingStrategy.getShardingAlgorithmName())));
+        return result.toString();
+    }
+    
+    private String generateKeyGenerateStrategy(final ShardingRuleConfiguration ruleConfig, final KeyGenerateStrategyConfiguration keyGenerateStrategy) {
+        StringBuilder result = new StringBuilder();
+        result.append("column:");
+        result.append(keyGenerateStrategy.getColumn());
+        result.append(" ");
+        result.append((new Gson()).toJson(ruleConfig.getKeyGenerators().get(keyGenerateStrategy.getKeyGeneratorName())));
+        return result.toString();
     }
     
     @Override
@@ -107,8 +153,7 @@ public final class ShardingRuleQueryBackendHandler extends SchemaRequiredBackend
     
     @Override
     public Collection<Object> getRowData() {
-        RuleConfiguration ruleConfig = data.next();
-        YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(Collections.singleton(ruleConfig)).iterator().next();
-        return Collections.singleton(YamlEngine.marshal(yamlRuleConfig));
+        Map<String, Object> table = data.next();
+        return Arrays.asList(table.get("name"), table.get("actualDataNodes"), table.get("tableStrategy"), table.get("databaseStrategy"), table.get("keyGenerateStrategy"), table.get("bindingTable"));
     }
 }
