@@ -21,6 +21,12 @@ ShardingSphere-Proxy 接入的分布式事务 API 同 ShardingSphere-JDBC 保持
     <jboss-transaction-spi.version>7.6.0.Final</jboss-transaction-spi.version>
     <jboss-logging.version>3.2.1.Final</jboss-logging.version>
 </propeties>
+
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
 <dependency>
     <groupId>org.jboss.narayana.jta</groupId>
     <artifactId>jta</artifactId>

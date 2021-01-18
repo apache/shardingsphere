@@ -25,8 +25,6 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.infra.hook.RootInvokeHook;
-import org.apache.shardingsphere.infra.hook.SPIRootInvokeHook;
 import org.apache.shardingsphere.replicaquery.route.engine.impl.PrimaryVisitedManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.ConnectionStatus;
@@ -63,10 +61,7 @@ public final class CommandExecutorTask implements Runnable {
      */
     @Override
     public void run() {
-        RootInvokeHook rootInvokeHook = new SPIRootInvokeHook();
-        rootInvokeHook.start();
         boolean isNeedFlush = false;
-        int connectionSize = 0;
         try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message)) {
             ConnectionStatus connectionStatus = backendConnection.getConnectionStatus();
             if (!backendConnection.getTransactionStatus().isInConnectionHeldTransaction()) {
@@ -74,7 +69,6 @@ public final class CommandExecutorTask implements Runnable {
                 connectionStatus.switchToUsing();
             }
             isNeedFlush = executeCommand(context, payload, backendConnection);
-            connectionSize = backendConnection.getConnectionSize();
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -88,7 +82,6 @@ public final class CommandExecutorTask implements Runnable {
                 exceptions.addAll(backendConnection.closeConnections(false));
             }
             processClosedExceptions(exceptions);
-            rootInvokeHook.finish(connectionSize);
         }
     }
     

@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
 import java.lang.reflect.Method;
-import org.apache.shardingsphere.agent.api.advice.MethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.api.advice.TargetObject;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
 import org.apache.shardingsphere.agent.metrics.api.constant.MethodNameConstant;
 
 /**
  * Transaction advice.
  */
-public final class TransactionAdvice implements MethodAroundAdvice {
+public final class TransactionAdvice implements InstanceMethodAroundAdvice {
     
     private static final String COMMIT = "proxy_transaction_commit_total";
     
@@ -39,7 +39,7 @@ public final class TransactionAdvice implements MethodAroundAdvice {
     }
     
     @Override
-    public void beforeMethod(final TargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+    public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         String methodName = method.getName();
         if (MethodNameConstant.COMMIT.equals(methodName)) {
             MetricsReporter.counterIncrement(COMMIT);

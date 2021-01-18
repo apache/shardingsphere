@@ -20,15 +20,15 @@ package org.apache.shardingsphere.agent.metrics.prometheus.service;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.config.PluginConfiguration;
-import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
-import org.apache.shardingsphere.agent.metrics.prometheus.register.PrometheusMetricsRegister;
-import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
-import org.apache.shardingsphere.agent.metrics.prometheus.collector.BuildInfoCollector;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.agent.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.exception.PluginConfigurationException;
+import org.apache.shardingsphere.agent.metrics.api.reporter.MetricsReporter;
+import org.apache.shardingsphere.agent.metrics.prometheus.collector.BuildInfoCollector;
+import org.apache.shardingsphere.agent.metrics.prometheus.register.PrometheusMetricsRegister;
+import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
 
 /**
  * Prometheus plugin boot service.
@@ -39,8 +39,11 @@ public final class PrometheusPluginBootService implements PluginBootService {
     private HTTPServer httpServer;
     
     @Override
-    public void start(final PluginConfiguration pluginConfig) {
-        startServer(pluginConfig);
+    public void start(final PluginConfiguration pluginConfiguration) {
+        if (!checkConfig(pluginConfiguration)) {
+            throw new PluginConfigurationException("prometheus config error, host is null or port is %s", pluginConfiguration.getPort());
+        }
+        startServer(pluginConfiguration);
         MetricsReporter.register(PrometheusMetricsRegister.getInstance());
     }
     
@@ -54,6 +57,12 @@ public final class PrometheusPluginBootService implements PluginBootService {
     @Override
     public String getType() {
         return "Prometheus";
+    }
+    
+    private boolean checkConfig(final PluginConfiguration pluginConfiguration) {
+        String host = pluginConfiguration.getHost();
+        int port = pluginConfiguration.getPort();
+        return null != host && !"".equalsIgnoreCase(host) && port > 0;
     }
     
     private void startServer(final PluginConfiguration configuration) {

@@ -50,15 +50,19 @@ public final class ScalingTaskScheduler implements Runnable {
      * Stop all scaling task.
      */
     public void stop() {
+        log.info("stop scaling job {}", scalingJob.getJobId());
         if (JobStatus.valueOf(scalingJob.getStatus()).isRunning()) {
             scalingJob.setStatus(JobStatus.STOPPING.name());
         }
         for (ScalingTask each : scalingJob.getInventoryTasks()) {
+            log.info("stop inventory task {} - {}", scalingJob.getJobId(), each.getTaskId());
             each.stop();
         }
         for (ScalingTask each : scalingJob.getIncrementalTasks()) {
+            log.info("stop incremental task {} - {}", scalingJob.getJobId(), each.getTaskId());
             each.stop();
         }
+        scalingJob.getResumeBreakPointManager().close();
     }
     
     @Override

@@ -62,9 +62,19 @@ public final class ScalingConstant {
     public static final String CONFIG = "config";
     
     /**
+     * Status.
+     */
+    public static final String STATUS = "status";
+    
+    /**
      * Position.
      */
     public static final String POSITION = "position";
+    
+    /**
+     * Workflow.
+     */
+    public static final String WORKFLOW = "workflow";
     
     /**
      * Incremental.

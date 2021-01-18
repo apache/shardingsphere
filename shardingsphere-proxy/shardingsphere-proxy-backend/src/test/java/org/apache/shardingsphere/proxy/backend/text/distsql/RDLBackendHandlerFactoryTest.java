@@ -24,6 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.Create
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -36,9 +37,11 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.RDLBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLBackendHandlerFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateDatabaseStatement;
@@ -254,6 +257,22 @@ public final class RDLBackendHandlerFactoryTest {
         assertTrue(rdlBackendHandler.isPresent());
         ResponseHeader response = rdlBackendHandler.get().execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
+    }
+    
+    @Test(expected = ClassCastException.class)
+    public void assertExecuteShowResourceContext() throws SQLException {
+        BackendConnection connection = mock(BackendConnection.class);
+        when(connection.getSchemaName()).thenReturn("schema");
+        try {
+            RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(ShowResourcesStatement.class), connection);
+        } catch (final SQLException ex) {
+            assertThat(ex.getMessage(), is("No Registry center to execute `ShowResourcesStatement` SQL"));
+        }
+        setGovernanceMetaDataContexts(true);
+        Optional<TextProtocolBackendHandler> rdlBackendHandler = RQLBackendHandlerFactory.newInstance(mock(ShowResourcesStatement.class), connection);
+        assertTrue(rdlBackendHandler.isPresent());
+        ResponseHeader response = rdlBackendHandler.get().execute();
+        assertThat(response, instanceOf(QueryResponseHeader.class));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

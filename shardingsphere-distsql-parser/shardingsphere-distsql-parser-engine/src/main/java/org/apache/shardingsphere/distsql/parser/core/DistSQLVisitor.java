@@ -130,8 +130,8 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
             props.setProperty(each.key.getText(), each.value.getText());
         }
         result.setName(ctx.ruleName.getText());
-        result.setPrimaryDatasource(ctx.primary.getText());
-        result.setReplicaDatasources(replicaDatasources);
+        result.setPrimaryDataSource(ctx.primary.getText());
+        result.setReplicaDataSources(replicaDatasources);
         result.setLoadBalancer(ctx.loadBalancer.getText());
         result.setProps(props);
         return result;
@@ -139,11 +139,16 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
 
     @Override
     public ASTNode visitAlterReplicaQueryRule(final AlterReplicaQueryRuleContext ctx) {
-        Collection<ReplicaQueryRuleSegment> replicaQueryRules = new LinkedList<>();
+        Collection<ReplicaQueryRuleSegment> modifyReplicaQueryRules = new LinkedList<>();
+        Collection<ReplicaQueryRuleSegment> addReplicaQueryRules = new LinkedList<>();
         for (AlterReplicaQueryRuleDefinitionContext each : ctx.alterReplicaQueryRuleDefinition()) {
-            replicaQueryRules.add((ReplicaQueryRuleSegment) visit(each));
+            if (null != each.MODIFY()) {
+                modifyReplicaQueryRules.add((ReplicaQueryRuleSegment) visit(each));
+            } else {
+                addReplicaQueryRules.add((ReplicaQueryRuleSegment) visit(each));
+            }
         }
-        return new AlterReplicaQueryRuleStatement(replicaQueryRules);
+        return new AlterReplicaQueryRuleStatement(modifyReplicaQueryRules, addReplicaQueryRules);
     }
 
     @Override
@@ -163,8 +168,8 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
             replicaDatasources.add(each.getText());
         }
         result.setName(ctx.ruleName.getText());
-        result.setPrimaryDatasource(ctx.primary.getText());
-        result.setReplicaDatasources(replicaDatasources);
+        result.setPrimaryDataSource(ctx.primary.getText());
+        result.setReplicaDataSources(replicaDatasources);
         if (null != ctx.loadBalancer) {
             Properties props = new Properties();
             for (AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {

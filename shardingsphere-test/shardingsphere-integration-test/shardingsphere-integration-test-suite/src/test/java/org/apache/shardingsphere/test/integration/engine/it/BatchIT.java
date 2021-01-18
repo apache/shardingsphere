@@ -22,8 +22,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.test.integration.cases.IntegrateTestCaseContext;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrateTestCaseAssertion;
+import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
@@ -31,11 +31,8 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.env.schema.SchemaEnvironmentManager;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -62,34 +59,22 @@ public abstract class BatchIT extends BaseIT {
     
     private static DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    private final IntegrateTestCaseContext testCaseContext;
+    private final IntegrationTestCaseContext testCaseContext;
     
     private final String sql;
     
     private final Collection<DataSet> dataSets;
     
-    protected BatchIT(final IntegrateTestCaseContext testCaseContext,
+    protected BatchIT(final IntegrationTestCaseContext testCaseContext,
                       final String adapter, final String scenario, final DatabaseType databaseType, final String sql) throws IOException, JAXBException, SQLException {
         super(adapter, scenario, databaseType);
         this.testCaseContext = testCaseContext;
         this.sql = sql;
         dataSets = new LinkedList<>();
-        for (IntegrateTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
+        for (IntegrationTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
             dataSets.add(DataSetLoader.load(testCaseContext.getParentPath(), scenario, databaseType, each.getExpectedDataFile()));
         }
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(scenario), getActualDataSources());
-    }
-    
-    @BeforeClass
-    public static void initDatabasesAndTables() throws JAXBException, IOException {
-        SchemaEnvironmentManager.createDatabases();
-        SchemaEnvironmentManager.dropTables();
-        SchemaEnvironmentManager.createTables();
-    }
-    
-    @AfterClass
-    public static void destroyDatabasesAndTables() throws IOException, JAXBException {
-        SchemaEnvironmentManager.dropDatabases();
     }
     
     @Before

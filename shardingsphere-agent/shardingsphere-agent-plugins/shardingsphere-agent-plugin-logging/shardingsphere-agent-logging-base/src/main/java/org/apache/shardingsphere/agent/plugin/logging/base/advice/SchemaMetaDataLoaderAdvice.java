@@ -21,13 +21,13 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.api.advice.StaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
 
 /**
  * Schema meta data loader advice.
  */
 @Slf4j
-public final class SchemaMetaDataLoaderAdvice implements StaticMethodAroundAdvice {
+public final class SchemaMetaDataLoaderAdvice implements ClassStaticMethodAroundAdvice {
     
     @Override
     @SuppressWarnings("unchecked")

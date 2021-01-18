@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
-import org.apache.shardingsphere.agent.core.plugin.loader.PluginLoader;
+import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
 
 /**
  * Plugin service loader.

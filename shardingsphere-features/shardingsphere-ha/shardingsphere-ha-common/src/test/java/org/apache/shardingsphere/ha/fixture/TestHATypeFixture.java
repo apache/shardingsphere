@@ -47,10 +47,6 @@ public final class TestHATypeFixture implements HAType {
     }
     
     @Override
-    public void stopPeriodicalUpdate() {
-    }
-    
-    @Override
     public String getPrimaryDataSource() {
         return null;
     }

@@ -43,6 +43,15 @@ public final class PostgreSQLDataSourceMetaDataTest {
         assertThat(actual.getCatalog(), is("ds_0"));
         assertNull(actual.getSchema());
     }
+
+    @Test
+    public void assertMultipleDatabases() {
+        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:postgresql://127.0.0.1:5432,127.0.0.1:5433,127.0.0.1:5434/ds_0?targetServerType=master");
+        assertThat(actual.getHostName(), is("127.0.0.1"));
+        assertThat(actual.getPort(), is(5432));
+        assertThat(actual.getCatalog(), is("ds_0"));
+        assertNull(actual.getSchema());
+    }
     
     @Test(expected = UnrecognizedDatabaseURLException.class)
     public void assertNewConstructorFailure() {

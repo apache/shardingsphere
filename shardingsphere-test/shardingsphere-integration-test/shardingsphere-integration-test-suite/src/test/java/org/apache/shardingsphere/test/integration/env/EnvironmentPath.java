@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.env;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.net.URL;
 
@@ -32,22 +33,46 @@ public final class EnvironmentPath {
     
     private static final String ROOT_PATH = "env";
     
-    private static final String SCHEMA_FILE = "schema.xml";
+    private static final String DATABASES_FILE = "databases.xml";
+    
+    private static final String INIT_SQL_FILE = "init.sql";
     
     private static final String DATASET_FILE = "dataset.xml";
     
     private static final String RULES_CONFIG_FILE = "rules.yaml";
     
     private static final String AUTHORITY_FILE = "authority.xml";
-    
+
     /**
-     * Get schema file.
+     * Assert scenario directory existed.
      * 
      * @param scenario scenario
-     * @return schema file
      */
-    public static String getSchemaFile(final String scenario) {
-        return getFile(scenario, SCHEMA_FILE);
+    public static void assertScenarioDirectoryExisted(final String scenario) {
+        String scenarioDirectory = String.join("/", ROOT_PATH, scenario);
+        URL url = EnvironmentPath.class.getClassLoader().getResource(scenarioDirectory);
+        assertNotNull(String.format("Scenario directory `%s` must exist.", scenarioDirectory), url);
+    }
+    
+    /**
+     * Get databases file.
+     * 
+     * @param scenario scenario
+     * @return databases file
+     */
+    public static String getDatabasesFile(final String scenario) {
+        return getFile(scenario, DATABASES_FILE);
+    }
+    
+    /**
+     * Get init SQL file.
+     *
+     * @param databaseType database type
+     * @param scenario scenario
+     * @return init SQL file
+     */
+    public static String getInitSQLFile(final DatabaseType databaseType, final String scenario) {
+        return getFile(databaseType, scenario, INIT_SQL_FILE);
     }
     
     /**
@@ -81,8 +106,16 @@ public final class EnvironmentPath {
     }
     
     private static String getFile(final String scenario, final String fileName) {
-        URL url = EnvironmentPath.class.getClassLoader().getResource(String.join("/", ROOT_PATH, scenario, fileName));
-        assertNotNull(url);
+        String path = String.join("/", ROOT_PATH, scenario, fileName);
+        URL url = EnvironmentPath.class.getClassLoader().getResource(path);
+        assertNotNull(String.format("File `%s` must exist.", path), url);
+        return url.getFile();
+    }
+    
+    private static String getFile(final DatabaseType databaseType, final String scenario, final String fileName) {
+        String path = String.join("/", ROOT_PATH, scenario, databaseType.getName().toLowerCase(), fileName);
+        URL url = EnvironmentPath.class.getClassLoader().getResource(path);
+        assertNotNull(String.format("File `%s` must exist.", path), url);
         return url.getFile();
     }
 }

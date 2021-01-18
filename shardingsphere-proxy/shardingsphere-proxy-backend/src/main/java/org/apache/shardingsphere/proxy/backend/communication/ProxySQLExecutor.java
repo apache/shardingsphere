@@ -134,7 +134,7 @@ public final class ProxySQLExecutor {
         }
         MetaDataContexts metaData = ProxyContext.getInstance().getMetaDataContexts();
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(type, metaData.getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType(), 
-                executionContext.getSqlStatementContext().getSqlStatement(), backendConnection, isExceptionThrown, isReturnGeneratedKeys, true);
+                executionContext.getSqlStatementContext().getSqlStatement(), backendConnection, isReturnGeneratedKeys, isExceptionThrown, true);
         CalciteRowExecutor executor = new CalciteRowExecutor(rules, maxConnectionsSizePerQuery, backendConnection, jdbcExecutor.getJdbcExecutor(), executionContext, callback);
         CalciteExecutor calciteExecutor = new CalciteJDBCExecutor(metaData.getCalciteContextFactory().create(backendConnection.getSchemaName(), executor));
         backendConnection.setCalciteExecutor(calciteExecutor);
@@ -147,6 +147,6 @@ public final class ProxySQLExecutor {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
                 type, maxConnectionsSizePerQuery, backendConnection, new StatementOption(isReturnGeneratedKeys), rules);
         Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
-        return jdbcExecutor.execute(executionContext.getSqlStatementContext().getSqlStatement(), executionGroups, isExceptionThrown, isReturnGeneratedKeys);
+        return jdbcExecutor.execute(executionContext.getSqlStatementContext().getSqlStatement(), executionGroups, isReturnGeneratedKeys, isExceptionThrown);
     }
 }

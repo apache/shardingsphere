@@ -97,11 +97,11 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements DDLSQLVisitor, SQLStatementVisitor {
-
+    
     public PostgreSQLDDLStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {

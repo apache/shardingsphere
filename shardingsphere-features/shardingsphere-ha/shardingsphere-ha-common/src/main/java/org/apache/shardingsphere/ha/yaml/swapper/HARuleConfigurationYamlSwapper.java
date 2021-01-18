@@ -49,8 +49,8 @@ public final class HARuleConfigurationYamlSwapper
         if (null != data.getLoadBalancers()) {
             data.getLoadBalancers().forEach((key, value) -> result.getLoadBalancers().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         }
-        if (null != data.getHaConfiguration()) {
-            result.setHaType(algorithmSwapper.swapToYamlConfiguration(data.getHaConfiguration()));
+        if (null != data.getHaTypes()) {
+            data.getHaTypes().forEach((key, value) -> result.getHaTypes().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         }
         return result;
     }
@@ -61,6 +61,7 @@ public final class HARuleConfigurationYamlSwapper
         result.setDataSourceNames(dataSourceRuleConfig.getDataSourceNames());
         result.setLoadBalancerName(dataSourceRuleConfig.getLoadBalancerName());
         result.setReplicaQuery(dataSourceRuleConfig.isReplicaQuery());
+        result.setHaTypeName(dataSourceRuleConfig.getHaTypeName());
         return result;
     }
     
@@ -74,13 +75,16 @@ public final class HARuleConfigurationYamlSwapper
         if (null != yamlConfig.getLoadBalancers()) {
             yamlConfig.getLoadBalancers().forEach((key, value) -> loadBalancers.put(key, algorithmSwapper.swapToObject(value)));
         }
-        ShardingSphereAlgorithmConfiguration haType = algorithmSwapper.swapToObject(yamlConfig.getHaType());
-        return new HARuleConfiguration(dataSources, loadBalancers, haType);
+        Map<String, ShardingSphereAlgorithmConfiguration> haTypes = new LinkedHashMap<>(yamlConfig.getHaTypes().entrySet().size(), 1);
+        if (null != yamlConfig.getHaTypes()) {
+            yamlConfig.getHaTypes().forEach((key, value) -> haTypes.put(key, algorithmSwapper.swapToObject(value)));
+        }
+        return new HARuleConfiguration(dataSources, loadBalancers, haTypes);
     }
     
     private HADataSourceRuleConfiguration swapToObject(final String name, final YamlHADataSourceRuleConfiguration yamlDataSourceRuleConfig) {
         return new HADataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getDataSourceNames(),
-                yamlDataSourceRuleConfig.getLoadBalancerName(), yamlDataSourceRuleConfig.isReplicaQuery());
+                yamlDataSourceRuleConfig.getLoadBalancerName(), yamlDataSourceRuleConfig.isReplicaQuery(), yamlDataSourceRuleConfig.getHaTypeName());
     }
     
     @Override

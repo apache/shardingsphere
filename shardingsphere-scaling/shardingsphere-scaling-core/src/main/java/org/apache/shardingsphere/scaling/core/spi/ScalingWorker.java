@@ -25,13 +25,6 @@ import org.apache.shardingsphere.governance.repository.api.config.GovernanceConf
 public interface ScalingWorker {
     
     /**
-     * Get type.
-     *
-     * @return type of scaling worker.
-     */
-    String getType();
-    
-    /**
      * Init scaling worker.
      *
      * @param governanceConfig governance configuration

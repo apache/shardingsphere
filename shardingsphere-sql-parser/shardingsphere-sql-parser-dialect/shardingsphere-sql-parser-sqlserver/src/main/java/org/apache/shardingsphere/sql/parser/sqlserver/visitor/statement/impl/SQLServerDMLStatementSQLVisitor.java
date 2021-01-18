@@ -127,11 +127,11 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class SQLServerDMLStatementSQLVisitor extends SQLServerStatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
-
+    
     public SQLServerDMLStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         SQLServerInsertStatement result;
