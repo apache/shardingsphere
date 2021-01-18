@@ -129,7 +129,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Getter(AccessLevel.PROTECTED)
     private CalciteExecutor calciteExecutor;
-    
+
     public ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql) throws SQLException {
         this(connection, sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, false);
     }
@@ -402,7 +402,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return executionContext.getSqlStatementContext() instanceof InsertStatementContext
                 ? ((InsertStatementContext) executionContext.getSqlStatementContext()).getGeneratedKeyContext() : Optional.empty();
     }
-    
+
     @Override
     public ResultSet getGeneratedKeys() throws SQLException {
         Optional<GeneratedKeyContext> generatedKey = findGeneratedKey(executionContext);

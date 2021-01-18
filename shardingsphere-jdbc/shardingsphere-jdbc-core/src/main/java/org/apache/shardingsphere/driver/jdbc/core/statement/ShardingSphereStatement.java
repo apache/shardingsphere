@@ -115,7 +115,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     @Getter(AccessLevel.PROTECTED)
     private CalciteExecutor calciteExecutor;
-    
+
     public ShardingSphereStatement(final ShardingSphereConnection connection) {
         this(connection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
@@ -385,7 +385,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         };
         return driverJDBCExecutor.execute(executionGroups, sqlStatement, routeUnits, jdbcExecutorCallback);
     }
-    
+
     private ExecutionContext createExecutionContext(final String sql) throws SQLException {
         clearStatements();
         LogicSQL logicSQL = createLogicSQL(sql);
