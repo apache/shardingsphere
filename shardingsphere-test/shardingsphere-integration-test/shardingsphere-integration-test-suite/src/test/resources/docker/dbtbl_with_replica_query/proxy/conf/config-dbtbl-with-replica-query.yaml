@@ -209,7 +209,7 @@ dataSources:
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   replica_ds_9:
-    url: jdbc:mysql://mysql.dbtbl-with-replica-query.host:3306/replica_ds_8?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query.host:3306/replica_ds_9?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
