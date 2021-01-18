@@ -65,8 +65,8 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.optimize.execute.CalciteExecutor;
-import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
 import org.apache.shardingsphere.infra.optimize.execute.CalciteJDBCExecutor;
+import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
@@ -275,8 +275,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             }
             
             @Override
-            protected Integer getSaneResult(final SQLStatement sqlStatement) {
-                return 0;
+            protected Optional<Integer> getSaneResult(final SQLStatement sqlStatement) {
+                return Optional.of(0);
             }
         };
         return driverJDBCExecutor.executeUpdate(executionGroups, sqlStatementContext, routeUnits, callback);
@@ -379,8 +379,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             }
             
             @Override
-            protected Boolean getSaneResult(final SQLStatement sqlStatement) {
-                return sqlStatement instanceof SelectStatement;
+            protected Optional<Boolean> getSaneResult(final SQLStatement sqlStatement) {
+                return Optional.of(sqlStatement instanceof SelectStatement);
             }
         };
         return driverJDBCExecutor.execute(executionGroups, sqlStatement, routeUnits, jdbcExecutorCallback);
