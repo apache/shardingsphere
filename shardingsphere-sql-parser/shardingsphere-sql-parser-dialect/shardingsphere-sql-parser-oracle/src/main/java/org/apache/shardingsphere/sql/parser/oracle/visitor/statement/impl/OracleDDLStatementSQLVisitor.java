@@ -49,6 +49,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -264,17 +265,22 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
         OracleCreateIndexStatement result = new OracleCreateIndexStatement();
         if (null != ctx.createIndexDefinitionClause().tableIndexClause()) {
             result.setTable((SimpleTableSegment) visit(ctx.createIndexDefinitionClause().tableIndexClause().tableName()));
+            result.setIndex((IndexSegment) visit(ctx.indexName()));
         }
         return result;
     }
     
     @Override
     public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
-        return new OracleAlterIndexStatement();
+        OracleAlterIndexStatement result = new OracleAlterIndexStatement();
+        result.setIndex((IndexSegment) visit(ctx.indexName()));
+        return result;
     }
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        return new OracleDropIndexStatement();
+        OracleDropIndexStatement result = new OracleDropIndexStatement();
+        result.getIndexes().add((IndexSegment) visit(ctx.indexName()));
+        return result;
     }
 }
