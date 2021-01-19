@@ -119,6 +119,10 @@ indexName
     : identifier
     ;
 
+savepointName
+    : identifier
+    ;
+    
 owner
     : identifier
     ;
