@@ -10,16 +10,16 @@ Not like Integration test, SQL parse test does not need a specific database envi
 
 ### SQL Data
 
-As mentioned `sql-case-id` in Integration test，test-case-id could be shared in different module to test, and the file is at `/sharding-sql-test/src/main/resources/sql/sharding/SQL-TYPE/*.xml` 
+As mentioned `sql-case-id` in Integration test，test-case-id could be shared in different module to test, and the file is at `shardingsphere-sql-parser/shardingsphere-sql-parser-test/src/main/resources/sql/supported/${SQL-TYPE}/*.xml` 
 
-### Parser Assert Data
+### Assert Data
 
-The assert data is at `/sharding-core/sharding-core-parse/sharding-core-parse-test/src/test/resources/sharding/SQL-TYPE/*.xml`
+The assert data is at `shardingsphere-sql-parser/shardingsphere-sql-parser-test/src/main/resources/case/${SQL-TYPE}/*.xml`
 in that xml file, it could assert against the table name, token or sql condition and so on. For example:
 
 ```xml
 <parser-result-sets>
-<parser-result sql-case-id="insert_with_multiple_values">
+    <parser-result sql-case-id="insert_with_multiple_values">
         <tables>
             <table name="t_order" />
         </tables>
@@ -48,4 +48,4 @@ in that xml file, it could assert against the table name, token or sql condition
 </parser-result-sets>
 ```
 
-When these configs are ready, launch the test engine in sharding-core-parse-test to test SQL parse. 
+When these configs are ready, launch the test engine in `shardingsphere-sql-parser/shardingsphere-sql-parser-test` to test SQL parse. 
