@@ -1,0 +1,109 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata>
+        <column name="order_id" />
+        <column name="user_id" />
+        <column name="status" />
+        <column name="item_id" />
+        <column name="order_id" />
+        <column name="user_id" />
+        <column name="status" />
+        <column name="creation_date" />
+    </metadata>
+    <row values="1000, 10, init_replica, 100001, 1000, 10, init_replica, 2017-08-08" />
+    <row values="1000, 10, init_replica, 100002, 1000, 10, init_replica, 2017-08-08" />
+    <row values="1001, 10, init_replica, 100101, 1001, 10, init_replica, 2017-08-08" />
+    <row values="1001, 10, init_replica, 100102, 1001, 10, init_replica, 2017-08-08" />
+    <row values="1100, 11, init_replica, 110001, 1100, 11, init_replica, 2017-08-08" />
+    <row values="1100, 11, init_replica, 110002, 1100, 11, init_replica, 2017-08-08" />
+    <row values="1101, 11, init_replica, 110101, 1101, 11, init_replica, 2017-08-08" />
+    <row values="1101, 11, init_replica, 110102, 1101, 11, init_replica, 2017-08-08" />
+    <row values="1200, 12, init_replica, 120001, 1200, 12, init_replica, 2017-08-08" />
+    <row values="1200, 12, init_replica, 120002, 1200, 12, init_replica, 2017-08-08" />
+    <row values="1201, 12, init_replica, 120101, 1201, 12, init_replica, 2017-08-08" />
+    <row values="1201, 12, init_replica, 120102, 1201, 12, init_replica, 2017-08-08" />
+    <row values="1300, 13, init_replica, 130001, 1300, 13, init_replica, 2017-08-08" />
+    <row values="1300, 13, init_replica, 130002, 1300, 13, init_replica, 2017-08-08" />
+    <row values="1301, 13, init_replica, 130101, 1301, 13, init_replica, 2017-08-08" />
+    <row values="1301, 13, init_replica, 130102, 1301, 13, init_replica, 2017-08-08" />
+    <row values="1400, 14, init_replica, 140001, 1400, 14, init_replica, 2017-08-08" />
+    <row values="1400, 14, init_replica, 140002, 1400, 14, init_replica, 2017-08-08" />
+    <row values="1401, 14, init_replica, 140101, 1401, 14, init_replica, 2017-08-08" />
+    <row values="1401, 14, init_replica, 140102, 1401, 14, init_replica, 2017-08-08" />
+    <row values="1500, 15, init_replica, 150001, 1500, 15, init_replica, 2017-08-08" />
+    <row values="1500, 15, init_replica, 150002, 1500, 15, init_replica, 2017-08-08" />
+    <row values="1501, 15, init_replica, 150101, 1501, 15, init_replica, 2017-08-08" />
+    <row values="1501, 15, init_replica, 150102, 1501, 15, init_replica, 2017-08-08" />
+    <row values="1600, 16, init_replica, 160001, 1600, 16, init_replica, 2017-08-08" />
+    <row values="1600, 16, init_replica, 160002, 1600, 16, init_replica, 2017-08-08" />
+    <row values="1601, 16, init_replica, 160101, 1601, 16, init_replica, 2017-08-08" />
+    <row values="1601, 16, init_replica, 160102, 1601, 16, init_replica, 2017-08-08" />
+    <row values="1700, 17, init_replica, 170001, 1700, 17, init_replica, 2017-08-08" />
+    <row values="1700, 17, init_replica, 170002, 1700, 17, init_replica, 2017-08-08" />
+    <row values="1701, 17, init_replica, 170101, 1701, 17, init_replica, 2017-08-08" />
+    <row values="1701, 17, init_replica, 170102, 1701, 17, init_replica, 2017-08-08" />
+    <row values="1800, 18, init_replica, 180001, 1800, 18, init_replica, 2017-08-08" />
+    <row values="1800, 18, init_replica, 180002, 1800, 18, init_replica, 2017-08-08" />
+    <row values="1801, 18, init_replica, 180101, 1801, 18, init_replica, 2017-08-08" />
+    <row values="1801, 18, init_replica, 180102, 1801, 18, init_replica, 2017-08-08" />
+    <row values="1900, 19, init_replica, 190001, 1900, 19, init_replica, 2017-08-08" />
+    <row values="1900, 19, init_replica, 190002, 1900, 19, init_replica, 2017-08-08" />
+    <row values="1901, 19, init_replica, 190101, 1901, 19, init_replica, 2017-08-08" />
+    <row values="1901, 19, init_replica, 190102, 1901, 19, init_replica, 2017-08-08" />
+    <row values="2000, 20, init_replica, 200001, 2000, 20, init_replica, 2017-08-08" />
+    <row values="2000, 20, init_replica, 200002, 2000, 20, init_replica, 2017-08-08" />
+    <row values="2001, 20, init_replica, 200101, 2001, 20, init_replica, 2017-08-08" />
+    <row values="2001, 20, init_replica, 200102, 2001, 20, init_replica, 2017-08-08" />
+    <row values="2100, 21, init_replica, 210001, 2100, 21, init_replica, 2017-08-08" />
+    <row values="2100, 21, init_replica, 210002, 2100, 21, init_replica, 2017-08-08" />
+    <row values="2101, 21, init_replica, 210101, 2101, 21, init_replica, 2017-08-08" />
+    <row values="2101, 21, init_replica, 210102, 2101, 21, init_replica, 2017-08-08" />
+    <row values="2200, 22, init_replica, 220001, 2200, 22, init_replica, 2017-08-08" />
+    <row values="2200, 22, init_replica, 220002, 2200, 22, init_replica, 2017-08-08" />
+    <row values="2201, 22, init_replica, 220101, 2201, 22, init_replica, 2017-08-08" />
+    <row values="2201, 22, init_replica, 220102, 2201, 22, init_replica, 2017-08-08" />
+    <row values="2300, 23, init_replica, 230001, 2300, 23, init_replica, 2017-08-08" />
+    <row values="2300, 23, init_replica, 230002, 2300, 23, init_replica, 2017-08-08" />
+    <row values="2301, 23, init_replica, 230101, 2301, 23, init_replica, 2017-08-08" />
+    <row values="2301, 23, init_replica, 230102, 2301, 23, init_replica, 2017-08-08" />
+    <row values="2400, 24, init_replica, 240001, 2400, 24, init_replica, 2017-08-08" />
+    <row values="2400, 24, init_replica, 240002, 2400, 24, init_replica, 2017-08-08" />
+    <row values="2401, 24, init_replica, 240101, 2401, 24, init_replica, 2017-08-08" />
+    <row values="2401, 24, init_replica, 240102, 2401, 24, init_replica, 2017-08-08" />
+    <row values="2500, 25, init_replica, 250001, 2500, 25, init_replica, 2017-08-08" />
+    <row values="2500, 25, init_replica, 250002, 2500, 25, init_replica, 2017-08-08" />
+    <row values="2501, 25, init_replica, 250101, 2501, 25, init_replica, 2017-08-08" />
+    <row values="2501, 25, init_replica, 250102, 2501, 25, init_replica, 2017-08-08" />
+    <row values="2600, 26, init_replica, 260001, 2600, 26, init_replica, 2017-08-08" />
+    <row values="2600, 26, init_replica, 260002, 2600, 26, init_replica, 2017-08-08" />
+    <row values="2601, 26, init_replica, 260101, 2601, 26, init_replica, 2017-08-08" />
+    <row values="2601, 26, init_replica, 260102, 2601, 26, init_replica, 2017-08-08" />
+    <row values="2700, 27, init_replica, 270001, 2700, 27, init_replica, 2017-08-08" />
+    <row values="2700, 27, init_replica, 270002, 2700, 27, init_replica, 2017-08-08" />
+    <row values="2701, 27, init_replica, 270101, 2701, 27, init_replica, 2017-08-08" />
+    <row values="2701, 27, init_replica, 270102, 2701, 27, init_replica, 2017-08-08" />
+    <row values="2800, 28, init_replica, 280001, 2800, 28, init_replica, 2017-08-08" />
+    <row values="2800, 28, init_replica, 280002, 2800, 28, init_replica, 2017-08-08" />
+    <row values="2801, 28, init_replica, 280101, 2801, 28, init_replica, 2017-08-08" />
+    <row values="2801, 28, init_replica, 280102, 2801, 28, init_replica, 2017-08-08" />
+    <row values="2900, 29, init_replica, 290001, 2900, 29, init_replica, 2017-08-08" />
+    <row values="2900, 29, init_replica, 290002, 2900, 29, init_replica, 2017-08-08" />
+    <row values="2901, 29, init_replica, 290101, 2901, 29, init_replica, 2017-08-08" />
+    <row values="2901, 29, init_replica, 290102, 2901, 29, init_replica, 2017-08-08" />
+</dataset>
