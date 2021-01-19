@@ -46,7 +46,6 @@
     <row values="1008, 10, init_replica, 100801, 1008, 10, init_replica, 2017-08-08" />
     <row values="1009, 10, init_replica, 100900, 1009, 10, init_replica, 2017-08-08" />
     <row values="1009, 10, init_replica, 100901, 1009, 10, init_replica, 2017-08-08" />
-
     <row values="1100, 11, init_replica, 110000, 1100, 11, init_replica, 2017-08-08" />
     <row values="1100, 11, init_replica, 110001, 1100, 11, init_replica, 2017-08-08" />
     <row values="1101, 11, init_replica, 110100, 1101, 11, init_replica, 2017-08-08" />
@@ -67,7 +66,6 @@
     <row values="1108, 11, init_replica, 110801, 1108, 11, init_replica, 2017-08-08" />
     <row values="1109, 11, init_replica, 110900, 1109, 11, init_replica, 2017-08-08" />
     <row values="1109, 11, init_replica, 110901, 1109, 11, init_replica, 2017-08-08" />
-
     <row values="1200, 12, init_replica, 120000, 1200, 12, init_replica, 2017-08-08" />
     <row values="1200, 12, init_replica, 120001, 1200, 12, init_replica, 2017-08-08" />
     <row values="1201, 12, init_replica, 120100, 1201, 12, init_replica, 2017-08-08" />
@@ -88,7 +86,6 @@
     <row values="1208, 12, init_replica, 120801, 1208, 12, init_replica, 2017-08-08" />
     <row values="1209, 12, init_replica, 120900, 1209, 12, init_replica, 2017-08-08" />
     <row values="1209, 12, init_replica, 120901, 1209, 12, init_replica, 2017-08-08" />
-
     <row values="1300, 13, init_replica, 130000, 1300, 13, init_replica, 2017-08-08" />
     <row values="1300, 13, init_replica, 130001, 1300, 13, init_replica, 2017-08-08" />
     <row values="1301, 13, init_replica, 130100, 1301, 13, init_replica, 2017-08-08" />
@@ -109,7 +106,6 @@
     <row values="1308, 13, init_replica, 130801, 1308, 13, init_replica, 2017-08-08" />
     <row values="1309, 13, init_replica, 130900, 1309, 13, init_replica, 2017-08-08" />
     <row values="1309, 13, init_replica, 130901, 1309, 13, init_replica, 2017-08-08" />
-
     <row values="1400, 14, init_replica, 140000, 1400, 14, init_replica, 2017-08-08" />
     <row values="1400, 14, init_replica, 140001, 1400, 14, init_replica, 2017-08-08" />
     <row values="1401, 14, init_replica, 140100, 1401, 14, init_replica, 2017-08-08" />
@@ -130,7 +126,6 @@
     <row values="1408, 14, init_replica, 140801, 1408, 14, init_replica, 2017-08-08" />
     <row values="1409, 14, init_replica, 140900, 1409, 14, init_replica, 2017-08-08" />
     <row values="1409, 14, init_replica, 140901, 1409, 14, init_replica, 2017-08-08" />
-
     <row values="1500, 15, init_replica, 150000, 1500, 15, init_replica, 2017-08-08" />
     <row values="1500, 15, init_replica, 150001, 1500, 15, init_replica, 2017-08-08" />
     <row values="1501, 15, init_replica, 150100, 1501, 15, init_replica, 2017-08-08" />
@@ -151,7 +146,6 @@
     <row values="1508, 15, init_replica, 150801, 1508, 15, init_replica, 2017-08-08" />
     <row values="1509, 15, init_replica, 150900, 1509, 15, init_replica, 2017-08-08" />
     <row values="1509, 15, init_replica, 150901, 1509, 15, init_replica, 2017-08-08" />
-
     <row values="1600, 16, init_replica, 160000, 1600, 16, init_replica, 2017-08-08" />
     <row values="1600, 16, init_replica, 160001, 1600, 16, init_replica, 2017-08-08" />
     <row values="1601, 16, init_replica, 160100, 1601, 16, init_replica, 2017-08-08" />
@@ -172,7 +166,6 @@
     <row values="1608, 16, init_replica, 160801, 1608, 16, init_replica, 2017-08-08" />
     <row values="1609, 16, init_replica, 160900, 1609, 16, init_replica, 2017-08-08" />
     <row values="1609, 16, init_replica, 160901, 1609, 16, init_replica, 2017-08-08" />
-
     <row values="1700, 17, init_replica, 170000, 1700, 17, init_replica, 2017-08-08" />
     <row values="1700, 17, init_replica, 170001, 1700, 17, init_replica, 2017-08-08" />
     <row values="1701, 17, init_replica, 170100, 1701, 17, init_replica, 2017-08-08" />
@@ -193,7 +186,6 @@
     <row values="1708, 17, init_replica, 170801, 1708, 17, init_replica, 2017-08-08" />
     <row values="1709, 17, init_replica, 170900, 1709, 17, init_replica, 2017-08-08" />
     <row values="1709, 17, init_replica, 170901, 1709, 17, init_replica, 2017-08-08" />
-
     <row values="1800, 18, init_replica, 180000, 1800, 18, init_replica, 2017-08-08" />
     <row values="1800, 18, init_replica, 180001, 1800, 18, init_replica, 2017-08-08" />
     <row values="1801, 18, init_replica, 180100, 1801, 18, init_replica, 2017-08-08" />
@@ -214,7 +206,6 @@
     <row values="1808, 18, init_replica, 180801, 1808, 18, init_replica, 2017-08-08" />
     <row values="1809, 18, init_replica, 180900, 1809, 18, init_replica, 2017-08-08" />
     <row values="1809, 18, init_replica, 180901, 1809, 18, init_replica, 2017-08-08" />
-
     <row values="1900, 19, init_replica, 190000, 1900, 19, init_replica, 2017-08-08" />
     <row values="1900, 19, init_replica, 190001, 1900, 19, init_replica, 2017-08-08" />
     <row values="1901, 19, init_replica, 190100, 1901, 19, init_replica, 2017-08-08" />
