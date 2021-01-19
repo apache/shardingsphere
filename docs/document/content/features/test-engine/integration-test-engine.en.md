@@ -4,7 +4,13 @@ title = "Integration Test Engine"
 weight = 2
 +++
 
+The SQL parsing unit test covers both SQL placeholder and literal dimension. 
+Integration test can be further divided into two dimensions of strategy and JDBC; the former one includes strategies as Sharding, table Sharding, database Sharding, and replica query while the latter one includes `Statement` and `PreparedStatement`.
+
+Therefore, one SQL can drive 5 kinds of database parsing * 2 kinds of parameter transmission modes + 5 kinds of databases * 5 kinds of Sharding strategies * 2 kinds of JDBC operation modes = 60 test cases, to enable ShardingSphere to achieve the pursuit of high quality.
+
 ## Process
+
 The `Parameterized` in JUnit will collect all test data, and pass to test method to assert one by one. The process of handling test data is just like a leaking hourglass:
 
 ![](https://shardingsphere.apache.org/document/current/img/test-engine/integration-test.jpg)
