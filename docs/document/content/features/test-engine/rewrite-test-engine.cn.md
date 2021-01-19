@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.9.4. </b>"
+pre = "<b>3.9.3. </b>"
 title = "SQL改写测试引擎"
-weight = 4
+weight = 3
 +++
 
 ## 目标
