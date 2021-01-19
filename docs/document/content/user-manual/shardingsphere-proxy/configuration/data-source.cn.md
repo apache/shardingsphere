@@ -22,3 +22,5 @@ dataSources: # 数据源配置，可配置多个 <data-source-name>
 rules: # 与 ShardingSphere-JDBC 配置一致
   # ...
 ```
+
+更多的数据源配置参数详见[HikariCP](https://github.com/brettwooldridge/HikariCP) 。

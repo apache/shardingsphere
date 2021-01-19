@@ -21,6 +21,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecorator;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -34,6 +35,7 @@ import java.util.Optional;
  * Backend data source factory using {@code HikariDataSource} for JDBC raw.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSourceFactory {
     
     private static final JDBCRawBackendDataSourceFactory INSTANCE = new JDBCRawBackendDataSourceFactory();
@@ -67,7 +69,15 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         config.setMaximumPoolSize(dataSourceParameter.getMaxPoolSize());
         config.setMinimumIdle(dataSourceParameter.getMinPoolSize());
         config.setReadOnly(dataSourceParameter.isReadOnly());
-        DataSource result = new HikariDataSource(config);
+        DataSource result;
+        try {
+            result = new HikariDataSource(config);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("Exception occur: ", ex);
+            return null;
+        }
         Optional<JDBCParameterDecorator> decorator = findJDBCParameterDecorator(result);
         return decorator.isPresent() ? decorator.get().decorate(result) : result;
     }

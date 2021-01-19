@@ -58,8 +58,8 @@ public final class ScalingElasticJob implements SimpleJob {
     }
     
     private void stopJob(final ShardingContext shardingContext) {
-        log.info("stop job: {} - {}", shardingContext.getJobName(), shardingContext.getShardingItem());
         if (null != scalingJob) {
+            log.info("stop job: {} - {}", shardingContext.getJobName(), shardingContext.getShardingItem());
             SCALING_JOB_SERVICE.stop(scalingJob.getJobId());
             scalingJob = null;
         }

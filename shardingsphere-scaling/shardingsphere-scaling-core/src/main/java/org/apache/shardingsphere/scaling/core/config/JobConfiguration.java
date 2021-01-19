@@ -35,11 +35,11 @@ public final class JobConfiguration {
     
     private String[] shardingTables;
     
-    private int shardingItem;
+    private Integer shardingItem;
     
     private int shardingSize = 1000 * 10000;
     
     private boolean running = true;
     
-    private long allowDelay = 60 * 1000L;
+    private WorkflowConfiguration workflowConfig;
 }

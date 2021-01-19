@@ -18,10 +18,18 @@
 
 <!-- FIXME assert index -->
 <sql-parser-test-cases>
-    <alter-index sql-case-id="alter_index" />
-    <alter-index sql-case-id="alter_index_with_space" />
-    <alter-index sql-case-id="alter_index_with_quota" />
+    <alter-index sql-case-id="alter_index">
+        <index name="order_index" start-index="12" stop-index="22" />
+    </alter-index>
     
+    <alter-index sql-case-id="alter_index_with_space">
+        <index name="order_index" start-index="24" stop-index="34" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_with_quota">
+        <index name="order_index" start-delimiter="&quot;" end-delimiter="&quot;" start-index="12" stop-index="24" />
+    </alter-index>
+
     <alter-index sql-case-id="alter_index_rebuild">
         <table name="t_order" start-index="27" stop-index="33" />
     </alter-index>

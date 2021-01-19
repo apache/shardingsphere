@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -32,7 +32,7 @@ public interface SaneQueryResultEngine extends TypedSPI {
      * Get sane query result.
      * 
      * @param sqlStatement SQL statement
-     * @return sane query result
+     * @return sane execute result
      */
-    Optional<QueryResult> getSaneQueryResult(SQLStatement sqlStatement);
+    Optional<ExecuteResult> getSaneQueryResult(SQLStatement sqlStatement);
 }

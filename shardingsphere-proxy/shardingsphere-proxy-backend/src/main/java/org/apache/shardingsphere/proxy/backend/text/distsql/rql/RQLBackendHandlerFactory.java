@@ -24,7 +24,9 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleState
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.DataSourcesQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ReplicaQueryRuleQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.RuleQueryBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl.ShardingRuleQueryBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Optional;
@@ -44,7 +46,19 @@ public final class RQLBackendHandlerFactory {
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final SQLStatement sqlStatement, final BackendConnection backendConnection) {
         if (sqlStatement instanceof ShowRuleStatement) {
-            return Optional.of(new RuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
+            String ruleType = ((ShowRuleStatement) sqlStatement).getRuleType();
+            switch (ruleType.toUpperCase()) {
+                case "SHARDING":
+                    return Optional.of(new ShardingRuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
+                case "REPLICA_QUERY":
+                    return Optional.of(new ReplicaQueryRuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
+                case "ENCRYPT":
+                    return Optional.of(new RuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
+                case "SHADOW":
+                    return Optional.of(new RuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
+                default:
+                    throw new UnsupportedOperationException(ruleType);
+            }
         }
         if (sqlStatement instanceof ShowResourcesStatement) {
             return Optional.of(new DataSourcesQueryBackendHandler((ShowResourcesStatement) sqlStatement, backendConnection));

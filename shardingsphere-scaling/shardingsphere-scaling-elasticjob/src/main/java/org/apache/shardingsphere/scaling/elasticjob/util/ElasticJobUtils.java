@@ -24,6 +24,7 @@ import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 
 import java.util.Properties;
 
@@ -46,7 +47,8 @@ public final class ElasticJobUtils {
     }
     
     private static ZookeeperConfiguration getZookeeperConfig(final GovernanceConfiguration governanceConfig) {
-        ZookeeperConfiguration result = new ZookeeperConfiguration(governanceConfig.getRegistryCenterConfiguration().getServerLists(), governanceConfig.getName());
+        ZookeeperConfiguration result = new ZookeeperConfiguration(governanceConfig.getRegistryCenterConfiguration().getServerLists(),
+                governanceConfig.getName() + ScalingConstant.SCALING_ELASTIC_JOB_PATH);
         Properties props = governanceConfig.getRegistryCenterConfiguration().getProps();
         result.setMaxSleepTimeMilliseconds(getProperty(props, "max.sleep.time.milliseconds", result.getMaxSleepTimeMilliseconds()));
         result.setBaseSleepTimeMilliseconds(getProperty(props, "base.sleep.time.milliseconds", result.getBaseSleepTimeMilliseconds()));

@@ -65,13 +65,8 @@ public final class ElasticJobScalingWorker implements ScalingWorker {
     private CoordinatorRegistryCenter registryCenter;
     
     @Override
-    public String getType() {
-        return "ElasticJob";
-    }
-    
-    @Override
     public void init(final GovernanceConfiguration governanceConfig) {
-        log.info("Scaling elastic job start...");
+        log.info("Init elastic job scaling worker.");
         this.governanceConfig = governanceConfig;
         registryCenter = ElasticJobUtils.createRegistryCenter(governanceConfig);
         watchConfigRepository();
@@ -146,7 +141,8 @@ public final class ElasticJobScalingWorker implements ScalingWorker {
         }
         if (new LeaderService(registryCenter, jobId).isLeader()) {
             log.info("leader worker update config.");
-            JobAPIFactory.createJobConfigurationAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), governanceConfig.getName(), null)
+            JobAPIFactory.createJobConfigurationAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(),
+                    governanceConfig.getName() + ScalingConstant.SCALING_ELASTIC_JOB_PATH, null)
                     .updateJobConfiguration(JobConfigurationPOJO.fromJobConfiguration(createJobConfig(jobId, scalingConfig)));
         }
         jobBootstrapWrapper.setRunning(scalingConfig.getJobConfiguration().isRunning());
@@ -154,7 +150,7 @@ public final class ElasticJobScalingWorker implements ScalingWorker {
     }
     
     private JobConfiguration createJobConfig(final String jobId, final ScalingConfiguration scalingConfig) {
-        return JobConfiguration.newBuilder(jobId, scalingConfig.getJobConfiguration().getShardingTables().length).jobParameter(GSON.toJson(scalingConfig)).build();
+        return JobConfiguration.newBuilder(jobId, scalingConfig.getJobConfiguration().getShardingTables().length).jobParameter(GSON.toJson(scalingConfig)).overwrite(true).build();
     }
     
     private void deleteJob(final String jobId, final ScalingConfiguration scalingConfig) {

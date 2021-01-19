@@ -39,11 +39,11 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class PostgreSQLTCLStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements TCLSQLVisitor, SQLStatementVisitor {
-
+    
     public PostgreSQLTCLStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
         return new PostgreSQLSetTransactionStatement();

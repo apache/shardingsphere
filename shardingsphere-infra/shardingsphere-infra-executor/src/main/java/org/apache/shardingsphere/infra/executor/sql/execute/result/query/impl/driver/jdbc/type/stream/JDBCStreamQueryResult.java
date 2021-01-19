@@ -121,4 +121,9 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
     public boolean wasNull() throws SQLException {
         return resultSet.wasNull();
     }
+    
+    @Override
+    public void close() throws SQLException {
+        resultSet.close();
+    }
 }

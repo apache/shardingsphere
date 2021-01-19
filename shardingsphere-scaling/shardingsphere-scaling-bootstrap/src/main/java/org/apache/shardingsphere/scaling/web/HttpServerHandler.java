@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.scaling.web;
 
-import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.LongSerializationPolicy;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -51,7 +51,7 @@ import java.util.Optional;
 @Slf4j
 public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     
-    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
+    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().setLongSerializationPolicy(LongSerializationPolicy.STRING).create();
     
     private static final ScalingJobService SCALING_JOB_SERVICE = ScalingJobServiceFactory.getInstance();
     
@@ -90,8 +90,11 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     
     private void startJob(final ChannelHandlerContext context, final String requestBody) {
         Optional<ScalingJob> scalingJob = SCALING_JOB_SERVICE.start(GSON.fromJson(requestBody, ScalingConfiguration.class));
-        Preconditions.checkState(scalingJob.isPresent());
-        response(ResponseContentUtil.build(scalingJob.get()), context, HttpResponseStatus.OK);
+        if (scalingJob.isPresent()) {
+            response(ResponseContentUtil.build(scalingJob.get()), context, HttpResponseStatus.OK);
+            return;
+        }
+        response(ResponseContentUtil.handleBadRequest("Invalid scaling job config!"), context, HttpResponseStatus.BAD_REQUEST);
     }
     
     private void listJobs(final ChannelHandlerContext context) {

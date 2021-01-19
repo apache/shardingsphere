@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.executor;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
@@ -41,6 +42,7 @@ public final class ProxyJDBCExecutor {
     
     private final BackendConnection backendConnection;
     
+    @Getter
     private final JDBCExecutor jdbcExecutor;
     
     /**
@@ -57,7 +59,7 @@ public final class ProxyJDBCExecutor {
                                              final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
         return jdbcExecutor.execute(executionGroups,
-                ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, sqlStatement, backendConnection, isExceptionThrown, isReturnGeneratedKeys, true),
-                ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, sqlStatement, backendConnection, isExceptionThrown, isReturnGeneratedKeys, false));
+                ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, sqlStatement, backendConnection, isReturnGeneratedKeys, isExceptionThrown, true),
+                ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, sqlStatement, backendConnection, isReturnGeneratedKeys, isExceptionThrown, false));
     }
 }

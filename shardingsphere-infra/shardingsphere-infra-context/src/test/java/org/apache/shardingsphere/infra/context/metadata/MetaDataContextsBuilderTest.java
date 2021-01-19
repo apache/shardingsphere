@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MetaDataContextsBuilderTest {
-    
+
     @Test
     public void assertBuildWithoutConfiguration() throws SQLException {
         MetaDataContexts actual = new MetaDataContextsBuilder(Collections.emptyMap(), Collections.emptyMap(), null).build();
@@ -45,7 +45,7 @@ public final class MetaDataContextsBuilderTest {
         assertTrue(((DefaultAuthentication) actual.getAuthentication()).getUsers().isEmpty());
         assertTrue(actual.getProps().getProps().isEmpty());
     }
-    
+
     @Test
     public void assertBuildWithConfigurationsButWithoutDataSource() throws SQLException {
         Properties props = new Properties();
@@ -58,7 +58,7 @@ public final class MetaDataContextsBuilderTest {
         assertThat(actual.getProps().getProps().size(), is(1));
         assertThat(actual.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(1));
     }
-    
+
     @Test
     public void assertBuildWithConfigurationsAndDataSources() throws SQLException {
         Properties props = new Properties();
@@ -71,12 +71,12 @@ public final class MetaDataContextsBuilderTest {
         assertThat(actual.getProps().getProps().size(), is(1));
         assertThat(actual.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(1));
     }
-    
+
     private void assertRules(final MetaDataContexts actual) {
         assertThat(actual.getMetaData("logic_db").getRuleMetaData().getRules().size(), is(1));
         assertThat(actual.getMetaData("logic_db").getRuleMetaData().getRules().iterator().next(), CoreMatchers.instanceOf(FixtureRule.class));
     }
-    
+
     private void assertDataSources(final MetaDataContexts actual) {
         assertThat(actual.getMetaData("logic_db").getResource().getDataSources().size(), is(1));
         assertThat(actual.getMetaData("logic_db").getResource().getDataSources().get("ds"), CoreMatchers.instanceOf(MockedDataSource.class));

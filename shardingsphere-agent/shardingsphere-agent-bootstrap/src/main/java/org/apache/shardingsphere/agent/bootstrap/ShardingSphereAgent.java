@@ -17,23 +17,24 @@
 
 package org.apache.shardingsphere.agent.bootstrap;
 
-import java.io.IOException;
-import java.lang.instrument.Instrumentation;
-import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.core.cache.AgentObjectPool;
-import org.apache.shardingsphere.agent.core.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.config.AgentConfiguration;
+import org.apache.shardingsphere.agent.config.PluginConfiguration;
+import org.apache.shardingsphere.agent.core.bytebuddy.listener.LoggingListener;
+import org.apache.shardingsphere.agent.core.bytebuddy.transformer.ShardingSphereTransformer;
+import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.config.loader.AgentConfigurationLoader;
-import org.apache.shardingsphere.agent.core.listener.LoggingListener;
-import org.apache.shardingsphere.agent.core.plugin.loader.PluginLoader;
-import org.apache.shardingsphere.agent.core.plugin.service.PluginServiceManager;
-import org.apache.shardingsphere.agent.core.transformer.ShardingSphereTransformer;
+import org.apache.shardingsphere.agent.core.plugin.PluginBootServiceManager;
+import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
+
+import java.io.IOException;
+import java.lang.instrument.Instrumentation;
+import java.util.Map;
 
 /**
  * ShardingSphere agent.
@@ -50,7 +51,7 @@ public final class ShardingSphereAgent {
      */
     public static void premain(final String arguments, final Instrumentation instrumentation) throws IOException {
         AgentConfiguration agentConfiguration = AgentConfigurationLoader.load();
-        AgentObjectPool.INSTANCE.put(agentConfiguration);
+        AgentConfigurationRegistry.INSTANCE.put(agentConfiguration);
         PluginLoader pluginLoader = createPluginLoader();
         setUpAgentBuilder(instrumentation, pluginLoader);
         setupPluginBootService(agentConfiguration.getPlugins());
@@ -63,8 +64,8 @@ public final class ShardingSphereAgent {
     }
     
     private static void setupPluginBootService(final Map<String, PluginConfiguration> pluginConfigurationMap) {
-        PluginServiceManager.startAllService(pluginConfigurationMap);
-        Runtime.getRuntime().addShutdownHook(new Thread(PluginServiceManager::closeAllService));
+        PluginBootServiceManager.startAllServices(pluginConfigurationMap);
+        Runtime.getRuntime().addShutdownHook(new Thread(PluginBootServiceManager::closeAllServices));
     }
     
     private static void setUpAgentBuilder(final Instrumentation instrumentation, final PluginLoader pluginLoader) {

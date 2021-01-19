@@ -180,7 +180,12 @@ public final class DatabaseCommunicationEngine {
     }
     
     private boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
+        return sqlStatementContext instanceof SelectStatementContext
+                && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty() && containAllTablesWithColumnMetaData(sqlStatementContext);
+    }
+    
+    private boolean containAllTablesWithColumnMetaData(final SQLStatementContext<?> sqlStatementContext) {
+        return sqlStatementContext.getTablesContext().getTableNames().stream().noneMatch(each -> metaData.getSchema().getAllColumnNames(each).isEmpty());
     }
     
     private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
@@ -248,7 +253,7 @@ public final class DatabaseCommunicationEngine {
         for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {
             Object data = mergedResult.getValue(columnIndex, Object.class);
             if (isBinary) {
-                cells.add(new BinaryQueryResponseCell(queryHeaders.get(columnIndex).getColumnType(), data));
+                cells.add(new BinaryQueryResponseCell(queryHeaders.get(columnIndex - 1).getColumnType(), data));
             } else {
                 cells.add(new TextQueryResponseCell(data));
             }

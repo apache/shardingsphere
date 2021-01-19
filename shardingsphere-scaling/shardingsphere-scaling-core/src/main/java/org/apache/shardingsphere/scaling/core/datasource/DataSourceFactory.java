@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.datasource;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 
 import java.sql.SQLException;
 
@@ -34,7 +34,7 @@ public final class DataSourceFactory {
      * @return new data source wrapper
      */
     @SneakyThrows(SQLException.class)
-    public DataSourceWrapper newInstance(final DataSourceConfiguration dataSourceConfig) {
+    public DataSourceWrapper newInstance(final ScalingDataSourceConfiguration dataSourceConfig) {
         return new DataSourceWrapper(dataSourceConfig.toDataSource());
     }
 }

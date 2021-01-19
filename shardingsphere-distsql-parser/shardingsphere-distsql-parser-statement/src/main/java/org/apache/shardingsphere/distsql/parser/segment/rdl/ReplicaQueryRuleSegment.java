@@ -33,9 +33,9 @@ public final class ReplicaQueryRuleSegment implements ASTNode {
     
     private String name;
     
-    private String primaryDatasource;
+    private String primaryDataSource;
     
-    private Collection<String> replicaDatasources;
+    private Collection<String> replicaDataSources;
     
     private String loadBalancer;
     

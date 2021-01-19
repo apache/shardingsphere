@@ -35,8 +35,8 @@ public final class RandomReplicaLoadBalanceAlgorithm implements ReplicaLoadBalan
     private Properties props = new Properties();
     
     @Override
-    public String getDataSource(final String name, final String primaryDataSourceName, final List<String> replicaDataSourceNames) {
-        return replicaDataSourceNames.get(ThreadLocalRandom.current().nextInt(replicaDataSourceNames.size()));
+    public String getDataSource(final String name, final String primaryDataSourceName, final List<String> dataSourceNames) {
+        return dataSourceNames.get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
     }
     
     @Override

@@ -20,7 +20,7 @@ grammar DDLStatement;
 import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
 
 createTable
-    : CREATE createTableSpecification TABLE tableName createDefinitionClause
+    : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause createMemOptimizeClause createParentClause
     ;
 
 createIndex
@@ -49,7 +49,7 @@ truncateTable
     ;
 
 createTableSpecification
-    : (GLOBAL TEMPORARY)?
+    : ((GLOBAL | PRIVATE) TEMPORARY | SHARDED | DUPLICATED)?
     ;
 
 tablespaceClauseWithParen
@@ -64,8 +64,36 @@ domainIndexClause
     : indexTypeName
     ;
 
+createSharingClause
+    : (SHARING EQ_ (METADATA | DATA | EXTENDED DATA | NONE))?
+    ;
+
 createDefinitionClause
+    : createRelationalTableClause | createObjectTableClause
+    ;
+
+createRelationalTableClause
     : (LP_ relationalProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
+    ;
+    
+createMemOptimizeClause
+    : (MEMOPTIMIZE FOR READ)? (MEMOPTIMIZE FOR WRITE)? 
+    ;    
+
+createParentClause
+    : (PARENT tableName)?
+    ;
+
+createObjectTableClause
+    : OF objectName objectTableSubstitution? (LP_ objectProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
+    ;
+
+createMemOptimizeClause
+    : (MEMOPTIMIZE FOR READ)? (MEMOPTIMIZE FOR WRITE)? 
+    ;    
+
+createParentClause
+    : (PARENT tableName)?
     ;
 
 relationalProperties
@@ -345,4 +373,8 @@ objectProperty
 
 renameIndexClause
     : (RENAME TO indexName)?
+    ;
+    
+objectTableSubstitution
+    : NOT? SUBSTITUTABLE AT ALL LEVELS
     ;

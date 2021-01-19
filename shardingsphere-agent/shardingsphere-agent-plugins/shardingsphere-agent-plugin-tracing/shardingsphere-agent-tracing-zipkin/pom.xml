@@ -26,20 +26,19 @@
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-tracing-zipkin</artifactId>
-    <packaging>jar</packaging>
     <name>${project.artifactId}</name>
-
-    <properties>
-        <zipkin-reporter.version>2.16.2</zipkin-reporter.version>
-        <zipkin-brave.version>5.13.2</zipkin-brave.version>
-        <entrypoint.class>org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition.ZipkinPluginDefinition</entrypoint.class>
-    </properties>
 
     <dependencies>
         <dependency>
             <groupId>io.zipkin.brave</groupId>
             <artifactId>brave</artifactId>
             <version>${zipkin-brave.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>zipkin-reporter-brave</artifactId>
+                    <groupId>io.zipkin.reporter2</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.zipkin.reporter2</groupId>
@@ -54,6 +53,10 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-proxy-frontend-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-agent-tracing-test</artifactId>
         </dependency>
     </dependencies>
 </project>

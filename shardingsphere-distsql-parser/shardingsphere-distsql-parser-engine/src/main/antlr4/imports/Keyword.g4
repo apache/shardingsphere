@@ -31,6 +31,14 @@ CREATE
     : C R E A T E
     ;
 
+ALTER
+    : A L T E R
+    ;
+
+MODIFY
+    : M O D I F Y
+    ;
+
 DROP
     : D R O P
     ;

@@ -44,7 +44,7 @@ public interface ScalingEntry extends DatabaseTypeAwareSPI {
      * @return log dumper type
      */
     Class<? extends LogDumper> getLogDumperClass();
-
+    
     /**
      * Get position manager type.
      *
@@ -58,7 +58,7 @@ public interface ScalingEntry extends DatabaseTypeAwareSPI {
      * @return importer type
      */
     Class<? extends Importer> getImporterClass();
-
+    
     /**
      * Get data source checker.
      *

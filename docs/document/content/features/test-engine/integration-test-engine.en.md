@@ -4,7 +4,13 @@ title = "Integration Test Engine"
 weight = 2
 +++
 
+The SQL parsing unit test covers both SQL placeholder and literal dimension. 
+Integration test can be further divided into two dimensions of strategy and JDBC; the former one includes strategies as Sharding, table Sharding, database Sharding, and replica query while the latter one includes `Statement` and `PreparedStatement`.
+
+Therefore, one SQL can drive 5 kinds of database parsing * 2 kinds of parameter transmission modes + 5 kinds of databases * 5 kinds of Sharding strategies * 2 kinds of JDBC operation modes = 60 test cases, to enable ShardingSphere to achieve the pursuit of high quality.
+
 ## Process
+
 The `Parameterized` in JUnit will collect all test data, and pass to test method to assert one by one. The process of handling test data is just like a leaking hourglass:
 
 ![](https://shardingsphere.apache.org/document/current/img/test-engine/integration-test.jpg)
@@ -12,12 +18,12 @@ The `Parameterized` in JUnit will collect all test data, and pass to test method
 ### Configuration
  
   - environment type
-    - /shardingsphere-test-suite/src/test/resources/integrate/env-jdbc-local.properties
-    - /shardingsphere-test-suite/src/test/resources/integrate/env/`SQL-TYPE`/dataset.xml
-    - /shardingsphere-test-suite/src/test/resources/integrate/env/`SQL-TYPE`/schema.xml
+    - /shardingsphere-integration-test-suite/src/test/resources/env-native.properties
+    - /shardingsphere-integration-test-suite/src/test/resources/env/`SQL-TYPE`/dataset.xml
+    - /shardingsphere-integration-test-suite/src/test/resources/env/`SQL-TYPE`/schema.xml
   - test case type
-    - /shardingsphere-test-suite/src/test/resources/integrate/cases/`SQL-TYPE`/`SQL-TYPE`-integrate-test-cases.xml
-    - /shardingsphere-test-suite/src/test/resources/integrate/cases/`SQL-TYPE`/dataset/`FEATURE-TYPE`/*.xml
+    - /shardingsphere-integration-test-suite/src/test/resources/cases/`SQL-TYPE`/`SQL-TYPE`-integration-test-cases.xml
+    - /shardingsphere-integration-test-suite/src/test/resources/cases/`SQL-TYPE`/dataset/`FEATURE-TYPE`/*.xml
   - sql-case 
     - /sharding-sql-test/src/main/resources/sql/sharding/`SQL-TYPE`/*.xml
 
@@ -25,44 +31,44 @@ The `Parameterized` in JUnit will collect all test data, and pass to test method
 
 Integration test depends on existed database environment, developer need to setup the configuration file for corresponding database to test: 
 
-Firstly, setup configuration file `/shardingsphere-test-suite/src/test/resources/integrate/env-jdbc-local.properties`, for example: 
+Firstly, setup configuration file `/shardingsphere-integration-test-suite/src/test/resources/env-native.properties`, for example: 
 
 ```properties
 # the switch for PK, concurrent, column index testing and so on
-run.additional.cases=false
+it.run.additional.cases=false
 
-# sharding rule, could define multiple rules
-sharding.rule.type=db,tbl,dbtbl_with_replica_query_,replica_query_
+# test scenarios, could define multiple rules
+it.scenarios=db,tbl,dbtbl_with_replica_query,replica_query
 
 # database type, could define multiple databases(H2,MySQL,Oracle,SQLServer,PostgreSQL)
-databases=MySQL,PostgreSQL
+it.databases=MySQL,PostgreSQL
 
 # MySQL configuration
-mysql.host=127.0.0.1
-mysql.port=13306
-mysql.username=root
-mysql.password=root
+it.mysql.host=127.0.0.1
+it.mysql.port=13306
+it.mysql.username=root
+it.mysql.password=root
 
 ## PostgreSQL configuration
-postgresql.host=db.psql
-postgresql.port=5432
-postgresql.username=postgres
-postgresql.password=postgres
+it.postgresql.host=db.psql
+it.postgresql.port=5432
+it.postgresql.username=postgres
+it.postgresql.password=postgres
 
 ## SQLServer configuration
-sqlserver.host=db.mssql
-sqlserver.port=1433
-sqlserver.username=sa
-sqlserver.password=Jdbc1234
+it.sqlserver.host=db.mssql
+it.sqlserver.port=1433
+it.sqlserver.username=sa
+it.sqlserver.password=Jdbc1234
 
 ## Oracle configuration
-oracle.host=db.oracle
-oracle.port=1521
-oracle.username=jdbc
-oracle.password=jdbc
+it.oracle.host=db.oracle
+it.oracle.port=1521
+it.oracle.username=jdbc
+it.oracle.password=jdbc
 ```
 
-Secondly, setup configuration file `/shardingsphere-test-suite/src/test/resources/integrate/env/SQL-TYPE/dataset.xml`. 
+Secondly, setup configuration file `/shardingsphere-integration-test-suite/src/test/resources/env/SQL-TYPE/dataset.xml`. 
 Developer can set up metadata and expected data to start the data initialization in `dataset.xml`. For example: 
 
 ```xml
@@ -89,20 +95,20 @@ Developer can customize DDL to create databases and tables in `schema.xml`.
 
 ### Assertion Configuration
 
-So far have confirmed what kind of sql execute in which environment in upon config, here define the data for assert.
-There are two kinds of config for assert, one is at `/shardingsphere-test-suite/src/test/resources/integrate/cases/SQL-TYPE/SQL-TYPE-integrate-test-cases.xml`.
+So far have confirmed what kind of sql execute in which environment in upon configuration, here define the data for assert.
+There are two kinds of config for assert, one is at `/shardingsphere-integration-test-suite/src/test/resources/cases/SQL-TYPE/SQL-TYPE-integration-test-cases.xml`.
 This file just like an index, defined the sql, parameters and expected index position for execution. the SQL is the value for `sql-case-id`. For example: 
 
 ```xml
-<integrate-test-cases>
+<integration-test-cases>
     <dml-test-case sql-case-id="insert_with_all_placeholders">
        <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
        <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
     </dml-test-case>
-</integrate-test-cases>
+</integration-test-cases>
 ```
 
-Another kind of config for assert is the data, as known as the corresponding expected-data-file in SQL-TYPE-integrate-test-cases.xml, which is at `/shardingsphere-test-suite/src/test/resources/integrate/cases/SQL-TYPE/dataset/FEATURE-TYPE/*.xml`.  
+Another kind of config for assert is the data, as known as the corresponding expected-data-file in SQL-TYPE-integration-test-cases.xml, which is at `/shardingsphere-integration-test-suite/src/test/resources/cases/SQL-TYPE/dataset/FEATURE-TYPE/*.xml`.  
 This file is very like the dataset.xml mentioned before, and the difference is that expected-data-file contains some other assert data, such as the return value after a sql execution. For examples:  
 
 ```xml

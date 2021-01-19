@@ -111,6 +111,18 @@ columnName
     : (owner DOT_)? name
     ;
 
+objectName
+    : (owner DOT_)? name
+    ;
+
+indexName
+    : identifier
+    ;
+
+savepointName
+    : identifier
+    ;
+    
 owner
     : identifier
     ;
@@ -125,10 +137,6 @@ columnNames
 
 tableNames
     : LP_? tableName (COMMA_ tableName)* RP_?
-    ;
-
-indexName
-    : identifier
     ;
 
 oracleId

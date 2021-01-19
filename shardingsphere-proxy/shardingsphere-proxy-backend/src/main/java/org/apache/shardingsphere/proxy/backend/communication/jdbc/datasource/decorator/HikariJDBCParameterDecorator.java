@@ -39,7 +39,9 @@ public final class HikariJDBCParameterDecorator implements JDBCParameterDecorato
         dataSource.getDataSourceProperties().setProperty("maintainTimeStats", Boolean.FALSE.toString());
         dataSource.getDataSourceProperties().setProperty("netTimeoutForStreamingResults", "0");
         dataSource.getDataSourceProperties().setProperty("tinyInt1isBit", Boolean.FALSE.toString());
-        return new HikariDataSource(dataSource);
+        HikariDataSource result = new HikariDataSource(dataSource);
+        dataSource.close();
+        return result;
     }
     
     @Override

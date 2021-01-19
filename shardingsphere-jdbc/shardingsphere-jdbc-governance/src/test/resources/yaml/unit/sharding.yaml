@@ -15,6 +15,16 @@
 # limitations under the License.
 #
 
+governance:
+  name: test_name
+  registryCenter:
+    type: REG_TEST
+    serverLists: localhost:3181
+  additionalConfigCenter:
+    type: CONFIG_TEST
+    serverLists: localhost:3181
+  overwrite: true
+
 dataSources:
   primary_ds: !!org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver

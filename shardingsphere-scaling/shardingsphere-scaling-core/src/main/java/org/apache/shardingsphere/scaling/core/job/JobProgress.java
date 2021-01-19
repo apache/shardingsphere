@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.scaling.core.job;
 
-import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskGroupProgress;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Job progress.
@@ -35,7 +36,7 @@ public final class JobProgress {
     
     private final String status;
     
-    private final Map<String, Collection<TaskProgress>> inventoryTaskProgress = Maps.newHashMap();
+    private final List<InventoryTaskGroupProgress> inventoryTaskProgress = new LinkedList<>();
     
-    private final Map<String, Collection<TaskProgress>> incrementalTaskProgress = Maps.newHashMap();
+    private final List<IncrementalTaskProgress> incrementalTaskProgress = new LinkedList<>();
 }

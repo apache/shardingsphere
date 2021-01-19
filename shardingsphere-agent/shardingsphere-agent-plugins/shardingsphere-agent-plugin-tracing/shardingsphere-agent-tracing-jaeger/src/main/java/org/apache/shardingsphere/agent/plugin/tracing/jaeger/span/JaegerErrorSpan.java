@@ -21,7 +21,7 @@ import io.opentracing.Span;
 import io.opentracing.tag.Tags;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.ErrorLogTagKeys;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,9 +44,9 @@ public final class JaegerErrorSpan {
     
     private static Map<String, ?> getReason(final Throwable cause) {
         Map<String, String> result = new HashMap<>(3, 1);
-        result.put(ErrorLogTagKeys.EVENT, ErrorLogTagKeys.EVENT_ERROR_TYPE);
-        result.put(ErrorLogTagKeys.ERROR_KIND, cause.getClass().getName());
-        result.put(ErrorLogTagKeys.MESSAGE, cause.getMessage());
+        result.put(JaegerConstants.ErrorLogTagKeys.EVENT, JaegerConstants.ErrorLogTagKeys.EVENT_ERROR_TYPE);
+        result.put(JaegerConstants.ErrorLogTagKeys.ERROR_KIND, cause.getClass().getName());
+        result.put(JaegerConstants.ErrorLogTagKeys.MESSAGE, cause.getMessage());
         return result;
     }
 }

@@ -26,7 +26,7 @@ public final class ServerConfigurationUtilTest {
     
     @Test
     public void assertInitScalingConfig() {
-        ServerConfigurationUtil.initScalingConfig();
+        ServerConfigurationInitializer.init();
         assertNotNull(ScalingContext.getInstance().getServerConfig());
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.governance.core.config.listener;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.governance.core.config.listener.metadata.MetaDataListener;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 import org.junit.Test;
@@ -37,7 +38,7 @@ public final class ConfigurationListenerManagerTest {
     private ConfigurationRepository configurationRepository;
     
     @Mock
-    private SchemaChangedListener schemaChangedListener;
+    private MetaDataListener metaDataListener;
     
     @Mock
     private PropertiesChangedListener propertiesChangedListener;
@@ -48,7 +49,7 @@ public final class ConfigurationListenerManagerTest {
     @Test
     public void assertInitListeners() {
         ConfigurationListenerManager actual = new ConfigurationListenerManager(configurationRepository, Arrays.asList("sharding_db", "replica_query_db"));
-        setField(actual, "schemaChangedListener", schemaChangedListener);
+        setField(actual, "metaDataListener", metaDataListener);
         setField(actual, "propertiesChangedListener", propertiesChangedListener);
         setField(actual, "authenticationChangedListener", authenticationChangedListener);
         actual.initListeners();

@@ -47,11 +47,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -60,6 +62,8 @@ import java.util.concurrent.TimeUnit;
 public final class CuratorZookeeperRepository implements ConfigurationRepository, RegistryRepository {
     
     private final Map<String, CuratorCache> caches = new HashMap<>();
+    
+    private final Set<String> watchedKeys = new HashSet<>();
     
     private CuratorFramework client;
     

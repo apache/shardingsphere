@@ -49,11 +49,11 @@ import java.util.Properties;
  */
 @NoArgsConstructor
 public final class OracleDCLStatementSQLVisitor extends OracleStatementSQLVisitor implements DCLSQLVisitor, SQLStatementVisitor {
-
+    
     public OracleDCLStatementSQLVisitor(final Properties props) {
         super(props);
     }
-
+    
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         OracleGrantStatement result = new OracleGrantStatement();
