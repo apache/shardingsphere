@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
+import org.apache.shardingsphere.distsql.parser.segment.rdl.ReplicaQueryRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AlterReplicaQueryRuleStatement;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -25,7 +26,10 @@ import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereA
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.AddReplicaQueryRuleDataSourcesExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleDataSourcesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
@@ -35,8 +39,12 @@ import org.apache.shardingsphere.replicaquery.yaml.config.YamlReplicaQueryRuleCo
 import org.apache.shardingsphere.replicaquery.yaml.config.rule.YamlReplicaQueryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.replicaquery.yaml.converter.AlterReplicaQueryRuleStatementConverter;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -49,34 +57,73 @@ public final class AlterReplicaQueryRuleBackendHandler extends SchemaRequiredBac
     public AlterReplicaQueryRuleBackendHandler(final AlterReplicaQueryRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
-
+    
     @Override
     public ResponseHeader execute(final String schemaName, final AlterReplicaQueryRuleStatement sqlStatement) {
-        YamlReplicaQueryRuleConfiguration config = AlterReplicaQueryRuleStatementConverter.convert(sqlStatement);
-        check(config, schemaName);
-        YamlReplicaQueryRuleConfiguration alterConfig = alter(config, schemaName);
-        Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(alterConfig));
+        check(sqlStatement, schemaName);
+        YamlReplicaQueryRuleConfiguration alterConfig = alter(sqlStatement, schemaName);
+        YamlReplicaQueryRuleConfiguration addConfig = add(alterConfig, sqlStatement, schemaName);
+        Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(addConfig));
         post(schemaName, rules);
         return new UpdateResponseHeader(sqlStatement);
     }
-
-    private void check(final YamlReplicaQueryRuleConfiguration config, final String schemaName) {
-//        TODO Check whether the database exists
+    
+    private void check(final AlterReplicaQueryRuleStatement statement, final String schemaName) {
+        checkRuleExist(schemaName);
+        checkAddDataSourceExist(statement, schemaName);
+        checkModifyDataSourceNotExist(statement, schemaName);
+        checkResourceExist(statement, schemaName);
+    }
+    
+    private void checkRuleExist(final String schemaName) {
         Optional<ReplicaQueryRuleConfiguration> replicaQueryRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ReplicaQueryRuleConfiguration).map(each -> (ReplicaQueryRuleConfiguration) each).findFirst();
         if (!replicaQueryRuleConfig.isPresent()) {
-            throw new ReplicaQueryRuleNotExistedException(config.getDataSources().keySet());
-        }
-        Set<String> existReplicaQueryDatasourceNames = replicaQueryRuleConfig.get().getDataSources().stream().map(each -> each.getName()).collect(Collectors.toSet());
-        Collection<String> notExistReplicaQueryDatasourceNames = config.getDataSources().keySet().stream().filter(each -> !existReplicaQueryDatasourceNames.contains(each))
-                .collect(Collectors.toList());
-        if (!notExistReplicaQueryDatasourceNames.isEmpty()) {
-            throw new ReplicaQueryRuleNotExistedException(notExistReplicaQueryDatasourceNames);
+            throw new ReplicaQueryRuleNotExistedException();
         }
     }
-
-    private YamlReplicaQueryRuleConfiguration alter(final YamlReplicaQueryRuleConfiguration config, final String schemaName) {
-        YamlReplicaQueryRuleConfiguration result = config;
+    
+    private void checkAddDataSourceExist(final AlterReplicaQueryRuleStatement statement, final String schemaName) {
+        Optional<ReplicaQueryRuleConfiguration> replicaQueryRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
+                .filter(each -> each instanceof ReplicaQueryRuleConfiguration).map(each -> (ReplicaQueryRuleConfiguration) each).findFirst();
+        Set<String> existReplicaQueryDataSourceNames = replicaQueryRuleConfig.get().getDataSources().stream().map(each -> each.getName()).collect(Collectors.toSet());
+        Collection<String> addExistReplicaQueryDataSourceNames = statement.getAddReplicaQueryRules().stream().map(each -> each.getName())
+                .filter(each -> existReplicaQueryDataSourceNames.contains(each)).collect(Collectors.toList());
+        if (!addExistReplicaQueryDataSourceNames.isEmpty()) {
+            throw new AddReplicaQueryRuleDataSourcesExistedException(addExistReplicaQueryDataSourceNames);
+        }
+    }
+    
+    private void checkResourceExist(final AlterReplicaQueryRuleStatement statement, final String schemaName) {
+        List<String> resources = new LinkedList<>();
+        for (ReplicaQueryRuleSegment each: statement.getModifyReplicaQueryRules()) {
+            resources.add(each.getPrimaryDataSource());
+            resources.addAll(each.getReplicaDataSources());
+        }
+        for (ReplicaQueryRuleSegment each: statement.getAddReplicaQueryRules()) {
+            resources.add(each.getPrimaryDataSource());
+            resources.addAll(each.getReplicaDataSources());
+        }
+        Map<String, DataSource> dataSourceMap = ProxyContext.getInstance().getMetaData(schemaName).getResource().getDataSources();
+        Collection<String> notExistResource = resources.stream().filter(each -> !dataSourceMap.containsKey(each)).collect(Collectors.toList());
+        if (!notExistResource.isEmpty()) {
+            throw new ResourceNotExistedException(notExistResource);
+        }
+    }
+    
+    private void checkModifyDataSourceNotExist(final AlterReplicaQueryRuleStatement statement, final String schemaName) {
+        Optional<ReplicaQueryRuleConfiguration> replicaQueryRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
+                .filter(each -> each instanceof ReplicaQueryRuleConfiguration).map(each -> (ReplicaQueryRuleConfiguration) each).findFirst();
+        Set<String> existReplicaQueryDataSourceNames = replicaQueryRuleConfig.get().getDataSources().stream().map(each -> each.getName()).collect(Collectors.toSet());
+        Collection<String> addExistReplicaQueryDataSourceNames = statement.getModifyReplicaQueryRules().stream().map(each -> each.getName())
+                .filter(each -> !existReplicaQueryDataSourceNames.contains(each)).collect(Collectors.toList());
+        if (!addExistReplicaQueryDataSourceNames.isEmpty()) {
+            throw new ReplicaQueryRuleDataSourcesNotExistedException(addExistReplicaQueryDataSourceNames);
+        }
+    }
+    
+    private YamlReplicaQueryRuleConfiguration alter(final AlterReplicaQueryRuleStatement statement, final String schemaName) {
+        YamlReplicaQueryRuleConfiguration result = AlterReplicaQueryRuleStatementConverter.convert(statement.getModifyReplicaQueryRules());
         ReplicaQueryRuleConfiguration replicaQueryRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ReplicaQueryRuleConfiguration).map(each -> (ReplicaQueryRuleConfiguration) each).findFirst().get();
         for (ReplicaQueryDataSourceRuleConfiguration each : replicaQueryRuleConfig.getDataSources()) {
@@ -102,6 +149,14 @@ public final class AlterReplicaQueryRuleBackendHandler extends SchemaRequiredBac
                 }
             }
         }
+        return result;
+    }
+    
+    private YamlReplicaQueryRuleConfiguration add(final YamlReplicaQueryRuleConfiguration config, final AlterReplicaQueryRuleStatement statement, final String schemaName) {
+        YamlReplicaQueryRuleConfiguration result = config;
+        YamlReplicaQueryRuleConfiguration addConfig = AlterReplicaQueryRuleStatementConverter.convert(statement.getAddReplicaQueryRules());
+        result.getDataSources().putAll(addConfig.getDataSources());
+        result.getLoadBalancers().putAll(addConfig.getLoadBalancers());
         return result;
     }
 

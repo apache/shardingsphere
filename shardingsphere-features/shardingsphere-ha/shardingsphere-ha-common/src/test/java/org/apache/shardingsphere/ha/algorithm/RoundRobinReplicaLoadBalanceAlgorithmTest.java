@@ -34,9 +34,9 @@ public final class RoundRobinReplicaLoadBalanceAlgorithmTest {
         String primaryDataSourceName = "test_primary_ds";
         String replicaDataSourceName1 = "test_replica_ds_1";
         String replicaDataSourceName2 = "test_replica_ds_2";
-        List<String> replicaDataSourceNames = Arrays.asList(replicaDataSourceName1, replicaDataSourceName2);
-        assertThat(roundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", primaryDataSourceName, replicaDataSourceNames), is(replicaDataSourceName1));
-        assertThat(roundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", primaryDataSourceName, replicaDataSourceNames), is(replicaDataSourceName2));
-        assertThat(roundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", primaryDataSourceName, replicaDataSourceNames), is(replicaDataSourceName1));
+        List<String> dataSourceNames = Arrays.asList(replicaDataSourceName1, replicaDataSourceName2);
+        assertThat(roundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", primaryDataSourceName, dataSourceNames), is(replicaDataSourceName1));
+        assertThat(roundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", primaryDataSourceName, dataSourceNames), is(replicaDataSourceName2));
+        assertThat(roundRobinReplicaLoadBalanceAlgorithm.getDataSource("ds", primaryDataSourceName, dataSourceNames), is(replicaDataSourceName1));
     }
 }

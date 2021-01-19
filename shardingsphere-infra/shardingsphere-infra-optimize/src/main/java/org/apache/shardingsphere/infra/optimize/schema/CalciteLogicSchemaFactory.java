@@ -20,7 +20,8 @@ package org.apache.shardingsphere.infra.optimize.schema;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.optimize.execute.CalciteInternalExecutor;
+import org.apache.shardingsphere.infra.optimize.schema.generator.CalciteLogicSchemaGenerator;
+import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
 
 import java.sql.SQLException;
 import java.util.Map;
@@ -28,13 +29,12 @@ import java.util.Map.Entry;
 
 
 /**
- * Calcite schema factory.
- *
+ * Calcite logic schema factory.
  */
 public final class CalciteLogicSchemaFactory {
-    
+
     private final Map<String, CalciteLogicSchemaGenerator> schemas = new LinkedMap<>();
-    
+
     public CalciteLogicSchemaFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
         for (Entry<String, ShardingSphereMetaData> each : metaDataMap.entrySet()) {
             try {
@@ -44,16 +44,15 @@ public final class CalciteLogicSchemaFactory {
             }
         }
     }
-    
+
     /**
      * Create schema.
      *
      * @param name name
      * @param executor executor
      * @return schema
-     * @exception SQLException sql exception
      */
-    public CalciteLogicSchema create(final String name, final CalciteInternalExecutor executor) throws SQLException {
+    public CalciteLogicSchema create(final String name, final CalciteRowExecutor executor) {
         if (!schemas.containsKey(name)) {
             throw new ShardingSphereException("No `%s` schema.", name);
         }

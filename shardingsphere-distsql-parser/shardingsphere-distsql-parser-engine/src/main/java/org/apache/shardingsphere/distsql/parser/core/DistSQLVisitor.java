@@ -29,12 +29,14 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.C
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropReplicaQueryRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ReplicaQueryRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingTableRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
@@ -44,6 +46,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AlterR
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowResourcesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleStatement;
@@ -75,6 +78,15 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     public ASTNode visitDataSource(final DataSourceContext ctx) {
         DataSourceSegment result = (DataSourceSegment) visit(ctx.dataSourceDefinition());
         result.setName(ctx.dataSourceName().getText());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDropResource(final DropResourceContext ctx) {
+        DropResourceStatement result = new DropResourceStatement();
+        for (TerminalNode each : ctx.IDENTIFIER()) {
+            result.getResourceNames().add(each.getText());
+        }
         return result;
     }
     
@@ -119,8 +131,8 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
             props.setProperty(each.key.getText(), each.value.getText());
         }
         result.setName(ctx.ruleName.getText());
-        result.setPrimaryDatasource(ctx.primary.getText());
-        result.setReplicaDatasources(replicaDatasources);
+        result.setPrimaryDataSource(ctx.primary.getText());
+        result.setReplicaDataSources(replicaDatasources);
         result.setLoadBalancer(ctx.loadBalancer.getText());
         result.setProps(props);
         return result;
@@ -128,11 +140,16 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
 
     @Override
     public ASTNode visitAlterReplicaQueryRule(final AlterReplicaQueryRuleContext ctx) {
-        Collection<ReplicaQueryRuleSegment> replicaQueryRules = new LinkedList<>();
+        Collection<ReplicaQueryRuleSegment> modifyReplicaQueryRules = new LinkedList<>();
+        Collection<ReplicaQueryRuleSegment> addReplicaQueryRules = new LinkedList<>();
         for (AlterReplicaQueryRuleDefinitionContext each : ctx.alterReplicaQueryRuleDefinition()) {
-            replicaQueryRules.add((ReplicaQueryRuleSegment) visit(each));
+            if (null != each.MODIFY()) {
+                modifyReplicaQueryRules.add((ReplicaQueryRuleSegment) visit(each));
+            } else {
+                addReplicaQueryRules.add((ReplicaQueryRuleSegment) visit(each));
+            }
         }
-        return new AlterReplicaQueryRuleStatement(replicaQueryRules);
+        return new AlterReplicaQueryRuleStatement(modifyReplicaQueryRules, addReplicaQueryRules);
     }
 
     @Override
@@ -152,8 +169,8 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
             replicaDatasources.add(each.getText());
         }
         result.setName(ctx.ruleName.getText());
-        result.setPrimaryDatasource(ctx.primary.getText());
-        result.setReplicaDatasources(replicaDatasources);
+        result.setPrimaryDataSource(ctx.primary.getText());
+        result.setReplicaDataSources(replicaDatasources);
         if (null != ctx.loadBalancer) {
             Properties props = new Properties();
             for (AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
@@ -199,6 +216,14 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     @Override
     public ASTNode visitTableName(final TableNameContext ctx) {
         return new TableNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
+    }
+    
+    @Override
+    public ASTNode visitShowShardingRule(final ShowShardingRuleContext ctx) {
+        if (null != ctx.schemaName()) {
+            return new ShowRuleStatement("sharding", (SchemaSegment) visitSchemaName(ctx.schemaName()));
+        }
+        return new ShowRuleStatement("sharding", null);
     }
     
     @Override

@@ -25,12 +25,12 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,18 +42,17 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     private final ResultSetMetaData resultSetMetaData;
     
-    private final Collection<ShardingSphereRule> rules;
+    private final ShardingSphereMetaData shardingSphereMetaData;
     
-    private final SQLStatementContext sqlStatementContext;
+    private final SQLStatementContext<?> sqlStatementContext;
     
     @Override
     public int getColumnCount() throws SQLException {
         if (sqlStatementContext instanceof SelectStatementContext) {
-            List<Projection> expandProjections = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections();
-            if (expandProjections.isEmpty()) {
-                return resultSetMetaData.getColumnCount();
+            if (hasSelectExpandProjections()) {
+                return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size();
             }
-            return expandProjections.size();
+            return resultSetMetaData.getColumnCount();
         }
         return resultSetMetaData.getColumnCount();
     }
@@ -100,7 +99,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getColumnName(final int column) throws SQLException {
-        if (isHasSelectExpandProjections()) {
+        if (hasSelectExpandProjections()) {
             List<Projection> actualProjections = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections();
             if (column > actualProjections.size()) {
                 throw new SQLException(SQLExceptionConstant.COLUMN_INDEX_OUT_OF_RANGE, SQLExceptionConstant.OUT_OF_INDEX_SQL_STATE, 0);
@@ -113,8 +112,13 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
         return resultSetMetaData.getColumnName(column);
     }
     
-    private boolean isHasSelectExpandProjections() {
-        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
+    private boolean hasSelectExpandProjections() {
+        return sqlStatementContext instanceof SelectStatementContext
+                && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty() && containAllTablesWithColumnMetaData(sqlStatementContext);
+    }
+    
+    private boolean containAllTablesWithColumnMetaData(final SQLStatementContext<?> sqlStatementContext) {
+        return sqlStatementContext.getTablesContext().getTableNames().stream().noneMatch(each -> shardingSphereMetaData.getSchema().getAllColumnNames(each).isEmpty());
     }
     
     @Override
@@ -135,7 +139,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     @Override
     public String getTableName(final int column) throws SQLException {
         String actualTableName = resultSetMetaData.getTableName(column);
-        Optional<ShardingSphereRule> rule = rules.stream().filter(each -> each instanceof DataNodeContainedRule).findFirst();
+        Optional<ShardingSphereRule> rule = shardingSphereMetaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof DataNodeContainedRule).findFirst();
         return rule.isPresent() ? ((DataNodeContainedRule) rule.get()).findLogicTableByActualTable(actualTableName).orElse(actualTableName) : actualTableName;
     }
     

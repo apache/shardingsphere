@@ -21,12 +21,14 @@
         <table>
             <simple-table name="t_log" start-index="28" stop-index="32" />
         </table>
+        <index name="t_log_index" start-index="13" stop-index="23" />
     </create-index>
     
     <create-index sql-case-id="create_unique_index">
         <table>
             <simple-table name="t_log" start-index="35" stop-index="39" />
         </table>
+        <index name="t_log_index" start-index="20" stop-index="30" />
     </create-index>
     
     <create-index sql-case-id="create_index_with_space">
@@ -45,6 +47,7 @@
         <table>
             <simple-table name="t_order" start-index="28" stop-index="34" />
         </table>
+        <index name="order_index" start-index="13" stop-index="23" />
     </create-index>
     
     <create-index sql-case-id="create_btree_index">
@@ -57,12 +60,14 @@
         <table>
             <simple-table name="t_order" start-delimiter="&quot;" end-delimiter="&quot;" start-index="30" stop-index="38" />
         </table>
+        <index name="order_index" start-delimiter="&quot;" end-delimiter="&quot;" start-index="13" stop-index="25" />
     </create-index>
     
     <create-index sql-case-id="create_index_with_function">
         <table>
             <simple-table name="t_order" start-index="33" stop-index="39" />
         </table>
+        <index name="idx_upper_status" start-index="13" stop-index="28" />
     </create-index>
     
     <create-index sql-case-id="create_index_with_double_quota">

@@ -22,7 +22,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.shardingsphere.agent.core.plugin.loader.PluginLoader;
+import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
 
 /**
  * Agent service loader.

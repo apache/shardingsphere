@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.optimize.execute.CalciteExecutor;
-import org.apache.shardingsphere.infra.optimize.execute.CalciteInternalExecutor;
+import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
 import org.apache.shardingsphere.infra.optimize.execute.CalciteJDBCExecutor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.RawExecutionRule;
@@ -134,8 +134,8 @@ public final class ProxySQLExecutor {
         }
         MetaDataContexts metaData = ProxyContext.getInstance().getMetaDataContexts();
         ProxyJDBCExecutorCallback callback = ProxyJDBCExecutorCallbackFactory.newInstance(type, metaData.getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType(), 
-                executionContext.getSqlStatementContext().getSqlStatement(), backendConnection, isExceptionThrown, isReturnGeneratedKeys, true);
-        CalciteInternalExecutor executor = new CalciteInternalExecutor(rules, maxConnectionsSizePerQuery, backendConnection, jdbcExecutor.getJdbcExecutor(), executionContext, callback);
+                executionContext.getSqlStatementContext().getSqlStatement(), backendConnection, isReturnGeneratedKeys, isExceptionThrown, true);
+        CalciteRowExecutor executor = new CalciteRowExecutor(rules, maxConnectionsSizePerQuery, backendConnection, jdbcExecutor.getJdbcExecutor(), executionContext, callback);
         CalciteExecutor calciteExecutor = new CalciteJDBCExecutor(metaData.getCalciteContextFactory().create(backendConnection.getSchemaName(), executor));
         backendConnection.setCalciteExecutor(calciteExecutor);
         SQLUnit sqlUnit = executionContext.getExecutionUnits().iterator().next().getSqlUnit();
@@ -147,6 +147,6 @@ public final class ProxySQLExecutor {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
                 type, maxConnectionsSizePerQuery, backendConnection, new StatementOption(isReturnGeneratedKeys), rules);
         Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
-        return jdbcExecutor.execute(executionContext.getSqlStatementContext().getSqlStatement(), executionGroups, isExceptionThrown, isReturnGeneratedKeys);
+        return jdbcExecutor.execute(executionContext.getSqlStatementContext().getSqlStatement(), executionGroups, isReturnGeneratedKeys, isExceptionThrown);
     }
 }

@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
 import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
-import org.apache.shardingsphere.tracing.opentracing.OpenTracingTracer;
+import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
@@ -60,7 +60,6 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         String xaTransactionMangerType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.XA_TRANSACTION_MANAGER_TYPE);
         TransactionContexts transactionContexts = decorateTransactionContexts(createTransactionContexts(metaDataContexts), xaTransactionMangerType);
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
-        initOpenTracing();
         setDatabaseServerInfo();
         initLockContext();
         initScalingWorker(yamlConfig);
@@ -100,12 +99,6 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         return new StandardTransactionContexts(transactionManagerEngines);
     }
     
-    private void initOpenTracing() {
-        if (ProxyContext.getInstance().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_OPENTRACING_ENABLED)) {
-            OpenTracingTracer.init();
-        }
-    }
-    
     private void setDatabaseServerInfo() {
         Optional<DataSource> dataSourceSample = ProxyContext.getInstance().getDataSourceSample();
         if (dataSourceSample.isPresent()) {
@@ -113,6 +106,16 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
             log.info(databaseServerInfo.toString());
             MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
         }
+    }
+    
+    protected Optional<ServerConfiguration> getScalingConfiguration(final YamlProxyConfiguration yamlConfig) {
+        if (null != yamlConfig.getServerConfiguration().getScaling()) {
+            ServerConfiguration result = new ServerConfiguration();
+            result.setBlockQueueSize(yamlConfig.getServerConfiguration().getScaling().getBlockQueueSize());
+            result.setWorkerThread(yamlConfig.getServerConfiguration().getScaling().getWorkerThread());
+            return Optional.of(result);
+        }
+        return Optional.empty();
     }
     
     protected abstract ProxyConfiguration getProxyConfiguration(YamlProxyConfiguration yamlConfig);

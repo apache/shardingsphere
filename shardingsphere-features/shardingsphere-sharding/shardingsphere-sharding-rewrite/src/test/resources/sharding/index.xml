@@ -31,8 +31,8 @@
     
     <rewrite-assertion id="drop_index_for_mysql" db-type="MySQL">
         <input sql="DROP INDEX index_name ON t_account" />
-        <output sql="DROP INDEX index_name ON t_account_0" />
-        <output sql="DROP INDEX index_name ON t_account_1" />
+        <output sql="DROP INDEX index_name_t_account_0 ON t_account_0" />
+        <output sql="DROP INDEX index_name_t_account_1 ON t_account_1" />
     </rewrite-assertion>
     
     <rewrite-assertion id="drop_index_for_postgresql" db-type="PostgreSQL">

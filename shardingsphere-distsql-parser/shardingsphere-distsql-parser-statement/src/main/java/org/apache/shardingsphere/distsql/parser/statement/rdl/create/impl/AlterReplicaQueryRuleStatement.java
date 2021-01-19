@@ -31,5 +31,7 @@ import java.util.Collection;
 @Getter
 public final class AlterReplicaQueryRuleStatement extends CreateRDLStatement {
     
-    private final Collection<ReplicaQueryRuleSegment> replicaQueryRules;
+    private final Collection<ReplicaQueryRuleSegment> modifyReplicaQueryRules;
+    
+    private final Collection<ReplicaQueryRuleSegment> addReplicaQueryRules;
 }

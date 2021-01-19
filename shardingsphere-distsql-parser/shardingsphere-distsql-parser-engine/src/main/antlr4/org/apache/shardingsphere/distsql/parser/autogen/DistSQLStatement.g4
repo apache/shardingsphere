@@ -21,6 +21,7 @@ import Symbol, RDLStatement, RQLStatement;
 
 execute
     : (addResource
+    | dropResource
     | createShardingRule
     | dropShardingRule
     | createReplicaQueryRule

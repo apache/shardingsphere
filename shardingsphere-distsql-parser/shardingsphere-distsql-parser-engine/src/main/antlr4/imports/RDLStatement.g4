@@ -23,6 +23,10 @@ addResource
     : ADD RESOURCE LP dataSource (COMMA dataSource)* RP
     ;
 
+dropResource
+    : DROP RESOURCE LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    ;
+
 dataSource
     : dataSourceName EQ dataSourceDefinition
     ;
@@ -56,7 +60,7 @@ user
     ;
 
 password
-    : IDENTIFIER | NUMBER | STRING
+    : IDENTIFIER | INT | STRING
     ;
 
 createShardingRule
@@ -76,7 +80,7 @@ alterReplicaQueryRule
     ;
 
 alterReplicaQueryRuleDefinition
-    : ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP (loadBalancer=IDENTIFIER LP algorithmProperties RP)?
+    : (MODIFY | ADD) ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP (loadBalancer=IDENTIFIER LP algorithmProperties RP)?
     ;
 
 shardingTableRuleDefinition
@@ -97,6 +101,10 @@ dropReplicaQueryRule
 
 dropShardingRule
     : DROP SHARDING RULE LP tableName (COMMA tableName)* RP
+    ;
+
+showShardingRule
+    : SHOW SHARDING RULE (FROM schemaName)?
     ;
 
 schemaNames

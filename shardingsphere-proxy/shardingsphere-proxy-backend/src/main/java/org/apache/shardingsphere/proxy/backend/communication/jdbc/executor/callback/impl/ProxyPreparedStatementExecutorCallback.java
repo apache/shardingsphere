@@ -32,8 +32,8 @@ import java.sql.Statement;
 public final class ProxyPreparedStatementExecutorCallback extends ProxyJDBCExecutorCallback {
     
     public ProxyPreparedStatementExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection,
-                                                  final boolean isExceptionThrown, final boolean isReturnGeneratedKeys, final boolean fetchMetaData) {
-        super(databaseType, sqlStatement, backendConnection, isExceptionThrown, isReturnGeneratedKeys, fetchMetaData);
+                                                  final boolean isReturnGeneratedKeys, final boolean isExceptionThrown, final boolean fetchMetaData) {
+        super(databaseType, sqlStatement, backendConnection, isReturnGeneratedKeys, isExceptionThrown, fetchMetaData);
     }
     
     @Override

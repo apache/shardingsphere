@@ -50,6 +50,8 @@ public final class ConfigCenterNode {
     
     private static final String PATH_SEPARATOR = "/";
     
+    private static final String CACHE_NODE = "cache";
+    
     /**
      * Get metadata node path.
      *
@@ -154,12 +156,63 @@ public final class ConfigCenterNode {
      * @return config paths list.
      */
     public Collection<String> getAllSchemaConfigPaths(final Collection<String> schemaNames) {
-        Collection<String> result = new ArrayList<>(Collections.singletonList(getMetadataNodePath()));
+        Collection<String> result = new ArrayList<>(Collections.singleton(getMetadataNodePath()));
         for (String schemaName : schemaNames) {
-            result.add(getSchemaNamePath(schemaName));
             result.add(getRulePath(schemaName));
             result.add(getDataSourcePath(schemaName));
             result.add(getSchemaPath(schemaName));
+        }
+        return result;
+    }
+    
+    /**
+     * Get cache path.
+     * 
+     * @param path path
+     * @return cache path
+     */
+    public String getCachePath(final String path) {
+        return Joiner.on(PATH_SEPARATOR).join(path, CACHE_NODE);
+    }
+    
+    /**
+     * Get all schema paths.
+     *
+     * @param schemaNames schema names.
+     * @return list of schema path.
+     */
+    public Collection<String> getAllSchemaPaths(final Collection<String> schemaNames) {
+        Collection<String> result = Collections.emptyList();
+        for (String schemaName : schemaNames) {
+            result.add(getSchemaPath(schemaName));
+        }
+        return result;
+    }
+    
+    /**
+     * Get all rule paths.
+     *
+     * @param schemaNames schema names.
+     * @return list of rule path.
+     */
+    public Collection<String> getAllRulePaths(final Collection<String> schemaNames) {
+        Collection<String> result = Collections.emptyList();
+        for (String schemaName : schemaNames) {
+            result.add(getRulePath(schemaName));
+        }
+        return result;
+    }
+    
+    /**
+     * Get all data source paths.
+     *
+     * @param schemaNames schema names.
+     * @return list of data source path.
+     */
+    public Collection<String> getAllDataSourcePaths(final Collection<String> schemaNames) {
+        Collection<String> result = Collections.emptyList();
+        for (String schemaName : schemaNames) {
+            result.add(getDataSourcePath(schemaName));
         }
         return result;
     }

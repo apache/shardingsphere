@@ -23,9 +23,12 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
+import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
 import org.apache.shardingsphere.replicaquery.yaml.config.YamlReplicaQueryRuleConfiguration;
 import org.apache.shardingsphere.replicaquery.yaml.converter.CreateReplicaQueryRuleStatementConverter;
 
@@ -43,10 +46,17 @@ public final class CreateReplicaQueryRuleBackendHandler extends SchemaRequiredBa
 
     @Override
     public ResponseHeader execute(final String schemaName, final CreateReplicaQueryRuleStatement sqlStatement) {
+        check(schemaName);
         YamlReplicaQueryRuleConfiguration config = CreateReplicaQueryRuleStatementConverter.convert(sqlStatement);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(config));
         post(schemaName, rules);
         return new UpdateResponseHeader(sqlStatement);
+    }
+    
+    private void check(final String schemaName) {
+        if (ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream().filter(each -> each instanceof ReplicaQueryRuleConfiguration).findFirst().isPresent()) {
+            throw new ReplicaQueryRuleCreateExistsException();
+        }
     }
     
     private void post(final String schemaName, final Collection<RuleConfiguration> rules) {

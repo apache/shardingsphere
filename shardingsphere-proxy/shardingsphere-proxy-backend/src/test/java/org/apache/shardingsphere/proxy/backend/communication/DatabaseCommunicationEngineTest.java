@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
@@ -74,6 +75,7 @@ public final class DatabaseCommunicationEngineTest {
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         return Collections.singletonMap("schema", result);
     }

@@ -65,8 +65,8 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.optimize.execute.CalciteExecutor;
-import org.apache.shardingsphere.infra.optimize.execute.CalciteInternalExecutor;
 import org.apache.shardingsphere.infra.optimize.execute.CalciteJDBCExecutor;
+import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
@@ -115,7 +115,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     @Getter(AccessLevel.PROTECTED)
     private CalciteExecutor calciteExecutor;
-    
+
     public ShardingSphereStatement(final ShardingSphereConnection connection) {
         this(connection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
@@ -144,9 +144,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         ResultSet result;
         try {
             executionContext = createExecutionContext(sql);
-            List<QueryResult> queryResults = executeQuery();
+            List<QueryResult> queryResults = executeQuery0();
             MergedResult mergedResult = mergeQuery(queryResults);
-            result = new ShardingSphereResultSet(statements.stream().map(this::getResultSet).collect(Collectors.toList()), mergedResult, this, executionContext);
+            result = new ShardingSphereResultSet(getResultSetsForShardingSphereResultSet(), mergedResult, this, executionContext);
         } finally {
             currentResultSet = null;
         }
@@ -154,7 +154,14 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return result;
     }
     
-    private List<QueryResult> executeQuery() throws SQLException {
+    private List<ResultSet> getResultSetsForShardingSphereResultSet() throws SQLException {
+        if (null != calciteExecutor) {
+            return Collections.singletonList(calciteExecutor.getResultSet());
+        }
+        return statements.stream().map(this::getResultSet).collect(Collectors.toList());
+    }
+    
+    private List<QueryResult> executeQuery0() throws SQLException {
         if (metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().anyMatch(each -> each instanceof RawExecutionRule)) {
             return rawExecutor.execute(createRawExecutionGroups(), new RawSQLExecutorCallback()).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
         }
@@ -181,7 +188,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         int maxConnectionsSizePerQuery = metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 executionContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
-        CalciteInternalExecutor executor = new CalciteInternalExecutor(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(),
+        CalciteRowExecutor executor = new CalciteRowExecutor(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(),
                 maxConnectionsSizePerQuery, connection, driverJDBCExecutor.getJdbcExecutor(), executionContext, callback);
         // TODO Consider CalciteRawExecutor
         return new CalciteJDBCExecutor(metaDataContexts.getCalciteContextFactory().create(DefaultSchema.LOGIC_NAME, executor));
@@ -268,8 +275,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             }
             
             @Override
-            protected Integer getSaneResult(final SQLStatement sqlStatement) {
-                return 0;
+            protected Optional<Integer> getSaneResult(final SQLStatement sqlStatement) {
+                return Optional.of(0);
             }
         };
         return driverJDBCExecutor.executeUpdate(executionGroups, sqlStatementContext, routeUnits, callback);
@@ -372,13 +379,13 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             }
             
             @Override
-            protected Boolean getSaneResult(final SQLStatement sqlStatement) {
-                return sqlStatement instanceof SelectStatement;
+            protected Optional<Boolean> getSaneResult(final SQLStatement sqlStatement) {
+                return Optional.of(sqlStatement instanceof SelectStatement);
             }
         };
         return driverJDBCExecutor.execute(executionGroups, sqlStatement, routeUnits, jdbcExecutorCallback);
     }
-    
+
     private ExecutionContext createExecutionContext(final String sql) throws SQLException {
         clearStatements();
         LogicSQL logicSQL = createLogicSQL(sql);

@@ -43,7 +43,7 @@ public final class HADataSourceRouter {
             PrimaryVisitedManager.setPrimaryVisited();
             return rule.getPrimaryDataSourceName();
         }
-        return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getPrimaryDataSourceName(), rule.getReplicaDataSourceNames());
+        return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getPrimaryDataSourceName(), rule.getDataSourceNames());
     }
     
     private boolean isPrimaryRoute(final SQLStatement sqlStatement) {

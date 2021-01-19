@@ -105,7 +105,7 @@ public final class TaskConfigurationUtil {
     }
     
     private static void filterByShardingDataSourceTables(final Map<String, Map<String, String>> dataSourceTableNameMap, final JobConfiguration jobConfig) {
-        if (null == jobConfig.getShardingTables()) {
+        if (null == jobConfig.getShardingTables() || null == jobConfig.getShardingItem()) {
             return;
         }
         Map<String, Set<String>> shardingDataSourceTableMap = toDataSourceTableNameMap(getShardingDataSourceTables(jobConfig));
@@ -179,11 +179,13 @@ public final class TaskConfigurationUtil {
     }
     
     private static Map<String, Set<String>> getShardingColumnsMap(final ShardingRuleConfiguration shardingRuleConfig) {
+        Set<String> defaultDatabaseShardingColumns = extractShardingColumns(shardingRuleConfig.getDefaultDatabaseShardingStrategy());
+        Set<String> defaultTableShardingColumns = extractShardingColumns(shardingRuleConfig.getDefaultTableShardingStrategy());
         Map<String, Set<String>> result = Maps.newConcurrentMap();
         for (ShardingTableRuleConfiguration each : shardingRuleConfig.getTables()) {
             Set<String> shardingColumns = Sets.newHashSet();
-            shardingColumns.addAll(extractShardingColumns(each.getDatabaseShardingStrategy()));
-            shardingColumns.addAll(extractShardingColumns(each.getTableShardingStrategy()));
+            shardingColumns.addAll(null == each.getDatabaseShardingStrategy() ? defaultDatabaseShardingColumns : extractShardingColumns(each.getDatabaseShardingStrategy()));
+            shardingColumns.addAll(null == each.getTableShardingStrategy() ? defaultTableShardingColumns : extractShardingColumns(each.getTableShardingStrategy()));
             result.put(each.getLogicTable(), shardingColumns);
         }
         return result;
@@ -250,7 +252,7 @@ public final class TaskConfigurationUtil {
             List<String> oldActualDataNodes = new InlineExpressionParser(oldShardingRuleConfigMap.get(each).getActualDataNodes()).splitAndEvaluate();
             List<String> newActualDataNodes = new InlineExpressionParser(newShardingRuleConfigMap.get(each).getActualDataNodes()).splitAndEvaluate();
             if (!CollectionUtils.isEqualCollection(oldActualDataNodes, newActualDataNodes) || includeModifiedDataSources(newActualDataNodes, modifiedDataSources)) {
-                result.add(newShardingRuleConfigMap.get(each).getActualDataNodes());
+                result.add(oldShardingRuleConfigMap.get(each).getActualDataNodes());
             }
         });
         return result;

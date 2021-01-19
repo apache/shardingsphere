@@ -810,3 +810,7 @@ MEMOPTIMIZE
 PARENT
     : P A R E N T
     ;
+
+IDENTIFIER
+    : I D E N T I F I E R
+    ;

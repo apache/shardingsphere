@@ -19,12 +19,14 @@ package org.apache.shardingsphere.scaling.core.job.check;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Data consistency check result.
  */
 @Getter
 @Setter
+@ToString
 public final class DataConsistencyCheckResult {
     
     private final long sourceCount;

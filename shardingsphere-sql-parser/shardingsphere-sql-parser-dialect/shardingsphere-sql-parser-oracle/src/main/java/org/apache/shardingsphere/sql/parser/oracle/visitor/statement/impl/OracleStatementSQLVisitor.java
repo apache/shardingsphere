@@ -112,10 +112,10 @@ import java.util.Properties;
 public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisitor<ASTNode> {
     
     private int currentParameterIndex;
-
+    
     public OracleStatementSQLVisitor(final Properties props) {
     }
-
+    
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
         return new ParameterMarkerValue(currentParameterIndex++);
