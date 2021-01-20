@@ -6,7 +6,7 @@ weight = 2
 ## Configuration Item Explanation
 
 ```yaml
-dataSource: # Omit data source configuration
+dataSource: # Omit the data source configuration, please refer to the usage
 
 rules:
 - !REPLICA_QUERY
