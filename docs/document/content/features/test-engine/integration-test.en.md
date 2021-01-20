@@ -13,8 +13,6 @@ Therefore, one SQL can drive 5 kinds of database parsing * 2 kinds of parameter 
 
 The `Parameterized` in JUnit will collect all test data, and pass to test method to assert one by one. The process of handling test data is just like a leaking hourglass:
 
-![](https://shardingsphere.apache.org/document/current/img/test-engine/integration-test.jpg)
-
 ### Configuration
  
   - environment type

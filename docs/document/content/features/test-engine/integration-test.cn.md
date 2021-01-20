@@ -4,130 +4,159 @@ title = "集成测试"
 weight = 1
 +++
 
-SQL解析单元测试全面覆盖SQL占位符和字面量维度。
-整合测试进一步拆分为策略和JDBC两个维度，策略维度包括分库分表、仅分表、仅分库、读写分离等策略，JDBC维度包括Statement、PreparedStatement。
+## 设计
 
-因此，1条SQL会驱动5种数据库的解析 * 2种参数传递类型 + 5种数据库 * 5种分片策略 * 2 种 JDBC 运行方式 = 60个测试用例，以达到ShardingSphere对于高质量的追求。
+集成测试包括 3 个模块：测试用例、测试环境以及测试引擎。
 
-## 流程
+### 测试用例
 
-Junit 中的 `Parameterized` 会聚合起所有的测试数据，并将测试数据一一传递给测试方法进行断言。数据处理就像是沙漏中的流沙：
+用于定义待测试的 SQL 以及测试结果的断言数据。
+每个用例定义一条 SQL，SQL 可定义多种数据库执行类型。
 
-![](https://shardingsphere.apache.org/document/current/img/test-engine/integration-test.jpg)
+### 测试环境
 
-### 配置
+用于搭建运行测试用例的数据库和 ShardingSphere-Proxy 环境。
+环境又具体分为环境准备方式，数据库类型和场景。
 
-  - 环境类文件
-    - /shardingsphere-integration-test-suite/src/test/resources/env-native.properties
-    - /shardingsphere-integration-test-suite/src/test/resources/env/`SQL-TYPE`/dataset.xml
-    - /shardingsphere-integration-test-suite/src/test/resources/env/`SQL-TYPE`/schema.xml
-  - 测试用例类文件
-    - /shardingsphere-integration-test-suite/src/test/resources/cases/`SQL-TYPE`/`SQL-TYPE`-integration-test-cases.xml
-    - /shardingsphere-integration-test-suite/src/test/resources/cases/`SQL-TYPE`/dataset/`FEATURE-TYPE`/*.xml
-  - sql-case 文件
-    - /shardingsphere-integration-test-suite/src/main/resources/sql/sharding/`SQL-TYPE`/*.xml
+环境准备方式分为 Native 和 Docker，未来还将增加 Embed 类型的支持。
 
-### 环境配置 
+  - Native 环境用于测试用例直接运行在开发者提供的测试环境中，适于调试场景；
+  - Docker 环境由 Maven 运行 Docker-Compose 插件直接搭建，适用于云编译环境和测试 ShardingSphere-Proxy 的场景，如：GitHub Action；
+  - Embed 环境由测试框架自动搭建嵌入式 MySQL，适用于 ShardingSphere-JDBC 的本地环境测试。
 
-集成测试需要真实的数据库环境，根据相应的配置文件创建测试环境：
+当前默认采用 Native 环境，使用 ShardingSphere-JDBC + H2 数据库运行测试用例。
+通过 Maven 的 `-P -Pit.env.docker` 参数可以指定 Docker 环境的运行方式。
+未来将采用 Embed 环境的 ShardingSphere-JDBC + MySQL，替换 Native 执行测试用例的默认环境类型。 
 
-首先，修改配置文件 `/shardingsphere-integration-test-suite/src/test/resources/env-native.properties` ，例子如下：
+数据库类型目前支持 MySQL、PostgreSQL、SQLServer 和 Oracle，并且可以支持使用 ShardingSphere-JDBC 或是使用 ShardingSphere-Proxy 执行测试用例。
 
-```properties
-# 测试主键，并发，column index等的开关
-it.run.additional.cases=false
+场景用于对 ShardingSphere 支持规则进行测试，目前支持数据分片和读写分离的相关场景，未来会不断完善场景的组合。
 
-# 测试场景，可指定多种规则
-it.scenarios=db,tbl,dbtbl_with_replica_query,replica_query
+### 测试引擎
 
-# 要测试的数据库，可以指定多种数据库(H2,MySQL,Oracle,SQLServer,PostgreSQL)
-it.databases=MySQL,PostgreSQL
+用于批量读取测试用例，并逐条执行和断言测试结果。
 
-# MySQL配置
-it.mysql.host=127.0.0.1
-it.mysql.port=13306
-it.mysql.username=root
-it.mysql.password=root
+测试引擎通过将用例和环境进行排列组合，以达到用最少的用例测试尽可能多场景的目的。
 
-## PostgreSQL配置
-it.postgresql.host=db.psql
-it.postgresql.port=5432
-it.postgresql.username=postgres
-it.postgresql.password=postgres
+每条 SQL 会以`数据库类型 * 接入端类型 * SQL 执行模式 * JDBC 执行模式 * 场景`的组合方式生成测试报告，目前各个维度的支持情况如下：
 
-## SQLServer配置
-it.sqlserver.host=db.mssql
-it.sqlserver.port=1433
-it.sqlserver.username=sa
-it.sqlserver.password=Jdbc1234
+  - 数据库类型：H2、MySQL、PostgreSQL、SQLServer 和 Oracle；
+  - 接入端类型：ShardingSphere-JDBC 和 ShardingSphere-Proxy；
+  - SQL 执行模式：Statement 和 PreparedStatement；
+  - JDBC 执行模式：execute 和 executeQuery (查询) / executeUpdate (更新)；
+  - 场景：分库、分表、读写分离和分库分表 + 读写分离。
 
-## Oracle配置
-it.oracle.host=db.oracle
-it.oracle.port=1521
-it.oracle.username=jdbc
-it.oracle.password=jdbc
-```
+因此，1 条 SQL 会驱动：`数据库类型(5) * 接入端类型(2) * SQL 执行模式(2) * JDBC 执行模式(2) * 场景(4) = 160` 个测试用例运行，以达到项目对于高质量的追求。
 
-其次，修改文件 `/shardingsphere-integration-test-suite/src/test/resources/env/SQL-TYPE/dataset.xml` 
-在`dataset.xml`文件中定义元数据和测试数据。例如：
+## 使用指南
 
-```xml
-<dataset>
-    <metadata data-nodes="tbl.t_order_${0..9}">
-        <column name="order_id" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
-    <row data-node="tbl.t_order_0" values="1000, 10, init" />
-    <row data-node="tbl.t_order_1" values="1001, 10, init" />
-    <row data-node="tbl.t_order_2" values="1002, 10, init" />
-    <row data-node="tbl.t_order_3" values="1003, 10, init" />
-    <row data-node="tbl.t_order_4" values="1004, 10, init" />
-    <row data-node="tbl.t_order_5" values="1005, 10, init" />
-    <row data-node="tbl.t_order_6" values="1006, 10, init" />
-    <row data-node="tbl.t_order_7" values="1007, 10, init" />
-    <row data-node="tbl.t_order_8" values="1008, 10, init" />
-    <row data-node="tbl.t_order_9" values="1009, 10, init" />
-</dataset>
-```
+### 测试用例配置
 
-开发者可以在 `schema.xml` 中自定义建库与建表语句。 
+SQL 用例在 `shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test/resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xml`。
 
-### 断言配置
-
-`env-native.properties` 与 `dataset.xml ` 确定了什么SQL在什么环境执行，下面是断言数据的配置：
-
-断言的配置，需要两种文件，第一类文件位于 `/shardingsphere-integration-test-suite/src/test/resources/cases/SQL-TYPE/SQL-TYPE-integration-test-cases.xml`
-这个文件类似于一个索引，定义了要执行的SQL，参数以及期待的数据的文件位置。这里的 test-case 引用的就是`sharding-sql-test`中 SQL 对应的`sql-case-id`，例子如下：
+用例文件格式如下：
 
 ```xml
 <integration-test-cases>
-    <dml-test-case sql-case-id="insert_with_all_placeholders">
-       <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
-       <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
-    </dml-test-case>
+    <test-case sql="${SQL}">
+        <assertion parameters="${value_1}:${type_1}, ${value_2}:${type_2}" expected-data-file="${dataset_file_1}.xml" />
+        <!-- ... more assertions -->
+        <assertion parameters="${value_3}:${type_3}, ${value_4}:${type_4}" expected-data-file="${dataset_file_2}.xml" />
+     </test-case>
+    
+    <!-- ... more test cases -->
 </integration-test-cases>
 ```
-还有一类文件 -- 断言数据，也就是上面配置中的 expected-data-file 对应的文件，文件在 `/shardingsphere-integration-test-suite/src/test/resources/cases/SQL-TYPE/dataset/FEATURE-TYPE/*.xml`
-这个文件内容跟 dataset.xml 很相似，只不过`expected-data-file`文件中不仅定义了断言的数据，还有相应SQL执行后的返回值等。例如：
+
+`expected-data-file` 的查找规则是：
+  1. 查找同级目录中 `dataset\${SCENARIO_NAME}\${DATABASE_TYPE}\${dataset_file}.xml` 文件；
+  2. 查找同级目录中 `dataset\${SCENARIO_NAME}\${dataset_file}.xml` 文件；
+  3. 查找同级目录中 `dataset\${dataset_file}.xml` 文件；
+  4. 都找不到则报错。
+
+断言文件格式如下：
 
 ```xml
-<dataset update-count="1">
-    <metadata data-nodes="db_${0..9}.t_order">
-        <column name="order_id" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
+<dataset>
+    <metadata>
+        <column name="column_1" />
+        <!-- ... more columns -->
+        <column name="column_n" />
     </metadata>
-    <row data-node="db_0.t_order" values="1000, 10, update" />
-    <row data-node="db_0.t_order" values="1001, 10, init" />
-    <row data-node="db_0.t_order" values="2000, 20, init" />
-    <row data-node="db_0.t_order" values="2001, 20, init" />
+    <row values="value_01, value_02" />
+    <!-- ... more rows -->
+    <row values="value_n1, value_n2" />
 </dataset>
 ```
 
-所有需要配置的数据，都已经配置完毕，启动相应的集成测试类即可，全程不需要修改任何 `Java` 代码，只需要在 `xml` 中做数据初始化以及断言，极大的降低了ShardingSphere数据测试的门槛以及复杂度。
+### 环境配置
 
-## 注意事项
+`${SCENARIO-TYPE}` 表示场景名称，在测试引擎运行中用于标识唯一场景。
+`${DATABASE-TYPE}` 表示数据库类型。
 
-1. 如需测试Oracle，请在pom.xml中增加Oracle驱动依赖。
-1. 为了保证测试数据的完整性，整合测试中的分库分表采用了10库10表的方式，因此运行测试用例的时间会比较长。
+#### Native 环境配置
+
+目录：`shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test/resources/env/${SCENARIO-TYPE}`
+
+  - `scenario-env.properties`: 数据源配置
+  - `rules.yaml`: 规则配置
+  - `databases.xml`: 真实库名称
+  - `dataset.xml`: 初始化数据
+  - `${DATABASE-TYPE}\init.sql`: 初始化数据库表结构
+  - `authority.xml`: 待补充
+
+#### Docker 环境配置
+
+目录：`shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test/resources/docker/${SCENARIO-TYPE}`
+
+  - `docker-compose.yml`: Docker-Compose 配置文件，用于 Docker 环境启动
+  - `proxy/conf/config-${SCENARIO-TYPE}.yaml`: 规则配置
+
+**Docker 环境配置为 ShardingSphere-Proxy 提供了远程调试端口，可以在 `docker-compose.yml` 文件的 `shardingsphere-proxy`中找到第 2 个暴露的端口用于远程调试。**
+
+### 运行测试引擎
+
+#### 配置测试引擎运行环境
+
+通过配置 `shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/src/test/resources/env/engine-env.properties` 控制测试引擎。
+
+所有的属性值都可以通过 Maven 命令行 `-D` 的方式动态注入。
+
+```properties
+# 配置环境类型，只支持单值。可选值：docker或空，默认值：空
+it.env.type=${it.env}
+# 待测试的接入端类型，多个值可用逗号分隔。可选值：jdbc, proxy，默认值：jdbc
+it.adapters=jdbc
+
+# 场景类型，多个值可用逗号分隔。可选值：db, tbl, dbtbl_with_replica_query, replica_query
+it.scenarios=db,tbl,dbtbl_with_replica_query,replica_query
+
+# 场景类型，多个值可用逗号分隔。可选值：H2, MySQL, Oracle, SQLServer, PostgreSQL
+it.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
+
+# 是否运行附加测试用例
+it.run.additional.cases=false
+```
+
+#### 运行调试模式
+
+  - 标准测试引擎
+    运行 `org.apache.shardingsphere.test.integration.engine.it.${SQL-TYPE}.General${SQL-TYPE}IT` 以启动不同 SQL 类型的测试引擎。
+
+  - 批量测试引擎
+    运行 `org.apache.shardingsphere.test.integration.engine.it.dml.BatchDMLIT`，以启动为 DML 语句提供的测试 `addBatch()` 的批量测试引擎。
+
+  - 附加测试引擎
+    运行 `org.apache.shardingsphere.test.integration.engine.it.${SQL-TYPE}.Additional${SQL-TYPE}IT` 以启动使用更多 JDBC 方法调用的测试引擎。
+    附加测试引擎需要通过设置 `it.run.additional.cases=true` 开启。
+
+#### 运行Docker 模式
+
+```bash
+./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_1,scenario_name_n} -Dit.databases=MySQL
+```
+
+#### 注意事项
+
+1. 如需测试 Oracle，请在 pom.xml 中增加 Oracle 驱动依赖；
+1. 为了保证测试数据的完整性和易读性，整合测试中的分库分表采用了 10 库 10 表的方式，完全运行测试用例所需时间较长。
