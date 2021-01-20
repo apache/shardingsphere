@@ -34,11 +34,6 @@ public final class FixtureLockStrategy implements LockStrategy {
     }
     
     @Override
-    public boolean checkLock() {
-        return false;
-    }
-    
-    @Override
     public String getType() {
         return LockStrategyType.STANDARD.name();
     }

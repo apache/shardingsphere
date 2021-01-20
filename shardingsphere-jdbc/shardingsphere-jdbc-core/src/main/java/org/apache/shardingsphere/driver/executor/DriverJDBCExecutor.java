@@ -144,7 +144,6 @@ public final class DriverJDBCExecutor {
             if (!LockContext.getLockStrategy().tryLock(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
                 throw new ShardingSphereException("Service lock wait timeout of %s ms exceeded", lockTimeoutMilliseconds);
             }
-            checkLock(lockTimeoutMilliseconds);
             return true;
         }
         return false;
@@ -152,12 +151,6 @@ public final class DriverJDBCExecutor {
     
     private boolean needLock(final SQLStatement sqlStatement) {
         return SchemaRefresherFactory.newInstance(sqlStatement).isPresent();
-    }
-    
-    private void checkLock(final long lockTimeoutMilliseconds) {
-        if (!LockContext.getLockStrategy().checkLock()) {
-            throw new ShardingSphereException("Service lock wait timeout of %s ms exceeded", lockTimeoutMilliseconds);
-        }
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})

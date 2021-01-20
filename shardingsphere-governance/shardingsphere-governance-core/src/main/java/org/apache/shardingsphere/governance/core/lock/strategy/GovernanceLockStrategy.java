@@ -58,11 +58,6 @@ public final class GovernanceLockStrategy implements LockStrategy {
     }
     
     @Override
-    public boolean checkLock() {
-        return registryCenter.checkLock();
-    }
-    
-    @Override
     public String getType() {
         return LockStrategyType.GOVERNANCE.name();
     }
