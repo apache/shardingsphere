@@ -102,7 +102,7 @@ SQL 用例在 `shardingsphere-test/shardingsphere-integration-test/shardingspher
   - `rules.yaml`: 规则配置
   - `databases.xml`: 真实库名称
   - `dataset.xml`: 初始化数据
-  - `${DATABASE-TYPE}\init.sql`: 初始化数据库表结构
+  - `init-sql\${DATABASE-TYPE}\init.sql`: 初始化数据库表结构
   - `authority.xml`: 待补充
 
 #### Docker 环境配置
