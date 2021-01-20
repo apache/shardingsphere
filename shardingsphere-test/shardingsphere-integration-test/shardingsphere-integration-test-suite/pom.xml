@@ -134,7 +134,7 @@
                                     <goal>up</goal>
                                 </goals>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/db/docker-compose.yml</composeFile>
+                                    <composeFile>${project.basedir}/src/test/resources/env/db/docker/docker-compose.yml</composeFile>
                                     <detachedMode>true</detachedMode>
                                 </configuration>
                             </execution>
@@ -145,7 +145,7 @@
                                     <goal>down</goal>
                                 </goals>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/db/docker-compose.yml</composeFile>
+                                    <composeFile>${project.basedir}/src/test/resources/env/db/docker/docker-compose.yml</composeFile>
                                     <removeVolumes>true</removeVolumes>
                                 </configuration>
                             </execution>
@@ -157,7 +157,7 @@
                                     <goal>up</goal>
                                 </goals>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/tbl/docker-compose.yml</composeFile>
+                                    <composeFile>${project.basedir}/src/test/resources/env/tbl/docker/docker-compose.yml</composeFile>
                                     <detachedMode>true</detachedMode>
                                 </configuration>
                             </execution>
@@ -168,7 +168,7 @@
                                     <goal>down</goal>
                                 </goals>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/tbl/docker-compose.yml</composeFile>
+                                    <composeFile>${project.basedir}/src/test/resources/env/tbl/docker/docker-compose.yml</composeFile>
                                     <removeVolumes>true</removeVolumes>
                                 </configuration>
                             </execution>
@@ -180,7 +180,7 @@
                                     <goal>up</goal>
                                 </goals>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/replica_query/docker-compose.yml</composeFile>
+                                    <composeFile>${project.basedir}/src/test/resources/env/replica_query/docker/docker-compose.yml</composeFile>
                                     <detachedMode>true</detachedMode>
                                 </configuration>
                             </execution>
@@ -191,7 +191,7 @@
                                     <goal>down</goal>
                                 </goals>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/replica_query/docker-compose.yml</composeFile>
+                                    <composeFile>${project.basedir}/src/test/resources/env/replica_query/docker/docker-compose.yml</composeFile>
                                     <removeVolumes>true</removeVolumes>
                                 </configuration>
                             </execution>
@@ -203,7 +203,7 @@
                                     <goal>up</goal>
                                 </goals>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/dbtbl_with_replica_query/docker-compose.yml</composeFile>
+                                    <composeFile>${project.basedir}/src/test/resources/env/dbtbl_with_replica_query/docker/docker-compose.yml</composeFile>
                                     <detachedMode>true</detachedMode>
                                 </configuration>
                             </execution>
@@ -214,7 +214,7 @@
                                     <goal>down</goal>
                                 </goals>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/dbtbl_with_replica_query/docker-compose.yml</composeFile>
+                                    <composeFile>${project.basedir}/src/test/resources/env/dbtbl_with_replica_query/docker/docker-compose.yml</composeFile>
                                     <removeVolumes>true</removeVolumes>
                                 </configuration>
                             </execution>
