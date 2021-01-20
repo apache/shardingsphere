@@ -18,7 +18,7 @@ weight = 1
 ShardingSphere-JDBC 的 Java API 通过数据源集合、规则集合以及属性配置组成。
 以下示例是根据 `user_id` 取模分库, 且根据 `order_id` 取模分表的 2 库 2 表的配置。
 
-注：示例的数据源为HikariCP，可根据业务场景更换为其他主流数据源。
+注：示例的数据库连接池为HikariCP，可根据业务场景更换为其他主流数据库连接池。
 
 ```java
 

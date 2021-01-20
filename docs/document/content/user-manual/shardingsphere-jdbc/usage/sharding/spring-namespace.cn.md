@@ -15,7 +15,7 @@ weight = 4
 
 ## 规则配置
 
-注：示例的数据源为HikariCP，可根据业务场景更换为其他主流数据源。
+注：示例的数据库连接池为HikariCP，可根据业务场景更换为其他主流数据库连接池。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>

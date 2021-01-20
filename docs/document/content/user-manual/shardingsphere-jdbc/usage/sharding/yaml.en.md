@@ -19,7 +19,7 @@ ShardingSphere-JDBC YAML file consists of data sources, rules and properties con
 The following example is the configuration of 2 databases and 2 tables, 
 whose databases take module and split according to `order_id`, tables take module and split according to `order_id`.
 
-Note: The data source of the example is HikariCP, which can be replaced with other mainstream data sources according to business scenarios.
+Note: The example database connection pool is HikariCP, which can be replaced with other mainstream database connection pools according to business scenarios.
 
 ```yaml
 # Configure actual data sources
