@@ -37,7 +37,7 @@ alterIndex
     ;
 
 dropTable
-    : DROP TABLE (schemaName DOT_)? tableName (CASCADE CONSTRAINTS)? (PURGE)?
+    : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
     ;
  
 dropIndex
