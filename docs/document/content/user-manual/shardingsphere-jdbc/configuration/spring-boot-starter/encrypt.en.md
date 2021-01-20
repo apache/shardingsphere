@@ -6,7 +6,7 @@ weight = 3
 ## Configuration Item Explanation
 
 ```properties
-spring.shardingsphere.datasource.names= # Omit data source configuration
+spring.shardingsphere.datasource.names= # Omit the data source configuration, please refer to the usage
 
 spring.shardingsphere.rules.encrypt.tables.<table-name>.columns.<column-name>.cipher-column= # Cipher column name
 spring.shardingsphere.rules.encrypt.tables.<table-name>.columns.<column-name>.assisted-query-column= # Assisted query column name

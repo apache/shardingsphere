@@ -6,7 +6,7 @@ weight = 2
 ## 配置项说明
 
 ```properties
-spring.shardingsphere.datasource.names= # 省略数据源配置
+spring.shardingsphere.datasource.names= # 省略数据源配置，请参考使用手册
 
 spring.shardingsphere.rules.replica-query.data-sources.<replica-query-data-source-name>.primary-data-source-name= # 主数据源名称
 spring.shardingsphere.rules.replica-query.data-sources.<replica-query-data-source-name>.replica-data-source-names= # 从数据源名称，多个从数据源用逗号分隔
