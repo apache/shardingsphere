@@ -147,6 +147,7 @@
                                 <configuration>
                                     <composeFile>${project.basedir}/src/test/resources/env/db/docker/docker-compose.yml</composeFile>
                                     <removeVolumes>true</removeVolumes>
+                                    <removeImages>true</removeImages>
                                 </configuration>
                             </execution>
                             
@@ -170,6 +171,7 @@
                                 <configuration>
                                     <composeFile>${project.basedir}/src/test/resources/env/tbl/docker/docker-compose.yml</composeFile>
                                     <removeVolumes>true</removeVolumes>
+                                    <removeImages>true</removeImages>
                                 </configuration>
                             </execution>
                             
@@ -193,6 +195,7 @@
                                 <configuration>
                                     <composeFile>${project.basedir}/src/test/resources/env/replica_query/docker/docker-compose.yml</composeFile>
                                     <removeVolumes>true</removeVolumes>
+                                    <removeImages>true</removeImages>
                                 </configuration>
                             </execution>
                             
@@ -216,6 +219,7 @@
                                 <configuration>
                                     <composeFile>${project.basedir}/src/test/resources/env/dbtbl_with_replica_query/docker/docker-compose.yml</composeFile>
                                     <removeVolumes>true</removeVolumes>
+                                    <removeImages>true</removeImages>
                                 </configuration>
                             </execution>
                         </executions>
