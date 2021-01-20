@@ -211,4 +211,4 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs
       - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-agent-test/pom.xml -Pit.env.agent
+        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-agent-test/pom.xml -Pit.env.agent -DskipTests
