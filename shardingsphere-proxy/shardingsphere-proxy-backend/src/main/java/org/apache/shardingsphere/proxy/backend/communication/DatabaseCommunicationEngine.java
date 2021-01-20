@@ -132,7 +132,6 @@ public final class DatabaseCommunicationEngine {
             if (!LockContext.getLockStrategy().tryLock(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
                 throw new LockWaitTimeoutException(lockTimeoutMilliseconds);
             }
-            checkLock(lockTimeoutMilliseconds);
             return true;
         }
         return false;
@@ -140,12 +139,6 @@ public final class DatabaseCommunicationEngine {
     
     private boolean needLock(final ExecutionContext executionContext) {
         return SchemaRefresherFactory.newInstance(executionContext.getSqlStatementContext().getSqlStatement()).isPresent();
-    }
-    
-    private void checkLock(final Long lockTimeoutMilliseconds) {
-        if (!LockContext.getLockStrategy().checkLock()) {
-            throw new LockWaitTimeoutException(lockTimeoutMilliseconds);
-        }
     }
     
     private void releaseLock() {

@@ -47,7 +47,7 @@ public final class GlobalLockChangedListenerTest {
     
     @Test
     public void createEvent() {
-        Optional<GovernanceEvent> actual = globalLockChangedListener.createEvent(new DataChangedEvent("/glock", "", Type.ADDED));
+        Optional<GovernanceEvent> actual = globalLockChangedListener.createEvent(new DataChangedEvent("/lock/glock", "", Type.ADDED));
         assertTrue(actual.isPresent());
         assertTrue(actual.get() instanceof GlobalLockAddedEvent);
     }

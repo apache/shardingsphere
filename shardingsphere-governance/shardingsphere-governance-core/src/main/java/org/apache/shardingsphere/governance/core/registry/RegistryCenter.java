@@ -162,7 +162,7 @@ public final class RegistryCenter {
      * @return true if get the lock, false if not
      */
     public boolean tryGlobalLock(final long timeout, final TimeUnit timeUnit) {
-        return repository.tryLock(timeout, timeUnit);
+        return repository.tryLock(timeout, timeUnit) && checkLock();
     }
     
     /**
@@ -173,12 +173,7 @@ public final class RegistryCenter {
         repository.delete(lockNode.getGlobalLockNodePath());
     }
     
-    /**
-     * Check lock state.
-     *
-     * @return true if all instances were locked, else false
-     */
-    public boolean checkLock() {
+    private boolean checkLock() {
         return checkOrRetry(this.loadAllInstances());
     }
     
