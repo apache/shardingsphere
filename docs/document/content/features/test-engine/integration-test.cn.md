@@ -4,9 +4,9 @@ title = "集成测试"
 weight = 1
 +++
 
-## 设计
+## 概要设计
 
-集成测试包括 3 个模块：测试用例、测试环境以及测试引擎。
+集成测试包括 3 个模块：**测试用例**、**测试环境**以及**测试引擎**。
 
 ### 测试用例
 
@@ -94,9 +94,9 @@ SQL 用例在 `shardingsphere-test/shardingsphere-integration-test/shardingspher
 `${SCENARIO-TYPE}` 表示场景名称，在测试引擎运行中用于标识唯一场景。
 `${DATABASE-TYPE}` 表示数据库类型。
 
-#### Native 环境配置
-
 目录：`shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test/resources/env/${SCENARIO-TYPE}`
+
+#### Native 环境配置
 
   - `scenario-env.properties`: 数据源配置
   - `rules.yaml`: 规则配置
@@ -107,10 +107,8 @@ SQL 用例在 `shardingsphere-test/shardingsphere-integration-test/shardingspher
 
 #### Docker 环境配置
 
-目录：`shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test/resources/docker/${SCENARIO-TYPE}`
-
-  - `docker-compose.yml`: Docker-Compose 配置文件，用于 Docker 环境启动
-  - `proxy/conf/config-${SCENARIO-TYPE}.yaml`: 规则配置
+  - `docker/docker-compose.yml`: Docker-Compose 配置文件，用于环境搭建
+  - `docker/proxy/conf/config-${SCENARIO-TYPE}.yaml`: 基于 Docker 启动的 ShardingSphere-Proxy 规则配置
 
 **Docker 环境配置为 ShardingSphere-Proxy 提供了远程调试端口，可以在 `docker-compose.yml` 文件的 `shardingsphere-proxy`中找到第 2 个暴露的端口用于远程调试。**
 
