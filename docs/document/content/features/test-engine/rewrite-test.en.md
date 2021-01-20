@@ -1,6 +1,6 @@
 +++
 pre = "<b>3.9.3. </b>"
-title = "SQL Rewrite Test Engine"
+title = "SQL Rewrite Test"
 weight = 3
 +++
 
