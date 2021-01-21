@@ -67,12 +67,16 @@ createShardingRule
     : CREATE SHARDING RULE LP shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)* RP
     ;
 
+alterShardingRule
+    : ALTER SHARDING RULE LP alterShardingTableRuleDefinition (COMMA alterShardingTableRuleDefinition)* RP
+    ;
+
 createReplicaQueryRule
     : CREATE REPLICA_QUERY RULE LP replicaQueryRuleDefinition (COMMA replicaQueryRuleDefinition)* RP
     ;
 
 replicaQueryRuleDefinition
-    : ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP loadBalancer=IDENTIFIER LP algorithmProperties RP
+    : ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition
     ;
 
 alterReplicaQueryRule
@@ -80,11 +84,31 @@ alterReplicaQueryRule
     ;
 
 alterReplicaQueryRuleDefinition
-    : (MODIFY | ADD) ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP (loadBalancer=IDENTIFIER LP algorithmProperties RP)?
+    : (MODIFY | ADD) ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition?
+    ;
+
+alterShardingTableRuleDefinition
+    : (MODIFY | ADD) shardingTableRuleDefinition
     ;
 
 shardingTableRuleDefinition
-    : tableName columnName shardingAlgorithmType=IDENTIFIER LP algorithmProperties RP
+    : tableName actualDataNodes databaseStrategy? tableStrategy? keyGenerateStrategy?
+    ;
+
+databaseStrategy
+    : DATABASESTRATEGY columnName functionDefinition
+    ;
+
+tableStrategy
+    : TABLESTRATEGY columnName functionDefinition
+    ;
+
+keyGenerateStrategy
+    : KEYGENERATESTRATEGY columnName functionDefinition
+    ;
+
+actualDataNodes
+    : STRING (COMMA STRING)*
     ;
 
 tableName
@@ -113,6 +137,10 @@ schemaNames
 
 schemaName
     : IDENTIFIER
+    ;
+
+functionDefinition
+    : functionName=IDENTIFIER LP algorithmProperties RP
     ;
 
 algorithmProperties

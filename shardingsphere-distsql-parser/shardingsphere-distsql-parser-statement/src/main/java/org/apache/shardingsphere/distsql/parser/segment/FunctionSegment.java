@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl;
+package org.apache.shardingsphere.distsql.parser.segment;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.ReplicaQueryRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRDLStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
-import java.util.Collection;
+import java.util.Properties;
 
 /**
- * Alter replica query rule statement.
+ * Function segment.
  */
-@RequiredArgsConstructor
 @Getter
-public final class AlterReplicaQueryRuleStatement extends CreateRDLStatement {
+@Setter
+public final class FunctionSegment implements ASTNode {
     
-    private final Collection<ReplicaQueryRuleSegment> modifyReplicaQueryRules;
+    private String algorithmName;
     
-    private final Collection<ReplicaQueryRuleSegment> addReplicaQueryRules;
+    private Properties algorithmProps;
 }

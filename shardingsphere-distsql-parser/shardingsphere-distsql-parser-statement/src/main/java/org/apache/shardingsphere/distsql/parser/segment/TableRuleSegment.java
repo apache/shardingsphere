@@ -22,7 +22,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Collection;
-import java.util.Properties;
 
 /**
  * Table rule segment.
@@ -35,9 +34,15 @@ public final class TableRuleSegment implements ASTNode {
     
     private Collection<String> dataSources;
     
-    private String shardingColumn;
+    private String databaseStrategyColumn;
     
-    private String algorithmType;
+    private String tableStrategyColumn;
     
-    private Properties algorithmProps;
+    private String keyGenerateStrategyColumn;
+    
+    private FunctionSegment databaseStrategy;
+    
+    private FunctionSegment tableStrategy;
+    
+    private FunctionSegment keyGenerateStrategy;
 }
