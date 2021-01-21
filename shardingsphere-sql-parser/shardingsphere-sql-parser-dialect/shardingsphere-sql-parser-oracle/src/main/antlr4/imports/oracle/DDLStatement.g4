@@ -37,7 +37,7 @@ alterIndex
     ;
 
 dropTable
-    : DROP TABLE tableName
+    : DROP TABLE tableName (CASCADE CONSTRAINTS)? (PURGE)?
     ;
  
 dropIndex

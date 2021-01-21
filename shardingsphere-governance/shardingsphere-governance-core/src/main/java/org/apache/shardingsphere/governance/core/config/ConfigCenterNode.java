@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Config center node.
@@ -182,11 +183,7 @@ public final class ConfigCenterNode {
      * @return list of schema path.
      */
     public Collection<String> getAllSchemaPaths(final Collection<String> schemaNames) {
-        Collection<String> result = Collections.emptyList();
-        for (String schemaName : schemaNames) {
-            result.add(getSchemaPath(schemaName));
-        }
-        return result;
+        return schemaNames.stream().map(this::getSchemaPath).collect(Collectors.toList());
     }
     
     /**
@@ -196,11 +193,7 @@ public final class ConfigCenterNode {
      * @return list of rule path.
      */
     public Collection<String> getAllRulePaths(final Collection<String> schemaNames) {
-        Collection<String> result = Collections.emptyList();
-        for (String schemaName : schemaNames) {
-            result.add(getRulePath(schemaName));
-        }
-        return result;
+        return schemaNames.stream().map(this::getRulePath).collect(Collectors.toList());
     }
     
     /**
@@ -210,10 +203,6 @@ public final class ConfigCenterNode {
      * @return list of data source path.
      */
     public Collection<String> getAllDataSourcePaths(final Collection<String> schemaNames) {
-        Collection<String> result = Collections.emptyList();
-        for (String schemaName : schemaNames) {
-            result.add(getDataSourcePath(schemaName));
-        }
-        return result;
+        return schemaNames.stream().map(this::getDataSourcePath).collect(Collectors.toList());
     }
 }

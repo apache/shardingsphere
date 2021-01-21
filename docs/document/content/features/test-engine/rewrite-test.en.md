@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.9.4. </b>"
-title = "SQL Rewrite Test Engine"
-weight = 4
+pre = "<b>3.9.3. </b>"
+title = "SQL Rewrite Test"
+weight = 3
 +++
 
 ## Target

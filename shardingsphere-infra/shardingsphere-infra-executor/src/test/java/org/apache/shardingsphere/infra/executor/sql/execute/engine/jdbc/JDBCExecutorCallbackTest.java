@@ -41,6 +41,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -81,8 +82,8 @@ public final class JDBCExecutorCallbackTest {
             }
             
             @Override
-            protected Integer getSaneResult(final SQLStatement sqlStatement) {
-                return 0;
+            protected Optional<Integer> getSaneResult(final SQLStatement sqlStatement) {
+                return Optional.of(0);
             }
         };
         Field field = JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA");

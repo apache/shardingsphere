@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Optional;
 
 /**
  * Execute query callback.
@@ -45,8 +46,8 @@ public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryRes
     }
     
     @Override
-    protected final QueryResult getSaneResult(final SQLStatement sqlStatement) {
-        return null;
+    protected final Optional<QueryResult> getSaneResult(final SQLStatement sqlStatement) {
+        return Optional.empty();
     }
     
     protected abstract ResultSet executeQuery(String sql, Statement statement) throws SQLException;

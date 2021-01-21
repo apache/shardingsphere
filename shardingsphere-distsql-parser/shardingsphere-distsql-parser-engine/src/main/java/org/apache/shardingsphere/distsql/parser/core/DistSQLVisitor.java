@@ -36,6 +36,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.S
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingTableRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
@@ -215,6 +216,14 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     @Override
     public ASTNode visitTableName(final TableNameContext ctx) {
         return new TableNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
+    }
+    
+    @Override
+    public ASTNode visitShowShardingRule(final ShowShardingRuleContext ctx) {
+        if (null != ctx.schemaName()) {
+            return new ShowRuleStatement("sharding", (SchemaSegment) visitSchemaName(ctx.schemaName()));
+        }
+        return new ShowRuleStatement("sharding", null);
     }
     
     @Override

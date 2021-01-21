@@ -152,7 +152,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     }
     
     private GovernanceEvent createRuleConfigurationCachedEvent(final String schemaName, final DataChangedEvent event) {
-        return new RuleConfigurationCachedEvent(getCacheId(event.getKey()), schemaName, getRuleConfigurations(event.getValue()));
+        return new RuleConfigurationCachedEvent(getCacheId(event.getKey()), schemaName);
     }
     
     private String getCacheId(final String path) {

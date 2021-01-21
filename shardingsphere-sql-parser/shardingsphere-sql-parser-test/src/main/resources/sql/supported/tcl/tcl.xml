@@ -25,6 +25,7 @@
     <sql-case id="rollback" value="ROLLBACK" db-types="MySQL,Oracle,PostgreSQL,SQLServer" />
     <sql-case id="rollbackWithName" value="ROLLBACK TRANSACTION transaction1" db-types="SQLServer" />
     <sql-case id="rollbackForce" value="ROLLBACK FORCE 'transaction1'" db-types="Oracle" />
+    <sql-case id="rollbackWorkForce" value="ROLLBACK WORK FORCE 'string1'" db-types="Oracle" />
     <sql-case id="savepoint" value="SAVEPOINT savepoint1" db-types="MySQL,PostgreSQL" />
     <sql-case id="begin" value="BEGIN" db-types="MySQL,PostgreSQL" />
     <sql-case id="beginTransaction" value="BEGIN TRANSACTION" db-types="SQLServer,PostgreSQL" />

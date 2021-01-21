@@ -30,6 +30,7 @@
         <module>example-core</module>
         <module>shardingsphere-jdbc-example</module>
         <module>shardingsphere-proxy-example</module>
+        <module>shardingsphere-parser-example</module>
     </modules>
     
     <properties>

@@ -127,9 +127,10 @@ public final class BatchPreparedStatementExecutor {
                 return statement.executeBatch();
             }
             
+            @SuppressWarnings("OptionalContainsCollection")
             @Override
-            protected int[] getSaneResult(final SQLStatement sqlStatement) {
-                return new int[batchCount];
+            protected Optional<int[]> getSaneResult(final SQLStatement sqlStatement) {
+                return Optional.of(new int[batchCount]);
             }
         };
         List<int[]> results = jdbcExecutor.execute(executionGroups, callback);
