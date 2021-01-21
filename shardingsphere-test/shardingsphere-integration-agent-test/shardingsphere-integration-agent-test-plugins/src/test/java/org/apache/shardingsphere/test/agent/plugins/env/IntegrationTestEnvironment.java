@@ -39,7 +39,7 @@ public final class IntegrationTestEnvironment {
     
     private static final String USER_NAME = "root";
     
-    private static final String PASSWORD = "";
+    private static final String PASSWORD = "root";
     
     private final boolean isEnvironmentPrepared;
     
@@ -69,7 +69,7 @@ public final class IntegrationTestEnvironment {
     private void waitForEnvironmentReady() {
         log.info("wait begin proxy environment");
         int retryCount = 0;
-        while (!isProxyReady() && retryCount < 30) {
+        while (!isProxyReady() && retryCount < 3000) {
             try {
                 Thread.sleep(1000L);
             } catch (final InterruptedException ignore) {
