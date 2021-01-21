@@ -46,15 +46,11 @@ public final class ShardingRuleStatementConverterTest {
         segment = new TableRuleSegment();
         segment.setLogicTable("t_order");
         segment.setDataSources(Arrays.asList("ds0", "ds1"));
-//        segment.setShardingColumn("order_id");
         segment.setTableStrategyColumn("order_id");
-//        segment.setAlgorithmType("MOD");
         FunctionSegment functionSegment = new FunctionSegment();
         functionSegment.setAlgorithmName("MOD");
-//        segment.setTableStrategy("MOD");
         Properties props = new Properties();
         props.setProperty("sharding_count", "2");
-//        segment.setAlgorithmProps(props);
         functionSegment.setAlgorithmProps(props);
         segment.setTableStrategy(functionSegment);
         sqlStatement = new CreateShardingRuleStatement(Collections.singleton(segment));
