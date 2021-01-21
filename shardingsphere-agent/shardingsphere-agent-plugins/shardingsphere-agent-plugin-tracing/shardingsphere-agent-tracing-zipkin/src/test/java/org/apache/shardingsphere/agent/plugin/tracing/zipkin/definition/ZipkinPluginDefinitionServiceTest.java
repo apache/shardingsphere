@@ -30,7 +30,7 @@ public final class ZipkinPluginDefinitionServiceTest {
     
     @Test
     public void assertDefine() {
-        Collection<PluginInterceptorPoint> interceptorPointList = zipkinPluginDefinitionService.define();
+        Collection<PluginInterceptorPoint> interceptorPointList = zipkinPluginDefinitionService.install();
         assertThat(interceptorPointList.size(), is(3));
     }
     
