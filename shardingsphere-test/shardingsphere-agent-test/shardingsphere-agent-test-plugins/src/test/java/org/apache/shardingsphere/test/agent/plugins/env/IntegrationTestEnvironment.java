@@ -58,14 +58,14 @@ public final class IntegrationTestEnvironment {
         if (isEnvironmentPrepared) {
             waitForEnvironmentReady();
             dataSource = createHikariCP();
-            File file = new File(getFile());
-            executeSQLScript(dataSource, file);
-            log.info("init proxy sql success");
+//            File file = new File(getFile());
+//            executeSQLScript(dataSource, file);
+//            log.info("init proxy sql success");
         }
     }
     
     private static String getFile() {
-        String path = String.join("/", "env", "init.sql");
+        String path = String.join("/", "env", "mysql", "init.sql");
         java.net.URL url = IntegrationTestEnvironment.class.getClassLoader().getResource(path);
         assertNotNull(String.format("File `%s` must exist.", path), url);
         return url.getFile();
