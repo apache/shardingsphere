@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import javax.sql.DataSource;
@@ -45,7 +46,7 @@ public final class BaseAgentIT {
                 insert(orderEntity, dataSource);
                 results.add(orderEntity.getOrderId());
             }
-            List<OrderEntity> orderEntities = selectAll(dataSource);
+            Collection<OrderEntity> orderEntities = selectAll(dataSource);
             assertThat(orderEntities.size(), is(10));
             for (Long each : results) {
                 delete(each, dataSource);
@@ -73,13 +74,13 @@ public final class BaseAgentIT {
         }
     }
     
-    private List<OrderEntity> selectAll(final DataSource dataSource) {
+    private Collection<OrderEntity> selectAll(final DataSource dataSource) {
         String sql = "SELECT * FROM t_order";
         return getOrders(sql, dataSource);
     }
     
-    private List<OrderEntity> getOrders(final String sql, final DataSource dataSource) {
-        List<OrderEntity> result = new LinkedList<>();
+    private Collection<OrderEntity> getOrders(final String sql, final DataSource dataSource) {
+        Collection<OrderEntity> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
