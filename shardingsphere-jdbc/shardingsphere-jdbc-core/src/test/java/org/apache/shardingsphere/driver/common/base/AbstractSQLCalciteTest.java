@@ -33,29 +33,29 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class AbstractSQLCalciteTest {
-
+public abstract class AbstractSQLCalciteTest {
+    
     private static final Map<DatabaseType, Map<String, DataSource>> DATABASE_TYPE_MAP = new HashMap<>();
-
+    
     private static final String INIT_CALCITE_DATABASE_0 = "jdbc_init_calcite_0.sql";
-
+    
     private static final String INIT_CALCITE_DATABASE_1 = "jdbc_init_calcite_1.sql";
-
+    
     @BeforeClass
     public static synchronized void initDataSource() {
         createDataSources();
     }
-
+    
     private static void createDataSources() {
         createDataSources("jdbc_0", DatabaseTypeRegistry.getActualDatabaseType("H2"), INIT_CALCITE_DATABASE_0);
         createDataSources("jdbc_1", DatabaseTypeRegistry.getActualDatabaseType("H2"), INIT_CALCITE_DATABASE_1);
     }
-
+    
     private static void createDataSources(final String dbName, final DatabaseType databaseType, final String initSql) {
         DATABASE_TYPE_MAP.computeIfAbsent(databaseType, key -> new LinkedHashMap<>()).put(dbName, buildDataSource(dbName, databaseType));
         buildSchema(dbName, databaseType, initSql);
     }
-
+    
     private static BasicDataSource buildDataSource(final String dbName, final DatabaseType databaseType) {
         DatabaseEnvironment dbEnv = new DatabaseEnvironment(databaseType);
         BasicDataSource result = new BasicDataSource();
@@ -66,7 +66,7 @@ public class AbstractSQLCalciteTest {
         result.setMaxTotal(50);
         return result;
     }
-
+    
     private static void buildSchema(final String dbName, final DatabaseType databaseType, final String initSql) {
         try {
             Connection conn = DATABASE_TYPE_MAP.get(databaseType).get(dbName).getConnection();
@@ -76,7 +76,7 @@ public class AbstractSQLCalciteTest {
             throw new RuntimeException(ex);
         }
     }
-
+    
     protected static Map<DatabaseType, Map<String, DataSource>> getDatabaseTypeMap() {
         return DATABASE_TYPE_MAP;
     }
