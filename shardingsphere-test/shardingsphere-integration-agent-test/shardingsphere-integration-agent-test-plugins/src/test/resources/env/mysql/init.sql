@@ -32,5 +32,3 @@ CREATE TABLE agent_db_0.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, 
 
 CREATE TABLE agent_db_1.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE agent_db_1.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
-
-
