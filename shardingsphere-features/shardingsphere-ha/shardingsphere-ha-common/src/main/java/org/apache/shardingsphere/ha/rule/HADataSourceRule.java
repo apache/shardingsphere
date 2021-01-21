@@ -59,7 +59,7 @@ public final class HADataSourceRule {
         name = config.getName();
         dataSourceNames = config.getDataSourceNames();
         this.loadBalancer = loadBalancer;
-        this.replicaQuery = config.isReplicaQuery();
+        replicaQuery = config.isReplicaQuery();
         this.haType = haType;
     }
     

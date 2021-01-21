@@ -86,9 +86,9 @@ public final class AlterReplicaQueryRuleBackendHandler extends SchemaRequiredBac
     private void checkAddDataSourceExist(final AlterReplicaQueryRuleStatement statement, final String schemaName) {
         Optional<ReplicaQueryRuleConfiguration> replicaQueryRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ReplicaQueryRuleConfiguration).map(each -> (ReplicaQueryRuleConfiguration) each).findFirst();
-        Set<String> existReplicaQueryDataSourceNames = replicaQueryRuleConfig.get().getDataSources().stream().map(each -> each.getName()).collect(Collectors.toSet());
-        Collection<String> addExistReplicaQueryDataSourceNames = statement.getAddReplicaQueryRules().stream().map(each -> each.getName())
-                .filter(each -> existReplicaQueryDataSourceNames.contains(each)).collect(Collectors.toList());
+        Set<String> existReplicaQueryDataSourceNames = replicaQueryRuleConfig.get().getDataSources().stream().map(ReplicaQueryDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
+        Collection<String> addExistReplicaQueryDataSourceNames = statement.getAddReplicaQueryRules().stream().map(ReplicaQueryRuleSegment::getName)
+                .filter(existReplicaQueryDataSourceNames::contains).collect(Collectors.toList());
         if (!addExistReplicaQueryDataSourceNames.isEmpty()) {
             throw new AddReplicaQueryRuleDataSourcesExistedException(addExistReplicaQueryDataSourceNames);
         }
@@ -114,8 +114,8 @@ public final class AlterReplicaQueryRuleBackendHandler extends SchemaRequiredBac
     private void checkModifyDataSourceNotExist(final AlterReplicaQueryRuleStatement statement, final String schemaName) {
         Optional<ReplicaQueryRuleConfiguration> replicaQueryRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ReplicaQueryRuleConfiguration).map(each -> (ReplicaQueryRuleConfiguration) each).findFirst();
-        Set<String> existReplicaQueryDataSourceNames = replicaQueryRuleConfig.get().getDataSources().stream().map(each -> each.getName()).collect(Collectors.toSet());
-        Collection<String> addExistReplicaQueryDataSourceNames = statement.getModifyReplicaQueryRules().stream().map(each -> each.getName())
+        Set<String> existReplicaQueryDataSourceNames = replicaQueryRuleConfig.get().getDataSources().stream().map(ReplicaQueryDataSourceRuleConfiguration::getName).collect(Collectors.toSet());
+        Collection<String> addExistReplicaQueryDataSourceNames = statement.getModifyReplicaQueryRules().stream().map(ReplicaQueryRuleSegment::getName)
                 .filter(each -> !existReplicaQueryDataSourceNames.contains(each)).collect(Collectors.toList());
         if (!addExistReplicaQueryDataSourceNames.isEmpty()) {
             throw new ReplicaQueryRuleDataSourcesNotExistedException(addExistReplicaQueryDataSourceNames);

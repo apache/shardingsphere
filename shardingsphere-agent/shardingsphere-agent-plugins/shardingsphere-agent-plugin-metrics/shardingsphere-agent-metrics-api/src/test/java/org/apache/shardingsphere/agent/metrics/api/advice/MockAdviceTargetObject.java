@@ -22,14 +22,14 @@ import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 public final class MockAdviceTargetObject implements AdviceTargetObject {
     
     private Object object;
-
+    
     @Override
     public Object getAttachment() {
         return object;
     }
-
+    
     @Override
     public void setAttachment(final Object attachment) {
-        this.object = attachment;
+        object = attachment;
     }
 }

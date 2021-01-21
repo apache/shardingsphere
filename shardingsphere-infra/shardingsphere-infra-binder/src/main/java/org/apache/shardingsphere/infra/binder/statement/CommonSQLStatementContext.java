@@ -41,15 +41,15 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
     private final T sqlStatement;
     
     private final TablesContext tablesContext;
-
+    
     private final DatabaseType databaseType;
     
     public CommonSQLStatementContext(final T sqlStatement) {
         this.sqlStatement = sqlStatement;
-        this.databaseType = initDatabaseType(sqlStatement);
+        databaseType = initDatabaseType(sqlStatement);
         tablesContext = new TablesContext(Collections.emptyList());
     }
-
+    
     private DatabaseType initDatabaseType(final SQLStatement sqlStatement) {
         DatabaseType databaseType = null;
         if (sqlStatement instanceof MySQLStatement) {

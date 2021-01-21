@@ -30,6 +30,6 @@ public final class MockAdviceTargetObject implements AdviceTargetObject {
     
     @Override
     public void setAttachment(final Object attachment) {
-        this.object = attachment;
+        object = attachment;
     }
 }

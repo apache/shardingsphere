@@ -57,7 +57,7 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
                                     final ExecutorEngine executorEngine, final Authentication authentication, final ConfigurationProperties props) {
         this.metaDataMap = new ConcurrentHashMap<>(metaDataMap);
         this.executorEngine = executorEngine;
-        this.calciteContextFactory = new CalciteContextFactory(metaDataMap);
+        calciteContextFactory = new CalciteContextFactory(metaDataMap);
         this.authentication = AuthenticationEngine.findSPIAuthentication().orElse(authentication);
         this.props = props;
     }
