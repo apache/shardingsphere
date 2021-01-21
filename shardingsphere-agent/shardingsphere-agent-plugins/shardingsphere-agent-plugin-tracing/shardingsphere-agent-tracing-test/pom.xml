@@ -70,4 +70,15 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <configuration>
+                    <outputFile>${build.directory}/${build.finalName}</outputFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
