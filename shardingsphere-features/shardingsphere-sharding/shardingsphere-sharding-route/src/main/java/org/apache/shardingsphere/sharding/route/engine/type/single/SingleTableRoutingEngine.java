@@ -78,11 +78,11 @@ public final class SingleTableRoutingEngine implements ShardingRouteEngine {
         return result.entrySet().stream().map(entry -> new RouteUnit(entry.getKey(), entry.getValue())).collect(Collectors.toList());
     }
     
-    private void fillRouteUnits(final String each, final String dataSource, final Map<RouteMapper, Collection<RouteMapper>> routeMappers) {
+    private void fillRouteUnits(final String table, final String dataSource, final Map<RouteMapper, Collection<RouteMapper>> routeMappers) {
         RouteMapper dataSourceMapper = new RouteMapper(dataSource, dataSource);
         if (!routeMappers.containsKey(dataSourceMapper)) {
             routeMappers.put(dataSourceMapper, new LinkedHashSet<>());
         }
-        routeMappers.get(dataSourceMapper).add(new RouteMapper(each, each));
+        routeMappers.get(dataSourceMapper).add(new RouteMapper(table, table));
     }
 }
