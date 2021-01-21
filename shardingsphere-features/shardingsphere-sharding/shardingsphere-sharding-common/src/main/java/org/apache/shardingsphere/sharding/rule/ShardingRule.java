@@ -303,6 +303,16 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
     }
     
     /**
+     * Single table rule exists.
+     *
+     * @param logicTableNames logic table names
+     * @return whether single table rule exists for logic tables
+     */
+    public boolean singleTableRuleExists(final Collection<String> logicTableNames) {
+        return singleTableRules.keySet().stream().anyMatch(logicTableNames::contains);
+    }
+    
+    /**
      * Judge is sharding column or not.
      *
      * @param columnName column name
