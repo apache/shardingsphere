@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.agent.plugins;
+package org.apache.shardingsphere.test.agent.plugins.env;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -26,14 +26,17 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 import javax.sql.DataSource;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.h2.tools.RunScript;
 
 import static org.junit.Assert.assertNotNull;
 
 @Getter
+@Slf4j
 public final class IntegrationTestEnvironment {
     
     private static final IntegrationTestEnvironment INSTANCE = new IntegrationTestEnvironment();
@@ -44,14 +47,21 @@ public final class IntegrationTestEnvironment {
     
     private static final String PASSWORD = "";
     
+    private final boolean isEnvironmentPrepared;
+    
     private DataSource dataSource;
     
     @SneakyThrows
     private IntegrationTestEnvironment() {
-        waitForEnvironmentReady();
-        dataSource = createHikariCP();
-        File file = new File(getFile());
-        executeSQLScript(dataSource, file);
+        Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
+        isEnvironmentPrepared = "agent".equals(engineEnvProps.getProperty("it.env.type"));
+        if (isEnvironmentPrepared) {
+            waitForEnvironmentReady();
+            dataSource = createHikariCP();
+            File file = new File(getFile());
+            executeSQLScript(dataSource, file);
+            log.info("init proxy sql success");
+        }
     }
     
     private static String getFile() {
@@ -80,6 +90,7 @@ public final class IntegrationTestEnvironment {
     }
     
     private void waitForEnvironmentReady() {
+        log.info("wait begin proxy environment");
         int retryCount = 0;
         while (!isProxyReady() && retryCount < 30) {
             try {
@@ -97,6 +108,7 @@ public final class IntegrationTestEnvironment {
         } catch (final SQLException ignore) {
             return false;
         }
+        log.info(" it proxy environment success");
         return true;
     }
     

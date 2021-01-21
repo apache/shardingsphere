@@ -27,42 +27,44 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.sql.DataSource;
 import org.apache.shardingsphere.test.agent.plugins.entity.Order;
+import org.apache.shardingsphere.test.agent.plugins.env.IntegrationTestEnvironment;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class BaseAgentTest {
-    
-    private DataSource dataSource;
+public class BaseAgentIT {
     
     @Test
-    public void setup() {
-        dataSource = IntegrationTestEnvironment.getInstance().getDataSource();
-        List<Long> results = new ArrayList<>(10);
-        for (int i = 1; i <= 10; i++) {
-            Order order = new Order(i, i, "INSERT_TEST");
-            insert(order);
-            results.add(order.getOrderId());
-        }
-        List<Order> orders = selectAll();
-        assertThat(orders.size(), is(10));
-        for (Long each : results) {
-            delete(each);
+    public void assertProxyWithAgent() {
+        if (IntegrationTestEnvironment.getInstance().isEnvironmentPrepared()) {
+            DataSource dataSource = IntegrationTestEnvironment.getInstance().getDataSource();
+            List<Long> results = new ArrayList<>(10);
+            for (int i = 1; i <= 10; i++) {
+                Order order = new Order(i, i, "INSERT_TEST");
+                insert(order, dataSource);
+                results.add(order.getOrderId());
+            }
+            List<Order> orders = selectAll(dataSource);
+            assertThat(orders.size(), is(10));
+            for (Long each : results) {
+                delete(each, dataSource);
+            }
         }
     }
     
-    private void insert(final Order order) {
-        String sql = "INSERT INTO t_order (user_id, status) VALUES (?, ?)";
+    private void insert(final Order order, final DataSource dataSource) {
+        String sql = "INSERT INTO t_order (order_id,user_id, status) VALUES (?, ?,?)";
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setInt(1, order.getUserId());
-            preparedStatement.setString(2, order.getStatus());
+            preparedStatement.setLong(1, order.getOrderId());
+            preparedStatement.setInt(2, order.getUserId());
+            preparedStatement.setString(3, order.getStatus());
             preparedStatement.executeUpdate();
         } catch (final SQLException ignored) {
         }
     }
     
-    private void delete(final Long orderId) {
+    private void delete(final Long orderId, final DataSource dataSource) {
         String sql = "DELETE FROM t_order WHERE order_id=?";
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setLong(1, orderId);
@@ -71,12 +73,12 @@ public class BaseAgentTest {
         }
     }
     
-    private List<Order> selectAll() {
+    private List<Order> selectAll(final DataSource dataSource) {
         String sql = "SELECT * FROM t_order";
-        return getOrders(sql);
+        return getOrders(sql, dataSource);
     }
     
-    private List<Order> getOrders(final String sql) {
+    private List<Order> getOrders(final String sql, final DataSource dataSource) {
         List<Order> result = new LinkedList<>();
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             ResultSet resultSet = preparedStatement.executeQuery();
