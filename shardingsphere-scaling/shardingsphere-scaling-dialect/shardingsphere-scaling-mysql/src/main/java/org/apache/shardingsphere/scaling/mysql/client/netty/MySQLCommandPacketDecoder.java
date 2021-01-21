@@ -60,11 +60,11 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     }
     
     private void decodeCommandPacket(final MySQLPacketPayload payload, final List<Object> out) {
-        if (States.FieldPacket.equals(currentState)) {
+        if (States.FieldPacket == currentState) {
             decodeFieldPacket(payload);
             return;
         }
-        if (States.RowDataPacket.equals(currentState)) {
+        if (States.RowDataPacket == currentState) {
             decodeRowDataPacket(payload, out);
             return;
         }

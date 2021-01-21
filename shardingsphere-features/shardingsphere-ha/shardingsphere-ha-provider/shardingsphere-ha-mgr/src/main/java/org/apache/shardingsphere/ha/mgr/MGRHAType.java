@@ -233,7 +233,7 @@ public final class MGRHAType implements HAType {
             }
             if (disable) {
                 ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), true));
-            } else if (!"".equals(url)) {
+            } else if (!url.isEmpty()) {
                 dataSourceURLs.put(entry.getKey(), url);
             }
         }

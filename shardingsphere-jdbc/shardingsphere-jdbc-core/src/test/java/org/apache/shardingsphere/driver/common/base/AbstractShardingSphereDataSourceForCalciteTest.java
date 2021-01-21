@@ -39,13 +39,13 @@ import java.util.Map;
 import java.util.Objects;
 
 public class AbstractShardingSphereDataSourceForCalciteTest extends AbstractSQLCalciteTest {
-
+    
     private static ShardingSphereDataSource dataSource;
-
+    
     private static final List<String> CALCITE_DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1");
-
+    
     private static final String CONFIG_CALCITE = "config-calcite.yaml";
-
+    
     @BeforeClass
     public static void initCalciteDataSource() throws SQLException, IOException {
         if (null != dataSource) {
@@ -53,11 +53,11 @@ public class AbstractShardingSphereDataSourceForCalciteTest extends AbstractSQLC
         }
         dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile(CONFIG_CALCITE));
     }
-
+    
     private static Map<String, DataSource> getDataSourceMap() {
         return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), CALCITE_DB_NAMES::contains);
     }
-
+    
     @Before
     public void initTable() {
         try {
@@ -72,16 +72,16 @@ public class AbstractShardingSphereDataSourceForCalciteTest extends AbstractSQLC
             throw new RuntimeException(ex);
         }
     }
-
+    
     private static File getFile(final String fileName) {
         return new File(Preconditions.checkNotNull(
                 AbstractShardingSphereDataSourceForShardingTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
     }
-
+    
     protected final ShardingSphereDataSource getShardingSphereDataSource() {
         return dataSource;
     }
-
+    
     @AfterClass
     public static void clear() throws Exception {
         if (null == dataSource) {

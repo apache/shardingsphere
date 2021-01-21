@@ -61,7 +61,7 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     @BeforeClass
     public static void setUp() throws SQLException, IOException, URISyntaxException {
-        GovernanceShardingSphereDataSourceTest.metaDataContexts = (GovernanceMetaDataContexts) getGovernanceShardingSphereDataSource().getMetaDataContexts();
+        metaDataContexts = (GovernanceMetaDataContexts) getGovernanceShardingSphereDataSource().getMetaDataContexts();
     }
     
     private static GovernanceShardingSphereDataSource getGovernanceShardingSphereDataSource() throws IOException, SQLException, URISyntaxException {
