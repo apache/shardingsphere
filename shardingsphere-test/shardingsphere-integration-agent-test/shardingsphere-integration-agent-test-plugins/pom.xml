@@ -22,11 +22,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-agent-test</artifactId>
+        <artifactId>shardingsphere-integration-agent-test</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
+    <artifactId>shardingsphere-integration-agent-test-plugins</artifactId>
     <name>${project.artifactId}</name>
-    <artifactId>shardingsphere-agent-test-plugins</artifactId>
 
     <dependencies>
         <dependency>
@@ -43,11 +43,6 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -99,7 +94,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <repository>apache/shardingsphere-proxy-test</repository>
+                            <repository>apache/shardingsphere-proxy-agent-test</repository>
                             <tag>${project.version}</tag>
                             <tag>latest</tag>
                             <buildArgs>
@@ -112,7 +107,7 @@
                         <artifactId>docker-compose-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>db-up</id>
+                                <id>agent-up</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
                                     <goal>up</goal>
@@ -123,7 +118,7 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>db-down</id>
+                                <id>agent-down</id>
                                 <phase>post-integration-test</phase>
                                 <goals>
                                     <goal>down</goal>
@@ -165,5 +160,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

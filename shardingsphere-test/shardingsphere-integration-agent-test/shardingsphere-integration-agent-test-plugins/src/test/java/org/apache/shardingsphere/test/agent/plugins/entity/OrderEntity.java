@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class Order {
+public final class OrderEntity {
     
     private final long orderId;
 

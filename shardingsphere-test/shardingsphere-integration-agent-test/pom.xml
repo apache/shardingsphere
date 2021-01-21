@@ -25,12 +25,12 @@
         <groupId>org.apache.shardingsphere</groupId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-agent-test</artifactId>
+    <artifactId>shardingsphere-integration-agent-test</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
 
     <modules>
-        <module>shardingsphere-agent-test-plugins</module>
+        <module>shardingsphere-integration-agent-test-plugins</module>
     </modules>
 
     <properties>

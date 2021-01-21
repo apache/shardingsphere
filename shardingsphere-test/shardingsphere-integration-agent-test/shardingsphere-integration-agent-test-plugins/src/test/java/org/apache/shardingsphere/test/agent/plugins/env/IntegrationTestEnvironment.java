@@ -19,9 +19,6 @@ package org.apache.shardingsphere.test.agent.plugins.env;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -31,9 +28,6 @@ import javax.sql.DataSource;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.h2.tools.RunScript;
-
-import static org.junit.Assert.assertNotNull;
 
 @Getter
 @Slf4j
@@ -41,7 +35,7 @@ public final class IntegrationTestEnvironment {
     
     private static final IntegrationTestEnvironment INSTANCE = new IntegrationTestEnvironment();
     
-    private static final String URL = "jdbc:mysql://127.0.0.1:33070?serverTimezone=UTC&useSSL=false&useLocalSessionState=true&characterEncoding=utf-8";
+    private static final String URL = "jdbc:mysql://127.0.0.1:43070?serverTimezone=UTC&useSSL=false&useLocalSessionState=true&characterEncoding=utf-8";
     
     private static final String USER_NAME = "root";
     
@@ -58,23 +52,6 @@ public final class IntegrationTestEnvironment {
         if (isEnvironmentPrepared) {
             waitForEnvironmentReady();
             dataSource = createHikariCP();
-//            File file = new File(getFile());
-//            executeSQLScript(dataSource, file);
-//            log.info("init proxy sql success");
-        }
-    }
-    
-    private static String getFile() {
-        String path = String.join("/", "env", "mysql", "init.sql");
-        java.net.URL url = IntegrationTestEnvironment.class.getClassLoader().getResource(path);
-        assertNotNull(String.format("File `%s` must exist.", path), url);
-        return url.getFile();
-    }
-    
-    private static void executeSQLScript(final DataSource dataSource, final File file) throws SQLException, IOException {
-        try (Connection connection = dataSource.getConnection();
-             FileReader reader = new FileReader(file)) {
-            RunScript.execute(connection, reader);
         }
     }
     
