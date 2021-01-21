@@ -303,7 +303,7 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
     }
     
     /**
-     * Judge if there is single table rule exists.
+     * Judge if single table rule exists or not.
      *
      * @param logicTableNames logic table names
      * @return whether single table rule exists for logic tables
