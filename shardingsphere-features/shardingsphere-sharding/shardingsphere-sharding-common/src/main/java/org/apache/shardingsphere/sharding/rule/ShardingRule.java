@@ -296,7 +296,7 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
      * Judge if there is at least one table rule for logic tables.
      *
      * @param logicTableNames logic table names
-     * @return judge whether a table rule exists for logic tables
+     * @return whether a table rule exists for logic tables
      */
     public boolean tableRuleExists(final Collection<String> logicTableNames) {
         return logicTableNames.stream().anyMatch(each -> findTableRule(each).isPresent() || isBroadcastTable(each));
