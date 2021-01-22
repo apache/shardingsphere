@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.config.listener;
 
+import org.apache.shardingsphere.governance.core.config.listener.metadata.MetaDataListener;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
@@ -27,14 +28,14 @@ import java.util.Collection;
  */
 public final class ConfigurationListenerManager {
     
-    private final SchemaChangedListener schemaChangedListener;
+    private final MetaDataListener metaDataListener;
     
     private final PropertiesChangedListener propertiesChangedListener;
     
     private final AuthenticationChangedListener authenticationChangedListener;
     
     public ConfigurationListenerManager(final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
-        schemaChangedListener = new SchemaChangedListener(configurationRepository, schemaNames);
+        metaDataListener = new MetaDataListener(configurationRepository, schemaNames);
         propertiesChangedListener = new PropertiesChangedListener(configurationRepository);
         authenticationChangedListener = new AuthenticationChangedListener(configurationRepository);
     }
@@ -43,7 +44,7 @@ public final class ConfigurationListenerManager {
      * Initialize all configuration changed listeners.
      */
     public void initListeners() {
-        schemaChangedListener.watch(Type.UPDATED, Type.DELETED, Type.ADDED);
+        metaDataListener.watch();
         propertiesChangedListener.watch(Type.UPDATED);
         authenticationChangedListener.watch(Type.UPDATED);
     }

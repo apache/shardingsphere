@@ -67,7 +67,7 @@ public final class FinishedCheckJob implements SimpleJob {
     }
     
     private void trySwitch(final long jobId, final WorkflowConfiguration workflowConfig) {
-        if (LockContext.getLockStrategy().tryLock(30L, TimeUnit.SECONDS) && LockContext.getLockStrategy().checkLock()) {
+        if (LockContext.getLockStrategy().tryLock(30L, TimeUnit.SECONDS)) {
             try {
                 ThreadUtil.sleep(10 * 1000L);
                 if (ScalingServiceHolder.getInstance().checkScalingResult(jobId)) {

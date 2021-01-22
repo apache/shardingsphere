@@ -237,9 +237,6 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
         String path = key + PATH_SEPARATOR;
-        if (isDuplicate(path)) {
-            return;
-        }
         if (!caches.containsKey(path)) {
             addCacheData(key);
         }
@@ -252,14 +249,6 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
                 listener.onChange(new DataChangedEvent(eventPath, null == eventDataByte ? null : new String(eventDataByte, StandardCharsets.UTF_8), changedType));
             }
         });
-    }
-    
-    private boolean isDuplicate(final String key) {
-        if (!watchedKeys.isEmpty()) {
-            return watchedKeys.stream().filter(each -> key.startsWith(each)).findFirst().isPresent();
-        }
-        watchedKeys.add(key);
-        return false;
     }
     
     private void addCacheData(final String cachePath) {

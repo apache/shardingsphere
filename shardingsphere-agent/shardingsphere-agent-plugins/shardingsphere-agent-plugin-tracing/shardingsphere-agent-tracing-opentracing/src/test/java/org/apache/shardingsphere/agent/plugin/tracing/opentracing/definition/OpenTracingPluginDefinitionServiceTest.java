@@ -30,7 +30,7 @@ public final class OpenTracingPluginDefinitionServiceTest {
     
     @Test
     public void assertDefine() {
-        Collection<PluginInterceptorPoint> interceptorPointList = openTracingPluginDefinitionService.define();
+        Collection<PluginInterceptorPoint> interceptorPointList = openTracingPluginDefinitionService.install();
         assertThat(interceptorPointList.size(), is(3));
     }
     

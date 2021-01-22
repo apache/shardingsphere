@@ -83,10 +83,7 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
             }
         }
         ShardingConditions shardingConditions = createShardingConditions(sqlStatementContext, parameters, schema, shardingRule);
-        if (shardingConditions.getConditions().size() > 1 && !isSameShardingCondition(shardingRule, shardingConditions)) {
-            return true;
-        }
-        return false;
+        return shardingConditions.getConditions().size() > 1 && !isSameShardingCondition(shardingRule, shardingConditions);
     }
     
     private boolean isRoutingByHint(final ShardingRule shardingRule, final TableRule tableRule) {
@@ -132,7 +129,7 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
         return bindingRule.isPresent() && bindingRule.get().hasLogicTable(shardingValue2.getTableName());
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("unchecked")
     private boolean isSameValue(final ShardingConditionValue shardingConditionValue1, final ShardingConditionValue shardingConditionValue2) {
         if (shardingConditionValue1 instanceof ListShardingConditionValue && shardingConditionValue2 instanceof ListShardingConditionValue) {
             return SafeNumberOperationUtils.safeCollectionEquals(

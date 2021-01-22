@@ -6,7 +6,7 @@ weight = 1
 ## Configuration Item Explanation
 
 ```yaml
-dataSources: # Omit data source configuration
+dataSources: # Omit the data source configuration, please refer to the usage
 
 rules:
 - !SHARDING

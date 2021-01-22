@@ -39,11 +39,11 @@ import java.util.Collections;
  * Create replica query rule backend handler.
  */
 public final class CreateReplicaQueryRuleBackendHandler extends SchemaRequiredBackendHandler<CreateReplicaQueryRuleStatement> {
-
+    
     public CreateReplicaQueryRuleBackendHandler(final CreateReplicaQueryRuleStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
     }
-
+    
     @Override
     public ResponseHeader execute(final String schemaName, final CreateReplicaQueryRuleStatement sqlStatement) {
         check(schemaName);
@@ -54,7 +54,7 @@ public final class CreateReplicaQueryRuleBackendHandler extends SchemaRequiredBa
     }
     
     private void check(final String schemaName) {
-        if (ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream().filter(each -> each instanceof ReplicaQueryRuleConfiguration).findFirst().isPresent()) {
+        if (ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream().anyMatch(each -> each instanceof ReplicaQueryRuleConfiguration)) {
             throw new ReplicaQueryRuleCreateExistsException();
         }
     }

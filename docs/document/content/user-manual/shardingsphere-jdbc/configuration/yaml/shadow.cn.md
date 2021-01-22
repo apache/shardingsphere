@@ -6,7 +6,7 @@ weight = 4
 ## 配置项说明
 
 ```yaml
-dataSources: #省略数据源配置
+dataSources: # 省略数据源配置，请参考使用手册
 
 rules:
 - !SHADOW

@@ -20,9 +20,6 @@ package org.apache.shardingsphere.governance.core.event.model.rule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-
-import java.util.Collection;
 
 /**
  * Rule configuration cached event.
@@ -34,6 +31,4 @@ public final class RuleConfigurationCachedEvent implements GovernanceEvent {
     private final String cacheId;
     
     private final String schemaName;
-    
-    private final Collection<RuleConfiguration> ruleConfigurations;
 }

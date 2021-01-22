@@ -15,6 +15,8 @@ weight = 4
 
 ## 规则配置
 
+注：示例的数据库连接池为HikariCP，可根据业务场景更换为其他主流数据库连接池。
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -27,16 +29,16 @@ weight = 4
                         ">
     <!-- 配置真实数据源 -->
     <!-- 配置第 1 个数据源 -->
-    <bean id="ds0" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+    <bean id="ds0" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds0" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/ds0" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
     <!-- 配置第 2 个数据源 -->
-    <bean id="ds1" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+    <bean id="ds1" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="url" value="jdbc:mysql://localhost:3306/ds1" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/ds1" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
