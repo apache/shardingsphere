@@ -112,13 +112,13 @@ public final class DatabaseCommunicationEngine {
         boolean locked = false;
         Collection<ExecuteResult> executeResults;
         try {
-            locked = tryLock(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
+            locked = tryGlobalLock(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
             proxySQLExecutor.checkExecutePrerequisites(executionContext);
             executeResults = proxySQLExecutor.execute(executionContext);
             refreshSchema(executionContext);
         } finally {
             if (locked) {
-                releaseLock();
+                releaseGlobalLock();
             }
         }
         ExecuteResult executeResultSample = executeResults.iterator().next();
@@ -127,9 +127,9 @@ public final class DatabaseCommunicationEngine {
                 : processExecuteUpdate(executionContext, executeResults.stream().map(each -> (UpdateResult) each).collect(Collectors.toList()));
     }
     
-    private boolean tryLock(final ExecutionContext executionContext, final Long lockTimeoutMilliseconds) {
+    private boolean tryGlobalLock(final ExecutionContext executionContext, final Long lockTimeoutMilliseconds) {
         if (needLock(executionContext)) {
-            if (!LockContext.getLockStrategy().tryLock(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
+            if (!LockContext.getLockStrategy().tryGlobalLock(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
                 throw new LockWaitTimeoutException(lockTimeoutMilliseconds);
             }
             return true;
@@ -141,8 +141,8 @@ public final class DatabaseCommunicationEngine {
         return SchemaRefresherFactory.newInstance(executionContext.getSqlStatementContext().getSqlStatement()).isPresent();
     }
     
-    private void releaseLock() {
-        LockContext.getLockStrategy().releaseLock();
+    private void releaseGlobalLock() {
+        LockContext.getLockStrategy().releaseGlobalLock();
     }
     
     private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
