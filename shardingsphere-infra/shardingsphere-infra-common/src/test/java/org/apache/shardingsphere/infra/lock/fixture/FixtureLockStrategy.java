@@ -23,18 +23,18 @@ import org.apache.shardingsphere.infra.lock.LockStrategyType;
 import java.util.concurrent.TimeUnit;
 
 public final class FixtureLockStrategy implements LockStrategy {
-    @Override
-    public boolean tryLock(final long timeout, final TimeUnit timeUnit) {
-        return false;
-    }
-    
-    @Override
-    public void releaseLock() {
-        
-    }
     
     @Override
     public String getType() {
         return LockStrategyType.STANDARD.name();
+    }
+    
+    @Override
+    public boolean tryGlobalLock(final long timeout, final TimeUnit timeUnit) {
+        return false;
+    }
+    
+    @Override
+    public void releaseGlobalLock() {
     }
 }

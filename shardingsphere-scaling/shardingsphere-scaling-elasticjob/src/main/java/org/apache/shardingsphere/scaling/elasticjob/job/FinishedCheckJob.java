@@ -67,7 +67,7 @@ public final class FinishedCheckJob implements SimpleJob {
     }
     
     private void trySwitch(final long jobId, final WorkflowConfiguration workflowConfig) {
-        if (LockContext.getLockStrategy().tryLock(30L, TimeUnit.SECONDS)) {
+        if (LockContext.getLockStrategy().tryGlobalLock(30L, TimeUnit.SECONDS)) {
             try {
                 ThreadUtil.sleep(10 * 1000L);
                 if (ScalingServiceHolder.getInstance().checkScalingResult(jobId)) {
@@ -75,7 +75,7 @@ public final class FinishedCheckJob implements SimpleJob {
                     ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(workflowConfig.getSchemaName(), workflowConfig.getRuleCacheId()));
                 }
             } finally {
-                LockContext.getLockStrategy().releaseLock();
+                LockContext.getLockStrategy().releaseGlobalLock();
             }
         } else {
             log.warn("can not get lock.");
