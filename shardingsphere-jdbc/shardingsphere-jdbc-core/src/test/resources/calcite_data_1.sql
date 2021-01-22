@@ -16,8 +16,14 @@
  */
 
 DELETE FROM t_order_item_calcite;
+DELETE FROM t_order_item_calcite_sharding;
 
 INSERT INTO t_order_item_calcite VALUES(100000, 1000, 10, 'init');
 INSERT INTO t_order_item_calcite VALUES(100001, 1000, 10, 'init');
 INSERT INTO t_order_item_calcite VALUES(100100, 1001, 10, 'init');
 INSERT INTO t_order_item_calcite VALUES(100101, 1001, 10, 'init');
+
+INSERT INTO t_order_item_calcite_sharding VALUES(100000, 1000, 10, 'init');
+INSERT INTO t_order_item_calcite_sharding VALUES(100001, 1000, 10, 'init');
+INSERT INTO t_order_item_calcite_sharding VALUES(100100, 1001, 10, 'init');
+INSERT INTO t_order_item_calcite_sharding VALUES(100101, 1001, 10, 'init');
