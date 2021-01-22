@@ -32,11 +32,11 @@ public final class GovernanceTransactionContexts implements TransactionContexts 
     
     private final TransactionContexts contexts;
     
-    private final String transactionManagerType;
+    private final String xaTransactionMangerType;
     
-    public GovernanceTransactionContexts(final TransactionContexts contexts, final String transactionManagerType) {
+    public GovernanceTransactionContexts(final TransactionContexts contexts, final String xaTransactionMangerType) {
         this.contexts = contexts;
-        this.transactionManagerType = transactionManagerType;
+        this.xaTransactionMangerType = xaTransactionMangerType;
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -68,7 +68,7 @@ public final class GovernanceTransactionContexts implements TransactionContexts 
             oldEngine.close();
         }
         ShardingTransactionManagerEngine newEngine = new ShardingTransactionManagerEngine();
-        newEngine.init(event.getDatabaseType(), event.getDataSources(), transactionManagerType);
+        newEngine.init(event.getDatabaseType(), event.getDataSources(), xaTransactionMangerType);
         contexts.getEngines().put(event.getSchemaName(), newEngine);
     }
 }
