@@ -74,7 +74,6 @@ public final class CuratorZookeeperRepositoryTest {
         EmbedTestingServer.start();
         serverLists = EmbedTestingServer.getTestingServerConnectionString();
         REPOSITORY.init("governance", new GovernanceCenterConfiguration(REPOSITORY.getType(), serverLists, new Properties()));
-        REPOSITORY.initLock("/glock");
     }
     
     @Test
@@ -289,17 +288,17 @@ public final class CuratorZookeeperRepositoryTest {
     
     @Test
     public void assertTryLock() {
-        assertThat(REPOSITORY.tryLock(5, TimeUnit.SECONDS), is(true));
-        REPOSITORY.releaseLock();
+        assertThat(REPOSITORY.tryLock("/lock/glock", 5, TimeUnit.SECONDS), is(true));
+        REPOSITORY.releaseLock("/lock/glock");
     }
     
     @Test
     @SneakyThrows
     public void assertTryLockFailed() {
-        assertThat(REPOSITORY.tryLock(1, TimeUnit.SECONDS), is(true));
-        FutureTask<Boolean> task = new FutureTask(() -> REPOSITORY.tryLock(1, TimeUnit.SECONDS));
+        assertThat(REPOSITORY.tryLock("/lock/glock", 1, TimeUnit.SECONDS), is(true));
+        FutureTask<Boolean> task = new FutureTask(() -> REPOSITORY.tryLock("/lock/glock", 1, TimeUnit.SECONDS));
         new Thread(task).start();
         assertThat(task.get(), is(false));
-        REPOSITORY.releaseLock();
+        REPOSITORY.releaseLock("/lock/glock");
     }
 }
