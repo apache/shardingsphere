@@ -33,23 +33,19 @@ public interface RegistryRepository extends GovernanceRepository {
     void persistEphemeral(String key, String value);
     
     /**
-     * Initialize lock.
+     * Try to get lock under the lock key.
      * 
-     * @param key the key for lock
-     */
-    void initLock(String key);
-    
-    /**
-     * Try to get lock.
-     * 
+     * @param key lock key
      * @param time time to wait
      * @param unit time unit
      * @return true if get the lock, false if not
      */
-    boolean tryLock(long time, TimeUnit unit);
+    boolean tryLock(String key, long time, TimeUnit unit);
     
     /**
      * Release lock.
+     * 
+     * @param key lock key
      */
-    void releaseLock();
+    void releaseLock(String key);
 }

@@ -47,13 +47,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -63,11 +63,9 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     
     private final Map<String, CuratorCache> caches = new HashMap<>();
     
-    private final Set<String> watchedKeys = new HashSet<>();
-    
     private CuratorFramework client;
     
-    private InterProcessLock lock;
+    private final Map<String, InterProcessLock> locks = new ConcurrentHashMap<>();
     
     @Getter
     @Setter
@@ -277,14 +275,9 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     }
     
     @Override
-    public void initLock(final String key) {
-        lock = new InterProcessMutex(client, key);
-    }
-    
-    @Override
-    public boolean tryLock(final long time, final TimeUnit unit) {
+    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
         try {
-            return lock.acquire(time, unit);
+            return getLock(key).acquire(time, unit);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -294,14 +287,30 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     }
     
     @Override
-    public void releaseLock() {
+    public void releaseLock(final String key) {
         try {
-            lock.release();
+            if (availableLock(key)) {
+                locks.get(key).release();
+                locks.remove(key);
+            }
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
+    }
+    
+    private InterProcessLock getLock(final String key) {
+        if (availableLock(key)) {
+            return locks.get(key);
+        }
+        InterProcessLock lock = new InterProcessMutex(client, key);
+        locks.put(key, lock);
+        return lock;
+    }
+    
+    private boolean availableLock(final String key) {
+        return Objects.nonNull(locks.get(key));
     }
     
     @Override

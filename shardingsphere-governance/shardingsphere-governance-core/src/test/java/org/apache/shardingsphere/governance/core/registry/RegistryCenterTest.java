@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry;
 
+import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -86,12 +87,13 @@ public final class RegistryCenterTest {
     @Test
     public void assertTryGlobalLock() {
         registryCenter.tryGlobalLock(50L, TimeUnit.MILLISECONDS);
-        verify(registryRepository).tryLock(eq(50L), eq(TimeUnit.MILLISECONDS));
+        verify(registryRepository).tryLock(eq(new LockNode().getGlobalLockNodePath()), eq(50L), eq(TimeUnit.MILLISECONDS));
     }
     
     @Test
     public void assertReleaseGlobalLock() {
         registryCenter.releaseGlobalLock();
-        verify(registryRepository).releaseLock();
+        verify(registryRepository).releaseLock(eq(new LockNode().getGlobalLockNodePath()));
+        verify(registryRepository).delete(eq(new LockNode().getGlobalLockNodePath()));
     }
 }

@@ -52,7 +52,6 @@ public final class RegistryCenter {
         repository = registryRepository;
         instance = GovernanceInstance.getInstance();
         lockNode = new LockNode();
-        registryRepository.initLock(lockNode.getGlobalLockNodePath());
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -162,14 +161,14 @@ public final class RegistryCenter {
      * @return true if get the lock, false if not
      */
     public boolean tryGlobalLock(final long timeout, final TimeUnit timeUnit) {
-        return repository.tryLock(timeout, timeUnit) && checkLock();
+        return repository.tryLock(lockNode.getGlobalLockNodePath(), timeout, timeUnit) && checkLock();
     }
     
     /**
      * Release global lock.
      */
     public void releaseGlobalLock() {
-        repository.releaseLock();
+        repository.releaseLock(lockNode.getGlobalLockNodePath());
         repository.delete(lockNode.getGlobalLockNodePath());
     }
     
