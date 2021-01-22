@@ -17,9 +17,17 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.orderby.engine;
 
+import java.sql.Types;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
+import org.apache.shardingsphere.infra.binder.segment.select.groupby.engine.GroupByContextEngine;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -80,7 +88,7 @@ public final class OrderByContextEngineTest {
         OrderByItem orderByItem2 = new OrderByItem(new IndexOrderByItemSegment(1, 2, 2, OrderDirection.ASC, OrderDirection.DESC));
         Collection<OrderByItem> orderByItems = Arrays.asList(orderByItem1, orderByItem2);
         GroupByContext groupByContext = new GroupByContext(orderByItems, 0);
-        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(selectStatement, groupByContext);
+        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(new ShardingSphereSchema(), selectStatement, groupByContext);
         assertThat(actualOrderByContext.getItems(), is(orderByItems));
         assertTrue(actualOrderByContext.isGenerated());
     }
@@ -117,7 +125,7 @@ public final class OrderByContextEngineTest {
         OrderBySegment orderBySegment = new OrderBySegment(0, 1, Arrays.asList(columnOrderByItemSegment, indexOrderByItemSegment1, indexOrderByItemSegment2));
         selectStatement.setOrderBy(orderBySegment);
         GroupByContext emptyGroupByContext = new GroupByContext(Collections.emptyList(), 0);
-        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(selectStatement, emptyGroupByContext);
+        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(new ShardingSphereSchema(), selectStatement, emptyGroupByContext);
         OrderByItem expectedOrderByItem1 = new OrderByItem(columnOrderByItemSegment);
         OrderByItem expectedOrderByItem2 = new OrderByItem(indexOrderByItemSegment1);
         expectedOrderByItem2.setIndex(2);
@@ -161,11 +169,65 @@ public final class OrderByContextEngineTest {
         projectionsSegment.getProjections().addAll(list);
         selectStatement.setProjections(projectionsSegment);
         GroupByContext groupByContext = new GroupByContext(Collections.emptyList(), 0);
-        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(selectStatement, groupByContext);
+        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(new ShardingSphereSchema(), selectStatement, groupByContext);
         assertThat(actualOrderByContext.getItems().size(), is(list.size()));
         List<OrderByItem> items = (List<OrderByItem>) actualOrderByContext.getItems();
         assertThat(((ColumnOrderByItemSegment) items.get(0).getSegment()).getColumn(), is(columnProjectionSegment1.getColumn()));
         assertThat(((ColumnOrderByItemSegment) items.get(1).getSegment()).getColumn(), is(columnProjectionSegment2.getColumn()));
         assertTrue(actualOrderByContext.isGenerated());
+    }
+    
+    @Test
+    public void assertCreateOrderByContextForMySQLSelectWithoutOrderBy() {
+        Map<String, TableMetaData> tables = new HashMap<>();
+        TableMetaData orderTable = new TableMetaData(Arrays.asList(
+            new ColumnMetaData("order_id", Types.INTEGER, "INT", true, true, false),
+            new ColumnMetaData("user_id", Types.INTEGER, "INT", false, false, false),
+            new ColumnMetaData("status", Types.VARCHAR, "VARCHAR", false, false, false)
+        ), Collections.emptyList());
+        tables.put("t_order", orderTable);
+        ShardingSphereSchema schema = new ShardingSphereSchema(tables);
+        // 1) `order by` will be added
+        OrderByContextEngine orderByContextEngine = new OrderByContextEngine();
+        SQLStatementParserEngine parserEngine = new SQLStatementParserEngine("MySQL");
+        for (String sql : Arrays.asList(
+            "SELECT * FROM t_order WHERE order_id>=1 AND order_id<=10",
+            // supported originally
+            "SELECT order_id FROM t_order GROUP BY order_id"
+        )) {
+            SelectStatement selectStatement = (SelectStatement) parserEngine.parse(sql, false);
+            GroupByContext groupByContext = new GroupByContext(Collections.emptyList(), 0);
+            OrderByContext actualOrderByContext = orderByContextEngine.createOrderBy(schema, selectStatement, groupByContext);
+            assertTrue(actualOrderByContext.isGenerated());
+            assertThat(actualOrderByContext.getItems().size(), is(1));
+            ColumnOrderByItemSegment actualItemSegment = (ColumnOrderByItemSegment) actualOrderByContext.getItems().iterator().next().getSegment();
+            assertThat(actualItemSegment.getColumn().getIdentifier().getValue(), is("order_id"));
+        }
+        // 1) already has `order by`, 2) `order by` will not be added
+        for (String sql : Arrays.asList(
+            "SELECT * FROM t_order WHERE order_id>=1 AND order_id<=10 ORDER BY order_id",
+            "SELECT * FROM t_order WHERE order_id>=1 AND order_id<=10 ORDER BY order_id ASC",
+            "SELECT * FROM t_order WHERE order_id>=1 AND order_id<=10 ORDER BY order_id DESC"
+        )) {
+            SelectStatement selectStatement = (SelectStatement) parserEngine.parse(sql, false);
+            GroupByContext groupByContext = new GroupByContext(Collections.emptyList(), 0);
+            OrderByContext actualOrderByContext = orderByContextEngine.createOrderBy(schema, selectStatement, groupByContext);
+            assertFalse(actualOrderByContext.isGenerated());
+            assertThat(actualOrderByContext.getItems().size(), is(1));
+            ColumnOrderByItemSegment actualItemSegment = (ColumnOrderByItemSegment) actualOrderByContext.getItems().iterator().next().getSegment();
+            assertThat(actualItemSegment.getColumn().getIdentifier().getValue(), is("order_id"));
+        }
+        // 1) un-supported sql, 2) `order by` will not be added
+        for (String sql : Arrays.asList(
+            "SELECT COUNT(1) FROM t_order",
+            "SELECT * FROM (SELECT * FROM t_order) AS tmp WHERE order_id>=1 AND order_id<=10",
+            "SELECT oi.* FROM t_order AS o, t_order_item AS oi WHERE o.order_id>=1 AND o.order_id<=10 AND o.order_id=oi.order_id"
+        )) {
+            SelectStatement selectStatement = (SelectStatement) parserEngine.parse(sql, false);
+            GroupByContext groupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
+            OrderByContext actualOrderByContext = orderByContextEngine.createOrderBy(schema, selectStatement, groupByContext);
+            assertFalse(actualOrderByContext.isGenerated());
+            assertThat(actualOrderByContext.getItems().size(), is(0));
+        }
     }
 }
