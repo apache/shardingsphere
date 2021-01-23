@@ -38,11 +38,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class AbstractShardingSphereDataSourceForCalciteTest extends AbstractSQLCalciteTest {
+public abstract class AbstractShardingSphereDataSourceForCalciteTest extends AbstractSQLCalciteTest {
     
     private static ShardingSphereDataSource dataSource;
     
-    private static final List<String> CALCITE_DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1");
+    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("jdbc_0", "jdbc_1");
     
     private static final String CONFIG_CALCITE = "config/config-calcite.yaml";
     
@@ -55,7 +55,7 @@ public class AbstractShardingSphereDataSourceForCalciteTest extends AbstractSQLC
     }
     
     private static Map<String, DataSource> getDataSourceMap() {
-        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), CALCITE_DB_NAMES::contains);
+        return Maps.filterKeys(getActualDataSources(), ACTUAL_DATA_SOURCE_NAMES::contains);
     }
     
     @Before
