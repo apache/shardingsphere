@@ -107,6 +107,10 @@ tableName
     : (owner DOT_)? name
     ;
 
+viewName
+    : (owner DOT_)? name
+    ;
+
 columnName
     : (owner DOT_)? name
     ;
