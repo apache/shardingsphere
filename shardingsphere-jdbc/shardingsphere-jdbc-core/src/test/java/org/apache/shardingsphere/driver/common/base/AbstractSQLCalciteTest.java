@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.common.base;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.shardingsphere.driver.common.env.DatabaseEnvironment;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.h2.tools.RunScript;
@@ -52,17 +51,16 @@ public abstract class AbstractSQLCalciteTest {
     }
     
     private static void createDataSources(final String dbName, final DatabaseType databaseType, final String initSql) {
-        DATABASE_TYPE_MAP.computeIfAbsent(databaseType, key -> new LinkedHashMap<>()).put(dbName, buildDataSource(dbName, databaseType));
+        DATABASE_TYPE_MAP.computeIfAbsent(databaseType, key -> new LinkedHashMap<>()).put(dbName, buildDataSource(dbName));
         buildSchema(dbName, databaseType, initSql);
     }
     
-    private static BasicDataSource buildDataSource(final String dbName, final DatabaseType databaseType) {
-        DatabaseEnvironment dbEnv = new DatabaseEnvironment(databaseType);
+    private static BasicDataSource buildDataSource(final String dbName) {
         BasicDataSource result = new BasicDataSource();
-        result.setDriverClassName(dbEnv.getDriverClassName());
-        result.setUrl(dbEnv.getURL(dbName));
-        result.setUsername(dbEnv.getUsername());
-        result.setPassword(dbEnv.getPassword());
+        result.setDriverClassName("org.h2.Driver");
+        result.setUrl(String.format("jdbc:h2:mem:%s;DATABASE_TO_UPPER=false;MODE=MySQL", dbName));
+        result.setUsername("sa");
+        result.setPassword("");
         result.setMaxTotal(50);
         return result;
     }
