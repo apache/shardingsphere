@@ -44,7 +44,7 @@ public class AbstractShardingSphereDataSourceForCalciteTest extends AbstractSQLC
     
     private static final List<String> CALCITE_DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1");
     
-    private static final String CONFIG_CALCITE = "config-calcite.yaml";
+    private static final String CONFIG_CALCITE = "config/config-calcite.yaml";
     
     @BeforeClass
     public static void initCalciteDataSource() throws SQLException, IOException {

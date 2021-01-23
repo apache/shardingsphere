@@ -43,7 +43,7 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     
     private static final List<String> SHARDING_DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1");
     
-    private static final String CONFIG_SHARDING = "config-sharding.yaml";
+    private static final String CONFIG_SHARDING = "config/config-sharding.yaml";
     
     @BeforeClass
     public static void initShardingSphereDataSource() throws SQLException, IOException {
