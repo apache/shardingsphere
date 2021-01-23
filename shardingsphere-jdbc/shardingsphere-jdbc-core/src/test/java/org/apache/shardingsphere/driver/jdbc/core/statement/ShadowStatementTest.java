@@ -87,7 +87,7 @@ public final class ShadowStatementTest extends AbstractShardingSphereDataSourceF
     
     private void assertResultSet(final boolean isShadow, final int resultSetCount, final Object cipherPwd) throws SQLException {
         Map<String, DataSource> dataMaps = getDatabaseTypeMap().get(DatabaseTypeRegistry.getActualDatabaseType("H2"));
-        DataSource dataSource = isShadow ? dataMaps.get("jdbc_1") : dataMaps.get("jdbc_0");
+        DataSource dataSource = isShadow ? dataMaps.get("shadow_jdbc_1") : dataMaps.get("shadow_jdbc_0");
         try (Statement statement = dataSource.getConnection().createStatement()) {
             ResultSet resultSet = statement.executeQuery(SELECT_SQL);
             int count = 1;

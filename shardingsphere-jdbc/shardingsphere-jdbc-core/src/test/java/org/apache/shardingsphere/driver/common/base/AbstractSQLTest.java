@@ -39,7 +39,7 @@ import java.util.Set;
 
 public abstract class AbstractSQLTest {
     
-    private static final List<String> DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "encrypt", "test_primary_ds", "test_replica_ds");
+    private static final List<String> DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "shadow_jdbc_0", "shadow_jdbc_1", "encrypt", "test_primary_ds", "test_replica_ds");
     
     private static final Set<DatabaseType> DATABASE_TYPES = Sets.newHashSet(DatabaseTypeRegistry.getActualDatabaseType("H2"));
     
@@ -77,7 +77,13 @@ public abstract class AbstractSQLTest {
     private static void buildSchema(final String dbName, final DatabaseType databaseType) {
         try {
             Connection conn = DATABASE_TYPE_MAP.get(databaseType).get(dbName).getConnection();
-            RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_init.sql"))));
+            if ("encrypt".equals(dbName)) {
+                RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_encrypt_init.sql"))));
+            } else if ("shadow_jdbc_0".equals(dbName) || "shadow_jdbc_1".equals(dbName)) {
+                RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_shadow_init.sql"))));
+            } else {
+                RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_init.sql"))));
+            }
             conn.close();
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
