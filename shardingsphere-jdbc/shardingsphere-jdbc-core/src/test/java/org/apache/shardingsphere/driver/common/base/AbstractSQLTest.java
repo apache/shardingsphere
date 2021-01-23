@@ -44,11 +44,11 @@ public abstract class AbstractSQLTest {
     private static final Map<DatabaseType, Map<String, DataSource>> DATABASE_TYPE_MAP = new HashMap<>();
     
     @BeforeClass
-    public static synchronized void initDataSource() {
+    public static synchronized void initializeDataSource() throws SQLException {
         createDataSources();
     }
     
-    private static void createDataSources() {
+    private static void createDataSources() throws SQLException {
         for (String each : DB_NAMES) {
             for (DatabaseType type : DATABASE_TYPES) {
                 createDataSources(each, type);
@@ -56,14 +56,13 @@ public abstract class AbstractSQLTest {
         }
     }
     
-    private static void createDataSources(final String dbName, final DatabaseType databaseType) {
+    private static void createDataSources(final String dbName, final DatabaseType databaseType) throws SQLException {
         DATABASE_TYPE_MAP.computeIfAbsent(databaseType, key -> new LinkedHashMap<>()).put(dbName, DataSourceBuilder.build(dbName));
-        buildSchema(dbName, databaseType);
+        initializeSchema(dbName, databaseType);
     }
     
-    private static void buildSchema(final String dbName, final DatabaseType databaseType) {
-        try {
-            Connection conn = DATABASE_TYPE_MAP.get(databaseType).get(dbName).getConnection();
+    private static void initializeSchema(final String dbName, final DatabaseType databaseType) throws SQLException {
+        try (Connection conn = DATABASE_TYPE_MAP.get(databaseType).get(dbName).getConnection()) {
             if ("encrypt".equals(dbName)) {
                 RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_encrypt_init.sql"))));
             } else if ("shadow_jdbc_0".equals(dbName) || "shadow_jdbc_1".equals(dbName)) {
@@ -71,9 +70,6 @@ public abstract class AbstractSQLTest {
             } else {
                 RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_init.sql"))));
             }
-            conn.close();
-        } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
         }
     }
     

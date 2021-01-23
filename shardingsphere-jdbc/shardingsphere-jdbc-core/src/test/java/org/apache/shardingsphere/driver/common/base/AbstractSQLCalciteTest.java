@@ -40,27 +40,19 @@ public abstract class AbstractSQLCalciteTest {
     private static final String INIT_CALCITE_DATABASE_1 = "sql/jdbc_init_calcite_1.sql";
     
     @BeforeClass
-    public static synchronized void initDataSource() {
-        createDataSources();
-    }
-    
-    private static void createDataSources() {
+    public static synchronized void initializeDataSource() throws SQLException {
         createDataSources("jdbc_0", DatabaseTypeRegistry.getActualDatabaseType("H2"), INIT_CALCITE_DATABASE_0);
         createDataSources("jdbc_1", DatabaseTypeRegistry.getActualDatabaseType("H2"), INIT_CALCITE_DATABASE_1);
     }
     
-    private static void createDataSources(final String dbName, final DatabaseType databaseType, final String initSql) {
+    private static void createDataSources(final String dbName, final DatabaseType databaseType, final String initSql) throws SQLException {
         DATABASE_TYPE_MAP.computeIfAbsent(databaseType, key -> new LinkedHashMap<>()).put(dbName, DataSourceBuilder.build(dbName));
-        buildSchema(dbName, databaseType, initSql);
+        initializeSchema(dbName, databaseType, initSql);
     }
     
-    private static void buildSchema(final String dbName, final DatabaseType databaseType, final String initSql) {
-        try {
-            Connection conn = DATABASE_TYPE_MAP.get(databaseType).get(dbName).getConnection();
+    private static void initializeSchema(final String dbName, final DatabaseType databaseType, final String initSql) throws SQLException {
+        try (Connection conn = DATABASE_TYPE_MAP.get(databaseType).get(dbName).getConnection()) {
             RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream(initSql))));
-            conn.close();
-        } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
         }
     }
     
