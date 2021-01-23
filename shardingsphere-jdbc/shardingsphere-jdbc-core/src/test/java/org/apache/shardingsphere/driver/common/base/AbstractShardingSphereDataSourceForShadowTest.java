@@ -38,7 +38,7 @@ public abstract class AbstractShardingSphereDataSourceForShadowTest extends Abst
     
     private static final String CONFIG_SHADOW = "config/config-shadow.yaml";
     
-    private static final List<String> SHADOW_DB_NAMES = Arrays.asList("shadow_jdbc_0", "shadow_jdbc_1");
+    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("shadow_jdbc_0", "shadow_jdbc_1");
     
     @BeforeClass
     public static void initShadowDataSource() throws SQLException, IOException {
@@ -49,7 +49,7 @@ public abstract class AbstractShardingSphereDataSourceForShadowTest extends Abst
     }
     
     private static Map<String, DataSource> getDataSources() {
-        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), SHADOW_DB_NAMES::contains);
+        return Maps.filterKeys(getActualDataSources(), ACTUAL_DATA_SOURCE_NAMES::contains);
     }
     
     private static File getFile(final String fileName) {

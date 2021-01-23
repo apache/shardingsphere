@@ -38,7 +38,7 @@ public abstract class AbstractShardingSphereDataSourceForReplicaQueryTest extend
     
     private static final String CONFIG = "config/config-replica-query.yaml";
     
-    private static final List<String> DATA_SOURCE_NAMES = Arrays.asList("test_primary_ds", "test_replica_ds");
+    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("test_primary_ds", "test_replica_ds");
     
     @BeforeClass
     public static void initReplicaQueryDataSources() throws SQLException, IOException {
@@ -49,7 +49,7 @@ public abstract class AbstractShardingSphereDataSourceForReplicaQueryTest extend
     }
     
     private static Map<String, DataSource> getDataSources() {
-        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), DATA_SOURCE_NAMES::contains);
+        return Maps.filterKeys(getActualDataSources(), ACTUAL_DATA_SOURCE_NAMES::contains);
     }
     
     private static File getFile(final String fileName) {

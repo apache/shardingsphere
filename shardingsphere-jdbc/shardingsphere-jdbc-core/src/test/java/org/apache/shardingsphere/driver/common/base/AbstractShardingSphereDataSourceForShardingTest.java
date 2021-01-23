@@ -41,7 +41,7 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     
     private static ShardingSphereDataSource dataSource;
     
-    private static final List<String> SHARDING_DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1");
+    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("jdbc_0", "jdbc_1");
     
     private static final String CONFIG_SHARDING = "config/config-sharding.yaml";
     
@@ -54,7 +54,7 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     }
     
     private static Map<String, DataSource> getDataSourceMap() {
-        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), SHARDING_DB_NAMES::contains);
+        return Maps.filterKeys(getActualDataSources(), ACTUAL_DATA_SOURCE_NAMES::contains);
     }
     
     private static File getFile(final String fileName) {
