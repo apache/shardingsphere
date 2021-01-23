@@ -48,7 +48,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     
     private static ShardingSphereDataSource encryptDataSourceWithProps;
     
-    private static final List<String> ENCRYPT_DB_NAMES = Collections.singletonList("encrypt");
+    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Collections.singletonList("encrypt");
     
     private static final String ENCRYPT_CONFIG_FILE = "config/config-encrypt.yaml";
     
@@ -69,7 +69,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     }
     
     private static Map<String, DataSource> getDataSources() {
-        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), ENCRYPT_DB_NAMES::contains);
+        return Maps.filterKeys(getActualDataSources(), ACTUAL_DATA_SOURCE_NAMES::contains);
     }
     
     private static DataSource createDataSourceWithEmptyProps(final DataSource dataSource, final File yamlFile) throws IOException, SQLException {
