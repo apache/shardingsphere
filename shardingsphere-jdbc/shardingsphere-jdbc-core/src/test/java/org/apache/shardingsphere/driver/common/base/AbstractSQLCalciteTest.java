@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.common.base;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.h2.tools.RunScript;
@@ -51,18 +50,8 @@ public abstract class AbstractSQLCalciteTest {
     }
     
     private static void createDataSources(final String dbName, final DatabaseType databaseType, final String initSql) {
-        DATABASE_TYPE_MAP.computeIfAbsent(databaseType, key -> new LinkedHashMap<>()).put(dbName, buildDataSource(dbName));
+        DATABASE_TYPE_MAP.computeIfAbsent(databaseType, key -> new LinkedHashMap<>()).put(dbName, DataSourceBuilder.build(dbName));
         buildSchema(dbName, databaseType, initSql);
-    }
-    
-    private static BasicDataSource buildDataSource(final String dbName) {
-        BasicDataSource result = new BasicDataSource();
-        result.setDriverClassName("org.h2.Driver");
-        result.setUrl(String.format("jdbc:h2:mem:%s;DATABASE_TO_UPPER=false;MODE=MySQL", dbName));
-        result.setUsername("sa");
-        result.setPassword("");
-        result.setMaxTotal(50);
-        return result;
     }
     
     private static void buildSchema(final String dbName, final DatabaseType databaseType, final String initSql) {
