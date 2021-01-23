@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.driver.common.env;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +37,6 @@ public final class DatabaseEnvironment {
     
     private static final Map<DatabaseType, String> SCHEMA = new HashMap<>(INIT_CAPACITY, 1);
     
-    @Getter
     private final DatabaseType databaseType;
     
     public DatabaseEnvironment(final DatabaseType databaseType) {
@@ -134,15 +132,5 @@ public final class DatabaseEnvironment {
      */
     public String getPassword() {
         return PASSWORD.get(databaseType);
-    }
-    
-    /**
-     * Get schema.
-     * 
-     * @param dbName database name
-     * @return schema
-     */
-    public String getSchema(final String dbName) {
-        return null == SCHEMA.get(databaseType) ? null : String.format(SCHEMA.get(databaseType), dbName);
     }
 }
