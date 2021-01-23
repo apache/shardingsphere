@@ -45,13 +45,13 @@ public abstract class AbstractSQLCalciteTest {
         createDataSources("jdbc_1", DatabaseTypeRegistry.getActualDatabaseType("H2"), INIT_CALCITE_DATABASE_1);
     }
     
-    private static void createDataSources(final String dbName, final DatabaseType databaseType, final String initSql) throws SQLException {
-        DATABASE_TYPE_MAP.computeIfAbsent(databaseType, key -> new LinkedHashMap<>()).put(dbName, DataSourceBuilder.build(dbName));
-        initializeSchema(dbName, databaseType, initSql);
+    private static void createDataSources(final String dataSourceName, final DatabaseType databaseType, final String initSql) throws SQLException {
+        DATABASE_TYPE_MAP.computeIfAbsent(databaseType, key -> new LinkedHashMap<>()).put(dataSourceName, DataSourceBuilder.build(dataSourceName));
+        initializeSchema(dataSourceName, databaseType, initSql);
     }
     
-    private static void initializeSchema(final String dbName, final DatabaseType databaseType, final String initSql) throws SQLException {
-        try (Connection conn = DATABASE_TYPE_MAP.get(databaseType).get(dbName).getConnection()) {
+    private static void initializeSchema(final String dataSourceName, final DatabaseType databaseType, final String initSql) throws SQLException {
+        try (Connection conn = DATABASE_TYPE_MAP.get(databaseType).get(dataSourceName).getConnection()) {
             RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream(initSql))));
         }
     }

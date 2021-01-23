@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.common.base;
 
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.h2.tools.RunScript;
@@ -33,35 +32,30 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 public abstract class AbstractSQLTest {
     
     private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "shadow_jdbc_0", "shadow_jdbc_1", "encrypt", "test_primary_ds", "test_replica_ds");
-    
-    private static final Set<DatabaseType> DATABASE_TYPES = Sets.newHashSet(DatabaseTypeRegistry.getActualDatabaseType("H2"));
     
     private static final Map<DatabaseType, Map<String, DataSource>> DATABASE_TYPE_MAP = new HashMap<>();
     
     @BeforeClass
     public static synchronized void initializeDataSource() throws SQLException {
         for (String each : ACTUAL_DATA_SOURCE_NAMES) {
-            for (DatabaseType type : DATABASE_TYPES) {
-                createDataSources(each, type);
-            }
+            createDataSources(each, DatabaseTypeRegistry.getActualDatabaseType("H2"));
         }
     }
     
-    private static void createDataSources(final String dbName, final DatabaseType databaseType) throws SQLException {
-        DATABASE_TYPE_MAP.computeIfAbsent(databaseType, key -> new LinkedHashMap<>()).put(dbName, DataSourceBuilder.build(dbName));
-        initializeSchema(dbName, databaseType);
+    private static void createDataSources(final String dataSourceName, final DatabaseType databaseType) throws SQLException {
+        DATABASE_TYPE_MAP.computeIfAbsent(databaseType, key -> new LinkedHashMap<>()).put(dataSourceName, DataSourceBuilder.build(dataSourceName));
+        initializeSchema(dataSourceName, databaseType);
     }
     
-    private static void initializeSchema(final String dbName, final DatabaseType databaseType) throws SQLException {
-        try (Connection conn = DATABASE_TYPE_MAP.get(databaseType).get(dbName).getConnection()) {
-            if ("encrypt".equals(dbName)) {
+    private static void initializeSchema(final String dataSourceName, final DatabaseType databaseType) throws SQLException {
+        try (Connection conn = DATABASE_TYPE_MAP.get(databaseType).get(dataSourceName).getConnection()) {
+            if ("encrypt".equals(dataSourceName)) {
                 RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_encrypt_init.sql"))));
-            } else if ("shadow_jdbc_0".equals(dbName) || "shadow_jdbc_1".equals(dbName)) {
+            } else if ("shadow_jdbc_0".equals(dataSourceName) || "shadow_jdbc_1".equals(dataSourceName)) {
                 RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_shadow_init.sql"))));
             } else {
                 RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_init.sql"))));
