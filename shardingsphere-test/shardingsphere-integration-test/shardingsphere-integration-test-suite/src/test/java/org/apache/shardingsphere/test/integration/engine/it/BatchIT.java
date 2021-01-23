@@ -134,10 +134,6 @@ public abstract class BatchIT extends BaseIT {
     
     private void mergeRow(final DataSet original, final DataSet dist, final Set<List<String>> existedRowValues) {
         for (DataSetRow each : original.getRows()) {
-            if (each.getDataNode().contains("broadcast")) {
-                dist.getRows().add(each);
-                continue;
-            }
             if (existedRowValues.add(each.getValues())) {
                 dist.getRows().add(each);
             }
@@ -157,10 +153,6 @@ public abstract class BatchIT extends BaseIT {
     }
     
     private void assertRows(final ResultSet actualResultSet, final List<DataSetRow> expectedDatSetRows) throws SQLException {
-        List<DataSetRow> sampleRows = getDataSets().iterator().next().getRows();
-        if (!sampleRows.isEmpty() && sampleRows.get(0).getDataNode().contains("broadcast")) {
-            return;
-        }
         int count = 0;
         while (actualResultSet.next()) {
             int index = 1;
