@@ -50,11 +50,11 @@ dataSources:
     maintenanceIntervalMilliseconds: 30000
 
 rules:
-  - !REPLICA_QUERY
-    dataSources:
-      primary-replica-ds:
-        name: primary-replica-ds
-        primaryDataSourceName: primary_ds
-        replicaDataSourceNames:
-          - replica_0
-          - replica_1
+- !REPLICA_QUERY
+  dataSources:
+    primary-replica-ds:
+      name: primary-replica-ds
+      primaryDataSourceName: primary_ds
+      replicaDataSourceNames:
+        - replica_0
+        - replica_1
