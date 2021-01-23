@@ -37,7 +37,7 @@ import java.util.Set;
 
 public abstract class AbstractSQLTest {
     
-    private static final List<String> DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "shadow_jdbc_0", "shadow_jdbc_1", "encrypt", "test_primary_ds", "test_replica_ds");
+    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "shadow_jdbc_0", "shadow_jdbc_1", "encrypt", "test_primary_ds", "test_replica_ds");
     
     private static final Set<DatabaseType> DATABASE_TYPES = Sets.newHashSet(DatabaseTypeRegistry.getActualDatabaseType("H2"));
     
@@ -45,11 +45,7 @@ public abstract class AbstractSQLTest {
     
     @BeforeClass
     public static synchronized void initializeDataSource() throws SQLException {
-        createDataSources();
-    }
-    
-    private static void createDataSources() throws SQLException {
-        for (String each : DB_NAMES) {
+        for (String each : ACTUAL_DATA_SOURCE_NAMES) {
             for (DatabaseType type : DATABASE_TYPES) {
                 createDataSources(each, type);
             }
