@@ -50,7 +50,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     
     private static final List<String> ENCRYPT_DB_NAMES = Collections.singletonList("encrypt");
     
-    private static final String ENCRYPT_CONFIG_FILE = "encrypt-config.yaml";
+    private static final String ENCRYPT_CONFIG_FILE = "config-encrypt.yaml";
     
     @BeforeClass
     public static void initEncryptDataSource() throws SQLException, IOException {
