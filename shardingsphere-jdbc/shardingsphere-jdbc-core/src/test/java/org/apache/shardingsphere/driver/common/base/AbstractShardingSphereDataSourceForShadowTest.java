@@ -36,7 +36,7 @@ public abstract class AbstractShardingSphereDataSourceForShadowTest extends Abst
     
     private static ShardingSphereDataSource dataSource;
     
-    private static final String CONFIG_SHADOW = "config-shadow.yaml";
+    private static final String CONFIG_SHADOW = "config/config-shadow.yaml";
     
     private static final List<String> SHADOW_DB_NAMES = Arrays.asList("shadow_jdbc_0", "shadow_jdbc_1");
     

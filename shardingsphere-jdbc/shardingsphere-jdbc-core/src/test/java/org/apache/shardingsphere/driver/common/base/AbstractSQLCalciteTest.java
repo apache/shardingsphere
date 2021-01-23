@@ -37,9 +37,9 @@ public abstract class AbstractSQLCalciteTest {
     
     private static final Map<DatabaseType, Map<String, DataSource>> DATABASE_TYPE_MAP = new HashMap<>();
     
-    private static final String INIT_CALCITE_DATABASE_0 = "jdbc_init_calcite_0.sql";
+    private static final String INIT_CALCITE_DATABASE_0 = "sql/jdbc_init_calcite_0.sql";
     
-    private static final String INIT_CALCITE_DATABASE_1 = "jdbc_init_calcite_1.sql";
+    private static final String INIT_CALCITE_DATABASE_1 = "sql/jdbc_init_calcite_1.sql";
     
     @BeforeClass
     public static synchronized void initDataSource() {

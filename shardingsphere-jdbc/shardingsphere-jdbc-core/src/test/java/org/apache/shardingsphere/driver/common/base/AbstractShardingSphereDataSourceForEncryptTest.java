@@ -50,7 +50,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     
     private static final List<String> ENCRYPT_DB_NAMES = Collections.singletonList("encrypt");
     
-    private static final String ENCRYPT_CONFIG_FILE = "config-encrypt.yaml";
+    private static final String ENCRYPT_CONFIG_FILE = "config/config-encrypt.yaml";
     
     @BeforeClass
     public static void initEncryptDataSource() throws SQLException, IOException {
@@ -80,7 +80,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     @Before
     public void initTable() {
         try (ShardingSphereConnection connection = dataSource.getConnection()) {
-            RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("encrypt_data.sql"))));
+            RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/encrypt_data.sql"))));
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }

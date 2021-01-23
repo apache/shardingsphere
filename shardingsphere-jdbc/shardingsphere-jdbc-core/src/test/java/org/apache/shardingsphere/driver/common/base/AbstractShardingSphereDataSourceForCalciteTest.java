@@ -44,7 +44,7 @@ public class AbstractShardingSphereDataSourceForCalciteTest extends AbstractSQLC
     
     private static final List<String> CALCITE_DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1");
     
-    private static final String CONFIG_CALCITE = "config-calcite.yaml";
+    private static final String CONFIG_CALCITE = "config/config-calcite.yaml";
     
     @BeforeClass
     public static void initCalciteDataSource() throws SQLException, IOException {
@@ -65,8 +65,8 @@ public class AbstractShardingSphereDataSourceForCalciteTest extends AbstractSQLC
             Map<String, DataSource> dataSourceMap = conn.getDataSourceMap();
             Connection database0 = dataSourceMap.get("jdbc_0").getConnection();
             Connection database1 = dataSourceMap.get("jdbc_1").getConnection();
-            RunScript.execute(database0, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("calcite_data_0.sql"))));
-            RunScript.execute(database1, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("calcite_data_1.sql"))));
+            RunScript.execute(database0, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/calcite_data_0.sql"))));
+            RunScript.execute(database1, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/calcite_data_1.sql"))));
             conn.close();
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
