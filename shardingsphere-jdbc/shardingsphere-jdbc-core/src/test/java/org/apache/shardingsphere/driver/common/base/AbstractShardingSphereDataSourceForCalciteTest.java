@@ -31,7 +31,6 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -62,11 +61,8 @@ public class AbstractShardingSphereDataSourceForCalciteTest extends AbstractSQLC
     public void initTable() {
         try {
             ShardingSphereConnection conn = dataSource.getConnection();
-            Map<String, DataSource> dataSourceMap = conn.getDataSourceMap();
-            Connection database0 = dataSourceMap.get("jdbc_0").getConnection();
-            Connection database1 = dataSourceMap.get("jdbc_1").getConnection();
-            RunScript.execute(database0, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("calcite_data_0.sql"))));
-            RunScript.execute(database1, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("calcite_data_1.sql"))));
+            RunScript.execute(conn.getConnection("jdbc_0"), new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("calcite_data_0.sql"))));
+            RunScript.execute(conn.getConnection("jdbc_1"), new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("calcite_data_1.sql"))));
             conn.close();
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
