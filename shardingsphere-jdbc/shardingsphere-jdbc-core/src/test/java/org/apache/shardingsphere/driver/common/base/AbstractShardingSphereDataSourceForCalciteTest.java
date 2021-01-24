@@ -66,6 +66,7 @@ public abstract class AbstractShardingSphereDataSourceForCalciteTest extends Abs
     @Before
     public void initTable() {
         try {
+            System.out.println("--------dataSource-------:" + dataSource);
             ShardingSphereConnection conn = dataSource.getConnection();
             Map<String, DataSource> dataSourceMap = conn.getDataSourceMap();
             Connection database0 = dataSourceMap.get("jdbc_0").getConnection();
