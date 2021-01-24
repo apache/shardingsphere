@@ -29,6 +29,7 @@ import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -41,22 +42,16 @@ public abstract class AbstractShardingSphereDataSourceForCalciteTest extends Abs
     
     private static ShardingSphereDataSource dataSource;
     
-    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("jdbc_0", "jdbc_1");
+    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("calcite_jdbc_0", "calcite_jdbc_1");
     
     private static final String CONFIG_CALCITE = "config/config-calcite.yaml";
     
     @BeforeClass
-    public static void initCalciteDataSource() {
+    public static void initCalciteDataSource() throws IOException, SQLException {
         if (null != dataSource) {
             return;
         }
-        try {
-            dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile(CONFIG_CALCITE));
-        // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            ex.printStackTrace();
-        }
-        // CHECKSTYLE:ON
+        dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile(CONFIG_CALCITE));
     }
     
     private static Map<String, DataSource> getDataSourceMap() {
@@ -66,11 +61,10 @@ public abstract class AbstractShardingSphereDataSourceForCalciteTest extends Abs
     @Before
     public void initTable() {
         try {
-            System.out.println("--------dataSource-------:" + dataSource);
             ShardingSphereConnection conn = dataSource.getConnection();
             Map<String, DataSource> dataSourceMap = conn.getDataSourceMap();
-            Connection database0 = dataSourceMap.get("jdbc_0").getConnection();
-            Connection database1 = dataSourceMap.get("jdbc_1").getConnection();
+            Connection database0 = dataSourceMap.get("calcite_jdbc_0").getConnection();
+            Connection database1 = dataSourceMap.get("calcite_jdbc_1").getConnection();
             RunScript.execute(database0, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/calcite_data_0.sql"))));
             RunScript.execute(database1, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/calcite_data_1.sql"))));
             conn.close();
