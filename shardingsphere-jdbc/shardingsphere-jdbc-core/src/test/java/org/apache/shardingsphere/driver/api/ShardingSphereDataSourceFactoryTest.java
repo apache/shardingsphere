@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.api;
 
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.junit.Test;
@@ -43,40 +44,52 @@ import static org.mockito.Mockito.when;
 public final class ShardingSphereDataSourceFactoryTest {
     
     @Test
-    public void assertCreateDataSourceWithShardingRuleAndProperties() throws SQLException {
+    public void assertCreateDataSourceWithMultipleActualDataSources() throws SQLException {
         Properties props = new Properties();
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource(
                 getDataSourceMap(), Collections.singleton(createShardingRuleConfiguration()), props);
         assertThat(dataSource.getMetaDataContexts().getProps().getProps(), is(props));
     }
     
+    @Test
+    public void assertCreateDataSourceWithSingleActualDataSource() throws SQLException {
+        Properties props = new Properties();
+        ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource(
+                mockDataSource(), Collections.singleton(createShardingRuleConfiguration()), props);
+        assertThat(dataSource.getMetaDataContexts().getProps().getProps(), is(props));
+    }
+    
     private Map<String, DataSource> getDataSourceMap() throws SQLException {
-        DataSource dataSource = mock(DataSource.class);
+        Map<String, DataSource> result = new HashMap<>(1, 1);
+        result.put(DefaultSchema.LOGIC_NAME, mockDataSource());
+        return result;
+    }
+    
+    private DataSource mockDataSource() throws SQLException {
+        DataSource result = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         Statement statement = mock(Statement.class);
         ResultSet resultSet = mock(ResultSet.class);
         when(statement.getResultSet()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
-        when(dataSource.getConnection()).thenReturn(connection);
+        when(result.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(connection.createStatement()).thenReturn(statement);
         when(statement.executeQuery(anyString())).thenReturn(resultSet);
         when(statement.getConnection()).thenReturn(connection);
         when(statement.getConnection().getMetaData().getTables(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
-        when(statement.getConnection().getMetaData().getURL()).thenReturn("jdbc:h2:mem:demo_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        when(statement.getConnection().getMetaData().getURL()).thenReturn("jdbc:h2:mem:demo_logic_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         when(statement.getConnection().getMetaData().getColumns(null, null, "table_0", "%")).thenReturn(mock(ResultSet.class));
         when(statement.getConnection().getMetaData().getPrimaryKeys(null, null, "table_0")).thenReturn(mock(ResultSet.class));
         when(statement.getConnection().getMetaData().getIndexInfo(null, null, "table_0", false, false)).thenReturn(mock(ResultSet.class));
-        Map<String, DataSource> result = new HashMap<>(1);
-        result.put("ds", dataSource);
         return result;
     }
     
     private ShardingRuleConfiguration createShardingRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTables().add(new ShardingTableRuleConfiguration("logicTable", "ds.table_${0..2}"));
+        result.getTables().add(new ShardingTableRuleConfiguration("logicTable", "logic_db.table_${0..2}"));
         return result;
     }
 }
