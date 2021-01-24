@@ -38,8 +38,8 @@ public abstract class AbstractSQLCalciteTest {
     
     @BeforeClass
     public static synchronized void initializeDataSource() throws SQLException {
-        createDataSources("jdbc_0", INIT_CALCITE_DATABASE_0);
-        createDataSources("jdbc_1", INIT_CALCITE_DATABASE_1);
+        createDataSources("calcite_jdbc_0", INIT_CALCITE_DATABASE_0);
+        createDataSources("calcite_jdbc_1", INIT_CALCITE_DATABASE_1);
     }
     
     private static void createDataSources(final String dataSourceName, final String initSql) throws SQLException {
