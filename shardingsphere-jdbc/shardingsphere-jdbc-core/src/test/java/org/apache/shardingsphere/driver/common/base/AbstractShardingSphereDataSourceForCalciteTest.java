@@ -28,7 +28,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.sql.Connection;
@@ -47,11 +46,17 @@ public abstract class AbstractShardingSphereDataSourceForCalciteTest extends Abs
     private static final String CONFIG_CALCITE = "config/config-calcite.yaml";
     
     @BeforeClass
-    public static void initCalciteDataSource() throws SQLException, IOException {
+    public static void initCalciteDataSource() {
         if (null != dataSource) {
             return;
         }
-        dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile(CONFIG_CALCITE));
+        try {
+            dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile(CONFIG_CALCITE));
+        // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            ex.printStackTrace();
+        }
+        // CHECKSTYLE:ON
     }
     
     private static Map<String, DataSource> getDataSourceMap() {
