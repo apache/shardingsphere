@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.jdbc.unsupported;
 
-import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +26,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collections;
 import java.util.Properties;
 
-public final class UnsupportedOperationDataSourceTest extends AbstractShardingSphereDataSourceForShardingTest {
+public final class UnsupportedOperationDataSourceTest {
     
     private ShardingSphereDataSource shardingSphereDataSource;
     
