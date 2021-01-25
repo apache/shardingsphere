@@ -34,6 +34,7 @@ public final class DataSourceValidator {
     /**
      * Validate.
      *
+     * @param dataSources data sources.
      * @return is valid or not
      */
     public static boolean validate(final Map<String, DataSourceConfiguration> dataSources) {
