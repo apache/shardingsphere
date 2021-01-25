@@ -138,7 +138,6 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         AlterShardingRuleStatement result;
         if (null != ctx.defaultTableStrategy()) {
             String defaultTableStrategyColumn = null != ctx.defaultTableStrategy().columnName() ? ctx.defaultTableStrategy().columnName().getText() : null;
-    
             result = new AlterShardingRuleStatement(defaultTableStrategyColumn, (FunctionSegment) visit(ctx.defaultTableStrategy()));
         } else {
             result = new AlterShardingRuleStatement(null, null);
