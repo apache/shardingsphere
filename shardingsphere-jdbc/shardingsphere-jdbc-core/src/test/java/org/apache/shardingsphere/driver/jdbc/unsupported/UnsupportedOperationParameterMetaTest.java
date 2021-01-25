@@ -17,95 +17,56 @@
 
 package org.apache.shardingsphere.driver.jdbc.unsupported;
 
-import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShardingTest;
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.junit.After;
-import org.junit.Before;
+import org.apache.shardingsphere.driver.jdbc.core.statement.metadata.ShardingSphereParameterMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 
-import java.sql.ParameterMetaData;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.ArrayList;
-import java.util.List;
 
-public final class UnsupportedOperationParameterMetaTest extends AbstractShardingSphereDataSourceForShardingTest {
+import static org.mockito.Mockito.mock;
+
+public final class UnsupportedOperationParameterMetaTest {
     
-    private static final String SQL = "SELECT user_id AS usr_id FROM t_order WHERE status = 'init'";
-    
-    private final List<ShardingSphereConnection> shardingSphereConnections = new ArrayList<>();
-    
-    private final List<ParameterMetaData> parameterMetaData = new ArrayList<>();
-    
-    @Before
-    public void init() throws SQLException {
-        ShardingSphereConnection connection = getShardingSphereDataSource().getConnection();
-        shardingSphereConnections.add(connection);
-        PreparedStatement preparedStatement = connection.prepareStatement(SQL);
-        parameterMetaData.add(preparedStatement.getParameterMetaData());
-    }
-    
-    @After
-    public void close() throws SQLException {
-        for (ShardingSphereConnection each : shardingSphereConnections) {
-            each.close();
-        }
-    }
+    private final ShardingSphereParameterMetaData shardingSphereParameterMetaData = new ShardingSphereParameterMetaData(mock(SQLStatement.class));
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertIsNullable() throws SQLException {
-        for (ParameterMetaData each : parameterMetaData) {
-            each.getParameterClassName(1);
-        }
+        shardingSphereParameterMetaData.getParameterClassName(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertIsSigned() throws SQLException {
-        for (ParameterMetaData each : parameterMetaData) {
-            each.isSigned(1);
-        }
+        shardingSphereParameterMetaData.isSigned(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetPrecision() throws SQLException {
-        for (ParameterMetaData each : parameterMetaData) {
-            each.getPrecision(1);
-        }
+        shardingSphereParameterMetaData.getPrecision(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetScale() throws SQLException {
-        for (ParameterMetaData each : parameterMetaData) {
-            each.getScale(1);
-        }
+        shardingSphereParameterMetaData.getScale(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetParameterType() throws SQLException {
-        for (ParameterMetaData each : parameterMetaData) {
-            each.getParameterType(1);
-        }
+        shardingSphereParameterMetaData.getParameterType(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetParameterTypeName() throws SQLException {
-        for (ParameterMetaData each : parameterMetaData) {
-            each.getParameterTypeName(1);
-        }
+        shardingSphereParameterMetaData.getParameterTypeName(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetParameterClassName() throws SQLException {
-        for (ParameterMetaData each : parameterMetaData) {
-            each.getParameterClassName(1);
-        }
+        shardingSphereParameterMetaData.getParameterClassName(1);
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetParameterMode() throws SQLException {
-        for (ParameterMetaData each : parameterMetaData) {
-            each.getParameterMode(1);
-        }
+        shardingSphereParameterMetaData.getParameterMode(1);
     }
 }
