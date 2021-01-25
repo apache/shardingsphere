@@ -116,7 +116,6 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         } else {
             result = new CreateShardingRuleStatement(null, null);
         }
-//        Collection<TableRuleSegment> tables = new LinkedList<>();
         for (ShardingTableRuleDefinitionContext each : ctx.shardingTableRuleDefinition()) {
             result.getTables().add((TableRuleSegment) visit(each));
         }
@@ -136,17 +135,6 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitAlterShardingRule(final AlterShardingRuleContext ctx) {
-//        Collection<TableRuleSegment> modifyShardingRules = new LinkedList<>();
-//        Collection<TableRuleSegment> addShardingRules = new LinkedList<>();
-//        for (AlterShardingTableRuleDefinitionContext each : ctx.alterShardingTableRuleDefinition()) {
-//            if (null != each.ADD()) {
-//                addShardingRules.add((TableRuleSegment) visit(each.shardingTableRuleDefinition()));
-//            } else if (null != each.MODIFY()) {
-//                modifyShardingRules.add((TableRuleSegment) visit(each.shardingTableRuleDefinition()));
-//            }
-//        }
-//        AlterShardingRuleStatement result = new AlterShardingRuleStatement(modifyShardingRules, addShardingRules);
-//        return result;
         AlterShardingRuleStatement result;
         if (null != ctx.defaultTableStrategy()) {
             String defaultTableStrategyColumn = null != ctx.defaultTableStrategy().columnName() ? ctx.defaultTableStrategy().columnName().getText() : null;
@@ -250,26 +238,6 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
 
     @Override
     public ASTNode visitShardingTableRuleDefinition(final ShardingTableRuleDefinitionContext ctx) {
-//        TableRuleSegment result = new TableRuleSegment();
-//        result.setLogicTable(ctx.tableName().getText());
-//        Collection<String> dataSources = new LinkedList<>();
-//        for (TerminalNode each : ctx.actualDataNodes().STRING()) {
-//            dataSources.add(new IdentifierValue(each.getText()).getValue());
-//        }
-//        result.setDataSources(dataSources);
-//        if (null != ctx.databaseStrategy()) {
-//            result.setDatabaseStrategy((FunctionSegment) visit(ctx.databaseStrategy().functionDefinition()));
-//            result.setDatabaseStrategyColumn(ctx.databaseStrategy().columnName().getText());
-//        }
-//        if (null != ctx.tableStrategy()) {
-//            result.setTableStrategy((FunctionSegment) visit(ctx.tableStrategy().functionDefinition()));
-//            result.setTableStrategyColumn(ctx.tableStrategy().columnName().getText());
-//        }
-//        if (null != ctx.keyGenerateStrategy()) {
-//            result.setKeyGenerateStrategy((FunctionSegment) visit(ctx.keyGenerateStrategy().functionDefinition()));
-//            result.setKeyGenerateStrategyColumn(ctx.keyGenerateStrategy().columnName().getText());
-//        }
-//        return result;
         TableRuleSegment result = new TableRuleSegment();
         result.setLogicTable(ctx.tableName().getText());
         Collection<String> dataSources = new LinkedList<>();

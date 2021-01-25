@@ -112,22 +112,6 @@ public final class ShardingRuleStatementConverter {
         return result;
     }
     
-    
-//    /**
-//     * Convert table rule segment to YAML sharding strategy configuration.
-//     *
-//     * @param segment table rule segment
-//     * @return YAML sharding strategy configuration
-//     */
-//    public static YamlShardingStrategyConfiguration createDatabaseStrategyConfiguration(final TableRuleSegment segment) {
-//        YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
-//        YamlStandardShardingStrategyConfiguration standard = new YamlStandardShardingStrategyConfiguration();
-//        standard.setShardingColumn(segment.getDatabaseStrategyColumn());
-//        standard.setShardingAlgorithmName(getAlgorithmName(segment.getLogicTable(), segment.getDatabaseStrategy().getAlgorithmName()));
-//        result.setStandard(standard);
-//        return result;
-//    }
-    
     /**
      * Convert table rule segment to YAML key generate strategy configuration.
      *
