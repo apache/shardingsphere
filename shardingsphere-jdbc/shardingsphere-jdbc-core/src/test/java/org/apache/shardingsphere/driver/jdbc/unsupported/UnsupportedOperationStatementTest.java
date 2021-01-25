@@ -17,80 +17,47 @@
 
 package org.apache.shardingsphere.driver.jdbc.unsupported;
 
-import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.junit.After;
-import org.junit.Before;
+import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.junit.Test;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 
-public final class UnsupportedOperationStatementTest extends AbstractShardingSphereDataSourceForShardingTest {
-    
-    private final List<ShardingSphereConnection> shardingSphereConnections = new ArrayList<>();
-    
-    private final List<Statement> statements = new ArrayList<>();
-    
-    @Before
-    public void init() {
-        ShardingSphereConnection connection = getShardingSphereDataSource().getConnection();
-        shardingSphereConnections.add(connection);
-        statements.add(connection.createStatement());
-    }
-    
-    @After
-    public void close() throws SQLException {
-        for (Statement each : statements) {
-            each.close();
-        }
-        for (ShardingSphereConnection each : shardingSphereConnections) {
-            each.close();
-        }
-    }
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 
+public final class UnsupportedOperationStatementTest {
+    
+    private final ShardingSphereStatement shardingSphereStatement = new ShardingSphereStatement(mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS));
+    
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertAddBatch() throws SQLException {
-        for (Statement each : statements) {
-            each.addBatch("");
-        }
+        shardingSphereStatement.addBatch("");
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertClearBatch() throws SQLException {
-        for (Statement each : statements) {
-            each.clearBatch();
-        }
+        shardingSphereStatement.clearBatch();
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertExecuteBatch() throws SQLException {
-        for (Statement each : statements) {
-            each.executeBatch();
-        }
+        shardingSphereStatement.executeBatch();
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertCloseOnCompletion() throws SQLException {
-        for (Statement each : statements) {
-            each.closeOnCompletion();
-        }
+        shardingSphereStatement.closeOnCompletion();
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertIsCloseOnCompletion() throws SQLException {
-        for (Statement each : statements) {
-            each.isCloseOnCompletion();
-        }
+        shardingSphereStatement.isCloseOnCompletion();
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetCursorName() throws SQLException {
-        for (Statement each : statements) {
-            each.setCursorName("cursorName");
-        }
+        shardingSphereStatement.setCursorName("cursorName");
     }
 }
