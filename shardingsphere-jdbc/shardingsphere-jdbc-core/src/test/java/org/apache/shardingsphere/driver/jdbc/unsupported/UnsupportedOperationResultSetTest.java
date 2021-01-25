@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.jdbc.unsupported;
 
-import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -33,7 +32,7 @@ import java.util.Collections;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public final class UnsupportedOperationResultSetTest extends AbstractShardingSphereDataSourceForShardingTest {
+public final class UnsupportedOperationResultSetTest {
     
     private ShardingSphereResultSet shardingSphereResultSet;
     
