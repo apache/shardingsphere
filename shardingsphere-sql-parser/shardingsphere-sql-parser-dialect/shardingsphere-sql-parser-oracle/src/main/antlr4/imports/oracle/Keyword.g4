@@ -550,3 +550,7 @@ NUMERIC
 FLOAT
     : F L O A T
     ;
+
+TRIGGERS
+    : T R I G G E R S
+    ;

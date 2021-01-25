@@ -43,7 +43,7 @@ rules:
     - t_order,t_order_item
   broadcastTables:
     - t_broadcast_table
-
+  
   shardingAlgorithms:
     standard_test:
       type: STANDARD_TEST

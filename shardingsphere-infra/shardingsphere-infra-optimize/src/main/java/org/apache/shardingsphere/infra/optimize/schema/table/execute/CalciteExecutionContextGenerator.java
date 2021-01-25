@@ -72,16 +72,21 @@ public final class CalciteExecutionContextGenerator {
     }
     
     private Collection<RouteUnit> getRouteUnits(final RouteContext routeContext) {
-        Collection<RouteUnit> result = new LinkedHashSet<>();
+        Collection<RouteUnit> result = new LinkedHashSet<>(routeContext.getRouteUnits().size(), 1);
         for (RouteUnit each : routeContext.getRouteUnits()) {
-            RouteUnit routeUnit = new RouteUnit(each.getDataSourceMapper(), new LinkedHashSet<>());
-            for (RouteMapper mapper : each.getTableMappers()) {
-                if (mapper.getLogicName().equals(table)) {
-                    routeUnit.getTableMappers().add(mapper);
-                }
-            }
+            RouteUnit routeUnit = getRouteUnit(each);
             if (!routeUnit.getTableMappers().isEmpty()) {
                 result.add(routeUnit);
+            }
+        }
+        return result;
+    }
+    
+    private RouteUnit getRouteUnit(final RouteUnit routeUnit) {
+        RouteUnit result = new RouteUnit(routeUnit.getDataSourceMapper(), new LinkedHashSet<>(routeUnit.getTableMappers().size(), 1));
+        for (RouteMapper each : routeUnit.getTableMappers()) {
+            if (each.getLogicName().equals(table)) {
+                result.getTableMappers().add(each);
             }
         }
         return result;

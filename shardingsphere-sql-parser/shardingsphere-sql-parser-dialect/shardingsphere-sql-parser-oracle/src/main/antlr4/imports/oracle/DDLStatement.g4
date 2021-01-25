@@ -28,7 +28,7 @@ createIndex
     ;
 
 alterTable
-    : ALTER TABLE tableName alterDefinitionClause
+    : ALTER TABLE tableName memOptimizeClause alterDefinitionClause enableDisableClauses
     ;
 
 // TODO hongjun throw exeption when alter index on oracle
@@ -86,14 +86,6 @@ createParentClause
 
 createObjectTableClause
     : OF objectName objectTableSubstitution? (LP_ objectProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
-    ;
-
-createMemOptimizeClause
-    : (MEMOPTIMIZE FOR READ)? (MEMOPTIMIZE FOR WRITE)? 
-    ;    
-
-createParentClause
-    : (PARENT tableName)?
     ;
 
 relationalProperties
@@ -377,4 +369,28 @@ renameIndexClause
     
 objectTableSubstitution
     : NOT? SUBSTITUTABLE AT ALL LEVELS
+    ;
+
+memOptimizeClause
+    : memOptimizeReadClause? memOptimizeWriteClause?
+    ;
+
+memOptimizeReadClause
+    : (MEMOPTIMIZE FOR READ | NO MEMOPTIMIZE FOR READ)
+    ;
+
+memOptimizeWriteClause
+    : (MEMOPTIMIZE FOR WRITE | NO MEMOPTIMIZE FOR WRITE)
+    ;
+
+enableDisableClauses
+    : (enableDisableClause | enableDisableOthers)?
+    ;
+
+enableDisableClause
+    : (ENABLE | DISABLE) (VALIDATE |NO VALIDATE)? ((UNIQUE columnName (COMMA_ columnName)*) | PRIMARY KEY | constraintWithName) usingIndexClause? exceptionsClause? CASCADE? ((KEEP | DROP) INDEX)?
+    ;
+
+enableDisableOthers
+    : (ENABLE | DISABLE) (TABLE LOCK | ALL TRIGGERS | CONTAINER_MAP | CONTAINERS_DEFAULT)
     ;

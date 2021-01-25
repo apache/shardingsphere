@@ -42,7 +42,7 @@ public final class RouteSQLBuilderTest {
     }
     
     @Test
-    public void assertToSQLWithRouteUnitAwaredSQLToken() {
+    public void assertToSQLWithRouteUnitAwareSQLToken() {
         SQLRewriteContext context = mock(SQLRewriteContext.class);
         when(context.getSql()).thenReturn("SELECT * FROM tbl WHERE id=?");
         when(context.getSqlTokens()).thenReturn(Collections.singletonList(new RouteUnitAwareSQLTokenFixture(14, 16)));

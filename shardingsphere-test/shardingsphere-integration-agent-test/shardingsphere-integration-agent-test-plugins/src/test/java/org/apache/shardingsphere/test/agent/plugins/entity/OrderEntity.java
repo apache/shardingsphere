@@ -13,11 +13,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-DELETE FROM t_order_item_calcite;
+package org.apache.shardingsphere.test.agent.plugins.entity;
 
-INSERT INTO t_order_item_calcite VALUES(100000, 1000, 10, 'init');
-INSERT INTO t_order_item_calcite VALUES(100001, 1000, 10, 'init');
-INSERT INTO t_order_item_calcite VALUES(100100, 1001, 10, 'init');
-INSERT INTO t_order_item_calcite VALUES(100101, 1001, 10, 'init');
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
+public final class OrderEntity {
+    
+    private final long orderId;
+
+    private final int userId;
+
+    private final String status;
+}

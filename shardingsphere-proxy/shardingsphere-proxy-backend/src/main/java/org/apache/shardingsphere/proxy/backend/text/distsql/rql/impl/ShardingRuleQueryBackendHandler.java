@@ -86,7 +86,7 @@ public final class ShardingRuleQueryBackendHandler extends SchemaRequiredBackend
         Optional<ShardingRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schema).getRuleMetaData().getConfigurations()
                 .stream().map(each -> (ShardingRuleConfiguration) each).findFirst();
         if (ruleConfig.isPresent()) {
-            List<List<String>> bindingTables = ruleConfig.get().getBindingTableGroups().stream().filter(each -> null != each && !"".equals(each)).map(each -> Arrays.asList(each.split(",")))
+            List<List<String>> bindingTables = ruleConfig.get().getBindingTableGroups().stream().filter(each -> null != each && !each.isEmpty()).map(each -> Arrays.asList(each.split(",")))
                     .collect(Collectors.toList());
             for (ShardingTableRuleConfiguration each : ruleConfig.get().getTables()) {
                 Map<String, Object> table = new HashMap<>();

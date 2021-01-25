@@ -54,12 +54,12 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class DatabaseCommunicationEngineTest {
     
@@ -88,15 +88,13 @@ public final class DatabaseCommunicationEngineTest {
                 DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(SQLStatement.class), "schemaName", Collections.emptyList(), backendConnection);
         assertNotNull(engine);
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
-
         Field queryHeadersField = engine.getClass().getDeclaredField("queryHeaders");
         FieldSetter.setField(engine, queryHeadersField, Collections.singletonList(QueryHeaderBuilder.build(createQueryResultMetaData(), createMetaData(), 1)));
-
         Field mergedResultField = engine.getClass().getDeclaredField("mergedResult");
         FieldSetter.setField(engine, mergedResultField, new MemoryMergedResult<ShardingSphereRule>(null, null, null, Collections.emptyList()) {
-
+            
             private MemoryQueryResultRow memoryQueryResultRow;
-
+            
             @Override
             protected List<MemoryQueryResultRow> init(final ShardingSphereRule rule, final ShardingSphereSchema schema, final SQLStatementContext sqlStatementContext,
                                                       final List<QueryResult> queryResults) {
@@ -104,17 +102,16 @@ public final class DatabaseCommunicationEngineTest {
                 return Collections.singletonList(memoryQueryResultRow);
             }
         });
-
         Exception ex = null;
         try {
             engine.getQueryResponseRow();
         } catch (final SQLException | IndexOutOfBoundsException e) {
             ex = e;
         } finally {
-            assertTrue(ex == null || !(ex instanceof IndexOutOfBoundsException));
+            assertFalse(ex instanceof IndexOutOfBoundsException);
         }
     }
-
+    
     private ShardingSphereMetaData createMetaData() {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         ColumnMetaData columnMetaData = new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false);
@@ -130,7 +127,7 @@ public final class DatabaseCommunicationEngineTest {
         when(result.getName()).thenReturn("sharding_schema");
         return result;
     }
-
+    
     private QueryResultMetaData createQueryResultMetaData() throws SQLException {
         QueryResultMetaData result = mock(QueryResultMetaData.class);
         when(result.getTableName(1)).thenReturn("t_order");

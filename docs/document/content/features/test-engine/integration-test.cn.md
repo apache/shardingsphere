@@ -50,9 +50,11 @@ weight = 1
 
 ## 使用指南
 
+模块路径：`shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite`
+
 ### 测试用例配置
 
-SQL 用例在 `shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test/resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xml`。
+SQL 用例在 `resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xml`。
 
 用例文件格式如下：
 
@@ -96,7 +98,7 @@ SQL 用例在 `shardingsphere-test/shardingsphere-integration-test/shardingspher
 
 #### Native 环境配置
 
-目录：`shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test/resources/env/${SCENARIO-TYPE}`
+目录：`src/test/resources/env/${SCENARIO-TYPE}`
 
   - `scenario-env.properties`: 数据源配置
   - `rules.yaml`: 规则配置
@@ -107,7 +109,7 @@ SQL 用例在 `shardingsphere-test/shardingsphere-integration-test/shardingspher
 
 #### Docker 环境配置
 
-目录：`shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test/resources/docker/${SCENARIO-TYPE}`
+目录：`src/test/resources/docker/${SCENARIO-TYPE}`
 
   - `docker-compose.yml`: Docker-Compose 配置文件，用于 Docker 环境启动
   - `proxy/conf/config-${SCENARIO-TYPE}.yaml`: 规则配置
@@ -118,7 +120,7 @@ SQL 用例在 `shardingsphere-test/shardingsphere-integration-test/shardingspher
 
 #### 配置测试引擎运行环境
 
-通过配置 `shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/src/test/resources/env/engine-env.properties` 控制测试引擎。
+通过配置 `src/test/resources/env/engine-env.properties` 控制测试引擎。
 
 所有的属性值都可以通过 Maven 命令行 `-D` 的方式动态注入。
 

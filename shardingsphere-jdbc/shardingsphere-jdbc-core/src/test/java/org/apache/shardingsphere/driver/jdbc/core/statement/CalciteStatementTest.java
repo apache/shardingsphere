@@ -30,9 +30,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public final class CalciteStatementTest extends AbstractShardingSphereDataSourceForCalciteTest {
-
+    
     private static final String SELECT_SQL_BY_ID = "select o.*, i.* from t_order_calcite o, t_order_item_calcite i where o.order_id = 1000 and i.item_id = 100000";
-
+    
     @Test
     public void assertQueryWithCalciteInSingleTables() throws SQLException {
         ShardingSphereStatement preparedStatement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();

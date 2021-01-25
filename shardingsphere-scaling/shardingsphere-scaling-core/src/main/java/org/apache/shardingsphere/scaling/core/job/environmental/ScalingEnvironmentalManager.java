@@ -38,7 +38,7 @@ public final class ScalingEnvironmentalManager {
     /**
      * Reset target table, Truncate target table.
      *
-     * @param scalingJob scalingjob
+     * @param scalingJob scaling job
      * @throws SQLException SQL exception
      */
     public void resetTargetTable(final ScalingJob scalingJob) throws SQLException {

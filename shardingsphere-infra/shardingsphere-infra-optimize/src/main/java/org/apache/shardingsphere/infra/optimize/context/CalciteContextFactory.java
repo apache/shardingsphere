@@ -96,41 +96,41 @@ public final class CalciteContextFactory {
     private void initProperties(final DatabaseType databaseType) {
         // TODO Logic could be improved.
         if (databaseType instanceof MySQLDatabaseType || databaseType == null) {
-            this.properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
-            this.properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.MYSQL_5.name());
+            properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
+            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.MYSQL_5.name());
             return;
         }
         if (databaseType instanceof H2DatabaseType) {
             // TODO No suitable type of Lex
-            this.properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
-            this.properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.DEFAULT.name());
+            properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
+            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.DEFAULT.name());
             return;
         }
         if (databaseType instanceof MariaDBDatabaseType) {
-            this.properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
-            this.properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.MYSQL_5.name());
+            properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
+            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.MYSQL_5.name());
             return;
         }
         if (databaseType instanceof OracleDatabaseType) {
-            this.properties.setProperty(LEX_CAMEL_NAME, Lex.ORACLE.name());
-            this.properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.ORACLE_12.name());
+            properties.setProperty(LEX_CAMEL_NAME, Lex.ORACLE.name());
+            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.ORACLE_12.name());
             return;
         }
         if (databaseType instanceof PostgreSQLDatabaseType) {
             // TODO No suitable type of Lex and conformance
-            this.properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
-            this.properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.DEFAULT.name());
+            properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
+            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.DEFAULT.name());
             return;
         }
         if (databaseType instanceof SQL92DatabaseType) {
             // TODO No suitable type of Lex
-            this.properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
-            this.properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.STRICT_92.name());
+            properties.setProperty(LEX_CAMEL_NAME, Lex.MYSQL.name());
+            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.STRICT_92.name());
             return;
         }
         if (databaseType instanceof SQLServerDatabaseType) {
-            this.properties.setProperty(LEX_CAMEL_NAME, Lex.SQL_SERVER.name());
-            this.properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.SQL_SERVER_2008.name());
+            properties.setProperty(LEX_CAMEL_NAME, Lex.SQL_SERVER.name());
+            properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.SQL_SERVER_2008.name());
             return;
         }
         throw new ShardingSphereException("No matching DatabaseType found");

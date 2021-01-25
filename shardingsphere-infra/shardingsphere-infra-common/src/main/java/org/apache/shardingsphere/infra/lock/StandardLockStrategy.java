@@ -32,7 +32,7 @@ public final class StandardLockStrategy implements LockStrategy {
     private final ReentrantLock lock = new ReentrantLock();
     
     @Override
-    public boolean tryLock(final long timeout, final TimeUnit timeUnit) {
+    public boolean tryGlobalLock(final long timeout, final TimeUnit timeUnit) {
         boolean result = false;
         try {
             result = lock.tryLock(timeout, timeUnit);
@@ -47,7 +47,7 @@ public final class StandardLockStrategy implements LockStrategy {
     }
     
     @Override
-    public void releaseLock() {
+    public void releaseGlobalLock() {
         lock.unlock();
         StateContext.switchState(new StateEvent(StateType.LOCK, false));
     }

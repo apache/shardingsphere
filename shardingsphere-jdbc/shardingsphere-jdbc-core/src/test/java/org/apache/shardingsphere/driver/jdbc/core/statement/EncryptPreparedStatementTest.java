@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForEncryptTest;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -170,7 +169,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     }
     
     private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object assistPwd) throws SQLException {
-        try (Connection conn = getDatabaseTypeMap().get(DatabaseTypeRegistry.getActualDatabaseType("H2")).get("encrypt").getConnection();
+        try (Connection conn = getActualDataSources().get("encrypt").getConnection();
              Statement stmt = conn.createStatement()) {
             ResultSet resultSet = stmt.executeQuery(SELECT_ALL_SQL);
             int count = 1;

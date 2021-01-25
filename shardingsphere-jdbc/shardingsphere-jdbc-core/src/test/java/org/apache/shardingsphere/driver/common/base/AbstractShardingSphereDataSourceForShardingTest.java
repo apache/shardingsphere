@@ -41,9 +41,9 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     
     private static ShardingSphereDataSource dataSource;
     
-    private static final List<String> SHARDING_DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1");
+    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("jdbc_0", "jdbc_1");
     
-    private static final String CONFIG_SHARDING = "config-sharding.yaml";
+    private static final String CONFIG_SHARDING = "config/config-sharding.yaml";
     
     @BeforeClass
     public static void initShardingSphereDataSource() throws SQLException, IOException {
@@ -54,7 +54,7 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     }
     
     private static Map<String, DataSource> getDataSourceMap() {
-        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), SHARDING_DB_NAMES::contains);
+        return Maps.filterKeys(getActualDataSources(), ACTUAL_DATA_SOURCE_NAMES::contains);
     }
     
     private static File getFile(final String fileName) {
@@ -66,7 +66,7 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     public void initTable() {
         try {
             ShardingSphereConnection conn = dataSource.getConnection();
-            RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_data.sql"))));
+            RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_data.sql"))));
             conn.close();
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);

@@ -109,8 +109,8 @@ public final class TableAssert {
      * @param expected expected ExpectedJoinTable
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final JoinTableSegment actual, final ExpectedJoinTable expected) {
-        TableAssert.assertIs(assertContext, actual.getLeft(), expected.getLeft());
-        TableAssert.assertIs(assertContext, actual.getRight(), expected.getRight());
+        assertIs(assertContext, actual.getLeft(), expected.getLeft());
+        assertIs(assertContext, actual.getRight(), expected.getRight());
         ExpressionAssert.assertExpression(assertContext, actual.getCondition(), expected.getOnCondition());
         assertThat(assertContext.getText("Column size assertion error: "),
                 actual.getUsing() != null ? actual.getUsing().size() : 0, is(expected.getUsingColumns().size()));

@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * ShardingSphere YAML constructor.
  */
-public final class ShardingSphereYamlConstructor extends Constructor {
+public class ShardingSphereYamlConstructor extends Constructor {
     
     static {
         ShardingSphereServiceLoader.register(ShardingSphereYamlConstruct.class);
