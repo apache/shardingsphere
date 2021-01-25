@@ -261,6 +261,34 @@ public final class ConnectionAdapterTest extends AbstractShardingSphereDataSourc
         }
     }
     
+    @Test
+    public void assertGetCatalog() throws SQLException {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
+            assertNull(actual.getCatalog());
+        }
+    }
+    
+    @Test
+    public void assertSetCatalog() throws SQLException {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
+            actual.setCatalog("");
+        }
+    }
+    
+    @Test
+    public void assertGetSchema() throws SQLException {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
+            assertNull(actual.getSchema());
+        }
+    }
+    
+    @Test
+    public void assertSetSchema() throws SQLException {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
+            actual.setSchema("");
+        }
+    }
+    
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private Multimap<String, Connection> getCachedConnections(final AbstractConnectionAdapter connectionAdapter) {
