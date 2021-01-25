@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForReplicaQueryTest;
+import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForReplicaQueryTest;
 import org.junit.Test;
 
 import java.sql.SQLException;

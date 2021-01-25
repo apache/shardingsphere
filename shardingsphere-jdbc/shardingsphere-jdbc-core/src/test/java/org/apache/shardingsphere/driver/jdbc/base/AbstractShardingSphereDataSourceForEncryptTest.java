@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.common.base;
+package org.apache.shardingsphere.driver.jdbc.base;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;

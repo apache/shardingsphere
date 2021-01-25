@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.common.base;
+package org.apache.shardingsphere.driver.jdbc.base;
 
 import org.h2.tools.RunScript;
 import org.junit.BeforeClass;
@@ -24,32 +24,39 @@ import javax.sql.DataSource;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public abstract class AbstractSQLCalciteTest {
+public abstract class AbstractSQLTest {
+    
+    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "shadow_jdbc_0", "shadow_jdbc_1", "encrypt", "test_primary_ds", "test_replica_ds");
     
     private static final Map<String, DataSource> ACTUAL_DATA_SOURCES = new HashMap<>();
     
-    private static final String INIT_CALCITE_DATABASE_0 = "sql/jdbc_init_calcite_0.sql";
-    
-    private static final String INIT_CALCITE_DATABASE_1 = "sql/jdbc_init_calcite_1.sql";
-    
     @BeforeClass
     public static synchronized void initializeDataSource() throws SQLException {
-        createDataSources("calcite_jdbc_0", INIT_CALCITE_DATABASE_0);
-        createDataSources("calcite_jdbc_1", INIT_CALCITE_DATABASE_1);
+        for (String each : ACTUAL_DATA_SOURCE_NAMES) {
+            createDataSources(each);
+        }
     }
     
-    private static void createDataSources(final String dataSourceName, final String initSql) throws SQLException {
+    private static void createDataSources(final String dataSourceName) throws SQLException {
         ACTUAL_DATA_SOURCES.put(dataSourceName, DataSourceBuilder.build(dataSourceName));
-        initializeSchema(dataSourceName, initSql);
+        initializeSchema(dataSourceName);
     }
     
-    private static void initializeSchema(final String dataSourceName, final String initSql) throws SQLException {
+    private static void initializeSchema(final String dataSourceName) throws SQLException {
         try (Connection conn = ACTUAL_DATA_SOURCES.get(dataSourceName).getConnection()) {
-            RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream(initSql))));
+            if ("encrypt".equals(dataSourceName)) {
+                RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_encrypt_init.sql"))));
+            } else if ("shadow_jdbc_0".equals(dataSourceName) || "shadow_jdbc_1".equals(dataSourceName)) {
+                RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_shadow_init.sql"))));
+            } else {
+                RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/jdbc_init.sql"))));
+            }
         }
     }
     
