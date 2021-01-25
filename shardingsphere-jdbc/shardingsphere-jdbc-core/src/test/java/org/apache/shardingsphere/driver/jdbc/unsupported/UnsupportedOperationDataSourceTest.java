@@ -18,20 +18,31 @@
 package org.apache.shardingsphere.driver.jdbc.unsupported;
 
 import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShardingTest;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.Collections;
+import java.util.Properties;
 
 public final class UnsupportedOperationDataSourceTest extends AbstractShardingSphereDataSourceForShardingTest {
     
+    private ShardingSphereDataSource shardingSphereDataSource;
+    
+    @Before
+    public void setUp() throws SQLException {
+        shardingSphereDataSource = new ShardingSphereDataSource(Collections.emptyMap(), Collections.emptyList(), new Properties());
+    }
+    
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertGetLoginTimeout() throws SQLException {
-        getShardingSphereDataSource().getLoginTimeout();
+        shardingSphereDataSource.getLoginTimeout();
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetLoginTimeout() throws SQLException {
-        getShardingSphereDataSource().setLoginTimeout(0);
+        shardingSphereDataSource.setLoginTimeout(0);
     }
 }
