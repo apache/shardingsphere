@@ -1,8 +1,0 @@
-<dataset>
-    <metadata>
-        <column name="orders_avg" />
-        <column name="user_id" />
-    </metadata>
-    <row values="1004.5000, 10" />
-    <row values="1104.5000, 11" />
-</dataset>

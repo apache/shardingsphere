@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="PostgreSQL" namespace="postgre.dal.show">
-    <sql-case id="show_all" value="SHOW ALL" />
-    <sql-case id="show_server_version" value="SHOW SERVER_VERSION" />
-</sql-cases>

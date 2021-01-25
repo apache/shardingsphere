@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="MySQL" namespace="mysql.dcl.renameUser">
-    <sql-case id="rename_user" value="RENAME USER user1_bak TO user1" />
-    <sql-case id="rename_users" value="RENAME USER user1_bak TO user1, user2_bak TO user2" />
-</sql-cases>

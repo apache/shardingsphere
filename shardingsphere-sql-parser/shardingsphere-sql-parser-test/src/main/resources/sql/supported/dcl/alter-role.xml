@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="alter_no_identified_role" value="ALTER ROLE role1 NOT IDENTIFIED"  db-types="Oracle" />
+    <sql-case id="alter_external_role" value="ALTER ROLE role1 IDENTIFIED EXTERNALLY"  db-types="Oracle" />
+    <sql-case id="alter_global_role" value="ALTER ROLE role1 IDENTIFIED GLOBALLY"  db-types="Oracle" />
+    <sql-case id="alter_role_with_password" value="ALTER ROLE role1 IDENTIFIED BY password"  db-types="Oracle" />
+    <sql-case id="alter_role_with_container" value="ALTER ROLE role1 NOT IDENTIFIED CONTAINER = ALL"  db-types="Oracle" />
+    <sql-case id="alter_role_with_password_postgresql" value="ALTER ROLE role1 WITH ENCRYPTED PASSWORD 'password'" db-types="PostgreSQL" />
+    <sql-case id="alter_role_with_option" value="ALTER ROLE role1 WITH SUPERUSER" db-types="PostgreSQL" />
+    <sql-case id="alter_role_with_options" value="ALTER ROLE role1 WITH CREATEDB CREATEROLE" db-types="PostgreSQL" />
+    <sql-case id="alter_role_with_rename" value="ALTER ROLE role1_bak RENAME TO role1" db-types="PostgreSQL" />
+    <sql-case id="alter_role_set_config" value="ALTER ROLE role1 SET client_min_messages = DEBUG" db-types="PostgreSQL" />
+    <sql-case id="alter_all_roles_set_config" value="ALTER ROLE ALL SET client_min_messages = DEBUG" db-types="PostgreSQL" />
+    <sql-case id="alter_role_set_config_in_database" value="ALTER ROLE role1 IN DATABASE ds_0 SET client_min_messages = DEBUG" db-types="PostgreSQL" />
+    <sql-case id="alter_role_set_config_from_current_user" value="ALTER ROLE role1 SET client_min_messages FROM CURRENT" db-types="PostgreSQL" />
+    <sql-case id="alter_role_reset_config" value="ALTER ROLE role1 RESET client_min_messages" db-types="PostgreSQL" />
+    <sql-case id="alter_all_roles_reset_config" value="ALTER ROLE ALL RESET client_min_messages" db-types="PostgreSQL" />
+    <sql-case id="alter_role_reset_config_in_database" value="ALTER ROLE role1 IN DATABASE ds_0 RESET client_min_messages" db-types="PostgreSQL" />
+    <sql-case id="alter_role_reset_all_config" value="ALTER ROLE role1 RESET ALL" db-types="PostgreSQL" />
+    <sql-case id="alter_role_add_member" value="ALTER ROLE role1 ADD MEMBER member1" db-types="SQLServer" />
+    <sql-case id="alter_role_drop_member" value="ALTER ROLE role1_bak DROP MEMBER member1" db-types="SQLServer" />
+    <sql-case id="alter_role_rename" value="ALTER ROLE role1_bak WITH NAME = role1" db-types="SQLServer" />
+    <sql-case id="alter_role_createRole_and_createDB" value="ALTER ROLE miriam CREATEROLE CREATEDB" db-types="PostgreSQL" />
+    <sql-case id="alter_role_in_database_set" value="ALTER ROLE fred IN DATABASE devel SET client_min_messages = DEBUG" db-types="PostgreSQL" />
+</sql-cases>

@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases>
-    <sql-case id="assertInsertAllIntoWithShardingColumn" value="INSERT ALL INTO t_order (order_id) VALUES (?) ON DUPLICATE KEY UPDATE order_id = VALUES(order_id)" db-types="MySQL" />
-</sql-cases>

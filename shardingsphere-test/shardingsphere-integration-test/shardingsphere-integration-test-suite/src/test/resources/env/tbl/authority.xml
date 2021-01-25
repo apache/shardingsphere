@@ -1,0 +1,80 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<authority>
+    <sqlset db-types="Oracle,SQLServer,PostgreSQL">
+        <user-create>
+            <sql>CREATE USER default_user</sql>
+            <sql>CREATE ROLE default_role</sql>
+            <sql>CREATE ROLE role2</sql>
+            <sql>CREATE ROLE role3</sql>
+            <sql>CREATE ROLE role4</sql>
+        </user-create>
+        <user-drop>
+            <sql>DROP ROLE IF EXISTS default_role</sql>
+            <sql>DROP ROLE IF EXISTS role_dev</sql>
+            <sql>DROP ROLE IF EXISTS role_dev_new</sql>
+            <sql>DROP ROLE IF EXISTS role2</sql>
+            <sql>DROP ROLE IF EXISTS role3</sql>
+            <sql>DROP ROLE IF EXISTS role4</sql>
+            <sql>DROP USER IF EXISTS user_dev</sql>
+            <sql>DROP USER IF EXISTS user_dev_new</sql>
+            <sql>DROP USER IF EXISTS default_user</sql>
+        </user-drop>
+    </sqlset>
+    <sqlset db-types="SQLServer">
+        <user-create>
+            <sql>CREATE LOGIN login_dev</sql>
+            <sql>CREATE USER user_dev FOR LOGIN login_dev</sql>
+        </user-create>
+        <user-drop>
+            <sql>DROP LOGIN IF EXISTS login_dev</sql>
+            <sql>DROP LOGIN IF EXISTS login_dev_new</sql>
+        </user-drop>
+    </sqlset>
+    <sqlset db-types="MySQL">
+        <user-create>
+            <sql>CREATE ROLE default_role</sql>
+            <sql>CREATE USER user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on tbl.* to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_0 to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_1 to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_2 to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_3 to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_4 to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_5 to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_6 to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_7 to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_8 to user_dev@localhost</sql>
+            <sql>GRANT select,update,insert,delete on t_order_9 to user_dev@localhost</sql>
+        </user-create>
+        <user-drop>
+            <sql>DROP USER IF EXISTS user_dev@localhost</sql>
+            <sql>DROP USER IF EXISTS user_dev_new@localhost</sql>
+            <sql>DROP USER IF EXISTS user_dev@127.0.0.1</sql>
+            <sql>DROP ROLE IF EXISTS default_role</sql>
+            <sql>DROP ROLE IF EXISTS role_dev</sql>
+            <sql>DROP ROLE IF EXISTS role_dev_new</sql>
+            <sql>FLUSH PRIVILEGES</sql>
+        </user-drop>
+    </sqlset>
+    <sqlset db-types="Oracle">
+        <user-create>
+            <sql>CREATE USER user_dev identified by passwd_dev</sql>
+        </user-create>
+    </sqlset>
+</authority>

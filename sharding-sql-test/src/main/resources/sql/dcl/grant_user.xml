@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases>
-    <sql-case id="grant_user_without_hostname" value="GRANT select, update, insert, delete on t_order to user_dev" db-types="Oracle,PostgreSQL,SQLServer,H2" />
-    <sql-case id="grant_user_with_grant" value="GRANT select, update, insert, delete on t_order to user_dev with GRANT option" db-types="Oracle,PostgreSQL,SQLServer"/>
-    <sql-case id="grant_role" value="GRANT role_dev to user_dev" db-types="Oracle,PostgreSQL,SQLServer,H2" />
-    <sql-case id="grant_user_with_admin" value="GRANT connect, resource to user_dev with admin option" db-types="Oracle" />
-    <sql-case id="grant_user_on_db" value="GRANT ALL ON sharding_db.* TO 'user_dev'@'localhost'" db-types="MySQL" />
-    <sql-case id="grant_user_with_hostname" value="GRANT select, update ON t_order TO 'user_dev'@'localhost'" db-types="MySQL" />
-</sql-cases>

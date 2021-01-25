@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="Oracle" namespace="oracle.dcl.alterRole">
-    <sql-case id="alter_no_identified_role" value="ALTER ROLE role1 NOT IDENTIFIED" />
-    <sql-case id="alter_external_role" value="ALTER ROLE role1 IDENTIFIED EXTERNALLY" />
-    <sql-case id="alter_global_role" value="ALTER ROLE role1 IDENTIFIED GLOBALLY" />
-    <sql-case id="alter_role_with_password" value="ALTER ROLE role1 IDENTIFIED BY password" />
-    <sql-case id="alter_role_with_container" value="ALTER ROLE role1 NOT IDENTIFIED CONTAINER = ALL" />
-</sql-cases>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="select_order_by_asc_and_index_desc" value="SELECT * FROM t_order o ORDER BY o.order_id, 2 DESC" />
+    <sql-case id="select_order_by_desc_and_index_asc" value="SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.status = 'init' ORDER BY o.order_id DESC, 1" />
+    <sql-case id="select_order_by_with_ordered_column" value="SELECT o.order_id as gen_order_id_ FROM t_order o ORDER BY o.order_id" />
+    <sql-case id="select_order_by_with_date" value="SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.status = 'init' ORDER BY i.creation_date DESC, o.order_id DESC, i.item_id" />
+    <sql-case id="select_order_by_for_nulls_first" value="SELECT o.order_id as gen_order_id_ FROM t_order o ORDER BY o.order_id NULLS FIRST" db-types="Oracle" />
+    <sql-case id="select_order_by_for_nulls_last" value="SELECT o.order_id as gen_order_id_ FROM t_order o ORDER BY o.order_id ASC NULLS LAST" db-types="Oracle" />
+    <sql-case id="select_order_by_with_multiple_stars" value="SELECT *, order_id, o.* FROM t_order o ORDER BY o.order_id" />
+    <sql-case id="select_order_by_with_alias_star_alias_name" value="SELECT o.* FROM t_order o ORDER BY o.order_id" db-types="H2,MySQL" />
+    <sql-case id="select_order_by_with_star_table_alias" value="SELECT * FROM t_order o ORDER BY order_id" db-types="H2,MySQL" />
+    <!--TODO need to fix on visitor-->
+<!--    <sql-case id="select_order_by_with_parameter" value="SELECT * FROM t_order o ORDER BY ?" db-types="MySQL" />-->
+<!--    <sql-case id="select_order_by_with_parameter_desc" value="SELECT * FROM t_order o ORDER BY ? DESC" db-types="MySQL" />-->
+    <sql-case id="select_order_by_with_table_star_table_name" value="SELECT t_order.* FROM t_order ORDER BY t_order.order_id" db-types="H2,MySQL" />
+    <sql-case id="select_order_by_with_star_no_table_alias" value="SELECT * FROM t_order ORDER BY order_id" db-types="H2,MySQL" />
+    <sql-case id="select_order_by_with_table_star_without_table_name" value="SELECT i.*, o.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY item_id" db-types="H2,MySQL" />
+</sql-cases>

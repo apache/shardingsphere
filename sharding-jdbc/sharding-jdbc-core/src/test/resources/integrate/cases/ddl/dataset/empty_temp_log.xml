@@ -1,6 +1,0 @@
-<dataset>
-    <metadata table-name="t_temp_log">
-        <column name="id" type="integer" />
-        <column name="status" type="varchar" />
-    </metadata>
-</dataset>

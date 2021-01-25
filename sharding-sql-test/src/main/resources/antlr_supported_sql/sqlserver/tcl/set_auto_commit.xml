@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases db-types="SQLServer" namespace="sqlserver.tcl.setAutoCommit">
-    <sql-case id="set_auto_commit_on" value="SET IMPLICIT_TRANSACTIONS ON" />
-    <sql-case id="set_auto_commit_off" value="IF @@TRANCOUNT > 0 COMMIT TRAN SET IMPLICIT_TRANSACTIONS OFF" />
-</sql-cases>

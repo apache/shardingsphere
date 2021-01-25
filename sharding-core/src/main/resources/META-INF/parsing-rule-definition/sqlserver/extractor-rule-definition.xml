@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<extractor-rule-definition>
-    <extractor-rule id="addColumnDefinition" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.ddl.column.AddColumnDefinitionExtractor" />
-    <extractor-rule id="modifyColumnDefinition" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.ddl.column.ModifyColumnDefinitionExtractor" />
-    <extractor-rule id="addPrimaryKey" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.ddl.constraint.dialect.sqlserver.SQLServerAddPrimaryKeyExtractor" />
-    <extractor-rule id="setAutoCommit" extractor-class="io.shardingsphere.core.parsing.antlr.extractor.impl.SetAutoCommitExtractor" />
-</extractor-rule-definition>

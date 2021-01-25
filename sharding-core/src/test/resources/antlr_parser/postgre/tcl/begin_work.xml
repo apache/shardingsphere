@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<parser-result-sets namespace="postgre.tcl.beginWork">
-    <parser-result sql-case-id="begin" tcl-actual-statement-class-type="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.BeginTransactionStatement" />
-    <parser-result sql-case-id="begin_read_committed" tcl-actual-statement-class-type="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.BeginTransactionStatement" />
-    <parser-result sql-case-id="begin_read_only" tcl-actual-statement-class-type="io.shardingsphere.core.parsing.antlr.sql.statement.tcl.BeginTransactionStatement" />
-</parser-result-sets>

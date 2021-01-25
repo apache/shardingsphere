@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sql-cases>
-    <sql-case id="delete_with_sharding_value" value="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status=?" />
-    <sql-case id="delete_without_sharding_value" value="DELETE FROM t_order WHERE status=?" />
-    <sql-case id="delete_with_special_character_without_sharding_value" value="DELETE FROM `t_order` WHERE `status`='init'" db-types="MySQL" />
-    <sql-case id="delete_with_special_comments_return_without_sharding_value" value="DELETE /*+ index(status) */ ONLY t_order WHERE status=1 RETURN * LOG ERRORS INTO TABLE_LOG" db-types="Oracle" />
-    <sql-case id="delete_with_special_comments_returning_without_sharding_value" value="DELETE /*+ index(status) */ ONLY (t_order) WHERE status=1 RETURNING *" db-types="Oracle" />
-</sql-cases>
