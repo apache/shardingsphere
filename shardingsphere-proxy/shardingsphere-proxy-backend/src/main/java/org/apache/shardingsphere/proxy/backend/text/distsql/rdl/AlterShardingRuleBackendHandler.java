@@ -118,70 +118,59 @@ public final class AlterShardingRuleBackendHandler extends SchemaRequiredBackend
     private void alter(final YamlShardingRuleConfiguration yamlShardingRuleConfig, final AlterShardingRuleStatement statement) {
         modifyTableRule(yamlShardingRuleConfig, statement);
         addTableRule(yamlShardingRuleConfig, statement);
+        if (!statement.getBindingTables().isEmpty()) {
+            yamlShardingRuleConfig.setBindingTables(statement.getBindingTables());
+        }
+        if (!statement.getBroadcastTables().isEmpty()) {
+            yamlShardingRuleConfig.setBroadcastTables(statement.getBroadcastTables());
+        }
+        if (null != statement.getDefaultTableStrategy()) {
+            yamlShardingRuleConfig.setDefaultTableStrategy(ShardingRuleStatementConverter.createDefaultTableStrategyConfiguration(statement.getDefaultTableStrategyColumn(),
+                    statement.getDefaultTableStrategy()));
+        }
     }
     
     private void modifyTableRule(final YamlShardingRuleConfiguration yamlShardingRuleConfig, final AlterShardingRuleStatement statement) {
         for (TableRuleSegment each : statement.getModifyShardingRules()) {
             YamlTableRuleConfiguration existTable = yamlShardingRuleConfig.getTables().get(each.getLogicTable());
             if (null != existTable) {
-                if (null != each.getDataSources()) {
-                    existTable.setActualDataNodes(Joiner.on(",").join(each.getDataSources()));
-                }
-                if (null != each.getTableStrategy()) {
-                    existTable.setTableStrategy(ShardingRuleStatementConverter.createTableStrategyConfiguration(each));
-                    yamlShardingRuleConfig.getShardingAlgorithms().put(ShardingRuleStatementConverter.getAlgorithmName(each.getLogicTable(), each.getTableStrategy().getAlgorithmName()),
-                            ShardingRuleStatementConverter.createAlgorithmConfiguration(each.getTableStrategy()));
-                }
-                if (null != each.getDatabaseStrategy()) {
-                    existTable.setDatabaseStrategy(ShardingRuleStatementConverter.createDatabaseStrategyConfiguration(each));
-                    yamlShardingRuleConfig.getShardingAlgorithms().put(ShardingRuleStatementConverter.getAlgorithmName(each.getLogicTable(), each.getDatabaseStrategy().getAlgorithmName()),
-                            ShardingRuleStatementConverter.createAlgorithmConfiguration(each.getDatabaseStrategy()));
-                }
-                if (null != each.getKeyGenerateStrategy()) {
-                    existTable.setKeyGenerateStrategy(ShardingRuleStatementConverter.createKeyGenerateStrategyConfiguration(each));
-                    yamlShardingRuleConfig.getShardingAlgorithms().put(ShardingRuleStatementConverter.getAlgorithmName(each.getLogicTable(), each.getKeyGenerateStrategy().getAlgorithmName()),
-                            ShardingRuleStatementConverter.createAlgorithmConfiguration(each.getKeyGenerateStrategy()));
-                }
-                continue;
+                yamlShardingRuleConfig.getTables().remove(each.getLogicTable());
             }
-            YamlShardingAutoTableRuleConfiguration existAutoTable = yamlShardingRuleConfig.getAutoTables().get(each.getLogicTable());
-            if (null != each.getDataSources()) {
-                existAutoTable.setActualDataSources(Joiner.on(",").join(each.getDataSources()));
+            YamlShardingAutoTableRuleConfiguration autoTable = new YamlShardingAutoTableRuleConfiguration();
+            if (null != each.getDataSources() && !each.getDataSources().isEmpty()) {
+                autoTable.setActualDataSources(Joiner.on(",").join(each.getDataSources()));
             }
             if (null != each.getTableStrategy()) {
-                existAutoTable.setShardingStrategy(ShardingRuleStatementConverter.createTableStrategyConfiguration(each));
+                autoTable.setShardingStrategy(ShardingRuleStatementConverter.createTableStrategyConfiguration(each));
                 yamlShardingRuleConfig.getShardingAlgorithms().put(ShardingRuleStatementConverter.getAlgorithmName(each.getLogicTable(), each.getTableStrategy().getAlgorithmName()),
                         ShardingRuleStatementConverter.createAlgorithmConfiguration(each.getTableStrategy()));
             }
             if (null != each.getKeyGenerateStrategy()) {
-                existAutoTable.setKeyGenerateStrategy(ShardingRuleStatementConverter.createKeyGenerateStrategyConfiguration(each));
+                autoTable.setKeyGenerateStrategy(ShardingRuleStatementConverter.createKeyGenerateStrategyConfiguration(each));
                 yamlShardingRuleConfig.getShardingAlgorithms().put(ShardingRuleStatementConverter.getAlgorithmName(each.getLogicTable(), each.getKeyGenerateStrategy().getAlgorithmName()),
                         ShardingRuleStatementConverter.createAlgorithmConfiguration(each.getKeyGenerateStrategy()));
             }
+            yamlShardingRuleConfig.getAutoTables().put(existTable.getLogicTable(), autoTable);
         }
     }
     
     private void addTableRule(final YamlShardingRuleConfiguration yamlShardingRuleConfig, final AlterShardingRuleStatement statement) {
         for (TableRuleSegment each : statement.getAddShardingRules()) {
-            YamlTableRuleConfiguration table = new YamlTableRuleConfiguration();
-            if (null != each.getDataSources()) {
-                table.setActualDataNodes(Joiner.on(",").join(each.getDataSources()));
+            YamlShardingAutoTableRuleConfiguration table = new YamlShardingAutoTableRuleConfiguration();
+            if (null != each.getDataSources() && !each.getDataSources().isEmpty()) {
+                table.setActualDataSources(Joiner.on(",").join(each.getDataSources()));
             }
             if (null != each.getTableStrategy()) {
-                table.setTableStrategy(ShardingRuleStatementConverter.createTableStrategyConfiguration(each));
+                table.setShardingStrategy(ShardingRuleStatementConverter.createTableStrategyConfiguration(each));
                 yamlShardingRuleConfig.getShardingAlgorithms().put(ShardingRuleStatementConverter.getAlgorithmName(each.getLogicTable(), each.getTableStrategy().getAlgorithmName()),
                         ShardingRuleStatementConverter.createAlgorithmConfiguration(each.getTableStrategy()));
-            }
-            if (null != each.getDatabaseStrategy()) {
-                table.setDatabaseStrategy(ShardingRuleStatementConverter.createDatabaseStrategyConfiguration(each));
-                yamlShardingRuleConfig.getShardingAlgorithms().put(ShardingRuleStatementConverter.getAlgorithmName(each.getLogicTable(), each.getDatabaseStrategy().getAlgorithmName()),
-                        ShardingRuleStatementConverter.createAlgorithmConfiguration(each.getDatabaseStrategy()));
             }
             if (null != each.getKeyGenerateStrategy()) {
                 table.setKeyGenerateStrategy(ShardingRuleStatementConverter.createKeyGenerateStrategyConfiguration(each));
                 yamlShardingRuleConfig.getShardingAlgorithms().put(ShardingRuleStatementConverter.getAlgorithmName(each.getLogicTable(), each.getKeyGenerateStrategy().getAlgorithmName()),
                         ShardingRuleStatementConverter.createAlgorithmConfiguration(each.getKeyGenerateStrategy()));
             }
+            yamlShardingRuleConfig.getAutoTables().put(each.getLogicTable(), table);
         }
     }
     

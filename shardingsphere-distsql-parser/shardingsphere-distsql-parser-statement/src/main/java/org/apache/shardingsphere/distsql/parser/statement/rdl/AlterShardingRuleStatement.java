@@ -19,9 +19,11 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Alter sharding rule statement.
@@ -30,7 +32,15 @@ import java.util.Collection;
 @Getter
 public final class AlterShardingRuleStatement extends RDLStatement {
     
-    private final Collection<TableRuleSegment> modifyShardingRules;
+    private final Collection<TableRuleSegment> modifyShardingRules = new LinkedList<>();
     
-    private final Collection<TableRuleSegment> addShardingRules;
+    private final Collection<TableRuleSegment> addShardingRules = new LinkedList<>();
+    
+    private final Collection<String> bindingTables = new LinkedList<>();
+    
+    private final Collection<String> broadcastTables = new LinkedList();
+    
+    private final String defaultTableStrategyColumn;
+    
+    private final FunctionSegment defaultTableStrategy;
 }

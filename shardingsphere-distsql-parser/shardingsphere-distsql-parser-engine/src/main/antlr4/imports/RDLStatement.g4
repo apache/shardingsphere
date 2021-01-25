@@ -64,11 +64,11 @@ password
     ;
 
 createShardingRule
-    : CREATE SHARDING RULE LP shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)* RP
+    : CREATE SHARDING RULE LP shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)* bindingTables? defaultTableStrategy? broadcastTables? RP
     ;
 
 alterShardingRule
-    : ALTER SHARDING RULE LP alterShardingTableRuleDefinition (COMMA alterShardingTableRuleDefinition)* RP
+    : ALTER SHARDING RULE LP alterShardingTableRuleDefinition (COMMA alterShardingTableRuleDefinition)* bindingTables? defaultTableStrategy? broadcastTables? RP
     ;
 
 createReplicaQueryRule
@@ -92,19 +92,27 @@ alterShardingTableRuleDefinition
     ;
 
 shardingTableRuleDefinition
-    : tableName actualDataNodes databaseStrategy? tableStrategy? keyGenerateStrategy?
+    : tableName resources? (columnName functionDefinition)? keyGenerateStrategy?
     ;
 
-databaseStrategy
-    : DATABASESTRATEGY columnName functionDefinition
+resources
+    : RESOURCE LP IDENTIFIER (COMMA IDENTIFIER)* RP
     ;
 
-tableStrategy
-    : TABLESTRATEGY columnName functionDefinition
+bindingTables
+    : BINDING_TABLES LP tableNames (COMMA tableNames)* RP
+    ;
+
+defaultTableStrategy
+    : DEFAULT_TABLE_STRATEGY columnName? functionDefinition
+    ;
+
+broadcastTables
+    : BROADCAST_TABLES LP IDENTIFIER (COMMA IDENTIFIER)* RP
     ;
 
 keyGenerateStrategy
-    : KEYGENERATESTRATEGY columnName functionDefinition
+    : GENERATED_KEY columnName functionDefinition
     ;
 
 actualDataNodes
@@ -113,6 +121,10 @@ actualDataNodes
 
 tableName
     : IDENTIFIER
+    ;
+
+tableNames
+    : IDENTIFIER+
     ;
 
 columnName

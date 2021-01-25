@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.distsql.parser.core;
 
+import com.google.common.base.Joiner;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AddResourceContext;
@@ -40,13 +41,14 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.S
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.TableNameContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.TableNamesContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ReplicaQueryRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
@@ -62,6 +64,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Dist SQL visitor.
@@ -106,25 +109,70 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitCreateShardingRule(final CreateShardingRuleContext ctx) {
-        Collection<TableRuleSegment> tables = new LinkedList<>();
-        for (ShardingTableRuleDefinitionContext each : ctx.shardingTableRuleDefinition()) {
-            tables.add((TableRuleSegment) visit(each));
+        CreateShardingRuleStatement result;
+        if (null != ctx.defaultTableStrategy()) {
+            String defaultTableStrategyColumn = null != ctx.defaultTableStrategy().columnName() ? ctx.defaultTableStrategy().columnName().getText() : null;
+            result = new CreateShardingRuleStatement(defaultTableStrategyColumn, (FunctionSegment) visit(ctx.defaultTableStrategy()));
+        } else {
+            result = new CreateShardingRuleStatement(null, null);
         }
-        return new CreateShardingRuleStatement(tables);
+//        Collection<TableRuleSegment> tables = new LinkedList<>();
+        for (ShardingTableRuleDefinitionContext each : ctx.shardingTableRuleDefinition()) {
+            result.getTables().add((TableRuleSegment) visit(each));
+        }
+        if (null != ctx.bindingTables()) {
+            for (TableNamesContext each : ctx.bindingTables().tableNames()) {
+                Collection<String> tables = each.IDENTIFIER().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList());
+                result.getBindingTables().add(Joiner.on(",").join(tables));
+            }
+        }
+        if (null != ctx.broadcastTables()) {
+            for (TerminalNode each : ctx.broadcastTables().IDENTIFIER()) {
+                result.getBroadcastTables().add(new IdentifierValue(each.getText()).getValue());
+            }
+        }
+        return result;
     }
     
     @Override
     public ASTNode visitAlterShardingRule(final AlterShardingRuleContext ctx) {
-        Collection<TableRuleSegment> modifyShardingRules = new LinkedList<>();
-        Collection<TableRuleSegment> addShardingRules = new LinkedList<>();
+//        Collection<TableRuleSegment> modifyShardingRules = new LinkedList<>();
+//        Collection<TableRuleSegment> addShardingRules = new LinkedList<>();
+//        for (AlterShardingTableRuleDefinitionContext each : ctx.alterShardingTableRuleDefinition()) {
+//            if (null != each.ADD()) {
+//                addShardingRules.add((TableRuleSegment) visit(each.shardingTableRuleDefinition()));
+//            } else if (null != each.MODIFY()) {
+//                modifyShardingRules.add((TableRuleSegment) visit(each.shardingTableRuleDefinition()));
+//            }
+//        }
+//        AlterShardingRuleStatement result = new AlterShardingRuleStatement(modifyShardingRules, addShardingRules);
+//        return result;
+        AlterShardingRuleStatement result;
+        if (null != ctx.defaultTableStrategy()) {
+            String defaultTableStrategyColumn = null != ctx.defaultTableStrategy().columnName() ? ctx.defaultTableStrategy().columnName().getText() : null;
+    
+            result = new AlterShardingRuleStatement(defaultTableStrategyColumn, (FunctionSegment) visit(ctx.defaultTableStrategy()));
+        } else {
+            result = new AlterShardingRuleStatement(null, null);
+        }
         for (AlterShardingTableRuleDefinitionContext each : ctx.alterShardingTableRuleDefinition()) {
             if (null != each.ADD()) {
-                addShardingRules.add((TableRuleSegment) visit(each.shardingTableRuleDefinition()));
+                result.getAddShardingRules().add((TableRuleSegment) visit(each.shardingTableRuleDefinition()));
             } else if (null != each.MODIFY()) {
-                modifyShardingRules.add((TableRuleSegment) visit(each.shardingTableRuleDefinition()));
+                result.getModifyShardingRules().add((TableRuleSegment) visit(each.shardingTableRuleDefinition()));
             }
         }
-        AlterShardingRuleStatement result = new AlterShardingRuleStatement(modifyShardingRules, addShardingRules);
+        if (null != ctx.bindingTables()) {
+            for (TableNamesContext each : ctx.bindingTables().tableNames()) {
+                Collection<String> tables = each.IDENTIFIER().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList());
+                result.getBindingTables().add(Joiner.on(",").join(tables));
+            }
+        }
+        if (null != ctx.broadcastTables()) {
+            for (TerminalNode each : ctx.broadcastTables().IDENTIFIER()) {
+                result.getBroadcastTables().add(new IdentifierValue(each.getText()).getValue());
+            }
+        }
         return result;
     }
     
@@ -202,20 +250,38 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
 
     @Override
     public ASTNode visitShardingTableRuleDefinition(final ShardingTableRuleDefinitionContext ctx) {
+//        TableRuleSegment result = new TableRuleSegment();
+//        result.setLogicTable(ctx.tableName().getText());
+//        Collection<String> dataSources = new LinkedList<>();
+//        for (TerminalNode each : ctx.actualDataNodes().STRING()) {
+//            dataSources.add(new IdentifierValue(each.getText()).getValue());
+//        }
+//        result.setDataSources(dataSources);
+//        if (null != ctx.databaseStrategy()) {
+//            result.setDatabaseStrategy((FunctionSegment) visit(ctx.databaseStrategy().functionDefinition()));
+//            result.setDatabaseStrategyColumn(ctx.databaseStrategy().columnName().getText());
+//        }
+//        if (null != ctx.tableStrategy()) {
+//            result.setTableStrategy((FunctionSegment) visit(ctx.tableStrategy().functionDefinition()));
+//            result.setTableStrategyColumn(ctx.tableStrategy().columnName().getText());
+//        }
+//        if (null != ctx.keyGenerateStrategy()) {
+//            result.setKeyGenerateStrategy((FunctionSegment) visit(ctx.keyGenerateStrategy().functionDefinition()));
+//            result.setKeyGenerateStrategyColumn(ctx.keyGenerateStrategy().columnName().getText());
+//        }
+//        return result;
         TableRuleSegment result = new TableRuleSegment();
         result.setLogicTable(ctx.tableName().getText());
         Collection<String> dataSources = new LinkedList<>();
-        for (TerminalNode each : ctx.actualDataNodes().STRING()) {
-            dataSources.add(new IdentifierValue(each.getText()).getValue());
+        if (null != ctx.resources()) {
+            for (TerminalNode each : ctx.resources().IDENTIFIER()) {
+                dataSources.add(new IdentifierValue(each.getText()).getValue());
+            }
         }
         result.setDataSources(dataSources);
-        if (null != ctx.databaseStrategy()) {
-            result.setDatabaseStrategy((FunctionSegment) visit(ctx.databaseStrategy().functionDefinition()));
-            result.setDatabaseStrategyColumn(ctx.databaseStrategy().columnName().getText());
-        }
-        if (null != ctx.tableStrategy()) {
-            result.setTableStrategy((FunctionSegment) visit(ctx.tableStrategy().functionDefinition()));
-            result.setTableStrategyColumn(ctx.tableStrategy().columnName().getText());
+        if (null != ctx.functionDefinition()) {
+            result.setTableStrategy((FunctionSegment) visit(ctx.functionDefinition()));
+            result.setTableStrategyColumn(ctx.columnName().getText());
         }
         if (null != ctx.keyGenerateStrategy()) {
             result.setKeyGenerateStrategy((FunctionSegment) visit(ctx.keyGenerateStrategy().functionDefinition()));

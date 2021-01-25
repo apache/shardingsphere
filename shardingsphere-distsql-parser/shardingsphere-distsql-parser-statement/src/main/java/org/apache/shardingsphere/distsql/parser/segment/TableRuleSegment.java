@@ -34,13 +34,9 @@ public final class TableRuleSegment implements ASTNode {
     
     private Collection<String> dataSources;
     
-    private String databaseStrategyColumn;
-    
     private String tableStrategyColumn;
     
     private String keyGenerateStrategyColumn;
-    
-    private FunctionSegment databaseStrategy;
     
     private FunctionSegment tableStrategy;
     

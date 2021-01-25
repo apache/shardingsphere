@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereA
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlHintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration;
 
@@ -90,19 +91,42 @@ public final class ShardingRuleStatementConverter {
     }
     
     /**
-     * Convert table rule segment to YAML sharding strategy configuration.
+     * Create YAML sharding strategy configuration.
      *
-     * @param segment table rule segment
+     * @param shardingColumn sharding column
+     * @param segment function segment
      * @return YAML sharding strategy configuration
      */
-    public static YamlShardingStrategyConfiguration createDatabaseStrategyConfiguration(final TableRuleSegment segment) {
+    public static YamlShardingStrategyConfiguration createDefaultTableStrategyConfiguration(final String shardingColumn, final FunctionSegment segment) {
         YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
-        YamlStandardShardingStrategyConfiguration standard = new YamlStandardShardingStrategyConfiguration();
-        standard.setShardingColumn(segment.getDatabaseStrategyColumn());
-        standard.setShardingAlgorithmName(getAlgorithmName(segment.getLogicTable(), segment.getDatabaseStrategy().getAlgorithmName()));
-        result.setStandard(standard);
+        if (null != shardingColumn) {
+            YamlStandardShardingStrategyConfiguration standard = new YamlStandardShardingStrategyConfiguration();
+            standard.setShardingColumn(shardingColumn);
+            standard.setShardingAlgorithmName(segment.getAlgorithmName());
+            result.setStandard(standard);
+        } else {
+            YamlHintShardingStrategyConfiguration hint = new YamlHintShardingStrategyConfiguration();
+            hint.setShardingAlgorithmName(segment.getAlgorithmName());
+            result.setHint(hint);
+        }
         return result;
     }
+    
+    
+//    /**
+//     * Convert table rule segment to YAML sharding strategy configuration.
+//     *
+//     * @param segment table rule segment
+//     * @return YAML sharding strategy configuration
+//     */
+//    public static YamlShardingStrategyConfiguration createDatabaseStrategyConfiguration(final TableRuleSegment segment) {
+//        YamlShardingStrategyConfiguration result = new YamlShardingStrategyConfiguration();
+//        YamlStandardShardingStrategyConfiguration standard = new YamlStandardShardingStrategyConfiguration();
+//        standard.setShardingColumn(segment.getDatabaseStrategyColumn());
+//        standard.setShardingAlgorithmName(getAlgorithmName(segment.getLogicTable(), segment.getDatabaseStrategy().getAlgorithmName()));
+//        result.setStandard(standard);
+//        return result;
+//    }
     
     /**
      * Convert table rule segment to YAML key generate strategy configuration.
