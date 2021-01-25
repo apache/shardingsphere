@@ -18,4 +18,4 @@
 DELETE FROM t_order_calcite;
 
 INSERT INTO t_order_calcite VALUES(1000, 10, 'init');
-INSERT INTO t_order_calcite VALUES(1001, 10, 'init')
+INSERT INTO t_order_calcite VALUES(1001, 11, 'init')

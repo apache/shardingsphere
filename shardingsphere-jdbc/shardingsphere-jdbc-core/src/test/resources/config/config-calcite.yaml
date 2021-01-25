@@ -17,5 +17,16 @@
 
 rules:
   - !SHARDING
-    defaultTableStrategy:
-      none:
+    tables:
+      t_order_item_calcite_sharding:
+        actualDataNodes: calcite_jdbc_1.t_order_item_calcite_sharding_${0..1}
+        tableStrategy:
+          standard:
+            shardingColumn: item_id
+            shardingAlgorithmName: table_inline
+    shardingAlgorithms:
+      table_inline:
+        type: INLINE
+        props:
+          algorithm-expression: t_order_item_calcite_sharding_${item_id % 2}
+
