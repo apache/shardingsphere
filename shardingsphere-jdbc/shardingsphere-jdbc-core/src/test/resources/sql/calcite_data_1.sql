@@ -17,7 +17,7 @@
 
 DELETE FROM t_order_item_calcite;
 DELETE FROM t_order_item_calcite_sharding_0;
- DELETE FROM t_order_item_calcite_sharding_1;
+DELETE FROM t_order_item_calcite_sharding_1;
 
 INSERT INTO t_order_item_calcite VALUES(100000, 1000, 10, 'init');
 INSERT INTO t_order_item_calcite VALUES(100001, 1000, 10, 'init');
