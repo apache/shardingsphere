@@ -28,7 +28,6 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -80,26 +79,6 @@ public final class UnsupportedOperationConnectionTest {
     @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertAbort() throws SQLException {
         shardingSphereConnection.abort(null);
-    }
-    
-    @Test
-    public void assertGetCatalog() {
-        assertNull(shardingSphereConnection.getCatalog());
-    }
-    
-    @Test
-    public void assertSetCatalog() {
-        shardingSphereConnection.setCatalog("");
-    }
-    
-    @Test
-    public void assertGetSchema() {
-        assertNull(shardingSphereConnection.getSchema());
-    }
-    
-    @Test
-    public void assertSetSchema() {
-        shardingSphereConnection.setSchema("");
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
