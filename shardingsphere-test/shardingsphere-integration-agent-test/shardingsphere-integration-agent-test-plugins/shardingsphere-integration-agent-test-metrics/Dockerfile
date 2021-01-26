@@ -15,35 +15,15 @@
 # limitations under the License.
 #
 
-applicationName: shardingsphere-agent
-ignoredPluginNames:
-  - Jaeger
-  - Opentracing
+FROM openjdk:8-jdk-alpine
 
-plugins:
-  prometheus:
-    host:  "localhost"
-    port: 9090
-    props:
-      JVM_INFORMATION_COLLECTOR_ENABLED : "true"
-  Jaeger:
-    host: "localhost"
-    port: 5775
-    props:
-      SERVICE_NAME: "shardingsphere-agent"
-      JAEGER_SAMPLER_TYPE: "const"
-      JAEGER_SAMPLER_PARAM: "1"
-      JAEGER_REPORTER_LOG_SPANS: "true"
-      JAEGER_REPORTER_FLUSH_INTERVAL: "1"
-  Zipkin:
-    host: "localhost"
-    port: 9411
-    props:
-      SERVICE_NAME: "shardingsphere-agent"
-      URL_VERSION: "/api/v2/spans"
-  Opentracing:
-    props:
-      OPENTRACING_TRACER_CLASS_NAME: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
-  Logging:
-    props:
-      LEVEL: "INFO"
+ARG APP_NAME
+ENV WAIT_VERSION 2.7.2
+
+ADD target/${APP_NAME}.tar.gz /opt
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
+RUN chmod +x /wait
+RUN ls /opt/${APP_NAME}
+RUN mv /opt/${APP_NAME} /opt/shardingsphere-proxy-agent-metrics
+RUN ls /opt
+ENTRYPOINT /wait && /opt/shardingsphere-proxy-agent-metrics/bin/start.sh && tail -f /opt/shardingsphere-proxy-agent-metrics/logs/stdout.log

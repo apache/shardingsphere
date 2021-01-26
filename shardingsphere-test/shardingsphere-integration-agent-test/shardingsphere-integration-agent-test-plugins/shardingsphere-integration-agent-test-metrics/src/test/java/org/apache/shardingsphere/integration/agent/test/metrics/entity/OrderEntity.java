@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.shardingsphere.test.agent.plugins.entity;
+package org.apache.shardingsphere.integration.agent.test.metrics.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

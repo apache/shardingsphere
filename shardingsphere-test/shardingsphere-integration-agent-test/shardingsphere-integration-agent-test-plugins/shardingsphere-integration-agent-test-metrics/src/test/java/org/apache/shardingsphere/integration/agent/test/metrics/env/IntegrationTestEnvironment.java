@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.agent.plugins.env;
+package org.apache.shardingsphere.integration.agent.test.metrics.env;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -48,7 +48,7 @@ public final class IntegrationTestEnvironment {
     @SneakyThrows
     private IntegrationTestEnvironment() {
         Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
-        isEnvironmentPrepared = "agent".equals(engineEnvProps.getProperty("it.env.type"));
+        isEnvironmentPrepared = "metrics".equals(engineEnvProps.getProperty("it.env.type"));
         if (isEnvironmentPrepared) {
             waitForEnvironmentReady();
             dataSource = createHikariCP();
@@ -69,7 +69,7 @@ public final class IntegrationTestEnvironment {
     private void waitForEnvironmentReady() {
         log.info("wait begin proxy environment");
         int retryCount = 0;
-        while (!isProxyReady() && retryCount < 30) {
+        while (!isProxyReady() && retryCount < 300) {
             try {
                 Thread.sleep(1000L);
             } catch (final InterruptedException ignore) {

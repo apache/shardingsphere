@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.agent.plugins;
+package org.apache.shardingsphere.integration.agent.test.metrics;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,14 +27,14 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import javax.sql.DataSource;
-import org.apache.shardingsphere.test.agent.plugins.entity.OrderEntity;
-import org.apache.shardingsphere.test.agent.plugins.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.agent.test.metrics.entity.OrderEntity;
+import org.apache.shardingsphere.integration.agent.test.metrics.env.IntegrationTestEnvironment;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class BaseAgentIT {
+public final class MetricsPluginIT {
     
     @Test
     public void assertProxyWithAgent() {

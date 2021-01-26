@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.agent.plugins.env;
+package org.apache.shardingsphere.integration.agent.test.metrics.env;
 
 import java.io.IOException;
 import java.io.InputStream;
