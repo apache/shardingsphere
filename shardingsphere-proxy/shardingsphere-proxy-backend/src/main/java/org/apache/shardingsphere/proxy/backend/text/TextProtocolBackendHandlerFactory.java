@@ -61,8 +61,9 @@ public final class TextProtocolBackendHandlerFactory {
         if (trimSQL.toUpperCase().startsWith(ShardingCTLBackendHandlerFactory.SCTL)) {
             return ShardingCTLBackendHandlerFactory.newInstance(trimSQL, backendConnection);
         }
-        DatabaseType backendDatabaseType =
-                ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
+
+        DatabaseType backendDatabaseType = getDatabaseType(databaseType, backendConnection);
+
         SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(backendDatabaseType.getName()).parse(sql, false);
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((TCLStatement) sqlStatement, sql, backendConnection);
@@ -76,5 +77,13 @@ public final class TextProtocolBackendHandlerFactory {
             return databaseAdminBackendHandler.get();
         }
         return DatabaseBackendHandlerFactory.newInstance(sqlStatement, sql, backendConnection);
+    }
+
+    private static DatabaseType getDatabaseType(final DatabaseType databaseType,
+                                                final BackendConnection backendConnection) {
+        if (Strings.isNullOrEmpty(backendConnection.getSchemaName())) {
+            return databaseType;
+        }
+        return ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
     }
 }
