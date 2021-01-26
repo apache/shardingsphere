@@ -24,7 +24,19 @@ setTransaction
     ;
 
 commit
-    : COMMIT
+    : COMMIT WORK? (commentClause? | writeClause? | forceClause)? 
+    ;
+
+commentClause
+    : COMMENT stringLiterals
+    ;
+
+writeClause
+    : WRITE (WAIT | NOWAIT)? (IMMEDIATE | BATCH)?
+    ;
+
+forceClause
+    : FORCE stringLiterals (COMMA_ numberLiterals)?
     ;
 
 rollback
