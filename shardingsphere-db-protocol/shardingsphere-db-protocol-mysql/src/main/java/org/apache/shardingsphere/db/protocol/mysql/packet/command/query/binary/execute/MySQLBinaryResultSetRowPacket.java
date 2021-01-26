@@ -66,7 +66,7 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
         }
         return result;
     }
-
+    
     private void writeValues(final MySQLPacketPayload payload) {
         for (BinaryCell each : row.getCells()) {
             Object data = each.getData();
