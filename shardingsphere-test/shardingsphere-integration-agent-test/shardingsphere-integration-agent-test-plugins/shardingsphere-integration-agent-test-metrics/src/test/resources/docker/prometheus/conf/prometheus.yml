@@ -15,36 +15,21 @@
 # limitations under the License.
 #
 
-applicationName: shardingsphere-agent
-ignoredPluginNames:
-  - Jaeger
-  - Opentracing
-  - Zipkin
+global:
+  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # scrape_timeout is set to the global default (10s).
 
-plugins:
-  prometheus:
-    host:  "localhost"
-    port: 8090
-    props:
-      JVM_INFORMATION_COLLECTOR_ENABLED : "true"
-  Jaeger:
-    host: "localhost"
-    port: 5775
-    props:
-      SERVICE_NAME: "shardingsphere-agent"
-      JAEGER_SAMPLER_TYPE: "const"
-      JAEGER_SAMPLER_PARAM: "1"
-      JAEGER_REPORTER_LOG_SPANS: "true"
-      JAEGER_REPORTER_FLUSH_INTERVAL: "1"
-  Zipkin:
-    host: "localhost"
-    port: 9411
-    props:
-      SERVICE_NAME: "shardingsphere-agent"
-      URL_VERSION: "/api/v2/spans"
-  Opentracing:
-    props:
-      OPENTRACING_TRACER_CLASS_NAME: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
-  Logging:
-    props:
-      LEVEL: "INFO"
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+    static_configs:
+    - targets: ['localhost:9090']
+
+  - job_name: 'shardingsphere-agent'
+    static_configs:
+    - targets: ['localhost:8090']

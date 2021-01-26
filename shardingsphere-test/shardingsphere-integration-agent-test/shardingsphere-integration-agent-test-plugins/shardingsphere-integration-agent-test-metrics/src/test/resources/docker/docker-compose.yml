@@ -34,8 +34,10 @@ services:
     container_name: agent-prometheus
     hostname: prometheus
     restart: always
+    volumes:
+      - ./prometheus/conf:/config
     ports:
-      - '9090:9090'
+      - '19090:9090'
     command: ['--config.file=/config/prometheus.yml']
 
   shardingsphere-proxy-agent-metrics:
