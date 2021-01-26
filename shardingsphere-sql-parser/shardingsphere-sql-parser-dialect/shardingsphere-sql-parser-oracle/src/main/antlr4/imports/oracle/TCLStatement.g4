@@ -40,11 +40,11 @@ forceClause
     ;
 
 rollback
-    : ROLLBACK (WORK)? savepointClause
+    : ROLLBACK WORK? savepointClause
     ;
 
 savepointClause
-    : (TO (SAVEPOINT)? savepointName | FORCE stringLiterals)?
+    : (TO SAVEPOINT? savepointName | FORCE stringLiterals)?
     ;
 
 savepoint
