@@ -25,7 +25,7 @@ import java.math.BigDecimal;
  * Binary protocol value for int8 for MySQL.
  */
 public final class MySQLInt8BinaryProtocolValue implements MySQLBinaryProtocolValue {
-
+    
     @Override
     public Object read(final MySQLPacketPayload payload) {
         return payload.readInt8();
