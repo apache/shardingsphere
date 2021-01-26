@@ -25,6 +25,7 @@ import org.apache.shardingsphere.driver.governance.internal.circuit.statement.Ci
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 
@@ -45,6 +46,15 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     @Override
     public boolean isReadOnly() {
         return false;
+    }
+    
+    @Override
+    public void setCatalog(final String catalog) throws SQLException {
+    }
+    
+    @Override
+    public String getCatalog() throws SQLException {
+        return null;
     }
     
     @Override
@@ -124,6 +134,15 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     @Override
     public boolean isValid(final int timeout) {
         return true;
+    }
+    
+    @Override
+    public void setSchema(final String schema) throws SQLException {
+    }
+    
+    @Override
+    public String getSchema() throws SQLException {
+        return null;
     }
     
     @Override
