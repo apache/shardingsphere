@@ -34,12 +34,6 @@
             <artifactId>shardingsphere-proxy-frontend-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.zipkin.brave</groupId>
-            <artifactId>brave</artifactId>
-            <version>${zipkin-brave.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy-agent</artifactId>
             <version>${bytebuddy.version}</version>
@@ -76,7 +70,7 @@
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <configuration>
-                    <outputFile>${build.directory}/${build.finalName}</outputFile>
+                    <outputFile>${project.build.directory}/${project.build.finalName}</outputFile>
                 </configuration>
             </plugin>
         </plugins>

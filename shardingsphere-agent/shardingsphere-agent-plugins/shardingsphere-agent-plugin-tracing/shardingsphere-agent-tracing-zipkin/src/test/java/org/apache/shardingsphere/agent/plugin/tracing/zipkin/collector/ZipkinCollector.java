@@ -15,47 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.rule;
+package org.apache.shardingsphere.agent.plugin.tracing.zipkin.collector;
 
-import io.opentracing.mock.MockSpan;
-import io.opentracing.mock.MockTracer;
-import io.opentracing.util.GlobalTracer;
+import brave.Tracing;
+import brave.propagation.StrictCurrentTraceContext;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.agent.plugin.tracing.rule.CollectorRule;
 import org.junit.rules.ExternalResource;
-import org.mockito.internal.util.reflection.FieldReader;
+import zipkin2.Span;
 
-import java.util.List;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
-public class JaegerCollector extends ExternalResource implements CollectorRule {
+public class ZipkinCollector extends ExternalResource implements CollectorRule {
     
-    private MockTracer tracer;
+    private static final ConcurrentLinkedDeque<Span> SPANS = new ConcurrentLinkedDeque<>();
     
     @Override
     @SneakyThrows
     protected void before() {
-        if (!GlobalTracer.isRegistered()) {
-            GlobalTracer.register(new MockTracer());
-        }
-        FieldReader fieldReader = new FieldReader(GlobalTracer.get(), GlobalTracer.class.getDeclaredField("tracer"));
-        tracer = (MockTracer) fieldReader.read();
-    }
-    
-    /**
-     * Get all spans.
-     * @return all spans.
-     */
-    public List<MockSpan> finishedSpans() {
-        return tracer.finishedSpans();
-    }
-    
-    @Override
-    public void cleanup() {
-        tracer.reset();
+        Tracing.newBuilder()
+                .currentTraceContext(StrictCurrentTraceContext.create())
+                .spanReporter(SPANS::add)
+                .build();
     }
     
     @Override
     @SneakyThrows
     protected void after() {
-        super.after();
+        Tracing.current().close();
+    }
+    
+    /**
+     * Get the first Span.
+     *
+     * @return span
+     */
+    public Span pop() {
+        return SPANS.pollFirst();
+    }
+    
+    @Override
+    public void cleanup() {
+        SPANS.clear();
     }
 }
