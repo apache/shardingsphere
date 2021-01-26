@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.driver.governance.internal.circuit.connection;
 
-import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 import org.apache.shardingsphere.driver.governance.internal.circuit.metadata.CircuitBreakerDatabaseMetaData;
 import org.apache.shardingsphere.driver.governance.internal.circuit.statement.CircuitBreakerPreparedStatement;
 import org.apache.shardingsphere.driver.governance.internal.circuit.statement.CircuitBreakerStatement;
+import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationConnection;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -54,7 +54,7 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     
     @Override
     public String getCatalog() throws SQLException {
-        return null;
+        return "";
     }
     
     @Override
@@ -142,7 +142,7 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     
     @Override
     public String getSchema() throws SQLException {
-        return null;
+        return "";
     }
     
     @Override
