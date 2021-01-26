@@ -19,10 +19,12 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRDLStatement;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Create sharding rule statement.
@@ -31,5 +33,13 @@ import java.util.Collection;
 @Getter
 public final class CreateShardingRuleStatement extends CreateRDLStatement {
     
-    private final Collection<TableRuleSegment> tables;
+    private final Collection<TableRuleSegment> tables = new LinkedList<>();
+    
+    private final Collection<String> bindingTables = new LinkedList<>();
+    
+    private final Collection<String> broadcastTables = new LinkedList<>();
+    
+    private final String defaultTableStrategyColumn;
+    
+    private final FunctionSegment defaultTableStrategy;
 }

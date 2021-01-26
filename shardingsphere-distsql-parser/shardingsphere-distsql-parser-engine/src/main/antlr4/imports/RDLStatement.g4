@@ -64,7 +64,11 @@ password
     ;
 
 createShardingRule
-    : CREATE SHARDING RULE LP shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)* RP
+    : CREATE SHARDING RULE LP shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)* bindingTables? defaultTableStrategy? broadcastTables? RP
+    ;
+
+alterShardingRule
+    : ALTER SHARDING RULE LP alterShardingTableRuleDefinition (COMMA alterShardingTableRuleDefinition)* bindingTables? defaultTableStrategy? broadcastTables? RP
     ;
 
 createReplicaQueryRule
@@ -72,7 +76,7 @@ createReplicaQueryRule
     ;
 
 replicaQueryRuleDefinition
-    : ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP loadBalancer=IDENTIFIER LP algorithmProperties RP
+    : ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition
     ;
 
 alterReplicaQueryRule
@@ -80,15 +84,47 @@ alterReplicaQueryRule
     ;
 
 alterReplicaQueryRuleDefinition
-    : (MODIFY | ADD) ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP (loadBalancer=IDENTIFIER LP algorithmProperties RP)?
+    : (MODIFY | ADD) ruleName=IDENTIFIER LP PRIMARY EQ primary=schemaName COMMA REPLICA EQ schemaNames RP functionDefinition?
+    ;
+
+alterShardingTableRuleDefinition
+    : (MODIFY | ADD) shardingTableRuleDefinition
     ;
 
 shardingTableRuleDefinition
-    : tableName columnName shardingAlgorithmType=IDENTIFIER LP algorithmProperties RP
+    : tableName resources? (columnName functionDefinition)? keyGenerateStrategy?
+    ;
+
+resources
+    : RESOURCE LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    ;
+
+bindingTables
+    : BINDING_TABLES LP tableNames (COMMA tableNames)* RP
+    ;
+
+defaultTableStrategy
+    : DEFAULT_TABLE_STRATEGY columnName? functionDefinition
+    ;
+
+broadcastTables
+    : BROADCAST_TABLES LP IDENTIFIER (COMMA IDENTIFIER)* RP
+    ;
+
+keyGenerateStrategy
+    : GENERATED_KEY columnName functionDefinition
+    ;
+
+actualDataNodes
+    : STRING (COMMA STRING)*
     ;
 
 tableName
     : IDENTIFIER
+    ;
+
+tableNames
+    : IDENTIFIER+
     ;
 
 columnName
@@ -113,6 +149,10 @@ schemaNames
 
 schemaName
     : IDENTIFIER
+    ;
+
+functionDefinition
+    : functionName=IDENTIFIER LP algorithmProperties RP
     ;
 
 algorithmProperties

@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import Symbol, RDLStatement, RQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-execute
-    : (addResource
-    | dropResource
-    | createShardingRule
-    | alterShardingRule
-    | dropShardingRule
-    | createReplicaQueryRule
-    | alterReplicaQueryRule
-    | dropReplicaQueryRule
-    | showResources
-    | showRule
-    ) SEMI?
-    ;
+import java.util.Collection;
+
+/**
+ * Sharding table rule existed exception.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ShardingTableRuleExistedException extends BackendException {
+    
+    private static final long serialVersionUID = 258686465701003401L;
+    
+    private final Collection<String> tableNames;
+}
