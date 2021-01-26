@@ -75,7 +75,7 @@ public final class RuleChangedListener extends PostGovernanceRepositoryEventList
     }
     
     private Collection<RuleConfiguration> getRuleConfigurations(final String yamlContent) {
-        YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlContent, YamlRootRuleConfigurations.class);
+        YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlContent, YamlRootRuleConfigurations.class, true);
         Preconditions.checkState(null != configurations, "No available rule to load for governance.");
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules());
     }
