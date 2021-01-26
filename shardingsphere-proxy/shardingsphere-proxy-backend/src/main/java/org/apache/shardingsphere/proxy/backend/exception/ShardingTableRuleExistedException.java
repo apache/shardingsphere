@@ -15,7 +15,21 @@
  * limitations under the License.
  */
 
-DELETE FROM t_order_calcite;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-INSERT INTO t_order_calcite VALUES(1000, 10, 'init');
-INSERT INTO t_order_calcite VALUES(1001, 11, 'init')
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
+
+/**
+ * Sharding table rule existed exception.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ShardingTableRuleExistedException extends BackendException {
+    
+    private static final long serialVersionUID = 258686465701003401L;
+    
+    private final Collection<String> tableNames;
+}

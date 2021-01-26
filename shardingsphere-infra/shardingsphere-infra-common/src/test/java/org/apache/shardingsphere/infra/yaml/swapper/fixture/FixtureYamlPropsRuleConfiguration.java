@@ -15,7 +15,25 @@
  * limitations under the License.
  */
 
-DELETE FROM t_order_calcite;
+package org.apache.shardingsphere.infra.yaml.swapper.fixture;
 
-INSERT INTO t_order_calcite VALUES(1000, 10, 'init');
-INSERT INTO t_order_calcite VALUES(1001, 11, 'init')
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+
+import java.util.Properties;
+
+@Getter
+@Setter
+public final class FixtureYamlPropsRuleConfiguration implements YamlRuleConfiguration {
+    
+    private String name;
+    
+    private Properties props;
+    
+    @Override
+    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
+        return FixtureRuleConfiguration.class;
+    }
+}

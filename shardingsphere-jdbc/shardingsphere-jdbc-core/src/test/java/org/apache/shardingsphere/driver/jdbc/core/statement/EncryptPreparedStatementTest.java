@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForEncryptTest;
+import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForEncryptTest;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.junit.Test;
 
@@ -44,7 +44,7 @@ public final class EncryptPreparedStatementTest extends AbstractShardingSphereDa
     private static final String UPDATE_SQL = "UPDATE t_query_encrypt SET pwd =? WHERE pwd = ?";
     
     private static final String SELECT_SQL = "SELECT * FROM t_query_encrypt WHERE pwd = ?";
- 
+    
     private static final String SELECT_SQL_OR = "SELECT * FROM t_query_encrypt WHERE pwd = ? AND (id = ? OR id =?)";
     
     private static final String SELECT_ALL_SQL = "SELECT id, cipher_pwd, assist_pwd FROM t_query_encrypt";

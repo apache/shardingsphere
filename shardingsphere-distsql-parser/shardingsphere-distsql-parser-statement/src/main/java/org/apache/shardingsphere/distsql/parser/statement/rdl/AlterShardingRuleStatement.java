@@ -15,30 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.segment;
+package org.apache.shardingsphere.distsql.parser.statement.rdl;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
+import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Table rule segment.
+ * Alter sharding rule statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class TableRuleSegment implements ASTNode {
+public final class AlterShardingRuleStatement extends RDLStatement {
     
-    private String logicTable;
+    private final Collection<TableRuleSegment> modifyShardingRules = new LinkedList<>();
     
-    private Collection<String> dataSources;
+    private final Collection<TableRuleSegment> addShardingRules = new LinkedList<>();
     
-    private String tableStrategyColumn;
+    private final Collection<String> bindingTables = new LinkedList<>();
     
-    private String keyGenerateStrategyColumn;
+    private final Collection<String> broadcastTables = new LinkedList();
     
-    private FunctionSegment tableStrategy;
+    private final String defaultTableStrategyColumn;
     
-    private FunctionSegment keyGenerateStrategy;
+    private final FunctionSegment defaultTableStrategy;
 }

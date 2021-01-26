@@ -15,7 +15,22 @@
  * limitations under the License.
  */
 
-DELETE FROM t_order_calcite;
+package org.apache.shardingsphere.distsql.parser.statement.rdl;
 
-INSERT INTO t_order_calcite VALUES(1000, 10, 'init');
-INSERT INTO t_order_calcite VALUES(1001, 11, 'init')
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.ReplicaQueryRuleSegment;
+
+import java.util.Collection;
+
+/**
+ * Alter replica query rule statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class AlterReplicaQueryRuleStatement extends RDLStatement {
+    
+    private final Collection<ReplicaQueryRuleSegment> modifyReplicaQueryRules;
+    
+    private final Collection<ReplicaQueryRuleSegment> addReplicaQueryRules;
+}

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForShardingTest;
+import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.apache.shardingsphere.driver.jdbc.core.fixture.BASEShardingTransactionManagerFixture;
 import org.apache.shardingsphere.driver.jdbc.core.fixture.XAShardingTransactionManagerFixture;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
@@ -258,6 +258,34 @@ public final class ConnectionAdapterTest extends AbstractShardingSphereDataSourc
         try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
             actual.setHoldability(ResultSet.CONCUR_READ_ONLY);
             assertThat(actual.getHoldability(), is(ResultSet.CLOSE_CURSORS_AT_COMMIT));
+        }
+    }
+    
+    @Test
+    public void assertGetCatalog() throws SQLException {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
+            assertNull(actual.getCatalog());
+        }
+    }
+    
+    @Test
+    public void assertSetCatalog() throws SQLException {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
+            actual.setCatalog("");
+        }
+    }
+    
+    @Test
+    public void assertGetSchema() throws SQLException {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
+            assertNull(actual.getSchema());
+        }
+    }
+    
+    @Test
+    public void assertSetSchema() throws SQLException {
+        try (ShardingSphereConnection actual = getShardingSphereDataSource().getConnection()) {
+            actual.setSchema("");
         }
     }
     

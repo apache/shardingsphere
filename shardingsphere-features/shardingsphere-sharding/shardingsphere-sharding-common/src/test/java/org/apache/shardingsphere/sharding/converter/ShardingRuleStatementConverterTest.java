@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.converter;
 
+import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -26,14 +27,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class CreateShardingRuleStatementConverterTest {
+public final class ShardingRuleStatementConverterTest {
     
     private TableRuleSegment segment;
     
@@ -45,17 +45,20 @@ public final class CreateShardingRuleStatementConverterTest {
         segment = new TableRuleSegment();
         segment.setLogicTable("t_order");
         segment.setDataSources(Arrays.asList("ds0", "ds1"));
-        segment.setShardingColumn("order_id");
-        segment.setAlgorithmType("MOD");
+        segment.setTableStrategyColumn("order_id");
+        FunctionSegment functionSegment = new FunctionSegment();
+        functionSegment.setAlgorithmName("MOD");
         Properties props = new Properties();
         props.setProperty("sharding_count", "2");
-        segment.setAlgorithmProps(props);
-        sqlStatement = new CreateShardingRuleStatement(Collections.singleton(segment));
+        functionSegment.setAlgorithmProps(props);
+        segment.setTableStrategy(functionSegment);
+        sqlStatement = new CreateShardingRuleStatement(null, functionSegment);
+        sqlStatement.getTables().add(segment);
     }
     
     @Test
     public void assertConvert() {
-        YamlShardingRuleConfiguration config = CreateShardingRuleStatementConverter.convert(sqlStatement);
+        YamlShardingRuleConfiguration config = ShardingRuleStatementConverter.convert(sqlStatement);
         assertTrue(config.getTables().isEmpty());
         assertThat(config.getAutoTables().size(), is(1));
         assertThat(config.getAutoTables().get(segment.getLogicTable()).getActualDataSources(), is("ds0,ds1"));

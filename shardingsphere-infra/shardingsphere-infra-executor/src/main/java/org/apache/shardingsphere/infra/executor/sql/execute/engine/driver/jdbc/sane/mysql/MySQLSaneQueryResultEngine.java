@@ -58,6 +58,9 @@ public final class MySQLSaneQueryResultEngine implements SaneQueryResultEngine {
     }
     
     private Optional<ExecuteResult> createQueryResult(final SelectStatement sqlStatement) {
+        if (null != sqlStatement.getFrom()) {
+            return Optional.empty();
+        }
         List<RawQueryResultColumnMetaData> queryResultColumnMetaDataList = new ArrayList<>(sqlStatement.getProjections().getProjections().size());
         List<Object> data = new ArrayList<>(sqlStatement.getProjections().getProjections().size());
         for (ProjectionSegment each : sqlStatement.getProjections().getProjections()) {

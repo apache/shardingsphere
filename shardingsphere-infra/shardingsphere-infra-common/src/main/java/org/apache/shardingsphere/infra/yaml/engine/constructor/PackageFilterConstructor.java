@@ -15,7 +15,22 @@
  * limitations under the License.
  */
 
-DELETE FROM t_order_calcite;
+package org.apache.shardingsphere.infra.yaml.engine.constructor;
 
-INSERT INTO t_order_calcite VALUES(1000, 10, 'init');
-INSERT INTO t_order_calcite VALUES(1001, 11, 'init')
+/**
+ * Package filter constructor for YAML.
+ */
+public final class PackageFilterConstructor extends ShardingSphereYamlConstructor {
+    
+    public PackageFilterConstructor(final Class<?> rootClass) {
+        super(rootClass);
+    }
+    
+    @Override
+    protected Class<?> getClassForName(final String name) throws ClassNotFoundException {
+        if (name != null && name.startsWith("org.apache.shardingsphere.")) {
+            return super.getClassForName(name);
+        }
+        throw new IllegalArgumentException(String.format("Class is not accepted: %s", name));
+    }
+}
