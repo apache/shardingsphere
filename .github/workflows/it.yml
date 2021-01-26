@@ -192,8 +192,8 @@ jobs:
       - name: Run Integration Test
         run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=jdbc -Dit.scenarios=dbtbl_with_replica_query -Dit.databases=MySQL
 
-  mysql-proxy-agent:
-    name: MySQL-Proxy with Agent
+  mysql-proxy-agent-metrics:
+    name: MySQL-Proxy with Agent Metrics
     runs-on: ubuntu-latest
     steps:
       - name: Cache Maven Repos
@@ -211,4 +211,4 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -Dmaven.test.skip=true
       - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-agent-test/pom.xml -Pit.env.agent
+        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-agent-test/shardingsphere-integration-agent-test-plugins/shardingsphere-integration-agent-test-metrics/pom.xml -Pit.env.metrics
