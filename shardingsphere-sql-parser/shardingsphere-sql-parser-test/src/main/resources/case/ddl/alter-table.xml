@@ -901,18 +901,127 @@
     </alter-table>
 
     <alter-table sql-case-id="alter_table_set_schema">
-        <table name="t_order" start-index="12" stop-index="18" />
+        <table name="t_order" start-index="12" stop-index="18"/>
     </alter-table>
 
     <alter-table sql-case-id="alter_table_attach_partition">
-        <table name="t_order" stop-index="18" start-index="12"/>
+        <table name="t_order" start-index="12" stop-index="18"/>
     </alter-table>
 
     <alter-table sql-case-id="alter_table_detach_partition">
-        <table name="t_order" stop-index="18" start-index="12"/>
+        <table name="t_order" start-index="12" stop-index="18"/>
     </alter-table>
 
     <alter-table sql-case-id="alter_table_in_hash_partitioned_table">
-        <table name="t_order" stop-index="18" start-index="12"/>
+        <table name="t_order" start-index="12" stop-index="18"/>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_optimize_memory_read">
+        <table name="t_log" start-index="12" stop-index="16"/>
+        <add-column>
+            <column-definition type="VARCHAR" start-index="43" stop-index="58">
+                <column name="name" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_no_optimize_memory_write">
+        <table name="t_log" start-index="12" stop-index="16"/>
+        <add-column>
+            <column-definition type="VARCHAR" start-index="47" stop-index="62">
+                <column name="name" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_enable_validate">
+        <table name="t_log" start-index="12" stop-index="16"/>
+        <add-column>
+            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+                <column name="name" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_primary_key">
+        <table name="t_log" start-index="12" stop-index="16"/>
+        <add-column>
+            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+                <column name="name" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_index_clause">
+        <table name="t_log" start-index="12" stop-index="16"/>
+        <add-column>
+            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+                <column name="name" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_exception_clause">
+        <table name="t_log" start-index="12" stop-index="16"/>
+        <add-column>
+            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+                <column name="name" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_cascade">
+        <table name="t_log" start-index="12" stop-index="16"/>
+        <add-column>
+            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+                <column name="name" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_keep_index">
+        <table name="t_log" start-index="12" stop-index="16"/>
+        <add-column>
+            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+                <column name="name" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_enable_table_lock">
+        <table name="t_log" start-index="12" stop-index="16"/>
+        <add-column>
+            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+                <column name="name" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_enable_all_triggers">
+        <table name="t_log" start-index="12" stop-index="16"/>
+        <add-column>
+            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+                <column name="name" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_disable_container_map">
+        <table name="t_log" start-index="12" stop-index="16"/>
+        <add-column>
+            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+                <column name="name" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_disable_containers_default">
+        <table name="t_log" start-index="12" stop-index="16"/>
+        <add-column>
+            <column-definition type="VARCHAR" start-index="22" stop-index="37">
+                <column name="name" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
 </sql-parser-test-cases>

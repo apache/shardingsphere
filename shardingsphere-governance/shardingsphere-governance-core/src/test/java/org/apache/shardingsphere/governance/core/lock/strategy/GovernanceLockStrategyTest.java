@@ -47,13 +47,13 @@ public final class GovernanceLockStrategyTest {
     
     @Test
     public void assertTryLock() {
-        lockStrategy.tryLock(50L, TimeUnit.MILLISECONDS);
+        lockStrategy.tryGlobalLock(50L, TimeUnit.MILLISECONDS);
         verify(registryCenter).tryGlobalLock(eq(50L), eq(TimeUnit.MILLISECONDS));
     }
     
     @Test
     public void assertReleaseLock() {
-        lockStrategy.releaseLock();
+        lockStrategy.releaseGlobalLock();
         verify(registryCenter).releaseGlobalLock();
     }
 }

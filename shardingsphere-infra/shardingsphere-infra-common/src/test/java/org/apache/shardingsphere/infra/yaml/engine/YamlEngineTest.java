@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.yaml.engine;
 
+import org.apache.shardingsphere.infra.yaml.swapper.fixture.FixtureYamlPropsRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.fixture.FixtureYamlRuleConfiguration;
 import org.junit.Test;
 import org.yaml.snakeyaml.constructor.ConstructorException;
@@ -103,5 +104,39 @@ public final class YamlEngineTest {
         acceptClasses.add(URL.class);
         Map<String, URLClassLoader> actual = (Map) YamlEngine.unmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", acceptClasses);
         assertThat(actual.get("url").getClass().getName(), is(URLClassLoader.class.getName()));
+    }
+    
+    @Test
+    public void assertUnmarshalWithYamlWithoutFilterPackage() throws IOException {
+        URL url = getClass().getClassLoader().getResource("yaml/fixture-rule-with-props.yaml");
+        assertNotNull(url);
+        StringBuilder yamlContent = new StringBuilder();
+        try (
+                FileReader fileReader = new FileReader(url.getFile());
+                BufferedReader reader = new BufferedReader(fileReader)) {
+            String line;
+            while (null != (line = reader.readLine())) {
+                yamlContent.append(line).append("\n");
+            }
+        }
+        FixtureYamlPropsRuleConfiguration actual = YamlEngine.unmarshal(yamlContent.toString(), FixtureYamlPropsRuleConfiguration.class, false);
+        assertThat(actual.getName(), is("test"));
+    }
+    
+    @Test(expected = ConstructorException.class)
+    public void assertUnmarshalWithYamlWithFilterPackage() throws IOException {
+        URL url = getClass().getClassLoader().getResource("yaml/fixture-rule-with-props.yaml");
+        assertNotNull(url);
+        StringBuilder yamlContent = new StringBuilder();
+        try (
+                FileReader fileReader = new FileReader(url.getFile());
+                BufferedReader reader = new BufferedReader(fileReader)) {
+            String line;
+            while (null != (line = reader.readLine())) {
+                yamlContent.append(line).append("\n");
+            }
+        }
+        FixtureYamlPropsRuleConfiguration actual = YamlEngine.unmarshal(yamlContent.toString(), FixtureYamlPropsRuleConfiguration.class, true);
+        assertThat(actual.getName(), is("test"));
     }
 }

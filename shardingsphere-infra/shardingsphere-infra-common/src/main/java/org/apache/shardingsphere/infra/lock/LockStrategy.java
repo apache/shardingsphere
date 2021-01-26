@@ -33,10 +33,10 @@ public interface LockStrategy extends TypedSPI {
      * @param timeUnit time unit
      * @return true if get the lock, false if not
      */
-    boolean tryLock(long timeout, TimeUnit timeUnit);
+    boolean tryGlobalLock(long timeout, TimeUnit timeUnit);
     
     /**
      * Release lock.
      */
-    void releaseLock();
+    void releaseGlobalLock();
 }

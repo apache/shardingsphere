@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-DELETE FROM t_order_calcite;
-
-INSERT INTO t_order_calcite VALUES(1000, 10, 'init');
-INSERT INTO t_order_calcite VALUES(1001, 10, 'init');
+CREATE TABLE IF NOT EXISTS t_order_item_calcite (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
+CREATE TABLE IF NOT EXISTS t_order_item_calcite_sharding_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));
+CREATE TABLE IF NOT EXISTS t_order_item_calcite_sharding_1 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (item_id));

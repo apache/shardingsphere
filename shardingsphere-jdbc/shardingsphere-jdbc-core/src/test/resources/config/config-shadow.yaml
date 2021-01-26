@@ -16,6 +16,9 @@
 #
 
 rules:
-  - !SHARDING
-    defaultTableStrategy:
-      none:
+- !SHADOW
+  column: shadow
+  sourceDataSourceNames:
+    - shadow_jdbc_0
+  shadowDataSourceNames:
+    - shadow_jdbc_1

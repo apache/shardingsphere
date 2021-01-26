@@ -15,10 +15,6 @@
 # limitations under the License.
 #
 
-rules:
-- !SHADOW
-  column: shadow
-  sourceDataSourceNames:
-    - jdbc_0
-  shadowDataSourceNames:
-    - jdbc_1
+name: test
+props:
+  url: !!java.net.URLClassLoader [[!!java.net.URL ["http://localhost"]]]

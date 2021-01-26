@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.common.base;
+package org.apache.shardingsphere.driver.jdbc.base;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
@@ -32,37 +32,37 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractShardingSphereDataSourceForReplicaQueryTest extends AbstractSQLTest {
+public abstract class AbstractShardingSphereDataSourceForShadowTest extends AbstractSQLTest {
     
     private static ShardingSphereDataSource dataSource;
     
-    private static final String CONFIG = "config-replica-query.yaml";
+    private static final String CONFIG_SHADOW = "config/config-shadow.yaml";
     
-    private static final List<String> DATA_SOURCE_NAMES = Arrays.asList("test_primary_ds", "test_replica_ds");
+    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("shadow_jdbc_0", "shadow_jdbc_1");
     
     @BeforeClass
-    public static void initReplicaQueryDataSources() throws SQLException, IOException {
+    public static void initShadowDataSource() throws SQLException, IOException {
         if (null != dataSource) {
             return;
         }
-        dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG));
+        dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG_SHADOW));
     }
     
     private static Map<String, DataSource> getDataSources() {
-        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), DATA_SOURCE_NAMES::contains);
+        return Maps.filterKeys(getActualDataSources(), ACTUAL_DATA_SOURCE_NAMES::contains);
     }
     
     private static File getFile(final String fileName) {
         return new File(Preconditions.checkNotNull(
-                AbstractShardingSphereDataSourceForReplicaQueryTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
+                AbstractShardingSphereDataSourceForShadowTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
     }
     
-    protected final ShardingSphereDataSource getReplicaQueryDataSource() {
+    protected final ShardingSphereDataSource getShadowDataSource() {
         return dataSource;
     }
     
     @AfterClass
-    public static void clear() throws Exception {
+    public static void close() throws Exception {
         if (null == dataSource) {
             return;
         }

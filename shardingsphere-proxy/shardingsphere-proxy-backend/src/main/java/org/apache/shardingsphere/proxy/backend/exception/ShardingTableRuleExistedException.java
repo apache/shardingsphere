@@ -15,4 +15,21 @@
  * limitations under the License.
  */
 
-CREATE TABLE IF NOT EXISTS t_order_item_calcite (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (item_id));
+package org.apache.shardingsphere.proxy.backend.exception;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
+
+/**
+ * Sharding table rule existed exception.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ShardingTableRuleExistedException extends BackendException {
+    
+    private static final long serialVersionUID = 258686465701003401L;
+    
+    private final Collection<String> tableNames;
+}

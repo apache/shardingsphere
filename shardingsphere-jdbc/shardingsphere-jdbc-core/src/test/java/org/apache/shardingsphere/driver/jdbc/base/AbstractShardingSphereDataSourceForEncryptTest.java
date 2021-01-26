@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.common.base;
+package org.apache.shardingsphere.driver.jdbc.base;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
@@ -48,9 +48,9 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     
     private static ShardingSphereDataSource encryptDataSourceWithProps;
     
-    private static final List<String> ENCRYPT_DB_NAMES = Collections.singletonList("encrypt");
+    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Collections.singletonList("encrypt");
     
-    private static final String ENCRYPT_CONFIG_FILE = "encrypt-config.yaml";
+    private static final String ENCRYPT_CONFIG_FILE = "config/config-encrypt.yaml";
     
     @BeforeClass
     public static void initEncryptDataSource() throws SQLException, IOException {
@@ -69,7 +69,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     }
     
     private static Map<String, DataSource> getDataSources() {
-        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), ENCRYPT_DB_NAMES::contains);
+        return Maps.filterKeys(getActualDataSources(), ACTUAL_DATA_SOURCE_NAMES::contains);
     }
     
     private static DataSource createDataSourceWithEmptyProps(final DataSource dataSource, final File yamlFile) throws IOException, SQLException {
@@ -80,7 +80,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     @Before
     public void initTable() {
         try (ShardingSphereConnection connection = dataSource.getConnection()) {
-            RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("encrypt_data.sql"))));
+            RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/encrypt_data.sql"))));
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }

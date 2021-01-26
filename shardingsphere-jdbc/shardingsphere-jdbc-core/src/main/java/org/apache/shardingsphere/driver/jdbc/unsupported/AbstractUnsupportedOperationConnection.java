@@ -85,24 +85,6 @@ public abstract class AbstractUnsupportedOperationConnection extends WrapperAdap
     }
     
     @Override
-    public final String getCatalog() {
-        return null;
-    }
-    
-    @Override
-    public final void setCatalog(final String catalog) {
-    }
-    
-    @Override
-    public final String getSchema() {
-        return null;
-    }
-    
-    @Override
-    public final void setSchema(final String schema) {
-    }
-    
-    @Override
     public final Map<String, Class<?>> getTypeMap() throws SQLException {
         throw new SQLFeatureNotSupportedException("getTypeMap");
     }

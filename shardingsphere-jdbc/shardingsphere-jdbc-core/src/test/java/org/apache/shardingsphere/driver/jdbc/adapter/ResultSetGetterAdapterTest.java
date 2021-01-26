@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
-import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForShardingTest;
+import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;

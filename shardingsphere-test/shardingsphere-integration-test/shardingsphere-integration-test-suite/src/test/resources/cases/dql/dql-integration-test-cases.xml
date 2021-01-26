@@ -89,12 +89,12 @@
     <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY i.item_id">
         <assertion expected-data-file="select_full_route_with_binding_tables.xml" />
     </test-case>
-<!--    TODO: broadcast table-->
-<!--    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_broadcast_table c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND o.status = ? ORDER BY i.item_id">-->
-<!--        <assertion parameters="10:int, 11:int, 1001:int, 1100:int, init:String" expected-data-file="select_sharding_route_with_broadcast_table.xml" />-->
-<!--        <assertion parameters="10:int, 11:int, 1009:int, 1108:int, none:String" expected-data-file="empty_order_item.xml" />-->
-<!--    </test-case>-->
-<!--    -->
+    
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_broadcast_table c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND o.status = ? ORDER BY i.item_id">
+        <assertion parameters="10:int, 11:int, 1001:int, 1100:int, init:String" expected-data-file="select_sharding_route_with_broadcast_table.xml" />
+        <assertion parameters="10:int, 11:int, 1009:int, 1108:int, none:String" expected-data-file="empty_order_item.xml" />
+    </test-case>
+    
     <test-case sql="SELECT length.item_id password FROM t_order_item length where length.item_id = ? " db-types="MySQL,H2,SQLServer,Oracle">
         <assertion parameters="100001:int" expected-data-file="select_alias_as_keyword.xml" />
     </test-case>
@@ -238,10 +238,10 @@
     <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE (o.order_id = ? OR o.order_id = ?) AND o.user_id = ?">
         <assertion parameters="1000:int, 1100:int, 11:int" expected-data-file="select_or_mix_and_with_binding_tables.xml" />
     </test-case>
-<!--    TODO: broadcast table-->
-<!--    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_broadcast_table c ON o.status = c.status WHERE (o.order_id = ? OR o.order_id = ?) AND o.user_id = ? AND o.status = ?">-->
-<!--        <assertion parameters="1000:int, 1100:int, 11:int, init:String" expected-data-file="select_or_mix_and_with_binding_and_broadcast_tables.xml" />-->
-<!--    </test-case>-->
+    
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_broadcast_table c ON o.status = c.status WHERE (o.order_id = ? OR o.order_id = ?) AND o.user_id = ? AND o.status = ?">
+        <assertion parameters="1000:int, 1100:int, 11:int, init:String" expected-data-file="select_or_mix_and_with_binding_and_broadcast_tables.xml" />
+    </test-case>
     
     <test-case sql="SELECT * FROM t_order o ORDER BY o.order_id, 2 DESC">
         <assertion expected-data-file="select_order_by_asc_and_index_desc.xml" />

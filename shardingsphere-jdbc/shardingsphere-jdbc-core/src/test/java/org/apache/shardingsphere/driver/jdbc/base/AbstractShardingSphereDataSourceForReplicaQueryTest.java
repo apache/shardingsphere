@@ -15,65 +15,49 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.common.base;
+package org.apache.shardingsphere.driver.jdbc.base;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.h2.tools.RunScript;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
-import java.io.InputStreamReader;
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-public abstract class AbstractShardingSphereDataSourceForShardingTest extends AbstractSQLTest {
+public abstract class AbstractShardingSphereDataSourceForReplicaQueryTest extends AbstractSQLTest {
     
     private static ShardingSphereDataSource dataSource;
     
-    private static final List<String> SHARDING_DB_NAMES = Arrays.asList("jdbc_0", "jdbc_1");
+    private static final String CONFIG = "config/config-replica-query.yaml";
     
-    private static final String CONFIG_SHARDING = "config-sharding.yaml";
+    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("test_primary_ds", "test_replica_ds");
     
     @BeforeClass
-    public static void initShardingSphereDataSource() throws SQLException, IOException {
+    public static void initReplicaQueryDataSources() throws SQLException, IOException {
         if (null != dataSource) {
             return;
         }
-        dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile(CONFIG_SHARDING));
+        dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSources(), getFile(CONFIG));
     }
     
-    private static Map<String, DataSource> getDataSourceMap() {
-        return Maps.filterKeys(getDatabaseTypeMap().values().iterator().next(), SHARDING_DB_NAMES::contains);
+    private static Map<String, DataSource> getDataSources() {
+        return Maps.filterKeys(getActualDataSources(), ACTUAL_DATA_SOURCE_NAMES::contains);
     }
     
     private static File getFile(final String fileName) {
         return new File(Preconditions.checkNotNull(
-                AbstractShardingSphereDataSourceForShardingTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
+                AbstractShardingSphereDataSourceForReplicaQueryTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
     }
     
-    @Before
-    public void initTable() {
-        try {
-            ShardingSphereConnection conn = dataSource.getConnection();
-            RunScript.execute(conn, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("jdbc_data.sql"))));
-            conn.close();
-        } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-    
-    protected final ShardingSphereDataSource getShardingSphereDataSource() {
+    protected final ShardingSphereDataSource getReplicaQueryDataSource() {
         return dataSource;
     }
     
