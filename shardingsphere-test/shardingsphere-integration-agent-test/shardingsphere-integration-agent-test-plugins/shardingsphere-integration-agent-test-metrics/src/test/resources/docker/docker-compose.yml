@@ -28,7 +28,7 @@ services:
       - "43060:3306"
     environment:
       - LANG=C.UTF-8
-      -
+
   prometheus:
     image: prom/prometheus:latest
     container_name: agent-prometheus
