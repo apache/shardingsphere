@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.distsql.parser.core;
 
+import com.google.common.base.Joiner;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AddResourceContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlgorithmPropertiesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlgorithmPropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterReplicaQueryRuleDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterShardingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterShardingTableRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
@@ -31,6 +33,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.D
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropShardingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.FunctionDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ReplicaQueryRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingTableRuleDefinitionContext;
@@ -38,11 +41,14 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.S
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.TableNameContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.TableNamesContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ReplicaQueryRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterReplicaQueryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AlterReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
@@ -54,11 +60,11 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.common.value.props.PropertiesValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Dist SQL visitor.
@@ -103,13 +109,60 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitCreateShardingRule(final CreateShardingRuleContext ctx) {
-        Collection<TableRuleSegment> tables = new LinkedList<>();
-        for (ShardingTableRuleDefinitionContext each : ctx.shardingTableRuleDefinition()) {
-            tables.add((TableRuleSegment) visit(each));
+        CreateShardingRuleStatement result;
+        if (null != ctx.defaultTableStrategy()) {
+            String defaultTableStrategyColumn = null != ctx.defaultTableStrategy().columnName() ? ctx.defaultTableStrategy().columnName().getText() : null;
+            result = new CreateShardingRuleStatement(defaultTableStrategyColumn, (FunctionSegment) visit(ctx.defaultTableStrategy()));
+        } else {
+            result = new CreateShardingRuleStatement(null, null);
         }
-        return new CreateShardingRuleStatement(tables);
+        for (ShardingTableRuleDefinitionContext each : ctx.shardingTableRuleDefinition()) {
+            result.getTables().add((TableRuleSegment) visit(each));
+        }
+        if (null != ctx.bindingTables()) {
+            for (TableNamesContext each : ctx.bindingTables().tableNames()) {
+                Collection<String> tables = each.IDENTIFIER().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList());
+                result.getBindingTables().add(Joiner.on(",").join(tables));
+            }
+        }
+        if (null != ctx.broadcastTables()) {
+            for (TerminalNode each : ctx.broadcastTables().IDENTIFIER()) {
+                result.getBroadcastTables().add(new IdentifierValue(each.getText()).getValue());
+            }
+        }
+        return result;
     }
-
+    
+    @Override
+    public ASTNode visitAlterShardingRule(final AlterShardingRuleContext ctx) {
+        AlterShardingRuleStatement result;
+        if (null != ctx.defaultTableStrategy()) {
+            String defaultTableStrategyColumn = null != ctx.defaultTableStrategy().columnName() ? ctx.defaultTableStrategy().columnName().getText() : null;
+            result = new AlterShardingRuleStatement(defaultTableStrategyColumn, (FunctionSegment) visit(ctx.defaultTableStrategy()));
+        } else {
+            result = new AlterShardingRuleStatement(null, null);
+        }
+        for (AlterShardingTableRuleDefinitionContext each : ctx.alterShardingTableRuleDefinition()) {
+            if (null != each.ADD()) {
+                result.getAddShardingRules().add((TableRuleSegment) visit(each.shardingTableRuleDefinition()));
+            } else if (null != each.MODIFY()) {
+                result.getModifyShardingRules().add((TableRuleSegment) visit(each.shardingTableRuleDefinition()));
+            }
+        }
+        if (null != ctx.bindingTables()) {
+            for (TableNamesContext each : ctx.bindingTables().tableNames()) {
+                Collection<String> tables = each.IDENTIFIER().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList());
+                result.getBindingTables().add(Joiner.on(",").join(tables));
+            }
+        }
+        if (null != ctx.broadcastTables()) {
+            for (TerminalNode each : ctx.broadcastTables().IDENTIFIER()) {
+                result.getBroadcastTables().add(new IdentifierValue(each.getText()).getValue());
+            }
+        }
+        return result;
+    }
+    
     @Override
     public ASTNode visitCreateReplicaQueryRule(final CreateReplicaQueryRuleContext ctx) {
         Collection<ReplicaQueryRuleSegment> replicaQueryRules = new LinkedList<>();
@@ -127,13 +180,13 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
             replicaDatasources.add(each.getText());
         }
         Properties props = new Properties();
-        for (AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
+        for (AlgorithmPropertyContext each : ctx.functionDefinition().algorithmProperties().algorithmProperty()) {
             props.setProperty(each.key.getText(), each.value.getText());
         }
         result.setName(ctx.ruleName.getText());
         result.setPrimaryDataSource(ctx.primary.getText());
         result.setReplicaDataSources(replicaDatasources);
-        result.setLoadBalancer(ctx.loadBalancer.getText());
+        result.setLoadBalancer(ctx.functionDefinition().functionName.getText());
         result.setProps(props);
         return result;
     }
@@ -171,12 +224,12 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         result.setName(ctx.ruleName.getText());
         result.setPrimaryDataSource(ctx.primary.getText());
         result.setReplicaDataSources(replicaDatasources);
-        if (null != ctx.loadBalancer) {
+        if (null != ctx.functionDefinition()) {
             Properties props = new Properties();
-            for (AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
+            for (AlgorithmPropertyContext each : ctx.functionDefinition().algorithmProperties().algorithmProperty()) {
                 props.setProperty(each.key.getText(), each.value.getText());
             }
-            result.setLoadBalancer(ctx.loadBalancer.getText());
+            result.setLoadBalancer(ctx.functionDefinition().functionName.getText());
             result.setProps(props);
         }
         return result;
@@ -186,21 +239,33 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     public ASTNode visitShardingTableRuleDefinition(final ShardingTableRuleDefinitionContext ctx) {
         TableRuleSegment result = new TableRuleSegment();
         result.setLogicTable(ctx.tableName().getText());
-        result.setShardingColumn(ctx.columnName().getText());
-        result.setAlgorithmType(ctx.shardingAlgorithmType.getText());
-        // TODO Future feature.
-        result.setDataSources(new LinkedList<>());
-        PropertiesValue propertiesValue = (PropertiesValue) visit(ctx.algorithmProperties());
-        result.setAlgorithmProps(propertiesValue.getValue());
+        Collection<String> dataSources = new LinkedList<>();
+        if (null != ctx.resources()) {
+            for (TerminalNode each : ctx.resources().IDENTIFIER()) {
+                dataSources.add(new IdentifierValue(each.getText()).getValue());
+            }
+        }
+        result.setDataSources(dataSources);
+        if (null != ctx.functionDefinition()) {
+            result.setTableStrategy((FunctionSegment) visit(ctx.functionDefinition()));
+            result.setTableStrategyColumn(ctx.columnName().getText());
+        }
+        if (null != ctx.keyGenerateStrategy()) {
+            result.setKeyGenerateStrategy((FunctionSegment) visit(ctx.keyGenerateStrategy().functionDefinition()));
+            result.setKeyGenerateStrategyColumn(ctx.keyGenerateStrategy().columnName().getText());
+        }
         return result;
     }
     
     @Override
-    public ASTNode visitAlgorithmProperties(final AlgorithmPropertiesContext ctx) {
-        PropertiesValue result = new PropertiesValue();
-        for (AlgorithmPropertyContext each : ctx.algorithmProperty()) {
-            result.getValue().setProperty(each.key.getText(), each.value.getText());
+    public ASTNode visitFunctionDefinition(final FunctionDefinitionContext ctx) {
+        FunctionSegment result = new FunctionSegment();
+        result.setAlgorithmName(ctx.functionName.getText());
+        Properties algorithmProps = new Properties();
+        for (AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
+            algorithmProps.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
         }
+        result.setAlgorithmProps(algorithmProps);
         return result;
     }
     

@@ -96,10 +96,10 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
     public MySQLFormatSQLVisitor(final Properties props) {
         if (null != props) {
             if (props.containsKey("upperCase")) {
-                setUpperCase(Boolean.valueOf(props.getProperty("upperCase")));
+                setUpperCase(Boolean.parseBoolean(props.getProperty("upperCase")));
             }
             if (props.containsKey("parameterized")) {
-                setParameterized(Boolean.valueOf(props.getProperty("parameterized")));
+                setParameterized(Boolean.parseBoolean(props.getProperty("parameterized")));
             }
             if (props.containsKey("projectionsCountOfLine")) {
                 setProjectionsCountOfLine(Integer.valueOf(props.getProperty("projectionsCountOfLine")));
@@ -469,7 +469,6 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
             if (i != 0) {
                 if (child instanceof TerminalNode) {
                     formatPrintln(",");
-                    continue;
                 } else {
                     child.accept(this);
                 }

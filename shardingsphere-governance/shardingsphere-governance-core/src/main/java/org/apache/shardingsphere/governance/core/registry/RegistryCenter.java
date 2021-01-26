@@ -52,7 +52,6 @@ public final class RegistryCenter {
         repository = registryRepository;
         instance = GovernanceInstance.getInstance();
         lockNode = new LockNode();
-        registryRepository.initLock(lockNode.getGlobalLockNodePath());
         ShardingSphereEventBus.getInstance().register(this);
     }
     
@@ -162,19 +161,19 @@ public final class RegistryCenter {
      * @return true if get the lock, false if not
      */
     public boolean tryGlobalLock(final long timeout, final TimeUnit timeUnit) {
-        return repository.tryLock(timeout, timeUnit) && checkLock();
+        return repository.tryLock(lockNode.getGlobalLockNodePath(), timeout, timeUnit) && checkLock();
     }
     
     /**
      * Release global lock.
      */
     public void releaseGlobalLock() {
-        repository.releaseLock();
+        repository.releaseLock(lockNode.getGlobalLockNodePath());
         repository.delete(lockNode.getGlobalLockNodePath());
     }
     
     private boolean checkLock() {
-        return checkOrRetry(this.loadAllInstances());
+        return checkOrRetry(loadAllInstances());
     }
     
     private boolean checkOrRetry(final Collection<String> instanceIds) {
@@ -194,7 +193,7 @@ public final class RegistryCenter {
     
     private boolean check(final Collection<String> instanceIds) {
         for (String each : instanceIds) {
-            if (!RegistryCenterNodeStatus.LOCKED.toString().equalsIgnoreCase(this.loadInstanceData(each))) {
+            if (!RegistryCenterNodeStatus.LOCKED.toString().equalsIgnoreCase(loadInstanceData(each))) {
                 return false;
             }
         }

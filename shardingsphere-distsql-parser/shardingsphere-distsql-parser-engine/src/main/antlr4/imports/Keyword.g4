@@ -86,3 +86,19 @@ PRIMARY
 REPLICA
     : R E P L I C A
     ;
+
+BINDING_TABLES
+    : B I N D I N G UL_ T A B L E S
+    ;
+
+BROADCAST_TABLES
+    : B R O A D C A S T UL_ T A B L E S
+    ;
+
+GENERATED_KEY
+    : G E N E R A T E D UL_ K E Y
+    ;
+
+DEFAULT_TABLE_STRATEGY
+    : D E F A U L T UL_ T A B L E UL_ S T R A T E G Y
+    ;

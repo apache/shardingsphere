@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.logging.base.definition;
 
-import java.util.Collection;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
 
 /**
@@ -34,12 +32,11 @@ public final class BaseLoggingPluginDefinitionService extends AbstractPluginDefi
     private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.logging.base.advice.SchemaMetaDataLoaderAdvice";
     
     @Override
-    public Collection<PluginInterceptorPoint> define() {
-        intercept(SCHEMA_METADATA_LOADER_CLASS)
+    public void defineInterceptors() {
+        defineInterceptor(SCHEMA_METADATA_LOADER_CLASS)
                 .aroundClassStaticMethod(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME))
                 .implement(SCHEMA_METADATA_LOADER_ADVICE_CLASS)
                 .build();
-        return install();
     }
     
     @Override

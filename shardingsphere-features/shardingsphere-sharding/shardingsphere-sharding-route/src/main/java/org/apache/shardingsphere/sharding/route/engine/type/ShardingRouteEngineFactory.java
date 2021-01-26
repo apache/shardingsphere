@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingIn
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingTableBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.complex.ShardingComplexRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ignore.ShardingIgnoreRoutingEngine;
+import org.apache.shardingsphere.sharding.route.engine.type.single.ShardingSingleRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.single.SingleTableRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.unicast.ShardingUnicastRoutingEngine;
@@ -86,16 +87,7 @@ public final class ShardingRouteEngineFactory {
         if (sqlStatement instanceof DCLStatement) {
             return getDCLRoutingEngine(shardingRule, metaData, sqlStatementContext);
         }
-        if (shardingRule.isAllBroadcastTables(tableNames)) {
-            return sqlStatement instanceof SelectStatement ? new ShardingUnicastRoutingEngine(tableNames) : new ShardingDatabaseBroadcastRoutingEngine();
-        }
-        if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
-            return new ShardingUnicastRoutingEngine(tableNames);
-        }
-        if (!shardingRule.tableRuleExists(tableNames)) {
-            return new SingleTableRoutingEngine(tableNames, sqlStatement);
-        }
-        return getShardingRoutingEngine(shardingRule, shardingConditions, tableNames, props);
+        return getDQLRoutingEngine(shardingRule, sqlStatementContext, shardingConditions, props, sqlStatement, tableNames);
     }
     
     private static ShardingRouteEngine getDDLRoutingEngine(final ShardingRule shardingRule, final ShardingSphereMetaData metaData, final SQLStatementContext<?> sqlStatementContext) {
@@ -146,6 +138,24 @@ public final class ShardingRouteEngineFactory {
             return 1 == tableSegmentsAvailable.getAllTables().size() && !"*".equals(tableSegmentsAvailable.getAllTables().iterator().next().getTableName().getIdentifier().getValue());
         }
         return false;
+    }
+    
+    private static ShardingRouteEngine getDQLRoutingEngine(final ShardingRule shardingRule, final SQLStatementContext<?> sqlStatementContext,
+                                                           final ShardingConditions shardingConditions, final ConfigurationProperties props,
+                                                           final SQLStatement sqlStatement, final Collection<String> tableNames) {
+        if (shardingRule.isAllBroadcastTables(tableNames)) {
+            return sqlStatement instanceof SelectStatement ? new ShardingUnicastRoutingEngine(tableNames) : new ShardingDatabaseBroadcastRoutingEngine();
+        }
+        if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
+            return new ShardingUnicastRoutingEngine(tableNames);
+        }
+        if (!shardingRule.tableRuleExists(tableNames)) {
+            return new SingleTableRoutingEngine(tableNames, sqlStatement);
+        }
+        if (shardingRule.tableRuleExists(tableNames) && shardingRule.singleTableRuleExists(tableNames)) {
+            return new ShardingSingleRoutingEngine(tableNames);
+        }
+        return getShardingRoutingEngine(shardingRule, shardingConditions, tableNames, props);
     }
     
     private static ShardingRouteEngine getShardingRoutingEngine(final ShardingRule shardingRule, final ShardingConditions shardingConditions, 

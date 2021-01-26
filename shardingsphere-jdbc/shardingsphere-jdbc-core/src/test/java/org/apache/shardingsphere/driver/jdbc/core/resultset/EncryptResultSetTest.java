@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
-import org.apache.shardingsphere.driver.common.base.AbstractShardingSphereDataSourceForEncryptTest;
+import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForEncryptTest;
 import org.junit.Ignore;
 import org.junit.Test;
 

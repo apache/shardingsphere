@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.constructor.ClassFilterConstructor;
+import org.apache.shardingsphere.infra.yaml.engine.constructor.PackageFilterConstructor;
 import org.apache.shardingsphere.infra.yaml.engine.constructor.ShardingSphereYamlConstructor;
 import org.apache.shardingsphere.infra.yaml.engine.representer.ShardingSphereYamlRepresenter;
 import org.yaml.snakeyaml.Yaml;
@@ -97,6 +98,20 @@ public final class YamlEngine {
      */
     public static Map<?, ?> unmarshal(final String yamlContent, final Collection<Class<?>> acceptClasses) {
         return Strings.isNullOrEmpty(yamlContent) ? new LinkedHashMap<>() : (Map) new Yaml(new ClassFilterConstructor(acceptClasses)).load(yamlContent);
+    }
+    
+    /**
+     * Unmarshal YAML.
+     *
+     * @param yamlContent YAML content
+     * @param classType class type
+     * @param <T> type of class
+     * @param filterPackage Filter non ShardingSphere packages or not
+     * @return object from YAML
+     */
+    public static <T> T unmarshal(final String yamlContent, final Class<T> classType, final boolean filterPackage) {
+        return new Yaml(filterPackage ? new PackageFilterConstructor(classType)
+                : new ShardingSphereYamlConstructor(classType)).loadAs(yamlContent, classType);
     }
     
     /**

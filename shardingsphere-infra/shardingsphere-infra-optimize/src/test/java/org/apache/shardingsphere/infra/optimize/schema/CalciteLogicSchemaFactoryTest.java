@@ -40,7 +40,7 @@ public final class CalciteLogicSchemaFactoryTest {
         CalciteLogicSchemaFactory calciteLogicSchemaFactory = new CalciteLogicSchemaFactory(metaDataMap);
         JDBCExecutor jdbcExecutor = mock(JDBCExecutor.class);
         ExecutionContext executionContext = mock(ExecutionContext.class);
-        CalciteRowExecutor calciteRowExecutor = new CalciteRowExecutor(Collections.EMPTY_LIST, 0, null, jdbcExecutor, executionContext, null);
+        CalciteRowExecutor calciteRowExecutor = new CalciteRowExecutor(Collections.emptyList(), 0, null, jdbcExecutor, executionContext, null);
         CalciteLogicSchema logicDbExist = calciteLogicSchemaFactory.create("logic_db", calciteRowExecutor);
         assertNotNull(logicDbExist);
     }

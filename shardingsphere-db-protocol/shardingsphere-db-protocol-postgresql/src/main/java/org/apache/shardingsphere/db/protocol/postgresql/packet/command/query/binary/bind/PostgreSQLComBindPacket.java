@@ -66,7 +66,7 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         }
     }
     
-    private List<Object> getParameters(final PostgreSQLPacketPayload payload, final List<PostgreSQLBinaryStatementParameterType> parameterTypes) throws SQLException {
+    private List<Object> getParameters(final PostgreSQLPacketPayload payload, final List<PostgreSQLBinaryStatementParameterType> parameterTypes) {
         int parameterCount = payload.readInt2();
         List<Object> result = new ArrayList<>(parameterCount);
         for (int parameterIndex = 0; parameterIndex < parameterCount; parameterIndex++) {
