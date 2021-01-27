@@ -81,7 +81,7 @@ public final class MetricsPluginIT {
                 JdbcUtils.deleteOrderByOrderId(each, dataSource);
             }
             try {
-                Thread.sleep(120000);
+                Thread.sleep(6000);
             } catch (final InterruptedException ignore) {
             }
             try {
