@@ -105,6 +105,9 @@ public final class OrderByContextEngine {
         int index = 0;
         List<OrderByItem> orderByItems = new LinkedList<>();
         TableMetaData tableMetaData = schema.get(((SimpleTableSegment) selectStatement.getFrom()).getTableName().getIdentifier().getValue());
+        if (null == tableMetaData) {
+            return Optional.empty();
+        }
         for (String each : tableMetaData.getPrimaryKeyColumns()) {
             ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each));
             OrderByItem item = new OrderByItem(new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC));
