@@ -22,7 +22,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.constructor.ClassFilterConstructor;
-import org.apache.shardingsphere.infra.yaml.engine.constructor.PackageFilterConstructor;
 import org.apache.shardingsphere.infra.yaml.engine.constructor.ShardingSphereYamlConstructor;
 import org.apache.shardingsphere.infra.yaml.engine.representer.ShardingSphereYamlRepresenter;
 import org.yaml.snakeyaml.Yaml;
@@ -36,7 +35,6 @@ import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * YAML engine.
@@ -93,36 +91,24 @@ public final class YamlEngine {
      * Unmarshal YAML.
      *
      * @param yamlContent YAML content
+     * @param classType class type
      * @param acceptClasses accept classes
-     * @return map from YAML
+     * @param <T> type of class
+     * @return object from YAML
      */
-    public static Map<?, ?> unmarshal(final String yamlContent, final Collection<Class<?>> acceptClasses) {
-        return Strings.isNullOrEmpty(yamlContent) ? new LinkedHashMap<>() : (Map) new Yaml(new ClassFilterConstructor(acceptClasses)).load(yamlContent);
+    public static <T> T unmarshal(final String yamlContent, final Class<T> classType, final Collection<Class<?>> acceptClasses) {
+        return new Yaml(new ClassFilterConstructor(classType, acceptClasses)).loadAs(yamlContent, classType);
     }
     
     /**
      * Unmarshal YAML.
      *
      * @param yamlContent YAML content
-     * @param classType class type
-     * @param <T> type of class
-     * @param filterPackage Filter non ShardingSphere packages or not
-     * @return object from YAML
-     */
-    public static <T> T unmarshal(final String yamlContent, final Class<T> classType, final boolean filterPackage) {
-        return new Yaml(filterPackage ? new PackageFilterConstructor(classType)
-                : new ShardingSphereYamlConstructor(classType)).loadAs(yamlContent, classType);
-    }
-    
-    /**
-     * Unmarshal properties YAML.
-     *
-     * @param yamlContent YAML content
      * @param acceptClasses accept classes
-     * @return properties from YAML
+     * @return map from YAML
      */
-    public static Properties unmarshalProperties(final String yamlContent, final Collection<Class<?>> acceptClasses) {
-        return Strings.isNullOrEmpty(yamlContent) ? new Properties() : new Yaml(new ClassFilterConstructor(acceptClasses)).loadAs(yamlContent, Properties.class);
+    public static Map<?, ?> unmarshal(final String yamlContent, final Collection<Class<?>> acceptClasses) {
+        return Strings.isNullOrEmpty(yamlContent) ? new LinkedHashMap<>() : (Map) new Yaml(new ClassFilterConstructor(acceptClasses)).load(yamlContent);
     }
     
     /**

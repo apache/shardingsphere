@@ -17,18 +17,24 @@
 
 package org.apache.shardingsphere.infra.yaml.engine.constructor;
 
-import lombok.RequiredArgsConstructor;
-import org.yaml.snakeyaml.constructor.Constructor;
-
 import java.util.Collection;
 
 /**
  * Class filter constructor for YAML load as map.
  */
-@RequiredArgsConstructor
-public final class ClassFilterConstructor extends Constructor {
+public final class ClassFilterConstructor extends ShardingSphereYamlConstructor {
     
     private final Collection<Class<?>> acceptClasses;
+    
+    public ClassFilterConstructor(final Class<?> rootClass, final Collection<Class<?>> acceptClasses) {
+        super(rootClass);
+        this.acceptClasses = acceptClasses;
+    }
+    
+    public ClassFilterConstructor(final Collection<Class<?>> acceptClasses) {
+        super(Object.class);
+        this.acceptClasses = acceptClasses;
+    }
     
     @Override
     protected Class<?> getClassForName(final String name) throws ClassNotFoundException {
