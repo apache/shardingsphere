@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine.constructor;
+package org.apache.shardingsphere.governance.core.yaml.config;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Package filter constructor for YAML.
+ * Rule configuration warp for YAML.
  */
-public final class PackageFilterConstructor extends ShardingSphereYamlConstructor {
+@Getter
+@Setter
+public final class YamlRuleConfigurationWrap implements YamlConfiguration {
     
-    public PackageFilterConstructor(final Class<?> rootClass) {
-        super(rootClass);
-    }
-    
-    @Override
-    protected Class<?> getClassForName(final String name) throws ClassNotFoundException {
-        if (name != null && name.startsWith("org.apache.shardingsphere.")) {
-            return super.getClassForName(name);
-        }
-        throw new IllegalArgumentException(String.format("Class is not accepted: %s", name));
-    }
+    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
 }
