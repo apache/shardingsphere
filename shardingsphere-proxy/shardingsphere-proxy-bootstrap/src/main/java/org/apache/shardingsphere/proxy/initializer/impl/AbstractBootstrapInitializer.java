@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.factory.JDBCRawBackendDataSourceFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -42,7 +41,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -102,30 +100,19 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private void setDatabaseServerInfo() {
-        Optional<DataSource> dataSourceSample = getBackendMySQLDatasource();
-        if (dataSourceSample.isPresent()) {
-            DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSample.get());
+        Optional<DataSource> dataSourceSampleForMySQL = findBackendMySQLDataSource();
+        if (dataSourceSampleForMySQL.isPresent()) {
+            DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSampleForMySQL.get());
             log.info(databaseServerInfo.toString());
             MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
         }
     }
-
-    /**
-     * Get backend MySQL datasource.
-     *
-     * @return datasource
-     */
-    private Optional<DataSource> getBackendMySQLDatasource() {
-        List<String> schemaNames = ProxyContext.getInstance().getAllSchemaNames();
-        if (schemaNames.isEmpty()) {
-            return Optional.empty();
-        }
-        for (String schemaName : schemaNames) {
-            ShardingSphereResource shardingSphereResource =
-                    ProxyContext.getInstance().getMetaData(schemaName).getResource();
-            DatabaseType databaseType = shardingSphereResource.getDatabaseType();
-            if ("MySQL".equals(databaseType.getName())) {
-                return shardingSphereResource.getDataSources().values().stream().findFirst();
+    
+    private Optional<DataSource> findBackendMySQLDataSource() {
+        for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
+            ShardingSphereResource resource = ProxyContext.getInstance().getMetaData(each).getResource();
+            if ("MySQL".equals(resource.getDatabaseType().getName())) {
+                return resource.getDataSources().values().stream().findFirst();
             }
         }
         return Optional.empty();
