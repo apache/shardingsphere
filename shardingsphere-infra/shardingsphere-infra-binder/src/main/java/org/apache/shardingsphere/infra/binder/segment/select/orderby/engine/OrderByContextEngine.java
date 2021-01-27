@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.binder.segment.select.orderby.engine;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
@@ -57,8 +58,8 @@ public final class OrderByContextEngine {
                 OrderByContext result = createOrderByContextForDistinctRowWithoutGroupBy(selectStatement, groupByContext);
                 return null != result ? result : getDefaultOrderByContextWithoutOrderBy(groupByContext);
             } else if (selectStatement instanceof MySQLSelectStatement) {
-                OrderByContext result = createOrderByContextForMySQLSelectWithoutOrderBy(schema, selectStatement, groupByContext);
-                return null != result ? result : getDefaultOrderByContextWithoutOrderBy(groupByContext);
+                Optional<OrderByContext> result = createOrderByContextForMySQLSelectWithoutOrderBy(schema, selectStatement, groupByContext);
+                return result.orElse(getDefaultOrderByContextWithoutOrderBy(groupByContext));
             }
             return getDefaultOrderByContextWithoutOrderBy(groupByContext);
         }
@@ -97,41 +98,41 @@ public final class OrderByContextEngine {
         return null;
     }
     
-    private OrderByContext createOrderByContextForMySQLSelectWithoutOrderBy(final ShardingSphereSchema schema, final SelectStatement selectStatement, final GroupByContext groupByContext) {
-        if (groupByContext.getItems().size() > 0) {
-            return null;
+    private Optional<OrderByContext> createOrderByContextForMySQLSelectWithoutOrderBy(final ShardingSphereSchema schema, final SelectStatement selectStatement, final GroupByContext groupByContext) {
+        if (!isNeedProcessMySQLSelectWithoutOrderBy(selectStatement, groupByContext)) {
+            return Optional.empty();
         }
-        
-        TableSegment tableSegment = selectStatement.getFrom();
-        if (null == tableSegment) {
-            return null;
-        }
-        if (!(tableSegment instanceof SimpleTableSegment)) {
-            return null;
-        }
-        String tableName = ((SimpleTableSegment) tableSegment).getTableName().getIdentifier().getValue();
-        TableMetaData tableMetaData = schema.get(tableName);
-        if (null == tableMetaData) {
-            return null;
-        }
-        
-        for (ProjectionSegment projectionSegment : selectStatement.getProjections().getProjections()) {
-            if (projectionSegment instanceof AggregationProjectionSegment) {
-                return null;
-            }
-        }
-        
         int index = 0;
         List<OrderByItem> orderByItems = new LinkedList<>();
-        for (String primaryKeyColumn : tableMetaData.getPrimaryKeyColumns()) {
-            ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(primaryKeyColumn));
+        TableMetaData tableMetaData = schema.get(((SimpleTableSegment) selectStatement.getFrom()).getTableName().getIdentifier().getValue());
+        for (String each : tableMetaData.getPrimaryKeyColumns()) {
+            ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue(each));
             OrderByItem item = new OrderByItem(new ColumnOrderByItemSegment(columnSegment, OrderDirection.ASC));
             item.setIndex(index++);
             orderByItems.add(item);
         }
         if (!orderByItems.isEmpty()) {
-            return new OrderByContext(orderByItems, true);
+            return Optional.of(new OrderByContext(orderByItems, true));
         }
-        return null;
+        return Optional.empty();
+    }
+    
+    private boolean isNeedProcessMySQLSelectWithoutOrderBy(final SelectStatement selectStatement, final GroupByContext groupByContext) {
+        if (!groupByContext.getItems().isEmpty()) {
+            return false;
+        }
+        TableSegment tableSegment = selectStatement.getFrom();
+        if (null == tableSegment) {
+            return false;
+        }
+        if (!(tableSegment instanceof SimpleTableSegment)) {
+            return false;
+        }
+        for (ProjectionSegment projectionSegment : selectStatement.getProjections().getProjections()) {
+            if (projectionSegment instanceof AggregationProjectionSegment) {
+                return false;
+            }
+        }
+        return true;
     }
 }

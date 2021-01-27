@@ -186,7 +186,64 @@ public final class OrderByContextEngineTest {
     }
     
     @Test
-    public void assertCreateOrderByContextForMySQLSelectWithoutOrderBy() {
+    public void assertCreateOrderByContextForMySQLSelectWithoutOrderByOnPlainQuery() {
+        SelectStatement selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
+        when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(0, 1, new IdentifierValue("t_order")));
+        GroupByContext groupByContext = new GroupByContext(Collections.emptyList(), 0);
+        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(getShardingSphereSchemaForMySQLSelectWithoutOrderBy(), selectStatement, groupByContext);
+        assertTrue(actualOrderByContext.isGenerated());
+        assertThat(actualOrderByContext.getItems().size(), is(1));
+        ColumnOrderByItemSegment actualItemSegment = (ColumnOrderByItemSegment) actualOrderByContext.getItems().iterator().next().getSegment();
+        assertThat(actualItemSegment.getColumn().getIdentifier().getValue(), is("order_id"));
+    }
+    
+    @Test
+    public void assertCreateOrderByContextForMySQLSelectWithoutOrderByOnOrderByQuery() {
+        SelectStatement selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
+        when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(0, 1, new IdentifierValue("t_order")));
+        when(selectStatement.getOrderBy()).thenReturn(Optional.of(new OrderBySegment(0, 1, Collections.singleton(new ColumnOrderByItemSegment(
+            new ColumnSegment(0, 1, new IdentifierValue("order_id")), OrderDirection.ASC)))));
+        GroupByContext groupByContext = new GroupByContext(Collections.emptyList(), 0);
+        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(getShardingSphereSchemaForMySQLSelectWithoutOrderBy(), selectStatement, groupByContext);
+        assertFalse(actualOrderByContext.isGenerated());
+        assertThat(actualOrderByContext.getItems().size(), is(1));
+        ColumnOrderByItemSegment actualItemSegment = (ColumnOrderByItemSegment) actualOrderByContext.getItems().iterator().next().getSegment();
+        assertThat(actualItemSegment.getColumn().getIdentifier().getValue(), is("order_id"));
+    }
+    
+    @Test
+    public void assertCreateOrderByContextForMySQLSelectWithoutOrderByOnCountQuery() {
+        SelectStatement selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
+        when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(0, 1, new IdentifierValue("t_order")));
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 1);
+        projectionsSegment.setDistinctRow(false);
+        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 1, AggregationType.COUNT, "COUNT(1)"));
+        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
+        assertCreateOrderByContextForMySQLSelectWithoutOrderByOnUnsupportedQuery(selectStatement);
+    }
+    
+    @Test
+    public void assertCreateOrderByContextForMySQLSelectWithoutOrderByOnSubQuery() {
+        SelectStatement selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
+        when(selectStatement.getFrom()).thenReturn(mock(SubqueryTableSegment.class));
+        assertCreateOrderByContextForMySQLSelectWithoutOrderByOnUnsupportedQuery(selectStatement);
+    }
+    
+    @Test
+    public void assertCreateOrderByContextForMySQLSelectWithoutOrderByOnJoinQuery() {
+        SelectStatement selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
+        when(selectStatement.getFrom()).thenReturn(mock(JoinTableSegment.class));
+        assertCreateOrderByContextForMySQLSelectWithoutOrderByOnUnsupportedQuery(selectStatement);
+    }
+    
+    private void assertCreateOrderByContextForMySQLSelectWithoutOrderByOnUnsupportedQuery(final SelectStatement selectStatement) {
+        GroupByContext groupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
+        OrderByContext actualOrderByContext = new OrderByContextEngine().createOrderBy(getShardingSphereSchemaForMySQLSelectWithoutOrderBy(), selectStatement, groupByContext);
+        assertFalse(actualOrderByContext.isGenerated());
+        assertThat(actualOrderByContext.getItems().size(), is(0));
+    }
+    
+    private ShardingSphereSchema getShardingSphereSchemaForMySQLSelectWithoutOrderBy() {
         Map<String, TableMetaData> tables = new HashMap<>();
         TableMetaData orderTable = new TableMetaData(Arrays.asList(
             new ColumnMetaData("order_id", Types.INTEGER, "INT", true, true, false),
@@ -194,57 +251,6 @@ public final class OrderByContextEngineTest {
             new ColumnMetaData("status", Types.VARCHAR, "VARCHAR", false, false, false)
         ), Collections.emptyList());
         tables.put("t_order", orderTable);
-        ShardingSphereSchema schema = new ShardingSphereSchema(tables);
-        OrderByContextEngine orderByContextEngine = new OrderByContextEngine();
-        
-        // "SELECT * FROM t_order WHERE order_id>=1 AND order_id<=10", `ORDER BY` will be added
-        SelectStatement selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
-        when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(0, 1, new IdentifierValue("t_order")));
-        GroupByContext groupByContext = new GroupByContext(Collections.emptyList(), 0);
-        OrderByContext actualOrderByContext = orderByContextEngine.createOrderBy(schema, selectStatement, groupByContext);
-        assertTrue(actualOrderByContext.isGenerated());
-        assertThat(actualOrderByContext.getItems().size(), is(1));
-        ColumnOrderByItemSegment actualItemSegment = (ColumnOrderByItemSegment) actualOrderByContext.getItems().iterator().next().getSegment();
-        assertThat(actualItemSegment.getColumn().getIdentifier().getValue(), is("order_id"));
-        
-        // "SELECT * FROM t_order WHERE order_id>=1 AND order_id<=10 ORDER BY order_id", `ORDER BY` will be kept
-        selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
-        when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(0, 1, new IdentifierValue("t_order")));
-        when(selectStatement.getOrderBy()).thenReturn(Optional.of(new OrderBySegment(0, 1, Collections.singleton(new ColumnOrderByItemSegment(
-            new ColumnSegment(0, 1, new IdentifierValue("order_id")), OrderDirection.ASC)))));
-        groupByContext = new GroupByContext(Collections.emptyList(), 0);
-        actualOrderByContext = orderByContextEngine.createOrderBy(schema, selectStatement, groupByContext);
-        assertFalse(actualOrderByContext.isGenerated());
-        assertThat(actualOrderByContext.getItems().size(), is(1));
-        actualItemSegment = (ColumnOrderByItemSegment) actualOrderByContext.getItems().iterator().next().getSegment();
-        assertThat(actualItemSegment.getColumn().getIdentifier().getValue(), is("order_id"));
-        
-        // "SELECT COUNT(1) FROM t_order", `ORDER BY` will not be added
-        selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
-        when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(0, 1, new IdentifierValue("t_order")));
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 1);
-        projectionsSegment.setDistinctRow(false);
-        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 1, AggregationType.COUNT, "COUNT(1)"));
-        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
-        groupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
-        actualOrderByContext = orderByContextEngine.createOrderBy(schema, selectStatement, groupByContext);
-        assertFalse(actualOrderByContext.isGenerated());
-        assertThat(actualOrderByContext.getItems().size(), is(0));
-        
-        // "SELECT * FROM (SELECT * FROM t_order) AS tmp WHERE order_id>=1 AND order_id<=10", `ORDER BY` will not be added
-        selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
-        when(selectStatement.getFrom()).thenReturn(mock(JoinTableSegment.class));
-        groupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
-        actualOrderByContext = orderByContextEngine.createOrderBy(schema, selectStatement, groupByContext);
-        assertFalse(actualOrderByContext.isGenerated());
-        assertThat(actualOrderByContext.getItems().size(), is(0));
-        
-        // "SELECT oi.* FROM t_order AS o, t_order_item AS oi WHERE o.order_id>=1 AND o.order_id<=10 AND o.order_id=oi.order_id", `ORDER BY` will not be added
-        selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
-        when(selectStatement.getFrom()).thenReturn(mock(SubqueryTableSegment.class));
-        groupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
-        actualOrderByContext = orderByContextEngine.createOrderBy(schema, selectStatement, groupByContext);
-        assertFalse(actualOrderByContext.isGenerated());
-        assertThat(actualOrderByContext.getItems().size(), is(0));
+        return new ShardingSphereSchema(tables);
     }
 }
