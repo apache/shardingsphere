@@ -107,11 +107,10 @@
         <!--&lt;!&ndash; TODO add gen column on create table &ndash;&gt;-->
         <!--&lt;!&ndash;<assertion parameters="1:int, 1:int, 2:int, 2:int" expected-data-file="batch_insert_without_generate_key_column.xml" />&ndash;&gt;-->
     <!--</test-case>-->
-
-    <!--TODO BatchIT.mergeRow not support broadcast table-->
-    <!--<test-case sql="INSERT INTO t_broadcast_table(id, status) values (?, 'insert'),(?, 'insert')">-->
-        <!--<assertion parameters="2:int, 3:int" expected-data-file="batch_insert_into_broadcast_table.xml" />-->
-    <!--</test-case>-->
+    
+    <test-case sql="INSERT INTO t_broadcast_table(id, status) values (?, 'insert'),(?, 'insert')">
+        <assertion parameters="2:int, 3:int" expected-data-file="batch_insert_into_broadcast_table.xml" />
+    </test-case>
     
     <test-case sql="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ?">
         <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
@@ -137,14 +136,13 @@
         <assertion parameters="1000:int, 0:int, 10:int" expected-data-file="update.xml" />
     </test-case>
     
-    <test-case sql="UPDATE t_order set status = status where user_id = user_id AND order_id = 1000">
+    <test-case sql="UPDATE t_order SET status = status where user_id = user_id AND order_id = 1000">
         <assertion expected-data-file="update_with_column_equal_column.xml" />
     </test-case>
-
-    <!--TODO BatchIT.mergeRow not support broadcast table-->
-    <!--<test-case sql="UPDATE t_broadcast_table b SET b.status = 'finished'">-->
-        <!--<assertion expected-data-file="update_broadcast_table.xml" />-->
-    <!--</test-case>-->
+    
+    <test-case sql="UPDATE t_broadcast_table b SET b.status = 'finished'">
+        <assertion expected-data-file="update_broadcast_table.xml" />
+    </test-case>
     
     <test-case sql="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status=?">
         <assertion parameters="1000:int, 10:int, init:String" expected-data-file="delete_with_sharding_value.xml" />
