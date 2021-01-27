@@ -114,10 +114,7 @@ public final class OrderByContextEngine {
             item.setIndex(index++);
             orderByItems.add(item);
         }
-        if (!orderByItems.isEmpty()) {
-            return Optional.of(new OrderByContext(orderByItems, true));
-        }
-        return Optional.empty();
+        return orderByItems.isEmpty() ? Optional.empty() : Optional.of(new OrderByContext(orderByItems, true));
     }
     
     private boolean isNeedProcessMySQLSelectWithoutOrderBy(final SelectStatement selectStatement, final GroupByContext groupByContext) {
