@@ -68,7 +68,6 @@ public final class TextProtocolBackendHandlerFactoryTest {
         when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         setTransactionContexts();
         when(backendConnection.getSchemaName()).thenReturn("schema");
-
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
         when(metaDataContexts.getMetaData("schema")).thenReturn(mock(ShardingSphereMetaData.class));
         when(metaDataContexts.getMetaData("schema").getResource()).thenReturn(mock(ShardingSphereResource.class));

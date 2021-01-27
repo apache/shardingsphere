@@ -101,5 +101,4 @@ public final class ProxyContext {
     public List<String> getAllSchemaNames() {
         return new ArrayList<>(metaDataContexts.getAllSchemaNames());
     }
-
 }

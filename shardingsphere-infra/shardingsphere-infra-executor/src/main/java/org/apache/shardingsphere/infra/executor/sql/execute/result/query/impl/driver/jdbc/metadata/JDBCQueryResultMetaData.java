@@ -76,7 +76,7 @@ public final class JDBCQueryResultMetaData implements QueryResultMetaData {
     public boolean isSigned(final int columnIndex) throws SQLException {
         try {
             return resultSetMetaData.isSigned(columnIndex);
-        } catch (SQLFeatureNotSupportedException e) {
+        } catch (final SQLFeatureNotSupportedException ignored) {
             return false;
         }
     }
