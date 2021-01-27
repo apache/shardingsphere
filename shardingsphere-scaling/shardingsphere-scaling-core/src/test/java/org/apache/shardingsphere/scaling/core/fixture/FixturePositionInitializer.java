@@ -15,29 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.scaling.core.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
 
 import javax.sql.DataSource;
 
-/**
- * Scaling position manager.
- */
-@Getter
-@Setter
-public class PositionManager {
+public final class FixturePositionInitializer implements PositionInitializer {
     
-    private DataSource dataSource;
-    
-    private Position<?> position;
-    
-    public PositionManager(final DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-    
-    public PositionManager(final Position<?> position) {
-        this.position = position;
+    @Override
+    public Position<?> init(final DataSource dataSource) {
+        return new PlaceholderPosition();
     }
 }

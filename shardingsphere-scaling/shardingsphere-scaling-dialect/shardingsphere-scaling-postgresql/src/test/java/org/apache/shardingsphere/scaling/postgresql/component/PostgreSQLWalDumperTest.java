@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.scaling.postgresql.component;
 
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.execute.executor.channel.MemoryChannel;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
@@ -86,7 +86,7 @@ public final class PostgreSQLWalDumperTest {
             when(logicalReplication.createPgConnection(jdbcDataSourceConfig)).thenReturn(pgConnection);
             when(pgConnection.unwrap(PgConnection.class)).thenReturn(pgConnection);
             when(pgConnection.getTimestampUtils()).thenReturn(null);
-            when(logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionManager.SLOT_NAME, position.getLogSequenceNumber())).thenReturn(pgReplicationStream);
+            when(logicalReplication.createReplicationStream(pgConnection, PostgreSQLPositionInitializer.SLOT_NAME, position.getLogSequenceNumber())).thenReturn(pgReplicationStream);
             ByteBuffer data = ByteBuffer.wrap("table public.test: DELETE: data[integer]:1".getBytes());
             when(pgReplicationStream.readPending()).thenReturn(null).thenReturn(data).thenThrow(new SQLException(""));
             when(pgReplicationStream.getLastReceiveLSN()).thenReturn(LogSequenceNumber.valueOf(101L));

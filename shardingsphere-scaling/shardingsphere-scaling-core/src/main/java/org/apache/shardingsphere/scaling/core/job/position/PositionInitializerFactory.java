@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.fixture;
+package org.apache.shardingsphere.scaling.core.job.position;
 
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 
-import javax.sql.DataSource;
-
-public final class FixturePositionManager extends PositionManager {
+/**
+ * Position initializer factory.
+ */
+public final class PositionInitializerFactory {
     
-    public FixturePositionManager(final DataSource dataSource) {
-        super(new PlaceholderPosition());
-    }
-    
-    public FixturePositionManager(final String position) {
-        super(new PlaceholderPosition());
+    /**
+     * New instance of position initializer.
+     *
+     * @param databaseType database type
+     * @return position initializer
+     */
+    @SneakyThrows(ReflectiveOperationException.class)
+    public static PositionInitializer newInstance(final String databaseType) {
+        return ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType).getPositionInitializer().newInstance();
     }
 }

@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class PostgreSQLPositionManagerTest {
+public final class PostgreSQLPositionInitializerTest {
     
     private static final String POSTGRESQL_96_LSN = "0/14EFDB8";
     
@@ -66,23 +66,17 @@ public final class PostgreSQLPositionManagerTest {
     }
     
     @Test
-    public void assertInitPositionByJson() {
-        WalPosition actual = new PostgreSQLPositionManager("100").getPosition();
-        assertThat(actual.getLogSequenceNumber().asLong(), is(LogSequenceNumber.valueOf(100L).asLong()));
-    }
-    
-    @Test
     public void assertGetCurrentPositionOnPostgreSQL96() throws SQLException {
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(6);
-        WalPosition actual = new PostgreSQLPositionManager(dataSource).getPosition();
+        WalPosition actual = new PostgreSQLPositionInitializer().init(dataSource);
         assertThat(actual.getLogSequenceNumber(), is(LogSequenceNumber.valueOf(POSTGRESQL_96_LSN)));
     }
     
     @Test
     public void assertGetCurrentPositionOnPostgreSQL10() throws SQLException {
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(10);
-        WalPosition actual = new PostgreSQLPositionManager(dataSource).getPosition();
+        WalPosition actual = new PostgreSQLPositionInitializer().init(dataSource);
         assertThat(actual.getLogSequenceNumber(), is(LogSequenceNumber.valueOf(POSTGRESQL_10_LSN)));
     }
     
@@ -90,18 +84,7 @@ public final class PostgreSQLPositionManagerTest {
     public void assertGetCurrentPositionThrowException() throws SQLException {
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(4);
-        new PostgreSQLPositionManager(dataSource).getPosition();
-    }
-    
-    @Test
-    @SneakyThrows(SQLException.class)
-    public void assertUpdateCurrentPosition() {
-        when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(9);
-        when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(6);
-        PostgreSQLPositionManager positionManager = new PostgreSQLPositionManager(dataSource);
-        WalPosition expected = new WalPosition(LogSequenceNumber.valueOf(POSTGRESQL_96_LSN));
-        positionManager.setPosition(expected);
-        assertThat(positionManager.getPosition(), is(expected));
+        new PostgreSQLPositionInitializer().init(dataSource);
     }
     
     @SneakyThrows(SQLException.class)

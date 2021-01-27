@@ -19,24 +19,21 @@ package org.apache.shardingsphere.scaling.core.job.preparer;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManagerFactory;
-import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManager;
-import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManagerFactory;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.job.position.PositionInitializerFactory;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceCheckerFactory;
-import org.apache.shardingsphere.scaling.core.job.preparer.resumer.ScalingPositionResumer;
 import org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryTaskSplitter;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
-import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
+import org.apache.shardingsphere.scaling.core.utils.ScalingConfigurationUtil;
 
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -50,35 +47,26 @@ public final class ScalingJobPreparer {
     
     private final InventoryTaskSplitter inventoryTaskSplitter = new InventoryTaskSplitter();
     
-    private final ScalingPositionResumer scalingPositionResumer = new ScalingPositionResumer();
-    
     /**
      * Do prepare work for scaling job.
      *
      * @param scalingJob scaling job
      */
     public void prepare(final ScalingJob scalingJob) {
+        ScalingConfigurationUtil.fillInProperties(scalingJob.getScalingConfig());
         try (DataSourceManager dataSourceManager = new DataSourceManager(scalingJob.getTaskConfigs())) {
-            checkSourceDataSources(scalingJob, dataSourceManager);
-            ResumeBreakPointManager resumeBreakPointManager = getResumeBreakPointManager(scalingJob);
-            scalingJob.setResumeBreakPointManager(resumeBreakPointManager);
-            if (resumeBreakPointManager.isResumable()) {
-                scalingPositionResumer.resumePosition(scalingJob, dataSourceManager, resumeBreakPointManager);
-            } else {
-                checkTargetDataSources(scalingJob, dataSourceManager);
-                initIncrementalTasks(scalingJob, dataSourceManager);
-                initInventoryTasks(scalingJob, dataSourceManager);
-                scalingPositionResumer.persistPosition(scalingJob, resumeBreakPointManager);
-            }
-        } catch (final PrepareFailedException ex) {
+            checkDataSource(scalingJob, dataSourceManager);
+            initIncrementalTasks(scalingJob, dataSourceManager);
+            initInventoryTasks(scalingJob, dataSourceManager);
+        } catch (final PrepareFailedException | SQLException ex) {
             log.error("Preparing scaling job {} failed", scalingJob.getJobId(), ex);
             scalingJob.setStatus(JobStatus.PREPARING_FAILURE.name());
         }
     }
     
-    private ResumeBreakPointManager getResumeBreakPointManager(final ScalingJob scalingJob) {
-        return ResumeBreakPointManagerFactory.newInstance(scalingJob.getDatabaseType(),
-                ScalingTaskUtil.getScalingListenerPath(scalingJob.getJobId(), ScalingConstant.POSITION, scalingJob.getShardingItem()));
+    private void checkDataSource(final ScalingJob scalingJob, final DataSourceManager dataSourceManager) {
+        checkSourceDataSources(scalingJob, dataSourceManager);
+        checkTargetDataSources(scalingJob, dataSourceManager);
     }
     
     private void checkSourceDataSources(final ScalingJob scalingJob, final DataSourceManager dataSourceManager) {
@@ -96,16 +84,22 @@ public final class ScalingJobPreparer {
     private void initInventoryTasks(final ScalingJob scalingJob, final DataSourceManager dataSourceManager) {
         List<ScalingTask> allInventoryTasks = new LinkedList<>();
         for (TaskConfiguration each : scalingJob.getTaskConfigs()) {
-            allInventoryTasks.addAll(inventoryTaskSplitter.splitInventoryData(scalingJob.getDatabaseType(), each, dataSourceManager));
+            allInventoryTasks.addAll(inventoryTaskSplitter.splitInventoryData(scalingJob, each, dataSourceManager));
         }
         scalingJob.getInventoryTasks().addAll(allInventoryTasks);
     }
     
-    private void initIncrementalTasks(final ScalingJob scalingJob, final DataSourceManager dataSourceManager) {
+    private void initIncrementalTasks(final ScalingJob scalingJob, final DataSourceManager dataSourceManager) throws SQLException {
         for (TaskConfiguration each : scalingJob.getTaskConfigs()) {
-            ScalingDataSourceConfiguration dataSourceConfig = each.getDumperConfig().getDataSourceConfig();
-            each.getDumperConfig().setPositionManager(PositionManagerFactory.newInstance(scalingJob.getDatabaseType(), dataSourceManager.getDataSource(dataSourceConfig)));
+            each.getDumperConfig().setPosition(getIncrementalPosition(scalingJob, each, dataSourceManager));
             scalingJob.getIncrementalTasks().add(scalingTaskFactory.createIncrementalTask(each.getJobConfig().getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
         }
+    }
+    
+    private Position<?> getIncrementalPosition(final ScalingJob scalingJob, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager) throws SQLException {
+        if (null != scalingJob.getInitPosition()) {
+            return scalingJob.getInitPosition().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
+        }
+        return PositionInitializerFactory.newInstance(taskConfig.getJobConfig().getDatabaseType()).init(dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig()));
     }
 }

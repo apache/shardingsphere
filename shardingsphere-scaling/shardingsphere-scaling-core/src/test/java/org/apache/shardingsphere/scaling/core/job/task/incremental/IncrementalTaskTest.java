@@ -19,13 +19,12 @@ package org.apache.shardingsphere.scaling.core.job.task.incremental;
 
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.job.TaskProgress;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
 import org.junit.After;
 import org.junit.Before;
@@ -82,7 +81,7 @@ public final class IncrementalTaskTest {
         Map<String, String> tableMap = new HashMap<>(1, 1);
         tableMap.put("t_order", "t_order");
         result.setTableNameMap(tableMap);
-        result.setPositionManager(new PositionManager(new PlaceholderPosition()));
+        result.setPosition(new PlaceholderPosition());
         return result;
     }
 }

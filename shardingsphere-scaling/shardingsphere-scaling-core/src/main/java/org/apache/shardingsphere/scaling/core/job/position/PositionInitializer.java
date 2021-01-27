@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.fixture;
-
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
+package org.apache.shardingsphere.scaling.core.job.position;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
-public final class FixturePositionManager extends PositionManager {
+/**
+ * Position initializer.
+ */
+public interface PositionInitializer {
     
-    public FixturePositionManager(final DataSource dataSource) {
-        super(new PlaceholderPosition());
-    }
-    
-    public FixturePositionManager(final String position) {
-        super(new PlaceholderPosition());
-    }
+    /**
+     * Init position by data source.
+     *
+     * @param dataSource data source
+     * @return position
+     * @throws SQLException SQL exception
+     */
+    Position<?> init(DataSource dataSource) throws SQLException;
 }

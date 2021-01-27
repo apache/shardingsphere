@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.utils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 
 /**
@@ -36,14 +36,14 @@ public final class RdbmsConfigurationUtil {
      * @return SQL where condition
      */
     public static String getWhereCondition(final InventoryDumperConfiguration inventoryDumperConfig) {
-        return getWhereCondition(inventoryDumperConfig.getPrimaryKey(), inventoryDumperConfig.getPositionManager());
+        return getWhereCondition(inventoryDumperConfig.getPrimaryKey(), inventoryDumperConfig.getPosition());
     }
     
-    private static String getWhereCondition(final String primaryKey, final PositionManager positionManager) {
-        if (null == primaryKey || null == positionManager) {
+    private static String getWhereCondition(final String primaryKey, final Position<?> position) {
+        if (null == primaryKey || null == position) {
             return "";
         }
-        PrimaryKeyPosition position = (PrimaryKeyPosition) positionManager.getPosition();
-        return String.format("WHERE %s BETWEEN %d AND %d", primaryKey, position.getBeginValue(), position.getEndValue());
+        PrimaryKeyPosition primaryKeyPosition = (PrimaryKeyPosition) position;
+        return String.format("WHERE %s BETWEEN %d AND %d", primaryKey, primaryKeyPosition.getBeginValue(), primaryKeyPosition.getEndValue());
     }
 }
