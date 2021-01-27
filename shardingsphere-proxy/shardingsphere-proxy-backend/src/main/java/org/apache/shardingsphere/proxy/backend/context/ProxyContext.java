@@ -27,11 +27,8 @@ import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedExcep
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 
-import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Proxy context.
@@ -104,18 +101,5 @@ public final class ProxyContext {
     public List<String> getAllSchemaNames() {
         return new ArrayList<>(metaDataContexts.getAllSchemaNames());
     }
-    
-    /**
-     * Get data source sample.
-     * 
-     * @return data source sample
-     */
-    public Optional<DataSource> getDataSourceSample() {
-        List<String> schemaNames = getAllSchemaNames();
-        if (schemaNames.isEmpty()) {
-            return Optional.empty();
-        }
-        Map<String, DataSource> dataSources = getMetaData(schemaNames.get(0)).getResource().getDataSources();
-        return dataSources.values().stream().findFirst();
-    }
+
 }

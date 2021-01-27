@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.proxy.backend;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
@@ -65,6 +68,14 @@ public final class TextProtocolBackendHandlerFactoryTest {
         when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         setTransactionContexts();
         when(backendConnection.getSchemaName()).thenReturn("schema");
+
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
+        when(metaDataContexts.getMetaData("schema")).thenReturn(mock(ShardingSphereMetaData.class));
+        when(metaDataContexts.getMetaData("schema").getResource()).thenReturn(mock(ShardingSphereResource.class));
+        when(metaDataContexts.getMetaData("schema").getResource().getDatabaseType()).thenReturn(databaseType);
+        TransactionContexts transactionContexts = mock(TransactionContexts.class);
+        ProxyContext proxyContext = ProxyContext.getInstance();
+        proxyContext.init(metaDataContexts, transactionContexts);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
