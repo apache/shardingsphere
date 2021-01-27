@@ -64,7 +64,7 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
             }
         }
         if (!inUsedTable.isEmpty()) {
-            throw new ShardingSphereException("Actual Tables: [%s] are in use.",inUsedTable);
+            throw new ShardingSphereException("Actual Tables: [%s] are in use.", inUsedTable);
         }
     }
 }
