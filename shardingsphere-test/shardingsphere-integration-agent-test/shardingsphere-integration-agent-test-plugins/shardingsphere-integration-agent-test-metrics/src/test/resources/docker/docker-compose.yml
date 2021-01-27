@@ -32,13 +32,16 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: agent-prometheus
-    hostname: prometheus
     restart: always
     volumes:
       - ./prometheus/conf:/config
     ports:
       - '19090:9090'
+    links:
+      - "shardingsphere-proxy-agent-metrics:shardingsphere.proxy.host"
     command: ['--config.file=/config/prometheus.yml']
+    depends_on:
+      - shardingsphere-proxy-agent-metrics
 
   shardingsphere-proxy-agent-metrics:
     image: apache/shardingsphere-proxy-agent-metrics-test
@@ -46,13 +49,13 @@ services:
     ports:
       - "43070:3307"
       - "43080:3308"
+      - "18090:8090"
     links:
       - "mysql:mysql.agent.metrics.host"
     volumes:
       - ./proxy/conf:/opt/shardingsphere-proxy-agent-metrics/conf
     depends_on:
       - mysql
-      - prometheus
     environment:
       - WAIT_HOSTS=mysql:3306
       - WAIT_HOSTS_TIMEOUT=300

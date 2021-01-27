@@ -23,7 +23,6 @@ ignoredPluginNames:
 
 plugins:
   prometheus:
-    host:  "localhost"
     port: 8090
     props:
       JVM_INFORMATION_COLLECTOR_ENABLED : "true"

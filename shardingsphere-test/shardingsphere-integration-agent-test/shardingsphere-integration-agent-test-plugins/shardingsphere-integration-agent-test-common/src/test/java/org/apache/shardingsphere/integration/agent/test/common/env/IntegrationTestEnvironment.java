@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.agent.test.metrics.env;
+package org.apache.shardingsphere.integration.agent.test.common.env;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -35,51 +35,50 @@ public final class IntegrationTestEnvironment {
     
     private static final IntegrationTestEnvironment INSTANCE = new IntegrationTestEnvironment();
     
-    private static final String URL = "jdbc:mysql://127.0.0.1:43070?serverTimezone=UTC&useSSL=false&useLocalSessionState=true&characterEncoding=utf-8";
-    
-    private static final String USER_NAME = "root";
-    
-    private static final String PASSWORD = "root";
-    
     private final boolean isEnvironmentPrepared;
     
     private DataSource dataSource;
     
+    private Properties engineEnvProps;
+    
     @SneakyThrows
     private IntegrationTestEnvironment() {
-        Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
-        isEnvironmentPrepared = "metrics".equals(engineEnvProps.getProperty("it.env.type"));
+        engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
+        isEnvironmentPrepared = engineEnvProps.getProperty("it.env.value").equals(engineEnvProps.getProperty("it.env.type"));
         if (isEnvironmentPrepared) {
-            waitForEnvironmentReady();
-            dataSource = createHikariCP();
+            waitForEnvironmentReady(engineEnvProps);
+            dataSource = createHikariCP(engineEnvProps);
         }
     }
     
-    private static DataSource createHikariCP() {
+    private static DataSource createHikariCP(final Properties engineEnvProps) {
         HikariConfig result = new HikariConfig();
         result.setDriverClassName("com.mysql.jdbc.Driver");
-        result.setJdbcUrl(URL);
-        result.setUsername(USER_NAME);
-        result.setPassword(PASSWORD);
+        result.setJdbcUrl(engineEnvProps.getProperty("proxy.url"));
+        result.setUsername(engineEnvProps.getProperty("proxy.username", "root"));
+        result.setPassword(engineEnvProps.getProperty("proxy.password", "root"));
         result.setMaximumPoolSize(5);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return new HikariDataSource(result);
     }
     
-    private void waitForEnvironmentReady() {
+    private void waitForEnvironmentReady(final Properties engineEnvProps) {
         log.info("wait begin proxy environment");
         int retryCount = 0;
-        while (!isProxyReady() && retryCount < 30) {
+        while (!isProxyReady(engineEnvProps) && retryCount < Integer.parseInt(engineEnvProps.getProperty("proxy.retry", "30"))) {
             try {
-                Thread.sleep(1000L);
+                Thread.sleep(Long.parseLong(engineEnvProps.getProperty("proxy.waitMs", "1000")));
             } catch (final InterruptedException ignore) {
             }
             retryCount++;
         }
     }
     
-    private boolean isProxyReady() {
-        try (Connection connection = DriverManager.getConnection(URL, USER_NAME, PASSWORD);
+    private boolean isProxyReady(final Properties engineEnvProps) {
+        String url = engineEnvProps.getProperty("proxy.url");
+        String username = engineEnvProps.getProperty("proxy.username", "root");
+        String password = engineEnvProps.getProperty("proxy.password", "root");
+        try (Connection connection = DriverManager.getConnection(url, username, password);
              Statement statement = connection.createStatement()) {
             statement.execute("SELECT 1");
         } catch (final SQLException ignore) {
