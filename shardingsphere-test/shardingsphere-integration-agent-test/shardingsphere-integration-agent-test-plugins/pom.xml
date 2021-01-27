@@ -31,6 +31,7 @@
 
     <modules>
         <module>shardingsphere-integration-agent-test-metrics</module>
+        <module>shardingsphere-integration-agent-test-common</module>
     </modules>
 
 </project>

@@ -60,9 +60,7 @@ public final class PrometheusPluginBootService implements PluginBootService {
     }
     
     private boolean checkConfig(final PluginConfiguration pluginConfiguration) {
-        String host = pluginConfiguration.getHost();
-        int port = pluginConfiguration.getPort();
-        return null != host && !"".equalsIgnoreCase(host) && port > 0;
+        return pluginConfiguration.getPort() > 0;
     }
     
     private void startServer(final PluginConfiguration configuration) {
@@ -70,7 +68,12 @@ public final class PrometheusPluginBootService implements PluginBootService {
         registerJvm(enabled);
         int port = configuration.getPort();
         String host = configuration.getHost();
-        InetSocketAddress inetSocketAddress = new InetSocketAddress(host, port);
+        InetSocketAddress inetSocketAddress;
+        if (null == host || "".equalsIgnoreCase(host)) {
+            inetSocketAddress = new InetSocketAddress(port);
+        } else {
+            inetSocketAddress = new InetSocketAddress(host, port);
+        }
         try {
             httpServer = new HTTPServer(inetSocketAddress, CollectorRegistry.defaultRegistry, true);
             log.info(String.format("Prometheus metrics HTTP server `%s:%s` start success.", inetSocketAddress.getHostString(), inetSocketAddress.getPort()));
