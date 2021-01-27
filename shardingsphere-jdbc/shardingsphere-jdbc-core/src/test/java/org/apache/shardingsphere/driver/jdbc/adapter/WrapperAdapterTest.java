@@ -17,13 +17,16 @@
 
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
-import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -35,55 +38,62 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DataSourceAdapterTest extends AbstractShardingSphereDataSourceForShardingTest {
+public final class WrapperAdapterTest {
+    
+    private ShardingSphereDataSource shardingSphereDataSource;
+    
+    @Before
+    public void setUp() throws SQLException {
+        shardingSphereDataSource = new ShardingSphereDataSource(Collections.emptyMap(), Collections.emptyList(), new Properties());
+    }
     
     @Test
     public void assertUnwrapSuccess() throws SQLException {
-        assertThat(getShardingSphereDataSource().unwrap(Object.class), is(getShardingSphereDataSource()));
+        assertThat(shardingSphereDataSource.unwrap(Object.class), is(shardingSphereDataSource));
     }
     
     @Test(expected = SQLException.class)
     public void assertUnwrapFailure() throws SQLException {
-        getShardingSphereDataSource().unwrap(String.class);
+        shardingSphereDataSource.unwrap(String.class);
     }
     
     @Test
     public void assertIsWrapperFor() {
-        assertTrue(getShardingSphereDataSource().isWrapperFor(Object.class));
+        assertTrue(shardingSphereDataSource.isWrapperFor(Object.class));
     }
     
     @Test
     public void assertIsNotWrapperFor() {
-        assertFalse(getShardingSphereDataSource().isWrapperFor(String.class));
+        assertFalse(shardingSphereDataSource.isWrapperFor(String.class));
     }
     
     @Test
     public void assertRecordMethodInvocationSuccess() {
         List<?> list = mock(List.class);
         when(list.isEmpty()).thenReturn(true);
-        getShardingSphereDataSource().recordMethodInvocation(List.class, "isEmpty", new Class[]{}, new Object[]{});
-        getShardingSphereDataSource().replayMethodsInvocation(list);
+        shardingSphereDataSource.recordMethodInvocation(List.class, "isEmpty", new Class[]{}, new Object[]{});
+        shardingSphereDataSource.replayMethodsInvocation(list);
     }
     
     @Test(expected = NoSuchMethodException.class)
     public void assertRecordMethodInvocationFailure() {
-        getShardingSphereDataSource().recordMethodInvocation(String.class, "none", new Class[]{}, new Object[]{});
+        shardingSphereDataSource.recordMethodInvocation(String.class, "none", new Class[]{}, new Object[]{});
     }
     
     @Test
     public void assertSetLogWriter() {
-        assertThat(getShardingSphereDataSource().getLogWriter(), instanceOf(PrintWriter.class));
-        getShardingSphereDataSource().setLogWriter(null);
-        assertNull(getShardingSphereDataSource().getLogWriter());
+        assertThat(shardingSphereDataSource.getLogWriter(), instanceOf(PrintWriter.class));
+        shardingSphereDataSource.setLogWriter(null);
+        assertNull(shardingSphereDataSource.getLogWriter());
     }
     
     @Test
     public void assertGetParentLogger() {
-        assertThat(getShardingSphereDataSource().getParentLogger().getName(), is(Logger.GLOBAL_LOGGER_NAME));
+        assertThat(shardingSphereDataSource.getParentLogger().getName(), is(Logger.GLOBAL_LOGGER_NAME));
     }
     
     @Test
     public void assertGetConnectionWithUsername() {
-        assertThat(getShardingSphereDataSource().getConnection("username", "password"), instanceOf(ShardingSphereConnection.class));
+        assertThat(shardingSphereDataSource.getConnection("username", "password"), instanceOf(ShardingSphereConnection.class));
     }
 }
