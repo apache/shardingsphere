@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.integration.cases.dataset.row;
 
 import com.google.common.base.Splitter;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,9 +30,10 @@ import java.util.List;
 /**
  * Data set row.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
+@EqualsAndHashCode
 public final class DataSetRow {
     
     @XmlAttribute(name = "data-node")

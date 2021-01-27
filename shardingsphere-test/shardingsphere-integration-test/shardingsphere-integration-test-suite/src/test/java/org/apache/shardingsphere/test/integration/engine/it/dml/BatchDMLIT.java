@@ -67,7 +67,7 @@ public final class BatchDMLIT extends BatchIT {
         try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCounts = executeBatchForPreparedStatement(connection);
         }
-        assertDataSet(actualUpdateCounts);
+        assertDataSets(actualUpdateCounts);
     }
     
     private int[] executeBatchForPreparedStatement(final Connection connection) throws SQLException, ParseException {
