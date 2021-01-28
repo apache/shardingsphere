@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.execute.engine.ExecuteCallback;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class ScalingTaskScheduler implements Runnable {
     
-    private final ScalingJob scalingJob;
+    private final JobContext jobContext;
     
     /**
      * Start execute scaling task.
@@ -50,16 +50,16 @@ public final class ScalingTaskScheduler implements Runnable {
      * Stop all scaling task.
      */
     public void stop() {
-        log.info("stop scaling job {}", scalingJob.getJobId());
-        if (JobStatus.valueOf(scalingJob.getStatus()).isRunning()) {
-            scalingJob.setStatus(JobStatus.STOPPING.name());
+        log.info("stop scaling job {}", jobContext.getJobId());
+        if (JobStatus.valueOf(jobContext.getStatus()).isRunning()) {
+            jobContext.setStatus(JobStatus.STOPPING.name());
         }
-        for (ScalingTask each : scalingJob.getInventoryTasks()) {
-            log.info("stop inventory task {} - {}", scalingJob.getJobId(), each.getTaskId());
+        for (ScalingTask each : jobContext.getInventoryTasks()) {
+            log.info("stop inventory task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
         }
-        for (ScalingTask each : scalingJob.getIncrementalTasks()) {
-            log.info("stop incremental task {} - {}", scalingJob.getJobId(), each.getTaskId());
+        for (ScalingTask each : jobContext.getIncrementalTasks()) {
+            log.info("stop incremental task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
         }
     }
@@ -72,14 +72,14 @@ public final class ScalingTaskScheduler implements Runnable {
     }
     
     private synchronized boolean executeInventoryTask() {
-        if (ScalingTaskUtil.allInventoryTasksFinished(scalingJob.getInventoryTasks())) {
+        if (ScalingTaskUtil.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
             log.info("All inventory tasks finished.");
             return true;
         }
         log.info("-------------- Start inventory task --------------");
-        scalingJob.setStatus(JobStatus.EXECUTE_INVENTORY_TASK.name());
+        jobContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK.name());
         ExecuteCallback inventoryTaskCallback = createInventoryTaskCallback();
-        for (ScalingTask each : scalingJob.getInventoryTasks()) {
+        for (ScalingTask each : jobContext.getInventoryTasks()) {
             ScalingContext.getInstance().getInventoryDumperExecuteEngine().submit(each, inventoryTaskCallback);
         }
         return false;
@@ -90,7 +90,7 @@ public final class ScalingTaskScheduler implements Runnable {
             
             @Override
             public void onSuccess() {
-                if (ScalingTaskUtil.allInventoryTasksFinished(scalingJob.getInventoryTasks())) {
+                if (ScalingTaskUtil.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
                     log.info("All inventory tasks finished.");
                     executeIncrementalTask();
                 }
@@ -100,19 +100,19 @@ public final class ScalingTaskScheduler implements Runnable {
             public void onFailure(final Throwable throwable) {
                 log.error("Inventory task execute failed.", throwable);
                 stop();
-                scalingJob.setStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name());
+                jobContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name());
             }
         };
     }
     
     private synchronized void executeIncrementalTask() {
-        if (JobStatus.EXECUTE_INCREMENTAL_TASK.name().equals(scalingJob.getStatus())) {
+        if (JobStatus.EXECUTE_INCREMENTAL_TASK.name().equals(jobContext.getStatus())) {
             return;
         }
         log.info("-------------- Start incremental task --------------");
-        scalingJob.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK.name());
+        jobContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK.name());
         ExecuteCallback incrementalTaskCallback = createIncrementalTaskCallback();
-        for (ScalingTask each : scalingJob.getIncrementalTasks()) {
+        for (ScalingTask each : jobContext.getIncrementalTasks()) {
             ScalingContext.getInstance().getIncrementalDumperExecuteEngine().submit(each, incrementalTaskCallback);
         }
     }
@@ -122,14 +122,14 @@ public final class ScalingTaskScheduler implements Runnable {
             
             @Override
             public void onSuccess() {
-                scalingJob.setStatus(JobStatus.STOPPED.name());
+                jobContext.setStatus(JobStatus.STOPPED.name());
             }
             
             @Override
             public void onFailure(final Throwable throwable) {
                 log.error("Incremental task execute failed.", throwable);
                 stop();
-                scalingJob.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name());
+                jobContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name());
             }
         };
     }
@@ -140,7 +140,7 @@ public final class ScalingTaskScheduler implements Runnable {
      * @return all inventory data task progress
      */
     public Collection<InventoryTaskProgress> getInventoryTaskProgress() {
-        return scalingJob.getInventoryTasks().stream().map(each -> (InventoryTaskProgress) each.getProgress()).collect(Collectors.toList());
+        return jobContext.getInventoryTasks().stream().map(each -> (InventoryTaskProgress) each.getProgress()).collect(Collectors.toList());
     }
     
     /**
@@ -149,6 +149,6 @@ public final class ScalingTaskScheduler implements Runnable {
      * @return all incremental data task progress
      */
     public Collection<IncrementalTaskProgress> getIncrementalTaskProgress() {
-        return scalingJob.getIncrementalTasks().stream().map(each -> (IncrementalTaskProgress) each.getProgress()).collect(Collectors.toList());
+        return jobContext.getIncrementalTasks().stream().map(each -> (IncrementalTaskProgress) each.getProgress()).collect(Collectors.toList());
     }
 }

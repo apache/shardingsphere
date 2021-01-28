@@ -33,8 +33,8 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
@@ -80,7 +80,7 @@ public final class HttpServerHandlerTest {
     
     @Test
     public void assertStartJobSuccess() {
-        when(scalingJobService.start(any(JobConfiguration.class))).thenReturn(Optional.of(new ScalingJob()));
+        when(scalingJobService.start(any(JobConfiguration.class))).thenReturn(Optional.of(new JobContext()));
         ResponseContent<?> responseContent = execute("/scaling/job/start");
         assertTrue(responseContent.isSuccess());
     }
@@ -95,9 +95,9 @@ public final class HttpServerHandlerTest {
     @Test
     @SuppressWarnings("unchecked")
     public void assertListJobs() {
-        when(scalingJobService.listJobs()).thenReturn(mockScalingJobs());
+        when(scalingJobService.listJobs()).thenReturn(mockJobContexts());
         ResponseContent<?> responseContent = execute("/scaling/job/list");
-        assertThat(((List<ScalingJob>) responseContent.getModel()).size(), is(2));
+        assertThat(((List<JobContext>) responseContent.getModel()).size(), is(2));
     }
     
     @Test
@@ -161,10 +161,10 @@ public final class HttpServerHandlerTest {
         return new Gson().fromJson(fullHttpResponse.content().toString(CharsetUtil.UTF_8), ResponseContent.class);
     }
     
-    private List<ScalingJob> mockScalingJobs() {
-        List<ScalingJob> result = Lists.newArrayList();
-        result.add(new ScalingJob());
-        result.add(new ScalingJob());
+    private List<JobContext> mockJobContexts() {
+        List<JobContext> result = Lists.newArrayList();
+        result.add(new JobContext());
+        result.add(new JobContext());
         return result;
     }
     

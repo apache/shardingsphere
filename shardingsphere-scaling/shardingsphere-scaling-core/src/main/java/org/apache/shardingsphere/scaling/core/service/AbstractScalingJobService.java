@@ -24,7 +24,7 @@ import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckerFactory;
@@ -41,7 +41,7 @@ import java.util.Optional;
 public abstract class AbstractScalingJobService implements ScalingJobService {
     
     @Override
-    public Optional<ScalingJob> start(final RuleConfigurationsAlteredEvent event) {
+    public Optional<JobContext> start(final RuleConfigurationsAlteredEvent event) {
         JobConfiguration jobConfig = new JobConfiguration();
         jobConfig.setRuleConfig(new RuleConfiguration(
                 new ShardingSphereJDBCDataSourceConfiguration(event.getSourceDataSource(), event.getSourceRule()),

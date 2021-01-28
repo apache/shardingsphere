@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.api;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.position.JobPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
@@ -37,13 +37,13 @@ public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
     private static final RegistryRepository REGISTRY_REPOSITORY = RegistryRepositoryHolder.getInstance();
     
     @Override
-    public void persistJobPosition(final ScalingJob scalingJob) {
+    public void persistJobPosition(final JobContext jobContext) {
         JobPosition jobPosition = new JobPosition();
-        jobPosition.setStatus(scalingJob.getStatus());
-        jobPosition.setDatabaseType(scalingJob.getJobConfig().getHandleConfig().getDatabaseType());
-        jobPosition.setIncrementalPositions(scalingJob.getIncrementalTasks().stream().collect(Collectors.toMap(ScalingTask::getTaskId, ScalingTask::getPosition)));
-        jobPosition.setInventoryPositions(scalingJob.getInventoryTasks().stream().collect(Collectors.toMap(ScalingTask::getTaskId, ScalingTask::getPosition)));
-        REGISTRY_REPOSITORY.persist(ScalingTaskUtil.getScalingListenerPath(scalingJob.getJobId(), scalingJob.getShardingItem()), jobPosition.toJson());
+        jobPosition.setStatus(jobContext.getStatus());
+        jobPosition.setDatabaseType(jobContext.getJobConfig().getHandleConfig().getDatabaseType());
+        jobPosition.setIncrementalPositions(jobContext.getIncrementalTasks().stream().collect(Collectors.toMap(ScalingTask::getTaskId, ScalingTask::getPosition)));
+        jobPosition.setInventoryPositions(jobContext.getInventoryTasks().stream().collect(Collectors.toMap(ScalingTask::getTaskId, ScalingTask::getPosition)));
+        REGISTRY_REPOSITORY.persist(ScalingTaskUtil.getScalingListenerPath(jobContext.getJobId(), jobContext.getShardingItem()), jobPosition.toJson());
     }
     
     @Override

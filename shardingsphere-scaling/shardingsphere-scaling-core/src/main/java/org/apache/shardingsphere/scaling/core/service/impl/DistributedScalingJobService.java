@@ -27,8 +27,8 @@ import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.TaskProgress;
 import org.apache.shardingsphere.scaling.core.job.position.InventoryPositionGroup;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
@@ -56,30 +56,30 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
     private static final RegistryRepository REGISTRY_REPOSITORY = RegistryRepositoryHolder.getInstance();
     
     @Override
-    public List<ScalingJob> listJobs() {
+    public List<JobContext> listJobs() {
         return REGISTRY_REPOSITORY.getChildrenKeys(ScalingConstant.SCALING_LISTENER_PATH).stream().map(each -> getJob(Long.parseLong(each))).collect(Collectors.toList());
     }
     
     @Override
-    public Optional<ScalingJob> start(final JobConfiguration jobConfig) {
+    public Optional<JobContext> start(final JobConfiguration jobConfig) {
         TaskConfigurationUtil.fillInShardingTables(jobConfig);
         if (shouldScaling(jobConfig)) {
-            ScalingJob scalingJob = new ScalingJob(jobConfig);
-            checkDataSources(scalingJob);
-            updateJobConfig(scalingJob.getJobId(), jobConfig);
-            log.info("start scaling job {}", scalingJob.getJobId());
-            return Optional.of(scalingJob);
+            JobContext jobContext = new JobContext(jobConfig);
+            checkDataSources(jobContext);
+            updateJobConfig(jobContext.getJobId(), jobConfig);
+            log.info("start scaling job {}", jobContext.getJobId());
+            return Optional.of(jobContext);
         }
         return Optional.empty();
     }
     
-    protected void checkDataSources(final ScalingJob scalingJob) {
-        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(scalingJob.getDatabaseType());
-        try (DataSourceManager dataSourceManager = new DataSourceManager(scalingJob.getTaskConfigs())) {
+    protected void checkDataSources(final JobContext jobContext) {
+        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(jobContext.getDatabaseType());
+        try (DataSourceManager dataSourceManager = new DataSourceManager(jobContext.getTaskConfigs())) {
             dataSourceChecker.checkConnection(dataSourceManager.getCachedDataSources().values());
             dataSourceChecker.checkPrivilege(dataSourceManager.getSourceDataSources().values());
             dataSourceChecker.checkVariable(dataSourceManager.getSourceDataSources().values());
-            dataSourceChecker.checkTargetTable(dataSourceManager.getTargetDataSources().values(), scalingJob.getTaskConfigs().iterator().next().getImporterConfig().getShardingColumnsMap().keySet());
+            dataSourceChecker.checkTargetTable(dataSourceManager.getTargetDataSources().values(), jobContext.getTaskConfigs().iterator().next().getImporterConfig().getShardingColumnsMap().keySet());
         }
     }
     
@@ -99,14 +99,14 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
     }
     
     @Override
-    public ScalingJob getJob(final long jobId) {
+    public JobContext getJob(final long jobId) {
         String data = REGISTRY_REPOSITORY.get(ScalingTaskUtil.getScalingListenerPath(jobId, ScalingConstant.CONFIG));
         if (Strings.isNullOrEmpty(data)) {
             throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", jobId));
         }
         JobConfiguration jobConfig = GSON.fromJson(data, JobConfiguration.class);
         jobConfig.getHandleConfig().setJobId(jobId);
-        return new ScalingJob(jobConfig);
+        return new JobContext(jobConfig);
     }
     
     @Override

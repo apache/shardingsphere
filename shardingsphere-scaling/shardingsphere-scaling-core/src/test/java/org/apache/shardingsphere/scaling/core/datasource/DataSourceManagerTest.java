@@ -41,7 +41,7 @@ public final class DataSourceManagerTest {
     @Before
     @SneakyThrows(IOException.class)
     public void setUp() {
-        taskConfigurations = JobConfigurationUtil.initJob("/config.json").getTaskConfigs();
+        taskConfigurations = JobConfigurationUtil.initJobContext("/config.json").getTaskConfigs();
     }
     
     @Test

@@ -21,7 +21,7 @@ import com.google.gson.Gson;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,13 +48,13 @@ public final class JobConfigurationUtil {
     }
     
     /**
-     * Init job from config file.
+     * Init job context by config file.
      *
      * @param configFile config file
      * @return scaling job
      * @throws IOException IO exception
      */
-    public static ScalingJob initJob(final String configFile) throws IOException {
-        return new ScalingJob(initJobConfig(configFile));
+    public static JobContext initJobContext(final String configFile) throws IOException {
+        return new JobContext(initJobConfig(configFile));
     }
 }

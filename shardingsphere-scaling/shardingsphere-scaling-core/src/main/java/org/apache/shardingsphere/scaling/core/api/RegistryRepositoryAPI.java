@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.api;
 
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.position.JobPosition;
 
 /**
@@ -28,9 +28,9 @@ public interface RegistryRepositoryAPI {
     /**
      * persist job position.
      *
-     * @param scalingJob scaling job
+     * @param jobContext job context
      */
-    void persistJobPosition(ScalingJob scalingJob);
+    void persistJobPosition(JobContext jobContext);
     
     /**
      * Get job position.
