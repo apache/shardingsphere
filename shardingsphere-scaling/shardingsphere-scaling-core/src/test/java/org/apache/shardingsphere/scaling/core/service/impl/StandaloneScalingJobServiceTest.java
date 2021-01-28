@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.service.impl;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
@@ -31,7 +31,7 @@ import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResu
 import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
 import org.apache.shardingsphere.scaling.core.schedule.ScalingTaskScheduler;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
-import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -75,7 +75,7 @@ public final class StandaloneScalingJobServiceTest {
     
     @Test
     public void assertStartJob() {
-        Optional<ScalingJob> scalingJob = scalingJobService.start(mockScalingConfiguration());
+        Optional<ScalingJob> scalingJob = scalingJobService.start(mockJobConfiguration());
         assertTrue(scalingJob.isPresent());
         long jobId = scalingJob.get().getJobId();
         JobProgress progress = scalingJobService.getProgress(jobId);
@@ -106,13 +106,13 @@ public final class StandaloneScalingJobServiceTest {
     @Test
     public void assertListJobs() {
         assertThat(scalingJobService.listJobs().size(), is(0));
-        scalingJobService.start(mockScalingConfiguration());
+        scalingJobService.start(mockJobConfiguration());
         assertThat(scalingJobService.listJobs().size(), is(1));
     }
     
     @Test
     public void assertCheckJob() {
-        Optional<ScalingJob> scalingJobOptional = scalingJobService.start(mockScalingConfiguration());
+        Optional<ScalingJob> scalingJobOptional = scalingJobService.start(mockJobConfiguration());
         assertTrue(scalingJobOptional.isPresent());
         ScalingJob scalingJob = scalingJobOptional.get();
         scalingJob.setDatabaseType("H2");
@@ -124,7 +124,7 @@ public final class StandaloneScalingJobServiceTest {
     @Test
     @SneakyThrows(SQLException.class)
     public void assertResetJob() {
-        Optional<ScalingJob> scalingJobOptional = scalingJobService.start(mockScalingConfiguration());
+        Optional<ScalingJob> scalingJobOptional = scalingJobService.start(mockJobConfiguration());
         assertTrue(scalingJobOptional.isPresent());
         ScalingJob scalingJob = scalingJobOptional.get();
         ScalingDataSourceConfiguration dataSourceConfig = scalingJob.getTaskConfigs().get(0).getImporterConfig().getDataSourceConfig();
@@ -135,8 +135,8 @@ public final class StandaloneScalingJobServiceTest {
     }
     
     @SneakyThrows(IOException.class)
-    private ScalingConfiguration mockScalingConfiguration() {
-        return ScalingConfigurationUtil.initConfig("/config.json");
+    private JobConfiguration mockJobConfiguration() {
+        return JobConfigurationUtil.initJobConfig("/config.json");
     }
     
     private void initTableData(final ScalingDataSourceConfiguration dataSourceConfig) throws SQLException {

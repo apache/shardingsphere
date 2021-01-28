@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.job;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.job.position.JobPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
@@ -54,7 +54,7 @@ public final class ScalingJob {
     
     private final transient List<ScalingTask> incrementalTasks = new LinkedList<>();
     
-    private transient ScalingConfiguration scalingConfig;
+    private transient JobConfiguration jobConfig;
     
     private String status = JobStatus.RUNNING.name();
     
@@ -66,11 +66,11 @@ public final class ScalingJob {
         this.jobId = jobId;
     }
     
-    public ScalingJob(final ScalingConfiguration scalingConfig) {
-        this(Optional.ofNullable(scalingConfig.getJobConfiguration().getJobId()).orElse(generateKey()));
-        this.scalingConfig = scalingConfig;
-        shardingItem = scalingConfig.getJobConfiguration().getShardingItem();
-        taskConfigs.addAll(TaskConfigurationUtil.toTaskConfigs(scalingConfig));
+    public ScalingJob(final JobConfiguration jobConfig) {
+        this(Optional.ofNullable(jobConfig.getHandleConfig().getJobId()).orElse(generateKey()));
+        this.jobConfig = jobConfig;
+        shardingItem = jobConfig.getHandleConfig().getShardingItem();
+        taskConfigs.addAll(TaskConfigurationUtil.toTaskConfigs(jobConfig));
     }
     
     private static SnowflakeKeyGenerateAlgorithm initIdAutoIncreaseGenerator() {

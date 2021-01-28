@@ -40,7 +40,7 @@ public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
     public void persistJobPosition(final ScalingJob scalingJob) {
         JobPosition jobPosition = new JobPosition();
         jobPosition.setStatus(scalingJob.getStatus());
-        jobPosition.setDatabaseType(scalingJob.getScalingConfig().getJobConfiguration().getDatabaseType());
+        jobPosition.setDatabaseType(scalingJob.getJobConfig().getHandleConfig().getDatabaseType());
         jobPosition.setIncrementalPositions(scalingJob.getIncrementalTasks().stream().collect(Collectors.toMap(ScalingTask::getTaskId, ScalingTask::getPosition)));
         jobPosition.setInventoryPositions(scalingJob.getInventoryTasks().stream().collect(Collectors.toMap(ScalingTask::getTaskId, ScalingTask::getPosition)));
         REGISTRY_REPOSITORY.persist(ScalingTaskUtil.getScalingListenerPath(scalingJob.getJobId(), scalingJob.getShardingItem()), jobPosition.toJson());

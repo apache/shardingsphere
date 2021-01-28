@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.service;
 
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
@@ -43,10 +43,10 @@ public interface ScalingJobService {
     /**
      * Start scaling job.
      *
-     * @param scalingConfig scaling job configuration
+     * @param jobConfig job configuration
      * @return scaling job
      */
-    Optional<ScalingJob> start(ScalingConfiguration scalingConfig);
+    Optional<ScalingJob> start(JobConfiguration jobConfig);
     
     /**
      * Start scaling job.

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.scaling.core.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
@@ -42,14 +42,14 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
     
     @Override
     public Optional<ScalingJob> start(final RuleConfigurationsAlteredEvent event) {
-        ScalingConfiguration scalingConfig = new ScalingConfiguration();
-        scalingConfig.setRuleConfiguration(new RuleConfiguration(
+        JobConfiguration jobConfig = new JobConfiguration();
+        jobConfig.setRuleConfig(new RuleConfiguration(
                 new ShardingSphereJDBCDataSourceConfiguration(event.getSourceDataSource(), event.getSourceRule()),
                 new ShardingSphereJDBCDataSourceConfiguration(event.getTargetDataSource(), event.getTargetRule())));
-        JobConfiguration jobConfig = new JobConfiguration();
-        jobConfig.setWorkflowConfig(new WorkflowConfiguration(event.getSchemaName(), event.getRuleCacheId()));
-        scalingConfig.setJobConfiguration(jobConfig);
-        return start(scalingConfig);
+        HandleConfiguration handleConfig = new HandleConfiguration();
+        handleConfig.setWorkflowConfig(new WorkflowConfiguration(event.getSchemaName(), event.getRuleCacheId()));
+        jobConfig.setHandleConfig(handleConfig);
+        return start(jobConfig);
     }
     
     @Override

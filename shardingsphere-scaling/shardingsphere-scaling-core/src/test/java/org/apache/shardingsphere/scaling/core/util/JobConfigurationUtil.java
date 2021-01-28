@@ -15,34 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.util;
+package org.apache.shardingsphere.scaling.core.util;
 
 import com.google.gson.Gson;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- * Scaling configuration util.
+ * Job configuration util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ScalingConfigurationUtil {
+public final class JobConfigurationUtil {
     
     /**
      * Init job config.
      *
      * @param configFile config file
-     * @return ScalingConfiguration
+     * @return job configuration
      * @throws IOException IO exception
      */
-    public static ScalingConfiguration initConfig(final String configFile) throws IOException {
-        try (InputStream fileInputStream = ScalingConfigurationUtil.class.getResourceAsStream(configFile);
+    public static JobConfiguration initJobConfig(final String configFile) throws IOException {
+        try (InputStream fileInputStream = JobConfigurationUtil.class.getResourceAsStream(configFile);
              InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream)) {
-            return new Gson().fromJson(inputStreamReader, ScalingConfiguration.class);
+            return new Gson().fromJson(inputStreamReader, JobConfiguration.class);
         }
+    }
+    
+    /**
+     * Init job from config file.
+     *
+     * @param configFile config file
+     * @return scaling job
+     * @throws IOException IO exception
+     */
+    public static ScalingJob initJob(final String configFile) throws IOException {
+        return new ScalingJob(initJobConfig(configFile));
     }
 }

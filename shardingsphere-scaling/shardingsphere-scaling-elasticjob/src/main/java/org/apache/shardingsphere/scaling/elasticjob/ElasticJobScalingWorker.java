@@ -24,7 +24,6 @@ import com.google.gson.JsonSyntaxException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.elasticjob.lite.internal.election.LeaderService;
@@ -33,7 +32,7 @@ import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 import org.apache.shardingsphere.scaling.core.spi.ScalingWorker;
@@ -74,17 +73,17 @@ public final class ElasticJobScalingWorker implements ScalingWorker {
     
     private void watchConfigRepository() {
         REGISTRY_REPOSITORY.watch(ScalingConstant.SCALING_LISTENER_PATH, event -> {
-            Optional<ScalingConfiguration> scalingConfig = getScalingConfig(event);
-            if (!scalingConfig.isPresent()) {
+            Optional<JobConfiguration> jobConfig = getJobConfig(event);
+            if (!jobConfig.isPresent()) {
                 return;
             }
             switch (event.getType()) {
                 case ADDED:
                 case UPDATED:
-                    executeJob(getJobId(event.getKey()), scalingConfig.get());
+                    executeJob(getJobId(event.getKey()), jobConfig.get());
                     break;
                 case DELETED:
-                    deleteJob(getJobId(event.getKey()), scalingConfig.get());
+                    deleteJob(getJobId(event.getKey()), jobConfig.get());
                     break;
                 default:
                     break;
@@ -100,62 +99,63 @@ public final class ElasticJobScalingWorker implements ScalingWorker {
         return key.split("/")[2];
     }
     
-    private Optional<ScalingConfiguration> getScalingConfig(final DataChangedEvent event) {
+    private Optional<JobConfiguration> getJobConfig(final DataChangedEvent event) {
         if (!CONFIG_PATTERN.matcher(event.getKey()).matches()) {
             return Optional.empty();
         }
         try {
-            log.info("{} scaling config: {} = {}", event.getType(), event.getKey(), event.getValue());
-            return Optional.of(GSON.fromJson(event.getValue(), ScalingConfiguration.class));
+            log.info("{} job config: {} = {}", event.getType(), event.getKey(), event.getValue());
+            return Optional.of(GSON.fromJson(event.getValue(), JobConfiguration.class));
         } catch (JsonSyntaxException ex) {
-            log.error("analyze scaling config failed.", ex);
+            log.error("analyze job config failed.", ex);
         }
         return Optional.empty();
     }
     
-    private void executeJob(final String jobId, final ScalingConfiguration scalingConfig) {
+    private void executeJob(final String jobId, final JobConfiguration jobConfig) {
         JobBootstrapWrapper jobBootstrapWrapper = scalingJobBootstrapMap.get(jobId);
         if (null == jobBootstrapWrapper) {
-            createJob(jobId, scalingConfig);
+            createJob(jobId, jobConfig);
             return;
         }
-        updateJob(jobId, scalingConfig);
+        updateJob(jobId, jobConfig);
     }
     
-    private void createJob(final String jobId, final ScalingConfiguration scalingConfig) {
-        if (scalingConfig.getJobConfiguration().isRunning()) {
-            JobBootstrapWrapper jobBootstrapWrapper = new JobBootstrapWrapper(jobId, scalingConfig);
+    private void createJob(final String jobId, final JobConfiguration jobConfig) {
+        if (jobConfig.getHandleConfig().isRunning()) {
+            JobBootstrapWrapper jobBootstrapWrapper = new JobBootstrapWrapper(jobId, jobConfig);
             jobBootstrapWrapper.getJobBootstrap().execute();
             scalingJobBootstrapMap.put(jobId, jobBootstrapWrapper);
         }
     }
     
-    private void updateJob(final String jobId, final ScalingConfiguration scalingConfig) {
+    private void updateJob(final String jobId, final JobConfiguration jobConfig) {
         JobBootstrapWrapper jobBootstrapWrapper = scalingJobBootstrapMap.get(jobId);
-        if (jobBootstrapWrapper.isRunning() && scalingConfig.getJobConfiguration().isRunning()) {
+        if (jobBootstrapWrapper.isRunning() && jobConfig.getHandleConfig().isRunning()) {
             log.warn("scaling elastic job has already running, ignore current config.");
             return;
         }
-        if (jobBootstrapWrapper.isRunning() == scalingConfig.getJobConfiguration().isRunning()) {
+        if (jobBootstrapWrapper.isRunning() == jobConfig.getHandleConfig().isRunning()) {
             return;
         }
         if (new LeaderService(registryCenter, jobId).isLeader()) {
             log.info("leader worker update config.");
             JobAPIFactory.createJobConfigurationAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(),
                     governanceConfig.getName() + ScalingConstant.SCALING_ELASTIC_JOB_PATH, null)
-                    .updateJobConfiguration(JobConfigurationPOJO.fromJobConfiguration(createJobConfig(jobId, scalingConfig)));
+                    .updateJobConfiguration(JobConfigurationPOJO.fromJobConfiguration(createJobConfig(jobId, jobConfig)));
         }
-        jobBootstrapWrapper.setRunning(scalingConfig.getJobConfiguration().isRunning());
+        jobBootstrapWrapper.setRunning(jobConfig.getHandleConfig().isRunning());
         jobBootstrapWrapper.getJobBootstrap().execute();
     }
     
-    private JobConfiguration createJobConfig(final String jobId, final ScalingConfiguration scalingConfig) {
-        return JobConfiguration.newBuilder(jobId, scalingConfig.getJobConfiguration().getShardingTables().length).jobParameter(GSON.toJson(scalingConfig)).overwrite(true).build();
+    private org.apache.shardingsphere.elasticjob.api.JobConfiguration createJobConfig(final String jobId, final JobConfiguration jobConfig) {
+        return org.apache.shardingsphere.elasticjob.api.JobConfiguration.newBuilder(jobId, jobConfig.getHandleConfig().getShardingTables().length)
+                .jobParameter(GSON.toJson(jobConfig)).overwrite(true).build();
     }
     
-    private void deleteJob(final String jobId, final ScalingConfiguration scalingConfig) {
-        scalingConfig.getJobConfiguration().setRunning(false);
-        executeJob(jobId, scalingConfig);
+    private void deleteJob(final String jobId, final JobConfiguration jobConfig) {
+        jobConfig.getHandleConfig().setRunning(false);
+        executeJob(jobId, jobConfig);
     }
     
     @Getter
@@ -166,9 +166,9 @@ public final class ElasticJobScalingWorker implements ScalingWorker {
         
         private boolean running;
         
-        private JobBootstrapWrapper(final String jobId, final ScalingConfiguration scalingConfig) {
-            jobBootstrap = new OneOffJobBootstrap(registryCenter, new ScalingElasticJob(), createJobConfig(jobId, scalingConfig));
-            running = scalingConfig.getJobConfiguration().isRunning();
+        private JobBootstrapWrapper(final String jobId, final JobConfiguration jobConfig) {
+            jobBootstrap = new OneOffJobBootstrap(registryCenter, new ScalingElasticJob(), createJobConfig(jobId, jobConfig));
+            running = jobConfig.getHandleConfig().isRunning();
         }
     }
 }

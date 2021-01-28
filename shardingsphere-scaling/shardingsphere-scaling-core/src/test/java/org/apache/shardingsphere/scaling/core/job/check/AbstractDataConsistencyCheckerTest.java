@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
-import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -61,6 +61,6 @@ public final class AbstractDataConsistencyCheckerTest {
     
     @SneakyThrows(IOException.class)
     private ScalingJob mockScalingJob() {
-        return ScalingConfigurationUtil.initJob("/config.json");
+        return JobConfigurationUtil.initJob("/config.json");
     }
 }

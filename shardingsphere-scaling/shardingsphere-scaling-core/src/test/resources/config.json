@@ -16,7 +16,7 @@
  */
 
 {
-  "ruleConfiguration": {
+  "ruleConfig": {
     "source": {
       "type": "shardingSphereJdbc",
       "parameter": {
@@ -34,7 +34,7 @@
       }
     }
   },
-  "jobConfiguration": {
+  "handleConfig": {
     "concurrency": 3,
     "shardingTables": ["ds_0.t1", "ds_0.t2"],
     "shardingItem": 0

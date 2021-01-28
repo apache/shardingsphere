@@ -23,7 +23,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
@@ -61,12 +61,12 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
     }
     
     @Override
-    public Optional<ScalingJob> start(final ScalingConfiguration scalingConfig) {
-        TaskConfigurationUtil.fillInShardingTables(scalingConfig);
-        if (shouldScaling(scalingConfig)) {
-            ScalingJob scalingJob = new ScalingJob(scalingConfig);
+    public Optional<ScalingJob> start(final JobConfiguration jobConfig) {
+        TaskConfigurationUtil.fillInShardingTables(jobConfig);
+        if (shouldScaling(jobConfig)) {
+            ScalingJob scalingJob = new ScalingJob(jobConfig);
             checkDataSources(scalingJob);
-            updateScalingConfig(scalingJob.getJobId(), scalingConfig);
+            updateJobConfig(scalingJob.getJobId(), jobConfig);
             log.info("start scaling job {}", scalingJob.getJobId());
             return Optional.of(scalingJob);
         }
@@ -83,19 +83,19 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
         }
     }
     
-    private boolean shouldScaling(final ScalingConfiguration scalingConfig) {
-        return scalingConfig.getJobConfiguration().getShardingTables().length > 0;
+    private boolean shouldScaling(final JobConfiguration jobConfig) {
+        return jobConfig.getHandleConfig().getShardingTables().length > 0;
     }
     
     @Override
     public void stop(final long jobId) {
-        ScalingConfiguration scalingConfig = getJob(jobId).getScalingConfig();
-        scalingConfig.getJobConfiguration().setRunning(false);
-        updateScalingConfig(jobId, scalingConfig);
+        JobConfiguration jobConfig = getJob(jobId).getJobConfig();
+        jobConfig.getHandleConfig().setRunning(false);
+        updateJobConfig(jobId, jobConfig);
     }
     
-    private void updateScalingConfig(final long jobId, final ScalingConfiguration scalingConfig) {
-        REGISTRY_REPOSITORY.persist(ScalingTaskUtil.getScalingListenerPath(jobId, ScalingConstant.CONFIG), GSON.toJson(scalingConfig));
+    private void updateJobConfig(final long jobId, final JobConfiguration jobConfig) {
+        REGISTRY_REPOSITORY.persist(ScalingTaskUtil.getScalingListenerPath(jobId, ScalingConstant.CONFIG), GSON.toJson(jobConfig));
     }
     
     @Override
@@ -104,14 +104,14 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
         if (Strings.isNullOrEmpty(data)) {
             throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", jobId));
         }
-        ScalingConfiguration scalingConfig = GSON.fromJson(data, ScalingConfiguration.class);
-        scalingConfig.getJobConfiguration().setJobId(jobId);
-        return new ScalingJob(scalingConfig);
+        JobConfiguration jobConfig = GSON.fromJson(data, JobConfiguration.class);
+        jobConfig.getHandleConfig().setJobId(jobId);
+        return new ScalingJob(jobConfig);
     }
     
     @Override
     public JobProgress getProgress(final long jobId) {
-        boolean running = getJob(jobId).getScalingConfig().getJobConfiguration().isRunning();
+        boolean running = getJob(jobId).getJobConfig().getHandleConfig().isRunning();
         JobProgress result = new JobProgress(jobId, running ? "RUNNING" : "STOPPED");
         List<String> shardingItems = REGISTRY_REPOSITORY.getChildrenKeys(ScalingTaskUtil.getScalingListenerPath(jobId, ScalingConstant.POSITION));
         for (String each : shardingItems) {

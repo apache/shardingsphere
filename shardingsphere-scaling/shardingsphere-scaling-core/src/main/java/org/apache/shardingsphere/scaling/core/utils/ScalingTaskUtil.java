@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.utils;
 
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
@@ -45,12 +45,12 @@ public final class ScalingTaskUtil {
      * All inventory tasks is finished and all Incremental tasks delay less than allow value.
      *
      * @param jobProgress job pProgress
-     * @param jobConfig job configuration
+     * @param handleConfig handle configuration
      * @return almost finished or not
      */
-    public static boolean allTasksAlmostFinished(final JobProgress jobProgress, final JobConfiguration jobConfig) {
+    public static boolean allTasksAlmostFinished(final JobProgress jobProgress, final HandleConfiguration handleConfig) {
         return jobProgress.getInventoryTaskProgress().stream().allMatch(each -> each.getTotal() == each.getFinished())
-                && jobProgress.getIncrementalTaskProgress().stream().allMatch(each -> each.getDelayMillisecond() < jobConfig.getWorkflowConfig().getAllowDelay());
+                && jobProgress.getIncrementalTaskProgress().stream().allMatch(each -> each.getDelayMillisecond() < handleConfig.getWorkflowConfig().getAllowDelay());
     }
     
     /**

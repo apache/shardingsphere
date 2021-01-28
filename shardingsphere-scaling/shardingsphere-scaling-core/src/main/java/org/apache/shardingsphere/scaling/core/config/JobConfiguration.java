@@ -21,27 +21,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Job configuration.
+ * Scaling job configuration.
  */
 @Setter
 @Getter
 public final class JobConfiguration {
     
-    private Long jobId;
+    private RuleConfiguration ruleConfig;
     
-    private int concurrency = 3;
-    
-    private int retryTimes = 3;
-    
-    private String[] shardingTables;
-    
-    private Integer shardingItem;
-    
-    private int shardingSize = 1000 * 10000;
-    
-    private boolean running = true;
-    
-    private String databaseType;
-    
-    private WorkflowConfiguration workflowConfig;
+    private HandleConfiguration handleConfig;
 }

@@ -31,7 +31,7 @@ import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
-import org.apache.shardingsphere.scaling.core.utils.ScalingConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.utils.JobConfigurationUtil;
 
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -53,7 +53,7 @@ public final class ScalingJobPreparer {
      * @param scalingJob scaling job
      */
     public void prepare(final ScalingJob scalingJob) {
-        ScalingConfigurationUtil.fillInProperties(scalingJob.getScalingConfig());
+        JobConfigurationUtil.fillInProperties(scalingJob.getJobConfig());
         try (DataSourceManager dataSourceManager = new DataSourceManager(scalingJob.getTaskConfigs())) {
             checkDataSource(scalingJob, dataSourceManager);
             initIncrementalTasks(scalingJob, dataSourceManager);
@@ -92,7 +92,7 @@ public final class ScalingJobPreparer {
     private void initIncrementalTasks(final ScalingJob scalingJob, final DataSourceManager dataSourceManager) throws SQLException {
         for (TaskConfiguration each : scalingJob.getTaskConfigs()) {
             each.getDumperConfig().setPosition(getIncrementalPosition(scalingJob, each, dataSourceManager));
-            scalingJob.getIncrementalTasks().add(scalingTaskFactory.createIncrementalTask(each.getJobConfig().getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
+            scalingJob.getIncrementalTasks().add(scalingTaskFactory.createIncrementalTask(each.getHandleConfig().getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
         }
     }
     
@@ -100,6 +100,6 @@ public final class ScalingJobPreparer {
         if (null != scalingJob.getInitPosition()) {
             return scalingJob.getInitPosition().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
         }
-        return PositionInitializerFactory.newInstance(taskConfig.getJobConfig().getDatabaseType()).init(dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig()));
+        return PositionInitializerFactory.newInstance(taskConfig.getHandleConfig().getDatabaseType()).init(dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig()));
     }
 }
