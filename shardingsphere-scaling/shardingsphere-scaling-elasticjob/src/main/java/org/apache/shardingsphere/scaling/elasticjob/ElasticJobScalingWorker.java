@@ -149,7 +149,8 @@ public final class ElasticJobScalingWorker implements ScalingWorker {
     }
     
     private org.apache.shardingsphere.elasticjob.api.JobConfiguration createJobConfig(final String jobId, final JobConfiguration jobConfig) {
-        return org.apache.shardingsphere.elasticjob.api.JobConfiguration.newBuilder(jobId, jobConfig.getHandleConfig().getShardingTables().length).jobParameter(GSON.toJson(jobConfig)).overwrite(true).build();
+        return org.apache.shardingsphere.elasticjob.api.JobConfiguration.newBuilder(jobId, jobConfig.getHandleConfig().getShardingTables().length)
+                .jobParameter(GSON.toJson(jobConfig)).overwrite(true).build();
     }
     
     private void deleteJob(final String jobId, final JobConfiguration jobConfig) {
