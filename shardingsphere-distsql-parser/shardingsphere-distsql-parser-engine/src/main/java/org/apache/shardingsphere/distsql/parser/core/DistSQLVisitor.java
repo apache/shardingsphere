@@ -180,8 +180,10 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
             replicaDatasources.add(each.getText());
         }
         Properties props = new Properties();
-        for (AlgorithmPropertyContext each : ctx.functionDefinition().algorithmProperties().algorithmProperty()) {
-            props.setProperty(each.key.getText(), each.value.getText());
+        if (null != ctx.functionDefinition().algorithmProperties()) {
+            for (AlgorithmPropertyContext each : ctx.functionDefinition().algorithmProperties().algorithmProperty()) {
+                props.setProperty(each.key.getText(), each.value.getText());
+            }
         }
         result.setName(ctx.ruleName.getText());
         result.setPrimaryDataSource(ctx.primary.getText());
@@ -226,8 +228,10 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         result.setReplicaDataSources(replicaDatasources);
         if (null != ctx.functionDefinition()) {
             Properties props = new Properties();
-            for (AlgorithmPropertyContext each : ctx.functionDefinition().algorithmProperties().algorithmProperty()) {
-                props.setProperty(each.key.getText(), each.value.getText());
+            if (null != ctx.functionDefinition().algorithmProperties()) {
+                for (AlgorithmPropertyContext each : ctx.functionDefinition().algorithmProperties().algorithmProperty()) {
+                    props.setProperty(each.key.getText(), each.value.getText());
+                }
             }
             result.setLoadBalancer(ctx.functionDefinition().functionName.getText());
             result.setProps(props);
@@ -262,8 +266,10 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         FunctionSegment result = new FunctionSegment();
         result.setAlgorithmName(ctx.functionName.getText());
         Properties algorithmProps = new Properties();
-        for (AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
-            algorithmProps.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
+        if (null != ctx.algorithmProperties()) {
+            for (AlgorithmPropertyContext each : ctx.algorithmProperties().algorithmProperty()) {
+                algorithmProps.setProperty(new IdentifierValue(each.key.getText()).getValue(), new IdentifierValue(each.value.getText()).getValue());
+            }
         }
         result.setAlgorithmProps(algorithmProps);
         return result;

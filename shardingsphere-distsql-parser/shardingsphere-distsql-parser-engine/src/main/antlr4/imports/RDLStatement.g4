@@ -152,7 +152,7 @@ schemaName
     ;
 
 functionDefinition
-    : functionName=IDENTIFIER LP algorithmProperties RP
+    : functionName=IDENTIFIER LP algorithmProperties? RP
     ;
 
 algorithmProperties
