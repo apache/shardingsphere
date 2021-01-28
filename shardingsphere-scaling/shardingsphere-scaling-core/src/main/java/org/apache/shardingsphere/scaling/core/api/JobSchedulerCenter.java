@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class JobSchedulerCenter {
     
-    private static final Map<String, JobContext> SCALING_JOB_MAP = Maps.newConcurrentMap();
+    private static final Map<String, JobContext> JOB_CONTEXT_MAP = Maps.newConcurrentMap();
     
     private static final ScheduledExecutorService JOB_PERSIST_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("scaling-job-persist-%d"));
     
@@ -49,7 +49,7 @@ public final class JobSchedulerCenter {
      * @param jobContext job context
      */
     public static void addJob(final JobContext jobContext) {
-        SCALING_JOB_MAP.put(String.format("%d-%d", jobContext.getJobId(), jobContext.getShardingItem()), jobContext);
+        JOB_CONTEXT_MAP.put(String.format("%d-%d", jobContext.getJobId(), jobContext.getShardingItem()), jobContext);
     }
     
     /**
@@ -58,14 +58,14 @@ public final class JobSchedulerCenter {
      * @param jobContext job context
      */
     public static void removeJob(final JobContext jobContext) {
-        SCALING_JOB_MAP.remove(String.format("%d-%d", jobContext.getJobId(), jobContext.getShardingItem()));
+        JOB_CONTEXT_MAP.remove(String.format("%d-%d", jobContext.getJobId(), jobContext.getShardingItem()));
     }
     
     private static final class PersistJobContextRunnable implements Runnable {
         
         @Override
         public void run() {
-            for (Map.Entry<String, JobContext> entry : SCALING_JOB_MAP.entrySet()) {
+            for (Map.Entry<String, JobContext> entry : JOB_CONTEXT_MAP.entrySet()) {
                 try {
                     REGISTRY_REPOSITORY_API.persistJobPosition(entry.getValue());
                     // CHECKSTYLE:OFF
