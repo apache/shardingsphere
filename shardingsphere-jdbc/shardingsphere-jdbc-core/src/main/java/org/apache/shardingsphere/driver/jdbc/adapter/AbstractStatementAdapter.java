@@ -124,13 +124,12 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     public final int getUpdateCount() throws SQLException {
         if (isAccumulate()) {
             return accumulate();
-        } else {
-            Collection<? extends Statement> statements = getRoutedStatements();
-            if (statements.isEmpty()) {
-                return -1;
-            }
-            return getRoutedStatements().iterator().next().getUpdateCount();
         }
+        Collection<? extends Statement> statements = getRoutedStatements();
+        if (statements.isEmpty()) {
+            return -1;
+        }
+        return getRoutedStatements().iterator().next().getUpdateCount();
     }
     
     private int accumulate() throws SQLException {
