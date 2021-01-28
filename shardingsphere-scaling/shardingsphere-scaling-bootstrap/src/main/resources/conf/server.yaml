@@ -21,7 +21,7 @@ scaling:
   workerThread: 30
 
 #governance:
-#  name: ScalingJob
+#  name: governance_ds
 #  registryCenter:
 #    type: ZooKeeper
 #    serverLists: localhost:2181
