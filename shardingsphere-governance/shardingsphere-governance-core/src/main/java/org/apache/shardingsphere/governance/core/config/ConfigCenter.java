@@ -50,9 +50,7 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -295,8 +293,8 @@ public final class ConfigCenter {
         if (!hasDataSourceConfiguration(schemaName)) {
             return new LinkedHashMap<>();
         }
-        YamlDataSourceConfigurationWrap result = YamlEngine.unmarshal(repository.get(node.getDataSourcePath(schemaName)), 
-                YamlDataSourceConfigurationWrap.class, Arrays.asList(YamlDataSourceConfigurationWrap.class, YamlDataSourceConfiguration.class));
+        YamlDataSourceConfigurationWrap result = YamlEngine.unmarshalWithFilter(repository.get(node.getDataSourcePath(schemaName)), 
+                YamlDataSourceConfigurationWrap.class);
         return result.getDataSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey,
             entry -> new DataSourceConfigurationYamlSwapper().swapToObject(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
@@ -309,8 +307,8 @@ public final class ConfigCenter {
      */
     public Collection<RuleConfiguration> loadRuleConfigurations(final String schemaName) {
         return hasRuleConfiguration(schemaName) ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                YamlEngine.unmarshal(repository.get(node.getRulePath(schemaName)), 
-                        YamlRuleConfigurationWrap.class, Collections.singletonList(YamlRuleConfigurationWrap.class)).getRules()) : new LinkedList<>();
+                YamlEngine.unmarshalWithFilter(repository.get(node.getRulePath(schemaName)), 
+                        YamlRuleConfigurationWrap.class).getRules()) : new LinkedList<>();
     }
     
     /**
@@ -331,7 +329,7 @@ public final class ConfigCenter {
      */
     public Properties loadProperties() {
         return Strings.isNullOrEmpty(repository.get(node.getPropsPath())) ? new Properties() 
-                : YamlEngine.unmarshal(repository.get(node.getPropsPath()), Properties.class, Collections.singletonList(Properties.class));
+                : YamlEngine.unmarshalWithFilter(repository.get(node.getPropsPath()), Properties.class);
     }
     
     /**

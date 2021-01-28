@@ -20,18 +20,18 @@ package org.apache.shardingsphere.infra.yaml.engine.constructor;
 import java.util.Collection;
 
 /**
- * Class filter constructor for YAML load as map.
+ * ShardingSphere filter constructor for YAML.
  */
-public final class ClassFilterConstructor extends ShardingSphereYamlConstructor {
+public final class ShardingSphereFilterYamlConstructor extends ShardingSphereYamlConstructor {
     
     private final Collection<Class<?>> acceptClasses;
     
-    public ClassFilterConstructor(final Class<?> rootClass, final Collection<Class<?>> acceptClasses) {
+    public ShardingSphereFilterYamlConstructor(final Class<?> rootClass, final Collection<Class<?>> acceptClasses) {
         super(rootClass);
         this.acceptClasses = acceptClasses;
     }
     
-    public ClassFilterConstructor(final Collection<Class<?>> acceptClasses) {
+    public ShardingSphereFilterYamlConstructor(final Collection<Class<?>> acceptClasses) {
         super(Object.class);
         this.acceptClasses = acceptClasses;
     }

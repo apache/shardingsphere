@@ -80,7 +80,7 @@ public final class YamlEngineTest {
     
     @Test
     public void assertUnmarshalProperties() {
-        Properties actual = YamlEngine.unmarshal("password: pwd\nauthorizedSchemas: db1", Properties.class, Collections.singletonList(Properties.class));
+        Properties actual = YamlEngine.unmarshalWithFilter("password: pwd\nauthorizedSchemas: db1", Properties.class);
         assertThat(actual.getProperty("authorizedSchemas"), is("db1"));
         assertThat(actual.getProperty("password"), is("pwd"));
     }
@@ -141,8 +141,8 @@ public final class YamlEngineTest {
                 yamlContent.append(line).append("\n");
             }
         }
-        FixtureYamlPropsRuleConfiguration actual = YamlEngine.unmarshal(yamlContent.toString(), 
-                FixtureYamlPropsRuleConfiguration.class, Collections.singletonList(FixtureYamlPropsRuleConfiguration.class));
+        FixtureYamlPropsRuleConfiguration actual = YamlEngine.unmarshalWithFilter(yamlContent.toString(), 
+                FixtureYamlPropsRuleConfiguration.class);
         assertThat(actual.getName(), is("test"));
     }
 }

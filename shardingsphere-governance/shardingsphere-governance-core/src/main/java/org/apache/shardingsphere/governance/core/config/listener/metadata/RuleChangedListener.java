@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -77,7 +76,7 @@ public final class RuleChangedListener extends PostGovernanceRepositoryEventList
     }
     
     private Collection<RuleConfiguration> getRuleConfigurations(final String yamlContent) {
-        Collection<YamlRuleConfiguration> rules = YamlEngine.unmarshal(yamlContent, YamlRuleConfigurationWrap.class, Collections.singletonList(YamlRuleConfigurationWrap.class)).getRules();
+        Collection<YamlRuleConfiguration> rules = YamlEngine.unmarshalWithFilter(yamlContent, YamlRuleConfigurationWrap.class).getRules();
         Preconditions.checkState(!rules.isEmpty(), "No available rule to load for governance.");
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rules);
     }
