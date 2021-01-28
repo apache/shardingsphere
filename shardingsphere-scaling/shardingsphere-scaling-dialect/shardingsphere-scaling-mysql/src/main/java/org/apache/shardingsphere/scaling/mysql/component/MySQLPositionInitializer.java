@@ -29,7 +29,7 @@ import java.sql.SQLException;
 /**
  * MySQL binlog position initializer.
  */
-public final class MySQLPositionInitializer implements PositionInitializer {
+public final class MySQLPositionInitializer implements PositionInitializer<BinlogPosition> {
     
     @Override
     public BinlogPosition init(final DataSource dataSource) throws SQLException {

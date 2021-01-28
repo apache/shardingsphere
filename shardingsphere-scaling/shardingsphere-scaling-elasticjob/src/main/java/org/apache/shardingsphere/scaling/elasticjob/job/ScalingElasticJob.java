@@ -22,6 +22,7 @@ import com.google.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
+import org.apache.shardingsphere.scaling.core.api.JobSchedulerCenter;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
@@ -55,12 +56,14 @@ public final class ScalingElasticJob implements SimpleJob {
         scalingConfig.getJobConfiguration().setShardingItem(shardingContext.getShardingItem());
         scalingConfig.getJobConfiguration().setJobId(Long.valueOf(shardingContext.getJobName()));
         scalingJob = SCALING_JOB_SERVICE.start(scalingConfig).orElse(null);
+        JobSchedulerCenter.addJob(scalingJob);
     }
     
     private void stopJob(final ShardingContext shardingContext) {
         if (null != scalingJob) {
             log.info("stop job: {} - {}", shardingContext.getJobName(), shardingContext.getShardingItem());
             SCALING_JOB_SERVICE.stop(scalingJob.getJobId());
+            JobSchedulerCenter.removeJob(scalingJob);
             scalingJob = null;
         }
     }

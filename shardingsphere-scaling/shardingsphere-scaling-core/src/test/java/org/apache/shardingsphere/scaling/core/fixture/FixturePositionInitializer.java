@@ -18,15 +18,14 @@
 package org.apache.shardingsphere.scaling.core.fixture;
 
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
 
 import javax.sql.DataSource;
 
-public final class FixturePositionInitializer implements PositionInitializer {
+public final class FixturePositionInitializer implements PositionInitializer<PlaceholderPosition> {
     
     @Override
-    public Position<?> init(final DataSource dataSource) {
+    public PlaceholderPosition init(final DataSource dataSource) {
         return new PlaceholderPosition();
     }
 }

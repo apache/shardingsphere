@@ -23,7 +23,7 @@ import java.sql.SQLException;
 /**
  * Position initializer.
  */
-public interface PositionInitializer {
+public interface PositionInitializer<T extends Position<?>> {
     
     /**
      * Init position by data source.
@@ -32,5 +32,5 @@ public interface PositionInitializer {
      * @return position
      * @throws SQLException SQL exception
      */
-    Position<?> init(DataSource dataSource) throws SQLException;
+    T init(DataSource dataSource) throws SQLException;
 }

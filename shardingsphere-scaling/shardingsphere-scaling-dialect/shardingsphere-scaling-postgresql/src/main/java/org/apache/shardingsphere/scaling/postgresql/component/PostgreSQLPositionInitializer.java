@@ -31,7 +31,7 @@ import java.sql.SQLException;
 /**
  * PostgreSQL wal position initializer.
  */
-public final class PostgreSQLPositionInitializer implements PositionInitializer {
+public final class PostgreSQLPositionInitializer implements PositionInitializer<WalPosition> {
     
     public static final String SLOT_NAME = "sharding_scaling";
     
