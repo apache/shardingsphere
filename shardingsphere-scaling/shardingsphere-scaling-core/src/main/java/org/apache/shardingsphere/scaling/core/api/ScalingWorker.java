@@ -50,7 +50,7 @@ public final class ScalingWorker {
      */
     public static void init() {
         ServerConfiguration serverConfig = ScalingContext.getInstance().getServerConfig();
-        Preconditions.checkArgument(serverConfig != null && serverConfig.getGovernanceConfig() != null, "Scaling server config and governance config is required.");
+        Preconditions.checkArgument(null != serverConfig && null != serverConfig.getGovernanceConfig(), "Scaling server config and governance config is required.");
         ShardingSphereEventBus.getInstance().register(INSTANCE);
         new FinishedCheckJobExecutor().start();
         new ScalingJobExecutor().start();
@@ -66,7 +66,7 @@ public final class ScalingWorker {
         log.info("Start scaling job by {}", event);
         Optional<JobContext> jobContext = ScalingJobServiceFactory.getInstance().start(createJobConfig(event));
         if (!jobContext.isPresent()) {
-            log.info("Without do scaling, switch rule configuration ruleCacheId = {} immediately.", event.getRuleCacheId());
+            log.info("Switch rule configuration ruleCacheId = {} immediately.", event.getRuleCacheId());
             ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(event.getSchemaName(), event.getRuleCacheId()));
         }
     }

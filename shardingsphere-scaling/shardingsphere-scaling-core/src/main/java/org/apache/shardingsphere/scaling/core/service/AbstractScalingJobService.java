@@ -18,13 +18,6 @@
 package org.apache.shardingsphere.scaling.core.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
-import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckerFactory;
@@ -32,7 +25,6 @@ import org.apache.shardingsphere.scaling.core.job.environmental.ScalingEnvironme
 
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Abstract scaling job service.
