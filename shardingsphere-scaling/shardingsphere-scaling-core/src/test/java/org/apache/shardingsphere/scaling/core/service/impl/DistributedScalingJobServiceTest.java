@@ -145,7 +145,7 @@ public final class DistributedScalingJobServiceTest {
     private ServerConfiguration mockServerConfiguration() {
         resetRegistryRepositoryAvailable();
         ServerConfiguration result = new ServerConfiguration();
-        result.setDistributedScalingService(new GovernanceConfiguration("test", new GovernanceCenterConfiguration("REG_FIXTURE", "", null), false));
+        result.setGovernanceConfig(new GovernanceConfiguration("test", new GovernanceCenterConfiguration("REG_FIXTURE", "", null), false));
         return result;
     }
     
