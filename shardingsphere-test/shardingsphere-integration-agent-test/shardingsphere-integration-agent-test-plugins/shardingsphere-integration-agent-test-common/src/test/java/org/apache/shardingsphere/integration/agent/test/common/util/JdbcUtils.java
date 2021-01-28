@@ -36,7 +36,7 @@ public class JdbcUtils {
      * Insert order.
      *
      * @param orderEntity order entity
-     * @param dataSource  data source
+     * @param dataSource data source
      */
     public static void insertOrder(final OrderEntity orderEntity, final DataSource dataSource) {
         String sql = "INSERT INTO t_order (order_id,user_id, status) VALUES (?, ?,?)";
@@ -55,7 +55,7 @@ public class JdbcUtils {
      * Insert order rollback.
      *
      * @param orderEntity order entity
-     * @param dataSource  data source
+     * @param dataSource data source
      */
     public static void insertOrderRollback(final OrderEntity orderEntity, final DataSource dataSource) {
         String sql = "INSERT INTO t_order (order_id,user_id, status) VALUES (?, ?,?)";
@@ -73,7 +73,7 @@ public class JdbcUtils {
     /**
      * Delete order by order id.
      *
-     * @param orderId    order id
+     * @param orderId order id
      * @param dataSource data source
      */
     public static void deleteOrderByOrderId(final Long orderId, final DataSource dataSource) {
@@ -107,7 +107,7 @@ public class JdbcUtils {
      * Select all orders collection.
      *
      * @param dataSource data source
-     * @return collection collection
+     * @return collection
      */
     public static Collection<OrderEntity> selectAllOrders(final DataSource dataSource) {
         String sql = "SELECT * FROM t_order";
