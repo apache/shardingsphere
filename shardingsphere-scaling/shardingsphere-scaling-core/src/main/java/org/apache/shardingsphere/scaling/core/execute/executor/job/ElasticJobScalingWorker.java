@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.elasticjob;
+package org.apache.shardingsphere.scaling.core.execute.executor.job;
 
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -34,11 +34,11 @@ import org.apache.shardingsphere.governance.repository.api.config.GovernanceConf
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
+import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 import org.apache.shardingsphere.scaling.core.spi.ScalingWorker;
+import org.apache.shardingsphere.scaling.core.utils.ElasticJobUtil;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
-import org.apache.shardingsphere.scaling.elasticjob.job.ScalingElasticJob;
-import org.apache.shardingsphere.scaling.elasticjob.util.ElasticJobUtils;
 
 import java.util.Map;
 import java.util.Optional;
@@ -67,7 +67,7 @@ public final class ElasticJobScalingWorker implements ScalingWorker {
     public void init(final GovernanceConfiguration governanceConfig) {
         log.info("Init elastic job scaling worker.");
         this.governanceConfig = governanceConfig;
-        registryCenter = ElasticJobUtils.createRegistryCenter(governanceConfig);
+        registryCenter = ElasticJobUtil.createRegistryCenter(governanceConfig);
         watchConfigRepository();
     }
     
@@ -167,7 +167,7 @@ public final class ElasticJobScalingWorker implements ScalingWorker {
         private boolean running;
         
         private JobBootstrapWrapper(final String jobId, final JobConfiguration jobConfig) {
-            jobBootstrap = new OneOffJobBootstrap(registryCenter, new ScalingElasticJob(), createJobConfig(jobId, jobConfig));
+            jobBootstrap = new OneOffJobBootstrap(registryCenter, new ScalingJob(), createJobConfig(jobId, jobConfig));
             running = jobConfig.getHandleConfig().isRunning();
         }
     }

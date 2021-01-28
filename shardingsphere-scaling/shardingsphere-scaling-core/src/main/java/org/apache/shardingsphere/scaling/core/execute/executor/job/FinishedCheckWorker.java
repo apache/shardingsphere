@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.elasticjob;
+package org.apache.shardingsphere.scaling.core.execute.executor.job;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobBootstrap;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.scaling.core.job.FinishedCheckJob;
 import org.apache.shardingsphere.scaling.core.spi.ScalingWorker;
-import org.apache.shardingsphere.scaling.elasticjob.job.FinishedCheckJob;
-import org.apache.shardingsphere.scaling.elasticjob.util.ElasticJobUtils;
+import org.apache.shardingsphere.scaling.core.utils.ElasticJobUtil;
 
 /**
  * Finished check worker.
@@ -38,7 +38,7 @@ public final class FinishedCheckWorker implements ScalingWorker {
     @Override
     public void init(final GovernanceConfiguration governanceConfig) {
         log.info("Init finished check worker.");
-        new ScheduleJobBootstrap(ElasticJobUtils.createRegistryCenter(governanceConfig), new FinishedCheckJob(), createJobConfig()).schedule();
+        new ScheduleJobBootstrap(ElasticJobUtil.createRegistryCenter(governanceConfig), new FinishedCheckJob(), createJobConfig()).schedule();
     }
     
     private JobConfiguration createJobConfig() {

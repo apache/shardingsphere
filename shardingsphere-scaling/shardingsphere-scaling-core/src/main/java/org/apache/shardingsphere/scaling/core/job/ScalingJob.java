@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.elasticjob.job;
+package org.apache.shardingsphere.scaling.core.job;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -24,15 +24,14 @@ import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.scaling.core.api.JobSchedulerCenter;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.service.impl.StandaloneScalingJobService;
 
 /**
- * Scaling elastic job.
+ * Scaling job.
  */
 @Slf4j
-public final class ScalingElasticJob implements SimpleJob {
+public final class ScalingJob implements SimpleJob {
     
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
     
