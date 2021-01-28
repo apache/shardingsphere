@@ -141,7 +141,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
         Optional<ServerConfiguration> scalingConfigurationOptional = getScalingConfiguration(yamlConfig);
         if (scalingConfigurationOptional.isPresent()) {
             ServerConfiguration serverConfiguration = scalingConfigurationOptional.get();
-            serverConfiguration.setDistributedScalingService(new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance()));
+            serverConfiguration.setGovernanceConfig(new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance()));
             ScalingContext.getInstance().init(serverConfiguration);
             ScalingWorkerLoader.initScalingWorker();
             ScalingServiceHolder.getInstance().init();
