@@ -100,12 +100,22 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     }
     
     private void setDatabaseServerInfo() {
-        Optional<DataSource> dataSourceSample = ProxyContext.getInstance().getDataSourceSample();
-        if (dataSourceSample.isPresent()) {
-            DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSample.get());
+        Optional<DataSource> dataSourceSampleForMySQL = findBackendMySQLDataSource();
+        if (dataSourceSampleForMySQL.isPresent()) {
+            DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSourceSampleForMySQL.get());
             log.info(databaseServerInfo.toString());
             MySQLServerInfo.setServerVersion(databaseServerInfo.getDatabaseVersion());
         }
+    }
+    
+    private Optional<DataSource> findBackendMySQLDataSource() {
+        for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
+            ShardingSphereResource resource = ProxyContext.getInstance().getMetaData(each).getResource();
+            if ("MySQL".equals(resource.getDatabaseType().getName())) {
+                return resource.getDataSources().values().stream().findFirst();
+            }
+        }
+        return Optional.empty();
     }
     
     protected Optional<ServerConfiguration> getScalingConfiguration(final YamlProxyConfiguration yamlConfig) {

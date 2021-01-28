@@ -22,8 +22,9 @@ import com.google.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.api.JobSchedulerCenter;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.service.impl.StandaloneScalingJobService;
 
@@ -37,31 +38,33 @@ public final class ScalingElasticJob implements SimpleJob {
     
     private static final ScalingJobService SCALING_JOB_SERVICE = new StandaloneScalingJobService();
     
-    private ScalingJob scalingJob;
+    private JobContext jobContext;
     
     @Override
     public void execute(final ShardingContext shardingContext) {
         log.info("execute job: {} - {}/{}", shardingContext.getTaskId(), shardingContext.getShardingItem(), shardingContext.getShardingTotalCount());
-        ScalingConfiguration scalingConfig = GSON.fromJson(shardingContext.getJobParameter(), ScalingConfiguration.class);
-        if (scalingConfig.getJobConfiguration().isRunning()) {
-            startJob(scalingConfig, shardingContext);
+        JobConfiguration jobConfig = GSON.fromJson(shardingContext.getJobParameter(), JobConfiguration.class);
+        if (jobConfig.getHandleConfig().isRunning()) {
+            startJob(jobConfig, shardingContext);
             return;
         }
         stopJob(shardingContext);
     }
     
-    private void startJob(final ScalingConfiguration scalingConfig, final ShardingContext shardingContext) {
+    private void startJob(final JobConfiguration jobConfig, final ShardingContext shardingContext) {
         log.info("start job: {} - {}", shardingContext.getJobName(), shardingContext.getShardingItem());
-        scalingConfig.getJobConfiguration().setShardingItem(shardingContext.getShardingItem());
-        scalingConfig.getJobConfiguration().setJobId(Long.valueOf(shardingContext.getJobName()));
-        scalingJob = SCALING_JOB_SERVICE.start(scalingConfig).orElse(null);
+        jobConfig.getHandleConfig().setShardingItem(shardingContext.getShardingItem());
+        jobConfig.getHandleConfig().setJobId(Long.valueOf(shardingContext.getJobName()));
+        jobContext = SCALING_JOB_SERVICE.start(jobConfig).orElse(null);
+        JobSchedulerCenter.addJob(jobContext);
     }
     
     private void stopJob(final ShardingContext shardingContext) {
-        if (null != scalingJob) {
+        if (null != jobContext) {
             log.info("stop job: {} - {}", shardingContext.getJobName(), shardingContext.getShardingItem());
-            SCALING_JOB_SERVICE.stop(scalingJob.getJobId());
-            scalingJob = null;
+            SCALING_JOB_SERVICE.stop(jobContext.getJobId());
+            JobSchedulerCenter.removeJob(jobContext);
+            jobContext = null;
         }
     }
 }

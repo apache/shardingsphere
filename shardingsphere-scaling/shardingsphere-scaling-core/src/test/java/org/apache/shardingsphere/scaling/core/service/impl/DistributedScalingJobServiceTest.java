@@ -23,17 +23,17 @@ import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurat
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
-import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 import org.junit.After;
@@ -66,43 +66,43 @@ public final class DistributedScalingJobServiceTest {
     @Test
     public void assertListJobs() {
         assertThat(scalingJobService.listJobs().size(), is(0));
-        scalingJobService.start(mockScalingConfiguration());
+        scalingJobService.start(mockJobConfiguration());
         assertThat(scalingJobService.listJobs().size(), is(1));
     }
     
     @Test
-    public void assertStartWithScalingConfig() {
-        Optional<ScalingJob> scalingJob = scalingJobService.start(mockScalingConfiguration());
-        assertTrue(scalingJob.isPresent());
-        assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(scalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":true"));
+    public void assertStartWithJobConfig() {
+        Optional<JobContext> jobContext = scalingJobService.start(mockJobConfiguration());
+        assertTrue(jobContext.isPresent());
+        assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(jobContext.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":true"));
     }
     
     @Test
     public void assertStartWithCallbackImmediately() {
-        ScalingConfiguration scalingConfig = mockScalingConfiguration();
-        ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfiguration().getSource().unwrap();
+        JobConfiguration jobConfig = mockJobConfiguration();
+        ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) jobConfig.getRuleConfig().getSource().unwrap();
         RuleConfigurationsAlteredEvent event = new RuleConfigurationsAlteredEvent("schema", source.getDataSource(), source.getRule(), source.getRule(), "cacheId");
-        Optional<ScalingJob> scalingJob = scalingJobService.start(event);
-        assertFalse(scalingJob.isPresent());
+        Optional<JobContext> jobContext = scalingJobService.start(event);
+        assertFalse(jobContext.isPresent());
     }
     
     @Test
     public void assertStartWithCallbackSuccess() throws IOException {
-        ScalingConfiguration scalingConfig = ScalingConfigurationUtil.initConfig("/config_sharding_sphere_jdbc_target.json");
-        ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfiguration().getSource().unwrap();
-        ShardingSphereJDBCDataSourceConfiguration target = (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfiguration().getTarget().unwrap();
+        JobConfiguration jobConfig = JobConfigurationUtil.initJobConfig("/config_sharding_sphere_jdbc_target.json");
+        ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) jobConfig.getRuleConfig().getSource().unwrap();
+        ShardingSphereJDBCDataSourceConfiguration target = (ShardingSphereJDBCDataSourceConfiguration) jobConfig.getRuleConfig().getTarget().unwrap();
         RuleConfigurationsAlteredEvent event = new RuleConfigurationsAlteredEvent(
                 "schema", source.getDataSource(), source.getRule(), target.getDataSource(), target.getRule(), "cacheId");
-        Optional<ScalingJob> scalingJob = scalingJobService.start(event);
-        assertTrue(scalingJob.isPresent());
+        Optional<JobContext> jobContext = scalingJobService.start(event);
+        assertTrue(jobContext.isPresent());
     }
     
     @Test
     public void assertStop() {
-        Optional<ScalingJob> scalingJob = scalingJobService.start(mockScalingConfiguration());
-        assertTrue(scalingJob.isPresent());
-        scalingJobService.stop(scalingJob.get().getJobId());
-        assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(scalingJob.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":false"));
+        Optional<JobContext> jobContext = scalingJobService.start(mockJobConfiguration());
+        assertTrue(jobContext.isPresent());
+        scalingJobService.stop(jobContext.get().getJobId());
+        assertTrue(registryRepository.get(ScalingTaskUtil.getScalingListenerPath(jobContext.get().getJobId(), ScalingConstant.CONFIG)).contains("\"running\":false"));
     }
     
     @Test(expected = ScalingJobNotFoundException.class)
@@ -112,7 +112,7 @@ public final class DistributedScalingJobServiceTest {
     
     @Test
     public void assertGetProgress() {
-        registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/config"), new Gson().toJson(mockScalingConfiguration()));
+        registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/config"), new Gson().toJson(mockJobConfiguration()));
         registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/position/0/inventory"),
                 "{'unfinished': {'ds1.table1#1':[0,100],'ds1.table1#2':[160,200],'ds1.table3':[]},'finished':['ds1.table2#1','ds1.table2#2']}");
         registryRepository.persist(ScalingTaskUtil.getScalingListenerPath("1/position/0/incremental"),
@@ -145,7 +145,7 @@ public final class DistributedScalingJobServiceTest {
     private ServerConfiguration mockServerConfiguration() {
         resetRegistryRepositoryAvailable();
         ServerConfiguration result = new ServerConfiguration();
-        result.setDistributedScalingService(new GovernanceConfiguration("test", new GovernanceCenterConfiguration("REG_FIXTURE", "", null), false));
+        result.setGovernanceConfig(new GovernanceConfiguration("test", new GovernanceCenterConfiguration("REG_FIXTURE", "", null), false));
         return result;
     }
     
@@ -155,7 +155,7 @@ public final class DistributedScalingJobServiceTest {
     }
     
     @SneakyThrows(IOException.class)
-    private ScalingConfiguration mockScalingConfiguration() {
-        return ScalingConfigurationUtil.initConfig("/config.json");
+    private JobConfiguration mockJobConfiguration() {
+        return JobConfigurationUtil.initJobConfig("/config.json");
     }
 }

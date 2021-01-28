@@ -85,7 +85,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         super(sqlStatement);
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
-        orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
+        orderByContext = new OrderByContextEngine().createOrderBy(schema, sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(schema).createProjectionsContext(getFromSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         containsSubquery = containsSubquery();

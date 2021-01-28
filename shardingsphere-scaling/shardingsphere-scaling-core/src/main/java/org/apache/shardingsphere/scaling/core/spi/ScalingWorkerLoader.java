@@ -36,7 +36,7 @@ public final class ScalingWorkerLoader {
     public static void initScalingWorker() {
         log.info("Init scaling worker");
         ShardingSphereServiceLoader.register(ScalingWorker.class);
-        GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getDistributedScalingService();
+        GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
         if (null != governanceConfig) {
             Collection<ScalingWorker> scalingWorkers = ShardingSphereServiceLoader.newServiceInstances(ScalingWorker.class);
             for (ScalingWorker each : scalingWorkers) {

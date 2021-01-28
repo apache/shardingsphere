@@ -23,7 +23,7 @@ import io.opentracing.tag.Tags;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
-import org.apache.shardingsphere.agent.plugin.tracing.rule.JaegerCollector;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.collector.JaegerCollector;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
