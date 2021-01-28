@@ -38,7 +38,7 @@ public final class ScalingTaskUtil {
      * @return is finished
      */
     public static boolean allInventoryTasksFinished(final Collection<ScalingTask> inventoryTasks) {
-        return inventoryTasks.stream().allMatch(each -> ((InventoryTask) each).getPositionManager().getPosition() instanceof FinishedPosition);
+        return inventoryTasks.stream().allMatch(each -> ((InventoryTask) each).getPosition() instanceof FinishedPosition);
     }
     
     /**

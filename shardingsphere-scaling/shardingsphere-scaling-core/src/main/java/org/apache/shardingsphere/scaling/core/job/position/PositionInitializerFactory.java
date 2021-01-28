@@ -17,43 +17,33 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
-
-import javax.sql.DataSource;
+import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 
 /**
- * Position manager factory.
+ * Position initializer factory.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PositionManagerFactory {
+public final class PositionInitializerFactory {
     
     /**
-     * New instance of position manager.
+     * New instance of position initializer.
      *
      * @param databaseType database type
-     * @param dataSource data source
-     * @return position manager
+     * @return position initializer
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static PositionManager newInstance(final String databaseType, final DataSource dataSource) {
-        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getPositionManager().getConstructor(DataSource.class).newInstance(dataSource);
+    public static PositionInitializer<?> newInstance(final String databaseType) {
+        return ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType).getPositionInitializer().newInstance();
     }
     
     /**
-     * New instance of position manager.
+     * Get position type.
      *
      * @param databaseType database type
-     * @param position position
-     * @return position manager
+     * @return position type
      */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static PositionManager newInstance(final String databaseType, final String position) {
-        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
-        return scalingEntry.getPositionManager().getConstructor(String.class).newInstance(position);
+    public static Class<?> getPositionClass(final String databaseType) {
+        return ReflectionUtil.getInterfaceGenericClass(ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType).getPositionInitializer());
     }
 }

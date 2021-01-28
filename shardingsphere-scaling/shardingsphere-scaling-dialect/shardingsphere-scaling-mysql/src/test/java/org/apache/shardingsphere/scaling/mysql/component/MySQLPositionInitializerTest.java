@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.mysql.component;
 
-import com.google.gson.Gson;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +36,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MySQLPositionManagerTest {
+public final class MySQLPositionInitializerTest {
     
     private static final String LOG_FILE_NAME = "binlog-000001";
     
@@ -61,28 +60,12 @@ public final class MySQLPositionManagerTest {
     }
     
     @Test
-    public void assertGetCurrentPosition() {
-        MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(dataSource);
-        BinlogPosition actual = mysqlPositionManager.getPosition();
+    public void assertGetCurrentPosition() throws SQLException {
+        MySQLPositionInitializer mySQLPositionInitializer = new MySQLPositionInitializer();
+        BinlogPosition actual = mySQLPositionInitializer.init(dataSource);
         assertThat(actual.getServerId(), is(SERVER_ID));
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));
         assertThat(actual.getPosition(), is(LOG_POSITION));
-    }
-    
-    @Test
-    public void assertInitPositionByJson() {
-        MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(new Gson().toJson(new BinlogPosition(LOG_FILE_NAME, LOG_POSITION)));
-        BinlogPosition actual = mysqlPositionManager.getPosition();
-        assertThat(actual.getFilename(), is(LOG_FILE_NAME));
-        assertThat(actual.getPosition(), is(LOG_POSITION));
-    }
-    
-    @Test
-    public void assertUpdateCurrentPosition() {
-        MySQLPositionManager mysqlPositionManager = new MySQLPositionManager(dataSource);
-        BinlogPosition expected = new BinlogPosition(LOG_FILE_NAME, LOG_POSITION, SERVER_ID, 0);
-        mysqlPositionManager.setPosition(expected);
-        assertThat(mysqlPositionManager.getPosition(), is(expected));
     }
     
     private PreparedStatement mockPositionStatement() throws SQLException {

@@ -111,7 +111,7 @@ public abstract class AbstractJDBCDumper extends AbstractScalingExecutor impleme
         if (null == inventoryDumperConfig.getPrimaryKey()) {
             return new PlaceholderPosition();
         }
-        return new PrimaryKeyPosition(rs.getLong(inventoryDumperConfig.getPrimaryKey()), ((PrimaryKeyPosition) inventoryDumperConfig.getPositionManager().getPosition()).getEndValue());
+        return new PrimaryKeyPosition(rs.getLong(inventoryDumperConfig.getPrimaryKey()), ((PrimaryKeyPosition) inventoryDumperConfig.getPosition()).getEndValue());
     }
     
     protected abstract PreparedStatement createPreparedStatement(Connection connection, String sql) throws SQLException;

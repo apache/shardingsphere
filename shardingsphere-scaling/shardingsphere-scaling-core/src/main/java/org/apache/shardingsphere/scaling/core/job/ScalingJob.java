@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManager;
+import org.apache.shardingsphere.scaling.core.job.position.JobPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
 import org.apache.shardingsphere.scaling.core.utils.TaskConfigurationUtil;
@@ -46,6 +46,8 @@ public final class ScalingJob {
     
     private String databaseType;
     
+    private JobPosition initPosition;
+    
     private final transient List<TaskConfiguration> taskConfigs = new LinkedList<>();
     
     private final transient List<ScalingTask> inventoryTasks = new LinkedList<>();
@@ -55,8 +57,6 @@ public final class ScalingJob {
     private transient ScalingConfiguration scalingConfig;
     
     private String status = JobStatus.RUNNING.name();
-    
-    private transient ResumeBreakPointManager resumeBreakPointManager;
     
     public ScalingJob() {
         this(generateKey());

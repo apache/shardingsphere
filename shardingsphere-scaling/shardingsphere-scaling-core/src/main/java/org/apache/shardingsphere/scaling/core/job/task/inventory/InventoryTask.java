@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.job.task.inventory;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.job.TaskProgress;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
 import java.util.Optional;
@@ -54,6 +56,12 @@ public final class InventoryTask extends AbstractScalingExecutor implements Scal
     
     private Dumper dumper;
     
+    @Getter
+    private final String taskId;
+    
+    @Getter
+    private Position<?> position;
+    
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig) {
         this(inventoryDumperConfig, importerConfig, new DataSourceManager());
     }
@@ -62,8 +70,8 @@ public final class InventoryTask extends AbstractScalingExecutor implements Scal
         this.inventoryDumperConfig = inventoryDumperConfig;
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
-        setTaskId(generateTaskId(inventoryDumperConfig));
-        setPositionManager(inventoryDumperConfig.getPositionManager());
+        taskId = generateTaskId(inventoryDumperConfig);
+        position = inventoryDumperConfig.getPosition();
     }
     
     private String generateTaskId(final InventoryDumperConfiguration inventoryDumperConfig) {
@@ -100,7 +108,7 @@ public final class InventoryTask extends AbstractScalingExecutor implements Scal
     private void instanceChannel(final Importer importer) {
         MemoryChannel channel = new MemoryChannel(records -> {
             Optional<Record> record = records.stream().filter(each -> !(each.getPosition() instanceof PlaceholderPosition)).reduce((a, b) -> b);
-            record.ifPresent(value -> getPositionManager().setPosition(value.getPosition()));
+            record.ifPresent(value -> position = value.getPosition());
         });
         dumper.setChannel(channel);
         importer.setChannel(channel);
@@ -111,7 +119,7 @@ public final class InventoryTask extends AbstractScalingExecutor implements Scal
             future.get();
         } catch (final InterruptedException ignored) {
         } catch (final ExecutionException ex) {
-            throw new ScalingTaskExecuteException(String.format("Task %s execute failed ", getTaskId()), ex.getCause());
+            throw new ScalingTaskExecuteException(String.format("Task %s execute failed ", taskId), ex.getCause());
         }
     }
     
@@ -125,6 +133,6 @@ public final class InventoryTask extends AbstractScalingExecutor implements Scal
     
     @Override
     public TaskProgress getProgress() {
-        return new InventoryTaskProgress(getTaskId(), getPositionManager().getPosition() instanceof FinishedPosition);
+        return new InventoryTaskProgress(taskId, position instanceof FinishedPosition);
     }
 }

@@ -17,27 +17,20 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
- * Scaling position manager.
+ * Position initializer.
  */
-@Getter
-@Setter
-public class PositionManager {
+public interface PositionInitializer<T extends Position<?>> {
     
-    private DataSource dataSource;
-    
-    private Position<?> position;
-    
-    public PositionManager(final DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
-    
-    public PositionManager(final Position<?> position) {
-        this.position = position;
-    }
+    /**
+     * Init position by data source.
+     *
+     * @param dataSource data source
+     * @return position
+     * @throws SQLException SQL exception
+     */
+    T init(DataSource dataSource) throws SQLException;
 }

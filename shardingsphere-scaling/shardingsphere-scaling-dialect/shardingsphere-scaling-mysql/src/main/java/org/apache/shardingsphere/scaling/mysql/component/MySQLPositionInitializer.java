@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.scaling.mysql.component;
 
-import com.google.common.base.Preconditions;
-import com.google.gson.Gson;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 
 import javax.sql.DataSource;
@@ -30,33 +27,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * MySQL binlog position manager.
+ * MySQL binlog position initializer.
  */
-public final class MySQLPositionManager extends PositionManager {
-    
-    public MySQLPositionManager(final DataSource dataSource) {
-        super(dataSource);
-        initPosition();
-    }
-    
-    public MySQLPositionManager(final String position) {
-        super(new Gson().fromJson(position, BinlogPosition.class));
-    }
+public final class MySQLPositionInitializer implements PositionInitializer<BinlogPosition> {
     
     @Override
-    public BinlogPosition getPosition() {
-        Position<?> position = super.getPosition();
-        Preconditions.checkState(null != position, "Unknown position.");
-        return (BinlogPosition) position;
-    }
-    
-    private void initPosition() {
-        try (Connection connection = getDataSource().getConnection()) {
-            BinlogPosition position = getBinlogPosition(connection);
-            position.setServerId(getServerId(connection));
-            setPosition(position);
-        } catch (final SQLException ex) {
-            throw new RuntimeException("init position failed.", ex);
+    public BinlogPosition init(final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            BinlogPosition result = getBinlogPosition(connection);
+            result.setServerId(getServerId(connection));
+            return result;
         }
     }
     

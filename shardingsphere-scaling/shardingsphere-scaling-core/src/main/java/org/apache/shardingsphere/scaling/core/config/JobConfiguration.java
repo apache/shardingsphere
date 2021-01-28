@@ -41,5 +41,7 @@ public final class JobConfiguration {
     
     private boolean running = true;
     
+    private String databaseType;
+    
     private WorkflowConfiguration workflowConfig;
 }

@@ -62,7 +62,6 @@ public final class ScalingTaskScheduler implements Runnable {
             log.info("stop incremental task {} - {}", scalingJob.getJobId(), each.getTaskId());
             each.stop();
         }
-        scalingJob.getResumeBreakPointManager().close();
     }
     
     @Override

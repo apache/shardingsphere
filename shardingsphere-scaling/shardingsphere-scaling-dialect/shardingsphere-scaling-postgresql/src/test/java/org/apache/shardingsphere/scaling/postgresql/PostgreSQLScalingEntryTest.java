@@ -23,7 +23,7 @@ import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLDataCons
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLDataSourceChecker;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLImporter;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLJdbcDumper;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLPositionManager;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLPositionInitializer;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLWalDumper;
 import org.junit.Test;
 
@@ -37,7 +37,7 @@ public final class PostgreSQLScalingEntryTest {
     public void assertGetScalingEntryByDatabaseType() {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType("PostgreSQL");
         assertTrue(scalingEntry instanceof PostgreSQLScalingEntry);
-        assertThat(scalingEntry.getPositionManager(), equalTo(PostgreSQLPositionManager.class));
+        assertThat(scalingEntry.getPositionInitializer(), equalTo(PostgreSQLPositionInitializer.class));
         assertThat(scalingEntry.getDataSourceCheckerClass(), equalTo(PostgreSQLDataSourceChecker.class));
         assertThat(scalingEntry.getDataConsistencyCheckerClass(), equalTo(PostgreSQLDataConsistencyChecker.class));
         assertThat(scalingEntry.getImporterClass(), equalTo(PostgreSQLImporter.class));

@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.scaling.postgresql.component;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
+import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
 import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.util.PSQLException;
@@ -31,9 +29,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * PostgreSQL wal position manager.
+ * PostgreSQL wal position initializer.
  */
-public final class PostgreSQLPositionManager extends PositionManager {
+public final class PostgreSQLPositionInitializer implements PositionInitializer<WalPosition> {
     
     public static final String SLOT_NAME = "sharding_scaling";
     
@@ -41,28 +39,11 @@ public final class PostgreSQLPositionManager extends PositionManager {
     
     public static final String DUPLICATE_OBJECT_ERROR_CODE = "42710";
     
-    public PostgreSQLPositionManager(final DataSource dataSource) {
-        super(dataSource);
-        initPosition();
-    }
-    
-    public PostgreSQLPositionManager(final String position) {
-        super(new WalPosition(LogSequenceNumber.valueOf(Long.parseLong(position))));
-    }
-    
     @Override
-    public WalPosition getPosition() {
-        Position<?> position = super.getPosition();
-        Preconditions.checkState(null != position, "Unknown position.");
-        return (WalPosition) position;
-    }
-    
-    private void initPosition() {
-        try (Connection connection = getDataSource().getConnection()) {
+    public WalPosition init(final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
             createIfNotExists(connection);
-            setPosition(getWalPosition(connection));
-        } catch (final SQLException ex) {
-            throw new RuntimeException("init position failed.", ex);
+            return getWalPosition(connection);
         }
     }
     

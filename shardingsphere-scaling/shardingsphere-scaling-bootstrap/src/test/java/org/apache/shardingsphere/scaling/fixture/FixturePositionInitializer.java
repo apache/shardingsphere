@@ -17,22 +17,15 @@
 
 package org.apache.shardingsphere.scaling.fixture;
 
-import org.apache.shardingsphere.scaling.core.job.position.resume.AbstractResumeBreakPointManager;
-import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManager;
+import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
+import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
 
-public final class FixtureResumeBreakPointManager extends AbstractResumeBreakPointManager implements ResumeBreakPointManager {
-    
-    public FixtureResumeBreakPointManager(final String databaseType, final String taskPath) {
-        super(databaseType, taskPath);
-    }
+import javax.sql.DataSource;
+
+public final class FixturePositionInitializer implements PositionInitializer<PlaceholderPosition> {
     
     @Override
-    public String getPosition(final String path) {
-        return null;
-    }
-    
-    @Override
-    public void persistPosition(final String path, final String data) {
-    
+    public PlaceholderPosition init(final DataSource dataSource) {
+        return new PlaceholderPosition();
     }
 }

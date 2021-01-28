@@ -15,20 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.fixture;
+package org.apache.shardingsphere.scaling.core.api;
 
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
+import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.job.position.JobPosition;
 
-import javax.sql.DataSource;
-
-public final class FixturePositionManager extends PositionManager {
+/**
+ * Registry repository API.
+ */
+public interface RegistryRepositoryAPI {
     
-    public FixturePositionManager(final DataSource dataSource) {
-        super(new PlaceholderPosition());
-    }
+    /**
+     * persist job position.
+     *
+     * @param scalingJob scaling job
+     */
+    void persistJobPosition(ScalingJob scalingJob);
     
-    public FixturePositionManager(final String position) {
-        super(new PlaceholderPosition());
-    }
+    /**
+     * Get job position.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @return job position
+     */
+    JobPosition getJobPosition(long jobId, int shardingItem);
 }
