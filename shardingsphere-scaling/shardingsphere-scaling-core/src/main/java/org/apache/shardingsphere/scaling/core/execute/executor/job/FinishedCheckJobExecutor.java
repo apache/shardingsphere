@@ -15,30 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.elasticjob;
+package org.apache.shardingsphere.scaling.core.execute.executor.job;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobBootstrap;
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.scaling.core.spi.ScalingWorker;
-import org.apache.shardingsphere.scaling.elasticjob.job.FinishedCheckJob;
-import org.apache.shardingsphere.scaling.elasticjob.util.ElasticJobUtils;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
+import org.apache.shardingsphere.scaling.core.execute.executor.AbstractScalingExecutor;
+import org.apache.shardingsphere.scaling.core.execute.executor.ScalingExecutor;
+import org.apache.shardingsphere.scaling.core.job.FinishedCheckJob;
+import org.apache.shardingsphere.scaling.core.utils.ElasticJobUtil;
 
 /**
  * Finished check worker.
  */
 @Slf4j
-public final class FinishedCheckWorker implements ScalingWorker {
+public final class FinishedCheckJobExecutor extends AbstractScalingExecutor implements ScalingExecutor {
     
     private static final String JOB_NAME = "finished_check";
     
     private static final String CRON_EXPRESSION = "0 * * * * ?";
     
     @Override
-    public void init(final GovernanceConfiguration governanceConfig) {
-        log.info("Init finished check worker.");
-        new ScheduleJobBootstrap(ElasticJobUtils.createRegistryCenter(governanceConfig), new FinishedCheckJob(), createJobConfig()).schedule();
+    public void start() {
+        super.start();
+        log.info("start finished check worker.");
+        new ScheduleJobBootstrap(ElasticJobUtil.createRegistryCenter(ScalingContext.getInstance().getServerConfig().getGovernanceConfig()), new FinishedCheckJob(), createJobConfig()).schedule();
     }
     
     private JobConfiguration createJobConfig() {
