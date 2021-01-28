@@ -21,40 +21,50 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public final class DataNodeContainedFixtureRule implements DataNodeContainedRule, TableContainedRule {
-    
+
+    private final Map<String, String> actualTableNameMaps = new HashMap<>(4);
+
+    public DataNodeContainedFixtureRule() {
+        actualTableNameMaps.putIfAbsent("data_node_routed_table1_0", "data_node_routed_table1");
+        actualTableNameMaps.putIfAbsent("data_node_routed_table1_1", "data_node_routed_table1");
+        actualTableNameMaps.putIfAbsent("data_node_routed_table2_0", "data_node_routed_table2");
+        actualTableNameMaps.putIfAbsent("data_node_routed_table2_1", "data_node_routed_table2");
+    }
+
     @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
         return null;
     }
-    
+
     @Override
     public Collection<String> getAllActualTables() {
-        return Arrays.asList("data_node_routed_table_0", "data_node_routed_table_2");
+        return actualTableNameMaps.keySet();
     }
-    
+
     @Override
     public Optional<String> findFirstActualTable(final String logicTable) {
         return Optional.empty();
     }
-    
+
     @Override
     public boolean isNeedAccumulate(final Collection<String> tables) {
         return false;
     }
-    
+
     @Override
     public Optional<String> findLogicTableByActualTable(final String actualTable) {
-        return Optional.empty();
+        return Optional.ofNullable(actualTableNameMaps.get(actualTable));
     }
-    
+
     @Override
     public Collection<String> getTables() {
-        return Arrays.asList("data_node_routed_table_0", "data_node_routed_table_1");
+        return actualTableNameMaps.values().stream().collect(Collectors.toSet());
     }
 }
