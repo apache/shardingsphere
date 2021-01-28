@@ -53,7 +53,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().setLongSerializationPolicy(LongSerializationPolicy.STRING).create();
     
-    private static final ScalingJobService SCALING_JOB_SERVICE = ScalingJobServiceFactory.getInstance();
+    private final ScalingJobService scalingJobService = ScalingJobServiceFactory.getInstance();
     
     @Override
     protected void channelRead0(final ChannelHandlerContext context, final FullHttpRequest request) {
@@ -89,7 +89,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     }
     
     private void startJob(final ChannelHandlerContext context, final String requestBody) {
-        Optional<ScalingJob> scalingJob = SCALING_JOB_SERVICE.start(GSON.fromJson(requestBody, ScalingConfiguration.class));
+        Optional<ScalingJob> scalingJob = scalingJobService.start(GSON.fromJson(requestBody, ScalingConfiguration.class));
         if (scalingJob.isPresent()) {
             response(ResponseContentUtil.build(scalingJob.get()), context, HttpResponseStatus.OK);
             return;
@@ -98,26 +98,26 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     }
     
     private void listJobs(final ChannelHandlerContext context) {
-        List<ScalingJob> scalingJobs = SCALING_JOB_SERVICE.listJobs();
+        List<ScalingJob> scalingJobs = scalingJobService.listJobs();
         response(ResponseContentUtil.build(scalingJobs), context, HttpResponseStatus.OK);
     }
     
     private void getJobProgress(final ChannelHandlerContext context, final String requestPath) {
         try {
-            response(ResponseContentUtil.build(SCALING_JOB_SERVICE.getProgress(getJobId(requestPath))), context, HttpResponseStatus.OK);
+            response(ResponseContentUtil.build(scalingJobService.getProgress(getJobId(requestPath))), context, HttpResponseStatus.OK);
         } catch (final ScalingJobNotFoundException ex) {
             response(ResponseContentUtil.handleBadRequest(ex.getMessage()), context, HttpResponseStatus.BAD_REQUEST);
         }
     }
     
     private void stopJob(final ChannelHandlerContext context, final String requestPath) {
-        SCALING_JOB_SERVICE.stop(getJobId(requestPath));
+        scalingJobService.stop(getJobId(requestPath));
         response(ResponseContentUtil.success(), context, HttpResponseStatus.OK);
     }
     
     private void checkJob(final ChannelHandlerContext context, final String requestPath) {
         try {
-            response(ResponseContentUtil.build(SCALING_JOB_SERVICE.check(getJobId(requestPath))), context, HttpResponseStatus.OK);
+            response(ResponseContentUtil.build(scalingJobService.check(getJobId(requestPath))), context, HttpResponseStatus.OK);
         } catch (final ScalingJobNotFoundException ex) {
             response(ResponseContentUtil.handleBadRequest(ex.getMessage()), context, HttpResponseStatus.BAD_REQUEST);
         }
@@ -125,7 +125,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     
     private void resetJob(final ChannelHandlerContext context, final String requestPath) {
         try {
-            SCALING_JOB_SERVICE.reset(getJobId(requestPath));
+            scalingJobService.reset(getJobId(requestPath));
             response(ResponseContentUtil.success(), context, HttpResponseStatus.OK);
         } catch (final ScalingJobNotFoundException | SQLException ex) {
             response(ResponseContentUtil.handleBadRequest(ex.getMessage()), context, HttpResponseStatus.BAD_REQUEST);
