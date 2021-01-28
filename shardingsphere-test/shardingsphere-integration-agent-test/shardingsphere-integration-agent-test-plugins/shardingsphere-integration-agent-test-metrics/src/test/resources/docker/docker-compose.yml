@@ -49,7 +49,7 @@ services:
     ports:
       - "43070:3307"
       - "43080:3308"
-      - "18090:8090"
+      - "18090:18090"
     links:
       - "mysql:mysql.agent.metrics.host"
     volumes:

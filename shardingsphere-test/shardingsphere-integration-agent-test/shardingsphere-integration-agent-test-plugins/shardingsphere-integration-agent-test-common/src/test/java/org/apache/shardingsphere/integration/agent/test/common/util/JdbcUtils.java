@@ -86,6 +86,24 @@ public class JdbcUtils {
     }
     
     /**
+     * Update order status.
+     *
+     * @param orderEntity order entity
+     * @param dataSource data source
+     */
+    public static void updateOrderStatus(final OrderEntity orderEntity, final DataSource dataSource) {
+        String sql = "UPDATE t_order SET status = ? where order_id =?";
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            connection.setAutoCommit(false);
+            preparedStatement.setString(1, orderEntity.getStatus());
+            preparedStatement.setLong(2, orderEntity.getOrderId());
+            preparedStatement.executeUpdate();
+            connection.commit();
+        } catch (final SQLException ignored) {
+        }
+    }
+    
+    /**
      * Select all orders collection.
      *
      * @param dataSource data source

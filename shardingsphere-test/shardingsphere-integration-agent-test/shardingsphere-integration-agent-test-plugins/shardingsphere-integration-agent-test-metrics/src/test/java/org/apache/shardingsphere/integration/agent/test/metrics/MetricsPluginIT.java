@@ -19,27 +19,25 @@ package org.apache.shardingsphere.integration.agent.test.metrics;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.agent.test.common.entity.OrderEntity;
 import org.apache.shardingsphere.integration.agent.test.common.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.agent.test.common.util.JdbcUtils;
 import org.apache.shardingsphere.integration.agent.test.common.util.OkHttpUtils;
-import org.apache.shardingsphere.integration.agent.test.metrics.result.MetricsLabelResult;
+import org.apache.shardingsphere.integration.agent.test.metrics.result.MetricResult;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
 public final class MetricsPluginIT {
-    
-    private static final String PROMETHEUS_URL = "http://127.0.0.1:19090/api/v1/labels";
     
     private static final String REQUEST_TOTAL = "proxy_request_total";
     
@@ -75,41 +73,55 @@ public final class MetricsPluginIT {
             }
             OrderEntity orderEntity = new OrderEntity(1000, 1000, "ROLL_BACK");
             JdbcUtils.insertOrderRollback(orderEntity, dataSource);
+            JdbcUtils.updateOrderStatus(orderEntity, dataSource);
             Collection<OrderEntity> orderEntities = JdbcUtils.selectAllOrders(dataSource);
             assertThat(orderEntities.size(), is(10));
             for (Long each : results) {
                 JdbcUtils.deleteOrderByOrderId(each, dataSource);
             }
+            Properties engineEnvProps = IntegrationTestEnvironment.getInstance().getEngineEnvProps();
             try {
-                Thread.sleep(6000);
+                Thread.sleep(Long.parseLong(engineEnvProps.getProperty("prometheus.waitMs", "60000")));
             } catch (final InterruptedException ignore) {
             }
-            try {
-                MetricsLabelResult metricsLabelResult = OkHttpUtils.getInstance().get(PROMETHEUS_URL, MetricsLabelResult.class);
-                log.info("prometheus label result is: {}", metricsLabelResult);
-                String[] labelNames = metricsLabelResult.getData();
-                log.info("prometheus label names is: {}", Arrays.toString(labelNames));
-                assertThat(metricsLabelResult.getStatus(), is("success"));
-                assertTrue(labelNames.length > 0);
-                assertFalse(isExist(labelNames, REQUEST_TOTAL));
-                assertFalse(isExist(labelNames, COLLECTION_TOTAL));
-                assertFalse(isExist(labelNames, EXECUTE_LATENCY));
-                assertFalse(isExist(labelNames, SELECT));
-                assertFalse(isExist(labelNames, UPDATE));
-                assertFalse(isExist(labelNames, DELETE));
-                assertFalse(isExist(labelNames, INSERT));
-                assertFalse(isExist(labelNames, ROUTE_DATASOURCE));
-                assertFalse(isExist(labelNames, ROUTE_TABLE));
-                assertFalse(isExist(labelNames, COMMIT));
-                assertFalse(isExist(labelNames, ROLLBACK));
-            } catch (IOException e) {
-                e.printStackTrace();
-                log.info("http get prometheus is error :", e);
+            String url = engineEnvProps.getProperty("prometheus.url");
+            Collection<String> metricsNames = buildMetricsNames();
+            for (String each : metricsNames) {
+                String metricURL = buildMetricURL(url, each);
+                try {
+                    MetricResult metricResult = OkHttpUtils.getInstance().get(metricURL, MetricResult.class);
+                    assertResult(metricResult, each);
+                } catch (IOException e) {
+                    log.info("http get prometheus is error :", e);
+                }
             }
         }
     }
     
-    private static boolean isExist(final String[] labelNames, final String labelName) {
-        return Arrays.asList(labelNames).contains(labelName);
+    private void assertResult(final MetricResult metricResult, final String metricsName) {
+        assertThat(metricResult.getStatus(), is("success"));
+        assertTrue(metricResult.getData().size() > 0);
+        List<MetricResult.Metric> metricList = metricResult.getData().get(metricsName);
+        assertTrue(metricList.size() > 0);
+    }
+    
+    private Collection<String> buildMetricsNames() {
+        Collection<String> result = new HashSet<>();
+        result.add(REQUEST_TOTAL);
+        result.add(COLLECTION_TOTAL);
+        result.add(EXECUTE_LATENCY);
+        result.add(SELECT);
+        result.add(UPDATE);
+        result.add(DELETE);
+        result.add(INSERT);
+        result.add(ROUTE_DATASOURCE);
+        result.add(ROUTE_TABLE);
+        result.add(COMMIT);
+        result.add(ROLLBACK);
+        return result;
+    }
+    
+    private String buildMetricURL(final String url, final String metricsName) {
+        return String.join("", url, metricsName);
     }
 }
