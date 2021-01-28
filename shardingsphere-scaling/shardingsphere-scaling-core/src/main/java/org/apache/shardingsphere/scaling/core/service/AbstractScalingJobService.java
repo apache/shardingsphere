@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
@@ -43,12 +43,12 @@ public abstract class AbstractScalingJobService implements ScalingJobService {
     @Override
     public Optional<ScalingJob> start(final RuleConfigurationsAlteredEvent event) {
         ScalingConfiguration scalingConfig = new ScalingConfiguration();
-        scalingConfig.setRuleConfiguration(new RuleConfiguration(
+        scalingConfig.setRuleConfig(new RuleConfiguration(
                 new ShardingSphereJDBCDataSourceConfiguration(event.getSourceDataSource(), event.getSourceRule()),
                 new ShardingSphereJDBCDataSourceConfiguration(event.getTargetDataSource(), event.getTargetRule())));
-        JobConfiguration jobConfig = new JobConfiguration();
-        jobConfig.setWorkflowConfig(new WorkflowConfiguration(event.getSchemaName(), event.getRuleCacheId()));
-        scalingConfig.setJobConfiguration(jobConfig);
+        HandleConfiguration handleConfig = new HandleConfiguration();
+        handleConfig.setWorkflowConfig(new WorkflowConfiguration(event.getSchemaName(), event.getRuleCacheId()));
+        scalingConfig.setHandleConfig(handleConfig);
         return start(scalingConfig);
     }
     

@@ -44,7 +44,7 @@ public final class ScalingElasticJob implements SimpleJob {
     public void execute(final ShardingContext shardingContext) {
         log.info("execute job: {} - {}/{}", shardingContext.getTaskId(), shardingContext.getShardingItem(), shardingContext.getShardingTotalCount());
         ScalingConfiguration scalingConfig = GSON.fromJson(shardingContext.getJobParameter(), ScalingConfiguration.class);
-        if (scalingConfig.getJobConfiguration().isRunning()) {
+        if (scalingConfig.getHandleConfig().isRunning()) {
             startJob(scalingConfig, shardingContext);
             return;
         }
@@ -53,8 +53,8 @@ public final class ScalingElasticJob implements SimpleJob {
     
     private void startJob(final ScalingConfiguration scalingConfig, final ShardingContext shardingContext) {
         log.info("start job: {} - {}", shardingContext.getJobName(), shardingContext.getShardingItem());
-        scalingConfig.getJobConfiguration().setShardingItem(shardingContext.getShardingItem());
-        scalingConfig.getJobConfiguration().setJobId(Long.valueOf(shardingContext.getJobName()));
+        scalingConfig.getHandleConfig().setShardingItem(shardingContext.getShardingItem());
+        scalingConfig.getHandleConfig().setJobId(Long.valueOf(shardingContext.getJobName()));
         scalingJob = SCALING_JOB_SERVICE.start(scalingConfig).orElse(null);
         JobSchedulerCenter.addJob(scalingJob);
     }

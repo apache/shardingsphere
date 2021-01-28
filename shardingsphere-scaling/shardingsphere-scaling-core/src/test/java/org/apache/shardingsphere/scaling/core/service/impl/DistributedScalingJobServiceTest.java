@@ -80,7 +80,7 @@ public final class DistributedScalingJobServiceTest {
     @Test
     public void assertStartWithCallbackImmediately() {
         ScalingConfiguration scalingConfig = mockScalingConfiguration();
-        ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfiguration().getSource().unwrap();
+        ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfig().getSource().unwrap();
         RuleConfigurationsAlteredEvent event = new RuleConfigurationsAlteredEvent("schema", source.getDataSource(), source.getRule(), source.getRule(), "cacheId");
         Optional<ScalingJob> scalingJob = scalingJobService.start(event);
         assertFalse(scalingJob.isPresent());
@@ -89,8 +89,8 @@ public final class DistributedScalingJobServiceTest {
     @Test
     public void assertStartWithCallbackSuccess() throws IOException {
         ScalingConfiguration scalingConfig = ScalingConfigurationUtil.initConfig("/config_sharding_sphere_jdbc_target.json");
-        ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfiguration().getSource().unwrap();
-        ShardingSphereJDBCDataSourceConfiguration target = (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfiguration().getTarget().unwrap();
+        ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfig().getSource().unwrap();
+        ShardingSphereJDBCDataSourceConfiguration target = (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfig().getTarget().unwrap();
         RuleConfigurationsAlteredEvent event = new RuleConfigurationsAlteredEvent(
                 "schema", source.getDataSource(), source.getRule(), target.getDataSource(), target.getRule(), "cacheId");
         Optional<ScalingJob> scalingJob = scalingJobService.start(event);

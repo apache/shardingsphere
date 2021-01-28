@@ -84,13 +84,13 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
     }
     
     private boolean shouldScaling(final ScalingConfiguration scalingConfig) {
-        return scalingConfig.getJobConfiguration().getShardingTables().length > 0;
+        return scalingConfig.getHandleConfig().getShardingTables().length > 0;
     }
     
     @Override
     public void stop(final long jobId) {
         ScalingConfiguration scalingConfig = getJob(jobId).getScalingConfig();
-        scalingConfig.getJobConfiguration().setRunning(false);
+        scalingConfig.getHandleConfig().setRunning(false);
         updateScalingConfig(jobId, scalingConfig);
     }
     
@@ -105,13 +105,13 @@ public final class DistributedScalingJobService extends AbstractScalingJobServic
             throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", jobId));
         }
         ScalingConfiguration scalingConfig = GSON.fromJson(data, ScalingConfiguration.class);
-        scalingConfig.getJobConfiguration().setJobId(jobId);
+        scalingConfig.getHandleConfig().setJobId(jobId);
         return new ScalingJob(scalingConfig);
     }
     
     @Override
     public JobProgress getProgress(final long jobId) {
-        boolean running = getJob(jobId).getScalingConfig().getJobConfiguration().isRunning();
+        boolean running = getJob(jobId).getScalingConfig().getHandleConfig().isRunning();
         JobProgress result = new JobProgress(jobId, running ? "RUNNING" : "STOPPED");
         List<String> shardingItems = REGISTRY_REPOSITORY.getChildrenKeys(ScalingTaskUtil.getScalingListenerPath(jobId, ScalingConstant.POSITION));
         for (String each : shardingItems) {

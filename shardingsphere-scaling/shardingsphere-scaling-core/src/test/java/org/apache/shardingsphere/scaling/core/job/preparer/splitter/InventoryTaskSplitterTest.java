@@ -76,7 +76,7 @@ public final class InventoryTaskSplitterTest {
     
     @Test
     public void assertSplitInventoryDataWithIntPrimary() throws SQLException {
-        taskConfig.getJobConfig().setShardingSize(10);
+        taskConfig.getHandleConfig().setShardingSize(10);
         initIntPrimaryEnvironment(taskConfig.getDumperConfig());
         List<ScalingTask> actual = (List<ScalingTask>) inventoryTaskSplitter.splitInventoryData(scalingJob, taskConfig, dataSourceManager);
         assertNotNull(actual);
@@ -154,9 +154,9 @@ public final class InventoryTaskSplitterTest {
     @SneakyThrows(IOException.class)
     private ScalingJob mockScalingJob() {
         ScalingJob result = ScalingConfigurationUtil.initJob("/config.json");
-        result.getScalingConfig().getJobConfiguration().setDatabaseType("H2");
-        result.getScalingConfig().getJobConfiguration().setShardingSize(10);
-        taskConfig = new TaskConfiguration(result.getScalingConfig().getJobConfiguration(), mockDumperConfig(), new ImporterConfiguration());
+        result.getScalingConfig().getHandleConfig().setDatabaseType("H2");
+        result.getScalingConfig().getHandleConfig().setShardingSize(10);
+        taskConfig = new TaskConfiguration(result.getScalingConfig().getHandleConfig(), mockDumperConfig(), new ImporterConfiguration());
         return result;
     }
     

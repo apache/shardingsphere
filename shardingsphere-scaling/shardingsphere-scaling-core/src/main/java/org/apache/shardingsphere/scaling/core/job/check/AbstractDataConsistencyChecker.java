@@ -78,11 +78,11 @@ public abstract class AbstractDataConsistencyChecker implements DataConsistencyC
     }
     
     protected DataSourceWrapper getSourceDataSource() {
-        return dataSourceFactory.newInstance(scalingJob.getScalingConfig().getRuleConfiguration().getSource().unwrap());
+        return dataSourceFactory.newInstance(scalingJob.getScalingConfig().getRuleConfig().getSource().unwrap());
     }
     
     protected DataSourceWrapper getTargetDataSource() {
-        return dataSourceFactory.newInstance(scalingJob.getScalingConfig().getRuleConfiguration().getTarget().unwrap());
+        return dataSourceFactory.newInstance(scalingJob.getScalingConfig().getRuleConfig().getTarget().unwrap());
     }
     
     protected abstract ScalingSQLBuilder getSqlBuilder();

@@ -92,7 +92,7 @@ public final class ScalingJobPreparer {
     private void initIncrementalTasks(final ScalingJob scalingJob, final DataSourceManager dataSourceManager) throws SQLException {
         for (TaskConfiguration each : scalingJob.getTaskConfigs()) {
             each.getDumperConfig().setPosition(getIncrementalPosition(scalingJob, each, dataSourceManager));
-            scalingJob.getIncrementalTasks().add(scalingTaskFactory.createIncrementalTask(each.getJobConfig().getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
+            scalingJob.getIncrementalTasks().add(scalingTaskFactory.createIncrementalTask(each.getHandleConfig().getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
         }
     }
     
@@ -100,6 +100,6 @@ public final class ScalingJobPreparer {
         if (null != scalingJob.getInitPosition()) {
             return scalingJob.getInitPosition().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
         }
-        return PositionInitializerFactory.newInstance(taskConfig.getJobConfig().getDatabaseType()).init(dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig()));
+        return PositionInitializerFactory.newInstance(taskConfig.getHandleConfig().getDatabaseType()).init(dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig()));
     }
 }

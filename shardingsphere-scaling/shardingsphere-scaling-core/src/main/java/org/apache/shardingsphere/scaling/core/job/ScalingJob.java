@@ -67,9 +67,9 @@ public final class ScalingJob {
     }
     
     public ScalingJob(final ScalingConfiguration scalingConfig) {
-        this(Optional.ofNullable(scalingConfig.getJobConfiguration().getJobId()).orElse(generateKey()));
+        this(Optional.ofNullable(scalingConfig.getHandleConfig().getJobId()).orElse(generateKey()));
         this.scalingConfig = scalingConfig;
-        shardingItem = scalingConfig.getJobConfiguration().getShardingItem();
+        shardingItem = scalingConfig.getHandleConfig().getShardingItem();
         taskConfigs.addAll(TaskConfigurationUtil.toTaskConfigs(scalingConfig));
     }
     

@@ -27,7 +27,7 @@ import lombok.Setter;
 @Getter
 public final class ScalingConfiguration {
     
-    private RuleConfiguration ruleConfiguration;
+    private RuleConfiguration ruleConfig;
     
-    private JobConfiguration jobConfiguration;
+    private HandleConfiguration handleConfig;
 }

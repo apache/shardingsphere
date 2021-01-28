@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Job configuration.
+ * Handle configuration.
  */
 @Setter
 @Getter
-public final class JobConfiguration {
+public final class HandleConfiguration {
     
     private Long jobId;
     

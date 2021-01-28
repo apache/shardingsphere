@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ConfigurationYamlConverter;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
@@ -65,27 +65,27 @@ public final class ScalingConfigurationUtil {
      * @param scalingConfig scaling config
      */
     public static void fillInProperties(final ScalingConfiguration scalingConfig) {
-        JobConfiguration jobConfig = scalingConfig.getJobConfiguration();
-        if (null == jobConfig.getJobId()) {
-            jobConfig.setJobId(generateKey());
+        HandleConfiguration handleConfig = scalingConfig.getHandleConfig();
+        if (null == handleConfig.getJobId()) {
+            handleConfig.setJobId(generateKey());
         }
-        if (Strings.isNullOrEmpty(jobConfig.getDatabaseType())) {
-            jobConfig.setDatabaseType(scalingConfig.getRuleConfiguration().getSource().unwrap().getDatabaseType().getName());
+        if (Strings.isNullOrEmpty(handleConfig.getDatabaseType())) {
+            handleConfig.setDatabaseType(scalingConfig.getRuleConfig().getSource().unwrap().getDatabaseType().getName());
         }
-        if (null == scalingConfig.getJobConfiguration().getShardingTables()) {
-            jobConfig.setShardingTables(groupByDataSource(getShouldScalingActualDataNodes(scalingConfig)));
+        if (null == scalingConfig.getHandleConfig().getShardingTables()) {
+            handleConfig.setShardingTables(groupByDataSource(getShouldScalingActualDataNodes(scalingConfig)));
         }
     }
     
     private static List<String> getShouldScalingActualDataNodes(final ScalingConfiguration scalingConfig) {
-        ScalingDataSourceConfiguration sourceConfig = scalingConfig.getRuleConfiguration().getSource().unwrap();
+        ScalingDataSourceConfiguration sourceConfig = scalingConfig.getRuleConfig().getSource().unwrap();
         Preconditions.checkState(sourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration,
                 "Only ShardingSphereJdbc type of source ScalingDataSourceConfiguration is supported.");
         ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
-        if (!(scalingConfig.getRuleConfiguration().getTarget().unwrap() instanceof ShardingSphereJDBCDataSourceConfiguration)) {
+        if (!(scalingConfig.getRuleConfig().getTarget().unwrap() instanceof ShardingSphereJDBCDataSourceConfiguration)) {
             return getShardingRuleConfigMap(source.getRule()).values().stream().map(ShardingTableRuleConfiguration::getActualDataNodes).collect(Collectors.toList());
         }
-        ShardingSphereJDBCDataSourceConfiguration target = (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfiguration().getTarget().unwrap();
+        ShardingSphereJDBCDataSourceConfiguration target = (ShardingSphereJDBCDataSourceConfiguration) scalingConfig.getRuleConfig().getTarget().unwrap();
         return getShouldScalingActualDataNodes(getModifiedDataSources(source.getDataSource(), target.getDataSource()),
                 getShardingRuleConfigMap(source.getRule()), getShardingRuleConfigMap(target.getRule()));
     }
