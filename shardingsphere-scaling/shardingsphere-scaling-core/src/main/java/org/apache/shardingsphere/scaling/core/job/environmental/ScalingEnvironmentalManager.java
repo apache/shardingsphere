@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.job.environmental;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceWrapper;
 import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilderFactory;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,15 +38,15 @@ public final class ScalingEnvironmentalManager {
     /**
      * Reset target table, Truncate target table.
      *
-     * @param scalingJob scaling job
+     * @param jobContext job context
      * @throws SQLException SQL exception
      */
-    public void resetTargetTable(final ScalingJob scalingJob) throws SQLException {
-        Set<String> tables = scalingJob.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet());
-        try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(scalingJob.getJobConfig().getRuleConfig().getTarget().unwrap());
+    public void resetTargetTable(final JobContext jobContext) throws SQLException {
+        Set<String> tables = jobContext.getTaskConfigs().stream().flatMap(each -> each.getDumperConfig().getTableNameMap().values().stream()).collect(Collectors.toSet());
+        try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(jobContext.getJobConfig().getRuleConfig().getTarget().unwrap());
              Connection connection = dataSource.getConnection()) {
             for (String each : tables) {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(ScalingSQLBuilderFactory.newInstance(scalingJob.getDatabaseType()).buildTruncateSQL(each))) {
+                try (PreparedStatement preparedStatement = connection.prepareStatement(ScalingSQLBuilderFactory.newInstance(jobContext.getDatabaseType()).buildTruncateSQL(each))) {
                     preparedStatement.execute();
                 }
             }

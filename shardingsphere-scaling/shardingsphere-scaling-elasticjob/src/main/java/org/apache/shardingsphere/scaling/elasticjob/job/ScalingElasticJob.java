@@ -24,7 +24,7 @@ import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.scaling.core.api.JobSchedulerCenter;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.service.impl.StandaloneScalingJobService;
 
@@ -38,7 +38,7 @@ public final class ScalingElasticJob implements SimpleJob {
     
     private static final ScalingJobService SCALING_JOB_SERVICE = new StandaloneScalingJobService();
     
-    private ScalingJob scalingJob;
+    private JobContext jobContext;
     
     @Override
     public void execute(final ShardingContext shardingContext) {
@@ -55,16 +55,16 @@ public final class ScalingElasticJob implements SimpleJob {
         log.info("start job: {} - {}", shardingContext.getJobName(), shardingContext.getShardingItem());
         jobConfig.getHandleConfig().setShardingItem(shardingContext.getShardingItem());
         jobConfig.getHandleConfig().setJobId(Long.valueOf(shardingContext.getJobName()));
-        scalingJob = SCALING_JOB_SERVICE.start(jobConfig).orElse(null);
-        JobSchedulerCenter.addJob(scalingJob);
+        jobContext = SCALING_JOB_SERVICE.start(jobConfig).orElse(null);
+        JobSchedulerCenter.addJob(jobContext);
     }
     
     private void stopJob(final ShardingContext shardingContext) {
-        if (null != scalingJob) {
+        if (null != jobContext) {
             log.info("stop job: {} - {}", shardingContext.getJobName(), shardingContext.getShardingItem());
-            SCALING_JOB_SERVICE.stop(scalingJob.getJobId());
-            JobSchedulerCenter.removeJob(scalingJob);
-            scalingJob = null;
+            SCALING_JOB_SERVICE.stop(jobContext.getJobId());
+            JobSchedulerCenter.removeJob(jobContext);
+            jobContext = null;
         }
     }
 }

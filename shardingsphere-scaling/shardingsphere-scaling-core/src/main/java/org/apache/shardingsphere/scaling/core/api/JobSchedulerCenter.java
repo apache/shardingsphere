@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.api;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class JobSchedulerCenter {
     
-    private static final Map<String, ScalingJob> SCALING_JOB_MAP = Maps.newConcurrentMap();
+    private static final Map<String, JobContext> JOB_CONTEXT_MAP = Maps.newConcurrentMap();
     
     private static final ScheduledExecutorService JOB_PERSIST_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("scaling-job-persist-%d"));
     
@@ -46,26 +46,26 @@ public final class JobSchedulerCenter {
     /**
      * Add job.
      *
-     * @param scalingJob scheduler job
+     * @param jobContext job context
      */
-    public static void addJob(final ScalingJob scalingJob) {
-        SCALING_JOB_MAP.put(String.format("%d-%d", scalingJob.getJobId(), scalingJob.getShardingItem()), scalingJob);
+    public static void addJob(final JobContext jobContext) {
+        JOB_CONTEXT_MAP.put(String.format("%d-%d", jobContext.getJobId(), jobContext.getShardingItem()), jobContext);
     }
     
     /**
      * Remove job.
      *
-     * @param scalingJob scheduler job
+     * @param jobContext job context
      */
-    public static void removeJob(final ScalingJob scalingJob) {
-        SCALING_JOB_MAP.remove(String.format("%d-%d", scalingJob.getJobId(), scalingJob.getShardingItem()));
+    public static void removeJob(final JobContext jobContext) {
+        JOB_CONTEXT_MAP.remove(String.format("%d-%d", jobContext.getJobId(), jobContext.getShardingItem()));
     }
     
     private static final class PersistJobContextRunnable implements Runnable {
         
         @Override
         public void run() {
-            for (Map.Entry<String, ScalingJob> entry : SCALING_JOB_MAP.entrySet()) {
+            for (Map.Entry<String, JobContext> entry : JOB_CONTEXT_MAP.entrySet()) {
                 try {
                     REGISTRY_REPOSITORY_API.persistJobPosition(entry.getValue());
                     // CHECKSTYLE:OFF

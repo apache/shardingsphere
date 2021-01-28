@@ -19,8 +19,8 @@ package org.apache.shardingsphere.scaling.core.service.impl;
 
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.preparer.ScalingJobPreparer;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskGroupProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
@@ -40,46 +40,46 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class StandaloneScalingJobService extends AbstractScalingJobService {
     
-    private final Map<Long, ScalingJob> scalingJobMap = new ConcurrentHashMap<>();
+    private final Map<Long, JobContext> jobContextMap = new ConcurrentHashMap<>();
     
     private final Map<Long, ScalingTaskScheduler> scalingTaskSchedulerMap = new ConcurrentHashMap<>();
     
     private final ScalingJobPreparer scalingJobPreparer = new ScalingJobPreparer();
     
     @Override
-    public List<ScalingJob> listJobs() {
-        return new LinkedList<>(scalingJobMap.values());
+    public List<JobContext> listJobs() {
+        return new LinkedList<>(jobContextMap.values());
     }
     
     @Override
-    public Optional<ScalingJob> start(final JobConfiguration jobConfig) {
-        ScalingJob scalingJob = new ScalingJob(jobConfig);
-        if (scalingJob.getTaskConfigs().isEmpty()) {
+    public Optional<JobContext> start(final JobConfiguration jobConfig) {
+        JobContext jobContext = new JobContext(jobConfig);
+        if (jobContext.getTaskConfigs().isEmpty()) {
             return Optional.empty();
         }
-        scalingJobMap.put(scalingJob.getJobId(), scalingJob);
-        scalingJobPreparer.prepare(scalingJob);
-        if (!JobStatus.PREPARING_FAILURE.name().equals(scalingJob.getStatus())) {
-            ScalingTaskScheduler scalingTaskScheduler = new ScalingTaskScheduler(scalingJob);
+        jobContextMap.put(jobContext.getJobId(), jobContext);
+        scalingJobPreparer.prepare(jobContext);
+        if (!JobStatus.PREPARING_FAILURE.name().equals(jobContext.getStatus())) {
+            ScalingTaskScheduler scalingTaskScheduler = new ScalingTaskScheduler(jobContext);
             scalingTaskScheduler.start();
-            scalingTaskSchedulerMap.put(scalingJob.getJobId(), scalingTaskScheduler);
+            scalingTaskSchedulerMap.put(jobContext.getJobId(), scalingTaskScheduler);
         }
-        return Optional.of(scalingJob);
+        return Optional.of(jobContext);
     }
     
     @Override
     public void stop(final long jobId) {
-        ScalingJob scalingJob = getJob(jobId);
+        JobContext jobContext = getJob(jobId);
         scalingTaskSchedulerMap.get(jobId).stop();
-        scalingJob.setStatus(JobStatus.STOPPED.name());
+        jobContext.setStatus(JobStatus.STOPPED.name());
     }
     
     @Override
-    public ScalingJob getJob(final long jobId) {
-        if (!scalingJobMap.containsKey(jobId)) {
+    public JobContext getJob(final long jobId) {
+        if (!jobContextMap.containsKey(jobId)) {
             throw new ScalingJobNotFoundException(String.format("Can't find scaling job id %s", jobId));
         }
-        return scalingJobMap.get(jobId);
+        return jobContextMap.get(jobId);
     }
     
     @Override
@@ -100,7 +100,7 @@ public final class StandaloneScalingJobService extends AbstractScalingJobService
     @Override
     public void remove(final long jobId) {
         stop(jobId);
-        scalingJobMap.remove(jobId);
+        jobContextMap.remove(jobId);
         scalingTaskSchedulerMap.remove(jobId);
     }
 }

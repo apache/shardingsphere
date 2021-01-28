@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 import org.apache.shardingsphere.scaling.core.service.impl.DistributedScalingJobService;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
@@ -49,12 +49,12 @@ public final class FinishedCheckJob implements SimpleJob {
         for (String each : jobs) {
             long jobId = Long.parseLong(each);
             try {
-                ScalingJob scalingJob = scalingJobService.getJob(jobId);
-                WorkflowConfiguration workflowConfig = scalingJob.getJobConfig().getHandleConfig().getWorkflowConfig();
+                JobContext jobContext = scalingJobService.getJob(jobId);
+                WorkflowConfiguration workflowConfig = jobContext.getJobConfig().getHandleConfig().getWorkflowConfig();
                 if (workflowConfig == null) {
                     continue;
                 }
-                if (ScalingTaskUtil.allTasksAlmostFinished(scalingJobService.getProgress(jobId), scalingJob.getJobConfig().getHandleConfig())) {
+                if (ScalingTaskUtil.allTasksAlmostFinished(scalingJobService.getProgress(jobId), jobContext.getJobConfig().getHandleConfig())) {
                     log.info("scaling job {} almost finished.", jobId);
                     trySwitch(jobId, workflowConfig);
                 }

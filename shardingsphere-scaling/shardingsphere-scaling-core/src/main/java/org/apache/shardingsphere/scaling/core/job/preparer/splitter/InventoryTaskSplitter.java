@@ -26,7 +26,7 @@ import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilderFactory;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
@@ -57,26 +57,26 @@ public final class InventoryTaskSplitter {
     /**
      * Split inventory data to multi-tasks.
      *
-     * @param scalingJob scaling job
+     * @param jobContext job context
      * @param taskConfig task configuration
      * @param dataSourceManager data source manager
      * @return split inventory data task
      */
-    public Collection<ScalingTask> splitInventoryData(final ScalingJob scalingJob, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager) {
+    public Collection<ScalingTask> splitInventoryData(final JobContext jobContext, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager) {
         Collection<ScalingTask> result = new LinkedList<>();
-        for (InventoryDumperConfiguration each : splitDumperConfig(scalingJob, taskConfig.getDumperConfig(), dataSourceManager)) {
+        for (InventoryDumperConfiguration each : splitDumperConfig(jobContext, taskConfig.getDumperConfig(), dataSourceManager)) {
             result.add(scalingTaskFactory.createInventoryTask(each, taskConfig.getImporterConfig()));
         }
         return result;
     }
     
     private Collection<InventoryDumperConfiguration> splitDumperConfig(
-            final ScalingJob scalingJob, final DumperConfiguration dumperConfig, final DataSourceManager dataSourceManager) {
+            final JobContext jobContext, final DumperConfiguration dumperConfig, final DataSourceManager dataSourceManager) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
         MetaDataManager metaDataManager = new MetaDataManager(dataSource);
         for (InventoryDumperConfiguration each : splitByTable(dumperConfig)) {
-            result.addAll(splitByPrimaryKey(scalingJob, dataSource, metaDataManager, each));
+            result.addAll(splitByPrimaryKey(jobContext, dataSource, metaDataManager, each));
         }
         return result;
     }
@@ -93,9 +93,9 @@ public final class InventoryTaskSplitter {
     }
     
     private Collection<InventoryDumperConfiguration> splitByPrimaryKey(
-            final ScalingJob scalingJob, final DataSource dataSource, final MetaDataManager metaDataManager, final InventoryDumperConfiguration dumperConfig) {
+            final JobContext jobContext, final DataSource dataSource, final MetaDataManager metaDataManager, final InventoryDumperConfiguration dumperConfig) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
-        Collection<Position<?>> inventoryPositions = getInventoryPositions(scalingJob, dumperConfig, dataSource, metaDataManager);
+        Collection<Position<?>> inventoryPositions = getInventoryPositions(jobContext, dumperConfig, dataSource, metaDataManager);
         int i = 0;
         for (Position<?> inventoryPosition : inventoryPositions) {
             InventoryDumperConfiguration splitDumperConfig = new InventoryDumperConfiguration(dumperConfig);
@@ -109,14 +109,14 @@ public final class InventoryTaskSplitter {
     }
     
     private Collection<Position<?>> getInventoryPositions(
-            final ScalingJob scalingJob, final InventoryDumperConfiguration dumperConfig, final DataSource dataSource, final MetaDataManager metaDataManager) {
-        if (null != scalingJob.getInitPosition()) {
-            return scalingJob.getInitPosition().getInventoryPosition(dumperConfig.getTableName()).values();
+            final JobContext jobContext, final InventoryDumperConfiguration dumperConfig, final DataSource dataSource, final MetaDataManager metaDataManager) {
+        if (null != jobContext.getInitPosition()) {
+            return jobContext.getInitPosition().getInventoryPosition(dumperConfig.getTableName()).values();
         }
         if (isSpiltByPrimaryKeyRange(metaDataManager, dumperConfig.getTableName())) {
             String primaryKey = metaDataManager.getTableMetaData(dumperConfig.getTableName()).getPrimaryKeyColumns().get(0);
             dumperConfig.setPrimaryKey(primaryKey);
-            return getPositionByPrimaryKeyRange(scalingJob, dataSource, dumperConfig);
+            return getPositionByPrimaryKeyRange(jobContext, dataSource, dumperConfig);
         }
         return Lists.newArrayList(new PlaceholderPosition());
     }
@@ -148,16 +148,16 @@ public final class InventoryTaskSplitter {
         return Types.INTEGER != columnType && Types.BIGINT != columnType && Types.SMALLINT != columnType && Types.TINYINT != columnType;
     }
     
-    private Collection<Position<?>> getPositionByPrimaryKeyRange(final ScalingJob scalingJob, final DataSource dataSource, final InventoryDumperConfiguration dumperConfig) {
+    private Collection<Position<?>> getPositionByPrimaryKeyRange(final JobContext jobContext, final DataSource dataSource, final InventoryDumperConfiguration dumperConfig) {
         Collection<Position<?>> result = new ArrayList<>();
-        String sql = ScalingSQLBuilderFactory.newInstance(scalingJob.getJobConfig().getHandleConfig().getDatabaseType())
+        String sql = ScalingSQLBuilderFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getDatabaseType())
                 .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getTableName(), dumperConfig.getPrimaryKey());
         try (Connection connection = dataSource.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
             long beginId = 0;
             for (int i = 0; i < Integer.MAX_VALUE; i++) {
                 ps.setLong(1, beginId);
-                ps.setLong(2, scalingJob.getJobConfig().getHandleConfig().getShardingSize());
+                ps.setLong(2, jobContext.getJobConfig().getHandleConfig().getShardingSize());
                 try (ResultSet rs = ps.executeQuery()) {
                     rs.next();
                     long endId = rs.getLong(1);

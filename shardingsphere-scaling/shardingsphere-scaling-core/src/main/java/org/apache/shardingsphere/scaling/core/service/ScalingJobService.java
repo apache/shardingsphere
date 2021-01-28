@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.service;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 
 import java.sql.SQLException;
@@ -34,27 +34,27 @@ import java.util.Optional;
 public interface ScalingJobService {
     
     /**
-     * Get {@code ScalingJob} list.
+     * Get job context list.
      *
-     * @return scaling job service list
+     * @return job list
      */
-    List<ScalingJob> listJobs();
+    List<JobContext> listJobs();
     
     /**
      * Start scaling job.
      *
      * @param jobConfig job configuration
-     * @return scaling job
+     * @return job context
      */
-    Optional<ScalingJob> start(JobConfiguration jobConfig);
+    Optional<JobContext> start(JobConfiguration jobConfig);
     
     /**
      * Start scaling job.
      *
      * @param event rule configurations altered event
-     * @return scaling job
+     * @return job context
      */
-    Optional<ScalingJob> start(RuleConfigurationsAlteredEvent event);
+    Optional<JobContext> start(RuleConfigurationsAlteredEvent event);
     
     /**
      * Stop job.
@@ -64,12 +64,12 @@ public interface ScalingJobService {
     void stop(long jobId);
     
     /**
-     * Get {@code ScalingJob} by id.
+     * Get job context by id.
      *
      * @param jobId job id
-     * @return {@code ScalingJob} instance
+     * @return job context
      */
-    ScalingJob getJob(long jobId);
+    JobContext getJob(long jobId);
     
     /**
      * Get job progress.

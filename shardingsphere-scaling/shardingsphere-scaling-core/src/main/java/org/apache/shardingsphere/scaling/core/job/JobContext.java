@@ -32,11 +32,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Scaling job.
+ * Scaling job context.
  */
 @Getter
 @Setter
-public final class ScalingJob {
+public final class JobContext {
     
     private static final SnowflakeKeyGenerateAlgorithm ID_AUTO_INCREASE_GENERATOR = initIdAutoIncreaseGenerator();
     
@@ -58,15 +58,15 @@ public final class ScalingJob {
     
     private String status = JobStatus.RUNNING.name();
     
-    public ScalingJob() {
+    public JobContext() {
         this(generateKey());
     }
     
-    public ScalingJob(final long jobId) {
+    public JobContext(final long jobId) {
         this.jobId = jobId;
     }
     
-    public ScalingJob(final JobConfiguration jobConfig) {
+    public JobContext(final JobConfiguration jobConfig) {
         this(Optional.ofNullable(jobConfig.getHandleConfig().getJobId()).orElse(generateKey()));
         this.jobConfig = jobConfig;
         shardingItem = jobConfig.getHandleConfig().getShardingItem();

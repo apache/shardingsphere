@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobServiceFactory;
@@ -63,8 +63,8 @@ public final class ScalingServiceHolder {
      */
     @Subscribe
     public void startScalingJob(final RuleConfigurationsAlteredEvent event) {
-        Optional<ScalingJob> scalingJob = scalingJobService.start(event);
-        if (!scalingJob.isPresent()) {
+        Optional<JobContext> jobContext = scalingJobService.start(event);
+        if (!jobContext.isPresent()) {
             ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(event.getSchemaName(), event.getRuleCacheId()));
         }
     }
