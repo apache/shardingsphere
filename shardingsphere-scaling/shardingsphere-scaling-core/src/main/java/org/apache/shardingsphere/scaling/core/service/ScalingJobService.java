@@ -49,14 +49,6 @@ public interface ScalingJobService {
     Optional<JobContext> start(JobConfiguration jobConfig);
     
     /**
-     * Start scaling job.
-     *
-     * @param event rule configurations altered event
-     * @return job context
-     */
-    Optional<JobContext> start(RuleConfigurationsAlteredEvent event);
-    
-    /**
      * Stop job.
      *
      * @param jobId job id

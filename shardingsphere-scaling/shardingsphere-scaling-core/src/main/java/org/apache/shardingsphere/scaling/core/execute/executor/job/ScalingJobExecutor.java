@@ -33,10 +33,12 @@ import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
+import org.apache.shardingsphere.scaling.core.execute.executor.AbstractScalingExecutor;
+import org.apache.shardingsphere.scaling.core.execute.executor.ScalingExecutor;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
-import org.apache.shardingsphere.scaling.core.spi.ScalingWorker;
 import org.apache.shardingsphere.scaling.core.utils.ElasticJobUtil;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 
@@ -46,10 +48,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Elastic job scaling worker.
+ * Scaling job executor.
  */
 @Slf4j
-public final class ElasticJobScalingWorker implements ScalingWorker {
+public final class ScalingJobExecutor extends AbstractScalingExecutor implements ScalingExecutor {
     
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
     
@@ -64,9 +66,10 @@ public final class ElasticJobScalingWorker implements ScalingWorker {
     private CoordinatorRegistryCenter registryCenter;
     
     @Override
-    public void init(final GovernanceConfiguration governanceConfig) {
-        log.info("Init elastic job scaling worker.");
-        this.governanceConfig = governanceConfig;
+    public void start() {
+        super.start();
+        log.info("Start scaling job executor.");
+        this.governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
         registryCenter = ElasticJobUtil.createRegistryCenter(governanceConfig);
         watchConfigRepository();
     }

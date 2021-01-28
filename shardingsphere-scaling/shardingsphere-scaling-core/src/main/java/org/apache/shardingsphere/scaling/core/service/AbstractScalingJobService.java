@@ -41,18 +41,6 @@ import java.util.Optional;
 public abstract class AbstractScalingJobService implements ScalingJobService {
     
     @Override
-    public Optional<JobContext> start(final RuleConfigurationsAlteredEvent event) {
-        JobConfiguration jobConfig = new JobConfiguration();
-        jobConfig.setRuleConfig(new RuleConfiguration(
-                new ShardingSphereJDBCDataSourceConfiguration(event.getSourceDataSource(), event.getSourceRule()),
-                new ShardingSphereJDBCDataSourceConfiguration(event.getTargetDataSource(), event.getTargetRule())));
-        HandleConfiguration handleConfig = new HandleConfiguration();
-        handleConfig.setWorkflowConfig(new WorkflowConfiguration(event.getSchemaName(), event.getRuleCacheId()));
-        jobConfig.setHandleConfig(handleConfig);
-        return start(jobConfig);
-    }
-    
-    @Override
     public Map<String, DataConsistencyCheckResult> check(final long jobId) {
         log.info("scaling job {} start data consistency check.", jobId);
         DataConsistencyChecker dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance(getJob(jobId));
