@@ -28,9 +28,9 @@ import lombok.Setter;
 @Setter
 public final class YamlPluginConfiguration {
     
-    private String host = "localhost";
+    private String host;
     
-    private int port = 5775;
+    private int port;
     
     private String password;
     

@@ -23,7 +23,7 @@ ignoredPluginNames:
 
 plugins:
   prometheus:
-    port: 8090
+    port: 18090
     props:
       JVM_INFORMATION_COLLECTOR_ENABLED : "true"
   Jaeger:

@@ -17,12 +17,24 @@
 
 package org.apache.shardingsphere.integration.agent.test.metrics.result;
 
+import java.util.List;
+import java.util.Map;
 import lombok.Data;
 
 @Data
-public class MetricsLabelResult {
+public class MetricResult {
     
     private String status;
     
-    private String[] data;
+    private Map<String, List<Metric>> data;
+    
+    @Data
+    public static class Metric {
+        
+        private String type;
+        
+        private String help;
+        
+        private String unit;
+    }
 }
