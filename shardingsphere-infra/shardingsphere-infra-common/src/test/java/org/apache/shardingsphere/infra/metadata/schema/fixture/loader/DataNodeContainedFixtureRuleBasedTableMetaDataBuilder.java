@@ -31,25 +31,25 @@ import java.util.Map;
 import java.util.Optional;
 
 public final class DataNodeContainedFixtureRuleBasedTableMetaDataBuilder implements RuleBasedTableMetaDataBuilder<DataNodeContainedFixtureRule> {
-
+    
     @Override
     public Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
                                         final DataNodes dataNodes, final DataNodeContainedFixtureRule rule, final ConfigurationProperties props) {
         return ("data_node_routed_table1".equals(tableName) || "data_node_routed_table2".equals(tableName))
                 ? Optional.of(new TableMetaData(Collections.emptyList(), Collections.emptyList())) : Optional.empty();
     }
-
+    
     @Override
     public TableMetaData decorate(final String tableName, final TableMetaData tableMetaData, final DataNodeContainedFixtureRule rule) {
         ColumnMetaData columnMetaData = new ColumnMetaData("id", 1, "INT", true, true, false);
         return new TableMetaData(Collections.singletonList(columnMetaData), Collections.emptyList());
     }
-
+    
     @Override
     public int getOrder() {
         return 1;
     }
-
+    
     @Override
     public Class<DataNodeContainedFixtureRule> getTypeClass() {
         return DataNodeContainedFixtureRule.class;

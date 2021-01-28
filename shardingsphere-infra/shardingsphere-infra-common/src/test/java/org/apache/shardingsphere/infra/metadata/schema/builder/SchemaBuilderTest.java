@@ -46,49 +46,50 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class SchemaBuilderTest {
+    
     private static final String TEST_CATALOG = "catalog";
-
+    
     private static final String TEST_SCHEMA = "schema";
-
+    
     private static final String TABLE_TYPE = "TABLE";
-
+    
     private static final String VIEW_TYPE = "VIEW";
-
+    
     private static final String TABLE_NAME = "TABLE_NAME";
-
-    private final String[] unConfiguredTableNames = new String[]{"unconfigured_table1", "unconfigured_table2"};
-
+    
+    private final String[] unConfiguredTableNames = {"unconfigured_table1", "unconfigured_table2"};
+    
     private SchemaBuilderMaterials schemaBuilderMaterials;
-
+    
     @Mock
     private DatabaseType databaseType;
-
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DataSource dataSource;
-
+    
     @Mock
     private ConfigurationProperties props;
-
+    
     @Before
     public void setUp() {
-        schemaBuilderMaterials = new SchemaBuilderMaterials(databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()),
-                props);
+        schemaBuilderMaterials = new SchemaBuilderMaterials(
+                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props);
     }
-
+    
     @Test
     public void assertBuildOfAllShardingTables() throws SQLException {
         ShardingSphereSchema actual = SchemaBuilder.build(schemaBuilderMaterials);
         assertThat(actual.getAllTableNames().size(), is(2));
         assertSchemaOfShardingTables(actual);
     }
-
+    
     private void assertSchemaOfShardingTables(final ShardingSphereSchema actual) {
         assertTrue(actual.containsTable("data_node_routed_table1"));
         assertTrue(actual.get("data_node_routed_table1").getColumns().containsKey("id"));
         assertTrue(actual.containsTable("data_node_routed_table2"));
         assertTrue(actual.get("data_node_routed_table2").getColumns().containsKey("id"));
     }
-
+    
     @Test
     @SneakyThrows(SQLException.class)
     public void assertBuildOfShardingTablesAndUnConfiguredTables() {
@@ -101,13 +102,13 @@ public final class SchemaBuilderTest {
         when(connection.getSchema()).thenReturn(TEST_SCHEMA);
         when(databaseMetaData.getTables(connection.getCatalog(), connection.getSchema(), null, new String[]{TABLE_TYPE, VIEW_TYPE})).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, true, true, true, true, false);
-        String[] mockReturnTables = new String[]{unConfiguredTableNames[1], "data_node_routed_table1_0", "data_node_routed_table1_1", "data_node_routed_table2_0", "data_node_routed_table2_1"};
+        String[] mockReturnTables = {unConfiguredTableNames[1], "data_node_routed_table1_0", "data_node_routed_table1_1", "data_node_routed_table2_0", "data_node_routed_table2_1"};
         when(resultSet.getString(TABLE_NAME)).thenReturn(unConfiguredTableNames[0], mockReturnTables);
         ShardingSphereSchema actual = SchemaBuilder.build(schemaBuilderMaterials);
         assertThat(actual.getAllTableNames().size(), is(4));
         assertSchemaOfShardingTablesAndUnConfiguredTables(actual);
     }
-
+    
     private void assertSchemaOfShardingTablesAndUnConfiguredTables(final ShardingSphereSchema actual) {
         assertSchemaOfShardingTables(actual);
         assertTrue(actual.containsTable(unConfiguredTableNames[0]));
