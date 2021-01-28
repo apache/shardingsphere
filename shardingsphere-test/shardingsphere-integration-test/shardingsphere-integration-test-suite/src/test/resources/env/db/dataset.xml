@@ -162,4 +162,5 @@
     <row data-node="db_7.t_broadcast_table" values="1, init" />
     <row data-node="db_8.t_broadcast_table" values="1, init" />
     <row data-node="db_9.t_broadcast_table" values="1, init" />
+    <row data-node="db_0.t_single_table" values="1, init" />
 </dataset>

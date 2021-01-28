@@ -32,7 +32,7 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata data-nodes="primary_ds_0.t_global,replica_ds_0.t_global">
+    <metadata data-nodes="primary_ds_0.t_single_table,replica_ds_0.t_single_table">
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
@@ -346,6 +346,8 @@
     <row data-node="primary_ds_7.t_broadcast_table" values="1, init" />
     <row data-node="primary_ds_8.t_broadcast_table" values="1, init" />
     <row data-node="primary_ds_9.t_broadcast_table" values="1, init" />
+    <!--TODO fix me! Single table conflict, there are multiple tables `t_single_table` existed -->
+    <!--<row data-node="primary_ds_0.t_single_table" values="1, init" />-->
     <row data-node="primary_ds_0.t_global" values="1, global_primary" />
     <row data-node="replica_ds_0.t_order_0" values="1000, 10, init_replica" />
     <row data-node="replica_ds_0.t_order_1" values="1001, 10, init_replica" />
@@ -658,4 +660,5 @@
     <row data-node="replica_ds_8.t_broadcast_table" values="1, init_replica" />
     <row data-node="replica_ds_9.t_broadcast_table" values="1, init_replica" />
     <row data-node="replica_ds_0.t_global" values="1, global_replica" />
+    <row data-node="replica_ds_0.t_single_table" values="1, init_replica" />
 </dataset>
