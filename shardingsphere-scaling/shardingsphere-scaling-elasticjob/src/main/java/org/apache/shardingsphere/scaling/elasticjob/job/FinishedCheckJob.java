@@ -50,11 +50,11 @@ public final class FinishedCheckJob implements SimpleJob {
             long jobId = Long.parseLong(each);
             try {
                 ScalingJob scalingJob = scalingJobService.getJob(jobId);
-                WorkflowConfiguration workflowConfig = scalingJob.getScalingConfig().getHandleConfig().getWorkflowConfig();
+                WorkflowConfiguration workflowConfig = scalingJob.getJobConfig().getHandleConfig().getWorkflowConfig();
                 if (workflowConfig == null) {
                     continue;
                 }
-                if (ScalingTaskUtil.allTasksAlmostFinished(scalingJobService.getProgress(jobId), scalingJob.getScalingConfig().getHandleConfig())) {
+                if (ScalingTaskUtil.allTasksAlmostFinished(scalingJobService.getProgress(jobId), scalingJob.getJobConfig().getHandleConfig())) {
                     log.info("scaling job {} almost finished.", jobId);
                     trySwitch(jobId, workflowConfig);
                 }

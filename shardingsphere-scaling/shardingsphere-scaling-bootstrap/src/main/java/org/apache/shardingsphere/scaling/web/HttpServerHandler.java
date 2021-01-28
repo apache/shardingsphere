@@ -34,7 +34,7 @@ import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
@@ -89,7 +89,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     }
     
     private void startJob(final ChannelHandlerContext context, final String requestBody) {
-        Optional<ScalingJob> scalingJob = scalingJobService.start(GSON.fromJson(requestBody, ScalingConfiguration.class));
+        Optional<ScalingJob> scalingJob = scalingJobService.start(GSON.fromJson(requestBody, JobConfiguration.class));
         if (scalingJob.isPresent()) {
             response(ResponseContentUtil.build(scalingJob.get()), context, HttpResponseStatus.OK);
             return;

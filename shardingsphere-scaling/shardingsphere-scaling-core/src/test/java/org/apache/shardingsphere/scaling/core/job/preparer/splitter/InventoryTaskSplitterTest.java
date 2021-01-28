@@ -27,7 +27,7 @@ import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
-import org.apache.shardingsphere.scaling.core.util.ScalingConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -153,10 +153,10 @@ public final class InventoryTaskSplitterTest {
     
     @SneakyThrows(IOException.class)
     private ScalingJob mockScalingJob() {
-        ScalingJob result = ScalingConfigurationUtil.initJob("/config.json");
-        result.getScalingConfig().getHandleConfig().setDatabaseType("H2");
-        result.getScalingConfig().getHandleConfig().setShardingSize(10);
-        taskConfig = new TaskConfiguration(result.getScalingConfig().getHandleConfig(), mockDumperConfig(), new ImporterConfiguration());
+        ScalingJob result = JobConfigurationUtil.initJob("/config.json");
+        result.getJobConfig().getHandleConfig().setDatabaseType("H2");
+        result.getJobConfig().getHandleConfig().setShardingSize(10);
+        taskConfig = new TaskConfiguration(result.getJobConfig().getHandleConfig(), mockDumperConfig(), new ImporterConfiguration());
         return result;
     }
     

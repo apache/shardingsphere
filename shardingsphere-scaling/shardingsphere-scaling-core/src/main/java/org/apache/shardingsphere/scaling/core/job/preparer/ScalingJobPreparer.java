@@ -31,7 +31,7 @@ import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
-import org.apache.shardingsphere.scaling.core.utils.ScalingConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.utils.JobConfigurationUtil;
 
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -53,7 +53,7 @@ public final class ScalingJobPreparer {
      * @param scalingJob scaling job
      */
     public void prepare(final ScalingJob scalingJob) {
-        ScalingConfigurationUtil.fillInProperties(scalingJob.getScalingConfig());
+        JobConfigurationUtil.fillInProperties(scalingJob.getJobConfig());
         try (DataSourceManager dataSourceManager = new DataSourceManager(scalingJob.getTaskConfigs())) {
             checkDataSource(scalingJob, dataSourceManager);
             initIncrementalTasks(scalingJob, dataSourceManager);

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.service.impl;
 
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
@@ -52,8 +52,8 @@ public final class StandaloneScalingJobService extends AbstractScalingJobService
     }
     
     @Override
-    public Optional<ScalingJob> start(final ScalingConfiguration scalingConfig) {
-        ScalingJob scalingJob = new ScalingJob(scalingConfig);
+    public Optional<ScalingJob> start(final JobConfiguration jobConfig) {
+        ScalingJob scalingJob = new ScalingJob(jobConfig);
         if (scalingJob.getTaskConfigs().isEmpty()) {
             return Optional.empty();
         }

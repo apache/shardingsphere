@@ -30,7 +30,7 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobProgress;
@@ -80,14 +80,14 @@ public final class HttpServerHandlerTest {
     
     @Test
     public void assertStartJobSuccess() {
-        when(scalingJobService.start(any(ScalingConfiguration.class))).thenReturn(Optional.of(new ScalingJob()));
+        when(scalingJobService.start(any(JobConfiguration.class))).thenReturn(Optional.of(new ScalingJob()));
         ResponseContent<?> responseContent = execute("/scaling/job/start");
         assertTrue(responseContent.isSuccess());
     }
     
     @Test
     public void assertStartJobFailure() {
-        when(scalingJobService.start(any(ScalingConfiguration.class))).thenReturn(Optional.empty());
+        when(scalingJobService.start(any(JobConfiguration.class))).thenReturn(Optional.empty());
         ResponseContent<?> responseContent = execute("/scaling/job/start");
         assertFalse(responseContent.isSuccess());
     }

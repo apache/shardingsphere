@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Scaling configuration.
+ * Scaling job configuration.
  */
 @Setter
 @Getter
-public final class ScalingConfiguration {
+public final class JobConfiguration {
     
     private RuleConfiguration ruleConfig;
     
