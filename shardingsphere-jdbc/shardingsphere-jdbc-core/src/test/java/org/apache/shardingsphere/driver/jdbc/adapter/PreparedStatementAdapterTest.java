@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
-import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShardingTest;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
-import org.apache.shardingsphere.driver.jdbc.util.JDBCTestSQL;
-import org.junit.After;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,294 +37,227 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public final class PreparedStatementAdapterTest extends AbstractShardingSphereDataSourceForShardingTest {
+public final class PreparedStatementAdapterTest {
     
-    private final List<ShardingSphereConnection> shardingSphereConnections = new ArrayList<>();
-    
-    private final List<PreparedStatement> preparedStatements = new ArrayList<>();
+    private ShardingSpherePreparedStatement shardingSpherePreparedStatement;
     
     @Before
-    public void init() throws SQLException {
-        ShardingSphereConnection connection = getShardingSphereDataSource().getConnection();
-        shardingSphereConnections.add(connection);
-        preparedStatements.add(connection.prepareStatement(JDBCTestSQL.SELECT_GROUP_BY_USER_ID_SQL));
+    public void setUp() throws SQLException {
+        ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaDataContexts().getDefaultMetaData().getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        shardingSpherePreparedStatement = new ShardingSpherePreparedStatement(connection, "SELECT 1");
     }
     
-    @After
-    public void close() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            each.close();
-        }
-        for (ShardingSphereConnection each : shardingSphereConnections) {
-            each.close();
+    @Test
+    public void assertSetNull() {
+        shardingSpherePreparedStatement.setNull(1, Types.VARCHAR);
+        shardingSpherePreparedStatement.setNull(2, Types.VARCHAR, "");
+        assertParameter(shardingSpherePreparedStatement, 1, null);
+        assertParameter(shardingSpherePreparedStatement, 2, null);
+    }
+    
+    @Test
+    public void assertSetBoolean() {
+        shardingSpherePreparedStatement.setBoolean(1, true);
+        assertParameter(shardingSpherePreparedStatement, 1, true);
+    }
+    
+    @Test
+    public void assertSetByte() {
+        shardingSpherePreparedStatement.setByte(1, (byte) 0);
+        assertParameter(shardingSpherePreparedStatement, 1, (byte) 0);
+    }
+    
+    @Test
+    public void assertSetShort() {
+        shardingSpherePreparedStatement.setShort(1, (short) 0);
+        assertParameter(shardingSpherePreparedStatement, 1, (short) 0);
+    }
+    
+    @Test
+    public void assertSetInt() {
+        shardingSpherePreparedStatement.setInt(1, 0);
+        assertParameter(shardingSpherePreparedStatement, 1, 0);
+    }
+    
+    @Test
+    public void assertSetLong() {
+        shardingSpherePreparedStatement.setLong(1, 0L);
+        assertParameter(shardingSpherePreparedStatement, 1, 0L);
+    }
+    
+    @Test
+    public void assertSetFloat() {
+        shardingSpherePreparedStatement.setFloat(1, 0.0F);
+        assertParameter(shardingSpherePreparedStatement, 1, 0.0F);
+    }
+    
+    @Test
+    public void assertSetDouble() {
+        shardingSpherePreparedStatement.setDouble(1, 0.0D);
+        assertParameter(shardingSpherePreparedStatement, 1, 0.0D);
+    }
+    
+    @Test
+    public void assertSetString() {
+        shardingSpherePreparedStatement.setString(1, "0");
+        assertParameter(shardingSpherePreparedStatement, 1, "0");
+    }
+    
+    @Test
+    public void assertSetBigDecimal() {
+        shardingSpherePreparedStatement.setBigDecimal(1, BigDecimal.ZERO);
+        assertParameter(shardingSpherePreparedStatement, 1, BigDecimal.ZERO);
+    }
+    
+    @Test
+    public void assertSetDate() {
+        Date date = new Date(0L);
+        shardingSpherePreparedStatement.setDate(1, date);
+        shardingSpherePreparedStatement.setDate(2, date, Calendar.getInstance());
+        assertParameter(shardingSpherePreparedStatement, 1, date);
+        assertParameter(shardingSpherePreparedStatement, 2, date);
+    }
+    
+    @Test
+    public void assertSetTime() {
+        Time time = new Time(0L);
+        shardingSpherePreparedStatement.setTime(1, time);
+        shardingSpherePreparedStatement.setTime(2, time, Calendar.getInstance());
+        assertParameter(shardingSpherePreparedStatement, 1, time);
+        assertParameter(shardingSpherePreparedStatement, 2, time);
+    }
+    
+    @Test
+    public void assertSetTimestamp() {
+        Timestamp timestamp = new Timestamp(0L);
+        shardingSpherePreparedStatement.setTimestamp(1, timestamp);
+        shardingSpherePreparedStatement.setTimestamp(2, timestamp, Calendar.getInstance());
+        assertParameter(shardingSpherePreparedStatement, 1, timestamp);
+        assertParameter(shardingSpherePreparedStatement, 2, timestamp);
+    }
+    
+    @Test
+    public void assertSetBytes() {
+        shardingSpherePreparedStatement.setBytes(1, new byte[]{});
+        assertParameter(shardingSpherePreparedStatement, 1, new byte[]{});
+    }
+    
+    @Test
+    public void assertSetBlob() throws IOException {
+        try (InputStream inputStream = new ByteArrayInputStream(new byte[]{})) {
+            shardingSpherePreparedStatement.setBlob(1, (Blob) null);
+            shardingSpherePreparedStatement.setBlob(2, inputStream);
+            shardingSpherePreparedStatement.setBlob(3, inputStream, 100L);
+            assertParameter(shardingSpherePreparedStatement, 1, null);
+            assertParameter(shardingSpherePreparedStatement, 2, inputStream);
+            assertParameter(shardingSpherePreparedStatement, 3, inputStream);
         }
     }
     
     @Test
-    public void assertSetNull() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            each.setNull(1, Types.VARCHAR);
-            each.setNull(2, Types.VARCHAR, "");
-            assertParameter(each, 1, null);
-            assertParameter(each, 2, null);
+    public void assertSetClob() {
+        Reader reader = new StringReader("value");
+        shardingSpherePreparedStatement.setClob(1, (Clob) null);
+        shardingSpherePreparedStatement.setClob(2, reader);
+        shardingSpherePreparedStatement.setClob(3, reader, 100L);
+        assertParameter(shardingSpherePreparedStatement, 1, null);
+        assertParameter(shardingSpherePreparedStatement, 2, reader);
+        assertParameter(shardingSpherePreparedStatement, 3, reader);
+    }
+    
+    @Test
+    public void assertSetAsciiStream() throws IOException {
+        try (InputStream inputStream = new ByteArrayInputStream(new byte[]{})) {
+            shardingSpherePreparedStatement.setAsciiStream(1, inputStream);
+            shardingSpherePreparedStatement.setAsciiStream(2, inputStream, 100);
+            shardingSpherePreparedStatement.setAsciiStream(3, inputStream, 100L);
+            assertParameter(shardingSpherePreparedStatement, 1, inputStream);
+            assertParameter(shardingSpherePreparedStatement, 2, inputStream);
+            assertParameter(shardingSpherePreparedStatement, 3, inputStream);
         }
     }
     
     @Test
-    public void assertSetBoolean() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            each.setBoolean(1, true);
-            assertParameter(each, 1, true);
+    public void assertSetUnicodeStream() throws IOException {
+        try (InputStream inputStream = new ByteArrayInputStream(new byte[]{})) {
+            shardingSpherePreparedStatement.setUnicodeStream(1, inputStream, 100);
+            assertParameter(shardingSpherePreparedStatement, 1, inputStream);
         }
     }
     
     @Test
-    public void assertSetByte() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            each.setByte(1, (byte) 0);
-            assertParameter(each, 1, (byte) 0);
+    public void assertSetBinaryStream() throws IOException {
+        try (InputStream inputStream = new ByteArrayInputStream(new byte[]{})) {
+            shardingSpherePreparedStatement.setBinaryStream(1, inputStream);
+            shardingSpherePreparedStatement.setBinaryStream(2, inputStream, 100);
+            shardingSpherePreparedStatement.setBinaryStream(3, inputStream, 100L);
+            assertParameter(shardingSpherePreparedStatement, 1, inputStream);
+            assertParameter(shardingSpherePreparedStatement, 2, inputStream);
+            assertParameter(shardingSpherePreparedStatement, 3, inputStream);
         }
     }
     
     @Test
-    public void assertSetShort() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            each.setShort(1, (short) 0);
-            assertParameter(each, 1, (short) 0);
-        }
+    public void assertSetCharacterStream() {
+        shardingSpherePreparedStatement.setCharacterStream(1, new StringReader("value"));
+        shardingSpherePreparedStatement.setCharacterStream(2, new StringReader("value"), 100);
+        shardingSpherePreparedStatement.setCharacterStream(3, new StringReader("value"), 100L);
+        assertParameter(shardingSpherePreparedStatement, 1, "value");
+        assertParameter(shardingSpherePreparedStatement, 2, "value");
+        assertParameter(shardingSpherePreparedStatement, 3, "value");
     }
     
     @Test
-    public void assertSetInt() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            each.setInt(1, 0);
-            assertParameter(each, 1, 0);
-        }
+    public void assertSetURL() {
+        shardingSpherePreparedStatement.setURL(1, null);
+        assertParameter(shardingSpherePreparedStatement, 1, null);
     }
     
     @Test
-    public void assertSetLong() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            each.setLong(1, 0L);
-            assertParameter(each, 1, 0L);
-        }
+    public void assertSetSQLXML() {
+        shardingSpherePreparedStatement.setSQLXML(1, null);
+        assertParameter(shardingSpherePreparedStatement, 1, null);
     }
     
     @Test
-    public void assertSetFloat() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            each.setFloat(1, 0.0F);
-            assertParameter(each, 1, 0.0F);
-        }
-    }
-    
-    @Test
-    public void assertSetDouble() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            each.setDouble(1, 0.0D);
-            assertParameter(each, 1, 0.0D);
-        }
-    }
-    
-    @Test
-    public void assertSetString() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            each.setString(1, "0");
-            assertParameter(each, 1, "0");
-        }
-    }
-    
-    @Test
-    public void assertSetBigDecimal() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            each.setBigDecimal(1, BigDecimal.ZERO);
-            assertParameter(each, 1, BigDecimal.ZERO);
-        }
-    }
-    
-    @Test
-    public void assertSetDate() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            Date now = new Date(0L);
-            each.setDate(1, now);
-            each.setDate(2, now, Calendar.getInstance());
-            assertParameter(each, 1, now);
-            assertParameter(each, 2, now);
-        }
-    }
-    
-    @Test
-    public void assertSetTime() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            Time now = new Time(0L);
-            each.setTime(1, now);
-            each.setTime(2, now, Calendar.getInstance());
-            assertParameter(each, 1, now);
-            assertParameter(each, 2, now);
-        }
-    }
-    
-    @Test
-    public void assertSetTimestamp() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            Timestamp now = new Timestamp(0L);
-            each.setTimestamp(1, now);
-            each.setTimestamp(2, now, Calendar.getInstance());
-            assertParameter(each, 1, now);
-            assertParameter(each, 2, now);
-        }
-    }
-    
-    @Test
-    public void assertSetBytes() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            each.setBytes(1, new byte[]{});
-            assertParameter(each, 1, new byte[]{});
-        }
-    }
-    
-    @Test
-    public void assertSetBlob() throws SQLException, IOException {
-        for (PreparedStatement each : preparedStatements) {
-            try (InputStream inputStream = new ByteArrayInputStream(new byte[]{})) {
-                each.setBlob(1, (Blob) null);
-                each.setBlob(2, inputStream);
-                each.setBlob(3, inputStream, 100L);
-                assertParameter(each, 1, null);
-                assertParameter(each, 2, inputStream);
-                assertParameter(each, 3, inputStream);
-            }
-        }
-    }
-    
-    @Test
-    public void assertSetClob() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            Reader reader = new SerializableStringReader();
-            each.setClob(1, (Clob) null);
-            each.setClob(2, reader);
-            each.setClob(3, reader, 100L);
-            assertParameter(each, 1, null);
-            assertParameter(each, 2, reader);
-            assertParameter(each, 3, reader);
-        }
-    }
-    
-    @Test
-    public void assertSetAsciiStream() throws SQLException, IOException {
-        for (PreparedStatement each : preparedStatements) {
-            try (InputStream inputStream = new ByteArrayInputStream(new byte[]{})) {
-                each.setAsciiStream(1, inputStream);
-                each.setAsciiStream(2, inputStream, 100);
-                each.setAsciiStream(3, inputStream, 100L);
-                assertParameter(each, 1, inputStream);
-                assertParameter(each, 2, inputStream);
-                assertParameter(each, 3, inputStream);
-            }
-        }
-    }
-    
-    @SuppressWarnings("deprecation")
-    @Test
-    public void assertSetUnicodeStream() throws SQLException, IOException {
-        for (PreparedStatement each : preparedStatements) {
-            try (InputStream inputStream = new ByteArrayInputStream(new byte[]{})) {
-                each.setUnicodeStream(1, inputStream, 100);
-                assertParameter(each, 1, inputStream);
-            }
-        }
-    }
-    
-    @Test
-    public void assertSetBinaryStream() throws SQLException, IOException {
-        for (PreparedStatement each : preparedStatements) {
-            try (InputStream inputStream = new ByteArrayInputStream(new byte[]{})) {
-                each.setBinaryStream(1, inputStream);
-                each.setBinaryStream(2, inputStream, 100);
-                each.setBinaryStream(3, inputStream, 100L);
-                assertParameter(each, 1, inputStream);
-                assertParameter(each, 2, inputStream);
-                assertParameter(each, 3, inputStream);
-            }
-        }
-    }
-    
-    @Test
-    public void assertSetCharacterStream() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            each.setCharacterStream(1, new SerializableStringReader());
-            each.setCharacterStream(2, new SerializableStringReader(), 100);
-            each.setCharacterStream(3, new SerializableStringReader(), 100L);
-            assertParameter(each, 1, "value");
-            assertParameter(each, 2, "value");
-            assertParameter(each, 3, "value");
-        }
-    }
-    
-    @Test
-    public void assertSetURL() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            each.setURL(1, null);
-            assertParameter(each, 1, null);
-        }
-    }
-    
-    @Test
-    public void assertSetSQLXML() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            each.setSQLXML(1, null);
-            assertParameter(each, 1, null);
-        }
-    }
-    
-    @Test
-    public void assertSetObject() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            Object obj = "value";
-            each.setObject(1, obj);
-            each.setObject(2, obj, 0);
-            each.setObject(3, null);
-            each.setObject(4, null);
-            each.setObject(5, obj, 0, 0);
-            assertParameter(each, 1, obj);
-            assertParameter(each, 2, obj);
-            assertParameter(each, 3, null);
-            assertParameter(each, 4, null);
-            assertParameter(each, 5, obj);
-        }
-    }
-    
-    @Test
-    public void assertClearParameters() throws SQLException {
-        for (PreparedStatement each : preparedStatements) {
-            Object obj = new Object();
-            each.setObject(1, obj);
-            each.setObject(2, obj, 0);
-            each.setObject(3, null);
-            each.setObject(4, null);
-            each.setObject(5, obj, 0, 0);
-            assertThat(((ShardingSpherePreparedStatement) each).getParameters().size(), is(5));
-            each.clearParameters();
-            assertTrue(((ShardingSpherePreparedStatement) each).getParameters().isEmpty());
-        }
+    public void assertSetObject() {
+        Object obj = "value";
+        shardingSpherePreparedStatement.setObject(1, obj);
+        shardingSpherePreparedStatement.setObject(2, obj, 0);
+        shardingSpherePreparedStatement.setObject(3, null);
+        shardingSpherePreparedStatement.setObject(4, null);
+        shardingSpherePreparedStatement.setObject(5, obj, 0, 0);
+        assertParameter(shardingSpherePreparedStatement, 1, obj);
+        assertParameter(shardingSpherePreparedStatement, 2, obj);
+        assertParameter(shardingSpherePreparedStatement, 3, null);
+        assertParameter(shardingSpherePreparedStatement, 4, null);
+        assertParameter(shardingSpherePreparedStatement, 5, obj);
     }
     
     private void assertParameter(final PreparedStatement actual, final int index, final Object parameter) {
         assertThat(((ShardingSpherePreparedStatement) actual).getParameters().get(index - 1), is(parameter));
     }
     
-    private static class SerializableStringReader extends StringReader {
-        
-        SerializableStringReader() {
-            super("value");
-        }
+    @Test
+    public void assertClearParameters() {
+        Object obj = new Object();
+        shardingSpherePreparedStatement.setObject(1, obj);
+        shardingSpherePreparedStatement.setObject(2, obj, 0);
+        shardingSpherePreparedStatement.setObject(3, null);
+        shardingSpherePreparedStatement.setObject(4, null);
+        shardingSpherePreparedStatement.setObject(5, obj, 0, 0);
+        assertThat(shardingSpherePreparedStatement.getParameters().size(), is(5));
+        shardingSpherePreparedStatement.clearParameters();
+        assertTrue(shardingSpherePreparedStatement.getParameters().isEmpty());
     }
 }
