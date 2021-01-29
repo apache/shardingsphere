@@ -24,10 +24,11 @@ import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRe
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlRuleConfigurationWrap;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
@@ -75,9 +76,9 @@ public final class RuleChangedListener extends PostGovernanceRepositoryEventList
     }
     
     private Collection<RuleConfiguration> getRuleConfigurations(final String yamlContent) {
-        YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlContent, YamlRootRuleConfigurations.class, true);
-        Preconditions.checkState(null != configurations, "No available rule to load for governance.");
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(configurations.getRules());
+        Collection<YamlRuleConfiguration> rules = YamlEngine.unmarshalWithFilter(yamlContent, YamlRuleConfigurationWrap.class).getRules();
+        Preconditions.checkState(!rules.isEmpty(), "No available rule to load for governance.");
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rules);
     }
     
     private GovernanceEvent createRuleConfigurationCachedEvent(final String schemaName, final DataChangedEvent event) {

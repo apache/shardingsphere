@@ -33,6 +33,7 @@ import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePe
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaPersistEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlRuleConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
@@ -50,7 +51,6 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -293,7 +293,8 @@ public final class ConfigCenter {
         if (!hasDataSourceConfiguration(schemaName)) {
             return new LinkedHashMap<>();
         }
-        YamlDataSourceConfigurationWrap result = YamlEngine.unmarshal(repository.get(node.getDataSourcePath(schemaName)), YamlDataSourceConfigurationWrap.class, true);
+        YamlDataSourceConfigurationWrap result = YamlEngine.unmarshalWithFilter(repository.get(node.getDataSourcePath(schemaName)), 
+                YamlDataSourceConfigurationWrap.class);
         return result.getDataSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey,
             entry -> new DataSourceConfigurationYamlSwapper().swapToObject(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
@@ -306,7 +307,8 @@ public final class ConfigCenter {
      */
     public Collection<RuleConfiguration> loadRuleConfigurations(final String schemaName) {
         return hasRuleConfiguration(schemaName) ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                YamlEngine.unmarshal(repository.get(node.getRulePath(schemaName)), YamlRootRuleConfigurations.class, true).getRules()) : new LinkedList<>();
+                YamlEngine.unmarshalWithFilter(repository.get(node.getRulePath(schemaName)), 
+                        YamlRuleConfigurationWrap.class).getRules()) : new LinkedList<>();
     }
     
     /**
@@ -326,7 +328,8 @@ public final class ConfigCenter {
      * @return properties
      */
     public Properties loadProperties() {
-        return YamlEngine.unmarshalProperties(repository.get(node.getPropsPath()), Collections.singletonList(Properties.class));
+        return Strings.isNullOrEmpty(repository.get(node.getPropsPath())) ? new Properties() 
+                : YamlEngine.unmarshalWithFilter(repository.get(node.getPropsPath()), Properties.class);
     }
     
     /**

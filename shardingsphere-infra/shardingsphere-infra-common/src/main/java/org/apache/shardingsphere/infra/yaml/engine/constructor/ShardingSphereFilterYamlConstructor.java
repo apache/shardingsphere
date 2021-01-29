@@ -17,19 +17,31 @@
 
 package org.apache.shardingsphere.infra.yaml.engine.constructor;
 
+import java.util.Collection;
+
 /**
- * Package filter constructor for YAML.
+ * ShardingSphere filter constructor for YAML.
  */
-public final class PackageFilterConstructor extends ShardingSphereYamlConstructor {
+public final class ShardingSphereFilterYamlConstructor extends ShardingSphereYamlConstructor {
     
-    public PackageFilterConstructor(final Class<?> rootClass) {
+    private final Collection<Class<?>> acceptClasses;
+    
+    public ShardingSphereFilterYamlConstructor(final Class<?> rootClass, final Collection<Class<?>> acceptClasses) {
         super(rootClass);
+        this.acceptClasses = acceptClasses;
+    }
+    
+    public ShardingSphereFilterYamlConstructor(final Collection<Class<?>> acceptClasses) {
+        super(Object.class);
+        this.acceptClasses = acceptClasses;
     }
     
     @Override
     protected Class<?> getClassForName(final String name) throws ClassNotFoundException {
-        if (name != null && name.startsWith("org.apache.shardingsphere.")) {
-            return super.getClassForName(name);
+        for (Class<? extends Object> each : acceptClasses) {
+            if (name.equals(each.getName())) {
+                return super.getClassForName(name);
+            }
         }
         throw new IllegalArgumentException(String.format("Class is not accepted: %s", name));
     }

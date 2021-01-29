@@ -80,7 +80,7 @@ public final class YamlEngineTest {
     
     @Test
     public void assertUnmarshalProperties() {
-        Properties actual = YamlEngine.unmarshalProperties("password: pwd\nauthorizedSchemas: db1", Collections.singletonList(Properties.class));
+        Properties actual = YamlEngine.unmarshalWithFilter("password: pwd\nauthorizedSchemas: db1", Properties.class);
         assertThat(actual.getProperty("authorizedSchemas"), is("db1"));
         assertThat(actual.getProperty("password"), is("pwd"));
     }
@@ -107,7 +107,7 @@ public final class YamlEngineTest {
     }
     
     @Test
-    public void assertUnmarshalWithYamlWithoutFilterPackage() throws IOException {
+    public void assertUnmarshalWithAcceptClass() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/fixture-rule-with-props.yaml");
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();
@@ -119,12 +119,17 @@ public final class YamlEngineTest {
                 yamlContent.append(line).append("\n");
             }
         }
-        FixtureYamlPropsRuleConfiguration actual = YamlEngine.unmarshal(yamlContent.toString(), FixtureYamlPropsRuleConfiguration.class, false);
+        Collection<Class<?>> acceptClasses = new LinkedList<>();
+        acceptClasses.add(URLClassLoader.class);
+        acceptClasses.add(URL.class);
+        acceptClasses.add(FixtureYamlPropsRuleConfiguration.class);
+        FixtureYamlPropsRuleConfiguration actual = YamlEngine.unmarshal(yamlContent.toString(), 
+                FixtureYamlPropsRuleConfiguration.class, acceptClasses);
         assertThat(actual.getName(), is("test"));
     }
     
     @Test(expected = ConstructorException.class)
-    public void assertUnmarshalWithYamlWithFilterPackage() throws IOException {
+    public void assertUnmarshalWithoutAcceptClass() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/fixture-rule-with-props.yaml");
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();
@@ -136,7 +141,8 @@ public final class YamlEngineTest {
                 yamlContent.append(line).append("\n");
             }
         }
-        FixtureYamlPropsRuleConfiguration actual = YamlEngine.unmarshal(yamlContent.toString(), FixtureYamlPropsRuleConfiguration.class, true);
+        FixtureYamlPropsRuleConfiguration actual = YamlEngine.unmarshalWithFilter(yamlContent.toString(), 
+                FixtureYamlPropsRuleConfiguration.class);
         assertThat(actual.getName(), is("test"));
     }
 }
