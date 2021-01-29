@@ -18,13 +18,6 @@
 package org.apache.shardingsphere.scaling.core.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckerFactory;
@@ -32,25 +25,12 @@ import org.apache.shardingsphere.scaling.core.job.environmental.ScalingEnvironme
 
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Abstract scaling job service.
  */
 @Slf4j
 public abstract class AbstractScalingJobService implements ScalingJobService {
-    
-    @Override
-    public Optional<ScalingJob> start(final RuleConfigurationsAlteredEvent event) {
-        ScalingConfiguration scalingConfig = new ScalingConfiguration();
-        scalingConfig.setRuleConfiguration(new RuleConfiguration(
-                new ShardingSphereJDBCDataSourceConfiguration(event.getSourceDataSource(), event.getSourceRule()),
-                new ShardingSphereJDBCDataSourceConfiguration(event.getTargetDataSource(), event.getTargetRule())));
-        JobConfiguration jobConfig = new JobConfiguration();
-        jobConfig.setWorkflowConfig(new WorkflowConfiguration(event.getSchemaName(), event.getRuleCacheId()));
-        scalingConfig.setJobConfiguration(jobConfig);
-        return start(scalingConfig);
-    }
     
     @Override
     public Map<String, DataConsistencyCheckResult> check(final long jobId) {

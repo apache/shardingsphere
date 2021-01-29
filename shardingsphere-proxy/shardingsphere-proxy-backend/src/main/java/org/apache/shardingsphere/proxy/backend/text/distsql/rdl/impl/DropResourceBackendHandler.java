@@ -79,7 +79,7 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
             }
         }
         Collection<String> conflictResources = new LinkedList<>();
-        for (String each : useResources) {
+        for (String each : resourceNames) {
             if (useResources.contains(each)) {
                 conflictResources.add(each);
             }

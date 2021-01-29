@@ -50,9 +50,6 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     private int transactionIsolation = TRANSACTION_READ_UNCOMMITTED;
     
-    protected AbstractConnectionAdapter() {
-    }
-    
     @Override
     public final void close() throws SQLException {
         closed = true;
@@ -124,5 +121,23 @@ public abstract class AbstractConnectionAdapter extends AbstractUnsupportedOpera
     
     @Override
     public final void setHoldability(final int holdability) {
+    }
+    
+    @Override
+    public final String getCatalog() {
+        return null;
+    }
+    
+    @Override
+    public final void setCatalog(final String catalog) {
+    }
+    
+    @Override
+    public final String getSchema() {
+        return null;
+    }
+    
+    @Override
+    public final void setSchema(final String schema) {
     }
 }

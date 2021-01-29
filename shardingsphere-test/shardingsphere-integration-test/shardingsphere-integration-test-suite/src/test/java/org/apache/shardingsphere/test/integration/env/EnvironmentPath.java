@@ -113,7 +113,7 @@ public final class EnvironmentPath {
     }
     
     private static String getFile(final DatabaseType databaseType, final String scenario, final String fileName) {
-        String path = String.join("/", ROOT_PATH, scenario, databaseType.getName().toLowerCase(), fileName);
+        String path = String.join("/", ROOT_PATH, scenario, "init-sql", databaseType.getName().toLowerCase(), fileName);
         URL url = EnvironmentPath.class.getClassLoader().getResource(path);
         assertNotNull(String.format("File `%s` must exist.", path), url);
         return url.getFile();

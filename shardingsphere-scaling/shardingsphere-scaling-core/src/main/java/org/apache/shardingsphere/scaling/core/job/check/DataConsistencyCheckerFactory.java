@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job.check;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 
@@ -30,12 +30,12 @@ public final class DataConsistencyCheckerFactory {
     /**
      * Create data consistency checker instance.
      *
-     * @param scalingJob scaling job
+     * @param jobContext job context
      * @return data consistency checker
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static DataConsistencyChecker newInstance(final ScalingJob scalingJob) {
-        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(scalingJob.getDatabaseType());
-        return scalingEntry.getDataConsistencyCheckerClass().getConstructor(ScalingJob.class).newInstance(scalingJob);
+    public static DataConsistencyChecker newInstance(final JobContext jobContext) {
+        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(jobContext.getDatabaseType());
+        return scalingEntry.getDataConsistencyCheckerClass().getConstructor(JobContext.class).newInstance(jobContext);
     }
 }

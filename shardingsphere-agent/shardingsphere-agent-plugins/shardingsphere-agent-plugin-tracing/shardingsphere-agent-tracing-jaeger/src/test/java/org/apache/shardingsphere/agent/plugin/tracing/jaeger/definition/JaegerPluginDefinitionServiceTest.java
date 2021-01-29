@@ -30,7 +30,7 @@ public final class JaegerPluginDefinitionServiceTest {
     
     @Test
     public void assertDefine() {
-        Collection<PluginInterceptorPoint> interceptorPointList = jaegerPluginDefinitionService.define();
+        Collection<PluginInterceptorPoint> interceptorPointList = jaegerPluginDefinitionService.install();
         assertThat(interceptorPointList.size(), is(3));
     }
     

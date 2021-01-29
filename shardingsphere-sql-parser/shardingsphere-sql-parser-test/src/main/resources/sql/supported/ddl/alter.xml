@@ -110,6 +110,18 @@
     <sql-case id="alter_table_attach_partition" value="ALTER TABLE t_order ATTACH PARTITION measurement_y2016m07 FOR VALUES FROM ('2016-07-01') TO ('2016-08-01')" db-types="PostgreSQL"/>
     <sql-case id="alter_table_detach_partition" value="ALTER TABLE t_order ATTACH PARTITION measurement_y2016m07 FOR VALUES FROM ('2016-07-01') TO ('2016-08-01')" db-types="PostgreSQL"/>
     <sql-case id="alter_table_in_hash_partitioned_table" value="ALTER TABLE t_order ATTACH PARTITION orders_p4 FOR VALUES WITH (MODULUS 4, REMAINDER 3)" db-types="PostgreSQL" />
+    <sql-case id="alter_table_with_optimize_memory_read" value="ALTER TABLE t_log MEMOPTIMIZE FOR READ ADD name VARCHAR(10)" db-types="Oracle" />
+    <sql-case id="alter_table_with_no_optimize_memory_write" value="ALTER TABLE t_log NO MEMOPTIMIZE FOR WRITE ADD name VARCHAR(10)" db-types="Oracle" />
+    <sql-case id="alter_table_with_enable_validate" value="ALTER TABLE t_log ADD name VARCHAR(10) ENABLE VALIDATE PRIMARY KEY" db-types="Oracle" />
+    <sql-case id="alter_table_with_primary_key" value="ALTER TABLE t_log ADD name VARCHAR(10) ENABLE PRIMARY KEY" db-types="Oracle" />
+    <sql-case id="alter_table_with_index_clause" value="ALTER TABLE t_log ADD name VARCHAR(10) ENABLE PRIMARY KEY USING INDEX t_log" db-types="Oracle" />
+    <sql-case id="alter_table_with_exception_clause" value="ALTER TABLE t_log ADD name VARCHAR(10) DISABLE PRIMARY KEY EXCEPTIONS INTO t_log" db-types="Oracle" />
+    <sql-case id="alter_table_with_cascade" value="ALTER TABLE t_log ADD name VARCHAR(10) DISABLE PRIMARY KEY CASCADE" db-types="Oracle" />
+    <sql-case id="alter_table_with_keep_index" value="ALTER TABLE t_log ADD name VARCHAR(10) DISABLE PRIMARY KEY KEEP INDEX" db-types="Oracle" />
+    <sql-case id="alter_table_with_enable_table_lock" value="ALTER TABLE t_log ADD name VARCHAR(10) ENABLE TABLE LOCK" db-types="Oracle" />
+    <sql-case id="alter_table_with_enable_all_triggers" value="ALTER TABLE t_log ADD name VARCHAR(10) ENABLE ALL TRIGGERS" db-types="Oracle" />
+    <sql-case id="alter_table_with_disable_container_map" value="ALTER TABLE t_log ADD name VARCHAR(10) DISABLE CONTAINER_MAP" db-types="Oracle" />
+    <sql-case id="alter_table_with_disable_containers_default" value="ALTER TABLE t_log ADD name VARCHAR(10) DISABLE CONTAINERS_DEFAULT" db-types="Oracle" />
     
 <!--    alter index test-->
     <sql-case id="alter_index" value="ALTER INDEX order_index REBUILD PARALLEL" db-types="Oracle" />

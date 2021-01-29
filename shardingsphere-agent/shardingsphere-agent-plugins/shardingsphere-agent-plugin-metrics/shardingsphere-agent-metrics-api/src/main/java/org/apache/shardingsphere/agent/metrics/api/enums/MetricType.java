@@ -40,6 +40,5 @@ public enum MetricType {
     /**
      * Histogram metric type.
      */
-    HISTOGRAM;
-    
+    HISTOGRAM
 }

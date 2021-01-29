@@ -787,7 +787,7 @@ explicitRow
 
 implicitRow
     : LP_ exprList COMMA_ aExpr RP_
-	;
+    ;
 
 subType
     : ANY | SOME | ALL
@@ -976,14 +976,14 @@ typeName
     ;
 
 simpleTypeName
-	: genericType
-	| numeric
-	| bit
-	| character
-	| constDatetime
-	| constInterval optInterval
-	| constInterval LP_ NUMBER_ RP_
-	;
+    : genericType
+    | numeric
+    | bit
+    | character
+    | constDatetime
+    | constInterval optInterval
+    | constInterval LP_ NUMBER_ RP_
+    ;
 
 exprList
     : aExpr
@@ -1014,7 +1014,7 @@ typeModifiers
 
 numeric
     : INT | INTEGER | SMALLINT | BIGINT| REAL | FLOAT optFloat | DOUBLE PRECISION | DECIMAL typeModifiers? | DEC typeModifiers? | NUMERIC typeModifiers? | BOOLEAN | FLOAT8 | FLOAT4 | INT2 | INT4 | INT8
-	;
+    ;
 
 constDatetime
     : TIMESTAMP LP_ NUMBER_ RP_ timezone?
@@ -1048,7 +1048,7 @@ characterClause
     | NATIONAL CHARACTER VARYING?
     | NATIONAL CHAR VARYING?
     | NCHAR VARYING?
-	;
+    ;
 
 optFloat
     : LP_ NUMBER_ RP_ |
@@ -1326,14 +1326,14 @@ reloptions
 
 reloptionList
     : reloptionElem (COMMA_ reloptionElem)*
-	;
+    ;
 
 reloptionElem
     : alias EQ_ defArg
     | alias
     | alias DOT_ alias EQ_ defArg
     | alias DOT_ alias
-	;
+    ;
 
 defArg
     : funcType
@@ -1799,7 +1799,7 @@ functionSetResetClause
     ;
 
 rowSecurityCmd
-    : ALL | SELECT | INSERT	| UPDATE | DELETE
+    : ALL | SELECT | INSERT    | UPDATE | DELETE
     ;
 
 event

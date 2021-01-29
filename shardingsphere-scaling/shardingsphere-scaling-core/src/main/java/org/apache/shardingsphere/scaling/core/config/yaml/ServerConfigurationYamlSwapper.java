@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.config.yaml;
 
+import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 
@@ -30,11 +31,11 @@ public final class ServerConfigurationYamlSwapper implements YamlSwapper<YamlSer
     @Override
     public YamlServerConfiguration swapToYamlConfiguration(final ServerConfiguration data) {
         YamlServerConfiguration result = new YamlServerConfiguration();
-        result.setPort(data.getPort());
-        result.setBlockQueueSize(data.getBlockQueueSize());
-        result.setWorkerThread(data.getWorkerThread());
-        if (null != data.getDistributedScalingService()) {
-            result.setDistributedScalingService(governanceConfigurationYamlSwapper.swapToYamlConfiguration(data.getDistributedScalingService()));
+        result.getScaling().setPort(data.getPort());
+        result.getScaling().setBlockQueueSize(data.getBlockQueueSize());
+        result.getScaling().setWorkerThread(data.getWorkerThread());
+        if (null != data.getGovernanceConfig()) {
+            result.setGovernance(governanceConfigurationYamlSwapper.swapToYamlConfiguration(data.getGovernanceConfig()));
         }
         return result;
     }
@@ -42,11 +43,11 @@ public final class ServerConfigurationYamlSwapper implements YamlSwapper<YamlSer
     @Override
     public ServerConfiguration swapToObject(final YamlServerConfiguration yamlConfig) {
         ServerConfiguration result = new ServerConfiguration();
-        result.setPort(yamlConfig.getPort());
-        result.setBlockQueueSize(yamlConfig.getBlockQueueSize());
-        result.setWorkerThread(yamlConfig.getWorkerThread());
-        if (null != yamlConfig.getDistributedScalingService()) {
-            result.setDistributedScalingService(governanceConfigurationYamlSwapper.swapToObject(yamlConfig.getDistributedScalingService()));
+        result.setPort(yamlConfig.getScaling().getPort());
+        result.setBlockQueueSize(yamlConfig.getScaling().getBlockQueueSize());
+        result.setWorkerThread(yamlConfig.getScaling().getWorkerThread());
+        if (null != yamlConfig.getGovernance()) {
+            result.setGovernanceConfig(governanceConfigurationYamlSwapper.swapToObject(yamlConfig.getGovernance()));
         }
         return result;
     }

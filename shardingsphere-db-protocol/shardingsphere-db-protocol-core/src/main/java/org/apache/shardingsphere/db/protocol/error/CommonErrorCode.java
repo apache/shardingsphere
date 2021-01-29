@@ -45,6 +45,10 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     REPLICA_QUERY_RULE_EXIST(11008, "C11008", "Replica query rule already exists."),
     
+    SHARDING_RULE_NOT_EXIST(11009, "C11009", "Sharding rule does not exist."),
+    
+    SHARDING_TABLE_RULE_EXIST(11010, "C11010", "Sharding table rules: [%s] already exists."),
+    
     UNSUPPORTED_COMMAND(19998, "C19998", "Unsupported command: [%s]"),
     
     UNKNOWN_EXCEPTION(19999, "C19999", "Unknown exception: [%s]");

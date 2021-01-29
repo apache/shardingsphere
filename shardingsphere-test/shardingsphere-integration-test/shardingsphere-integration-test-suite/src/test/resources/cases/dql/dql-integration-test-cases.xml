@@ -481,4 +481,8 @@
     <test-case sql="SELECT * FROM t_order o LEFT JOIN t_order_item m ON o.order_id = m.order_id" db-types="MySQL,H2">
         <assertion expected-data-file="select_for_left_join.xml"/>
     </test-case>
+
+    <test-case sql="SELECT * FROM t_broadcast_table">
+        <assertion expected-data-file="select_for_broadcast_table.xml"/>
+    </test-case>
 </integration-test-cases>

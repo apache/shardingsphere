@@ -34,5 +34,5 @@ public final class ServerConfiguration {
     
     private int workerThread = 30;
     
-    private GovernanceConfiguration distributedScalingService;
+    private GovernanceConfiguration governanceConfig;
 }

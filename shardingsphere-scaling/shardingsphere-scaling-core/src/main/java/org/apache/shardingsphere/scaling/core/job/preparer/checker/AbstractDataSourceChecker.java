@@ -58,7 +58,7 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
             try (PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement(getSqlBuilder().buildCheckEmptySQL(each));
                  ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    throw new PrepareFailedException(String.format("Target table [%s] not empty!", each));
+                    throw new PrepareFailedException(String.format("Target table [%s] is not empty!", each));
                 }
             }
         }

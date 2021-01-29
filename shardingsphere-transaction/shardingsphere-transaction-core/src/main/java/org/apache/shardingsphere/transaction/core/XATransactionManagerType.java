@@ -46,6 +46,6 @@ public enum XATransactionManagerType {
      * @return value from transaction manager type
      */
     public static XATransactionManagerType valueFrom(final String type) {
-        return Arrays.stream(values()).filter(each -> each.type.equalsIgnoreCase(type)).findFirst().orElse(XATransactionManagerType.ATOMIKOS);
+        return Arrays.stream(values()).filter(each -> each.type.equalsIgnoreCase(type)).findFirst().orElse(ATOMIKOS);
     }
 }

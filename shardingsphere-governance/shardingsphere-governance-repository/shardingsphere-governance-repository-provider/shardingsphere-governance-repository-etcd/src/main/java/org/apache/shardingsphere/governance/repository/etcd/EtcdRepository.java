@@ -100,18 +100,13 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
     }
     
     @Override
-    public void initLock(final String key) {
-        // TODO
-    }
-    
-    @Override
-    public boolean tryLock(final long time, final TimeUnit unit) {
+    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
         // TODO
         return false;
     }
     
     @Override
-    public void releaseLock() {
+    public void releaseLock(final String key) {
         // TODO
     }
     

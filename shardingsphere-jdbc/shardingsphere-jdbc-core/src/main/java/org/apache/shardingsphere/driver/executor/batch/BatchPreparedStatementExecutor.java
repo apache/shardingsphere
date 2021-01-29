@@ -134,6 +134,9 @@ public final class BatchPreparedStatementExecutor {
             }
         };
         List<int[]> results = jdbcExecutor.execute(executionGroups, callback);
+        if (results.isEmpty()) {
+            return new int[0];
+        }
         return isNeedAccumulate(
                 metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().filter(rule -> rule instanceof DataNodeContainedRule).collect(Collectors.toList()), sqlStatementContext)
                 ? accumulate(results) : results.get(0);

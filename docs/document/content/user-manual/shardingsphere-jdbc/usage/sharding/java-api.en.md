@@ -17,7 +17,9 @@ weight = 1
 
 ShardingSphere-JDBC Java API consists of data sources, rules and properties configuration.
 The following example is the configuration of 2 databases and 2 tables, 
-whose databases take module and split according to `order_id`, tables take module and split according to `order_id`.
+whose databases take module and split according to `order_id`, tables take module and split according to `order_id` .
+
+Note: The example database connection pool is HikariCP, which can be replaced with other mainstream database connection pools according to business scenarios.
 
 ```java
 
@@ -25,17 +27,17 @@ whose databases take module and split according to `order_id`, tables take modul
 Map<String, DataSource> dataSourceMap = new HashMap<>();
 
 // Configure the first data source
-BasicDataSource dataSource1 = new BasicDataSource();
+HikariDataSource dataSource1 = new HikariDataSource();
 dataSource1.setDriverClassName("com.mysql.jdbc.Driver");
-dataSource1.setUrl("jdbc:mysql://localhost:3306/ds0");
+dataSource1.setJdbcUrl("jdbc:mysql://localhost:3306/ds0");
 dataSource1.setUsername("root");
 dataSource1.setPassword("");
 dataSourceMap.put("ds0", dataSource1);
 
 // Configure the second data source
-BasicDataSource dataSource2 = new BasicDataSource();
+HikariDataSource dataSource2 = new HikariDataSource();
 dataSource2.setDriverClassName("com.mysql.jdbc.Driver");
-dataSource2.setUrl("jdbc:mysql://localhost:3306/ds1");
+dataSource2.setJdbcUrl("jdbc:mysql://localhost:3306/ds1");
 dataSource2.setUsername("root");
 dataSource2.setPassword("");
 dataSourceMap.put("ds1", dataSource2);

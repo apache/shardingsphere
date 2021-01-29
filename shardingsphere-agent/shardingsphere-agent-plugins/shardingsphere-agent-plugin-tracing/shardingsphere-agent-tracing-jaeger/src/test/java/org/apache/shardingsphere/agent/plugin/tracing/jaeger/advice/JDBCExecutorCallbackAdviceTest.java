@@ -21,7 +21,7 @@ import io.opentracing.mock.MockSpan;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractJDBCExecutorCallbackAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
-import org.apache.shardingsphere.agent.plugin.tracing.rule.JaegerCollector;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.collector.JaegerCollector;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;

@@ -20,7 +20,9 @@ package org.apache.shardingsphere.db.protocol.mysql.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.util.List;
@@ -48,11 +50,19 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
     
     @Override
     public void encode(final ChannelHandlerContext context, final MySQLPacket message, final ByteBuf out) {
-        try (MySQLPacketPayload payload = new MySQLPacketPayload(context.alloc().buffer())) {
+        MySQLPacketPayload payload = new MySQLPacketPayload(context.alloc().buffer());
+        try {
             message.write(payload);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            payload.getByteBuf().resetWriterIndex();
+            new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, ex.getMessage()).write(payload);
+        } finally {
             out.writeMediumLE(payload.getByteBuf().readableBytes());
             out.writeByte(message.getSequenceId());
             out.writeBytes(payload.getByteBuf());
+            payload.close();
         }
     }
     
