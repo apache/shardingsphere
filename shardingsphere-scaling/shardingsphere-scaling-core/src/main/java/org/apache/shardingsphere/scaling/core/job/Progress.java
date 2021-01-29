@@ -20,5 +20,5 @@ package org.apache.shardingsphere.scaling.core.job;
 /**
  * Scaling progress.
  */
-public interface TaskProgress {
+public interface Progress {
 }

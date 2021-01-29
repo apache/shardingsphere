@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.api;
 
 import org.apache.shardingsphere.scaling.core.job.JobContext;
-import org.apache.shardingsphere.scaling.core.job.position.JobPosition;
+import org.apache.shardingsphere.scaling.core.job.position.JobProgress;
 
 /**
  * Registry repository API.
@@ -26,18 +26,18 @@ import org.apache.shardingsphere.scaling.core.job.position.JobPosition;
 public interface RegistryRepositoryAPI {
     
     /**
-     * persist job position.
+     * persist job progress.
      *
      * @param jobContext job context
      */
-    void persistJobPosition(JobContext jobContext);
+    void persistJobProgress(JobContext jobContext);
     
     /**
-     * Get job position.
+     * Get job progress.
      *
      * @param jobId job id
      * @param shardingItem sharding item
-     * @return job position
+     * @return job progress
      */
-    JobPosition getJobPosition(long jobId, int shardingItem);
+    JobProgress getJobProgress(long jobId, int shardingItem);
 }

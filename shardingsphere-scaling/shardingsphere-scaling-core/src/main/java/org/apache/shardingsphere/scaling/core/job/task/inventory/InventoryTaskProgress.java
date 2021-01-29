@@ -19,16 +19,15 @@ package org.apache.shardingsphere.scaling.core.job.task.inventory;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.TaskProgress;
+import org.apache.shardingsphere.scaling.core.job.Progress;
+import org.apache.shardingsphere.scaling.core.job.position.Position;
 
 /**
  * Inventory task progress.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InventoryTaskProgress implements TaskProgress {
+public final class InventoryTaskProgress implements Progress {
     
-    private final String id;
-    
-    private final boolean finished;
+    private final Position<?> position;
 }

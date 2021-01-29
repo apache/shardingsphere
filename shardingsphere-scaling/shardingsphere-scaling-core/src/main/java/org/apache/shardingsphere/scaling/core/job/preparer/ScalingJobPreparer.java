@@ -28,8 +28,8 @@ import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChe
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryTaskSplitter;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
-import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
 import org.apache.shardingsphere.scaling.core.utils.JobConfigurationUtil;
 
@@ -82,7 +82,7 @@ public final class ScalingJobPreparer {
     }
     
     private void initInventoryTasks(final JobContext jobContext, final DataSourceManager dataSourceManager) {
-        List<ScalingTask> allInventoryTasks = new LinkedList<>();
+        List<InventoryTask> allInventoryTasks = new LinkedList<>();
         for (TaskConfiguration each : jobContext.getTaskConfigs()) {
             allInventoryTasks.addAll(inventoryTaskSplitter.splitInventoryData(jobContext, each, dataSourceManager));
         }
@@ -97,8 +97,8 @@ public final class ScalingJobPreparer {
     }
     
     private Position<?> getIncrementalPosition(final JobContext jobContext, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager) throws SQLException {
-        if (null != jobContext.getInitPosition()) {
-            return jobContext.getInitPosition().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
+        if (null != jobContext.getInitProgress()) {
+            return jobContext.getInitProgress().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
         }
         return PositionInitializerFactory.newInstance(taskConfig.getHandleConfig().getDatabaseType()).init(dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig()));
     }

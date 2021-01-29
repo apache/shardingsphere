@@ -21,12 +21,16 @@ import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
-import org.apache.shardingsphere.scaling.core.job.position.JobPosition;
-import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
+import org.apache.shardingsphere.scaling.core.job.position.JobProgress;
+import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTask;
+import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Registry repository API impl.
@@ -37,23 +41,39 @@ public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
     private static final RegistryRepository REGISTRY_REPOSITORY = RegistryRepositoryHolder.getInstance();
     
     @Override
-    public void persistJobPosition(final JobContext jobContext) {
-        JobPosition jobPosition = new JobPosition();
+    public void persistJobProgress(final JobContext jobContext) {
+        JobProgress jobPosition = new JobProgress();
         jobPosition.setStatus(jobContext.getStatus());
         jobPosition.setDatabaseType(jobContext.getJobConfig().getHandleConfig().getDatabaseType());
-        jobPosition.setIncrementalPositions(jobContext.getIncrementalTasks().stream().collect(Collectors.toMap(ScalingTask::getTaskId, ScalingTask::getPosition)));
-        jobPosition.setInventoryPositions(jobContext.getInventoryTasks().stream().collect(Collectors.toMap(ScalingTask::getTaskId, ScalingTask::getPosition)));
+        jobPosition.setIncrementalTaskProgressMap(getIncrementalTaskProgressMap(jobContext));
+        jobPosition.setInventoryTaskProgressMap(getInventoryTaskProgressMap(jobContext));
         REGISTRY_REPOSITORY.persist(ScalingTaskUtil.getScalingListenerPath(jobContext.getJobId(), jobContext.getShardingItem()), jobPosition.toJson());
     }
     
+    private Map<String, IncrementalTaskProgress> getIncrementalTaskProgressMap(final JobContext jobContext) {
+        Map<String, IncrementalTaskProgress> result = new HashMap<>();
+        for (IncrementalTask each : jobContext.getIncrementalTasks()) {
+            result.put(each.getTaskId(), each.getProgress());
+        }
+        return result;
+    }
+    
+    private Map<String, InventoryTaskProgress> getInventoryTaskProgressMap(final JobContext jobContext) {
+        Map<String, InventoryTaskProgress> result = new HashMap<>();
+        for (InventoryTask each : jobContext.getInventoryTasks()) {
+            result.put(each.getTaskId(), each.getProgress());
+        }
+        return result;
+    }
+    
     @Override
-    public JobPosition getJobPosition(final long jobId, final int shardingItem) {
+    public JobProgress getJobProgress(final long jobId, final int shardingItem) {
         String data = null;
         try {
             data = REGISTRY_REPOSITORY.get(ScalingTaskUtil.getScalingListenerPath(jobId, shardingItem));
         } catch (final NullPointerException ex) {
             log.info("job {}-{} without break point.", jobId, shardingItem);
         }
-        return Strings.isNullOrEmpty(data) ? null : JobPosition.fromJson(data);
+        return Strings.isNullOrEmpty(data) ? null : JobProgress.fromJson(data);
     }
 }

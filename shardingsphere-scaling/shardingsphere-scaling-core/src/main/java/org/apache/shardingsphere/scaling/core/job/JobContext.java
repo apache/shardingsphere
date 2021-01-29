@@ -21,8 +21,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.scaling.core.job.position.JobPosition;
-import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
+import org.apache.shardingsphere.scaling.core.job.position.JobProgress;
+import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTask;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
 import org.apache.shardingsphere.scaling.core.utils.TaskConfigurationUtil;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
@@ -46,13 +47,13 @@ public final class JobContext {
     
     private String databaseType;
     
-    private JobPosition initPosition;
+    private JobProgress initProgress;
     
     private final transient List<TaskConfiguration> taskConfigs = new LinkedList<>();
     
-    private final transient List<ScalingTask> inventoryTasks = new LinkedList<>();
+    private final transient List<InventoryTask> inventoryTasks = new LinkedList<>();
     
-    private final transient List<ScalingTask> incrementalTasks = new LinkedList<>();
+    private final transient List<IncrementalTask> incrementalTasks = new LinkedList<>();
     
     private transient JobConfiguration jobConfig;
     

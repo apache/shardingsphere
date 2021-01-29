@@ -23,7 +23,7 @@ import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.job.TaskProgress;
+import org.apache.shardingsphere.scaling.core.job.Progress;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
 import org.junit.After;
@@ -56,7 +56,7 @@ public final class IncrementalTaskTest {
     @Test
     public void assertStart() {
         incrementalTask.start();
-        TaskProgress progress = incrementalTask.getProgress();
+        Progress progress = incrementalTask.getProgress();
         assertTrue(progress instanceof IncrementalTaskProgress);
         assertThat(((IncrementalTaskProgress) progress).getId(), is("ds0"));
         assertThat(((IncrementalTaskProgress) progress).getDelayMillisecond(), is(Long.MAX_VALUE));

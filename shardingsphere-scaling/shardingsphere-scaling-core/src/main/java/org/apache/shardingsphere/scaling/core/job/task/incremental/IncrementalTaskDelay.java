@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.task.inventory;
+package org.apache.shardingsphere.scaling.core.job.task.incremental;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.TaskProgress;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
- * Inventory task group progress.
+ * Incremental task delay.
  */
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
-@RequiredArgsConstructor
-public final class InventoryTaskGroupProgress implements TaskProgress {
+@Setter
+public final class IncrementalTaskDelay {
     
-    private final String shardingItem;
+    private long lastEventTimestamps = 0;
     
-    private final int total;
-    
-    private final int finished;
+    private long delayMilliseconds = -1;
 }

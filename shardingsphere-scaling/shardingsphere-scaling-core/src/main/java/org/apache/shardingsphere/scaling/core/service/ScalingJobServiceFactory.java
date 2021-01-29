@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.service;
 
-import org.apache.shardingsphere.scaling.core.service.impl.DistributedScalingJobService;
-import org.apache.shardingsphere.scaling.core.service.impl.StandaloneScalingJobService;
-
 /**
  * Scaling job service factory.
  */
@@ -31,6 +28,7 @@ public final class ScalingJobServiceFactory {
      * @return scaling job service
      */
     public static ScalingJobService getInstance() {
-        return RegistryRepositoryHolder.isAvailable() ? new DistributedScalingJobService() : new StandaloneScalingJobService();
+        // TODO Get ScalingJobService instance
+        return null;
     }
 }

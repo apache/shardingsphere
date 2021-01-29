@@ -67,7 +67,7 @@ public final class JobSchedulerCenter {
         public void run() {
             for (Map.Entry<String, JobContext> entry : JOB_CONTEXT_MAP.entrySet()) {
                 try {
-                    REGISTRY_REPOSITORY_API.persistJobPosition(entry.getValue());
+                    REGISTRY_REPOSITORY_API.persistJobProgress(entry.getValue());
                     // CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     // CHECKSTYLE:ON
