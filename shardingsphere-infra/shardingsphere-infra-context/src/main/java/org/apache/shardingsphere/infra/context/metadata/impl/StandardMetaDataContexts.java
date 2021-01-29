@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.lock.StandardLockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
 
@@ -49,6 +51,8 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     
     private final ConfigurationProperties props;
     
+    private final LockContext lockContext;
+    
     public StandardMetaDataContexts() {
         this(new ConcurrentHashMap<>(), null, new DefaultAuthentication(), new ConfigurationProperties(new Properties()));
     }
@@ -60,6 +64,7 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
         calciteContextFactory = new CalciteContextFactory(metaDataMap);
         this.authentication = AuthenticationEngine.findSPIAuthentication().orElse(authentication);
         this.props = props;
+        this.lockContext = new StandardLockContext();
     }
     
     @Override
@@ -75,6 +80,11 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     @Override
     public ShardingSphereMetaData getDefaultMetaData() {
         return getMetaData(DefaultSchema.LOGIC_NAME);
+    }
+    
+    @Override
+    public LockContext getLockContext() {
+        return this.lockContext;
     }
     
     @Override

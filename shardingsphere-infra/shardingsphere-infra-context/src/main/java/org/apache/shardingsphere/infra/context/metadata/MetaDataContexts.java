@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.context.metadata;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
 
@@ -80,4 +81,11 @@ public interface MetaDataContexts extends Closeable {
      * @return configuration properties
      */
     ConfigurationProperties getProps();
+    
+    /**
+     * Get lock context.
+     * 
+     * @return lock context
+     */
+    LockContext getLockContext();
 }

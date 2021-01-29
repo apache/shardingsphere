@@ -15,40 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.governance.core.event.model.lock;
 
-import java.util.concurrent.TimeUnit;
+import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 
 /**
- * Lock context.
+ * Unlock event.
  */
-public interface LockContext {
-    
-    /**
-     * Try to get lock.
-     *
-     * @param timeout the maximum time in milliseconds to acquire lock
-     * @param timeUnit time unit
-     * @return true if get the lock, false if not
-     */
-    boolean tryGlobalLock(long timeout, TimeUnit timeUnit);
-    
-    /**
-     * Release lock.
-     */
-    void releaseGlobalLock();
-    
-    /**
-     * await.
-     * 
-     * @param timeout time out
-     * @param timeUnit  time unit
-     * @return true if no exception
-     */
-    boolean await(Long timeout, TimeUnit timeUnit);
-    
-    /**
-     * signal all.
-     */
-    void signalAll();
+public final class UnlockEvent implements GovernanceEvent {
 }
