@@ -6,7 +6,7 @@ They both provide functions of data scale out, distributed transaction and distr
 
 Apache ShardingSphere aiming at reasonably making full use of the computation and storage capacity of existed database in distributed system, rather than a totally new database.
 As the cornerstone of enterprises, relational database still takes a huge market share.
-Therefore, at current stage, we prefer to focus on its increment instead of a total overturn.
+Therefore, we prefer to focus on its increment instead of a total overturn.
 
 ShardingSphere-Proxy defines itself as a transparent database proxy, providing a database server that encapsulates database binary protocol to support heterogeneous languages. 
 Friendlier to DBA, the MySQL/PostgreSQL version provided now can use any kind of client access (such as MySQL Command Client, MySQL Workbench, Navicat etc.) that is compatible of MySQL/PostgreSQL protocol to operate data.
