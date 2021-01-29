@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.api;
+package org.apache.shardingsphere.scaling.core.api.impl;
 
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.scaling.core.api.RegistryRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.position.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTask;

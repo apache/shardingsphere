@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.core.api;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
+import org.apache.shardingsphere.scaling.core.api.impl.RegistryRepositoryAPIImpl;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 
 import java.util.Map;
