@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
  * Database environment.
  */
 @RequiredArgsConstructor
+@Getter
 public final class DatabaseEnvironment {
     
     private final DatabaseType databaseType;
@@ -33,11 +34,13 @@ public final class DatabaseEnvironment {
     
     private final int port;
     
-    @Getter
     private final String username;
     
-    @Getter
     private final String password;
+
+    private final String distributionUrl;
+
+    private final String distributionVersion;
     
     /**
      * Get driver class name.

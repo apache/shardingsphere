@@ -107,4 +107,24 @@ public final class DatabaseScenarioProperties {
     public String getProxyPassword() {
         return props.getProperty(String.format("it.%s.proxy.password", scenario));
     }
+
+    /**
+     * Get database distribution url.
+     *
+     * @param databaseType database type
+     * @return database distribution url
+     */
+    public String getDatabaseDistributionUrl(final DatabaseType databaseType) {
+        return props.getProperty(String.format("it.%s.%s.distribution.url", scenario, databaseType.getName().toLowerCase()));
+    }
+
+    /**
+     * Get database distribution version.
+     *
+     * @param databaseType database type
+     * @return database distribution version
+     */
+    public String getDatabaseDistributionVersion(final DatabaseType databaseType) {
+        return props.getProperty(String.format("it.%s.%s.distribution.version", scenario, databaseType.getName().toLowerCase()));
+    }
 }

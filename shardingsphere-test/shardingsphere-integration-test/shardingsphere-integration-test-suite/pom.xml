@@ -71,6 +71,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>com.wix</groupId>
+            <artifactId>wix-embedded-mysql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
             <scope>test</scope>
