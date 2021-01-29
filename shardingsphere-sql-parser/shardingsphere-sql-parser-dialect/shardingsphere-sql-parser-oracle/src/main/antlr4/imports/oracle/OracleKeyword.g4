@@ -818,3 +818,11 @@ IDENTIFIER
 WORK
     : W O R K
     ;
+
+CONTAINER_MAP
+    : C O N T A I N E R UL_ M A P
+    ;
+
+CONTAINERS_DEFAULT
+    : C O N T A I N E R S UL_ D E F A U L T
+    ;

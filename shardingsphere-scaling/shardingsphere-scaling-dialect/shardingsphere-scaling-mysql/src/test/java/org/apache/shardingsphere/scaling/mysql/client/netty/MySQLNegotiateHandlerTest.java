@@ -79,9 +79,9 @@ public final class MySQLNegotiateHandlerTest {
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLHandshakeResponse41Packet.class));
         ServerInfo serverInfo = ReflectionUtil.getFieldValue(mysqlNegotiateHandler, "serverInfo", ServerInfo.class);
         assertNotNull(serverInfo);
-        assertThat(serverInfo.getServerVersion().getMajor(), is(8));
-        assertThat(serverInfo.getServerVersion().getMinor(), is(0));
-        assertThat(serverInfo.getServerVersion().getSeries(), is(20));
+        assertThat(serverInfo.getServerVersion().getMajor(), is(5));
+        assertThat(serverInfo.getServerVersion().getMinor(), is(7));
+        assertThat(serverInfo.getServerVersion().getSeries(), is(22));
     }
     
     @Test

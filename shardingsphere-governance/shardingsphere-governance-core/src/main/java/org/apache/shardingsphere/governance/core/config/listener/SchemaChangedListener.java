@@ -156,7 +156,7 @@ public final class SchemaChangedListener extends PostGovernanceRepositoryEventLi
     }
     
     private String getCacheId(final String path) {
-        return path.substring(path.lastIndexOf("/") + 1);
+        return path.substring(path.lastIndexOf('/') + 1);
     }
     
     private Collection<RuleConfiguration> getRuleConfigurations(final String yamlContent) {

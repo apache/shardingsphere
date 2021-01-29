@@ -57,16 +57,12 @@ public final class FixtureRegistryRepository implements RegistryRepository, Conf
     }
     
     @Override
-    public void initLock(final String key) {
-    }
-    
-    @Override
-    public boolean tryLock(final long time, final TimeUnit unit) {
+    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
         return false;
     }
     
     @Override
-    public void releaseLock() {
+    public void releaseLock(final String key) {
     }
     
     @Override

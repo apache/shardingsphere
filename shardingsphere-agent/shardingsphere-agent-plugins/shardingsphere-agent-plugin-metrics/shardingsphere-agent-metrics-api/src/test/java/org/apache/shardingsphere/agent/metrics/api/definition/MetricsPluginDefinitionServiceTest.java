@@ -30,7 +30,7 @@ public final class MetricsPluginDefinitionServiceTest {
     
     @Test
     public void assertDefine() {
-        Collection<PluginInterceptorPoint> interceptorPointList = metricsPluginDefinitionService.define();
+        Collection<PluginInterceptorPoint> interceptorPointList = metricsPluginDefinitionService.install();
         assertThat(interceptorPointList.size(), is(4));
     }
     

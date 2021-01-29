@@ -23,6 +23,7 @@ execute
     : (addResource
     | dropResource
     | createShardingRule
+    | alterShardingRule
     | dropShardingRule
     | createReplicaQueryRule
     | alterReplicaQueryRule

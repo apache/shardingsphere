@@ -38,17 +38,17 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class CalciteContextFactoryTest {
-
+    
     @Test
     public void assertCreate() {
         ShardingSphereResource shardingSphereResource = new ShardingSphereResource(null, null, null, new H2DatabaseType());
         ShardingSphereSchema schema = new ShardingSphereSchema();
         schema.put("tab_user", mock(TableMetaData.class));
-        ShardingSphereRuleMetaData metaData = new ShardingSphereRuleMetaData(Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+        ShardingSphereRuleMetaData metaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList());
         ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData("logic_db", shardingSphereResource, metaData, schema);
         CalciteContextFactory calciteContextFactory = new CalciteContextFactory(Collections.singletonMap("logic_db", shardingSphereMetaData));
         assertNotNull(calciteContextFactory);
-        CalciteContext logicDb = calciteContextFactory.create("logic_db", new CalciteRowExecutor(Collections.EMPTY_LIST, 0, null, mock(JDBCExecutor.class), mock(ExecutionContext.class), null));
+        CalciteContext logicDb = calciteContextFactory.create("logic_db", new CalciteRowExecutor(Collections.emptyList(), 0, null, mock(JDBCExecutor.class), mock(ExecutionContext.class), null));
         assertNotNull(logicDb);
         Properties properties = logicDb.getConnectionProperties();
         assertNotNull(properties);

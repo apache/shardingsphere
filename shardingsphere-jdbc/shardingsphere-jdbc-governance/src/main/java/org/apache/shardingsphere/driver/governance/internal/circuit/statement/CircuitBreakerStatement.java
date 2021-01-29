@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.driver.governance.internal.circuit.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import org.apache.shardingsphere.driver.governance.internal.circuit.connection.CircuitBreakerConnection;
+import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.SQLWarning;
 
 /**
@@ -100,12 +99,12 @@ public final class CircuitBreakerStatement extends AbstractUnsupportedOperationS
     }
 
     @Override
-    public int getFetchDirection() throws SQLException {
+    public int getFetchDirection() {
         return ResultSet.FETCH_FORWARD;
     }
 
     @Override
-    public void setFetchDirection(final int direction) throws SQLException {
+    public void setFetchDirection(final int direction) {
     }
 
     @Override

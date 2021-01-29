@@ -49,7 +49,7 @@ public final class TableMetaDataBuilderTest {
     
     @Test
     public void assertBuildWithExistedTableName() throws SQLException {
-        assertTrue(TableMetaDataBuilder.build("data_node_routed_table_0", new SchemaBuilderMaterials(
+        assertTrue(TableMetaDataBuilder.build("data_node_routed_table1", new SchemaBuilderMaterials(
                 databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props)).isPresent());
     }
     

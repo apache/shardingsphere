@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractJDBCExecutorCallbackAdviceTest;
-import org.apache.shardingsphere.agent.plugin.tracing.rule.ZipkinCollector;
+import org.apache.shardingsphere.agent.plugin.tracing.zipkin.collector.ZipkinCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.junit.Before;
 import org.junit.ClassRule;

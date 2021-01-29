@@ -21,6 +21,7 @@ import com.google.common.base.Splitter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
+import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
@@ -93,6 +94,7 @@ public abstract class BaseDDLIT extends SingleIT {
         try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", getAssertion().getInitialSQL().getAffectedTable()))) {
             preparedStatement.executeUpdate();
         } catch (final SQLException ignored) {
+        } catch (final NoSuchTableException ignored) {
         }
     }
     

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
-import org.apache.shardingsphere.sharding.converter.CreateShardingRuleStatementConverter;
+import org.apache.shardingsphere.sharding.converter.ShardingRuleStatementConverter;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 
 import java.util.Collection;
@@ -43,7 +43,7 @@ public final class CreateShardingRuleBackendHandler extends SchemaRequiredBacken
     
     @Override
     public ResponseHeader execute(final String schemaName, final CreateShardingRuleStatement sqlStatement) {
-        YamlShardingRuleConfiguration config = CreateShardingRuleStatementConverter.convert(sqlStatement);
+        YamlShardingRuleConfiguration config = ShardingRuleStatementConverter.convert(sqlStatement);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(config));
         post(schemaName, rules);
         return new UpdateResponseHeader(sqlStatement);

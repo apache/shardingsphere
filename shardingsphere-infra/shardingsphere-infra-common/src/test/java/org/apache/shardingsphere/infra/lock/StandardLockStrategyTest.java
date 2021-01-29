@@ -33,16 +33,16 @@ public final class StandardLockStrategyTest {
     
     @Test
     public void assertTryLock() {
-        assertTrue(lockStrategy.tryLock(50L, TimeUnit.MILLISECONDS));
+        assertTrue(lockStrategy.tryGlobalLock(50L, TimeUnit.MILLISECONDS));
         assertThat(StateContext.getCurrentState(), is(StateType.LOCK));
-        lockStrategy.releaseLock();
+        lockStrategy.releaseGlobalLock();
     }
     
     @Test
     public void assertReleaseLock() {
-        assertTrue(lockStrategy.tryLock(50L, TimeUnit.MILLISECONDS));
+        assertTrue(lockStrategy.tryGlobalLock(50L, TimeUnit.MILLISECONDS));
         assertThat(StateContext.getCurrentState(), is(StateType.LOCK));
-        lockStrategy.releaseLock();
+        lockStrategy.releaseGlobalLock();
         assertThat(StateContext.getCurrentState(), is(StateType.OK));
     }
 }

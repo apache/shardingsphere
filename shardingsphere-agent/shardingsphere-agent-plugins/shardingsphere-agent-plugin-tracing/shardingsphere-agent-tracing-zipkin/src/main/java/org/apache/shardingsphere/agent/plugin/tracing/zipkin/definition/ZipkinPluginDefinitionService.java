@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.definition;
 
-import java.util.Collection;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
 
 /**
@@ -48,22 +46,21 @@ public final class ZipkinPluginDefinitionService extends AbstractPluginDefinitio
     private static final String JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice.JDBCExecutorCallbackAdvice";
     
     @Override
-    public Collection<PluginInterceptorPoint> define() {
-        intercept(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
+    public void defineInterceptors() {
+        defineInterceptor(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(COMMAND_EXECUTOR_METHOD_NAME))
                 .implement(COMMAND_EXECUTOR_TASK_ADVICE_CLASS)
                 .build();
-        intercept(SQL_PARSER_ENGINE_ENHANCE_CLASS)
+        defineInterceptor(SQL_PARSER_ENGINE_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(SQL_PARSER_ENGINE_METHOD_NAME))
                 .implement(SQL_PARSER_ENGINE_ADVICE_CLASS)
                 .build();
-        intercept(JDBC_EXECUTOR_CALLBACK_ENGINE_ENHANCE_CLASS)
+        defineInterceptor(JDBC_EXECUTOR_CALLBACK_ENGINE_ENHANCE_CLASS)
                 .aroundInstanceMethod(
                         ElementMatchers.named(JDBC_EXECUTOR_METHOD_NAME)
                                 .and(ElementMatchers.takesArgument(0, ElementMatchers.named(JDBC_EXECUTOR_UNIT_ENGINE_ENHANCE_CLASS))))
                 .implement(JDBC_EXECUTOR_CALLBACK_ADVICE_CLASS)
                 .build();
-        return install();
     }
     
     @Override

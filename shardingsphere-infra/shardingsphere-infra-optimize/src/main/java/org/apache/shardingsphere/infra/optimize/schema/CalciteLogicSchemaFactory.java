@@ -27,14 +27,13 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.Map.Entry;
 
-
 /**
  * Calcite logic schema factory.
  */
 public final class CalciteLogicSchemaFactory {
-
+    
     private final Map<String, CalciteLogicSchemaGenerator> schemas = new LinkedMap<>();
-
+    
     public CalciteLogicSchemaFactory(final Map<String, ShardingSphereMetaData> metaDataMap) {
         for (Entry<String, ShardingSphereMetaData> each : metaDataMap.entrySet()) {
             try {
@@ -44,7 +43,7 @@ public final class CalciteLogicSchemaFactory {
             }
         }
     }
-
+    
     /**
      * Create schema.
      *

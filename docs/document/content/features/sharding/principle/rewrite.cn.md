@@ -187,7 +187,7 @@ SELECT score FROM t_score ORDER BY score DESC LIMIT 1, 2;
 ![不改写SQL的分页执行结果](https://shardingsphere.apache.org/document/current/img/sharding/pagination_without_rewrite.png)
 
 通过图中所示，想要取得两个表中共同的按照分数排序的第 2 条和第 3 条数据，应该是 `95` 和 `90`。
-由于执行的 SQL 只能从每个表中获取第 2 条和第 3 条数据，即从 t_score_0 表中获取的是 `90` 和 `80`；从 t_score_0 表中获取的是 `85` 和 `75`。
+由于执行的 SQL 只能从每个表中获取第 2 条和第 3 条数据，即从 t_score_0 表中获取的是 `90` 和 `80`；从 t_score_1 表中获取的是 `85` 和 `75`。
 因此进行结果归并时，只能从获取的 `90`，`80`，`85` 和 `75` 之中进行归并，那么结果归并无论怎么实现，都不可能获得正确的结果。
 
 正确的做法是将分页条件改写为 `LIMIT 0, 3`，取出所有前两页数据，再结合排序条件计算出正确的数据。

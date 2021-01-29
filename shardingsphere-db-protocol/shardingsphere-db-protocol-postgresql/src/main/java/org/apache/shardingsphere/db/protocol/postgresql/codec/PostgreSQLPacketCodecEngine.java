@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
@@ -56,13 +57,23 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
     
     @Override
     public void encode(final ChannelHandlerContext context, final PostgreSQLPacket message, final ByteBuf out) {
-        try (PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(context.alloc().buffer())) {
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(context.alloc().buffer());
+        try {
             message.write(payload);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            payload.getByteBuf().resetWriterIndex();
+            PostgreSQLErrorResponsePacket postgreSQLErrorResponsePacket = new PostgreSQLErrorResponsePacket();
+            postgreSQLErrorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, ex.getMessage());
+            postgreSQLErrorResponsePacket.write(payload);
+        } finally {
             if (!(message instanceof PostgreSQLSSLNegativePacket)) {
                 out.writeByte(message.getMessageType());
                 out.writeInt(payload.getByteBuf().readableBytes() + PostgreSQLPacket.PAYLOAD_LENGTH);
             }
             out.writeBytes(payload.getByteBuf());
+            payload.close();
         }
     }
     

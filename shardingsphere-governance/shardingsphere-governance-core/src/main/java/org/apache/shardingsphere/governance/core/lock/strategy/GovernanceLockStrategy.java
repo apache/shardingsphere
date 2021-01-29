@@ -48,18 +48,13 @@ public final class GovernanceLockStrategy implements LockStrategy {
     }
     
     @Override
-    public boolean tryLock(final long timeout, final TimeUnit timeUnit) {
+    public boolean tryGlobalLock(final long timeout, final TimeUnit timeUnit) {
         return registryCenter.tryGlobalLock(timeout, timeUnit);
     }
     
     @Override
-    public void releaseLock() {
+    public void releaseGlobalLock() {
         registryCenter.releaseGlobalLock();
-    }
-    
-    @Override
-    public boolean checkLock() {
-        return registryCenter.checkLock();
     }
     
     @Override

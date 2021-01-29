@@ -6,7 +6,7 @@ weight = 2
 ## Configuration Item Explanation
 
 ```properties
-spring.shardingsphere.datasource.names= # Omit data source configuration
+spring.shardingsphere.datasource.names= # Omit the data source configuration, please refer to the usage
 
 spring.shardingsphere.rules.replica-query.data-sources.<replica-query-data-source-name>.primary-data-source-name= # Primary data source name
 spring.shardingsphere.rules.replica-query.data-sources.<replica-query-data-source-name>.replica-data-source-names= # Replica data source names, multiple data source names separated with comma

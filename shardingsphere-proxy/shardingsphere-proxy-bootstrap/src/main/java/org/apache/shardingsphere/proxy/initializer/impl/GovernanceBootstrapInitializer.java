@@ -38,10 +38,9 @@ import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
+import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.spi.ScalingWorkerLoader;
-import org.apache.shardingsphere.scaling.core.workflow.ScalingServiceHolder;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 import java.util.Collection;
@@ -141,10 +140,9 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
         Optional<ServerConfiguration> scalingConfigurationOptional = getScalingConfiguration(yamlConfig);
         if (scalingConfigurationOptional.isPresent()) {
             ServerConfiguration serverConfiguration = scalingConfigurationOptional.get();
-            serverConfiguration.setDistributedScalingService(new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance()));
+            serverConfiguration.setGovernanceConfig(new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance()));
             ScalingContext.getInstance().init(serverConfiguration);
-            ScalingWorkerLoader.initScalingWorker();
-            ScalingServiceHolder.getInstance().init();
+            ScalingWorker.init();
         }
     }
 }

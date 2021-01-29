@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.spi.ScalingWorkerLoader;
+import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
 import org.apache.shardingsphere.scaling.util.ServerConfigurationInitializer;
 
 
@@ -41,7 +41,7 @@ public final class ScalingWorkerBootstrap {
         // CHECKSTYLE:ON
         log.info("ShardingSphere-Scaling Worker Startup");
         ServerConfigurationInitializer.init();
-        ScalingWorkerLoader.initScalingWorker();
+        ScalingWorker.init();
         wait0();
     }
     

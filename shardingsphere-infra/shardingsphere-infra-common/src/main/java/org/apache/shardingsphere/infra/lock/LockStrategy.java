@@ -33,17 +33,10 @@ public interface LockStrategy extends TypedSPI {
      * @param timeUnit time unit
      * @return true if get the lock, false if not
      */
-    boolean tryLock(long timeout, TimeUnit timeUnit);
+    boolean tryGlobalLock(long timeout, TimeUnit timeUnit);
     
     /**
      * Release lock.
      */
-    void releaseLock();
-    
-    /**
-     * Check lock state.
-     * 
-     * @return true if all instances were locked, else false
-     */
-    boolean checkLock();
+    void releaseGlobalLock();
 }

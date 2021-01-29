@@ -179,6 +179,7 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
     private Collection<String> getExcludedTables() {
         Collection<String> result = new HashSet<>(getTables());
         result.addAll(getAllActualTables());
+        result.addAll(broadcastTables);
         return result;
     }
     
@@ -300,6 +301,16 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
      */
     public boolean tableRuleExists(final Collection<String> logicTableNames) {
         return logicTableNames.stream().anyMatch(each -> findTableRule(each).isPresent() || isBroadcastTable(each));
+    }
+    
+    /**
+     * Judge if single table rule exists or not.
+     *
+     * @param logicTableNames logic table names
+     * @return whether single table rule exists for logic tables
+     */
+    public boolean singleTableRuleExists(final Collection<String> logicTableNames) {
+        return singleTableRules.keySet().stream().anyMatch(logicTableNames::contains);
     }
     
     /**

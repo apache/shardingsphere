@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.agent.metrics.api.definition;
 
-import java.util.Collection;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
-import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
 import org.apache.shardingsphere.agent.metrics.api.constant.MethodNameConstant;
+import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
 
 /**
  * Metrics plugin definition service.
@@ -45,25 +43,24 @@ public final class MetricsPluginDefinitionService extends AbstractPluginDefiniti
     private static final String TRANSACTION_ADVICE_CLASS = "org.apache.shardingsphere.agent.metrics.api.advice.TransactionAdvice";
     
     @Override
-    public Collection<PluginInterceptorPoint> define() {
-        intercept(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
+    public void defineInterceptors() {
+        defineInterceptor(COMMAND_EXECUTOR_TASK_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(MethodNameConstant.COMMAND_EXECUTOR_RUN))
                 .implement(COMMAND_EXECUTOR_TASK_ADVICE_CLASS)
                 .build();
-        intercept(CHANNEL_HANDLER_ENHANCE_CLASS)
+        defineInterceptor(CHANNEL_HANDLER_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(MethodNameConstant.CHANNEL_ACTIVE).or(ElementMatchers.named(MethodNameConstant.CHANNEL_INACTIVE))
                         .or(ElementMatchers.named(MethodNameConstant.CHANNEL_READ)))
                 .implement(CHANNEL_HANDLER_ADVICE_CLASS)
                 .build();
-        intercept(SQL_ROUTER_ENGINE_ENHANCE_CLASS)
+        defineInterceptor(SQL_ROUTER_ENGINE_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(MethodNameConstant.SQL_ROUTER))
                 .implement(SQL_ROUTER_ENGINE_ADVICE_CLASS)
                 .build();
-        intercept(TRANSACTION_ENHANCE_CLASS)
+        defineInterceptor(TRANSACTION_ENHANCE_CLASS)
                 .aroundInstanceMethod(ElementMatchers.named(MethodNameConstant.COMMIT).or(ElementMatchers.named(MethodNameConstant.ROLL_BACK)))
                 .implement(TRANSACTION_ADVICE_CLASS)
                 .build();
-        return install();
     }
     
     @Override

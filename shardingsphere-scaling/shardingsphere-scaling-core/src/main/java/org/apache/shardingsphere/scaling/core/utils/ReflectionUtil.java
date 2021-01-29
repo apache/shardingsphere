@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.scaling.core.utils;
 
+import com.google.common.base.Preconditions;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -152,5 +156,17 @@ public final class ReflectionUtil {
         Method method = target.getClass().getDeclaredMethod(methodName, parameterTypes);
         method.setAccessible(true);
         method.invoke(target, parameterValues);
+    }
+    
+    /**
+     * Get interface generic class.
+     *
+     * @param clazz class
+     * @return generic class
+     */
+    public static Class<?> getInterfaceGenericClass(final Class<?> clazz) {
+        Type[] types = clazz.getGenericInterfaces();
+        Preconditions.checkState(types.length == 1, "Only supported one generic type");
+        return (Class<?>) ((ParameterizedType) types[0]).getActualTypeArguments()[0];
     }
 }

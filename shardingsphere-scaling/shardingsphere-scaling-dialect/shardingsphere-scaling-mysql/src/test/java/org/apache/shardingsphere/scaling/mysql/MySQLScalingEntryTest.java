@@ -24,7 +24,7 @@ import org.apache.shardingsphere.scaling.mysql.component.MySQLDataConsistencyChe
 import org.apache.shardingsphere.scaling.mysql.component.MySQLDataSourceChecker;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLImporter;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLJdbcDumper;
-import org.apache.shardingsphere.scaling.mysql.component.MySQLPositionManager;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLPositionInitializer;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -37,7 +37,7 @@ public final class MySQLScalingEntryTest {
     public void assertGetScalingEntryByDatabaseType() {
         ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType("MySQL");
         assertTrue(scalingEntry instanceof MySQLScalingEntry);
-        assertThat(scalingEntry.getPositionManager(), equalTo(MySQLPositionManager.class));
+        assertThat(scalingEntry.getPositionInitializer(), equalTo(MySQLPositionInitializer.class));
         assertThat(scalingEntry.getDataSourceCheckerClass(), equalTo(MySQLDataSourceChecker.class));
         assertThat(scalingEntry.getImporterClass(), equalTo(MySQLImporter.class));
         assertThat(scalingEntry.getJdbcDumperClass(), equalTo(MySQLJdbcDumper.class));
