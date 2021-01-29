@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
+import org.apache.shardingsphere.infra.auth.Grantee;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -69,7 +70,7 @@ public final class ShowTablesExecutorTest {
     }
     
     private DefaultAuthentication getAuthentication() {
-        ShardingSphereUser user = new ShardingSphereUser("root", Arrays.asList(String.format(SCHEMA_PATTERN, 0), String.format(SCHEMA_PATTERN, 1)));
+        ShardingSphereUser user = new ShardingSphereUser("root", "", Arrays.asList(String.format(SCHEMA_PATTERN, 0), String.format(SCHEMA_PATTERN, 1)));
         DefaultAuthentication result = new DefaultAuthentication();
         result.getUsers().put("root", user);
         return result;
@@ -86,7 +87,7 @@ public final class ShowTablesExecutorTest {
     
     private BackendConnection mockBackendConnection() {
         BackendConnection result = mock(BackendConnection.class);
-        when(result.getUsername()).thenReturn("root");
+        when(result.getGrantee()).thenReturn(new Grantee("root", ""));
         when(result.getSchemaName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
         return result;
     }

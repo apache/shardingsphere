@@ -33,14 +33,15 @@
 #      operationTimeoutMilliseconds: 500
 #  overwrite: false
 #
-#authentication:
-#  users:
-#    root:
-#      password: root
-#    sharding:
-#      password: sharding
-#      authorizedSchemas: sharding_db
-#
+authentication:
+  users:
+    root:
+      hostname: 127.0.01
+      password: root
+    sharding:
+      password: sharding
+      authorizedSchemas: sharding_db
+
 #scaling:
 #  blockQueueSize: 10000
 #  workerThread: 40

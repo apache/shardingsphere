@@ -126,7 +126,7 @@ public final class PostgreSQLAuthenticationEngineTest {
         
         ProxyContext proxyContext = ProxyContext.getInstance();
         StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts();
-        ((DefaultAuthentication) standardMetaDataContexts.getAuthentication()).getUsers().put(username, new ShardingSphereUser(password, null));
+        ((DefaultAuthentication) standardMetaDataContexts.getAuthentication()).getUsers().put(username, new ShardingSphereUser(password, "", null));
         proxyContext.init(standardMetaDataContexts, mock(TransactionContexts.class));
         actual = engine.auth(channelHandlerContext, payload);
         assertThat(actual.isFinished(), is(password.equals(inputPassword)));

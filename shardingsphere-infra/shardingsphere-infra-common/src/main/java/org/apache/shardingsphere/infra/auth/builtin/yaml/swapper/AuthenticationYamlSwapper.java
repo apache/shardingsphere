@@ -17,10 +17,15 @@
 
 package org.apache.shardingsphere.infra.auth.builtin.yaml.swapper;
 
-import com.google.common.collect.Maps;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Authentication YAML swapper.
@@ -32,7 +37,11 @@ public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenti
     @Override
     public YamlAuthenticationConfiguration swapToYamlConfiguration(final DefaultAuthentication data) {
         YamlAuthenticationConfiguration result = new YamlAuthenticationConfiguration();
-        result.setUsers(Maps.transformValues(data.getUsers(), userYamlSwapper::swapToYamlConfiguration));
+        Map<String, YamlUserConfiguration> users = new LinkedHashMap<>();
+        for (Entry<String, ShardingSphereUser> entry : data.getUsers().entrySet()) {
+            users.put(entry.getKey(), userYamlSwapper.swapToYamlConfiguration(entry.getValue()));
+        }
+        result.setUsers(users);
         return result;
     }
     
@@ -42,7 +51,9 @@ public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenti
         if (null == yamlConfig) {
             return result;
         }
-        result.getUsers().putAll(Maps.transformValues(yamlConfig.getUsers(), userYamlSwapper::swapToObject));
+        for (Entry<String, YamlUserConfiguration> entry : yamlConfig.getUsers().entrySet()) {
+            result.getUsers().put(entry.getKey(), userYamlSwapper.swapToObject(entry.getValue()));
+        }
         return result;
     }
 }

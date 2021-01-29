@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth.builtin.yaml.config;
+package org.apache.shardingsphere.infra.auth;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import lombok.RequiredArgsConstructor;
 
 /**
- * User for YAML.
+ * Grantee.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlUserConfiguration implements YamlConfiguration {
+@EqualsAndHashCode
+public final class Grantee {
     
-    private String hostname;
+    private final String username;
     
-    private String password;
-    
-    private String authorizedSchemas;
+    private final String hostname;
 }
