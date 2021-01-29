@@ -15,15 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Use database statement for MySQL.
+ * Use database statement.
  */
+@Getter
+@Setter
 @ToString
-public final class MySQLUseStatement extends UseStatement implements MySQLStatement {
+public abstract class UseStatement extends AbstractSQLStatement implements DALStatement {
+    
+    private String schema;
 }
