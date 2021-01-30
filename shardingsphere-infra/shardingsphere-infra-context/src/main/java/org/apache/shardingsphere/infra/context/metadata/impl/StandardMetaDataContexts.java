@@ -64,7 +64,7 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
         calciteContextFactory = new CalciteContextFactory(metaDataMap);
         this.authentication = AuthenticationEngine.findSPIAuthentication().orElse(authentication);
         this.props = props;
-        this.lockContext = new StandardLockContext();
+        lockContext = new StandardLockContext();
     }
     
     @Override
@@ -84,7 +84,7 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     
     @Override
     public LockContext getLockContext() {
-        return this.lockContext;
+        return lockContext;
     }
     
     @Override

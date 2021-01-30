@@ -36,9 +36,7 @@ public final class StandardLockContext extends AbstractLockContext {
         boolean result = false;
         try {
             result = lock.tryLock(timeout, timeUnit);
-            // CHECKSTYLE:OFF
-        } catch (final InterruptedException e) {
-            // CHECKSTYLE:ON
+        } catch (final InterruptedException ignored) {
         }
         if (result) {
             StateContext.switchState(new StateEvent(StateType.LOCK, true));

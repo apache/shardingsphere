@@ -74,7 +74,7 @@ public final class GovernanceLockContext extends AbstractLockContext {
     }
     
     /**
-     * unlock instance.
+     * Unlock instance.
      * 
      * @param event unlock event
      */

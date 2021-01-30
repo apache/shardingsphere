@@ -32,13 +32,11 @@ public abstract class AbstractLockContext implements LockContext {
     private final Condition innerCondition = innerLock.newCondition();
     
     @Override
-    public boolean await(final Long timeout, final TimeUnit timeUnit) {
+    public final boolean await(final Long timeout, final TimeUnit timeUnit) {
         innerLock.lock();
         try {
             return innerCondition.await(timeout, TimeUnit.MILLISECONDS);
-            // CHECKSTYLE:OFF
-        } catch (InterruptedException e) {
-            // CHECKSTYLE:ON
+        } catch (final InterruptedException ignored) {
         } finally {
             innerLock.unlock();
         }
@@ -46,7 +44,7 @@ public abstract class AbstractLockContext implements LockContext {
     }
     
     @Override
-    public void signalAll() {
+    public final void signalAll() {
         innerLock.lock();
         try {
             innerCondition.signalAll();

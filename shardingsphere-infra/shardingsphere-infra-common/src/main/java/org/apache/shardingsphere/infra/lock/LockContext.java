@@ -27,7 +27,7 @@ public interface LockContext {
     /**
      * Try to get lock.
      *
-     * @param timeout the maximum time in milliseconds to acquire lock
+     * @param timeout time out to acquire lock
      * @param timeUnit time unit
      * @return true if get the lock, false if not
      */
@@ -39,9 +39,9 @@ public interface LockContext {
     void releaseGlobalLock();
     
     /**
-     * await.
+     * Await.
      * 
-     * @param timeout time out
+     * @param timeout time out to await lock
      * @param timeUnit  time unit
      * @return true if no exception
      */
