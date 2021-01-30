@@ -73,7 +73,6 @@
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>wix-embedded-mysql</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

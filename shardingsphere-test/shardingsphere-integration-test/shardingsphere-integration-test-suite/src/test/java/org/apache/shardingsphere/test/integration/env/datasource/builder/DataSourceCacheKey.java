@@ -27,9 +27,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 @RequiredArgsConstructor
 @EqualsAndHashCode
 public final class DataSourceCacheKey {
-
+    
     private final String scenario;
-
+    
     private final String dataSourceName;
     
     private final DatabaseType databaseType;

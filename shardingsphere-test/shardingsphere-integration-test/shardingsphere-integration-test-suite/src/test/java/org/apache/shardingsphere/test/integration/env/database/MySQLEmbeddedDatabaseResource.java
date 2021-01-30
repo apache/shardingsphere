@@ -27,19 +27,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
 
 /**
- * MySQL database resource.
+ * Embedded database resource for MySQL.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class MySQLEmbeddedDatabaseResource implements EmbeddedDatabaseResource {
-
+    
     private final DatabaseEnvironment databaseEnvironment;
-
+    
     private EmbeddedMysql embeddedMySQL;
-
+    
     @Override
     public void start() {
-        final long t = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         log.info("Test embedded database resources MySQL prepare.");
         DownloadConfig downloadConfig = DownloadConfig.aDownloadConfig()
                 .withBaseUrl(databaseEnvironment.getDistributionUrl())
@@ -52,9 +52,9 @@ public final class MySQLEmbeddedDatabaseResource implements EmbeddedDatabaseReso
                 .withServerVariable("innodb_flush_log_at_trx_commit", 2)
                 .build();
         embeddedMySQL = EmbeddedMysql.anEmbeddedMysql(mysqldConfig, downloadConfig).start();
-        log.info("Test embedded database resources MySQL start mysqld elapsed time {}s", (System.currentTimeMillis() - t) / 1000);
+        log.info("Test embedded database resources MySQL start mysqld elapsed time {}s", (System.currentTimeMillis() - startTime) / 1000);
     }
-
+    
     @Override
     public void stop() {
         if (null != embeddedMySQL) {

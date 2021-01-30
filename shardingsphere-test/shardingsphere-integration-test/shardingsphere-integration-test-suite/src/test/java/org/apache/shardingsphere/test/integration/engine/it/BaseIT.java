@@ -66,7 +66,6 @@ public abstract class BaseIT {
         this.databaseType = databaseType;
         actualDataSources = ActualDataSourceBuilder.createActualDataSources(scenario, databaseType);
         targetDataSource = createTargetDataSource();
-
         // TODO maybe use @AfterClass, but targetDataSource should be static
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             if (targetDataSource instanceof ShardingSphereDataSource) {
@@ -86,6 +85,17 @@ public abstract class BaseIT {
         targetDataSource = createTargetDataSource();
     }
     
+    private void closeTargetDataSource() {
+        ((ShardingSphereDataSource) targetDataSource).getDataSourceMap().values().forEach(dataSource -> {
+            try {
+                ((AutoCloseable) dataSource).close();
+                //CHECKSTYLE:OFF
+            } catch (final Exception ignored) {
+            }
+            //CHECKSTYLE:ON
+        });
+    }
+    
     @BeforeClass
     public static void executeInitSQLs() throws IOException, JAXBException, SQLException {
         if (!IntegrationTestEnvironment.getInstance().isEnvironmentPrepared()) {
@@ -98,16 +108,5 @@ public abstract class BaseIT {
         if (targetDataSource instanceof ShardingSphereDataSource) {
             ((ShardingSphereDataSource) targetDataSource).getMetaDataContexts().getExecutorEngine().close();
         }
-    }
-
-    private void closeTargetDataSource() {
-        ((ShardingSphereDataSource) targetDataSource).getDataSourceMap().values().forEach(dataSource -> {
-            try {
-                ((AutoCloseable) dataSource).close();
-                //CHECKSTYLE:OFF
-            } catch (Exception ignore) {
-            }
-            //CHECKSTYLE:ON
-        });
     }
 }
