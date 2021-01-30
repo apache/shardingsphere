@@ -28,10 +28,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
 
 import java.util.Optional;
 
@@ -46,8 +46,8 @@ public final class MySQLAdminExecutorFactory implements DatabaseAdminExecutorFac
     
     @Override
     public Optional<DatabaseAdminExecutor> newInstance(final String currentSchema, final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof MySQLUseStatement) {
-            return Optional.of(new UseDatabaseExecutor((MySQLUseStatement) sqlStatement));
+        if (sqlStatement instanceof UseStatement) {
+            return Optional.of(new UseDatabaseExecutor((UseStatement) sqlStatement));
         }
         if (sqlStatement instanceof MySQLShowDatabasesStatement) {
             return Optional.of(new ShowDatabasesExecutor());

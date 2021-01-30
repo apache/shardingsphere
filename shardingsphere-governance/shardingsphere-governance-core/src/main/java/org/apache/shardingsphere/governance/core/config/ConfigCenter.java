@@ -31,6 +31,7 @@ import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurat
 import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaPersistEvent;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
@@ -38,7 +39,6 @@ import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigur
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.AuthenticationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -50,7 +50,6 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -290,12 +289,8 @@ public final class ConfigCenter {
      * @return data source configurations
      */
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String schemaName) {
-        if (!hasDataSourceConfiguration(schemaName)) {
-            return new LinkedHashMap<>();
-        }
-        YamlDataSourceConfigurationWrap result = YamlEngine.unmarshal(repository.get(node.getDataSourcePath(schemaName)), YamlDataSourceConfigurationWrap.class, true);
-        return result.getDataSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-            entry -> new DataSourceConfigurationYamlSwapper().swapToObject(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return hasDataSourceConfiguration(schemaName) 
+                ? YamlConfigurationConverter.convertDataSourceConfigurations(repository.get(node.getDataSourcePath(schemaName))) : new LinkedHashMap<>();
     }
     
     /**
@@ -305,8 +300,8 @@ public final class ConfigCenter {
      * @return rule configurations
      */
     public Collection<RuleConfiguration> loadRuleConfigurations(final String schemaName) {
-        return hasRuleConfiguration(schemaName) ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                YamlEngine.unmarshal(repository.get(node.getRulePath(schemaName)), YamlRootRuleConfigurations.class, true).getRules()) : new LinkedList<>();
+        return hasRuleConfiguration(schemaName) 
+                ? YamlConfigurationConverter.convertRuleConfigurations(repository.get(node.getRulePath(schemaName))) : new LinkedList<>();
     }
     
     /**
@@ -316,7 +311,7 @@ public final class ConfigCenter {
      */
     public DefaultAuthentication loadAuthentication() {
         return hasAuthentication()
-                ? new AuthenticationYamlSwapper().swapToObject(YamlEngine.unmarshal(repository.get(node.getAuthenticationPath()), YamlAuthenticationConfiguration.class))
+                ? YamlConfigurationConverter.convertAuthentication(repository.get(node.getAuthenticationPath()))
                 : new DefaultAuthentication();
     }
     
@@ -326,7 +321,8 @@ public final class ConfigCenter {
      * @return properties
      */
     public Properties loadProperties() {
-        return YamlEngine.unmarshalProperties(repository.get(node.getPropsPath()), Collections.singletonList(Properties.class));
+        return Strings.isNullOrEmpty(repository.get(node.getPropsPath())) ? new Properties() 
+                : YamlConfigurationConverter.convertProperties(repository.get(node.getPropsPath()));
     }
     
     /**

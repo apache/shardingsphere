@@ -17,81 +17,53 @@
 
 package org.apache.shardingsphere.scaling.core.job;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.scaling.core.config.ScalingConfiguration;
-import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.scaling.core.job.position.resume.ResumeBreakPointManager;
-import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
-import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
-import org.apache.shardingsphere.scaling.core.utils.TaskConfigurationUtil;
-import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.elasticjob.api.ShardingContext;
+import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
+import org.apache.shardingsphere.scaling.core.api.JobSchedulerCenter;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
+import org.apache.shardingsphere.scaling.core.service.impl.StandaloneScalingJobService;
 
 /**
  * Scaling job.
  */
-@Getter
-@Setter
-public final class ScalingJob {
+@Slf4j
+public final class ScalingJob implements SimpleJob {
     
-    private static final SnowflakeKeyGenerateAlgorithm ID_AUTO_INCREASE_GENERATOR = initIdAutoIncreaseGenerator();
+    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
     
-    private long jobId;
+    private static final ScalingJobService SCALING_JOB_SERVICE = new StandaloneScalingJobService();
     
-    private Integer shardingItem;
+    private JobContext jobContext;
     
-    private String databaseType;
-    
-    private final transient List<TaskConfiguration> taskConfigs = new LinkedList<>();
-    
-    private final transient List<ScalingTask> inventoryTasks = new LinkedList<>();
-    
-    private final transient List<ScalingTask> incrementalTasks = new LinkedList<>();
-    
-    private transient ScalingConfiguration scalingConfig;
-    
-    private String status = JobStatus.RUNNING.name();
-    
-    private transient ResumeBreakPointManager resumeBreakPointManager;
-    
-    public ScalingJob() {
-        this(generateKey());
-    }
-    
-    public ScalingJob(final long jobId) {
-        this.jobId = jobId;
-    }
-    
-    public ScalingJob(final ScalingConfiguration scalingConfig) {
-        this(Optional.ofNullable(scalingConfig.getJobConfiguration().getJobId()).orElse(generateKey()));
-        this.scalingConfig = scalingConfig;
-        shardingItem = scalingConfig.getJobConfiguration().getShardingItem();
-        taskConfigs.addAll(TaskConfigurationUtil.toTaskConfigs(scalingConfig));
-    }
-    
-    private static SnowflakeKeyGenerateAlgorithm initIdAutoIncreaseGenerator() {
-        SnowflakeKeyGenerateAlgorithm result = new SnowflakeKeyGenerateAlgorithm();
-        result.init();
-        return result;
-    }
-    
-    private static Long generateKey() {
-        return (Long) ID_AUTO_INCREASE_GENERATOR.generateKey();
-    }
-    
-    /**
-     * Get database type.
-     *
-     * @return database type
-     */
-    public String getDatabaseType() {
-        if (null == databaseType && !taskConfigs.isEmpty()) {
-            databaseType = taskConfigs.get(0).getDumperConfig().getDataSourceConfig().getDatabaseType().getName();
+    @Override
+    public void execute(final ShardingContext shardingContext) {
+        log.info("execute job: {} - {}/{}", shardingContext.getTaskId(), shardingContext.getShardingItem(), shardingContext.getShardingTotalCount());
+        JobConfiguration jobConfig = GSON.fromJson(shardingContext.getJobParameter(), JobConfiguration.class);
+        if (jobConfig.getHandleConfig().isRunning()) {
+            startJob(jobConfig, shardingContext);
+            return;
         }
-        return databaseType;
+        stopJob(shardingContext);
+    }
+    
+    private void startJob(final JobConfiguration jobConfig, final ShardingContext shardingContext) {
+        log.info("start job: {} - {}", shardingContext.getJobName(), shardingContext.getShardingItem());
+        jobConfig.getHandleConfig().setShardingItem(shardingContext.getShardingItem());
+        jobConfig.getHandleConfig().setJobId(Long.valueOf(shardingContext.getJobName()));
+        jobContext = SCALING_JOB_SERVICE.start(jobConfig).orElse(null);
+        JobSchedulerCenter.addJob(jobContext);
+    }
+    
+    private void stopJob(final ShardingContext shardingContext) {
+        if (null != jobContext) {
+            log.info("stop job: {} - {}", shardingContext.getJobName(), shardingContext.getShardingItem());
+            SCALING_JOB_SERVICE.stop(jobContext.getJobId());
+            JobSchedulerCenter.removeJob(jobContext);
+            jobContext = null;
+        }
     }
 }

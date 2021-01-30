@@ -69,7 +69,7 @@ public final class RegistryRepositoryHolder {
         if (null != available) {
             return;
         }
-        GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getDistributedScalingService();
+        GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
         if (null != governanceConfig) {
             GovernanceCenterConfiguration registryCenterConfig = governanceConfig.getRegistryCenterConfiguration();
             Preconditions.checkNotNull(registryCenterConfig, "Registry center configuration cannot be null.");

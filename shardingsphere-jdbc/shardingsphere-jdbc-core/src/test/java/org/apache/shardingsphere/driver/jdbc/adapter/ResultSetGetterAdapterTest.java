@@ -17,625 +17,428 @@
 
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
-import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForShardingTest;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.driver.jdbc.util.JDBCTestSQL;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.junit.After;
-import org.junit.Before;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.Test;
 
-import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.math.BigDecimal;
+import java.net.URL;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.sql.Statement;
-import java.util.ArrayList;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public final class ResultSetGetterAdapterTest extends AbstractShardingSphereDataSourceForShardingTest {
-    
-    private final List<ShardingSphereConnection> shardingSphereConnections = new ArrayList<>();
-    
-    private final List<Statement> statements = new ArrayList<>();
-    
-    private final Map<DatabaseType, ResultSet> resultSets = new HashMap<>();
-    
-    private final String columnName = "user_id";
-    
-    @Before
-    public void init() throws SQLException {
-        ShardingSphereConnection connection = getShardingSphereDataSource().getConnection();
-        shardingSphereConnections.add(connection);
-        Statement statement = connection.createStatement();
-        statements.add(statement);
-        ResultSet resultSet = statement.executeQuery(JDBCTestSQL.SELECT_ORDER_BY_USER_ID_SQL);
-        resultSet.next();
-        resultSets.put(DatabaseTypeRegistry.getActualDatabaseType("H2"), resultSet);
-    }
-    
-    @After
-    public void close() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            each.close();
-        }
-        for (Statement each : statements) {
-            each.close();
-        }
-        for (ShardingSphereConnection each : shardingSphereConnections) {
-            each.close();
-        }
-    }
+public final class ResultSetGetterAdapterTest {
     
     @Test
     public void assertGetBooleanForColumnIndex() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertTrue(each.getBoolean(1));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, boolean.class)).thenReturn(true);
+        assertTrue(mockShardingSphereResultSet(mergedResult).getBoolean(1));
     }
     
     @Test
     public void assertGetBooleanForColumnLabel() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertTrue(each.getBoolean(columnName));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, boolean.class)).thenReturn(true);
+        assertTrue(mockShardingSphereResultSet(mergedResult).getBoolean("col"));
     }
     
     @Test
     public void assertGetByteForColumnIndex() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getByte(1), is((byte) 10));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, byte.class)).thenReturn(10);
+        assertThat(mockShardingSphereResultSet(mergedResult).getByte(1), is((byte) 10));
     }
     
     @Test
     public void assertGetByteForColumnLabel() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getByte(columnName), is((byte) 10));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, byte.class)).thenReturn(10);
+        assertThat(mockShardingSphereResultSet(mergedResult).getByte("col"), is((byte) 10));
     }
     
     @Test
     public void assertGetShortForColumnIndex() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getShort(1), is((short) 10));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, short.class)).thenReturn(10);
+        assertThat(mockShardingSphereResultSet(mergedResult).getShort(1), is((short) 10));
     }
     
     @Test
     public void assertGetShortForColumnLabel() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getShort(columnName), is((short) 10));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, short.class)).thenReturn(10);
+        assertThat(mockShardingSphereResultSet(mergedResult).getShort("col"), is((short) 10));
     }
     
     @Test
     public void assertGetIntForColumnIndex() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getInt(1), is(10));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, int.class)).thenReturn(10);
+        assertThat(mockShardingSphereResultSet(mergedResult).getInt(1), is(10));
     }
     
     @Test
     public void assertGetIntForColumnLabel() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getInt(columnName), is(10));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, int.class)).thenReturn(10);
+        assertThat(mockShardingSphereResultSet(mergedResult).getInt("col"), is(10));
     }
     
     @Test
     public void assertGetLongForColumnIndex() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getLong(1), is(10L));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, long.class)).thenReturn(10L);
+        assertThat(mockShardingSphereResultSet(mergedResult).getLong(1), is(10L));
     }
     
     @Test
     public void assertGetLongForColumnLabel() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getLong(columnName), is(10L));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, long.class)).thenReturn(10L);
+        assertThat(mockShardingSphereResultSet(mergedResult).getLong("col"), is(10L));
     }
     
     @Test
     public void assertGetFloatForColumnIndex() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getFloat(1), is(10.0F));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, float.class)).thenReturn(10.0F);
+        assertThat(mockShardingSphereResultSet(mergedResult).getFloat(1), is(10.0F));
     }
     
     @Test
     public void assertGetFloatForColumnLabel() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getFloat(columnName), is(10.0F));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, float.class)).thenReturn(10.0F);
+        assertThat(mockShardingSphereResultSet(mergedResult).getFloat("col"), is(10.0F));
     }
     
     @Test
     public void assertGetDoubleForColumnIndex() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getDouble(1), is(10.0D));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, double.class)).thenReturn(10.0D);
+        assertThat(mockShardingSphereResultSet(mergedResult).getDouble(1), is(10.0D));
     }
     
     @Test
     public void assertGetDoubleForColumnLabel() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getDouble(columnName), is(10.0D));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, double.class)).thenReturn(10.0D);
+        assertThat(mockShardingSphereResultSet(mergedResult).getDouble("col"), is(10.0D));
     }
     
     @Test
     public void assertGetStringForColumnIndex() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getString(1), is("10"));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, String.class)).thenReturn("10");
+        assertThat(mockShardingSphereResultSet(mergedResult).getString(1), is("10"));
     }
     
     @Test
     public void assertGetStringForColumnLabel() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getString(columnName), is("10"));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, String.class)).thenReturn("10");
+        assertThat(mockShardingSphereResultSet(mergedResult).getString("col"), is("10"));
     }
     
     @Test
     public void assertGetBigDecimalForColumnIndex() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getBigDecimal(1), is(new BigDecimal("10")));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, BigDecimal.class)).thenReturn(new BigDecimal("10"));
+        assertThat(mockShardingSphereResultSet(mergedResult).getBigDecimal(1), is(new BigDecimal("10")));
     }
     
     @Test
     public void assertGetBigDecimalForColumnLabel() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getBigDecimal(columnName), is(new BigDecimal("10")));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, BigDecimal.class)).thenReturn(new BigDecimal("10"));
+        assertThat(mockShardingSphereResultSet(mergedResult).getBigDecimal("col"), is(new BigDecimal("10")));
     }
     
-    @SuppressWarnings("deprecation")
     @Test
     public void assertGetBigDecimalColumnIndexWithScale() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getBigDecimal(1, 2), is(new BigDecimal("10")));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, BigDecimal.class)).thenReturn(new BigDecimal("10"));
+        assertThat(mockShardingSphereResultSet(mergedResult).getBigDecimal(1, 2), is(new BigDecimal("10")));
     }
     
-    @SuppressWarnings("deprecation")
     @Test
     public void assertGetBigDecimalColumnLabelWithScale() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getBigDecimal(columnName, 2), is(new BigDecimal("10")));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, BigDecimal.class)).thenReturn(new BigDecimal("10"));
+        assertThat(mockShardingSphereResultSet(mergedResult).getBigDecimal("col", 2), is(new BigDecimal("10")));
     }
     
     @Test
     public void assertGetBytesForColumnIndex() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            try {
-                assertTrue(each.getBytes(1).length > 0);
-                fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, byte[].class)).thenReturn(new byte[] {1});
+        assertThat(mockShardingSphereResultSet(mergedResult).getBytes(1), is(new byte[] {1}));
     }
     
     @Test
     public void assertGetBytesForColumnLabel() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            try {
-                assertTrue(each.getBytes(columnName).length > 0);
-                fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, byte[].class)).thenReturn(new byte[] {1});
+        assertThat(mockShardingSphereResultSet(mergedResult).getBytes("col"), is(new byte[] {1}));
     }
     
     @Test
     public void assertGetDateForColumnIndex() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            try {
-                each.getDate(1);
-                fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, Date.class)).thenReturn(new Date(0L));
+        assertThat(mockShardingSphereResultSet(mergedResult).getDate(1), is(new Date(0L)));
     }
     
     @Test
     public void assertGetDateForColumnLabel() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            try {
-                each.getDate(columnName);
-                fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, Date.class)).thenReturn(new Date(0L));
+        assertThat(mockShardingSphereResultSet(mergedResult).getDate("col"), is(new Date(0L)));
     }
     
     @Test
     public void assertGetDateColumnIndexWithCalendar() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            try {
-                each.getDate(1, Calendar.getInstance());
-                fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
-        }
+        Calendar calendar = Calendar.getInstance();
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
+        assertThat(mockShardingSphereResultSet(mergedResult).getDate(1, calendar), is(new Date(0L)));
     }
     
     @Test
     public void assertGetDateColumnLabelWithCalendar() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            try {
-                each.getDate(columnName, Calendar.getInstance());
-                fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
-        }
+        Calendar calendar = Calendar.getInstance();
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
+        assertThat(mockShardingSphereResultSet(mergedResult).getDate("col", calendar), is(new Date(0L)));
     }
     
     @Test
     public void assertGetTimeForColumnIndex() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            try {
-                each.getTime(1);
-                fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, Time.class)).thenReturn(new Time(0L));
+        assertThat(mockShardingSphereResultSet(mergedResult).getTime(1), is(new Time(0L)));
     }
     
     @Test
     public void assertGetTimeForColumnLabel() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            try {
-                each.getTime(columnName);
-                fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, Time.class)).thenReturn(new Time(0L));
+        assertThat(mockShardingSphereResultSet(mergedResult).getTime("col"), is(new Time(0L)));
     }
     
     @Test
     public void assertGetTimeColumnIndexWithCalendar() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            try {
-                each.getTime(1, Calendar.getInstance());
-                fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
-        }
+        Calendar calendar = Calendar.getInstance();
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getCalendarValue(1, Time.class, calendar)).thenReturn(new Time(0L));
+        assertThat(mockShardingSphereResultSet(mergedResult).getTime(1, calendar), is(new Time(0L)));
     }
     
     @Test
     public void assertGetTimeColumnLabelWithCalendar() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            try {
-                each.getTime(columnName, Calendar.getInstance());
-                fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
-        }
+        Calendar calendar = Calendar.getInstance();
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getCalendarValue(1, Time.class, calendar)).thenReturn(new Time(0L));
+        assertThat(mockShardingSphereResultSet(mergedResult).getTime("col", calendar), is(new Time(0L)));
     }
     
     @Test
     public void assertGetTimestampForColumnIndex() throws SQLException {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            try {
-                each.getValue().getTimestamp(1);
-                if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
-                    continue;
-                }
-                fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, Timestamp.class)).thenReturn(new Timestamp(0L));
+        assertThat(mockShardingSphereResultSet(mergedResult).getTimestamp(1), is(new Timestamp(0L)));
     }
     
     @Test
     public void assertGetTimestampForColumnLabel() throws SQLException {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            try {
-                each.getValue().getTimestamp(columnName);
-                if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
-                    continue;
-                }
-                fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, Timestamp.class)).thenReturn(new Timestamp(0L));
+        assertThat(mockShardingSphereResultSet(mergedResult).getTimestamp("col"), is(new Timestamp(0L)));
     }
     
     @Test
     public void assertGetTimestampColumnIndexWithCalendar() throws SQLException {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            try {
-                each.getValue().getTimestamp(1, Calendar.getInstance());
-                if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
-                    continue;
-                }
-                fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
-        }
+        Calendar calendar = Calendar.getInstance();
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getCalendarValue(1, Timestamp.class, calendar)).thenReturn(new Timestamp(0L));
+        assertThat(mockShardingSphereResultSet(mergedResult).getTimestamp(1, calendar), is(new Timestamp(0L)));
     }
     
     @Test
     public void assertGetTimestampColumnLabelWithCalendar() throws SQLException {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            try {
-                each.getValue().getTimestamp(columnName, Calendar.getInstance());
-                if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
-                    continue;
-                }
-                fail("Expected an SQLException to be thrown");
-            } catch (final ShardingSphereException ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
-        }
+        Calendar calendar = Calendar.getInstance();
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getCalendarValue(1, Timestamp.class, calendar)).thenReturn(new Timestamp(0L));
+        assertThat(mockShardingSphereResultSet(mergedResult).getTimestamp("col", calendar), is(new Timestamp(0L)));
     }
     
     @Test
-    public void assertGetAsciiStreamForColumnIndex() throws SQLException, IOException {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
-                byte[] b = new byte[1];
-                each.getValue().getAsciiStream(1).read(b);
-                assertThat(new String(b), is("1"));
-            }
-        }
+    public void assertGetAsciiStreamForColumnIndex() throws SQLException {
+        InputStream inputStream = mock(InputStream.class);
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getInputStream(1, "Ascii")).thenReturn(inputStream);
+        assertThat(mockShardingSphereResultSet(mergedResult).getAsciiStream(1), is(inputStream));
     }
     
     @Test
-    public void assertGetAsciiStreamForColumnLabel() throws SQLException, IOException {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
-                byte[] b = new byte[1];
-                each.getValue().getAsciiStream(columnName).read(b);
-                assertThat(new String(b), is("1"));
-            }
-        }
-    }
-    
-    @SuppressWarnings("deprecation")
-    @Test
-    public void assertGetUnicodeStreamForColumnIndex() throws SQLException, IOException {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypeRegistry.getActualDatabaseType("Oracle") == each.getKey()) {
-                continue;
-            }
-            byte[] b = new byte[1];
-            if (DatabaseTypeRegistry.getActualDatabaseType("H2") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("SQLServer") == each.getKey()) {
-                try {
-                    each.getValue().getUnicodeStream(1).read(b);
-                } catch (final ShardingSphereException ignored) {
-                }
-            } else {
-                each.getValue().getUnicodeStream(1).read(b);
-                assertThat(new String(b), is("1"));
-            }
-        }
-    }
-    
-    @SuppressWarnings("deprecation")
-    @Test
-    public void assertGetUnicodeStreamForColumnLabel() throws SQLException, IOException {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypeRegistry.getActualDatabaseType("Oracle") == each.getKey()) {
-                continue;
-            }
-            byte[] b = new byte[1];
-            if (DatabaseTypeRegistry.getActualDatabaseType("H2") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("SQLServer") == each.getKey()) {
-                try {
-                    each.getValue().getUnicodeStream(columnName).read(b);
-                } catch (final ShardingSphereException ignored) {
-                }
-            } else {
-                each.getValue().getUnicodeStream(columnName).read(b);
-                assertThat(new String(b), is("1"));
-            }
-        }
+    public void assertGetAsciiStreamForColumnLabel() throws SQLException {
+        InputStream inputStream = mock(InputStream.class);
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getInputStream(1, "Ascii")).thenReturn(inputStream);
+        assertThat(mockShardingSphereResultSet(mergedResult).getAsciiStream("col"), is(inputStream));
     }
     
     @Test
-    public void assertGetBinaryStreamForColumnIndex() throws SQLException, IOException {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
-                assertTrue(each.getValue().getBinaryStream(1).read() != -1);
-            }
-        }
+    public void assertGetUnicodeStreamForColumnIndex() throws SQLException {
+        InputStream inputStream = mock(InputStream.class);
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getInputStream(1, "Unicode")).thenReturn(inputStream);
+        assertThat(mockShardingSphereResultSet(mergedResult).getUnicodeStream(1), is(inputStream));
     }
     
     @Test
-    public void assertGetBinaryStreamForColumnLabel() throws SQLException, IOException {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
-                assertTrue(each.getValue().getBinaryStream(columnName).read() != -1);
-            }
-        }
+    public void assertGetUnicodeStreamForColumnLabel() throws SQLException {
+        InputStream inputStream = mock(InputStream.class);
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getInputStream(1, "Unicode")).thenReturn(inputStream);
+        assertThat(mockShardingSphereResultSet(mergedResult).getUnicodeStream("col"), is(inputStream));
     }
     
     @Test
-    public void assertGetCharacterStreamForColumnIndex() throws SQLException, IOException {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
-                char[] c = new char[1];
-                each.getValue().getCharacterStream(1).read(c);
-                assertThat(c[0], is('1'));
-            }
-        }
+    public void assertGetBinaryStreamForColumnIndex() throws SQLException {
+        InputStream inputStream = mock(InputStream.class);
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getInputStream(1, "Binary")).thenReturn(inputStream);
+        assertThat(mockShardingSphereResultSet(mergedResult).getBinaryStream(1), is(inputStream));
     }
     
     @Test
-    public void assertGetCharacterStreamForColumnLabel() throws SQLException, IOException {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypeRegistry.getActualDatabaseType("MySQL") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL") == each.getKey()) {
-                char[] c = new char[1];
-                each.getValue().getCharacterStream(columnName).read(c);
-                assertThat(c[0], is('1'));
-            }
-        }
+    public void assertGetBinaryStreamForColumnLabel() throws SQLException {
+        InputStream inputStream = mock(InputStream.class);
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getInputStream(1, "Binary")).thenReturn(inputStream);
+        assertThat(mockShardingSphereResultSet(mergedResult).getBinaryStream("col"), is(inputStream));
+    }
+    
+    @Test
+    public void assertGetCharacterStreamForColumnIndex() throws SQLException {
+        Reader reader = mock(Reader.class);
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, Reader.class)).thenReturn(reader);
+        assertThat(mockShardingSphereResultSet(mergedResult).getCharacterStream(1), is(reader));
+    }
+    
+    @Test
+    public void assertGetCharacterStreamForColumnLabel() throws SQLException {
+        Reader reader = mock(Reader.class);
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, Reader.class)).thenReturn(reader);
+        assertThat(mockShardingSphereResultSet(mergedResult).getCharacterStream("col"), is(reader));
     }
     
     @Test
     public void assertGetBlobForColumnIndex() throws SQLException {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypeRegistry.getActualDatabaseType("H2") == each.getKey()) {
-                try {
-                    assertTrue(each.getValue().getBlob(1).length() > 0);
-                    fail("Expected an SQLException to be thrown");
-                    // TODO need investigate why throw ClassCastException
-                } catch (final ClassCastException ex) {
-                    assertFalse(ex.getMessage().isEmpty());
-                }
-            }
-        }
+        Blob blob = mock(Blob.class);
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, Blob.class)).thenReturn(blob);
+        assertThat(mockShardingSphereResultSet(mergedResult).getBlob(1), is(blob));
     }
     
     @Test
     public void assertGetBlobForColumnLabel() throws SQLException {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypeRegistry.getActualDatabaseType("H2") == each.getKey()) {
-                try {
-                    assertTrue(each.getValue().getBlob(columnName).length() > 0);
-                    fail("Expected an SQLException to be thrown");
-                    // TODO need investigate why throw ClassCastException
-                } catch (final ClassCastException ex) {
-                    assertFalse(ex.getMessage().isEmpty());
-                }
-            }
-        }
+        Blob blob = mock(Blob.class);
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, Blob.class)).thenReturn(blob);
+        assertThat(mockShardingSphereResultSet(mergedResult).getBlob("col"), is(blob));
     }
     
     @Test
     public void assertGetClobForColumnIndex() throws SQLException {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            try {
-                each.getValue().getClob(1);
-                fail("Expected an SQLException to be thrown");
-                // TODO need investigate why throw ClassCastException
-            } catch (final ClassCastException ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
-        }
+        Clob clob = mock(Clob.class);
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, Clob.class)).thenReturn(clob);
+        assertThat(mockShardingSphereResultSet(mergedResult).getClob(1), is(clob));
     }
     
     @Test
     public void assertGetClobForColumnLabel() throws SQLException {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            try {
-                assertThat(each.getValue().getClob(columnName).getSubString(1, 2), is("10"));
-                fail("Expected an SQLException to be thrown");
-                // TODO need investigate why throw ClassCastException
-            } catch (final ClassCastException ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
-        }
+        Clob clob = mock(Clob.class);
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, Clob.class)).thenReturn(clob);
+        assertThat(mockShardingSphereResultSet(mergedResult).getClob("col"), is(clob));
     }
     
     @Test
     public void assertGetURLForColumnIndex() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            try {
-                each.getURL(1);
-                fail("Expected an SQLException to be thrown");
-                // TODO need investigate why throw ClassCastException
-            } catch (final ClassCastException ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
-        }
+        URL url = mock(URL.class);
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, URL.class)).thenReturn(url);
+        assertThat(mockShardingSphereResultSet(mergedResult).getURL(1), is(url));
     }
     
     @Test
     public void assertGetURLForColumnLabel() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            try {
-                each.getURL(columnName);
-                fail("Expected an SQLException to be thrown");
-                // TODO need investigate why throw ClassCastException
-            } catch (final ClassCastException ex) {
-                assertFalse(ex.getMessage().isEmpty());
-            }
-        }
+        URL url = mock(URL.class);
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, URL.class)).thenReturn(url);
+        assertThat(mockShardingSphereResultSet(mergedResult).getURL("col"), is(url));
     }
     
     @Test
     public void assertGetSQLXMLForColumnIndex() throws SQLException {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypeRegistry.getActualDatabaseType("Oracle") == each.getKey()) {
-                continue;
-            }
-            if (DatabaseTypeRegistry.getActualDatabaseType("H2") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("SQLServer") == each.getKey()) {
-                try {
-                    each.getValue().getSQLXML(1);
-                    fail("Expected an SQLException to be thrown");
-                    // TODO need investigate why throw ClassCastException
-                } catch (final ClassCastException ex) {
-                    assertFalse(ex.getMessage().isEmpty());
-                }
-            } else {
-                assertThat(each.getValue().getSQLXML(1).getString(), is("10"));
-            }
-        }
+        SQLXML sqlxml = mock(SQLXML.class);
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, SQLXML.class)).thenReturn(sqlxml);
+        assertThat(mockShardingSphereResultSet(mergedResult).getSQLXML(1), is(sqlxml));
     }
     
     @Test
     public void assertGetSQLXMLForColumnLabel() throws SQLException {
-        for (Entry<DatabaseType, ResultSet> each : resultSets.entrySet()) {
-            if (DatabaseTypeRegistry.getActualDatabaseType("Oracle") == each.getKey()) {
-                continue;
-            }
-            if (DatabaseTypeRegistry.getActualDatabaseType("H2") == each.getKey() || DatabaseTypeRegistry.getActualDatabaseType("SQLServer") == each.getKey()) {
-                try {
-                    each.getValue().getSQLXML(columnName);
-                    fail("Expected an SQLException to be thrown");
-                    // TODO need investigate why throw ClassCastException
-                } catch (final ClassCastException ex) {
-                    assertFalse(ex.getMessage().isEmpty());
-                }
-            } else {
-                assertThat(each.getValue().getSQLXML(columnName).getString(), is("10"));
-            }
-        }
+        SQLXML sqlxml = mock(SQLXML.class);
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, SQLXML.class)).thenReturn(sqlxml);
+        assertThat(mockShardingSphereResultSet(mergedResult).getSQLXML("col"), is(sqlxml));
     }
     
     @Test
     public void assertGetObjectForColumnIndex() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getObject(1).toString(), is("10"));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, Object.class)).thenReturn("obj");
+        assertThat(mockShardingSphereResultSet(mergedResult).getObject(1), is("obj"));
     }
     
     @Test
     public void assertGetObjectForColumnLabel() throws SQLException {
-        for (ResultSet each : resultSets.values()) {
-            assertThat(each.getObject(columnName).toString(), is("10"));
-        }
+        MergedResult mergedResult = mock(MergedResult.class);
+        when(mergedResult.getValue(1, Object.class)).thenReturn("obj");
+        assertThat(mockShardingSphereResultSet(mergedResult).getObject("col"), is("obj"));
+    }
+    
+    private ShardingSphereResultSet mockShardingSphereResultSet(final MergedResult mergedResult) throws SQLException {
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("col");
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSetMetaData.getColumnCount()).thenReturn(1);
+        when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
+        return new ShardingSphereResultSet(Collections.singletonList(resultSet), mergedResult, mock(Statement.class), mock(ExecutionContext.class));
     }
 }
