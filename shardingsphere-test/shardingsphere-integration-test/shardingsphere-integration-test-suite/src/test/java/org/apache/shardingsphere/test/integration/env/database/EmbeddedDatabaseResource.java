@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.datasource.builder;
-
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+package org.apache.shardingsphere.test.integration.env.database;
 
 /**
- * Data source cache key.
+ * Embedded database resource.
  */
-@RequiredArgsConstructor
-@EqualsAndHashCode
-public final class DataSourceCacheKey {
+public interface EmbeddedDatabaseResource {
 
-    private final String scenario;
+    /**
+     * start embedded database resource.
+     */
+    void start();
 
-    private final String dataSourceName;
-    
-    private final DatabaseType databaseType;
+    /**
+     * stop embedded database resource.
+     */
+    void stop();
 }

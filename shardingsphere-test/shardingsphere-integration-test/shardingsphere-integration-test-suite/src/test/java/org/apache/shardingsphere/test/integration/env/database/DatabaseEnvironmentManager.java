@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.integration.env.database;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
@@ -34,12 +36,20 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Schema environment manager.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseEnvironmentManager {
+
+    private static final ConcurrentMap<String, EmbeddedDatabaseResource> DATABASE_RESOURCE_CACHE = new ConcurrentHashMap<>();
+
+    private static final Lock DATABASE_RESOURCE_LOCK = new ReentrantLock();
     
     /**
      * Get database names.
@@ -74,9 +84,9 @@ public final class DatabaseEnvironmentManager {
     
     private static void executeInitSQLs(final String scenario) throws IOException, JAXBException, SQLException {
         for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
-            if ("H2".equals(each.getName())) {
+            if (each instanceof H2DatabaseType) {
                 executeInitSQLForSchemaNotSupportedDatabase(scenario, each);
-                return;
+                continue;
             }
             // TODO use multiple threads to improve performance
             DataSource dataSource = ActualDataSourceBuilder.build(null, scenario, each);
@@ -97,7 +107,63 @@ public final class DatabaseEnvironmentManager {
     private static void executeSQLScript(final DataSource dataSource, final File file) throws SQLException, IOException {
         try (Connection connection = dataSource.getConnection();
              FileReader reader = new FileReader(file)) {
+            // TODO If you don't use H2 in the future, you need to implement this method.
             RunScript.execute(connection, reader);
         }
+    }
+
+    /**
+     * create embedded database resource by database type and environment.
+     *
+     * @param databaseType database type
+     * @param scenario scenario
+     * @param databaseEnvironment database props
+     */
+    public static void createEmbeddedDatabaseResource(final DatabaseType databaseType,
+                                                      final String scenario,
+                                                      final org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment databaseEnvironment) {
+        if (null == databaseType) {
+            return;
+        }
+        String databaseTypeName = databaseType.getName();
+        String embeddedDatabaseResourceKey = databaseTypeName + "_" + scenario;
+        EmbeddedDatabaseResource embeddedDatabaseResource = DATABASE_RESOURCE_CACHE.get(embeddedDatabaseResourceKey);
+        if (null != embeddedDatabaseResource) {
+            return;
+        }
+        try {
+            DATABASE_RESOURCE_LOCK.lock();
+            embeddedDatabaseResource = DATABASE_RESOURCE_CACHE.get(embeddedDatabaseResourceKey);
+            if (null != embeddedDatabaseResource) {
+                return;
+            }
+            if (databaseType instanceof MySQLDatabaseType) {
+                embeddedDatabaseResource = new MySQLEmbeddedDatabaseResource(databaseEnvironment);
+            } else {
+                // TODO return default database resource
+                embeddedDatabaseResource = new EmbeddedDatabaseResource() {
+
+                    @Override
+                    public void start() {
+                    }
+
+                    @Override
+                    public void stop() {
+                    }
+                };
+            }
+            embeddedDatabaseResource.start();
+            DATABASE_RESOURCE_CACHE.put(embeddedDatabaseResourceKey, embeddedDatabaseResource);
+        } finally {
+            DATABASE_RESOURCE_LOCK.unlock();
+        }
+    }
+
+    /**
+     * drop embedded database resource.
+     */
+    public static void dropEmbeddedDatabaseResource() {
+        DATABASE_RESOURCE_CACHE.values().forEach(EmbeddedDatabaseResource::stop);
+        DATABASE_RESOURCE_CACHE.clear();
     }
 }
