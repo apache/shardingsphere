@@ -27,7 +27,7 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 public final class DatabaseScenarioProperties {
-
+    
     private final String scenario;
     
     private final Properties props;
@@ -107,17 +107,17 @@ public final class DatabaseScenarioProperties {
     public String getProxyPassword() {
         return props.getProperty(String.format("it.%s.proxy.password", scenario));
     }
-
+    
     /**
-     * Get database distribution url.
+     * Get database distribution URL.
      *
      * @param databaseType database type
-     * @return database distribution url
+     * @return database distribution URL
      */
     public String getDatabaseDistributionUrl(final DatabaseType databaseType) {
         return props.getProperty(String.format("it.%s.%s.distribution.url", scenario, databaseType.getName().toLowerCase()));
     }
-
+    
     /**
      * Get database distribution version.
      *

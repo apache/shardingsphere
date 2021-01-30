@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -59,7 +60,7 @@ public final class IntegrationTestEnvironment {
     private final Map<DatabaseType, Map<String, DatabaseEnvironment>> databaseEnvironments;
     
     private final Map<String, DatabaseEnvironment> proxyEnvironments;
-
+    
     private final boolean isDatabasesEmbedded;
     
     private IntegrationTestEnvironment() {
@@ -72,7 +73,7 @@ public final class IntegrationTestEnvironment {
         Map<String, DatabaseScenarioProperties> databaseProps = getDatabaseScenarioProperties();
         databaseEnvironments = createDatabaseEnvironments(getDatabaseTypes(engineEnvProps), databaseProps);
         if (isDatabasesEmbedded) {
-            initEmbeddedDatabaseResources();
+            createEmbeddedDatabaseResources();
         }
         proxyEnvironments = createProxyEnvironments(databaseProps);
         if (isEnvironmentPrepared) {
@@ -122,14 +123,18 @@ public final class IntegrationTestEnvironment {
                 databaseProps.getDatabaseUsername(databaseType), databaseProps.getDatabasePassword(databaseType),
                 databaseProps.getDatabaseDistributionUrl(databaseType), databaseProps.getDatabaseDistributionVersion(databaseType));
     }
-
-    private void initEmbeddedDatabaseResources() {
-        if (!isEnvironmentPrepared()) {
-            for (Map.Entry<DatabaseType, Map<String, DatabaseEnvironment>> each : getDatabaseEnvironments().entrySet()) {
-                for (Map.Entry<String, DatabaseEnvironment> databaseEnvironmentEntry : each.getValue().entrySet()) {
-                    DatabaseEnvironmentManager.createEmbeddedDatabaseResource(each.getKey(), databaseEnvironmentEntry.getKey(), databaseEnvironmentEntry.getValue());
-                }
+    
+    private void createEmbeddedDatabaseResources() {
+        if (!isEnvironmentPrepared) {
+            for (Entry<DatabaseType, Map<String, DatabaseEnvironment>> entry : databaseEnvironments.entrySet()) {
+                createEmbeddedDatabaseResources(entry.getKey(), entry.getValue());
             }
+        }
+    }
+    
+    private void createEmbeddedDatabaseResources(final DatabaseType databaseType, final Map<String, DatabaseEnvironment> databaseEnvs) {
+        for (Entry<String, DatabaseEnvironment> databaseEnvironmentEntry : databaseEnvs.entrySet()) {
+            DatabaseEnvironmentManager.createEmbeddedDatabaseResource(databaseType, databaseEnvironmentEntry.getKey(), databaseEnvironmentEntry.getValue());
         }
     }
     

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.h2.tools.RunScript;
 
@@ -46,9 +47,9 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseEnvironmentManager {
-
+    
     private static final ConcurrentMap<String, EmbeddedDatabaseResource> DATABASE_RESOURCE_CACHE = new ConcurrentHashMap<>();
-
+    
     private static final Lock DATABASE_RESOURCE_LOCK = new ReentrantLock();
     
     /**
@@ -63,9 +64,9 @@ public final class DatabaseEnvironmentManager {
         return unmarshal(EnvironmentPath.getDatabasesFile(scenario)).getDatabases();
     }
     
-    private static DatabaseEnvironment unmarshal(final String databasesFile) throws IOException, JAXBException {
+    private static DatabaseNameEnvironment unmarshal(final String databasesFile) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(databasesFile)) {
-            return (DatabaseEnvironment) JAXBContext.newInstance(DatabaseEnvironment.class).createUnmarshaller().unmarshal(reader);
+            return (DatabaseNameEnvironment) JAXBContext.newInstance(DatabaseNameEnvironment.class).createUnmarshaller().unmarshal(reader);
         }
     }
     
@@ -111,22 +112,20 @@ public final class DatabaseEnvironmentManager {
             RunScript.execute(connection, reader);
         }
     }
-
+    
     /**
-     * create embedded database resource by database type and environment.
+     * Create embedded database resource.
      *
      * @param databaseType database type
      * @param scenario scenario
-     * @param databaseEnvironment database props
+     * @param databaseEnvironment database environment
      */
-    public static void createEmbeddedDatabaseResource(final DatabaseType databaseType,
-                                                      final String scenario,
-                                                      final org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment databaseEnvironment) {
+    public static void createEmbeddedDatabaseResource(final DatabaseType databaseType, final String scenario, final DatabaseEnvironment databaseEnvironment) {
         if (null == databaseType) {
             return;
         }
         String databaseTypeName = databaseType.getName();
-        String embeddedDatabaseResourceKey = databaseTypeName + "_" + scenario;
+        String embeddedDatabaseResourceKey = String.join("_", databaseTypeName, scenario);
         EmbeddedDatabaseResource embeddedDatabaseResource = DATABASE_RESOURCE_CACHE.get(embeddedDatabaseResourceKey);
         if (null != embeddedDatabaseResource) {
             return;
@@ -142,11 +141,11 @@ public final class DatabaseEnvironmentManager {
             } else {
                 // TODO return default database resource
                 embeddedDatabaseResource = new EmbeddedDatabaseResource() {
-
+                    
                     @Override
                     public void start() {
                     }
-
+                    
                     @Override
                     public void stop() {
                     }
@@ -158,9 +157,9 @@ public final class DatabaseEnvironmentManager {
             DATABASE_RESOURCE_LOCK.unlock();
         }
     }
-
+    
     /**
-     * drop embedded database resource.
+     * Drop embedded database resource.
      */
     public static void dropEmbeddedDatabaseResource() {
         DATABASE_RESOURCE_CACHE.values().forEach(EmbeddedDatabaseResource::stop);

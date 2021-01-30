@@ -37,9 +37,9 @@ public final class DatabaseEnvironment {
     private final String username;
     
     private final String password;
-
+    
     private final String distributionUrl;
-
+    
     private final String distributionVersion;
     
     /**
