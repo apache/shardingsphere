@@ -106,6 +106,9 @@ public final class MySQLFrontendEngineTest {
         ShardingSphereUser user = new ShardingSphereUser("", "", Collections.singleton("db1"));
         setAuthentication(user);
         when(payload.readStringNul()).thenReturn("root");
+        when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
+        when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
+        when(context.channel()).thenReturn(channel);
         AuthenticationResult actual = mysqlFrontendEngine.getAuthEngine().auth(context, payload);
         assertThat(actual.getUsername(), is("root"));
         assertNull(actual.getDatabase());
