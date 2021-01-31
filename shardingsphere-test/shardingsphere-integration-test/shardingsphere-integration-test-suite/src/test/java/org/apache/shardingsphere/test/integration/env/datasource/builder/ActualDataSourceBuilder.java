@@ -73,7 +73,7 @@ public final class ActualDataSourceBuilder {
      * @return actual data source
      */
     public static DataSource build(final String name, final String scenario, final DatabaseType databaseType) {
-        DataSourceCacheKey cacheKey = new DataSourceCacheKey(name, databaseType);
+        DataSourceCacheKey cacheKey = new DataSourceCacheKey(scenario, name, databaseType);
         if (CACHE.containsKey(cacheKey)) {
             return CACHE.get(cacheKey);
         }

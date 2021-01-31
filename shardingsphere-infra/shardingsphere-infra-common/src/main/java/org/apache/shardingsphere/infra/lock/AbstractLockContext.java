@@ -17,38 +17,39 @@
 
 package org.apache.shardingsphere.infra.lock;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-public final class LockContextTest {
+/**
+ * Abstract lock context.
+ */
+public abstract class AbstractLockContext implements LockContext {
     
-    @Before
-    public void init() {
-        LockContext.init(LockStrategyType.STANDARD);
+    private final Lock innerLock = new ReentrantLock();
+    
+    private final Condition innerCondition = innerLock.newCondition();
+    
+    @Override
+    public final boolean await(final Long timeout, final TimeUnit timeUnit) {
+        innerLock.lock();
+        try {
+            return innerCondition.await(timeout, TimeUnit.MILLISECONDS);
+        } catch (final InterruptedException ignored) {
+        } finally {
+            innerLock.unlock();
+        }
+        return false;
     }
     
-    @Test
-    public void assertGetLockStrategy() {
-        assertNotNull(LockContext.getLockStrategy());
-    }
-    
-    @Test
-    public void assetAwait() {
-        new Thread(() -> {
-            try {
-                TimeUnit.MILLISECONDS.sleep(200L);
-                // CHECKSTYLE:OFF
-            } catch (final InterruptedException e) {
-                // CHECKSTYLE:ON
-            }
-            LockContext.signalAll();
-        }).start();
-        boolean result = LockContext.await(400L);
-        assertTrue(result);
+    @Override
+    public final void signalAll() {
+        innerLock.lock();
+        try {
+            innerCondition.signalAll();
+        } finally {
+            innerLock.unlock();
+        }
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.elasticjob.util;
+package org.apache.shardingsphere.scaling.core.utils;
 
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
@@ -29,10 +29,10 @@ import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import java.util.Properties;
 
 /**
- * Elastic job utils.
+ * Elastic job util.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ElasticJobUtils {
+public final class ElasticJobUtil {
     
     /**
      * Create registry center.

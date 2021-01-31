@@ -15,39 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Handle configuration.
+ * Use database statement.
  */
-@NoArgsConstructor
-@Setter
 @Getter
-public final class HandleConfiguration {
+@Setter
+@ToString
+public abstract class UseStatement extends AbstractSQLStatement implements DALStatement {
     
-    private Long jobId;
-    
-    private int concurrency = 3;
-    
-    private int retryTimes = 3;
-    
-    private String[] shardingTables;
-    
-    private Integer shardingItem;
-    
-    private int shardingSize = 1000 * 10000;
-    
-    private boolean running = true;
-    
-    private String databaseType;
-    
-    private WorkflowConfiguration workflowConfig;
-    
-    public HandleConfiguration(final WorkflowConfiguration workflowConfig) {
-        this.workflowConfig = workflowConfig;
-    }
+    private String schema;
 }

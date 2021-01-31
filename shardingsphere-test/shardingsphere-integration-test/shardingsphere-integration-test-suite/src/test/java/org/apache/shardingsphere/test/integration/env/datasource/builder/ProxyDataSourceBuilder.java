@@ -45,7 +45,7 @@ public final class ProxyDataSourceBuilder {
      * @return proxy data source
      */
     public static DataSource build(final String name, final DatabaseType databaseType, final DatabaseEnvironment databaseEnvironment) {
-        DataSourceCacheKey cacheKey = new DataSourceCacheKey(name, databaseType);
+        DataSourceCacheKey cacheKey = new DataSourceCacheKey(name, name, databaseType);
         if (CACHE.containsKey(cacheKey)) {
             return CACHE.get(cacheKey);
         }

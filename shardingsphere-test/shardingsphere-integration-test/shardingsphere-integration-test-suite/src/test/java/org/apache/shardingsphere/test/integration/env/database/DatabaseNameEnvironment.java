@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.spi;
+package org.apache.shardingsphere.test.integration.env.database;
 
-import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import lombok.Getter;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Scaling worker.
+ * XML definition of database name environment.
  */
-public interface ScalingWorker {
+@Getter
+@XmlRootElement(name = "databases")
+public final class DatabaseNameEnvironment {
     
-    /**
-     * Init scaling worker.
-     *
-     * @param governanceConfig governance configuration
-     */
-    void init(GovernanceConfiguration governanceConfig);
+    @XmlElement(name = "database")
+    private final Collection<String> databases = new LinkedList<>();
 }

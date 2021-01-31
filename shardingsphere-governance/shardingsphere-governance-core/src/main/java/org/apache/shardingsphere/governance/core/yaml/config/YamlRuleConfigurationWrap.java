@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine.constructor;
+package org.apache.shardingsphere.governance.core.yaml.config;
 
-import lombok.RequiredArgsConstructor;
-import org.yaml.snakeyaml.constructor.Constructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Class filter constructor for YAML load as map.
+ * Rule configuration warp for YAML.
  */
-@RequiredArgsConstructor
-public final class ClassFilterConstructor extends Constructor {
+@Getter
+@Setter
+public final class YamlRuleConfigurationWrap implements YamlConfiguration {
     
-    private final Collection<Class<?>> acceptClasses;
-    
-    @Override
-    protected Class<?> getClassForName(final String name) throws ClassNotFoundException {
-        for (Class<? extends Object> each : acceptClasses) {
-            if (name.equals(each.getName())) {
-                return super.getClassForName(name);
-            }
-        }
-        throw new IllegalArgumentException(String.format("Class is not accepted: %s", name));
-    }
+    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
 }

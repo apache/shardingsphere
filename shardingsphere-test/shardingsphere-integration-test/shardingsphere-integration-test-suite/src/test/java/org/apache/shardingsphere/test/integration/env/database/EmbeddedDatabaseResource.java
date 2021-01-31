@@ -15,39 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config;
-
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+package org.apache.shardingsphere.test.integration.env.database;
 
 /**
- * Handle configuration.
+ * Embedded database resource.
  */
-@NoArgsConstructor
-@Setter
-@Getter
-public final class HandleConfiguration {
+public interface EmbeddedDatabaseResource {
     
-    private Long jobId;
+    /**
+     * Start embedded database resource.
+     */
+    void start();
     
-    private int concurrency = 3;
-    
-    private int retryTimes = 3;
-    
-    private String[] shardingTables;
-    
-    private Integer shardingItem;
-    
-    private int shardingSize = 1000 * 10000;
-    
-    private boolean running = true;
-    
-    private String databaseType;
-    
-    private WorkflowConfiguration workflowConfig;
-    
-    public HandleConfiguration(final WorkflowConfiguration workflowConfig) {
-        this.workflowConfig = workflowConfig;
-    }
+    /**
+     * Stop embedded database resource.
+     */
+    void stop();
 }
