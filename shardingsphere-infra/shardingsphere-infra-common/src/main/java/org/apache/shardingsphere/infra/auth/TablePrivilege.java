@@ -40,7 +40,7 @@ public final class TablePrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        if (privileges.contains(PrivilegeType.ALL)) {
+        if (this.privileges.contains(PrivilegeType.ALL)) {
             return true;
         }
         return this.privileges.containsAll(privileges);
