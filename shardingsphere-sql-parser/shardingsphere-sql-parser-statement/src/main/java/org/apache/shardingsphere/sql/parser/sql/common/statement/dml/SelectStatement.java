@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.hint.HintSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
@@ -46,6 +47,8 @@ public abstract class SelectStatement extends AbstractSQLStatement implements DM
     private GroupBySegment groupBy;
     
     private OrderBySegment orderBy;
+
+    private HintSegment hint;
     
     /**
      * Get where.
@@ -72,5 +75,14 @@ public abstract class SelectStatement extends AbstractSQLStatement implements DM
      */
     public Optional<OrderBySegment> getOrderBy() {
         return Optional.ofNullable(orderBy);
+    }
+
+    /**
+     * Get hint segment.
+     *
+     * @return hint segment
+     */
+    public Optional<HintSegment> getHint() {
+        return Optional.ofNullable(hint);
     }
 }

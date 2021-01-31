@@ -133,7 +133,7 @@ selectWithInto
     ;
 
 queryExpression
-    : withClause? (queryExpressionBody | queryExpressionParens) orderByClause? limitClause?
+    : hintComment? withClause? (queryExpressionBody | queryExpressionParens) orderByClause? limitClause?
     ;
 
 queryExpressionBody
@@ -235,6 +235,31 @@ rowConstructorList
 
 withClause
     : WITH RECURSIVE? cteClause (COMMA_ cteClause)*
+    ;
+
+hintComment
+    : SLASH_ ASTERISK_ NOT_ (databaseHintComment| shardingHintComment) ASTERISK_ SLASH_
+    ;
+
+databaseHintComment
+    : DATABASESHARDING LP_ identifier RP_
+    ;
+
+shardingHintComment
+    : shardingDatabaseHintComment? shardingTableHintComment?
+    | shardingTableHintComment? shardingDatabaseHintComment?
+    ;
+
+shardingDatabaseHintComment
+    :  SHARDINGDATABASEVALUE shardingHintCommentValue
+    ;
+
+shardingTableHintComment
+    :  SHARDINGTABLEVALUE shardingHintCommentValue
+    ;
+
+shardingHintCommentValue
+    :  LP_ expr (COMMA_ expr)* RP_
     ;
 
 cteClause

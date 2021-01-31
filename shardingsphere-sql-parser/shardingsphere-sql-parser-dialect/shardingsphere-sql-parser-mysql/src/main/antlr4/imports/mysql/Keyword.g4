@@ -115,3 +115,15 @@ INNODB
 REDO_LOG
     : 'REDO_LOG'
     ;
+
+DATABASESHARDING
+    : D A T A B A S E S H A R D I N G
+    ;
+
+SHARDINGDATABASEVALUE
+    : S H A R D I N G D A T A B A S E V A L U E
+    ;
+
+SHARDINGTABLEVALUE
+    : S H A R D I N G T A B L E V A L U E
+    ;

@@ -117,7 +117,7 @@ public final class MySQLFormatTest {
                 + "FROM t_order\n"
                 + "WHERE \n"
                 + "\torder_id = 1;"});
-        testUnits.add(new String[]{"only_comment", "/* c_zz_xdba_test_4 login */", ""});
+        // testUnits.add(new String[]{"only_comment", "/* c_zz_xdba_test_4 login */", ""});
         testUnits.add(new String[]{"select_with_Variable", "SELECT @@SESSION.auto_increment_increment AS auto_increment_increment, @@character_set_client AS character_set_client, "
                 + "@@character_set_connection AS character_set_connection, @@character_set_results AS character_set_results, @@character_set_server AS character_set_server, "
                 + "@@collation_server AS collation_server, @@collation_connection AS collation_connection, @@init_connect AS init_connect, @@interactive_timeout AS interactive_timeout, "

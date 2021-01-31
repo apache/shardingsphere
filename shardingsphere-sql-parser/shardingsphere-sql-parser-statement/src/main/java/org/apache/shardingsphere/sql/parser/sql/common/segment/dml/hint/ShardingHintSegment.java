@@ -15,9 +15,25 @@
  * limitations under the License.
  */
 
-lexer grammar Comments;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.hint;
 
-import Symbol;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-BLOCK_COMMENT:  '/*' [ \t\r\n]+ '*' .*? '*/' -> channel(HIDDEN);
-INLINE_COMMENT: (('-- ' | '#') ~[\r\n]* ('\r'? '\n' | EOF) | '--' ('\r'? '\n' | EOF)) -> channel(HIDDEN);
+/**
+ * LogicTableShardingHintSegment.
+ */
+@Getter
+@Setter
+@ToString
+public class ShardingHintSegment extends AbstractHintSegment {
+
+    private ShardingHintValueSegment shardingDatabaseHintValueSegment;
+
+    private ShardingHintValueSegment shardingTableHintValueSegment;
+
+    public ShardingHintSegment(final int startIndex, final int stopIndex) {
+        super(startIndex, stopIndex);
+    }
+}

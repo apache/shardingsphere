@@ -2417,7 +2417,7 @@
         </where>
     </select>
 
-    <select sql-case-id="select_with_block_comment" >
+<!--    <select sql-case-id="select_with_block_comment" >
         <from>
             <simple-table name="t_order" start-index="83" stop-index="89" />
         </from>
@@ -2437,7 +2437,7 @@
                 </binary-operation-expression>
             </expr>
         </where>
-    </select>
+    </select>-->
 
     <select sql-case-id="select_with_single_comment" >
         <from>

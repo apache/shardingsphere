@@ -15,9 +15,33 @@
  * limitations under the License.
  */
 
-lexer grammar Comments;
+package org.apache.shardingsphere.infra.binder.segment.select.hint;
 
-import Symbol;
+/**
+ * SqlHintType.
+ */
 
-BLOCK_COMMENT:  '/*' [ \t\r\n]+ '*' .*? '*/' -> channel(HIDDEN);
-INLINE_COMMENT: (('-- ' | '#') ~[\r\n]* ('\r'? '\n' | EOF) | '--' ('\r'? '\n' | EOF)) -> channel(HIDDEN);
+public enum HintType {
+    NONE(), DATABASE_HINT, SHARDING_VALUE_HINT;
+
+    /**
+     * isDataBaseSqlHint.
+     *
+     * @param hintType hintType
+     * @return is DATABASE_HINT type
+     */
+    public static boolean isDataBaseSqlHint(final HintType hintType) {
+        return DATABASE_HINT.equals(hintType);
+    }
+
+    /**
+     * isShardingValueSqlHint.
+     *
+     * @param hintType hintType
+     * @return is SHARDING_VALUE_HINT type
+     */
+    public static boolean isShardingValueSqlHint(final HintType hintType) {
+        return SHARDING_VALUE_HINT.equals(hintType);
+    }
+
+}

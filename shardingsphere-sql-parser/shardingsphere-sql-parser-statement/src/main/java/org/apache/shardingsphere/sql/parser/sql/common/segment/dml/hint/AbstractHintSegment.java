@@ -15,9 +15,21 @@
  * limitations under the License.
  */
 
-lexer grammar Comments;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.hint;
 
-import Symbol;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
-BLOCK_COMMENT:  '/*' [ \t\r\n]+ '*' .*? '*/' -> channel(HIDDEN);
-INLINE_COMMENT: (('-- ' | '#') ~[\r\n]* ('\r'? '\n' | EOF) | '--' ('\r'? '\n' | EOF)) -> channel(HIDDEN);
+/**
+ * AbstractHintSegment.
+ */
+@RequiredArgsConstructor
+@Getter
+public abstract class AbstractHintSegment implements SQLSegment {
+
+    private final int startIndex;
+
+    private final int stopIndex;
+
+}

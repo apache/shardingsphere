@@ -15,9 +15,26 @@
  * limitations under the License.
  */
 
-lexer grammar Comments;
+package org.apache.shardingsphere.infra.binder.segment.select.hint;
 
-import Symbol;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.hint.DataBaseHintSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.hint.ShardingHintSegment;
 
-BLOCK_COMMENT:  '/*' [ \t\r\n]+ '*' .*? '*/' -> channel(HIDDEN);
-INLINE_COMMENT: (('-- ' | '#') ~[\r\n]* ('\r'? '\n' | EOF) | '--' ('\r'? '\n' | EOF)) -> channel(HIDDEN);
+/**
+ * SqlHintContext.
+ */
+
+@RequiredArgsConstructor
+@Getter
+@Setter
+public class HintContext {
+
+    private final HintType hintType;
+
+    private DataBaseHintSegment dataBaseHintSegment;
+
+    private ShardingHintSegment shardingHintSegment;
+}

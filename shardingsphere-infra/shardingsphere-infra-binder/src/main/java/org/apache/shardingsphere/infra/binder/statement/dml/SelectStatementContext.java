@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.binder.statement.dml;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.segment.select.hint.HintContext;
+import org.apache.shardingsphere.infra.binder.segment.select.hint.HintContextEngine;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.engine.GroupByContextEngine;
@@ -69,6 +71,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private final boolean containsSubquery;
 
+    private HintContext hintContext;
+
     // TODO to be remove, for test case only
     public SelectStatementContext(final SelectStatement sqlStatement, final GroupByContext groupByContext,
                                   final OrderByContext orderByContext, final ProjectionsContext projectionsContext, final PaginationContext paginationContext) {
@@ -89,6 +93,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         projectionsContext = new ProjectionsContextEngine(schema).createProjectionsContext(getFromSimpleTableSegments(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters);
         containsSubquery = containsSubquery();
+        hintContext = new HintContextEngine().createHintContext(sqlStatement);
     }
     
     private boolean containsSubquery() {

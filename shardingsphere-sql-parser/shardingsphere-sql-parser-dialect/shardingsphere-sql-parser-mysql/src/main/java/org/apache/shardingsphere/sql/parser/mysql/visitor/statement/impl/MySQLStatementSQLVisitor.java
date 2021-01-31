@@ -117,6 +117,12 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.MatchEx
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DataTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OrderByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.OrderByItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HintCommentContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DatabaseHintCommentContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShardingHintCommentContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShardingDatabaseHintCommentContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShardingTableHintCommentContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShardingHintCommentValueContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -138,6 +144,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.hint.DataBaseHintSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.hint.HintSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.hint.ShardingHintSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.hint.ShardingHintValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -581,6 +591,9 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             result = (MySQLSelectStatement) visit(ctx.queryExpressionBody());
         } else {
             result = (MySQLSelectStatement) visit(ctx.queryExpressionParens());
+        }
+        if (null != ctx.hintComment()) {
+            result.setHint((HintSegment) visit(ctx.hintComment()));
         }
         if (null != ctx.orderByClause()) {
             result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
@@ -1404,5 +1417,39 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
         }
         return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.parameterMarker())).getValue());
+    }
+    
+    @Override
+    public ASTNode visitHintComment(final HintCommentContext ctx) {
+        if (null != ctx.databaseHintComment()) {
+            DatabaseHintCommentContext databaseHintComment = ctx.databaseHintComment();
+            DataBaseHintSegment dataBaseHintSegment =
+                    new DataBaseHintSegment(databaseHintComment.getStart().getStartIndex(), databaseHintComment.getStop().getStopIndex(), (IdentifierValue) visit(databaseHintComment.identifier()));
+            return new HintSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), dataBaseHintSegment);
+        }
+        ShardingHintCommentContext shardingHintCommentContext = ctx.shardingHintComment();
+        ShardingHintSegment shardingHintSegment =
+                new ShardingHintSegment(shardingHintCommentContext.getStart().getStartIndex(), shardingHintCommentContext.getStop().getStopIndex());
+        ShardingDatabaseHintCommentContext shardingDatabaseHintCommentContext = shardingHintCommentContext.shardingDatabaseHintComment();
+        if (null != shardingDatabaseHintCommentContext) {
+            shardingHintSegment.setShardingDatabaseHintValueSegment(
+                    (ShardingHintValueSegment) visitShardingHintCommentValue(shardingDatabaseHintCommentContext.shardingHintCommentValue()));
+        }
+        ShardingTableHintCommentContext shardingTableHintCommentContext = shardingHintCommentContext.shardingTableHintComment();
+        if (null != shardingTableHintCommentContext) {
+            shardingHintSegment.setShardingTableHintValueSegment(
+                    (ShardingHintValueSegment) visitShardingHintCommentValue(shardingTableHintCommentContext.shardingHintCommentValue()));
+        }
+        return new HintSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), shardingHintSegment);
+    }
+
+    @Override
+    public ASTNode visitShardingHintCommentValue(final ShardingHintCommentValueContext ctx) {
+        ShardingHintValueSegment shardingHintValueSegment =
+                new ShardingHintValueSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
+        for (ExprContext each : ctx.expr()) {
+            shardingHintValueSegment.getValues().add((ExpressionSegment) visit(each));
+        }
+        return shardingHintValueSegment;
     }
 }

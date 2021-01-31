@@ -15,9 +15,23 @@
  * limitations under the License.
  */
 
-lexer grammar Comments;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.hint;
 
-import Symbol;
+import lombok.Getter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
-BLOCK_COMMENT:  '/*' [ \t\r\n]+ '*' .*? '*/' -> channel(HIDDEN);
-INLINE_COMMENT: (('-- ' | '#') ~[\r\n]* ('\r'? '\n' | EOF) | '--' ('\r'? '\n' | EOF)) -> channel(HIDDEN);
+/**
+ * DataBaseHintSegment.
+ */
+@Getter
+@ToString
+public class DataBaseHintSegment extends AbstractHintSegment {
+
+    private final IdentifierValue value;
+
+    public DataBaseHintSegment(final int startIndex, final int stopIndex, final IdentifierValue value) {
+        super(startIndex, stopIndex);
+        this.value = value;
+    }
+}
