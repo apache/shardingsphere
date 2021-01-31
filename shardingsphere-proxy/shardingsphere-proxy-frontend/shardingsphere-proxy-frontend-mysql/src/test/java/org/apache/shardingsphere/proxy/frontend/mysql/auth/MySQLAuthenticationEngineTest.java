@@ -41,6 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Collections;
 import java.util.Optional;
@@ -96,8 +97,12 @@ public final class MySQLAuthenticationEngineTest {
     public void assertAuthSwitchResponse() {
         setConnectionPhase(MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH);
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
+        Channel channel = mock(Channel.class);
         ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);
         when(payload.readStringEOFByBytes()).thenReturn(authResponse);
+        when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
+        when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
+        when(channelHandlerContext.channel()).thenReturn(channel);
         setAuthenticationResult();
         authenticationEngine.auth(channelHandlerContext, payload);
         assertThat(getAuthResponse(), is(authResponse));
