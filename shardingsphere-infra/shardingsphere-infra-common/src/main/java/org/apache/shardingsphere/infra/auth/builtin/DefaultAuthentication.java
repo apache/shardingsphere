@@ -39,7 +39,7 @@ public final class DefaultAuthentication implements Authentication {
     @Override
     public Optional<ShardingSphereUser> findUser(final Grantee grantee) {
         Optional<Entry<String, ShardingSphereUser>> result = users.entrySet().stream().filter(entry -> entry.getKey().equals(grantee.getUsername())
-                && (entry.getValue().getHostname().equals(grantee.getHostname()) || Strings.isNullOrEmpty(grantee.getHostname()))).findFirst();
+                && (entry.getValue().getHostname().equals(grantee.getHostname()) || Strings.isNullOrEmpty(entry.getValue().getHostname()))).findFirst();
         return result.map(Entry::getValue);
     }
 }
