@@ -34,6 +34,7 @@ public final class UserYamlSwapper implements YamlSwapper<YamlUserConfiguration,
     @Override
     public YamlUserConfiguration swapToYamlConfiguration(final ShardingSphereUser data) {
         YamlUserConfiguration result = new YamlUserConfiguration();
+        result.setHostname(data.getHostname());
         result.setPassword(data.getPassword());
         String authorizedSchemas = null == data.getAuthorizedSchemas() ? "" : Joiner.on(',').join(data.getAuthorizedSchemas());
         result.setAuthorizedSchemas(authorizedSchemas);
@@ -43,8 +44,9 @@ public final class UserYamlSwapper implements YamlSwapper<YamlUserConfiguration,
     @Override
     public ShardingSphereUser swapToObject(final YamlUserConfiguration yamlConfig) {
         if (Strings.isNullOrEmpty(yamlConfig.getAuthorizedSchemas())) {
-            return new ShardingSphereUser(yamlConfig.getPassword(), Collections.emptyList());
+            return new ShardingSphereUser(yamlConfig.getPassword(), null == yamlConfig.getHostname() ? "" : yamlConfig.getHostname(), Collections.emptyList());
         }
-        return new ShardingSphereUser(yamlConfig.getPassword(), Splitter.on(',').trimResults().splitToList(yamlConfig.getAuthorizedSchemas()));
+        return new ShardingSphereUser(yamlConfig.getPassword(), null == yamlConfig.getHostname() ? "" : yamlConfig.getHostname(),
+                Splitter.on(',').trimResults().splitToList(yamlConfig.getAuthorizedSchemas()));
     }
 }

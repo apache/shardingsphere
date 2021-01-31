@@ -99,7 +99,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         }
         md5Salt = PostgreSQLRandomGenerator.getInstance().generateRandomBytes(4);
         context.writeAndFlush(new PostgreSQLAuthenticationMD5PasswordPacket(md5Salt));
-        currentAuthResult = AuthenticationResultBuilder.continued(username, databaseName);
+        currentAuthResult = AuthenticationResultBuilder.continued(username, "", databaseName);
         return currentAuthResult;
     }
     
@@ -127,7 +127,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
             context.write(new PostgreSQLParameterStatusPacket("client_encoding", "UTF8"));
             context.write(new PostgreSQLParameterStatusPacket("server_encoding", "UTF8"));
             context.writeAndFlush(new PostgreSQLReadyForQueryPacket());
-            return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), currentAuthResult.getDatabase());
+            return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), "", currentAuthResult.getDatabase());
         }
     }
     

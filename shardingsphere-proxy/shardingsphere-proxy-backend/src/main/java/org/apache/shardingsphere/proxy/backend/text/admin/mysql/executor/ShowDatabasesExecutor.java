@@ -49,7 +49,7 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
     private Collection<Object> getSchemaNames(final BackendConnection backendConnection) {
         Collection<Object> result = new LinkedList<>(ProxyContext.getInstance().getAllSchemaNames());
-        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(backendConnection.getUsername());
+        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(backendConnection.getGrantee());
         Collection<String> authorizedSchemas = user.isPresent() ? user.get().getAuthorizedSchemas() : Collections.emptyList();
         if (!authorizedSchemas.isEmpty()) {
             result.retainAll(authorizedSchemas);

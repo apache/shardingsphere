@@ -36,6 +36,7 @@
 #authentication:
 #  users:
 #    root:
+#      hostname: 127.0.01
 #      password: root
 #    sharding:
 #      password: sharding

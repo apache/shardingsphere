@@ -23,6 +23,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
+import org.apache.shardingsphere.infra.auth.Grantee;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
@@ -43,13 +44,14 @@ public final class MySQLAuthenticationHandler {
     /**
      * Login.
      *
-     * @param username username.
+     * @param username username
+     * @param hostname hostname
      * @param authResponse auth response
      * @param database database
      * @return login success or failure
      */
-    public Optional<MySQLServerErrorCode> login(final String username, final byte[] authResponse, final String database) {
-        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(username);
+    public Optional<MySQLServerErrorCode> login(final String username, final String hostname, final byte[] authResponse, final String database) {
+        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(new Grantee(username, hostname));
         if (!user.isPresent() || !isPasswordRight(user.get().getPassword(), authResponse)) {
             return Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR);
         }
