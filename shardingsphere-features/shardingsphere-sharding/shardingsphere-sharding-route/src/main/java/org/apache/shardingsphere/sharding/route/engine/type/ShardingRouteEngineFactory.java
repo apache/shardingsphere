@@ -35,8 +35,8 @@ import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDa
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingInstanceBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingTableBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.complex.ShardingComplexRoutingEngine;
-import org.apache.shardingsphere.sharding.route.engine.type.hint.DatabaseSqlHintRoutingEngine;
-import org.apache.shardingsphere.sharding.route.engine.type.hint.ShardingSqlHintRoutingEngine;
+import org.apache.shardingsphere.sharding.route.engine.type.hint.DatabaseHintRoutingEngine;
+import org.apache.shardingsphere.sharding.route.engine.type.hint.ShardingHintRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ignore.ShardingIgnoreRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.single.ShardingSingleRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.single.SingleTableRoutingEngine;
@@ -155,8 +155,8 @@ public final class ShardingRouteEngineFactory {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isAlwaysFalse() || tableNames.isEmpty()) {
             return new ShardingUnicastRoutingEngine(tableNames);
         }
-        if (sqlStatementContext instanceof SelectStatementContext && HintType.isDataBaseSqlHint(((SelectStatementContext) sqlStatementContext).getHintContext().getHintType())) {
-            return new DatabaseSqlHintRoutingEngine((SelectStatementContext) sqlStatementContext, props);
+        if (sqlStatementContext instanceof SelectStatementContext && HintType.isDataBaseHint(((SelectStatementContext) sqlStatementContext).getHintContext().getHintType())) {
+            return new DatabaseHintRoutingEngine((SelectStatementContext) sqlStatementContext, props);
         }
         if (!shardingRule.tableRuleExists(tableNames)) {
             return new SingleTableRoutingEngine(tableNames, sqlStatement);
@@ -170,15 +170,15 @@ public final class ShardingRouteEngineFactory {
     private static ShardingRouteEngine getShardingRoutingEngine(final ShardingRule shardingRule, final ShardingConditions shardingConditions,
                                                                 final Collection<String> tableNames, final ConfigurationProperties props, final SQLStatementContext<?> sqlStatementContext) {
         Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
-        boolean isShardingValueSqlHint = sqlStatementContext instanceof SelectStatementContext 
-                && HintType.isShardingValueSqlHint(((SelectStatementContext) sqlStatementContext).getHintContext().getHintType());
+        boolean isShardingHint = sqlStatementContext instanceof SelectStatementContext 
+                && HintType.isShardingHint(((SelectStatementContext) sqlStatementContext).getHintContext().getHintType());
         if (1 == shardingTableNames.size() || shardingRule.isAllBindingTables(shardingTableNames)) {
-            if (isShardingValueSqlHint) {
-                return new ShardingSqlHintRoutingEngine(shardingTableNames.iterator().next(), props, (SelectStatementContext) sqlStatementContext);
+            if (isShardingHint) {
+                return new ShardingHintRoutingEngine(shardingTableNames.iterator().next(), props, (SelectStatementContext) sqlStatementContext);
             }
             return new ShardingStandardRoutingEngine(shardingTableNames.iterator().next(), shardingConditions, props);
         }
-        Preconditions.checkState(!isShardingValueSqlHint, "Sharding value hint only support standard routing");
+        Preconditions.checkState(!isShardingHint, "Sharding hint only support standard routing");
         // TODO config for cartesian set
         return new ShardingComplexRoutingEngine(tableNames, shardingConditions, props);
     }

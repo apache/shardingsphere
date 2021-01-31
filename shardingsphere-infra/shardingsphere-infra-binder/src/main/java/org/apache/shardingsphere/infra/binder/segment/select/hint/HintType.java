@@ -22,7 +22,7 @@ package org.apache.shardingsphere.infra.binder.segment.select.hint;
  */
 
 public enum HintType {
-    NONE(), DATABASE_HINT, SHARDING_VALUE_HINT;
+    NONE(), DATABASE_HINT, SHARDING_HINT;
 
     /**
      * isDataBaseSqlHint.
@@ -30,7 +30,7 @@ public enum HintType {
      * @param hintType hintType
      * @return is DATABASE_HINT type
      */
-    public static boolean isDataBaseSqlHint(final HintType hintType) {
+    public static boolean isDataBaseHint(final HintType hintType) {
         return DATABASE_HINT.equals(hintType);
     }
 
@@ -40,8 +40,8 @@ public enum HintType {
      * @param hintType hintType
      * @return is SHARDING_VALUE_HINT type
      */
-    public static boolean isShardingValueSqlHint(final HintType hintType) {
-        return SHARDING_VALUE_HINT.equals(hintType);
+    public static boolean isShardingHint(final HintType hintType) {
+        return SHARDING_HINT.equals(hintType);
     }
 
 }

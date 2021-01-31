@@ -42,7 +42,7 @@ public final class HintContextEngine {
                 hintContext.setDataBaseHintSegment((DataBaseHintSegment) hintSegment.getAbstractHintSegment());
                 return hintContext;
             } else if (hintSegment.getAbstractHintSegment() instanceof ShardingHintSegment) {
-                HintContext hintContext = new HintContext(HintType.SHARDING_VALUE_HINT);
+                HintContext hintContext = new HintContext(HintType.SHARDING_HINT);
                 hintContext.setShardingHintSegment((ShardingHintSegment) hintSegment.getAbstractHintSegment());
                 return hintContext;
             }

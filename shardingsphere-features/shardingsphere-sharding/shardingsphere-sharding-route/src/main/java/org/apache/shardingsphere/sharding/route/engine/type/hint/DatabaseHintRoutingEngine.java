@@ -37,7 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
  * DatabaseSqlHintRoutingEngine.
  */
 @RequiredArgsConstructor
-public class DatabaseSqlHintRoutingEngine implements ShardingRouteEngine {
+public class DatabaseHintRoutingEngine implements ShardingRouteEngine {
 
     private final SelectStatementContext selectStatementContext;
 

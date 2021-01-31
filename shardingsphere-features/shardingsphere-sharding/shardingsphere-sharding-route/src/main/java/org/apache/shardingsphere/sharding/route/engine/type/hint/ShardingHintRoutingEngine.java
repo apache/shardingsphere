@@ -51,7 +51,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.hint.Sharding
  */
 
 @RequiredArgsConstructor
-public class ShardingSqlHintRoutingEngine implements ShardingRouteEngine {
+public class ShardingHintRoutingEngine implements ShardingRouteEngine {
 
     private final String logicTableName;
 
