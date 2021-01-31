@@ -107,7 +107,7 @@ public final class MySQLAuthenticationEngineTest {
     private void setAuthenticationResult() {
         Field field = MySQLAuthenticationEngine.class.getDeclaredField("currentAuthResult");
         field.setAccessible(true);
-        field.set(authenticationEngine, AuthenticationResultBuilder.continued("root", "sharding_db"));
+        field.set(authenticationEngine, AuthenticationResultBuilder.continued("root", "", "sharding_db"));
     }
     
     @Test
@@ -115,7 +115,7 @@ public final class MySQLAuthenticationEngineTest {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ChannelHandlerContext context = getContext();
         setMetaDataContexts();
-        when(authenticationHandler.login(anyString(), any(), anyString())).thenReturn(Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
+        when(authenticationHandler.login(anyString(), any(), any(), anyString())).thenReturn(Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
     }
@@ -133,7 +133,7 @@ public final class MySQLAuthenticationEngineTest {
     public void assertAuth() throws NoSuchFieldException, IllegalAccessException {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ChannelHandlerContext context = getContext();
-        when(authenticationHandler.login(anyString(), any(), anyString())).thenReturn(Optional.empty());
+        when(authenticationHandler.login(anyString(), any(), any(), anyString())).thenReturn(Optional.empty());
         setMetaDataContexts();
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse));
         verify(context).writeAndFlush(any(MySQLOKPacket.class));
