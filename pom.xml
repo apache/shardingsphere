@@ -938,7 +938,7 @@
     </reporting>
     
     <url>http://shardingsphere.apache.org</url>
-    <description>Distributed database middleware ecosphere</description>
+    <description>Distributed database ecosphere</description>
     <licenses>
         <license>
             <name>Apache License 2.0</name>

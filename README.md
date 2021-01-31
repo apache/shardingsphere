@@ -1,4 +1,4 @@
-# [ShardingSphere - Distributed Database Middleware Ecosphere](https://shardingsphere.apache.org/)
+# [ShardingSphere - Distributed Database Ecosphere](https://shardingsphere.apache.org/)
 
 **Official website: https://shardingsphere.apache.org/**
 
