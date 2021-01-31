@@ -1,11 +1,11 @@
 Welcome to Apache ShardingSphere
 ===============================================================================
 
-ShardingSphere is an open-source ecosystem consisted of a set of distributed database middleware solutions, including 2 independent products, ShardingSphere-JDBC & ShardingSphere-Proxy. 
+ShardingSphere is an open-source ecosystem consisted of a set of distributed database solutions, including 2 independent products, ShardingSphere-JDBC & ShardingSphere-Proxy. 
 They both provide functions of data scale out, distributed transaction and distributed governance, applicable in a variety of situations such as Java isomorphism and heterogeneous language. 
 
 Apache ShardingSphere aiming at reasonably making full use of the computation and storage capacity of existed database in distributed system, rather than a totally new database.
-As the cornerstone of enterprises, relational database still takes a huge market share. 
+As the cornerstone of enterprises, relational database still takes a huge market share.
 Therefore, we prefer to focus on its increment instead of a total overturn.
 
 ShardingSphere-JDBC defines itself as a lightweight Java framework that provides extra service at Java JDBC layer. 
