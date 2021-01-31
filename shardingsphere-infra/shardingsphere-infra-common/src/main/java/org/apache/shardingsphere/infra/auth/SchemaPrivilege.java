@@ -17,9 +17,34 @@
 
 package org.apache.shardingsphere.infra.auth;
 
+import lombok.Getter;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Schema privilege.
  */
+@Getter
 public final class SchemaPrivilege {
-
+    
+    private final Map<String, TablePrivilege> tablePrivileges = new LinkedHashMap<>();
+    
+    /**
+     * Has privileges.
+     *
+     * @param table table
+     * @param privileges privileges
+     * @return has privileges or not
+     */
+    public boolean hasPrivileges(final String table, final Collection<PrivilegeType> privileges) {
+        if (!tablePrivileges.containsKey(table)) {
+            return false;
+        }
+        if (tablePrivileges.containsKey("*")) {
+            return tablePrivileges.get("*").hasPrivileges(privileges);
+        }
+        return tablePrivileges.get(table).hasPrivileges(privileges);
+    }
 }
