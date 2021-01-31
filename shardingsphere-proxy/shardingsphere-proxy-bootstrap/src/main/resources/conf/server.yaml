@@ -36,7 +36,6 @@
 #authentication:
 #  users:
 #    root:
-#      hostname: 127.0.01
 #      password: root
 #    sharding:
 #      password: sharding
@@ -59,6 +58,6 @@
 #  proxy-opentracing-enabled: false
 #  proxy-hint-enabled: false
 #  query-with-cipher-column: true
-#  sql-show: false
+#  sql-show: true
 #  check-table-metadata-enabled: false
 #  lock-wait-timeout-milliseconds: 50000 # The maximum time to wait for a lock
