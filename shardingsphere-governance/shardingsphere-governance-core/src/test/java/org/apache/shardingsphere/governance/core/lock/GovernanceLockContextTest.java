@@ -15,34 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.governance.core.lock;
 
-import org.apache.shardingsphere.infra.state.StateContext;
-import org.apache.shardingsphere.infra.state.StateType;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
+import org.apache.shardingsphere.infra.lock.LockContext;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
-public final class StandardLockStrategyTest {
+@RunWith(MockitoJUnitRunner.class)
+public final class GovernanceLockContextTest {
     
-    private final StandardLockStrategy lockStrategy = new StandardLockStrategy();
+    @Mock
+    private RegistryCenter registryCenter;
+    
+    private LockContext lockContext;
+    
+    @Before
+    public void setUp() {
+        lockContext = new GovernanceLockContext(registryCenter);
+    }
     
     @Test
     public void assertTryLock() {
-        assertTrue(lockStrategy.tryGlobalLock(50L, TimeUnit.MILLISECONDS));
-        assertThat(StateContext.getCurrentState(), is(StateType.LOCK));
-        lockStrategy.releaseGlobalLock();
+        lockContext.tryGlobalLock(50L, TimeUnit.MILLISECONDS);
+        verify(registryCenter).tryGlobalLock(eq(50L), eq(TimeUnit.MILLISECONDS));
     }
     
     @Test
     public void assertReleaseLock() {
-        assertTrue(lockStrategy.tryGlobalLock(50L, TimeUnit.MILLISECONDS));
-        assertThat(StateContext.getCurrentState(), is(StateType.LOCK));
-        lockStrategy.releaseGlobalLock();
-        assertThat(StateContext.getCurrentState(), is(StateType.OK));
+        lockContext.releaseGlobalLock();
+        verify(registryCenter).releaseGlobalLock();
     }
 }

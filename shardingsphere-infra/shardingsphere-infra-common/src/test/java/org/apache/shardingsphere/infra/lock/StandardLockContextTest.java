@@ -18,42 +18,31 @@
 package org.apache.shardingsphere.infra.lock;
 
 import org.apache.shardingsphere.infra.state.StateContext;
-import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.infra.state.StateType;
+import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * Standard lock strategy.
- */
-public final class StandardLockStrategy implements LockStrategy {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+public final class StandardLockContextTest {
     
-    private final ReentrantLock lock = new ReentrantLock();
+    private final StandardLockContext lockContext = new StandardLockContext();
     
-    @Override
-    public boolean tryGlobalLock(final long timeout, final TimeUnit timeUnit) {
-        boolean result = false;
-        try {
-            result = lock.tryLock(timeout, timeUnit);
-            // CHECKSTYLE:OFF
-        } catch (final InterruptedException e) {
-            // CHECKSTYLE:ON
-        }
-        if (result) {
-            StateContext.switchState(new StateEvent(StateType.LOCK, true));
-        }
-        return result;
+    @Test
+    public void assertTryLock() {
+        assertTrue(lockContext.tryGlobalLock(50L, TimeUnit.MILLISECONDS));
+        assertThat(StateContext.getCurrentState(), is(StateType.LOCK));
+        lockContext.releaseGlobalLock();
     }
     
-    @Override
-    public void releaseGlobalLock() {
-        lock.unlock();
-        StateContext.switchState(new StateEvent(StateType.LOCK, false));
-    }
-    
-    @Override
-    public String getType() {
-        return LockStrategyType.STANDARD.name();
+    @Test
+    public void assertReleaseLock() {
+        assertTrue(lockContext.tryGlobalLock(50L, TimeUnit.MILLISECONDS));
+        assertThat(StateContext.getCurrentState(), is(StateType.LOCK));
+        lockContext.releaseGlobalLock();
+        assertThat(StateContext.getCurrentState(), is(StateType.OK));
     }
 }
