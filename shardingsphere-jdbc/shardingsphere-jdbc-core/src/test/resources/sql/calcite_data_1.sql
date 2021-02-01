@@ -18,6 +18,9 @@
 DELETE FROM t_order_item_calcite;
 DELETE FROM t_order_item_calcite_sharding_0;
 DELETE FROM t_order_item_calcite_sharding_1;
+DELETE FROM t_user_encrypt_calcite;
+DELETE FROM t_user_encrypt_calcite_sharding_0;
+DELETE FROM t_user_encrypt_calcite_sharding_1;
 
 INSERT INTO t_order_item_calcite VALUES(100000, 1000, 10, 'init');
 INSERT INTO t_order_item_calcite VALUES(100001, 1000, 10, 'init');
@@ -28,3 +31,17 @@ INSERT INTO t_order_item_calcite_sharding_0 VALUES(1000, 10000, 10, 'init', 't_o
 INSERT INTO t_order_item_calcite_sharding_1 VALUES(1001, 10001, 11, 'init', 't_order_item_calcite_sharding');
 INSERT INTO t_order_item_calcite_sharding_0 VALUES(1010, 10001, 10, 'init', 't_order_item_calcite_sharding');
 INSERT INTO t_order_item_calcite_sharding_1 VALUES(1011, 10001, 10, 'init', 't_order_item_calcite_sharding');
+
+INSERT INTO t_user_encrypt_calcite VALUES(0, 'plain password1', 'encrypt password1', 'Rachel');
+INSERT INTO t_user_encrypt_calcite VALUES(1, 'plain password2', 'encrypt password2', 'Monica');
+INSERT INTO t_user_encrypt_calcite VALUES(2, 'plain password3', 'encrypt password3', 'Phoebe');
+INSERT INTO t_user_encrypt_calcite VALUES(3, 'plain password4', 'encrypt password4', 'Ross');
+INSERT INTO t_user_encrypt_calcite VALUES(4, 'plain password5', 'encrypt password5', 'Chandler');
+INSERT INTO t_user_encrypt_calcite VALUES(5, 'plain password6', 'encrypt password6', 'Joey');
+
+INSERT INTO t_user_encrypt_calcite_sharding_0 VALUES(0, 'plain password1', 'encrypt password1', 'Rachel');
+INSERT INTO t_user_encrypt_calcite_sharding_1 VALUES(1, 'plain password2', 'encrypt password2', 'Monica');
+INSERT INTO t_user_encrypt_calcite_sharding_0 VALUES(2, 'plain password3', 'encrypt password3', 'Phoebe');
+INSERT INTO t_user_encrypt_calcite_sharding_1 VALUES(3, 'plain password4', 'encrypt password4', 'Ross');
+INSERT INTO t_user_encrypt_calcite_sharding_0 VALUES(4, 'plain password5', 'encrypt password5', 'Chandler');
+INSERT INTO t_user_encrypt_calcite_sharding_1 VALUES(5, 'plain password6', 'encrypt password6', 'Joey');

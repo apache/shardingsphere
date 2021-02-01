@@ -31,7 +31,8 @@ import static org.junit.Assert.assertTrue;
 
 public final class CalcitePrepareStatementTest extends AbstractShardingSphereDataSourceForCalciteTest {
 
-    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES = "select o.*, i.* from t_order_calcite o, t_order_item_calcite i where o.order_id = ? and i.item_id = ?";
+    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES =
+            "select o.*, i.* from t_order_calcite o, t_order_item_calcite i where o.order_id = ? and i.item_id = ?";
 
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES =
             "select t_order_calcite.*, t_order_item_calcite_sharding.* "
@@ -49,6 +50,14 @@ public final class CalcitePrepareStatementTest extends AbstractShardingSphereDat
                     + "where t_order_calcite.order_id = t_order_item_calcite_sharding.item_id "
                     + "AND t_order_item_calcite_sharding.remarks = 't_order_item_calcite_sharding' "
                     + "AND t_order_item_calcite_sharding.user_id = ?";
+
+    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES_WITH_ENCRYPT =
+            "select t_user_encrypt_calcite.user_id, t_user_encrypt_calcite.pwd, t_user_info.information from t_user_encrypt_calcite, t_user_info "
+                    + "where t_user_encrypt_calcite.user_id = t_user_info.user_id and t_user_encrypt_calcite.user_id > ? ";
+
+    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_WITH_ENCRYPT =
+            "select t_user_encrypt_calcite_sharding.user_id, t_user_encrypt_calcite_sharding.pwd, t_user_info.information from t_user_encrypt_calcite_sharding, t_user_info "
+            + "where t_user_encrypt_calcite_sharding.user_id = t_user_info.user_id and t_user_encrypt_calcite_sharding.user_id > ? ";
 
     @Test
     public void assertQueryWithCalciteInSingleTables() throws SQLException {
@@ -134,5 +143,41 @@ public final class CalcitePrepareStatementTest extends AbstractShardingSphereDat
         assertThat(resultSet1.getString(7), is("init"));
         assertThat(resultSet1.getString(8), is("t_order_item_calcite_sharding"));
         assertFalse(resultSet1.next());
+    }
+
+    @Test
+    public void assertQueryWithCalciteInSinglesWithEncryptRule() throws SQLException {
+        ShardingSpherePreparedStatement preparedStatement = (ShardingSpherePreparedStatement) getShardingSphereDataSource()
+                .getConnection().prepareStatement(SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES_WITH_ENCRYPT);
+        preparedStatement.setInt(1, 1);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        assertNotNull(resultSet);
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(2));
+        assertThat(resultSet.getString(2), is("plain password3"));
+        assertThat(resultSet.getString(3), is("description2"));
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(3));
+        assertThat(resultSet.getString(2), is("plain password4"));
+        assertThat(resultSet.getString(3), is("description3"));
+        assertFalse(resultSet.next());
+    }
+
+    @Test
+    public void assertQueryWithCalciteInSingleAndShardingTablesWithEncryptRule() throws SQLException {
+        ShardingSpherePreparedStatement preparedStatement = (ShardingSpherePreparedStatement) getShardingSphereDataSource()
+                .getConnection().prepareStatement(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_WITH_ENCRYPT);
+        preparedStatement.setInt(1, 1);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        assertNotNull(resultSet);
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(2));
+        assertThat(resultSet.getString(2), is("plain password3"));
+        assertThat(resultSet.getString(3), is("description2"));
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(3));
+        assertThat(resultSet.getString(2), is("plain password4"));
+        assertThat(resultSet.getString(3), is("description3"));
+        assertFalse(resultSet.next());
     }
 }

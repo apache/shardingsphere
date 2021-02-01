@@ -16,6 +16,12 @@
  */
 
 DELETE FROM t_order_calcite;
+DELETE FROM t_user_info;
 
 INSERT INTO t_order_calcite VALUES(1000, 10, 'init');
-INSERT INTO t_order_calcite VALUES(1001, 11, 'init')
+INSERT INTO t_order_calcite VALUES(1001, 11, 'init');
+
+INSERT INTO t_user_info VALUES(0, 'description0');
+INSERT INTO t_user_info VALUES(1, 'description1');
+INSERT INTO t_user_info VALUES(2, 'description2');
+INSERT INTO t_user_info VALUES(3, 'description3');
