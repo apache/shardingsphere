@@ -20,7 +20,6 @@ package org.apache.shardingsphere.scaling.core.api;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
-import org.apache.shardingsphere.scaling.core.api.impl.RegistryRepositoryAPIImpl;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.schedule.ScalingTaskScheduler;
 
@@ -41,7 +40,7 @@ public final class JobSchedulerCenter {
     
     private static final ScheduledExecutorService JOB_PERSIST_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("scaling-job-persist-%d"));
     
-    private static final RegistryRepositoryAPI REGISTRY_REPOSITORY_API = new RegistryRepositoryAPIImpl();
+    private static final RegistryRepositoryAPI REGISTRY_REPOSITORY_API = ScalingAPIFactory.getRegistryRepositoryAPI();
     
     static {
         JOB_PERSIST_EXECUTOR.scheduleWithFixedDelay(new PersistJobContextRunnable(), 1, 1, TimeUnit.MINUTES);

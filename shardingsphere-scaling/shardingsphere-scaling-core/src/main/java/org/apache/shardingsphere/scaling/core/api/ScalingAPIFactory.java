@@ -22,16 +22,28 @@ import lombok.Getter;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobAPIFactory;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
+import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
+import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.scaling.core.api.impl.RegistryRepositoryAPIImpl;
 import org.apache.shardingsphere.scaling.core.api.impl.ScalingAPIImpl;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
+import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 
 /**
  * Scaling API factory.
  */
 public final class ScalingAPIFactory {
+    
+    static {
+        ServerConfiguration serverConfig = ScalingContext.getInstance().getServerConfig();
+        Preconditions.checkArgument(null != serverConfig, "Scaling server configuration is required.");
+        Preconditions.checkArgument(null != serverConfig.getGovernanceConfig(), "Governance configuration is required.");
+    }
     
     /**
      * Get scaling API.
@@ -76,7 +88,17 @@ public final class ScalingAPIFactory {
     
     private static final class RegistryRepositoryAPIHolder {
         
-        private static final RegistryRepositoryAPI INSTANCE = new RegistryRepositoryAPIImpl();
+        private static final RegistryRepositoryAPI INSTANCE;
+        
+        static {
+            ShardingSphereServiceLoader.register(RegistryRepository.class);
+            ShardingSphereServiceLoader.register(ConfigurationRepository.class);
+            GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
+            GovernanceCenterConfiguration registryCenterConfig = governanceConfig.getRegistryCenterConfiguration();
+            RegistryRepository registryRepository = TypedSPIRegistry.getRegisteredService(RegistryRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
+            registryRepository.init(governanceConfig.getName(), registryCenterConfig);
+            INSTANCE = new RegistryRepositoryAPIImpl(registryRepository);
+        }
     }
     
     @Getter
@@ -87,10 +109,9 @@ public final class ScalingAPIFactory {
         private final JobStatisticsAPI jobStatisticsAPI;
         
         private final JobConfigurationAPI jobConfigurationAPI;
-    
+        
         private ElasticJobAPIHolder() {
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
-            Preconditions.checkNotNull(governanceConfig, "Governance configuration is requested.");
             String namespace = governanceConfig.getName() + ScalingConstant.SCALING_ROOT_PATH;
             jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
             jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);

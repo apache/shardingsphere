@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.scaling.core.api.JobSchedulerCenter;
+import org.apache.shardingsphere.scaling.core.api.RegistryRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.job.preparer.ScalingJobPreparer;
@@ -35,6 +36,8 @@ public final class ScalingJob implements SimpleJob {
     
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
     
+    private final RegistryRepositoryAPI registryRepositoryAPI = ScalingAPIFactory.getRegistryRepositoryAPI();
+    
     private final ScalingJobPreparer jobPreparer = new ScalingJobPreparer();
     
     @Override
@@ -43,7 +46,7 @@ public final class ScalingJob implements SimpleJob {
         JobConfiguration jobConfig = GSON.fromJson(shardingContext.getJobParameter(), JobConfiguration.class);
         jobConfig.getHandleConfig().setShardingItem(shardingContext.getShardingItem());
         JobContext jobContext = new JobContext(jobConfig);
-        jobContext.setInitProgress(ScalingAPIFactory.getRegistryRepositoryAPI().getJobProgress(jobContext.getJobId(), jobContext.getShardingItem()));
+        jobContext.setInitProgress(registryRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem()));
         jobPreparer.prepare(jobContext);
         JobSchedulerCenter.start(jobContext);
     }

@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.scaling.core.api;
 
+import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.position.JobProgress;
+
+import java.util.List;
 
 /**
  * Registry repository API.
@@ -47,4 +50,20 @@ public interface RegistryRepositoryAPI {
      * @param jobId job id
      */
     void deleteJob(long jobId);
+    
+    /**
+     * Get node's sub-nodes list.
+     *
+     * @param key key of data
+     * @return sub-nodes name list
+     */
+    List<String> getChildrenKeys(String key);
+    
+    /**
+     * Watch key or path of governance server.
+     *
+     * @param key key of data
+     * @param listener data changed event listener
+     */
+    void watch(String key, DataChangedEventListener listener);
 }
