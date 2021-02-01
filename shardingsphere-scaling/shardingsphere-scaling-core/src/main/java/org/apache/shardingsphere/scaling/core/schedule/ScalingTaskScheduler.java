@@ -110,7 +110,7 @@ public final class ScalingTaskScheduler implements Runnable {
     }
     
     private synchronized void executeIncrementalTask() {
-        if (JobStatus.EXECUTE_INCREMENTAL_TASK.name().equals(jobContext.getStatus())) {
+        if (JobStatus.EXECUTE_INCREMENTAL_TASK.equals(jobContext.getStatus())) {
             return;
         }
         log.info("-------------- Start incremental task --------------");
