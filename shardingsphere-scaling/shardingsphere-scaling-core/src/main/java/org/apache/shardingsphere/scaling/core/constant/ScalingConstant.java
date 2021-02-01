@@ -44,50 +44,5 @@ public final class ScalingConstant {
     /**
      * Scaling root path.
      */
-    public static final String SCALING_ROOT_PATH = "/scaling";
-    
-    /**
-     * Scaling listener path.
-     */
-    public static final String SCALING_LISTENER_PATH = SCALING_ROOT_PATH + "/listener";
-    
-    /**
-     * Scaling elastic job path.
-     */
-    public static final String SCALING_ELASTIC_JOB_PATH = SCALING_ROOT_PATH + "/elastic_job";
-    
-    /**
-     * Config.
-     */
-    public static final String CONFIG = "config";
-    
-    /**
-     * Status.
-     */
-    public static final String STATUS = "status";
-    
-    /**
-     * Position.
-     */
-    public static final String POSITION = "position";
-    
-    /**
-     * Workflow.
-     */
-    public static final String WORKFLOW = "workflow";
-    
-    /**
-     * Incremental.
-     */
-    public static final String INCREMENTAL = "incremental";
-    
-    /**
-     * Inventory.
-     */
-    public static final String INVENTORY = "inventory";
-    
-    /**
-     * Delay.
-     */
-    public static final String DELAY = "delay";
+    public static final String SCALING_ROOT = "/scaling";
 }

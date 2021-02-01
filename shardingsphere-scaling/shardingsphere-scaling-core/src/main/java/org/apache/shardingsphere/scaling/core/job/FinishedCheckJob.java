@@ -44,7 +44,7 @@ public final class FinishedCheckJob implements SimpleJob {
     
     @Override
     public void execute(final ShardingContext shardingContext) {
-        List<String> jobs = registryRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_LISTENER_PATH);
+        List<String> jobs = registryRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT);
         for (String each : jobs) {
             long jobId = Long.parseLong(each);
             try {

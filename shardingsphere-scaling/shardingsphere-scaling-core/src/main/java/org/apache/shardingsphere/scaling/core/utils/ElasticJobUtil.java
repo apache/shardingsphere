@@ -49,7 +49,7 @@ public final class ElasticJobUtil {
     private static ZookeeperConfiguration getZookeeperConfig() {
         GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
         ZookeeperConfiguration result = new ZookeeperConfiguration(governanceConfig.getRegistryCenterConfiguration().getServerLists(),
-                governanceConfig.getName() + ScalingConstant.SCALING_ELASTIC_JOB_PATH);
+                governanceConfig.getName() + ScalingConstant.SCALING_ROOT);
         Properties props = governanceConfig.getRegistryCenterConfiguration().getProps();
         result.setMaxSleepTimeMilliseconds(getProperty(props, "max.sleep.time.milliseconds", result.getMaxSleepTimeMilliseconds()));
         result.setBaseSleepTimeMilliseconds(getProperty(props, "base.sleep.time.milliseconds", result.getBaseSleepTimeMilliseconds()));

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.scaling.core.utils;
 
 import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
-import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
@@ -70,19 +69,5 @@ public final class ScalingTaskUtil {
         return jobProgressMap.values().stream()
                 .flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
                 .allMatch(each -> each.getIncrementalTaskDelay().getDelayMilliseconds() <= handleConfig.getWorkflowConfig().getAllowDelayMilliseconds());
-    }
-    
-    /**
-     * Get scaling listener path.
-     *
-     * @param paths sub paths.
-     * @return path.
-     */
-    public static String getScalingListenerPath(final Object... paths) {
-        StringBuilder result = new StringBuilder(ScalingConstant.SCALING_LISTENER_PATH);
-        for (Object each : paths) {
-            result.append("/").append(each);
-        }
-        return result.toString();
     }
 }
