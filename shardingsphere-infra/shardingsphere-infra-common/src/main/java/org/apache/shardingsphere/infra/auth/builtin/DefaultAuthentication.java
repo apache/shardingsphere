@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.infra.auth.builtin;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.Grantee;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 
 /**
@@ -31,10 +33,11 @@ import java.util.Optional;
 @Getter
 public final class DefaultAuthentication implements Authentication {
     
-    private final Map<String, ShardingSphereUser> users = new LinkedHashMap<>();
+    private final Collection<ShardingSphereUser> users = new LinkedHashSet<>();
     
     @Override
-    public Optional<ShardingSphereUser> findUser(final String username) {
-        return Optional.ofNullable(users.get(username));
+    public Optional<ShardingSphereUser> findUser(final Grantee grantee) {
+        return users.stream().filter(entry -> entry.getUsername().equals(grantee.getUsername())
+                && (entry.getHostname().equals(grantee.getHostname()) || Strings.isNullOrEmpty(entry.getHostname()))).findFirst();
     }
 }

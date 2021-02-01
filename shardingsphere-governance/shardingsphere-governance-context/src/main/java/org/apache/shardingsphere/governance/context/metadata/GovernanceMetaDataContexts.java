@@ -22,12 +22,14 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.event.model.auth.AuthenticationChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.lock.UnlockEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.event.model.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
+import org.apache.shardingsphere.governance.core.lock.GovernanceLockContext;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
@@ -41,6 +43,7 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
@@ -48,9 +51,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
 import org.apache.shardingsphere.infra.rule.type.StatusContainedRule;
-import org.apache.shardingsphere.infra.state.StateContext;
-import org.apache.shardingsphere.infra.state.StateEvent;
-import org.apache.shardingsphere.infra.state.StateType;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -72,12 +72,15 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private volatile StandardMetaDataContexts metaDataContexts;
     
+    private final LockContext lockContext;
+    
     public GovernanceMetaDataContexts(final StandardMetaDataContexts metaDataContexts, final GovernanceFacade governanceFacade) {
         this.governanceFacade = governanceFacade;
         this.metaDataContexts = metaDataContexts;
         ShardingSphereEventBus.getInstance().register(this);
         disableDataSources();
         persistMetaData();
+        lockContext = new GovernanceLockContext(governanceFacade.getRegistryCenter());
     }
     
     private void disableDataSources() {
@@ -131,6 +134,11 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     @Override
     public ConfigurationProperties getProps() {
         return metaDataContexts.getProps();
+    }
+    
+    @Override
+    public LockContext getLockContext() {
+        return this.lockContext;
     }
     
     @Override
@@ -206,10 +214,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
             }
             metaDataContexts = new StandardMetaDataContexts(newMetaDataMap, metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), metaDataContexts.getProps());
         } finally {
-            if (StateContext.getCurrentState() == StateType.LOCK) {
-                StateContext.switchState(new StateEvent(StateType.LOCK, false));
-                governanceFacade.getRegistryCenter().persistInstanceData("");
-            }
+            ShardingSphereEventBus.getInstance().post(new UnlockEvent());
         }
     }
     

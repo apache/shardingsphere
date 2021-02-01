@@ -37,16 +37,18 @@ public final class AuthenticationResultBuilderTest {
     
     @Test
     public void assertContinued() {
-        AuthenticationResult actual = AuthenticationResultBuilder.continued("username", "database");
+        AuthenticationResult actual = AuthenticationResultBuilder.continued("username", "127.0.0.1", "database");
         assertThat(actual.getUsername(), is("username"));
+        assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getDatabase(), is("database"));
         assertFalse(actual.isFinished());
     }
     
     @Test
     public void assertFinished() {
-        AuthenticationResult actual = AuthenticationResultBuilder.finished("username", "database");
+        AuthenticationResult actual = AuthenticationResultBuilder.finished("username", "127.0.0.1", "database");
         assertThat(actual.getUsername(), is("username"));
+        assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getDatabase(), is("database"));
         assertTrue(actual.isFinished());
     }

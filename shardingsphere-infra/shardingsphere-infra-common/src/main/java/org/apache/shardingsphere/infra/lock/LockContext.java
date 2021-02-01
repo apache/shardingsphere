@@ -17,80 +17,38 @@
 
 package org.apache.shardingsphere.infra.lock;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
-
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Lock context.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LockContext {
-    
-    private static final AtomicReference<LockStrategy> LOCK_STRATEGY = new AtomicReference<>();
-    
-    private static final Lock LOCK = new ReentrantLock();
-    
-    private static final Condition CONDITION = LOCK.newCondition();
-    
-    static {
-        ShardingSphereServiceLoader.register(LockStrategy.class);
-    }
+public interface LockContext {
     
     /**
-     * Init lock strategy.
+     * Try to get lock.
      *
-     * @param lockStrategyType lock strategy type
+     * @param timeout time out to acquire lock
+     * @param timeUnit time unit
+     * @return true if get the lock, false if not
      */
-    public static void init(final LockStrategyType lockStrategyType) {
-        LOCK_STRATEGY.set(TypedSPIRegistry.getRegisteredService(LockStrategy.class, lockStrategyType.name(), new Properties()));
-    }
+    boolean tryGlobalLock(long timeout, TimeUnit timeUnit);
     
     /**
-     * Get lock strategy.
+     * Release lock.
+     */
+    void releaseGlobalLock();
+    
+    /**
+     * Await.
      * 
-     * @return lock strategy
+     * @param timeout time out to await lock
+     * @param timeUnit  time unit
+     * @return true if no exception
      */
-    public static LockStrategy getLockStrategy() {
-        return LOCK_STRATEGY.get();
-    }
+    boolean await(Long timeout, TimeUnit timeUnit);
     
     /**
-     * Waiting for unlock.
-     * 
-     * @param timeout the maximum time in milliseconds to wait
-     * @return false if wait timeout exceeded, else true
+     * signal all.
      */
-    public static boolean await(final Long timeout) {
-        LOCK.lock();
-        try {
-            return CONDITION.await(timeout, TimeUnit.MILLISECONDS);
-            // CHECKSTYLE:OFF
-        } catch (InterruptedException e) {
-            // CHECKSTYLE:ON
-        } finally {
-            LOCK.unlock();
-        }
-        return false;
-    }
-    
-    /**
-     * Notify all blocked tasks.
-     */
-    public static void signalAll() {
-        LOCK.lock();
-        try {
-            CONDITION.signalAll();
-        } finally {
-            LOCK.unlock();
-        }
-    }
+    void signalAll();
 }

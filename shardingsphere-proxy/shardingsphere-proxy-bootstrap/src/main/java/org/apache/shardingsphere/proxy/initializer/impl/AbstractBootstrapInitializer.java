@@ -61,7 +61,6 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         TransactionContexts transactionContexts = decorateTransactionContexts(createTransactionContexts(metaDataContexts), xaTransactionMangerType);
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         setDatabaseServerInfo();
-        initLockContext();
         initScalingWorker(yamlConfig);
         shardingSphereProxy.start(port);
     }
@@ -133,8 +132,6 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     protected abstract MetaDataContexts decorateMetaDataContexts(MetaDataContexts metaDataContexts);
     
     protected abstract TransactionContexts decorateTransactionContexts(TransactionContexts transactionContexts, String xaTransactionMangerType);
-    
-    protected abstract void initLockContext();
     
     protected abstract void initScalingWorker(YamlProxyConfiguration yamlConfig);
 }

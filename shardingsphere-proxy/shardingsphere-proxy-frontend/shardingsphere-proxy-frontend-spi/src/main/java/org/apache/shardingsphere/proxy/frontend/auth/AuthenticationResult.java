@@ -29,6 +29,8 @@ public final class AuthenticationResult {
     
     private final String username;
     
+    private final String hostname;
+    
     private final String database;
     
     private final boolean finished;

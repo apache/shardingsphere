@@ -826,3 +826,15 @@ CONTAINER_MAP
 CONTAINERS_DEFAULT
     : C O N T A I N E R S UL_ D E F A U L T
     ;
+
+WAIT
+    : W A I T
+    ;
+
+NOWAIT
+    : N O W A I T
+    ;
+
+BATCH
+    : B A T C H
+    ;

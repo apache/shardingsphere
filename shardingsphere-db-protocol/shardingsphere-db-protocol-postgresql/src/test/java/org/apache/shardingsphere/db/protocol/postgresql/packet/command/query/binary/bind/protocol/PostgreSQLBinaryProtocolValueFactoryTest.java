@@ -62,6 +62,12 @@ public final class PostgreSQLBinaryProtocolValueFactoryTest {
     }
     
     @Test
+    public void assertGetNumericBinaryProtocolValue() {
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_NUMERIC);
+        assertThat(binaryProtocolValue, instanceOf(PostgreSQLNumericBinaryProtocolValue.class));
+    }
+    
+    @Test
     public void assertGetDateBinaryProtocolValue() {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_DATE);
         assertThat(binaryProtocolValue, instanceOf(PostgreSQLDateBinaryProtocolValue.class));

@@ -32,11 +32,11 @@ For individuals, you can gain a better career and find enjoyment.
 
 The Apache Software Foundation is a non-profit organization, many of whose projects have played essential roles in the internet industry since 1999.  Besides, those Apache projects have been the first choice for developers to create their projects. Therefore, if you knew little about Apache projects, such as Apache Tomcat, Apache Commons, Apache Maven, Apache Hadoop, etc., you could not receive a better offer as a Java Developer or a Big Data engineer.
 
-Recently, more and more Chinese projects entered the Apache foundation. There are 9 Top-Level projects and 10 incubator projects from China until now, which is a piece of good news for those Chinese newcomers since it is challenging for them to involve a wholly foreign open source community at the beginning. Whether it is a Chinese project, it must be under the Apache regulations and follow its policy. However, it is still more accessible for people to start with an Apache project coming from their country. The reason is that they have more chances to communicate with each other in their first language so as to dive into an Apache community quickly. 
+Recently, more and more Chinese projects entered the Apache foundation. There are 9 Top-Level projects and 10 incubating projects from China until now, which is a piece of good news for those Chinese newcomers since it is challenging for them to involve a wholly foreign open source community at the beginning. Whether it is a Chinese project, it must be under the Apache regulations and follow its policy. However, it is still more accessible for people to start with an Apache project coming from their country. The reason is that they have more chances to communicate with each other in their first language so as to dive into an Apache community quickly. 
 
 ### 03 What is Apache ShardingSphere?
 
-Apache ShardingSphere (TLP) is an open-source ecosystem consisted of a set of distributed database middleware solutions. From the GitHub data, its community is active and growing up fast, which benefits from its stable micro-core and scalable architecture.
+Apache ShardingSphere (TLP) is an open-source ecosystem consisted of a set of distributed database solutions. From the GitHub data, its community is active and growing up fast, which benefits from its stable micro-core and scalable architecture.
 
 ### 04 Apache ShardingSphere Community Statistics
 

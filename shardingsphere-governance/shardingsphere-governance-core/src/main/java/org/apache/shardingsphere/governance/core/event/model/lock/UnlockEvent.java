@@ -15,22 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.database;
+package org.apache.shardingsphere.governance.core.event.model.lock;
 
-import lombok.Getter;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 
 /**
- * XML definition of database environment.
+ * Unlock event.
  */
-@Getter
-@XmlRootElement(name = "databases")
-public final class DatabaseEnvironment {
-    
-    @XmlElement(name = "database")
-    private final Collection<String> databases = new LinkedList<>();
+public final class UnlockEvent implements GovernanceEvent {
 }

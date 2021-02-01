@@ -27,8 +27,8 @@ public interface Authentication {
     /**
      * Find user.
      * 
-     * @param username username
+     * @param grantee grantee
      * @return found user
      */
-    Optional<ShardingSphereUser> findUser(String username);
+    Optional<ShardingSphereUser> findUser(Grantee grantee);
 }

@@ -22,7 +22,6 @@ import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.scaling.core.api.RegistryRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
@@ -35,7 +34,6 @@ import org.apache.shardingsphere.scaling.core.utils.ThreadUtil;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public final class FinishedCheckJob implements SimpleJob {
@@ -68,18 +66,11 @@ public final class FinishedCheckJob implements SimpleJob {
     }
     
     private void trySwitch(final long jobId, final WorkflowConfiguration workflowConfig) {
-        if (LockContext.getLockStrategy().tryGlobalLock(30L, TimeUnit.SECONDS)) {
-            try {
-                ThreadUtil.sleep(10 * 1000L);
-                if (dataConsistencyCheck(jobId)) {
-                    scalingAPI.stop(jobId);
-                    ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(workflowConfig.getSchemaName(), workflowConfig.getRuleCacheId()));
-                }
-            } finally {
-                LockContext.getLockStrategy().releaseGlobalLock();
-            }
-        } else {
-            log.warn("can not get lock.");
+        // TODO lock proxy
+        ThreadUtil.sleep(10 * 1000L);
+        if (dataConsistencyCheck(jobId)) {
+            scalingAPI.stop(jobId);
+            ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(workflowConfig.getSchemaName(), workflowConfig.getRuleCacheId()));
         }
     }
     
