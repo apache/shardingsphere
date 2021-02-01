@@ -42,6 +42,7 @@ public final class PostgreSQLBinaryProtocolValueFactory {
         setInt2BinaryProtocolValue();
         setDoubleBinaryProtocolValue();
         setFloatBinaryProtocolValue();
+        setNumericBinaryProtocolValue();
         setDateBinaryProtocolValue();
         setTimeBinaryProtocolValue();
     }
@@ -79,6 +80,11 @@ public final class PostgreSQLBinaryProtocolValueFactory {
     private static void setFloatBinaryProtocolValue() {
         PostgreSQLFloatBinaryProtocolValue binaryProtocolValue = new PostgreSQLFloatBinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_FLOAT4, binaryProtocolValue);
+    }
+    
+    private static void setNumericBinaryProtocolValue() {
+        PostgreSQLNumericBinaryProtocolValue binaryProtocolValue = new PostgreSQLNumericBinaryProtocolValue();
+        BINARY_PROTOCOL_VALUES.put(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_NUMERIC, binaryProtocolValue);
     }
     
     private static void setDateBinaryProtocolValue() {
