@@ -125,5 +125,4 @@ public class ShardingHintRoutingEngine implements ShardingRouteEngine {
         return null == shardingStrategyConfig ? new NoneShardingStrategy()
                 : ShardingStrategyFactory.newInstance(shardingStrategyConfig, shardingAlgorithms.get(shardingStrategyConfig.getShardingAlgorithmName()));
     }
-
 }

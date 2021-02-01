@@ -31,5 +31,4 @@ public abstract class AbstractHintSegment implements SQLSegment {
     private final int startIndex;
 
     private final int stopIndex;
-
 }

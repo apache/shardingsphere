@@ -60,5 +60,4 @@ public final class HintContextEngineTest {
         HintContext hintContext = new HintContextEngine().createHintContext(mySQLSelectStatement);
         Assert.assertEquals(HintType.SHARDING_HINT, hintContext.getHintType());
     }
-    
 }

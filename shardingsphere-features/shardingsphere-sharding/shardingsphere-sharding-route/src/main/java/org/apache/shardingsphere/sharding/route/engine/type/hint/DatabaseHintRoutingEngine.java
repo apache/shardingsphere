@@ -58,5 +58,4 @@ public class DatabaseHintRoutingEngine implements ShardingRouteEngine {
         Preconditions.checkState(datasourceAllNames.contains(identifierValue.getValue()), "There is an error datasource name");
         return identifierValue.getValue();
     }
-
 }
