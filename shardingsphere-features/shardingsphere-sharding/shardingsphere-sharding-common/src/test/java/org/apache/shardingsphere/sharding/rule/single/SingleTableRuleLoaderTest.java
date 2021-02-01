@@ -100,5 +100,18 @@ public class SingleTableRuleLoaderTest {
         assertTrue(tableSet.contains("class"));
     }
 
+    @Test
+    public void assertLoadWithExcludeTable() {
+        Map<String, SingleTableRule> singleTableRuleMap = SingleTableRuleLoader.load(dbType, dataSourceMap,
+            Sets.newHashSet("salary", "employee", "student"));
+        Set<String> tableSet = singleTableRuleMap.keySet();
+        assertFalse(tableSet.contains("employee"));
+        assertFalse(tableSet.contains("salary"));
+        assertFalse(tableSet.contains("student"));
+        assertTrue(tableSet.contains("dept"));
+        assertTrue(tableSet.contains("teacher"));
+        assertTrue(tableSet.contains("class"));
+    }
+
 
 }
