@@ -56,7 +56,7 @@ rules:
   bindingTables:
     - t_order,t_order_item
   broadcastTables:
-    - t_broadcast_table
+    - t_broadcast_table,t_broadcast_details
   
   shardingAlgorithms:
     standard_test:

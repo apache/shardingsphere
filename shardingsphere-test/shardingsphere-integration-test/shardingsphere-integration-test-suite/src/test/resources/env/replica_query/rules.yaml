@@ -16,6 +16,20 @@
 #
 
 rules:
+- !SHARDING
+  tables:
+    t_order:
+      actualDataNodes: primary_ds.t_order
+      tableStrategy:
+        none:
+    t_order_item:
+      actualDataNodes: primary_ds.t_order_item
+      tableStrategy:
+        none:
+  bindingTables:
+    - t_order,t_order_item
+  broadcastTables:
+    - t_broadcast_table,t_broadcast_details
 - !REPLICA_QUERY
   dataSources:
     primary-replica-ds: 
