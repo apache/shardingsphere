@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth;
+package org.apache.shardingsphere.infra.auth.privilege;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

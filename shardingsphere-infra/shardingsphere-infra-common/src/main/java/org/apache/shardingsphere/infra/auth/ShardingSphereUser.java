@@ -29,9 +29,20 @@ import java.util.Collection;
 @Getter
 public final class ShardingSphereUser {
     
+    private final String username;
+    
     private final String password;
     
     private final String hostname;
     
     private final Collection<String> authorizedSchemas;
+    
+    /**
+     * Get grantee.
+     *
+     * @return grantee
+     */
+    public Grantee getGrantee() {
+        return new Grantee(username, hostname);
+    }
 }
