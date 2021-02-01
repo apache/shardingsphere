@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.infra.auth.builtin.yaml.swapper;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,16 +36,23 @@ import java.util.Map.Entry;
  */
 public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenticationConfiguration, DefaultAuthentication> {
     
-    private final UserYamlSwapper userYamlSwapper = new UserYamlSwapper();
-    
     @Override
     public YamlAuthenticationConfiguration swapToYamlConfiguration(final DefaultAuthentication data) {
         YamlAuthenticationConfiguration result = new YamlAuthenticationConfiguration();
         Map<String, YamlUserConfiguration> users = new LinkedHashMap<>();
-        for (Entry<String, ShardingSphereUser> entry : data.getUsers().entrySet()) {
-            users.put(entry.getKey(), userYamlSwapper.swapToYamlConfiguration(entry.getValue()));
+        for (ShardingSphereUser each : data.getUsers()) {
+            users.put(each.getUsername(), swapToYamlConfiguration(each));
         }
         result.setUsers(users);
+        return result;
+    }
+    
+    private YamlUserConfiguration swapToYamlConfiguration(final ShardingSphereUser data) {
+        YamlUserConfiguration result = new YamlUserConfiguration();
+        result.setHostname(data.getHostname());
+        result.setPassword(data.getPassword());
+        String authorizedSchemas = null == data.getAuthorizedSchemas() ? "" : Joiner.on(',').join(data.getAuthorizedSchemas());
+        result.setAuthorizedSchemas(authorizedSchemas);
         return result;
     }
     
@@ -52,8 +63,16 @@ public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenti
             return result;
         }
         for (Entry<String, YamlUserConfiguration> entry : yamlConfig.getUsers().entrySet()) {
-            result.getUsers().put(entry.getKey(), userYamlSwapper.swapToObject(entry.getValue()));
+            result.getUsers().add(swapToObject(entry.getKey(), entry.getValue()));
         }
         return result;
+    }
+    
+    private ShardingSphereUser swapToObject(final String username, final YamlUserConfiguration yamlConfig) {
+        if (Strings.isNullOrEmpty(yamlConfig.getAuthorizedSchemas())) {
+            return new ShardingSphereUser(username, yamlConfig.getPassword(), null == yamlConfig.getHostname() ? "" : yamlConfig.getHostname(), Collections.emptyList());
+        }
+        return new ShardingSphereUser(username, yamlConfig.getPassword(), null == yamlConfig.getHostname() ? "" : yamlConfig.getHostname(),
+                Splitter.on(',').trimResults().splitToList(yamlConfig.getAuthorizedSchemas()));
     }
 }

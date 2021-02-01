@@ -38,8 +38,8 @@ public final class AuthenticationYamlSwapperTest {
     @Test
     public void assertSwapToYaml() {
         DefaultAuthentication authentication = new DefaultAuthentication();
-        authentication.getUsers().put("user1", new ShardingSphereUser("pwd1", "127.0.0.1", Collections.singleton("db1")));
-        authentication.getUsers().put("user2", new ShardingSphereUser("pwd2", "127.0.0.2", Collections.singleton("db2")));
+        authentication.getUsers().add(new ShardingSphereUser("user1", "pwd1", "127.0.0.1", Collections.singleton("db1")));
+        authentication.getUsers().add(new ShardingSphereUser("user2", "pwd2", "127.0.0.2", Collections.singleton("db2")));
         YamlAuthenticationConfiguration actual = new AuthenticationYamlSwapper().swapToYamlConfiguration(authentication);
         assertThat(actual.getUsers().size(), is(2));
         assertThat(actual.getUsers().get("user1").getPassword(), is("pwd1"));
