@@ -70,7 +70,7 @@ public final class ScalingJobExecutor extends AbstractScalingExecutor implements
         super.start();
         log.info("Start scaling job executor.");
         this.governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
-        registryCenter = ElasticJobUtil.createRegistryCenter(governanceConfig);
+        registryCenter = ElasticJobUtil.createRegistryCenter();
         watchConfigRepository();
     }
     

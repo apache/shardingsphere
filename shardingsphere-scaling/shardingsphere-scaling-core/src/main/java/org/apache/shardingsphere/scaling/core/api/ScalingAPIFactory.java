@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.api;
 
-
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobAPIFactory;
@@ -88,8 +87,8 @@ public final class ScalingAPIFactory {
         private final JobStatisticsAPI jobStatisticsAPI;
         
         private final JobConfigurationAPI jobConfigurationAPI;
-        
-        public ElasticJobAPIHolder() {
+    
+        private ElasticJobAPIHolder() {
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
             Preconditions.checkNotNull(governanceConfig, "Governance configuration is requested.");
             String namespace = governanceConfig.getName() + ScalingConstant.SCALING_ROOT_PATH;

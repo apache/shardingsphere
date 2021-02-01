@@ -31,7 +31,7 @@ import lombok.Setter;
 @Setter
 public final class IncrementalTaskDelay {
     
-    private long lastEventTimestamps = 0;
+    private long lastEventTimestamps;
     
     private long delayMilliseconds = -1;
 }

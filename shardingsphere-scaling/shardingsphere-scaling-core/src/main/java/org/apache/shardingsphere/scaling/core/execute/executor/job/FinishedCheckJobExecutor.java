@@ -20,7 +20,6 @@ package org.apache.shardingsphere.scaling.core.execute.executor.job;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobBootstrap;
-import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.ScalingExecutor;
 import org.apache.shardingsphere.scaling.core.job.FinishedCheckJob;
@@ -40,7 +39,7 @@ public final class FinishedCheckJobExecutor extends AbstractScalingExecutor impl
     public void start() {
         super.start();
         log.info("start finished check worker.");
-        new ScheduleJobBootstrap(ElasticJobUtil.createRegistryCenter(ScalingContext.getInstance().getServerConfig().getGovernanceConfig()), new FinishedCheckJob(), createJobConfig()).schedule();
+        new ScheduleJobBootstrap(ElasticJobUtil.createRegistryCenter(), new FinishedCheckJob(), createJobConfig()).schedule();
     }
     
     private JobConfiguration createJobConfig() {

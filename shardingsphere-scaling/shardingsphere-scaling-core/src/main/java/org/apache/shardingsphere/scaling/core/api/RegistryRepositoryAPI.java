@@ -40,4 +40,11 @@ public interface RegistryRepositoryAPI {
      * @return job progress
      */
     JobProgress getJobProgress(long jobId, int shardingItem);
+    
+    /**
+     * Delete job.
+     *
+     * @param jobId job id
+     */
+    void deleteJob(long jobId);
 }

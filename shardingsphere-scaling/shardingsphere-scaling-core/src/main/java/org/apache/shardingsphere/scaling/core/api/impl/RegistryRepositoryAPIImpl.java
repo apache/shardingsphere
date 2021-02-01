@@ -77,4 +77,10 @@ public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
         }
         return Strings.isNullOrEmpty(data) ? null : JobProgress.fromJson(data);
     }
+    
+    @Override
+    public void deleteJob(final long jobId) {
+        log.info("delete job {}", jobId);
+        REGISTRY_REPOSITORY.delete(ScalingTaskUtil.getScalingListenerPath(jobId));
+    }
 }

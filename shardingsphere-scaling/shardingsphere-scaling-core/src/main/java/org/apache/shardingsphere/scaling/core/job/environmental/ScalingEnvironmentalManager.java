@@ -36,7 +36,7 @@ public final class ScalingEnvironmentalManager {
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     
     /**
-     * Reset target table, Truncate target table.
+     * Reset target table.
      *
      * @param jobContext job context
      * @throws SQLException SQL exception
@@ -46,7 +46,8 @@ public final class ScalingEnvironmentalManager {
         try (DataSourceWrapper dataSource = dataSourceFactory.newInstance(jobContext.getJobConfig().getRuleConfig().getTarget().unwrap());
              Connection connection = dataSource.getConnection()) {
             for (String each : tables) {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(ScalingSQLBuilderFactory.newInstance(jobContext.getDatabaseType()).buildTruncateSQL(each))) {
+                String sql = ScalingSQLBuilderFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getDatabaseType()).buildTruncateSQL(each);
+                try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                     preparedStatement.execute();
                 }
             }

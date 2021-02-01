@@ -90,4 +90,12 @@ public interface ScalingAPI {
      * @throws SQLException SQL exception
      */
     void resetTargetTable(long jobId) throws SQLException;
+    
+    /**
+     * Get job configuration.
+     *
+     * @param jobId job id
+     * @return job configuration
+     */
+    JobConfiguration getJobConfig(long jobId);
 }

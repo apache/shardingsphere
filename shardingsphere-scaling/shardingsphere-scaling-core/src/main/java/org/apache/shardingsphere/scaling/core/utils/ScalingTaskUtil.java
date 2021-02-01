@@ -19,12 +19,13 @@ package org.apache.shardingsphere.scaling.core.utils;
 
 import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
-import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
-import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
+import org.apache.shardingsphere.scaling.core.job.position.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 
-import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Scaling task util.
@@ -37,20 +38,38 @@ public final class ScalingTaskUtil {
      * @param inventoryTasks to check inventory tasks
      * @return is finished
      */
-    public static boolean allInventoryTasksFinished(final Collection<ScalingTask> inventoryTasks) {
-        return inventoryTasks.stream().allMatch(each -> ((InventoryTask) each).getPosition() instanceof FinishedPosition);
+    public static boolean allInventoryTasksFinished(final List<InventoryTask> inventoryTasks) {
+        return inventoryTasks.stream().allMatch(each -> each.getProgress().getPosition() instanceof FinishedPosition);
+    }
+    
+    private static boolean allInventoryTasksFinished(final Map<Integer, JobProgress> jobProgress) {
+        return jobProgress.values().stream()
+                .flatMap(each -> each.getInventoryTaskProgressMap().values().stream())
+                .allMatch(each -> each.getPosition() instanceof FinishedPosition);
     }
     
     /**
-     * All inventory tasks is finished and all Incremental tasks delay less than allow value.
+     * All inventory tasks is finished and all incremental tasks is almost finished.
      *
-     * @param jobProgress job pProgress
+     * @param jobProgressMap job progress map
      * @param handleConfig handle configuration
      * @return almost finished or not
      */
-    public static boolean allTasksAlmostFinished(final JobProgress jobProgress, final HandleConfiguration handleConfig) {
-        return jobProgress.getInventoryTaskProgress().stream().allMatch(each -> each.getTotal() == each.getFinished())
-                && jobProgress.getIncrementalTaskProgress().stream().allMatch(each -> each.getDelayMillisecond() < handleConfig.getWorkflowConfig().getAllowDelay());
+    public static boolean almostFinished(final Map<Integer, JobProgress> jobProgressMap, final HandleConfiguration handleConfig) {
+        return isCompletedProgress(jobProgressMap, handleConfig)
+                && allInventoryTasksFinished(jobProgressMap)
+                && allIncrementalTasksAlmostFinished(jobProgressMap, handleConfig);
+    }
+    
+    private static boolean isCompletedProgress(final Map<Integer, JobProgress> jobProgressMap, final HandleConfiguration handleConfig) {
+        return handleConfig.getShardingTotalCount() == jobProgressMap.size()
+                && jobProgressMap.values().stream().allMatch(Objects::nonNull);
+    }
+    
+    private static boolean allIncrementalTasksAlmostFinished(final Map<Integer, JobProgress> jobProgressMap, final HandleConfiguration handleConfig) {
+        return jobProgressMap.values().stream()
+                .flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
+                .allMatch(each -> each.getIncrementalTaskDelay().getDelayMilliseconds() <= handleConfig.getWorkflowConfig().getAllowDelayMilliseconds());
     }
     
     /**

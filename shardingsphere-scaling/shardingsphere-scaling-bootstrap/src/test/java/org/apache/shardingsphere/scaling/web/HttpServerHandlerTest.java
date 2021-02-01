@@ -34,8 +34,8 @@ import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
-import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
+import org.apache.shardingsphere.scaling.core.job.position.JobProgress;
 import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.apache.shardingsphere.scaling.web.entity.ResponseContent;
@@ -70,6 +70,9 @@ public final class HttpServerHandlerTest {
     @Mock
     private ChannelHandlerContext channelHandlerContext;
     
+    @Mock
+    private JobContext jobContext;
+    
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
@@ -80,7 +83,7 @@ public final class HttpServerHandlerTest {
     
     @Test
     public void assertStartJobSuccess() {
-        when(scalingJobService.start(any(JobConfiguration.class))).thenReturn(Optional.of(new JobContext()));
+        when(scalingJobService.start(any(JobConfiguration.class))).thenReturn(Optional.of(jobContext));
         ResponseContent<?> responseContent = execute("/scaling/job/start");
         assertTrue(responseContent.isSuccess());
     }
@@ -97,7 +100,7 @@ public final class HttpServerHandlerTest {
     public void assertListJobs() {
         when(scalingJobService.listJobs()).thenReturn(mockJobContexts());
         ResponseContent<?> responseContent = execute("/scaling/job/list");
-        assertThat(((List<JobContext>) responseContent.getModel()).size(), is(2));
+        assertThat(((List<JobContext>) responseContent.getModel()).size(), is(1));
     }
     
     @Test
@@ -163,13 +166,12 @@ public final class HttpServerHandlerTest {
     
     private List<JobContext> mockJobContexts() {
         List<JobContext> result = Lists.newArrayList();
-        result.add(new JobContext());
-        result.add(new JobContext());
+        result.add(jobContext);
         return result;
     }
     
     private JobProgress mockJobProgress() {
-        return new JobProgress(1, "RUNNING");
+        return new JobProgress();
     }
     
     private Map<String, DataConsistencyCheckResult> mockDataConsistency() {

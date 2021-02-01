@@ -19,8 +19,8 @@ package org.apache.shardingsphere.scaling.core.service;
 
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
-import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
+import org.apache.shardingsphere.scaling.core.job.position.JobProgress;
 
 import java.sql.SQLException;
 import java.util.List;

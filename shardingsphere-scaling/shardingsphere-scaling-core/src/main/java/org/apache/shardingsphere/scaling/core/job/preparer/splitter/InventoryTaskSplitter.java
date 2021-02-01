@@ -62,8 +62,8 @@ public final class InventoryTaskSplitter {
      * @param dataSourceManager data source manager
      * @return split inventory data task
      */
-    public Collection<InventoryTask> splitInventoryData(final JobContext jobContext, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager) {
-        Collection<InventoryTask> result = new LinkedList<>();
+    public List<InventoryTask> splitInventoryData(final JobContext jobContext, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager) {
+        List<InventoryTask> result = new LinkedList<>();
         for (InventoryDumperConfiguration each : splitDumperConfig(jobContext, taskConfig.getDumperConfig(), dataSourceManager)) {
             result.add(scalingTaskFactory.createInventoryTask(each, taskConfig.getImporterConfig()));
         }

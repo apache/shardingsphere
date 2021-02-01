@@ -31,6 +31,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskDelay;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
+import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
 
 import java.io.IOException;
 import java.util.Map;
@@ -49,7 +50,7 @@ public final class JobProgress {
     
     private static final Gson INVENTORY_POSITION_ADAPTED_GSON = new GsonBuilder().registerTypeHierarchyAdapter(Position.class, new InventoryPositionTypeAdapter()).create();
     
-    private String status;
+    private JobStatus status = JobStatus.RUNNING;
     
     private String databaseType;
     
@@ -87,7 +88,7 @@ public final class JobProgress {
      */
     public String toJson() {
         JsonObject result = new JsonObject();
-        result.addProperty("status", status);
+        result.addProperty("status", status.name());
         result.addProperty("databaseType", databaseType);
         result.add("inventory", getInventoryJson());
         result.add("incremental", getIncrementalJson());
@@ -139,7 +140,7 @@ public final class JobProgress {
     public static JobProgress fromJson(final String data) {
         JobProgress result = new JobProgress();
         JsonObject jsonObject = GSON.fromJson(data, JsonObject.class);
-        result.setStatus(jsonObject.get("status").getAsString());
+        result.setStatus(JobStatus.valueOf(jsonObject.get("status").getAsString()));
         result.setDatabaseType(jsonObject.get("databaseType").getAsString());
         result.setInventoryTaskProgressMap(getInventoryTaskProgressMap(jsonObject.get("inventory").getAsJsonObject()));
         result.setIncrementalTaskProgressMap(getIncrementalTaskProgressMap(jsonObject.get("incremental").getAsJsonObject(), jsonObject.get("databaseType").getAsString()));

@@ -27,8 +27,8 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ConfigurationYamlConverter;
@@ -72,8 +72,8 @@ public final class TaskConfigurationUtil {
      * @param jobConfig job configuration
      * @return list of task configurations
      */
-    public static Collection<TaskConfiguration> toTaskConfigs(final JobConfiguration jobConfig) {
-        Collection<TaskConfiguration> result = new LinkedList<>();
+    public static List<TaskConfiguration> toTaskConfigs(final JobConfiguration jobConfig) {
+        List<TaskConfiguration> result = new LinkedList<>();
         ShardingSphereJDBCDataSourceConfiguration sourceConfig = getSourceConfig(jobConfig);
         ShardingRuleConfiguration sourceRuleConfig = ConfigurationYamlConverter.loadShardingRuleConfig(sourceConfig.getRule());
         Map<String, DataSourceConfiguration> sourceDataSource = ConfigurationYamlConverter.loadDataSourceConfigs(sourceConfig.getDataSource());

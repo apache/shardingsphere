@@ -24,10 +24,12 @@ import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConf
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
+import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
-import org.apache.shardingsphere.scaling.core.service.impl.DistributedScalingJobService;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 import org.apache.shardingsphere.scaling.core.utils.ThreadUtil;
 import org.apache.shardingsphere.scaling.core.workflow.ScalingServiceHolder;
@@ -40,7 +42,7 @@ public final class FinishedCheckJob implements SimpleJob {
     
     private static final RegistryRepository REGISTRY_REPOSITORY = RegistryRepositoryHolder.getInstance();
     
-    private final DistributedScalingJobService scalingJobService = new DistributedScalingJobService();
+    private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
     
     @Override
     public void execute(final ShardingContext shardingContext) {
@@ -48,12 +50,12 @@ public final class FinishedCheckJob implements SimpleJob {
         for (String each : jobs) {
             long jobId = Long.parseLong(each);
             try {
-                JobContext jobContext = scalingJobService.getJob(jobId);
-                WorkflowConfiguration workflowConfig = jobContext.getJobConfig().getHandleConfig().getWorkflowConfig();
+                JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId);
+                WorkflowConfiguration workflowConfig = jobConfig.getHandleConfig().getWorkflowConfig();
                 if (workflowConfig == null) {
                     continue;
                 }
-                if (ScalingTaskUtil.allTasksAlmostFinished(scalingJobService.getProgress(jobId), jobContext.getJobConfig().getHandleConfig())) {
+                if (ScalingTaskUtil.almostFinished(scalingAPI.getProgress(jobId), jobConfig.getHandleConfig())) {
                     log.info("scaling job {} almost finished.", jobId);
                     trySwitch(jobId, workflowConfig);
                 }
