@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.service;
+package org.apache.shardingsphere.scaling.core.api;
 
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.job.JobContext;
-import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
+import org.apache.shardingsphere.scaling.core.job.position.JobProgress;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -28,68 +27,75 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Scaling job service.
+ * Scaling API.
  */
-public interface ScalingJobService {
+public interface ScalingAPI {
     
     /**
-     * Get job context list.
+     * List all jobs.
      *
-     * @return job list
+     * @return job infos
      */
-    List<JobContext> listJobs();
+    List<JobInfo> list();
     
     /**
-     * Start scaling job.
+     * Start a scaling job by config.
      *
-     * @param jobConfig job configuration
-     * @return job context
+     * @param jobConfig job config
+     * @return job id
      */
-    Optional<JobContext> start(JobConfiguration jobConfig);
+    Optional<Long> start(JobConfiguration jobConfig);
     
     /**
-     * Stop job.
+     * Start a scaling job by id.
+     *
+     * @param jobId job id
+     */
+    void start(long jobId);
+    
+    /**
+     * Stop a job.
      *
      * @param jobId job id
      */
     void stop(long jobId);
     
     /**
-     * Get job context by id.
+     * Remove a job.
      *
      * @param jobId job id
-     * @return job context
      */
-    JobContext getJob(long jobId);
+    void remove(long jobId);
     
     /**
-     * Get job progress.
+     * Get progress.
      *
      * @param jobId job id
-     * @return scaling job progress
+     * @return each sharding item progress
      */
-    JobProgress getProgress(long jobId);
+    Map<Integer, JobProgress> getProgress(long jobId);
     
     /**
      * Do data consistency check.
      *
      * @param jobId job id
-     * @return data consistency check result
+     * @return each logic table check result
      */
-    Map<String, DataConsistencyCheckResult> check(long jobId);
+    Map<String, DataConsistencyCheckResult> dataConsistencyCheck(long jobId);
     
     /**
-     * Reset target tables.
+     * Reset target table.
      *
      * @param jobId job id
      * @throws SQLException SQL exception
      */
-    void reset(long jobId) throws SQLException;
+    void resetTargetTable(long jobId) throws SQLException;
     
     /**
-     * remove job.
+     * Get job configuration.
      *
      * @param jobId job id
+     * @return job configuration
      */
-    void remove(long jobId);
+    JobConfiguration getJobConfig(long jobId);
 }

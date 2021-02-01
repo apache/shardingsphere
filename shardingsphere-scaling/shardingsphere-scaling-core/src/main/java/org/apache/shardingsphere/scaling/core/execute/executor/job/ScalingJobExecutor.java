@@ -29,16 +29,16 @@ import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBoo
 import org.apache.shardingsphere.elasticjob.lite.internal.election.LeaderService;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobAPIFactory;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.scaling.core.api.RegistryRepositoryAPI;
+import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.ScalingExecutor;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
-import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
 import org.apache.shardingsphere.scaling.core.utils.ElasticJobUtil;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 
@@ -57,7 +57,7 @@ public final class ScalingJobExecutor extends AbstractScalingExecutor implements
     
     private static final Pattern CONFIG_PATTERN = Pattern.compile(ScalingTaskUtil.getScalingListenerPath("(\\d+)", ScalingConstant.CONFIG));
     
-    private static final RegistryRepository REGISTRY_REPOSITORY = RegistryRepositoryHolder.getInstance();
+    private final RegistryRepositoryAPI registryRepositoryAPI = ScalingAPIFactory.getRegistryRepositoryAPI();
     
     private final Map<String, JobBootstrapWrapper> scalingJobBootstrapMap = Maps.newHashMap();
     
@@ -70,12 +70,12 @@ public final class ScalingJobExecutor extends AbstractScalingExecutor implements
         super.start();
         log.info("Start scaling job executor.");
         this.governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
-        registryCenter = ElasticJobUtil.createRegistryCenter(governanceConfig);
+        registryCenter = ElasticJobUtil.createRegistryCenter();
         watchConfigRepository();
     }
     
     private void watchConfigRepository() {
-        REGISTRY_REPOSITORY.watch(ScalingConstant.SCALING_LISTENER_PATH, event -> {
+        registryRepositoryAPI.watch(ScalingConstant.SCALING_LISTENER_PATH, event -> {
             Optional<JobConfiguration> jobConfig = getJobConfig(event);
             if (!jobConfig.isPresent()) {
                 return;

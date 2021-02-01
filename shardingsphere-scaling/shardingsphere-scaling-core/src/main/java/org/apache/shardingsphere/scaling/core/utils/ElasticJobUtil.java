@@ -24,6 +24,7 @@ import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 
 import java.util.Properties;
@@ -37,16 +38,16 @@ public final class ElasticJobUtil {
     /**
      * Create registry center.
      *
-     * @param governanceConfig governance configuration
      * @return coordinator registry center
      */
-    public static CoordinatorRegistryCenter createRegistryCenter(final GovernanceConfiguration governanceConfig) {
-        CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(getZookeeperConfig(governanceConfig));
+    public static CoordinatorRegistryCenter createRegistryCenter() {
+        CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(getZookeeperConfig());
         result.init();
         return result;
     }
     
-    private static ZookeeperConfiguration getZookeeperConfig(final GovernanceConfiguration governanceConfig) {
+    private static ZookeeperConfiguration getZookeeperConfig() {
+        GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
         ZookeeperConfiguration result = new ZookeeperConfiguration(governanceConfig.getRegistryCenterConfiguration().getServerLists(),
                 governanceConfig.getName() + ScalingConstant.SCALING_ELASTIC_JOB_PATH);
         Properties props = governanceConfig.getRegistryCenterConfiguration().getProps();

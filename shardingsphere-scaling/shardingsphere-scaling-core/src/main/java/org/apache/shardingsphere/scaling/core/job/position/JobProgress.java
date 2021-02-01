@@ -21,36 +21,42 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskDelay;
+import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
+import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Position group.
+ * Job progress.
  */
 @Getter
 @Setter
-public final class JobPosition {
+public final class JobProgress {
     
     private static final Gson GSON = new Gson();
     
     private static final Gson INVENTORY_POSITION_ADAPTED_GSON = new GsonBuilder().registerTypeHierarchyAdapter(Position.class, new InventoryPositionTypeAdapter()).create();
     
-    private String status;
+    private JobStatus status = JobStatus.RUNNING;
     
     private String databaseType;
     
-    private Map<String, Position<?>> inventoryPositions;
+    private Map<String, InventoryTaskProgress> inventoryTaskProgressMap;
     
-    private Map<String, Position<?>> incrementalPositions;
+    private Map<String, IncrementalTaskProgress> incrementalTaskProgressMap;
     
     /**
      * Get incremental position.
@@ -59,7 +65,7 @@ public final class JobPosition {
      * @return incremental position
      */
     public Position<?> getIncrementalPosition(final String dataSourceName) {
-        return incrementalPositions.get(dataSourceName);
+        return incrementalTaskProgressMap.get(dataSourceName).getPosition();
     }
     
     /**
@@ -70,9 +76,9 @@ public final class JobPosition {
      */
     public Map<String, Position<?>> getInventoryPosition(final String tableName) {
         Pattern pattern = Pattern.compile(String.format("%s(#\\d+)?", tableName));
-        return inventoryPositions.entrySet().stream()
+        return inventoryTaskProgressMap.entrySet().stream()
                 .filter(entry -> pattern.matcher(entry.getKey()).find())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getPosition()));
     }
     
     /**
@@ -82,34 +88,46 @@ public final class JobPosition {
      */
     public String toJson() {
         JsonObject result = new JsonObject();
-        result.addProperty("status", status);
+        result.addProperty("status", status.name());
         result.addProperty("databaseType", databaseType);
         result.add("inventory", getInventoryJson());
         result.add("incremental", getIncrementalJson());
         return result.toString();
     }
     
-    private JsonObject getInventoryJson() {
+    private JsonElement getInventoryJson() {
         JsonObject result = new JsonObject();
-        JsonArray finished = new JsonArray();
-        JsonObject unfinished = new JsonObject();
-        for (Map.Entry<String, Position<?>> entry : inventoryPositions.entrySet()) {
-            if (entry.getValue() instanceof FinishedPosition) {
-                finished.add(entry.getKey());
-                continue;
-            }
-            unfinished.add(entry.getKey(), GSON.toJsonTree(entry.getValue(), entry.getValue().getClass()));
-        }
-        result.add("finished", finished);
-        result.add("unfinished", unfinished);
+        result.add("finished", getInventoryFinishedJson());
+        result.add("unfinished", getInventoryUnfinishedJson());
         return result;
     }
     
-    private JsonObject getIncrementalJson() {
+    private JsonElement getInventoryFinishedJson() {
+        JsonArray result = new JsonArray();
+        inventoryTaskProgressMap.entrySet().stream()
+                .filter(entry -> entry.getValue().getPosition() instanceof FinishedPosition)
+                .forEach(entry -> result.add(entry.getKey()));
+        return result;
+    }
+    
+    private JsonElement getInventoryUnfinishedJson() {
         JsonObject result = new JsonObject();
-        for (Map.Entry<String, Position<?>> entry : incrementalPositions.entrySet()) {
-            result.add(entry.getKey(), GSON.toJsonTree(entry.getValue(), entry.getClass()));
-        }
+        inventoryTaskProgressMap.entrySet().stream()
+                .filter(entry -> !(entry.getValue().getPosition() instanceof FinishedPosition))
+                .forEach(entry -> result.add(entry.getKey(), GSON.toJsonTree(entry.getValue(), entry.getValue().getClass())));
+        return result;
+    }
+    
+    private JsonElement getIncrementalJson() {
+        JsonObject result = new JsonObject();
+        incrementalTaskProgressMap.forEach((key, value) -> result.add(key, getIncrementalJson(value)));
+        return result;
+    }
+    
+    private JsonElement getIncrementalJson(final IncrementalTaskProgress incrementalTaskProgress) {
+        JsonObject result = new JsonObject();
+        result.add("position", GSON.toJsonTree(incrementalTaskProgress.getPosition(), incrementalTaskProgress.getPosition().getClass()));
+        result.add("delay", GSON.toJsonTree(incrementalTaskProgress.getIncrementalTaskDelay()));
         return result;
     }
     
@@ -119,27 +137,29 @@ public final class JobPosition {
      * @param data json data
      * @return job position
      */
-    public static JobPosition fromJson(final String data) {
-        JobPosition result = new JobPosition();
+    public static JobProgress fromJson(final String data) {
+        JobProgress result = new JobProgress();
         JsonObject jsonObject = GSON.fromJson(data, JsonObject.class);
-        result.setStatus(jsonObject.get("status").getAsString());
+        result.setStatus(JobStatus.valueOf(jsonObject.get("status").getAsString()));
         result.setDatabaseType(jsonObject.get("databaseType").getAsString());
-        result.setInventoryPositions(getInventoryPositions(jsonObject.get("inventory").getAsJsonObject()));
-        result.setIncrementalPositions(getIncrementalPositions(jsonObject.get("incremental").getAsJsonObject(), jsonObject.get("databaseType").getAsString()));
+        result.setInventoryTaskProgressMap(getInventoryTaskProgressMap(jsonObject.get("inventory").getAsJsonObject()));
+        result.setIncrementalTaskProgressMap(getIncrementalTaskProgressMap(jsonObject.get("incremental").getAsJsonObject(), jsonObject.get("databaseType").getAsString()));
         return result;
     }
     
-    private static Map<String, Position<?>> getInventoryPositions(final JsonObject inventory) {
+    private static Map<String, InventoryTaskProgress> getInventoryTaskProgressMap(final JsonObject inventory) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("inventory", inventory);
-        return INVENTORY_POSITION_ADAPTED_GSON.fromJson(jsonObject, JobPosition.class).getInventoryPositions();
+        return INVENTORY_POSITION_ADAPTED_GSON.fromJson(jsonObject, JobProgress.class).getInventoryTaskProgressMap();
     }
     
-    private static Map<String, Position<?>> getIncrementalPositions(final JsonObject incremental, final String databaseType) {
+    private static Map<String, IncrementalTaskProgress> getIncrementalTaskProgressMap(final JsonObject incremental, final String databaseType) {
         Class<?> incrementalPositionClass = PositionInitializerFactory.getPositionClass(databaseType);
-        Map<String, Position<?>> result = Maps.newHashMap();
+        Map<String, IncrementalTaskProgress> result = Maps.newHashMap();
         for (String each : incremental.keySet()) {
-            result.put(each, (Position<?>) GSON.fromJson(incremental.get(each), incrementalPositionClass));
+            Position<?> position = (Position<?>) GSON.fromJson(incremental.get(each).getAsJsonObject().get("position"), incrementalPositionClass);
+            IncrementalTaskDelay incrementalTaskDelay = GSON.fromJson(incremental.get(each).getAsJsonObject().get("delay"), IncrementalTaskDelay.class);
+            result.put(each, new IncrementalTaskProgress(position, incrementalTaskDelay));
         }
         return result;
     }

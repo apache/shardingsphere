@@ -30,14 +30,14 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.scaling.core.api.JobInfo;
+import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
-import org.apache.shardingsphere.scaling.core.job.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
-import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
+import org.apache.shardingsphere.scaling.core.job.position.JobProgress;
 import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
+import org.apache.shardingsphere.scaling.util.ServerConfigurationInitializer;
 import org.apache.shardingsphere.scaling.web.entity.ResponseContent;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,7 +65,7 @@ public final class HttpServerHandlerTest {
     private HttpServerHandler httpServerHandler;
     
     @Mock
-    private ScalingJobService scalingJobService;
+    private ScalingAPI scalingAPI;
     
     @Mock
     private ChannelHandlerContext channelHandlerContext;
@@ -73,21 +73,21 @@ public final class HttpServerHandlerTest {
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
-        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", new ServerConfiguration());
+        ServerConfigurationInitializer.init();
         httpServerHandler = new HttpServerHandler();
-        ReflectionUtil.setFieldValue(httpServerHandler, "scalingJobService", scalingJobService);
+        ReflectionUtil.setFieldValue(httpServerHandler, "scalingAPI", scalingAPI);
     }
     
     @Test
     public void assertStartJobSuccess() {
-        when(scalingJobService.start(any(JobConfiguration.class))).thenReturn(Optional.of(new JobContext()));
+        when(scalingAPI.start(any(JobConfiguration.class))).thenReturn(Optional.of(1L));
         ResponseContent<?> responseContent = execute("/scaling/job/start");
         assertTrue(responseContent.isSuccess());
     }
     
     @Test
     public void assertStartJobFailure() {
-        when(scalingJobService.start(any(JobConfiguration.class))).thenReturn(Optional.empty());
+        when(scalingAPI.start(any(JobConfiguration.class))).thenReturn(Optional.empty());
         ResponseContent<?> responseContent = execute("/scaling/job/start");
         assertFalse(responseContent.isSuccess());
     }
@@ -95,18 +95,18 @@ public final class HttpServerHandlerTest {
     @Test
     @SuppressWarnings("unchecked")
     public void assertListJobs() {
-        when(scalingJobService.listJobs()).thenReturn(mockJobContexts());
+        when(scalingAPI.list()).thenReturn(mockJobInfos());
         ResponseContent<?> responseContent = execute("/scaling/job/list");
-        assertThat(((List<JobContext>) responseContent.getModel()).size(), is(2));
+        assertThat(((List<JobContext>) responseContent.getModel()).size(), is(1));
     }
     
     @Test
     @SuppressWarnings("unchecked")
     public void assertGetJobProgress() {
-        when(scalingJobService.getProgress(1L)).thenReturn(mockJobProgress());
+        when(scalingAPI.getProgress(1L)).thenReturn(mockJobProgress());
         ResponseContent<?> responseContent = execute("/scaling/job/progress/1");
-        Map<String, String> map = (Map<String, String>) responseContent.getModel();
-        assertThat(map.get("status"), is("RUNNING"));
+        Map<String, Map<String, String>> map = (Map<String, Map<String, String>>) responseContent.getModel();
+        assertThat(map.get("1").get("status"), is("RUNNING"));
     }
     
     @Test
@@ -117,7 +117,7 @@ public final class HttpServerHandlerTest {
     
     @Test
     public void assertDataConsistencyCheck() {
-        when(scalingJobService.check(1L)).thenReturn(mockDataConsistency());
+        when(scalingAPI.dataConsistencyCheck(1L)).thenReturn(mockDataConsistency());
         ResponseContent<?> responseContent = execute("/scaling/job/check/1");
         assertTrue(responseContent.isSuccess());
     }
@@ -161,15 +161,16 @@ public final class HttpServerHandlerTest {
         return new Gson().fromJson(fullHttpResponse.content().toString(CharsetUtil.UTF_8), ResponseContent.class);
     }
     
-    private List<JobContext> mockJobContexts() {
-        List<JobContext> result = Lists.newArrayList();
-        result.add(new JobContext());
-        result.add(new JobContext());
+    private List<JobInfo> mockJobInfos() {
+        List<JobInfo> result = Lists.newArrayList();
+        result.add(new JobInfo(1L));
         return result;
     }
     
-    private JobProgress mockJobProgress() {
-        return new JobProgress(1, "RUNNING");
+    private Map<Integer, JobProgress> mockJobProgress() {
+        Map<Integer, JobProgress> result = Maps.newHashMap();
+        result.put(1, new JobProgress());
+        return result;
     }
     
     private Map<String, DataConsistencyCheckResult> mockDataConsistency() {

@@ -15,10 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job;
+package org.apache.shardingsphere.scaling.core.job.task.incremental;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
- * Scaling progress.
+ * Incremental task delay.
  */
-public interface TaskProgress {
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+public final class IncrementalTaskDelay {
+    
+    private long lastEventTimestamps;
+    
+    private long delayMilliseconds = -1;
 }

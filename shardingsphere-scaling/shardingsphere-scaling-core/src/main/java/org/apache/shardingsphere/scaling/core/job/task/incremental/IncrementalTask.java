@@ -32,9 +32,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.dumper.DumperFact
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.ImporterFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.scaling.core.job.TaskProgress;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
 import java.util.ArrayList;
@@ -49,6 +47,9 @@ import java.util.concurrent.Future;
 @Slf4j
 public final class IncrementalTask extends AbstractScalingExecutor implements ScalingTask {
     
+    @Getter
+    private final String taskId;
+    
     private final int concurrency;
     
     private final DumperConfiguration dumperConfig;
@@ -60,12 +61,7 @@ public final class IncrementalTask extends AbstractScalingExecutor implements Sc
     private Dumper dumper;
     
     @Getter
-    private final String taskId;
-    
-    @Getter
-    private Position<?> position;
-    
-    private long delayMillisecond = Long.MAX_VALUE;
+    private IncrementalTaskProgress progress;
     
     public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig) {
         this.concurrency = concurrency;
@@ -73,12 +69,12 @@ public final class IncrementalTask extends AbstractScalingExecutor implements Sc
         this.importerConfig = importerConfig;
         dataSourceManager = new DataSourceManager();
         taskId = dumperConfig.getDataSourceName();
-        position = dumperConfig.getPosition();
+        progress = new IncrementalTaskProgress(dumperConfig.getPosition());
     }
     
     @Override
     public void start() {
-        dumper = DumperFactory.newInstanceLogDumper(dumperConfig, position);
+        dumper = DumperFactory.newInstanceLogDumper(dumperConfig, progress.getPosition());
         Collection<Importer> importers = instanceImporters();
         instanceChannel(importers);
         Future<?> future = ScalingContext.getInstance().getIncrementalDumperExecuteEngine().submitAll(importers, new ExecuteCallback() {
@@ -110,9 +106,9 @@ public final class IncrementalTask extends AbstractScalingExecutor implements Sc
         DistributionChannel channel = new DistributionChannel(importers.size(), records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
             if (!(lastHandledRecord.getPosition() instanceof PlaceholderPosition)) {
-                position = lastHandledRecord.getPosition();
+                progress = new IncrementalTaskProgress(lastHandledRecord.getPosition(),
+                        new IncrementalTaskDelay(lastHandledRecord.getCommitTime(), System.currentTimeMillis() - lastHandledRecord.getCommitTime()));
             }
-            delayMillisecond = System.currentTimeMillis() - lastHandledRecord.getCommitTime();
         });
         dumper.setChannel(channel);
         for (Importer each : importers) {
@@ -135,10 +131,5 @@ public final class IncrementalTask extends AbstractScalingExecutor implements Sc
             dumper.stop();
             dumper = null;
         }
-    }
-    
-    @Override
-    public TaskProgress getProgress() {
-        return new IncrementalTaskProgress(taskId, delayMillisecond, position);
     }
 }

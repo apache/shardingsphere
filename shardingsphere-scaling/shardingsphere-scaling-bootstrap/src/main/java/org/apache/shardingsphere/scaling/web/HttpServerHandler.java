@@ -34,11 +34,11 @@ import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.scaling.core.api.JobInfo;
+import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
+import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
-import org.apache.shardingsphere.scaling.core.job.JobContext;
-import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
-import org.apache.shardingsphere.scaling.core.service.ScalingJobServiceFactory;
 import org.apache.shardingsphere.scaling.util.ResponseContentUtil;
 
 import java.sql.SQLException;
@@ -53,7 +53,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().setLongSerializationPolicy(LongSerializationPolicy.STRING).create();
     
-    private final ScalingJobService scalingJobService = ScalingJobServiceFactory.getInstance();
+    private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
     
     @Override
     protected void channelRead0(final ChannelHandlerContext context, final FullHttpRequest request) {
@@ -89,35 +89,35 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     }
     
     private void startJob(final ChannelHandlerContext context, final String requestBody) {
-        Optional<JobContext> jobContext = scalingJobService.start(GSON.fromJson(requestBody, JobConfiguration.class));
-        if (jobContext.isPresent()) {
-            response(ResponseContentUtil.build(jobContext.get()), context, HttpResponseStatus.OK);
+        Optional<Long> jobId = scalingAPI.start(GSON.fromJson(requestBody, JobConfiguration.class));
+        if (jobId.isPresent()) {
+            response(ResponseContentUtil.build(jobId.get()), context, HttpResponseStatus.OK);
             return;
         }
         response(ResponseContentUtil.handleBadRequest("Invalid scaling job config!"), context, HttpResponseStatus.BAD_REQUEST);
     }
     
     private void listJobs(final ChannelHandlerContext context) {
-        List<JobContext> jobContexts = scalingJobService.listJobs();
+        List<JobInfo> jobContexts = scalingAPI.list();
         response(ResponseContentUtil.build(jobContexts), context, HttpResponseStatus.OK);
     }
     
     private void getJobProgress(final ChannelHandlerContext context, final String requestPath) {
         try {
-            response(ResponseContentUtil.build(scalingJobService.getProgress(getJobId(requestPath))), context, HttpResponseStatus.OK);
+            response(ResponseContentUtil.build(scalingAPI.getProgress(getJobId(requestPath))), context, HttpResponseStatus.OK);
         } catch (final ScalingJobNotFoundException ex) {
             response(ResponseContentUtil.handleBadRequest(ex.getMessage()), context, HttpResponseStatus.BAD_REQUEST);
         }
     }
     
     private void stopJob(final ChannelHandlerContext context, final String requestPath) {
-        scalingJobService.stop(getJobId(requestPath));
+        scalingAPI.stop(getJobId(requestPath));
         response(ResponseContentUtil.success(), context, HttpResponseStatus.OK);
     }
     
     private void checkJob(final ChannelHandlerContext context, final String requestPath) {
         try {
-            response(ResponseContentUtil.build(scalingJobService.check(getJobId(requestPath))), context, HttpResponseStatus.OK);
+            response(ResponseContentUtil.build(scalingAPI.dataConsistencyCheck(getJobId(requestPath))), context, HttpResponseStatus.OK);
         } catch (final ScalingJobNotFoundException ex) {
             response(ResponseContentUtil.handleBadRequest(ex.getMessage()), context, HttpResponseStatus.BAD_REQUEST);
         }
@@ -125,7 +125,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     
     private void resetJob(final ChannelHandlerContext context, final String requestPath) {
         try {
-            scalingJobService.reset(getJobId(requestPath));
+            scalingAPI.resetTargetTable(getJobId(requestPath));
             response(ResponseContentUtil.success(), context, HttpResponseStatus.OK);
         } catch (final ScalingJobNotFoundException | SQLException ex) {
             response(ResponseContentUtil.handleBadRequest(ex.getMessage()), context, HttpResponseStatus.BAD_REQUEST);

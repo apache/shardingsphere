@@ -15,22 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.service;
+package org.apache.shardingsphere.scaling.core.api;
 
-import org.apache.shardingsphere.scaling.core.service.impl.DistributedScalingJobService;
-import org.apache.shardingsphere.scaling.core.service.impl.StandaloneScalingJobService;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
- * Scaling job service factory.
+ * Job info.
  */
-public final class ScalingJobServiceFactory {
+@RequiredArgsConstructor
+@Getter
+@Setter
+@ToString
+public final class JobInfo {
     
-    /**
-     * Get instance of {@code ScalingJobService}.
-     *
-     * @return scaling job service
-     */
-    public static ScalingJobService getInstance() {
-        return RegistryRepositoryHolder.isAvailable() ? new DistributedScalingJobService() : new StandaloneScalingJobService();
-    }
+    private final long jobId;
+    
+    private boolean active;
+    
+    private String status;
+    
+    private String[] tables;
+    
+    private int shardingTotalCount;
+    
+    private int inventoryFinishedPercentage;
+    
+    private long incrementalAverageDelayMilliseconds = -1;
 }

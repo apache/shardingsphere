@@ -32,8 +32,6 @@ import org.apache.shardingsphere.scaling.core.execute.executor.dumper.DumperFact
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.execute.executor.importer.ImporterFactory;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.scaling.core.job.TaskProgress;
-import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
@@ -48,6 +46,9 @@ import java.util.concurrent.Future;
 @Slf4j
 public final class InventoryTask extends AbstractScalingExecutor implements ScalingTask {
     
+    @Getter
+    private final String taskId;
+    
     private final InventoryDumperConfiguration inventoryDumperConfig;
     
     private final ImporterConfiguration importerConfig;
@@ -56,10 +57,6 @@ public final class InventoryTask extends AbstractScalingExecutor implements Scal
     
     private Dumper dumper;
     
-    @Getter
-    private final String taskId;
-    
-    @Getter
     private Position<?> position;
     
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig) {
@@ -132,7 +129,7 @@ public final class InventoryTask extends AbstractScalingExecutor implements Scal
     }
     
     @Override
-    public TaskProgress getProgress() {
-        return new InventoryTaskProgress(taskId, position instanceof FinishedPosition);
+    public InventoryTaskProgress getProgress() {
+        return new InventoryTaskProgress(position);
     }
 }

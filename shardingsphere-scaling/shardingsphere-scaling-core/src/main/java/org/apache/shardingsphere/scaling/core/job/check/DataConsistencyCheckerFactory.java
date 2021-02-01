@@ -35,7 +35,7 @@ public final class DataConsistencyCheckerFactory {
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public static DataConsistencyChecker newInstance(final JobContext jobContext) {
-        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(jobContext.getDatabaseType());
+        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(jobContext.getJobConfig().getHandleConfig().getDatabaseType());
         return scalingEntry.getDataConsistencyCheckerClass().getConstructor(JobContext.class).newInstance(jobContext);
     }
 }

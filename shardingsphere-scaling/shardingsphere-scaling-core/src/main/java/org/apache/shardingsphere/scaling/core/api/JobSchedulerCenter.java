@@ -21,8 +21,11 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
+import org.apache.shardingsphere.scaling.core.schedule.ScalingTaskScheduler;
 
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -33,41 +36,54 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class JobSchedulerCenter {
     
-    private static final Map<String, JobContext> JOB_CONTEXT_MAP = Maps.newConcurrentMap();
+    private static final Map<String, ScalingTaskScheduler> JOB_SCHEDULER_MAP = Maps.newConcurrentMap();
     
     private static final ScheduledExecutorService JOB_PERSIST_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("scaling-job-persist-%d"));
     
-    private static final RegistryRepositoryAPI REGISTRY_REPOSITORY_API = new RegistryRepositoryAPIImpl();
+    private static final RegistryRepositoryAPI REGISTRY_REPOSITORY_API = ScalingAPIFactory.getRegistryRepositoryAPI();
     
     static {
         JOB_PERSIST_EXECUTOR.scheduleWithFixedDelay(new PersistJobContextRunnable(), 1, 1, TimeUnit.MINUTES);
     }
     
     /**
-     * Add job.
+     * Start a job.
      *
      * @param jobContext job context
      */
-    public static void addJob(final JobContext jobContext) {
-        JOB_CONTEXT_MAP.put(String.format("%d-%d", jobContext.getJobId(), jobContext.getShardingItem()), jobContext);
+    public static void start(final JobContext jobContext) {
+        String key = String.format("%d-%d", jobContext.getJobId(), jobContext.getShardingItem());
+        if (JOB_SCHEDULER_MAP.containsKey(key)) {
+            return;
+        }
+        ScalingTaskScheduler jobScheduler = new ScalingTaskScheduler(jobContext);
+        jobScheduler.start();
+        JOB_SCHEDULER_MAP.put(key, jobScheduler);
     }
     
     /**
-     * Remove job.
+     * Stop a job.
      *
-     * @param jobContext job context
+     * @param jobId job id
      */
-    public static void removeJob(final JobContext jobContext) {
-        JOB_CONTEXT_MAP.remove(String.format("%d-%d", jobContext.getJobId(), jobContext.getShardingItem()));
+    public static void stop(final long jobId) {
+        Iterator<Entry<String, ScalingTaskScheduler>> iterator = JOB_SCHEDULER_MAP.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Entry<String, ScalingTaskScheduler> entry = iterator.next();
+            if (entry.getKey().startsWith(String.format("%d-", jobId))) {
+                entry.getValue().stop();
+                iterator.remove();
+            }
+        }
     }
     
     private static final class PersistJobContextRunnable implements Runnable {
         
         @Override
         public void run() {
-            for (Map.Entry<String, JobContext> entry : JOB_CONTEXT_MAP.entrySet()) {
+            for (Map.Entry<String, ScalingTaskScheduler> entry : JOB_SCHEDULER_MAP.entrySet()) {
                 try {
-                    REGISTRY_REPOSITORY_API.persistJobPosition(entry.getValue());
+                    REGISTRY_REPOSITORY_API.persistJobProgress(entry.getValue().getJobContext());
                     // CHECKSTYLE:OFF
                 } catch (final Exception ex) {
                     // CHECKSTYLE:ON

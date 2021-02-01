@@ -23,9 +23,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.scaling.core.api.JobSchedulerCenter;
+import org.apache.shardingsphere.scaling.core.api.RegistryRepositoryAPI;
+import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.service.ScalingJobService;
-import org.apache.shardingsphere.scaling.core.service.impl.StandaloneScalingJobService;
+import org.apache.shardingsphere.scaling.core.job.preparer.ScalingJobPreparer;
 
 /**
  * Scaling job.
@@ -35,35 +36,18 @@ public final class ScalingJob implements SimpleJob {
     
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
     
-    private static final ScalingJobService SCALING_JOB_SERVICE = new StandaloneScalingJobService();
+    private final RegistryRepositoryAPI registryRepositoryAPI = ScalingAPIFactory.getRegistryRepositoryAPI();
     
-    private JobContext jobContext;
+    private final ScalingJobPreparer jobPreparer = new ScalingJobPreparer();
     
     @Override
     public void execute(final ShardingContext shardingContext) {
-        log.info("execute job: {} - {}/{}", shardingContext.getTaskId(), shardingContext.getShardingItem(), shardingContext.getShardingTotalCount());
+        log.info("Execute scaling job {}-{}", shardingContext.getJobName(), shardingContext.getShardingItem());
         JobConfiguration jobConfig = GSON.fromJson(shardingContext.getJobParameter(), JobConfiguration.class);
-        if (jobConfig.getHandleConfig().isRunning()) {
-            startJob(jobConfig, shardingContext);
-            return;
-        }
-        stopJob(shardingContext);
-    }
-    
-    private void startJob(final JobConfiguration jobConfig, final ShardingContext shardingContext) {
-        log.info("start job: {} - {}", shardingContext.getJobName(), shardingContext.getShardingItem());
         jobConfig.getHandleConfig().setShardingItem(shardingContext.getShardingItem());
-        jobConfig.getHandleConfig().setJobId(Long.valueOf(shardingContext.getJobName()));
-        jobContext = SCALING_JOB_SERVICE.start(jobConfig).orElse(null);
-        JobSchedulerCenter.addJob(jobContext);
-    }
-    
-    private void stopJob(final ShardingContext shardingContext) {
-        if (null != jobContext) {
-            log.info("stop job: {} - {}", shardingContext.getJobName(), shardingContext.getShardingItem());
-            SCALING_JOB_SERVICE.stop(jobContext.getJobId());
-            JobSchedulerCenter.removeJob(jobContext);
-            jobContext = null;
-        }
+        JobContext jobContext = new JobContext(jobConfig);
+        jobContext.setInitProgress(registryRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem()));
+        jobPreparer.prepare(jobContext);
+        JobSchedulerCenter.start(jobContext);
     }
 }

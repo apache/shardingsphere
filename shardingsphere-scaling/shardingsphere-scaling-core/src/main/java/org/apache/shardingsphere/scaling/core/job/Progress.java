@@ -15,22 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.task.inventory;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.TaskProgress;
+package org.apache.shardingsphere.scaling.core.job;
 
 /**
- * Inventory task group progress.
+ * Scaling progress.
  */
-@Getter
-@RequiredArgsConstructor
-public final class InventoryTaskGroupProgress implements TaskProgress {
-    
-    private final String shardingItem;
-    
-    private final int total;
-    
-    private final int finished;
+public interface Progress {
 }

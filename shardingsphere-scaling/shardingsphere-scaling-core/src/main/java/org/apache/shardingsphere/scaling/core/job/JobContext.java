@@ -21,15 +21,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.scaling.core.job.position.JobPosition;
-import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
+import org.apache.shardingsphere.scaling.core.job.position.JobProgress;
+import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTask;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
+import org.apache.shardingsphere.scaling.core.utils.JobConfigurationUtil;
 import org.apache.shardingsphere.scaling.core.utils.TaskConfigurationUtil;
-import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Scaling job context.
@@ -38,60 +38,27 @@ import java.util.Optional;
 @Setter
 public final class JobContext {
     
-    private static final SnowflakeKeyGenerateAlgorithm ID_AUTO_INCREASE_GENERATOR = initIdAutoIncreaseGenerator();
+    private final long jobId;
     
-    private long jobId;
+    private final int shardingItem;
     
-    private Integer shardingItem;
+    private JobStatus status = JobStatus.RUNNING;
     
-    private String databaseType;
+    private JobProgress initProgress;
     
-    private JobPosition initPosition;
+    private final List<TaskConfiguration> taskConfigs;
     
-    private final transient List<TaskConfiguration> taskConfigs = new LinkedList<>();
+    private final List<InventoryTask> inventoryTasks = new LinkedList<>();
     
-    private final transient List<ScalingTask> inventoryTasks = new LinkedList<>();
+    private final List<IncrementalTask> incrementalTasks = new LinkedList<>();
     
-    private final transient List<ScalingTask> incrementalTasks = new LinkedList<>();
-    
-    private transient JobConfiguration jobConfig;
-    
-    private String status = JobStatus.RUNNING.name();
-    
-    public JobContext() {
-        this(generateKey());
-    }
-    
-    public JobContext(final long jobId) {
-        this.jobId = jobId;
-    }
+    private JobConfiguration jobConfig;
     
     public JobContext(final JobConfiguration jobConfig) {
-        this(Optional.ofNullable(jobConfig.getHandleConfig().getJobId()).orElse(generateKey()));
         this.jobConfig = jobConfig;
+        JobConfigurationUtil.fillInProperties(jobConfig);
+        jobId = jobConfig.getHandleConfig().getJobId();
         shardingItem = jobConfig.getHandleConfig().getShardingItem();
-        taskConfigs.addAll(TaskConfigurationUtil.toTaskConfigs(jobConfig));
-    }
-    
-    private static SnowflakeKeyGenerateAlgorithm initIdAutoIncreaseGenerator() {
-        SnowflakeKeyGenerateAlgorithm result = new SnowflakeKeyGenerateAlgorithm();
-        result.init();
-        return result;
-    }
-    
-    private static Long generateKey() {
-        return (Long) ID_AUTO_INCREASE_GENERATOR.generateKey();
-    }
-    
-    /**
-     * Get database type.
-     *
-     * @return database type
-     */
-    public String getDatabaseType() {
-        if (null == databaseType && !taskConfigs.isEmpty()) {
-            databaseType = taskConfigs.get(0).getDumperConfig().getDataSourceConfig().getDatabaseType().getName();
-        }
-        return databaseType;
+        taskConfigs = TaskConfigurationUtil.toTaskConfigs(jobConfig);
     }
 }

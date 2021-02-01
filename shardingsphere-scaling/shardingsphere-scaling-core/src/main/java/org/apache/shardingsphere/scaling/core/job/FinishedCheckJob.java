@@ -21,37 +21,39 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.scaling.core.api.RegistryRepositoryAPI;
+import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
+import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
-import org.apache.shardingsphere.scaling.core.service.RegistryRepositoryHolder;
-import org.apache.shardingsphere.scaling.core.service.impl.DistributedScalingJobService;
+import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 import org.apache.shardingsphere.scaling.core.utils.ThreadUtil;
-import org.apache.shardingsphere.scaling.core.workflow.ScalingServiceHolder;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public final class FinishedCheckJob implements SimpleJob {
     
-    private static final RegistryRepository REGISTRY_REPOSITORY = RegistryRepositoryHolder.getInstance();
+    private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
     
-    private final DistributedScalingJobService scalingJobService = new DistributedScalingJobService();
+    private final RegistryRepositoryAPI registryRepositoryAPI = ScalingAPIFactory.getRegistryRepositoryAPI();
     
     @Override
     public void execute(final ShardingContext shardingContext) {
-        List<String> jobs = REGISTRY_REPOSITORY.getChildrenKeys(ScalingConstant.SCALING_LISTENER_PATH);
+        List<String> jobs = registryRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_LISTENER_PATH);
         for (String each : jobs) {
             long jobId = Long.parseLong(each);
             try {
-                JobContext jobContext = scalingJobService.getJob(jobId);
-                WorkflowConfiguration workflowConfig = jobContext.getJobConfig().getHandleConfig().getWorkflowConfig();
+                JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId);
+                WorkflowConfiguration workflowConfig = jobConfig.getHandleConfig().getWorkflowConfig();
                 if (workflowConfig == null) {
                     continue;
                 }
-                if (ScalingTaskUtil.allTasksAlmostFinished(scalingJobService.getProgress(jobId), jobContext.getJobConfig().getHandleConfig())) {
+                if (ScalingTaskUtil.almostFinished(scalingAPI.getProgress(jobId), jobConfig.getHandleConfig())) {
                     log.info("scaling job {} almost finished.", jobId);
                     trySwitch(jobId, workflowConfig);
                 }
@@ -66,9 +68,25 @@ public final class FinishedCheckJob implements SimpleJob {
     private void trySwitch(final long jobId, final WorkflowConfiguration workflowConfig) {
         // TODO lock proxy
         ThreadUtil.sleep(10 * 1000L);
-        if (ScalingServiceHolder.getInstance().checkScalingResult(jobId)) {
-            ScalingServiceHolder.getInstance().stopScalingJob(jobId);
+        if (dataConsistencyCheck(jobId)) {
+            scalingAPI.stop(jobId);
             ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(workflowConfig.getSchemaName(), workflowConfig.getRuleCacheId()));
         }
+    }
+    
+    private boolean dataConsistencyCheck(final long jobId) {
+        Map<String, DataConsistencyCheckResult> scalingResult = scalingAPI.dataConsistencyCheck(jobId);
+        if (scalingResult.isEmpty()) {
+            return false;
+        }
+        for (String key : scalingResult.keySet()) {
+            boolean isDataValid = scalingResult.get(key).isDataValid();
+            boolean isCountValid = scalingResult.get(key).isCountValid();
+            if (!isDataValid || !isCountValid) {
+                log.error("Scaling job: {}, table: {} data consistency check failed, dataValid: {}, countValid: {}", jobId, key, isDataValid, isCountValid);
+                return false;
+            }
+        }
+        return true;
     }
 }
