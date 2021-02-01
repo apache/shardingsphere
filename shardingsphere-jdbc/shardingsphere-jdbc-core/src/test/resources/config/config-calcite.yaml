@@ -23,10 +23,20 @@ rules:
         tableStrategy:
           standard:
             shardingColumn: item_id
-            shardingAlgorithmName: table_inline
+            shardingAlgorithmName: table_inline_item_id
+      t_user_encrypt_calcite_sharding:
+        actualDataNodes: calcite_ds.t_user_encrypt_calcite_sharding_${0..1}
+        tableStrategy:
+          standard:
+            shardingColumn: user_id
+            shardingAlgorithmName: table_inline_user_id
     shardingAlgorithms:
-      table_inline:
+      table_inline_item_id:
         type: INLINE
         props:
           algorithm-expression: t_order_item_calcite_sharding_${item_id % 2}
+      table_inline_user_id:
+        type: INLINE
+        props:
+          algorithm-expression: t_user_encrypt_calcite_sharding_${user_id % 2}
 
