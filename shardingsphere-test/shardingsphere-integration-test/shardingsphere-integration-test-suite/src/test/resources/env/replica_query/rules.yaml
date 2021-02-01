@@ -19,11 +19,11 @@ rules:
 - !SHARDING
   tables:
     t_order:
-      actualDataNodes: primary_ds.t_order
+      actualDataNodes: primary-replica-ds.t_order
       tableStrategy:
         none:
     t_order_item:
-      actualDataNodes: primary_ds.t_order_item
+      actualDataNodes: primary-replica-ds.t_order_item
       tableStrategy:
         none:
   bindingTables:
