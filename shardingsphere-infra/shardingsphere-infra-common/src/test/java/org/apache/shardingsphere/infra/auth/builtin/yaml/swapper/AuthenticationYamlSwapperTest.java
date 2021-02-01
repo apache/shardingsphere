@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.auth.builtin.yaml.swapper;
 
+import org.apache.shardingsphere.infra.auth.Grantee;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
@@ -37,13 +38,15 @@ public final class AuthenticationYamlSwapperTest {
     @Test
     public void assertSwapToYaml() {
         DefaultAuthentication authentication = new DefaultAuthentication();
-        authentication.getUsers().put("user1", new ShardingSphereUser("pwd1", Collections.singleton("db1")));
-        authentication.getUsers().put("user2", new ShardingSphereUser("pwd2", Collections.singleton("db2")));
+        authentication.getUsers().put("user1", new ShardingSphereUser("pwd1", "127.0.0.1", Collections.singleton("db1")));
+        authentication.getUsers().put("user2", new ShardingSphereUser("pwd2", "127.0.0.2", Collections.singleton("db2")));
         YamlAuthenticationConfiguration actual = new AuthenticationYamlSwapper().swapToYamlConfiguration(authentication);
         assertThat(actual.getUsers().size(), is(2));
         assertThat(actual.getUsers().get("user1").getPassword(), is("pwd1"));
+        assertThat(actual.getUsers().get("user1").getHostname(), is("127.0.0.1"));
         assertThat(actual.getUsers().get("user1").getAuthorizedSchemas(), is("db1"));
         assertThat(actual.getUsers().get("user2").getPassword(), is("pwd2"));
+        assertThat(actual.getUsers().get("user2").getHostname(), is("127.0.0.2"));
         assertThat(actual.getUsers().get("user2").getAuthorizedSchemas(), is("db2"));
     }
     
@@ -61,10 +64,10 @@ public final class AuthenticationYamlSwapperTest {
         YamlAuthenticationConfiguration yamlConfig = new YamlAuthenticationConfiguration();
         yamlConfig.setUsers(users);
         DefaultAuthentication actual = new AuthenticationYamlSwapper().swapToObject(yamlConfig);
-        Optional<ShardingSphereUser> actualUser1 = actual.findUser("user1");
+        Optional<ShardingSphereUser> actualUser1 = actual.findUser(new Grantee("user1", ""));
         assertTrue(actualUser1.isPresent());
         assertThat(actualUser1.get().getAuthorizedSchemas().size(), is(1));
-        Optional<ShardingSphereUser> actualUser2 = actual.findUser("user2");
+        Optional<ShardingSphereUser> actualUser2 = actual.findUser(new Grantee("user2", ""));
         assertTrue(actualUser2.isPresent());
         assertThat(actualUser2.get().getAuthorizedSchemas().size(), is(2));
     }

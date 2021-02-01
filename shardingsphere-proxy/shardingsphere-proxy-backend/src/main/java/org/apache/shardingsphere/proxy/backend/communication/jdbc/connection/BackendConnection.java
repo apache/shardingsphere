@@ -23,6 +23,7 @@ import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
+import org.apache.shardingsphere.infra.auth.Grantee;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -66,7 +67,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
     private int connectionId;
     
     @Setter
-    private String username;
+    private Grantee grantee;
     
     @Setter
     private CalciteExecutor calciteExecutor;

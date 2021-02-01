@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.state;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.lock.LockContext;
 
 import java.util.Collections;
 import java.util.Deque;
@@ -47,14 +46,6 @@ public final class StateContext {
                 recoverState();
             }
         }
-        signalAll();
-    }
-    
-    private static void signalAll() {
-        if (getCurrentState() == StateType.LOCK) {
-            return;
-        }
-        LockContext.signalAll();
     }
     
     /**

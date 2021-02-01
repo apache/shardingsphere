@@ -15,22 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth.builtin.yaml.config;
+package org.apache.shardingsphere.infra.auth;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * User for YAML.
+ * Schema privilege.
  */
 @Getter
-@Setter
-public final class YamlUserConfiguration implements YamlConfiguration {
+public final class SchemaPrivilege {
     
-    private String hostname;
+    private final Map<String, TablePrivilege> tablePrivileges = new LinkedHashMap<>();
     
-    private String password;
-    
-    private String authorizedSchemas;
+    /**
+     * Has privileges.
+     *
+     * @param table table
+     * @param privileges privileges
+     * @return has privileges or not
+     */
+    public boolean hasPrivileges(final String table, final Collection<PrivilegeType> privileges) {
+        if (!tablePrivileges.containsKey(table)) {
+            return false;
+        }
+        if (tablePrivileges.containsKey("*")) {
+            return tablePrivileges.get("*").hasPrivileges(privileges);
+        }
+        return tablePrivileges.get(table).hasPrivileges(privileges);
+    }
 }

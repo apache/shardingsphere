@@ -31,5 +31,7 @@ public final class ShardingSphereUser {
     
     private final String password;
     
+    private final String hostname;
+    
     private final Collection<String> authorizedSchemas;
 }

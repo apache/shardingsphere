@@ -48,7 +48,7 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     }
     
     private boolean isAuthorizedSchema(final BackendConnection backendConnection, final String schema) {
-        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(backendConnection.getUsername());
+        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(backendConnection.getGrantee());
         Collection<String> authorizedSchemas = user.isPresent() ? user.get().getAuthorizedSchemas() : Collections.emptyList();
         return authorizedSchemas.isEmpty() || authorizedSchemas.contains(schema);
     }

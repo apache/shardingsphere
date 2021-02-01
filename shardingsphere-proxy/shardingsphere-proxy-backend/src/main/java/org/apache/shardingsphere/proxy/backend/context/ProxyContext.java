@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
@@ -100,5 +101,14 @@ public final class ProxyContext {
      */
     public List<String> getAllSchemaNames() {
         return new ArrayList<>(metaDataContexts.getAllSchemaNames());
+    }
+    
+    /**
+     * Get lock context.
+     * 
+     * @return lock context
+     */
+    public LockContext getLockContext() {
+        return metaDataContexts.getLockContext();
     }
 }

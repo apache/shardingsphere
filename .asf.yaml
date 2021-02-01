@@ -21,7 +21,7 @@ notifications:
   pullrequests: notifications@shardingsphere.apache.org
 
 github:
-  description: Distributed database middleware
+  description: Distributed Database Ecosphere
   labels:
     - shardingsphere
     - database
@@ -33,7 +33,6 @@ github:
     - database-cluster
     - mysql
     - postgresql
-    - middleware
   features:
     issues: true
     projects: true

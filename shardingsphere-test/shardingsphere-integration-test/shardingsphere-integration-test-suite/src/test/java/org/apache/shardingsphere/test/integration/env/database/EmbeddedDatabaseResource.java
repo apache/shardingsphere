@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth.builtin.yaml.config;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+package org.apache.shardingsphere.test.integration.env.database;
 
 /**
- * User for YAML.
+ * Embedded database resource.
  */
-@Getter
-@Setter
-public final class YamlUserConfiguration implements YamlConfiguration {
+public interface EmbeddedDatabaseResource {
     
-    private String hostname;
+    /**
+     * Start embedded database resource.
+     */
+    void start();
     
-    private String password;
-    
-    private String authorizedSchemas;
+    /**
+     * Stop embedded database resource.
+     */
+    void stop();
 }

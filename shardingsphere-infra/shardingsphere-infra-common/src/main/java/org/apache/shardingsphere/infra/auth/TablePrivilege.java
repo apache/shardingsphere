@@ -15,22 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth.builtin.yaml.config;
+package org.apache.shardingsphere.infra.auth;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
 
 /**
- * User for YAML.
+ * Table privilege.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlUserConfiguration implements YamlConfiguration {
+public final class TablePrivilege {
     
-    private String hostname;
+    private final String tableName;
     
-    private String password;
+    private final Collection<PrivilegeType> privileges;
     
-    private String authorizedSchemas;
+    /**
+     * Has privileges.
+     *
+     * @param privileges privileges
+     * @return has privileges or not
+     */
+    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
+        if (this.privileges.contains(PrivilegeType.ALL)) {
+            return true;
+        }
+        return this.privileges.containsAll(privileges);
+    }
 }

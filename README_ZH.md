@@ -1,4 +1,4 @@
-# [ShardingSphere - 分布式数据库中间层生态圈](https://shardingsphere.apache.org/index_zh.html)
+# [ShardingSphere - 分布式数据库生态圈](https://shardingsphere.apache.org/index_zh.html)
 
 **官方网站: https://shardingsphere.apache.org/**
 

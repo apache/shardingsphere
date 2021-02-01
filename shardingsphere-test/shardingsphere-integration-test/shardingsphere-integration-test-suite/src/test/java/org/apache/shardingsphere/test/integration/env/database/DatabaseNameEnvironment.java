@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth.builtin.yaml.config;
+package org.apache.shardingsphere.test.integration.env.database;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * User for YAML.
+ * XML definition of database name environment.
  */
 @Getter
-@Setter
-public final class YamlUserConfiguration implements YamlConfiguration {
+@XmlRootElement(name = "databases")
+public final class DatabaseNameEnvironment {
     
-    private String hostname;
-    
-    private String password;
-    
-    private String authorizedSchemas;
+    @XmlElement(name = "database")
+    private final Collection<String> databases = new LinkedList<>();
 }

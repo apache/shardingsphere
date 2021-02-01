@@ -30,9 +30,10 @@ public final class UserYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        YamlUserConfiguration actual = new UserYamlSwapper().swapToYamlConfiguration(new ShardingSphereUser("pwd", Collections.singleton("db1")));
+        YamlUserConfiguration actual = new UserYamlSwapper().swapToYamlConfiguration(new ShardingSphereUser("pwd", "127.0.0.1", Collections.singleton("db1")));
         assertThat(actual.getAuthorizedSchemas(), is("db1"));
         assertThat(actual.getPassword(), is("pwd"));
+        assertThat(actual.getHostname(), is("127.0.0.1"));
     }
     
     @Test

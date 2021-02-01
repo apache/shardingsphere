@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
-import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -129,7 +128,7 @@ public final class DatabaseCommunicationEngine {
     
     private boolean tryGlobalLock(final ExecutionContext executionContext, final Long lockTimeoutMilliseconds) {
         if (needLock(executionContext)) {
-            if (!LockContext.getLockStrategy().tryGlobalLock(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
+            if (!ProxyContext.getInstance().getLockContext().tryGlobalLock(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
                 throw new LockWaitTimeoutException(lockTimeoutMilliseconds);
             }
             return true;
@@ -142,7 +141,7 @@ public final class DatabaseCommunicationEngine {
     }
     
     private void releaseGlobalLock() {
-        LockContext.getLockStrategy().releaseGlobalLock();
+        ProxyContext.getInstance().getLockContext().releaseGlobalLock();
     }
     
     private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
