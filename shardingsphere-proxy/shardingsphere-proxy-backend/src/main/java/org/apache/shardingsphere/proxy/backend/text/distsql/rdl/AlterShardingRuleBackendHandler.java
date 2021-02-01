@@ -118,8 +118,14 @@ public final class AlterShardingRuleBackendHandler extends SchemaRequiredBackend
     private void alter(final YamlShardingRuleConfiguration yamlShardingRuleConfig, final AlterShardingRuleStatement statement) {
         modifyTableRule(yamlShardingRuleConfig, statement);
         addTableRule(yamlShardingRuleConfig, statement);
-        if (!statement.getBindingTables().isEmpty()) {
-            yamlShardingRuleConfig.setBindingTables(statement.getBindingTables());
+        Collection<String> existBindingTables = yamlShardingRuleConfig.getBindingTables();
+        for (String each : statement.getAddBindingTables()) {
+            if (!existBindingTables.contains(each)) {
+                existBindingTables.add(each);
+            }
+        }
+        for (String each : statement.getDropBindingTables()) {
+            existBindingTables.remove(each);
         }
         if (!statement.getBroadcastTables().isEmpty()) {
             yamlShardingRuleConfig.setBroadcastTables(statement.getBroadcastTables());
@@ -150,7 +156,7 @@ public final class AlterShardingRuleBackendHandler extends SchemaRequiredBackend
                 yamlShardingRuleConfig.getShardingAlgorithms().put(ShardingRuleStatementConverter.getAlgorithmName(each.getLogicTable(), each.getKeyGenerateStrategy().getAlgorithmName()),
                         ShardingRuleStatementConverter.createAlgorithmConfiguration(each.getKeyGenerateStrategy()));
             }
-            yamlShardingRuleConfig.getAutoTables().put(existTable.getLogicTable(), autoTable);
+            yamlShardingRuleConfig.getAutoTables().put(each.getLogicTable(), autoTable);
         }
     }
     
