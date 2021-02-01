@@ -40,7 +40,6 @@ import org.apache.shardingsphere.scaling.core.execute.executor.AbstractScalingEx
 import org.apache.shardingsphere.scaling.core.execute.executor.ScalingExecutor;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.utils.ElasticJobUtil;
-import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 
 import java.util.Map;
 import java.util.Optional;
@@ -55,7 +54,7 @@ public final class ScalingJobExecutor extends AbstractScalingExecutor implements
     
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
     
-    private static final Pattern CONFIG_PATTERN = Pattern.compile(ScalingTaskUtil.getScalingListenerPath("(\\d+)", ScalingConstant.CONFIG));
+    private static final Pattern CONFIG_PATTERN = Pattern.compile("(\\d+)/config");
     
     private final RegistryRepositoryAPI registryRepositoryAPI = ScalingAPIFactory.getRegistryRepositoryAPI();
     
@@ -75,7 +74,7 @@ public final class ScalingJobExecutor extends AbstractScalingExecutor implements
     }
     
     private void watchConfigRepository() {
-        registryRepositoryAPI.watch(ScalingConstant.SCALING_LISTENER_PATH, event -> {
+        registryRepositoryAPI.watch(ScalingConstant.SCALING_ROOT, event -> {
             Optional<JobConfiguration> jobConfig = getJobConfig(event);
             if (!jobConfig.isPresent()) {
                 return;
@@ -144,7 +143,7 @@ public final class ScalingJobExecutor extends AbstractScalingExecutor implements
         if (new LeaderService(registryCenter, jobId).isLeader()) {
             log.info("leader worker update config.");
             JobAPIFactory.createJobConfigurationAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(),
-                    governanceConfig.getName() + ScalingConstant.SCALING_ELASTIC_JOB_PATH, null)
+                    governanceConfig.getName() + ScalingConstant.SCALING_ROOT, null)
                     .updateJobConfiguration(JobConfigurationPOJO.fromJobConfiguration(createJobConfig(jobId, jobConfig)));
         }
         jobBootstrapWrapper.setRunning(jobConfig.getHandleConfig().isRunning());

@@ -96,7 +96,7 @@ public final class ScalingAPIFactory {
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
             GovernanceCenterConfiguration registryCenterConfig = governanceConfig.getRegistryCenterConfiguration();
             RegistryRepository registryRepository = TypedSPIRegistry.getRegisteredService(RegistryRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
-            registryRepository.init(governanceConfig.getName(), registryCenterConfig);
+            registryRepository.init(governanceConfig.getName() + ScalingConstant.SCALING_ROOT, registryCenterConfig);
             INSTANCE = new RegistryRepositoryAPIImpl(registryRepository);
         }
     }
@@ -112,7 +112,7 @@ public final class ScalingAPIFactory {
         
         private ElasticJobAPIHolder() {
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
-            String namespace = governanceConfig.getName() + ScalingConstant.SCALING_ROOT_PATH;
+            String namespace = governanceConfig.getName() + ScalingConstant.SCALING_ROOT;
             jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
             jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
         }

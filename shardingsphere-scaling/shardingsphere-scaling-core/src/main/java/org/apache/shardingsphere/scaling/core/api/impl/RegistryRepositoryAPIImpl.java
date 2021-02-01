@@ -29,7 +29,6 @@ import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTa
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
-import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +50,7 @@ public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
         jobPosition.setDatabaseType(jobContext.getJobConfig().getHandleConfig().getDatabaseType());
         jobPosition.setIncrementalTaskProgressMap(getIncrementalTaskProgressMap(jobContext));
         jobPosition.setInventoryTaskProgressMap(getInventoryTaskProgressMap(jobContext));
-        registryRepository.persist(ScalingTaskUtil.getScalingListenerPath(jobContext.getJobId(), jobContext.getShardingItem()), jobPosition.toJson());
+        registryRepository.persist(getPath(jobContext.getJobId(), jobContext.getShardingItem()), jobPosition.toJson());
     }
     
     private Map<String, IncrementalTaskProgress> getIncrementalTaskProgressMap(final JobContext jobContext) {
@@ -70,11 +69,15 @@ public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
         return result;
     }
     
+    private String getPath(final long jobId, final int shardingItem) {
+        return String.format("/%d/offset/%d", jobId, shardingItem);
+    }
+    
     @Override
     public JobProgress getJobProgress(final long jobId, final int shardingItem) {
         String data = null;
         try {
-            data = registryRepository.get(ScalingTaskUtil.getScalingListenerPath(jobId, shardingItem));
+            data = registryRepository.get(getPath(jobId, shardingItem));
         } catch (final NullPointerException ex) {
             log.info("job {}-{} without break point.", jobId, shardingItem);
         }
@@ -84,7 +87,7 @@ public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
     @Override
     public void deleteJob(final long jobId) {
         log.info("delete job {}", jobId);
-        registryRepository.delete(ScalingTaskUtil.getScalingListenerPath(jobId));
+        registryRepository.delete(String.valueOf(jobId));
     }
     
     @Override
