@@ -40,7 +40,7 @@ import java.util.concurrent.Future;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TaskExecuteEngine {
     
-    public static final String THREAD_NAME_FORMAT = "ShardingScaling-execute-%d";
+    public static final String THREAD_NAME_FORMAT = "Scaling-execute-%d";
     
     private final ListeningExecutorService executorService;
     
