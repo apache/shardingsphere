@@ -54,8 +54,7 @@ rules:
           shardingColumn: order_id
           shardingAlgorithmName: standard_test
   bindingTables:
-    - t_order
-    - t_order_item
+    - t_order,t_order_item
   broadcastTables:
     - t_broadcast_table
     - t_broadcast_details
