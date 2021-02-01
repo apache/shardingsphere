@@ -40,9 +40,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class FinishedCheckJob implements SimpleJob {
     
-    private final RegistryRepositoryAPI registryRepositoryAPI = ScalingAPIFactory.getRegistryRepositoryAPI();
-    
     private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
+    
+    private final RegistryRepositoryAPI registryRepositoryAPI = ScalingAPIFactory.getRegistryRepositoryAPI();
     
     @Override
     public void execute(final ShardingContext shardingContext) {

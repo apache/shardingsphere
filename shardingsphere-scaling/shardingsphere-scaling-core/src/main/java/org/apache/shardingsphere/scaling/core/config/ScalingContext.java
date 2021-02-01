@@ -54,6 +54,9 @@ public final class ScalingContext {
      * @param serverConfig server configuration
      */
     public void init(final ServerConfiguration serverConfig) {
+        if (null != this.serverConfig) {
+            return;
+        }
         this.serverConfig = serverConfig;
         inventoryDumperExecuteEngine = TaskExecuteEngine.newFixedThreadInstance(serverConfig.getWorkerThread());
         incrementalDumperExecuteEngine = TaskExecuteEngine.newCachedThreadInstance();

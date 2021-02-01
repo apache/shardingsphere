@@ -26,6 +26,7 @@
         <appender-ref ref="console" />
     </logger>
     <logger name="com.zaxxer.hikari" level="warn" />
+    <logger name="org.apache.shardingsphere.scaling.web.HttpServerHandler" level="off" />
 
     <root>
         <level value="info" />

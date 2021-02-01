@@ -33,8 +33,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.position.JobProgress;
@@ -42,7 +40,6 @@ import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
 import org.apache.shardingsphere.scaling.util.ServerConfigurationInitializer;
 import org.apache.shardingsphere.scaling.web.entity.ResponseContent;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -73,23 +70,12 @@ public final class HttpServerHandlerTest {
     @Mock
     private ChannelHandlerContext channelHandlerContext;
     
-    @BeforeClass
-    public static void init() {
-        ServerConfigurationInitializer.init();
-//        ScalingContext.getInstance().init(mockServerConfig());
-    }
-    
-    private static ServerConfiguration mockServerConfig() {
-        ServerConfigurationInitializer.init();
-        ServerConfiguration serverConfig = new ServerConfiguration();
-        return null;
-    }
-    
     @Before
     @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
+        ServerConfigurationInitializer.init();
         httpServerHandler = new HttpServerHandler();
-        ReflectionUtil.setFieldValue(httpServerHandler, "scalingJobService", scalingAPI);
+        ReflectionUtil.setFieldValue(httpServerHandler, "scalingAPI", scalingAPI);
     }
     
     @Test
@@ -119,8 +105,8 @@ public final class HttpServerHandlerTest {
     public void assertGetJobProgress() {
         when(scalingAPI.getProgress(1L)).thenReturn(mockJobProgress());
         ResponseContent<?> responseContent = execute("/scaling/job/progress/1");
-        Map<String, String> map = (Map<String, String>) responseContent.getModel();
-        assertThat(map.get("status"), is("RUNNING"));
+        Map<String, Map<String, String>> map = (Map<String, Map<String, String>>) responseContent.getModel();
+        assertThat(map.get("1").get("status"), is("RUNNING"));
     }
     
     @Test

@@ -21,10 +21,7 @@ import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
-import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
-import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
 import org.apache.shardingsphere.scaling.core.api.JobInfo;
-import org.apache.shardingsphere.scaling.core.api.RegistryRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
@@ -53,15 +50,9 @@ import java.util.stream.Stream;
 @Slf4j
 public final class ScalingAPIImpl implements ScalingAPI {
     
-    private final RegistryRepositoryAPI registryRepositoryAPI = ScalingAPIFactory.getRegistryRepositoryAPI();
-    
-    private final JobConfigurationAPI jobConfigurationAPI = ScalingAPIFactory.getJobConfigurationAPI();
-    
-    private final JobStatisticsAPI jobStatisticsAPI = ScalingAPIFactory.getJobStatisticsAPI();
-    
     @Override
     public List<JobInfo> list() {
-        return jobStatisticsAPI.getAllJobsBriefInfo().stream()
+        return ScalingAPIFactory.getJobStatisticsAPI().getAllJobsBriefInfo().stream()
                 .filter(each -> !each.getJobName().startsWith("_"))
                 .map(each -> getJobInfo(each.getJobName()))
                 .collect(Collectors.toList());
@@ -128,7 +119,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
         log.info("Start scaling job {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         jobConfigPOJO.setDisabled(false);
-        jobConfigurationAPI.updateJobConfiguration(jobConfigPOJO);
+        ScalingAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
     }
     
     private void executeScalingJob(final JobConfiguration jobConfig) {
@@ -147,19 +138,19 @@ public final class ScalingAPIImpl implements ScalingAPI {
         log.info("Stop scaling job {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         jobConfigPOJO.setDisabled(true);
-        jobConfigurationAPI.updateJobConfiguration(jobConfigPOJO);
+        ScalingAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
     }
     
     @Override
     public void remove(final long jobId) {
         log.info("Remove scaling job {}", jobId);
-        registryRepositoryAPI.deleteJob(jobId);
+        ScalingAPIFactory.getRegistryRepositoryAPI().deleteJob(jobId);
     }
     
     @Override
     public Map<Integer, JobProgress> getProgress(final long jobId) {
         return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getShardingTotalCount()).boxed()
-                .collect(HashMap::new, (map, each) -> map.put(each, registryRepositoryAPI.getJobProgress(jobId, each)), HashMap::putAll);
+                .collect(HashMap::new, (map, each) -> map.put(each, ScalingAPIFactory.getRegistryRepositoryAPI().getJobProgress(jobId, each)), HashMap::putAll);
     }
     
     @Override
@@ -191,7 +182,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     
     private JobConfigurationPOJO getElasticJobConfigPOJO(final long jobId) {
         try {
-            return jobConfigurationAPI.getJobConfiguration(String.valueOf(jobId));
+            return ScalingAPIFactory.getJobConfigurationAPI().getJobConfiguration(String.valueOf(jobId));
         } catch (final NullPointerException ex) {
             log.warn("Get job {} config failed.", jobId);
             throw new ScalingJobNotFoundException(String.format("Can not find job by id %s", jobId));
