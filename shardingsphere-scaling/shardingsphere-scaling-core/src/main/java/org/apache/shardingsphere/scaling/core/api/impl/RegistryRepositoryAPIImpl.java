@@ -70,7 +70,7 @@ public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
     }
     
     private String getPath(final long jobId, final int shardingItem) {
-        return String.format("/%d/%d", jobId, shardingItem);
+        return String.format("/%d/offset/%d", jobId, shardingItem);
     }
     
     @Override
