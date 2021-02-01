@@ -51,6 +51,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
 import org.apache.shardingsphere.infra.rule.type.StatusContainedRule;
+import org.apache.shardingsphere.infra.state.StateContext;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -139,6 +140,11 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     @Override
     public LockContext getLockContext() {
         return this.lockContext;
+    }
+    
+    @Override
+    public StateContext getStateContext() {
+        return metaDataContexts.getStateContext();
     }
     
     @Override

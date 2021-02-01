@@ -17,14 +17,10 @@
 
 package org.apache.shardingsphere.infra.lock;
 
-import org.apache.shardingsphere.infra.state.StateContext;
-import org.apache.shardingsphere.infra.state.StateType;
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class StandardLockContextTest {
@@ -34,15 +30,12 @@ public final class StandardLockContextTest {
     @Test
     public void assertTryLock() {
         assertTrue(lockContext.tryGlobalLock(50L, TimeUnit.MILLISECONDS));
-        assertThat(StateContext.getCurrentState(), is(StateType.LOCK));
         lockContext.releaseGlobalLock();
     }
     
     @Test
     public void assertReleaseLock() {
         assertTrue(lockContext.tryGlobalLock(50L, TimeUnit.MILLISECONDS));
-        assertThat(StateContext.getCurrentState(), is(StateType.LOCK));
         lockContext.releaseGlobalLock();
-        assertThat(StateContext.getCurrentState(), is(StateType.OK));
     }
 }

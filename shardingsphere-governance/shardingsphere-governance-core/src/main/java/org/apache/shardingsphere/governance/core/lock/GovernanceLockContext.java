@@ -24,7 +24,6 @@ import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.AbstractLockContext;
-import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.infra.state.StateType;
 
@@ -53,23 +52,13 @@ public final class GovernanceLockContext extends AbstractLockContext {
     }
     
     /**
-     * Switch state.
-     *
-     * @param event state event
-     */
-    @Subscribe
-    public void switchState(final StateEvent event) {
-        StateContext.switchState(event);
-    }
-    
-    /**
      * Lock instance after global lock added.
      *
      * @param event global lock added event
      */
     @Subscribe
     public void doLock(final GlobalLockAddedEvent event) {
-        StateContext.switchState(new StateEvent(StateType.LOCK, true));
+        ShardingSphereEventBus.getInstance().post(new StateEvent(StateType.LOCK, true));
         registryCenter.persistInstanceData(RegistryCenterNodeStatus.LOCKED.toString());
     }
     
@@ -80,10 +69,8 @@ public final class GovernanceLockContext extends AbstractLockContext {
      */
     @Subscribe
     public void unlock(final UnlockEvent event) {
-        if (StateContext.getCurrentState() == StateType.LOCK) {
-            StateContext.switchState(new StateEvent(StateType.LOCK, false));
-            registryCenter.persistInstanceData("");
-            signalAll();
-        }
+        ShardingSphereEventBus.getInstance().post(new StateEvent(StateType.LOCK, false));
+        registryCenter.persistInstanceData("");
+        signalAll();
     }
 }

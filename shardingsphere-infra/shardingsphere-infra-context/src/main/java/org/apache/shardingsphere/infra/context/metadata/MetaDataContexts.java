@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
+import org.apache.shardingsphere.infra.state.StateContext;
 
 import java.io.Closeable;
 import java.util.Collection;
@@ -88,4 +89,11 @@ public interface MetaDataContexts extends Closeable {
      * @return lock context
      */
     LockContext getLockContext();
+    
+    /**
+     * Get state context.
+     * 
+     * @return state context
+     */
+    StateContext getStateContext();
 }

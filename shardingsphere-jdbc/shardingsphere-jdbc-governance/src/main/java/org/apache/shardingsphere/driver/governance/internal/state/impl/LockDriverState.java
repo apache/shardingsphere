@@ -23,7 +23,6 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -43,12 +42,12 @@ public final class LockDriverState implements DriverState {
     public Connection getConnection(final Map<String, DataSource> dataSourceMap, 
                                     final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
         block(metaDataContexts);
-        if (StateContext.getCurrentState() == StateType.OK) {
+        if (metaDataContexts.getStateContext().getCurrentState() == StateType.OK) {
             return new ShardingSphereConnection(dataSourceMap, metaDataContexts, transactionContexts, TransactionTypeHolder.get());
-        } else if (StateContext.getCurrentState() == StateType.CIRCUIT_BREAK) {
+        } else if (metaDataContexts.getStateContext().getCurrentState() == StateType.CIRCUIT_BREAK) {
             return new CircuitBreakerDataSource().getConnection();
         }
-        throw new UnsupportedOperationException(String.format("Unknown driver state type: %s", StateContext.getCurrentState().name()));
+        throw new UnsupportedOperationException(String.format("Unknown driver state type: %s", metaDataContexts.getStateContext().getCurrentState().name()));
     }
     
     private void block(final MetaDataContexts metaDataContexts) {
