@@ -3,10 +3,7 @@ package org.apache.shardingsphere.sharding.rule.single;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import lombok.Data;
 import lombok.val;
-import org.apache.commons.codec.binary.StringUtils;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -14,7 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.OngoingStubbing;
+
 
 import javax.sql.DataSource;
 import java.sql.Connection;
