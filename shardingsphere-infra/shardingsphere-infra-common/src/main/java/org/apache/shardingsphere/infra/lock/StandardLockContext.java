@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.lock;
 
-import org.apache.shardingsphere.infra.state.StateContext;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.infra.state.StateType;
 
@@ -39,7 +39,7 @@ public final class StandardLockContext extends AbstractLockContext {
         } catch (final InterruptedException ignored) {
         }
         if (result) {
-            StateContext.switchState(new StateEvent(StateType.LOCK, true));
+            ShardingSphereEventBus.getInstance().post(new StateEvent(StateType.LOCK, true));
         }
         return result;
     }
@@ -47,7 +47,7 @@ public final class StandardLockContext extends AbstractLockContext {
     @Override
     public void releaseGlobalLock() {
         lock.unlock();
-        StateContext.switchState(new StateEvent(StateType.LOCK, false));
+        ShardingSphereEventBus.getInstance().post(new StateEvent(StateType.LOCK, false));
         signalAll();
     }
 }
