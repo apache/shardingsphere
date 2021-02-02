@@ -34,7 +34,7 @@ import java.util.Map;
 public final class PrivilegeMerger {
     
     /**
-     * Audit SQL.
+     * Merge.
      * 
      * @param authentication authentication
      * @param schemaName schema name
