@@ -27,10 +27,10 @@ import org.apache.shardingsphere.scaling.core.job.position.PositionInitializerFa
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryTaskSplitter;
+import org.apache.shardingsphere.scaling.core.job.schedule.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
-import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
 
 import java.sql.SQLException;
 import java.util.LinkedList;
