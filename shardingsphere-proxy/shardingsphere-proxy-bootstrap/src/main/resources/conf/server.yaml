@@ -47,7 +47,6 @@
 #
 #props:
 #  max-connections-size-per-query: 1
-#  acceptor-size: 16  # The default value is available processors count * 2.
 #  executor-size: 16  # Infinite by default.
 #  proxy-frontend-flush-threshold: 128  # The default value is 128.
 #    # LOCAL: Proxy will run with LOCAL transaction.
