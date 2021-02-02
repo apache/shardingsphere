@@ -25,3 +25,7 @@ DistSQL 划分为 RDL、RQL 和 SCTL 这三种具体类型。
 ## 目标
 
 **打破中间件和数据库之间的界限，让开发者像使用数据库一样使用 Apache ShardingSphere，是 DistSQL 的设计目标。**
+
+## 注意事项
+
+DistSQL 只能用于 ShardingSphere-Proxy，ShardingSphere-JDBC 暂不提供。
