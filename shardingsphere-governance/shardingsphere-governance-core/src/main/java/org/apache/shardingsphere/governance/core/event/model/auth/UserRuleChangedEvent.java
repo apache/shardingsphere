@@ -20,14 +20,16 @@ package org.apache.shardingsphere.governance.core.event.model.auth;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+
+import java.util.Collection;
 
 /**
- * Authentication changed event.
+ * User rule changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AuthenticationChangedEvent implements GovernanceEvent {
+public final class UserRuleChangedEvent implements GovernanceEvent {
     
-    private final DefaultAuthentication authentication;
+    private final Collection<ShardingSphereUser> users;
 }

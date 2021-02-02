@@ -15,38 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth;
+package org.apache.shardingsphere.infra.metadata.privilege.loader;
 
-import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
-import java.util.Map;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Authentication.
-*/
-public interface Authentication {
+ * Privilege loader engine.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PrivilegeLoaderEngine {
+    
+    static {
+        ShardingSphereServiceLoader.register(PrivilegeLoader.class);
+    }
     
     /**
-     * Get authentication.
+     * Get privilege loader.
      *
-     * @return Authentication
+     * @return privilege loader
      */
-    Map<ShardingSphereUser, ShardingSpherePrivilege> getAuthentication();
-    
-    /**
-     * Find user.
-     * 
-     * @param grantee grantee
-     * @return found user
-     */
-    Optional<ShardingSphereUser> findUser(Grantee grantee);
-    
-    /**
-     * Find Privilege.
-     *
-     * @param grantee grantee
-     * @return found user
-     */
-    Optional<ShardingSpherePrivilege> findPrivilege(Grantee grantee);
+    public static Optional<PrivilegeLoader> getPrivilegeLoader() {
+        Collection<PrivilegeLoader> loaders = ShardingSphereServiceLoader.newServiceInstances(PrivilegeLoader.class);
+        if (loaders.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(loaders.iterator().next());
+    }
 }

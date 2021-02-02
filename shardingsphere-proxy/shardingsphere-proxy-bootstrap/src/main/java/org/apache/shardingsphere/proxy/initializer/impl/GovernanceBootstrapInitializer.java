@@ -21,9 +21,7 @@ import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataC
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
-import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
@@ -69,7 +67,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
             governanceFacade.onlineInstance();
         } else {
             governanceFacade.onlineInstance(
-                    getDataSourceConfigurationMap(ruleConfigs), getRuleConfigurations(ruleConfigs), getAuthentication(serverConfig.getAuthentication()), serverConfig.getProps());
+                    getDataSourceConfigurationMap(ruleConfigs), getRuleConfigurations(ruleConfigs), new UserRuleYamlSwapper().swapToObject(serverConfig.getAuthentication()), serverConfig.getProps());
         }
     }
     
@@ -92,17 +90,12 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
             entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private DefaultAuthentication getAuthentication(final YamlAuthenticationConfiguration authConfig) {
-        return new AuthenticationYamlSwapper().swapToObject(authConfig);
-    }
-    
     private ProxyConfiguration loadProxyConfiguration() {
         Collection<String> schemaNames = governanceFacade.getConfigCenter().getAllSchemaNames();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
         Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules(schemaNames);
-        DefaultAuthentication authentication = governanceFacade.getConfigCenter().loadAuthentication();
         Properties props = governanceFacade.getConfigCenter().loadProperties();
-        return new ProxyConfiguration(schemaDataSources, schemaRules, authentication, props);
+        return new ProxyConfiguration(schemaDataSources, schemaRules, governanceFacade.getConfigCenter().loadUserRule(), props);
     }
     
     private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {

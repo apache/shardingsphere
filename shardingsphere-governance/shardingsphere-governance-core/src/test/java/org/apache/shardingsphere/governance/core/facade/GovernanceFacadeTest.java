@@ -26,6 +26,7 @@ import org.apache.shardingsphere.governance.repository.api.config.GovernanceCent
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.junit.Before;
@@ -76,11 +77,12 @@ public final class GovernanceFacadeTest {
         Map<String, Collection<RuleConfiguration>> ruleConfigurationMap = Collections.singletonMap("sharding_db", Collections.singletonList(mock(RuleConfiguration.class)));
         ShardingSphereUser user = new ShardingSphereUser("root", "root", "", Collections.singleton("db1"));
         DefaultAuthentication authentication = new DefaultAuthentication();
-        authentication.getUsers().add(user);
+        authentication.getAuthentication().put(user, new ShardingSpherePrivilege());
         Properties props = new Properties();
-        governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigMap), ruleConfigurationMap, authentication, props);
+        governanceFacade.onlineInstance(
+                Collections.singletonMap("sharding_db", dataSourceConfigMap), ruleConfigurationMap, authentication.getAuthentication().keySet(), props);
         verify(configCenter).persistConfigurations("sharding_db", dataSourceConfigMap, ruleConfigurationMap.get("sharding_db"), false);
-        verify(configCenter).persistGlobalConfiguration(authentication, props, false);
+        verify(configCenter).persistGlobalConfiguration(authentication.getAuthentication().keySet(), props, false);
         verify(registryCenter).persistInstanceOnline();
         verify(registryCenter).persistDataNodes();
         verify(listenerManager).init();

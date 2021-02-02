@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 import java.util.Map;
 
 /**
- * Authentication configuration for YAML.
+ * User rule configuration for YAML.
  */
 @Getter
 @Setter
-public final class YamlAuthenticationConfiguration implements YamlConfiguration {
+public final class YamlUserRuleConfiguration implements YamlConfiguration {
     
     private Map<String, YamlUserConfiguration> users;
 }

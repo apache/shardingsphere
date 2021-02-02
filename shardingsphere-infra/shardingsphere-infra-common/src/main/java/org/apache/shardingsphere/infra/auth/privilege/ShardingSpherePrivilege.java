@@ -15,38 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth;
+package org.apache.shardingsphere.infra.auth.privilege;
 
-import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
+import lombok.Getter;
 
-import java.util.Map;
-import java.util.Optional;
+import java.util.Collections;
 
 /**
- * Authentication.
-*/
-public interface Authentication {
+ * ShardingSphere privilege.
+ */
+@Getter
+public final class ShardingSpherePrivilege {
+    
+    private final InstancePrivilege instancePrivilege = new InstancePrivilege();
+    
+    private final SchemaPrivilege schemaPrivilege = new SchemaPrivilege();
     
     /**
-     * Get authentication.
+     * Set super privilege.
      *
-     * @return Authentication
      */
-    Map<ShardingSphereUser, ShardingSpherePrivilege> getAuthentication();
-    
-    /**
-     * Find user.
-     * 
-     * @param grantee grantee
-     * @return found user
-     */
-    Optional<ShardingSphereUser> findUser(Grantee grantee);
-    
-    /**
-     * Find Privilege.
-     *
-     * @param grantee grantee
-     * @return found user
-     */
-    Optional<ShardingSpherePrivilege> findPrivilege(Grantee grantee);
+    public void setSuper() {
+        instancePrivilege.getPrivileges().add(PrivilegeType.ALL);
+        schemaPrivilege.getTablePrivileges().put(PrivilegeType.ALL.getName(),
+                new TablePrivilege(PrivilegeType.ALL.getName(), Collections.singletonList(PrivilegeType.ALL)));
+    }
 }

@@ -116,7 +116,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         assertNotNull(actual);
         assertSchemaDataSources(actual.getSchemaDataSources());
         assertSchemaRules(actual.getSchemaRules());
-        assertAuthentication(actual.getAuthentication());
+        assertAuthentication(new DefaultAuthentication(actual.getUsers()));
         assertProps(actual.getProps());
     }
     

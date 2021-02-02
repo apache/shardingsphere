@@ -19,25 +19,51 @@ package org.apache.shardingsphere.infra.auth.builtin;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.Grantee;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.privilege.PrivilegeType;
+import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
+import org.apache.shardingsphere.infra.auth.privilege.TablePrivilege;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * Default authentication.
 */
+@NoArgsConstructor
 @Getter
 public final class DefaultAuthentication implements Authentication {
     
-    private final Collection<ShardingSphereUser> users = new LinkedHashSet<>();
+    private final Map<ShardingSphereUser, ShardingSpherePrivilege> auth = new LinkedHashMap<>();
+    
+    public DefaultAuthentication(final Collection<ShardingSphereUser> users) {
+        for (ShardingSphereUser each : users) {
+            auth.put(each, createShardingSpherePrivilege());
+        }
+    }
+    
+    private ShardingSpherePrivilege createShardingSpherePrivilege() {
+        ShardingSpherePrivilege result = new ShardingSpherePrivilege();
+        result.getInstancePrivilege().getPrivileges().add(PrivilegeType.ALL);
+        result.getSchemaPrivilege().getTablePrivileges().put(PrivilegeType.ALL.getName(),
+                new TablePrivilege(PrivilegeType.ALL.getName(), Collections.singleton(PrivilegeType.ALL)));
+        return result;
+    }
     
     @Override
     public Optional<ShardingSphereUser> findUser(final Grantee grantee) {
-        return users.stream().filter(entry -> entry.getUsername().equals(grantee.getUsername())
-                && (entry.getHostname().equals(grantee.getHostname()) || Strings.isNullOrEmpty(entry.getHostname()))).findFirst();
+        return auth.keySet().stream().filter(each -> each.getUsername().equals(grantee.getUsername())
+                && (each.getHostname().equals(grantee.getHostname()) || Strings.isNullOrEmpty(each.getHostname()))).findFirst();
+    }
+    
+    @Override
+    public Optional<ShardingSpherePrivilege> findPrivilege(final Grantee grantee) {
+        return findUser(grantee).map(auth::get);
     }
 }
