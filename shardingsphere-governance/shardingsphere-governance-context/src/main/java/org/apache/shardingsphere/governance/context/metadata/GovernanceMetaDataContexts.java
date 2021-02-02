@@ -154,7 +154,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     /**
-     * Renew to add new schema.
+     * Renew to persist meta data.
      *
      * @param event meta data persisted event
      * @throws SQLException SQL exception
