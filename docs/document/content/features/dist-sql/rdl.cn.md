@@ -123,7 +123,7 @@ DROP TABLE t_item;
 DROP DATABASE sharding_db
 ```
 
-### 注意
+### 注意事项
 
 1. 当前, `DROP DB`只会移除`逻辑的分布式数据库`，不会删除用户真实的数据库 (**TODO**)。
 2. `DROP TABLE`会将逻辑分片表和数据库中真实的表全部删除。
