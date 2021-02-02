@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.metadata;
+package org.apache.shardingsphere.scaling.core.datasource;
 
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.scaling.core.datasource.MetaDataManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

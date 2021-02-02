@@ -29,7 +29,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.channel.MemoryCha
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.PlaceholderRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.scaling.core.metadata.JdbcUri;
+import org.apache.shardingsphere.scaling.core.datasource.JdbcUri;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractBinlogEvent;

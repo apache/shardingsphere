@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.metadata;
+package org.apache.shardingsphere.scaling.core.datasource;
 
 import com.google.common.base.Strings;
 

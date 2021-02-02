@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.metadata;
+package org.apache.shardingsphere.scaling.core.datasource;
 
+import org.apache.shardingsphere.scaling.core.datasource.JdbcUri;
 import org.junit.Test;
 
 import java.util.Map;

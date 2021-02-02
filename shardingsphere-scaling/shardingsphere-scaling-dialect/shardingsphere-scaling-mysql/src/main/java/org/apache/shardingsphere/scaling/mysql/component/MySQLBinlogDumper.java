@@ -35,8 +35,8 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.Placeholde
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
-import org.apache.shardingsphere.scaling.core.metadata.JdbcUri;
-import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
+import org.apache.shardingsphere.scaling.core.datasource.JdbcUri;
+import org.apache.shardingsphere.scaling.core.datasource.MetaDataManager;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractRowsEvent;
