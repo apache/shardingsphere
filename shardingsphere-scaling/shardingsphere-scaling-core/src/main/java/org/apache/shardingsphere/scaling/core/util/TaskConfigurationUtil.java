@@ -18,13 +18,10 @@
 package org.apache.shardingsphere.scaling.core.util;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
@@ -35,7 +32,6 @@ import org.apache.shardingsphere.scaling.core.config.datasource.ConfigurationYam
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.metadata.JdbcUri;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -46,7 +42,6 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,7 +52,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -217,116 +211,5 @@ public final class TaskConfigurationUtil {
         result.setShardingColumnsMap(shardingColumnsMap);
         result.setRetryTimes(jobConfig.getHandleConfig().getRetryTimes());
         return result;
-    }
-    
-    /**
-     * Fill in sharding tables.
-     *
-     * @param jobConfig job configuration
-     */
-    public static void fillInShardingTables(final JobConfiguration jobConfig) {
-        if (null != jobConfig.getHandleConfig().getShardingTables()) {
-            return;
-        }
-        jobConfig.getHandleConfig().setShardingTables(groupByDataSource(getShouldScalingActualDataNodes(jobConfig)));
-    }
-    
-    private static List<String> getShouldScalingActualDataNodes(final JobConfiguration jobConfig) {
-        ScalingDataSourceConfiguration sourceConfig = jobConfig.getRuleConfig().getSource().unwrap();
-        Preconditions.checkState(sourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration,
-                "Only ShardingSphereJdbc type of source ScalingDataSourceConfiguration is supported.");
-        ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
-        if (!(jobConfig.getRuleConfig().getTarget().unwrap() instanceof ShardingSphereJDBCDataSourceConfiguration)) {
-            return getShardingRuleConfigMap(source.getRule()).values().stream().map(ShardingTableRuleConfiguration::getActualDataNodes).collect(Collectors.toList());
-        }
-        ShardingSphereJDBCDataSourceConfiguration target =
-                (ShardingSphereJDBCDataSourceConfiguration) jobConfig.getRuleConfig().getTarget().unwrap();
-        Set<String> modifiedDataSources = getModifiedDataSources(source.getDataSource(), target.getDataSource());
-        Map<String, ShardingTableRuleConfiguration> oldShardingRuleConfigMap = getShardingRuleConfigMap(source.getRule());
-        Map<String, ShardingTableRuleConfiguration> newShardingRuleConfigMap = getShardingRuleConfigMap(target.getRule());
-        List<String> result = new ArrayList<>();
-        newShardingRuleConfigMap.keySet().forEach(each -> {
-            if (!oldShardingRuleConfigMap.containsKey(each)) {
-                return;
-            }
-            List<String> oldActualDataNodes = new InlineExpressionParser(oldShardingRuleConfigMap.get(each).getActualDataNodes()).splitAndEvaluate();
-            List<String> newActualDataNodes = new InlineExpressionParser(newShardingRuleConfigMap.get(each).getActualDataNodes()).splitAndEvaluate();
-            if (!CollectionUtils.isEqualCollection(oldActualDataNodes, newActualDataNodes) || includeModifiedDataSources(newActualDataNodes, modifiedDataSources)) {
-                result.add(oldShardingRuleConfigMap.get(each).getActualDataNodes());
-            }
-        });
-        return result;
-    }
-    
-    private static Set<String> getModifiedDataSources(final String oldConfig, final String newConfig) {
-        Set<String> result = new HashSet<>();
-        Map<String, String> oldDataSourceUrlMap = getDataSourceUrlMap(oldConfig);
-        Map<String, String> newDataSourceUrlMap = getDataSourceUrlMap(newConfig);
-        newDataSourceUrlMap.forEach((key, value) -> {
-            if (!value.equals(oldDataSourceUrlMap.get(key))) {
-                result.add(key);
-            }
-        });
-        return result;
-    }
-    
-    private static Map<String, String> getDataSourceUrlMap(final String configuration) {
-        Map<String, String> result = new HashMap<>();
-        ConfigurationYamlConverter.loadDataSourceConfigs(configuration).forEach((key, value) -> {
-            JdbcUri uri = new JdbcUri(value.getProps().getOrDefault("url", value.getProps().get("jdbcUrl")).toString());
-            result.put(key, String.format("%s/%s", uri.getHost(), uri.getDatabase()));
-        });
-        return result;
-    }
-    
-    private static boolean includeModifiedDataSources(final List<String> actualDataNodes, final Set<String> modifiedDataSources) {
-        return actualDataNodes.stream().anyMatch(each -> modifiedDataSources.contains(each.split("\\.")[0]));
-    }
-    
-    private static Map<String, ShardingTableRuleConfiguration> getShardingRuleConfigMap(final String configuration) {
-        ShardingRuleConfiguration oldShardingRuleConfig = ConfigurationYamlConverter.loadShardingRuleConfig(configuration);
-        return oldShardingRuleConfig.getTables().stream().collect(Collectors.toMap(ShardingTableRuleConfiguration::getLogicTable, Function.identity()));
-    }
-    
-    private static String[] groupByDataSource(final List<String> actualDataNodeList) {
-        List<String> result = new ArrayList<>();
-        Multimap<String, String> multiMap = getNodeMultiMap(actualDataNodeList);
-        for (String key : multiMap.keySet()) {
-            List<String> list = new ArrayList<>();
-            for (String value : multiMap.get(key)) {
-                list.add(String.format("%s.%s", key, value));
-            }
-            result.add(String.join(",", list));
-        }
-        return result.toArray(new String[0]);
-    }
-    
-    private static Multimap<String, String> getNodeMultiMap(final List<String> actualDataNodeList) {
-        Multimap<String, String> result = HashMultimap.create();
-        for (String actualDataNodes : actualDataNodeList) {
-            for (String actualDataNode : actualDataNodes.split(",")) {
-                String[] nodeArray = split(actualDataNode);
-                for (String dataSource : new InlineExpressionParser(nodeArray[0]).splitAndEvaluate()) {
-                    result.put(dataSource, nodeArray[1]);
-                }
-            }
-        }
-        return result;
-    }
-    
-    private static String[] split(final String actualDataNode) {
-        boolean flag = true;
-        int i = 0;
-        for (; i < actualDataNode.length(); i++) {
-            char each = actualDataNode.charAt(i);
-            if (each == '{') {
-                flag = false;
-            } else if (each == '}') {
-                flag = true;
-            } else if (flag && each == '.') {
-                break;
-            }
-        }
-        return new String[]{actualDataNode.substring(0, i), actualDataNode.substring(i + 1)};
     }
 }
