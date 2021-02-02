@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.datasource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
-import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
+import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 

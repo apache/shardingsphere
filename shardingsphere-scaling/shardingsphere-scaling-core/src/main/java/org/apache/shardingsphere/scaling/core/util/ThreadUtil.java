@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.utils;
+package org.apache.shardingsphere.scaling.core.util;
 
-import java.util.Map;
-import java.util.Set;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Sharding columns util.
+ * Thread util.
  */
-public final class ShardingColumnsUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ThreadUtil {
     
     /**
-     * Is Sharding column.
+     * Sleep ignored InterruptedException.
      *
-     * @param shardingColumnsMap sharding columns map
-     * @param tableName table name
-     * @param columnName column name
-     * @return boolean
+     * @param millis sleep time.
      */
-    public static boolean isShardingColumn(final Map<String, Set<String>> shardingColumnsMap,
-                                           final String tableName, final String columnName) {
-        return shardingColumnsMap.containsKey(tableName)
-                && shardingColumnsMap.get(tableName).contains(columnName);
+    public static void sleep(final long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (final InterruptedException ignored) {
+        }
     }
 }

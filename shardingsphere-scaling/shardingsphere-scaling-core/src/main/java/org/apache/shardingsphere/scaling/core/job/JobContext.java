@@ -25,8 +25,8 @@ import org.apache.shardingsphere.scaling.core.job.position.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
-import org.apache.shardingsphere.scaling.core.utils.JobConfigurationUtil;
-import org.apache.shardingsphere.scaling.core.utils.TaskConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.util.TaskConfigurationUtil;
 
 import java.util.LinkedList;
 import java.util.List;

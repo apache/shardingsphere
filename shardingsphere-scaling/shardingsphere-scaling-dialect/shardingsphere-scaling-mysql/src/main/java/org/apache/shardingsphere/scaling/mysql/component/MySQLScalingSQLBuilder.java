@@ -21,7 +21,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.AbstractScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.utils.ShardingColumnsUtil;
+import org.apache.shardingsphere.scaling.core.util.ShardingColumnsUtil;
 
 import java.util.Map;
 import java.util.Set;

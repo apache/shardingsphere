@@ -38,7 +38,7 @@ import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
-import org.apache.shardingsphere.scaling.core.utils.RdbmsConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.util.RdbmsConfigurationUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

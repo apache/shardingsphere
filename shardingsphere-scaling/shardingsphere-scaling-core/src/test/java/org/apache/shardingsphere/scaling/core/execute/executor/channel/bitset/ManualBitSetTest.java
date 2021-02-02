@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.execute.executor.channel.bitset;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
+import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.junit.Test;
 
 import java.util.BitSet;

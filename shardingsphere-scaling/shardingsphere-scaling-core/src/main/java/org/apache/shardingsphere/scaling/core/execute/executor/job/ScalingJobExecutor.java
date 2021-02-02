@@ -29,7 +29,7 @@ import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.ScalingExecutor;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
-import org.apache.shardingsphere.scaling.core.utils.ElasticJobUtil;
+import org.apache.shardingsphere.scaling.core.util.ElasticJobUtil;
 
 import java.util.Optional;
 import java.util.Set;

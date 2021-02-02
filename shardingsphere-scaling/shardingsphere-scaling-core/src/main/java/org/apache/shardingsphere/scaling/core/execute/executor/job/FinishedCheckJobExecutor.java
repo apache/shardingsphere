@@ -23,7 +23,7 @@ import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobB
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.ScalingExecutor;
 import org.apache.shardingsphere.scaling.core.job.FinishedCheckJob;
-import org.apache.shardingsphere.scaling.core.utils.ElasticJobUtil;
+import org.apache.shardingsphere.scaling.core.util.ElasticJobUtil;
 
 /**
  * Finished check worker.
