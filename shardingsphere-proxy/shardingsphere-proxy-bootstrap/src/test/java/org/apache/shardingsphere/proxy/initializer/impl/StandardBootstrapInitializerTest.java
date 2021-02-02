@@ -159,7 +159,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     
     private YamlProxyServerConfiguration createYamlProxyServerConfiguration() {
         YamlProxyServerConfiguration result = new YamlProxyServerConfiguration();
-        result.setAuthentication(createYamlAuthenticationConfiguration());
+        result.setAuthentication(createYamlUserRuleConfiguration());
         result.setProps(createProperties());
         return result;
     }
@@ -171,7 +171,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         return result;
     }
     
-    private YamlUserRuleConfiguration createYamlAuthenticationConfiguration() {
+    private YamlUserRuleConfiguration createYamlUserRuleConfiguration() {
         Map<String, YamlUserConfiguration> users = new HashMap<>(1, 1);
         users.put("root", createYamlUserConfiguration());
         YamlUserRuleConfiguration result = new YamlUserRuleConfiguration();

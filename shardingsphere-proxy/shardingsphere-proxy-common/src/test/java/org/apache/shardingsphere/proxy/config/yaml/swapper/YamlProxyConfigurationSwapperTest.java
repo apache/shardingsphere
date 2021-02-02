@@ -219,9 +219,9 @@ public final class YamlProxyConfigurationSwapperTest {
         when(yamlUserConfig.getPassword()).thenReturn("pass");
         when(yamlUserConfig.getAuthorizedSchemas()).thenReturn("db1");
         yamlUserConfigurationMap.put("user1", yamlUserConfig);
-        YamlUserRuleConfiguration yamlAuthenticationConfig = mock(YamlUserRuleConfiguration.class);
-        when(yamlAuthenticationConfig.getUsers()).thenReturn(yamlUserConfigurationMap);
-        when(yamlProxyServerConfig.getAuthentication()).thenReturn(yamlAuthenticationConfig);
+        YamlUserRuleConfiguration userRuleConfiguration = mock(YamlUserRuleConfiguration.class);
+        when(userRuleConfiguration.getUsers()).thenReturn(yamlUserConfigurationMap);
+        when(yamlProxyServerConfig.getAuthentication()).thenReturn(userRuleConfiguration);
     }
     
     private YamlProxyServerConfiguration getYamlProxyServerConfiguration(final YamlProxyConfiguration yamlProxyConfig) {
