@@ -15,23 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.event.model.rule;
+package org.apache.shardingsphere.governance.core.event.model.scaling;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-
-import java.util.Collection;
 
 /**
- * Rule configurations persist event.
+ * Start scaling event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class RuleConfigurationsPersistEvent implements GovernanceEvent {
+public final class StartScalingEvent {
     
     private final String schemaName;
     
-    private final Collection<RuleConfiguration> ruleConfigurations;
+    private final String sourceDataSource;
+    
+    private final String sourceRule;
+    
+    private final String targetDataSource;
+    
+    private final String targetRule;
+    
+    private final String ruleCacheId;
+    
+    public StartScalingEvent(final String schemaName, final String sourceDataSource, final String sourceRule, final String targetRule, final String ruleCacheId) {
+        this(schemaName, sourceDataSource, sourceRule, sourceDataSource, targetRule, ruleCacheId);
+    }
 }

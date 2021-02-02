@@ -29,8 +29,8 @@ import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataCr
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDroppedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
-import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
+import org.apache.shardingsphere.governance.core.event.model.scaling.StartScalingEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAlteredEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
@@ -130,10 +130,10 @@ public final class ConfigCenter {
     /**
      * Persist rule configurations.
      * 
-     * @param event Rule event.
+     * @param event rule configurations altered event.
      */
     @Subscribe
-    public synchronized void renew(final RuleConfigurationsPersistEvent event) {
+    public synchronized void renew(final RuleConfigurationsAlteredEvent event) {
         //TODO
         persistRuleConfigurations(event.getSchemaName(), event.getRuleConfigurations());
     }
@@ -196,11 +196,11 @@ public final class ConfigCenter {
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationCachedEvent event) {
-        RuleConfigurationsAlteredEvent ruleConfigurationsAlteredEvent = new RuleConfigurationsAlteredEvent(event.getSchemaName(),
+        StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(),
                 repository.get(node.getDataSourcePath(event.getSchemaName())),
                 repository.get(node.getRulePath(event.getSchemaName())),
                 configCacheManager.loadCache(node.getRulePath(event.getSchemaName()), event.getCacheId()), event.getCacheId());
-        ShardingSphereEventBus.getInstance().post(ruleConfigurationsAlteredEvent);
+        ShardingSphereEventBus.getInstance().post(startScalingEvent);
     }
     
     private Collection<RuleConfiguration> loadCachedRuleConfigurations(final String schemaName, final String ruleConfigurationCacheId) {
@@ -244,7 +244,7 @@ public final class ConfigCenter {
     
     private void cacheRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
         String cacheId = configCacheManager.cache(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRootRuleConfigurations(schemaName, ruleConfigurations)));
-        RuleConfigurationsAlteredEvent event = new RuleConfigurationsAlteredEvent(schemaName,
+        StartScalingEvent event = new StartScalingEvent(schemaName,
                 repository.get(node.getDataSourcePath(schemaName)),
                 repository.get(node.getRulePath(schemaName)),
                 configCacheManager.loadCache(node.getRulePath(schemaName), cacheId), cacheId);
