@@ -28,4 +28,4 @@ DistSQL is divided into RDL, RQL and SCTL.
 
 ## Notice
 
-DistSQL can use in ShardingSphere-Proxy only, not for ShardingSphere-JDBC now.
+DistSQL can use for ShardingSphere-Proxy only, not for ShardingSphere-JDBC now.
