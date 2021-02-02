@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.context.metadata;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.privilege.builder.PrivilegeBuilder;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -45,6 +47,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -62,21 +65,21 @@ public final class MetaDataContextsBuilder {
     
     private final Map<String, Collection<RuleConfiguration>> ruleConfigs;
     
-    private final Authentication authentication;
+    private final Collection<ShardingSphereUser> users;
     
     private final ConfigurationProperties props;
     
     private final ExecutorEngine executorEngine;
     
     public MetaDataContextsBuilder(final Map<String, Map<String, DataSource>> dataSources, final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Properties props) {
-        this(dataSources, ruleConfigs, new DefaultAuthentication(), props);
+        this(dataSources, ruleConfigs, Collections.emptyList(), props);
     }
     
     public MetaDataContextsBuilder(final Map<String, Map<String, DataSource>> dataSources,
-                                   final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Authentication authentication, final Properties props) {
+                                   final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Collection<ShardingSphereUser> users, final Properties props) {
         this.dataSources = dataSources;
         this.ruleConfigs = ruleConfigs;
-        this.authentication = authentication;
+        this.users = users;
         this.props = new ConfigurationProperties(null == props ? new Properties() : props);
         executorEngine = new ExecutorEngine(this.props.<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
     }
@@ -89,6 +92,7 @@ public final class MetaDataContextsBuilder {
      */
     public StandardMetaDataContexts build() throws SQLException {
         Map<String, ShardingSphereMetaData> mataDataMap = new HashMap<>(ruleConfigs.size(), 1);
+        Authentication authentication = buildAuthentication(users, mataDataMap);
         for (String each : ruleConfigs.keySet()) {
             mataDataMap.put(each, buildMetaData(each));
         }
@@ -104,7 +108,7 @@ public final class MetaDataContextsBuilder {
         return new ShardingSphereMetaData(schemaName, buildResource(databaseType, dataSourceMap), ruleMetaData, buildSchema(schemaName, databaseType, dataSourceMap, rules));
     }
     
-    private DatabaseType getDatabaseType(final Map<String, DataSource> dataSourceMap) throws SQLException {
+    private DatabaseType getDatabaseType(final Map<String, DataSource> dataSourceMap) {
         DatabaseType result = null;
         for (DataSource each : dataSourceMap.values()) {
             DatabaseType databaseType = getDatabaseType(each);
@@ -154,6 +158,12 @@ public final class MetaDataContextsBuilder {
         long start = System.currentTimeMillis();
         ShardingSphereSchema result = SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
         log.info("Load meta data for schema {} finished, cost {} milliseconds.", schemaName, System.currentTimeMillis() - start);
+        return result;
+    }
+    
+    private Authentication buildAuthentication(final Collection<ShardingSphereUser> users, final Map<String, ShardingSphereMetaData> metaDataMap) {
+        DefaultAuthentication result = new DefaultAuthentication();
+        result.getAuthentication().putAll(PrivilegeBuilder.build(metaDataMap.values(), users, props));
         return result;
     }
 }

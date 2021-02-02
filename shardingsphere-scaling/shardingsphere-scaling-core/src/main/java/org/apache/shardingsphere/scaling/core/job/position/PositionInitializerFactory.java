@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.job.position;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
-import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
+import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 
 /**
  * Position initializer factory.
@@ -34,7 +34,7 @@ public final class PositionInitializerFactory {
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public static PositionInitializer<?> newInstance(final String databaseType) {
-        return ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType).getPositionInitializer().newInstance();
+        return ScalingEntryLoader.getInstance(databaseType).getPositionInitializer().newInstance();
     }
     
     /**
@@ -44,6 +44,6 @@ public final class PositionInitializerFactory {
      * @return position type
      */
     public static Class<?> getPositionClass(final String databaseType) {
-        return ReflectionUtil.getInterfaceGenericClass(ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType).getPositionInitializer());
+        return ReflectionUtil.getInterfaceGenericClass(ScalingEntryLoader.getInstance(databaseType).getPositionInitializer());
     }
 }

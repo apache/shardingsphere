@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.AbstractScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.internal.common.sqlbuilder.AbstractScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.internal.common.sqlbuilder.ScalingSQLBuilder;
 
 import java.util.Map;
 import java.util.Set;

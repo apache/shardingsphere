@@ -23,17 +23,17 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilderFactory;
+import org.apache.shardingsphere.scaling.core.internal.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.internal.common.datasource.MetaDataManager;
+import org.apache.shardingsphere.scaling.core.internal.common.exception.PrepareFailedException;
+import org.apache.shardingsphere.scaling.core.internal.common.sqlbuilder.ScalingSQLBuilderFactory;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
-import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
-import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -62,8 +62,8 @@ public final class InventoryTaskSplitter {
      * @param dataSourceManager data source manager
      * @return split inventory data task
      */
-    public Collection<ScalingTask> splitInventoryData(final JobContext jobContext, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager) {
-        Collection<ScalingTask> result = new LinkedList<>();
+    public List<InventoryTask> splitInventoryData(final JobContext jobContext, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager) {
+        List<InventoryTask> result = new LinkedList<>();
         for (InventoryDumperConfiguration each : splitDumperConfig(jobContext, taskConfig.getDumperConfig(), dataSourceManager)) {
             result.add(scalingTaskFactory.createInventoryTask(each, taskConfig.getImporterConfig()));
         }
@@ -110,8 +110,8 @@ public final class InventoryTaskSplitter {
     
     private Collection<Position<?>> getInventoryPositions(
             final JobContext jobContext, final InventoryDumperConfiguration dumperConfig, final DataSource dataSource, final MetaDataManager metaDataManager) {
-        if (null != jobContext.getInitPosition()) {
-            return jobContext.getInitPosition().getInventoryPosition(dumperConfig.getTableName()).values();
+        if (null != jobContext.getInitProgress()) {
+            return jobContext.getInitProgress().getInventoryPosition(dumperConfig.getTableName()).values();
         }
         if (isSpiltByPrimaryKeyRange(metaDataManager, dumperConfig.getTableName())) {
             String primaryKey = metaDataManager.getTableMetaData(dumperConfig.getTableName()).getPrimaryKeyColumns().get(0);

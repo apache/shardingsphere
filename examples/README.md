@@ -4,31 +4,31 @@ Example for 1.x please see tags in `https://github.com/apache/shardingsphere/tre
 
 Example for 2.x or 3.x or 4.x please see tags in `https://github.com/apache/shardingsphere-example/tree/${tag}`
 
-**Need attention**
+**Notices**
 
 - *Please do not use `dev` branch to run your example, example of `dev` branch is not released yet.*
 
-- *The manual schema initial script is in `https://github.com/apache/shardingsphere-example/blob/dev/src/resources/manual_schema.sql`, please execute it before you first run the example.*
+- *Please execute [initial script](https://github.com/apache/shardingsphere/blob/master/examples/src/resources/manual_schema.sql) before you first run the example if using manual mode.*
 
-- *Please make sure primary replica data replication sync on MySQL is running correctly. Otherwise this example will query empty data from the replica.*
+- *Please make sure primary replica data replication sync on MySQL is running correctly. Otherwise, primary-replica example will query empty data from the replica.*
 
-## Before start the example if you want use `dev` branch
+## Using `dev` branch
 
-Please make sure some dependencies from [shardingsphere](https://github.com/apache/shardingsphere) has been installed since some examples depend on that.
-if you are a newbie for shardingsphere, you could prepare the dependencies as following: 
+Please make sure some dependencies from [Apache ShardingSphere](https://github.com/apache/shardingsphere) has been installed since examples depend on that.
+if you are a newbie for Apache ShardingSphere, you could prepare the dependencies as following: 
 
-1.download and install [shardingsphere](https://github.com/apache/shardingsphere): 
+1. download and install [Apache ShardingSphere](https://github.com/apache/shardingsphere): 
 
 ```bash
-## download the code of shardingsphere
+## download source code
 git clone https://github.com/apache/shardingsphere.git
 
-## install the dependencies
+## compile source code
 cd shardingsphere/examples
 mvn clean install -Prelease
 ```
 
-## shardingsphere-example module design
+## Module design
 
 ### project structure
 
@@ -66,15 +66,15 @@ shardingsphere-example
 
 ## Available Examples
 
-| Example | Description |
-|---------|-------------|
-| [sharding](shardingsphere-jdbc-example/sharding-example) | show how to use sharding-table\sharding-database\replica-query with ShardingSphere-JDBC |
-| [springboot jpa](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example) | show how to use SpringBoot JPA with ShardingSphere |
-| [springboot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | show how to use SpringBoot Mybatis with ShardingSphere |
-| [governance](shardingsphere-jdbc-example/governance-example) | show how to use ShardingSphere governance |
-| [transaction](shardingsphere-jdbc-example/transaction-example) | show how to use ShardingSphere transaction |
-| [hint](shardingsphere-jdbc-example/other-feature-example/hint-example) | show how to use ShardingSphere hint |
-| [encryption](shardingsphere-jdbc-example/other-feature-example/encrypt-example) | show how to use ShardingSphere encryption |
-| APM(Pending) | show how to use APM in ShardingSphere |
-| proxy(Pending) | show how to use sharding proxy |
-| [docker](./docker/docker-compose.md) | show how to use docker to setup the environment for ShardingSphere |
+| Example                                                                                                 | Description                                                                             |
+|---------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
+| [sharding](shardingsphere-jdbc-example/sharding-example)                                                | show how to use table sharding\database sharding\replica-query with ShardingSphere-JDBC |
+| [springboot jpa](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-jpa-example)         | show how to use SpringBoot JPA with ShardingSphere-JDBC                                 |
+| [springboot mybatis](shardingsphere-jdbc-example/sharding-example/sharding-spring-boot-mybatis-example) | show how to use SpringBoot Mybatis with ShardingSphere-JDBC                             |
+| [governance](shardingsphere-jdbc-example/governance-example)                                            | show how to use ShardingSphere-JDBC governance                                          |
+| [transaction](shardingsphere-jdbc-example/transaction-example)                                          | show how to use ShardingSphere-JDBC transaction                                         |
+| [hint](shardingsphere-jdbc-example/other-feature-example/hint-example)                                  | show how to use ShardingSphere-JDBC hint                                                |
+| [encryption](shardingsphere-jdbc-example/other-feature-example/encrypt-example)                         | show how to use ShardingSphere-JDBC encryption                                          |
+| APM(Pending)                                                                                            | show how to use APM in ShardingSphere                                                   |
+| proxy(Pending)                                                                                          | show how to use ShardingSphere-Proxy                                                    |
+| [docker](./docker/docker-compose.md)                                                                    | show how to use docker to setup the environment for ShardingSphere                      |

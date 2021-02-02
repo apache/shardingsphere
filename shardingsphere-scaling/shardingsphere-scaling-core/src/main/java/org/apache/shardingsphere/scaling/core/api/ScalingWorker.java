@@ -17,23 +17,18 @@
 
 package org.apache.shardingsphere.scaling.core.api;
 
-import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
+import org.apache.shardingsphere.governance.core.event.model.scaling.StartScalingEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.execute.executor.job.FinishedCheckJobExecutor;
-import org.apache.shardingsphere.scaling.core.execute.executor.job.ScalingJobExecutor;
-import org.apache.shardingsphere.scaling.core.job.JobContext;
-import org.apache.shardingsphere.scaling.core.service.ScalingJobServiceFactory;
+import org.apache.shardingsphere.scaling.core.internal.executor.job.FinishedCheckJobExecutor;
+import org.apache.shardingsphere.scaling.core.internal.executor.job.ScalingJobExecutor;
 
 import java.util.Optional;
 
@@ -45,12 +40,12 @@ public final class ScalingWorker {
     
     private static final ScalingWorker INSTANCE = new ScalingWorker();
     
+    private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
+    
     /**
      * Init scaling worker.
      */
     public static void init() {
-        ServerConfiguration serverConfig = ScalingContext.getInstance().getServerConfig();
-        Preconditions.checkArgument(null != serverConfig && null != serverConfig.getGovernanceConfig(), "Scaling server config and governance config is required.");
         ShardingSphereEventBus.getInstance().register(INSTANCE);
         new FinishedCheckJobExecutor().start();
         new ScalingJobExecutor().start();
@@ -59,19 +54,19 @@ public final class ScalingWorker {
     /**
      * Start scaling job.
      *
-     * @param event rule configurations altered event.
+     * @param event start scaling event.
      */
     @Subscribe
-    public void start(final RuleConfigurationsAlteredEvent event) {
+    public void start(final StartScalingEvent event) {
         log.info("Start scaling job by {}", event);
-        Optional<JobContext> jobContext = ScalingJobServiceFactory.getInstance().start(createJobConfig(event));
-        if (!jobContext.isPresent()) {
+        Optional<Long> jobId = scalingAPI.start(createJobConfig(event));
+        if (!jobId.isPresent()) {
             log.info("Switch rule configuration ruleCacheId = {} immediately.", event.getRuleCacheId());
             ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(event.getSchemaName(), event.getRuleCacheId()));
         }
     }
     
-    private JobConfiguration createJobConfig(final RuleConfigurationsAlteredEvent event) {
+    private JobConfiguration createJobConfig(final StartScalingEvent event) {
         JobConfiguration result = new JobConfiguration();
         result.setRuleConfig(new RuleConfiguration(
                 new ShardingSphereJDBCDataSourceConfiguration(event.getSourceDataSource(), event.getSourceRule()),

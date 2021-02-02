@@ -20,10 +20,10 @@ package org.apache.shardingsphere.scaling.core.job.check;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceFactory;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceWrapper;
-import org.apache.shardingsphere.scaling.core.exception.DataCheckFailException;
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.internal.common.datasource.DataSourceFactory;
+import org.apache.shardingsphere.scaling.core.internal.common.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.scaling.core.internal.common.exception.DataCheckFailException;
+import org.apache.shardingsphere.scaling.core.internal.common.sqlbuilder.ScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 
 import javax.sql.DataSource;

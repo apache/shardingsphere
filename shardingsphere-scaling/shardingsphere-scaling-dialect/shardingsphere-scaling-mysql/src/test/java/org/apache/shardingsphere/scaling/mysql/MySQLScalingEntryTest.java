@@ -35,7 +35,7 @@ public final class MySQLScalingEntryTest {
     
     @Test
     public void assertGetScalingEntryByDatabaseType() {
-        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType("MySQL");
+        ScalingEntry scalingEntry = ScalingEntryLoader.getInstance("MySQL");
         assertTrue(scalingEntry instanceof MySQLScalingEntry);
         assertThat(scalingEntry.getPositionInitializer(), equalTo(MySQLPositionInitializer.class));
         assertThat(scalingEntry.getDataSourceCheckerClass(), equalTo(MySQLDataSourceChecker.class));

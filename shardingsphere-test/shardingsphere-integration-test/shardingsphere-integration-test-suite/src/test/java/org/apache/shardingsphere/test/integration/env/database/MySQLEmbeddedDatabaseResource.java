@@ -26,6 +26,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
 
+import java.io.File;
+
 /**
  * Embedded database resource for MySQL.
  */
@@ -46,6 +48,7 @@ public final class MySQLEmbeddedDatabaseResource implements EmbeddedDatabaseReso
                 .build();
         MysqldConfig mysqldConfig = MysqldConfig.aMysqldConfig(Version.valueOf(databaseEnvironment.getDistributionVersion()))
                 .withCharset(Charset.UTF8MB4)
+                .withTempDir(new File(downloadConfig.getCacheDir(), "runtime").getPath())
                 .withPort(databaseEnvironment.getPort())
                 .withUser("test", "test")
                 .withServerVariable("bind-address", "0.0.0.0")

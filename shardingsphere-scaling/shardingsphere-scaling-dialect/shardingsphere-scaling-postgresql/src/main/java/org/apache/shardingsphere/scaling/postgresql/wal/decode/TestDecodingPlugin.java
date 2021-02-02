@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.scaling.postgresql.wal.decode;
 
 import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
-import org.apache.shardingsphere.scaling.core.exception.ScalingTaskExecuteException;
+import org.apache.shardingsphere.scaling.core.internal.common.constant.ScalingConstant;
+import org.apache.shardingsphere.scaling.core.internal.common.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.DeleteRowEvent;

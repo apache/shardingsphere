@@ -21,7 +21,7 @@ import io.netty.buffer.ByteBuf;
 
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinlogEventType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
-import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
+import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogContext;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.DeleteRowsEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.UpdateRowsEvent;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.config;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.scaling.core.execute.engine.TaskExecuteEngine;
+import org.apache.shardingsphere.scaling.core.internal.executor.TaskExecuteEngine;
 
 /**
  * ShardingSphere-Scaling context.
@@ -54,6 +54,9 @@ public final class ScalingContext {
      * @param serverConfig server configuration
      */
     public void init(final ServerConfiguration serverConfig) {
+        if (null != this.serverConfig) {
+            return;
+        }
         this.serverConfig = serverConfig;
         inventoryDumperExecuteEngine = TaskExecuteEngine.newFixedThreadInstance(serverConfig.getWorkerThread());
         incrementalDumperExecuteEngine = TaskExecuteEngine.newCachedThreadInstance();

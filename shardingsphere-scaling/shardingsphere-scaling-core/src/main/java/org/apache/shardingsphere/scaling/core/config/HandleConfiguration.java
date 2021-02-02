@@ -50,4 +50,13 @@ public final class HandleConfiguration {
     public HandleConfiguration(final WorkflowConfiguration workflowConfig) {
         this.workflowConfig = workflowConfig;
     }
+    
+    /**
+     * Get sharding total count.
+     *
+     * @return sharding total count
+     */
+    public int getShardingTotalCount() {
+        return null == shardingTables ? 0 : shardingTables.length;
+    }
 }

@@ -22,18 +22,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.exception.ScalingTaskExecuteException;
-import org.apache.shardingsphere.scaling.core.execute.engine.ExecuteCallback;
-import org.apache.shardingsphere.scaling.core.execute.executor.AbstractScalingExecutor;
-import org.apache.shardingsphere.scaling.core.execute.executor.channel.MemoryChannel;
-import org.apache.shardingsphere.scaling.core.execute.executor.dumper.Dumper;
-import org.apache.shardingsphere.scaling.core.execute.executor.dumper.DumperFactory;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.ImporterFactory;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.scaling.core.job.TaskProgress;
-import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
+import org.apache.shardingsphere.scaling.core.internal.common.channel.MemoryChannel;
+import org.apache.shardingsphere.scaling.core.internal.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.internal.common.exception.ScalingTaskExecuteException;
+import org.apache.shardingsphere.scaling.core.internal.common.record.Record;
+import org.apache.shardingsphere.scaling.core.internal.executor.AbstractScalingExecutor;
+import org.apache.shardingsphere.scaling.core.internal.executor.ExecuteCallback;
+import org.apache.shardingsphere.scaling.core.internal.executor.dumper.Dumper;
+import org.apache.shardingsphere.scaling.core.internal.executor.dumper.DumperFactory;
+import org.apache.shardingsphere.scaling.core.internal.executor.importer.Importer;
+import org.apache.shardingsphere.scaling.core.internal.executor.importer.ImporterFactory;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
@@ -48,6 +46,9 @@ import java.util.concurrent.Future;
 @Slf4j
 public final class InventoryTask extends AbstractScalingExecutor implements ScalingTask {
     
+    @Getter
+    private final String taskId;
+    
     private final InventoryDumperConfiguration inventoryDumperConfig;
     
     private final ImporterConfiguration importerConfig;
@@ -56,10 +57,6 @@ public final class InventoryTask extends AbstractScalingExecutor implements Scal
     
     private Dumper dumper;
     
-    @Getter
-    private final String taskId;
-    
-    @Getter
     private Position<?> position;
     
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig) {
@@ -132,7 +129,7 @@ public final class InventoryTask extends AbstractScalingExecutor implements Scal
     }
     
     @Override
-    public TaskProgress getProgress() {
-        return new InventoryTaskProgress(taskId, position instanceof FinishedPosition);
+    public InventoryTaskProgress getProgress() {
+        return new InventoryTaskProgress(position);
     }
 }
