@@ -23,8 +23,10 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.google.gson.Gson;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
@@ -48,6 +50,9 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -350,5 +355,19 @@ public final class JobConfigurationUtil {
         result.setShardingColumnsMap(shardingColumnsMap);
         result.setRetryTimes(jobConfig.getHandleConfig().getRetryTimes());
         return result;
+    }
+    
+    /**
+     * Init job config.
+     *
+     * @param configFile config file
+     * @return job configuration
+     */
+    @SneakyThrows(IOException.class)
+    public static JobConfiguration initJobConfig(final String configFile) {
+        try (InputStream fileInputStream = JobConfigurationUtil.class.getResourceAsStream(configFile);
+             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream)) {
+            return new Gson().fromJson(inputStreamReader, JobConfiguration.class);
+        }
     }
 }
