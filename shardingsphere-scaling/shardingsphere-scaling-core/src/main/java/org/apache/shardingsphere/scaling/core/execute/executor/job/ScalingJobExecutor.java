@@ -31,6 +31,7 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobAPIFactory;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.scaling.core.api.RegistryRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
@@ -54,7 +55,7 @@ public final class ScalingJobExecutor extends AbstractScalingExecutor implements
     
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
     
-    private static final Pattern CONFIG_PATTERN = Pattern.compile("(\\d+)/config");
+    private static final Pattern CONFIG_PATTERN = Pattern.compile(ScalingConstant.SCALING_ROOT + "/(\\d+)/config");
     
     private final RegistryRepositoryAPI registryRepositoryAPI = ScalingAPIFactory.getRegistryRepositoryAPI();
     
@@ -107,7 +108,8 @@ public final class ScalingJobExecutor extends AbstractScalingExecutor implements
         }
         try {
             log.info("{} job config: {} = {}", event.getType(), event.getKey(), event.getValue());
-            return Optional.of(GSON.fromJson(event.getValue(), JobConfiguration.class));
+            JobConfigurationPOJO jobConfigPOJO = YamlEngine.unmarshal(event.getValue(), JobConfigurationPOJO.class);
+            return Optional.of(GSON.fromJson(jobConfigPOJO.getJobParameter(), JobConfiguration.class));
         } catch (JsonSyntaxException ex) {
             log.error("analyze job config failed.", ex);
         }

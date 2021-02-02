@@ -32,7 +32,6 @@ import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResu
 import org.apache.shardingsphere.scaling.core.utils.ScalingTaskUtil;
 import org.apache.shardingsphere.scaling.core.utils.ThreadUtil;
 
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -44,25 +43,26 @@ public final class FinishedCheckJob implements SimpleJob {
     
     @Override
     public void execute(final ShardingContext shardingContext) {
-        List<String> jobs = registryRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT);
-        for (String each : jobs) {
-            long jobId = Long.parseLong(each);
-            try {
-                JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId);
-                WorkflowConfiguration workflowConfig = jobConfig.getHandleConfig().getWorkflowConfig();
-                if (workflowConfig == null) {
-                    continue;
-                }
-                if (ScalingTaskUtil.almostFinished(scalingAPI.getProgress(jobId), jobConfig.getHandleConfig())) {
-                    log.info("scaling job {} almost finished.", jobId);
-                    trySwitch(jobId, workflowConfig);
-                }
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                log.error("scaling job {} finish check failed!", jobId, ex);
-            }
-        }
+        registryRepositoryAPI.getChildrenKeys(ScalingConstant.SCALING_ROOT).stream()
+                .filter(each -> !each.startsWith("_"))
+                .forEach(each -> {
+                    long jobId = Long.parseLong(each);
+                    try {
+                        JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId);
+                        WorkflowConfiguration workflowConfig = jobConfig.getHandleConfig().getWorkflowConfig();
+                        if (workflowConfig == null) {
+                            return;
+                        }
+                        if (ScalingTaskUtil.almostFinished(scalingAPI.getProgress(jobId), jobConfig.getHandleConfig())) {
+                            log.info("scaling job {} almost finished.", jobId);
+                            trySwitch(jobId, workflowConfig);
+                        }
+                        // CHECKSTYLE:OFF
+                    } catch (final Exception ex) {
+                        // CHECKSTYLE:ON
+                        log.error("scaling job {} finish check failed!", jobId, ex);
+                    }
+                });
     }
     
     private void trySwitch(final long jobId, final WorkflowConfiguration workflowConfig) {

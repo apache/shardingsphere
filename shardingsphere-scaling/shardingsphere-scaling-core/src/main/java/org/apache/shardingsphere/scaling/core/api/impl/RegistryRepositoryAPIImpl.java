@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 import org.apache.shardingsphere.scaling.core.api.RegistryRepositoryAPI;
+import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.position.JobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTask;
@@ -50,7 +51,7 @@ public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
         jobPosition.setDatabaseType(jobContext.getJobConfig().getHandleConfig().getDatabaseType());
         jobPosition.setIncrementalTaskProgressMap(getIncrementalTaskProgressMap(jobContext));
         jobPosition.setInventoryTaskProgressMap(getInventoryTaskProgressMap(jobContext));
-        registryRepository.persist(getPath(jobContext.getJobId(), jobContext.getShardingItem()), jobPosition.toJson());
+        registryRepository.persist(getOffsetPath(jobContext.getJobId(), jobContext.getShardingItem()), jobPosition.toJson());
     }
     
     private Map<String, IncrementalTaskProgress> getIncrementalTaskProgressMap(final JobContext jobContext) {
@@ -69,15 +70,11 @@ public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
         return result;
     }
     
-    private String getPath(final long jobId, final int shardingItem) {
-        return String.format("/%d/offset/%d", jobId, shardingItem);
-    }
-    
     @Override
     public JobProgress getJobProgress(final long jobId, final int shardingItem) {
         String data = null;
         try {
-            data = registryRepository.get(getPath(jobId, shardingItem));
+            data = registryRepository.get(getOffsetPath(jobId, shardingItem));
         } catch (final NullPointerException ex) {
             log.info("job {}-{} without break point.", jobId, shardingItem);
         }
@@ -87,7 +84,7 @@ public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
     @Override
     public void deleteJob(final long jobId) {
         log.info("delete job {}", jobId);
-        registryRepository.delete(String.valueOf(jobId));
+        registryRepository.delete(String.format("%s/%d", ScalingConstant.SCALING_ROOT, jobId));
     }
     
     @Override
@@ -98,5 +95,14 @@ public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
         registryRepository.watch(key, listener);
+    }
+    
+    @Override
+    public void persist(final String key, final String value) {
+        registryRepository.persist(key, value);
+    }
+    
+    private String getOffsetPath(final long jobId, final int shardingItem) {
+        return String.format("%s/%d/offset/%d", ScalingConstant.SCALING_ROOT, jobId, shardingItem);
     }
 }

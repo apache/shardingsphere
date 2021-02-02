@@ -31,7 +31,7 @@ import org.apache.shardingsphere.scaling.core.utils.ElasticJobUtil;
 @Slf4j
 public final class FinishedCheckJobExecutor extends AbstractScalingExecutor implements ScalingExecutor {
     
-    private static final String JOB_NAME = "finished_check";
+    private static final String JOB_NAME = "_finished_check";
     
     private static final String CRON_EXPRESSION = "0 * * * * ?";
     

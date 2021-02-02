@@ -66,4 +66,12 @@ public interface RegistryRepositoryAPI {
      * @param listener data changed event listener
      */
     void watch(String key, DataChangedEventListener listener);
+    
+    /**
+     * Persist data.
+     *
+     * @param key key of data
+     * @param value value of data
+     */
+    void persist(String key, String value);
 }
