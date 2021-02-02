@@ -1,10 +1,13 @@
 +++
 title = "SCTL"
-weight = 4
+weight = 3
 +++
 
-SCTL (ShardingSphere Control Language) 为 ShardingSphere 特有的控制语句，
-可以在运行时修改和查询 ShardingSphere-Proxy 的状态，目前支持的语法为：
+## 定义
+
+SCTL (ShardingSphere Control Language) 为 Apache ShardingSphere 的控制语言，负责Hint、事务类型切换、分片执行计划查询等增量功能的操作。
+
+## 使用实战
 
 | 语句                                     | 说明                                                                                            |
 |:----------------------------------------|:------------------------------------------------------------------------------------------------|
@@ -19,5 +22,7 @@ SCTL (ShardingSphere Control Language) 为 ShardingSphere 特有的控制语句�
 |sctl:hint clear                          | 针对当前连接，清除 hint 所有设置                                                                     |
 |sctl:hint show status                    | 针对当前连接，查询 hint 状态，primary_only:true/false，sharding_type:databases_only/databases_tables |
 |sctl:hint show table status              | 针对当前连接，查询逻辑表的 hint 分片值                                                               |
+
+## 注意事项
 
 ShardingSphere-Proxy 默认不支持 hint，如需支持，请在 `conf/server.yaml` 中，将 `properties` 的属性 `proxy-hint-enabled` 设置为 true。

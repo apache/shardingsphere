@@ -1,9 +1,13 @@
 +++
 title = "SCTL"
-weight = 4
+weight = 3
 +++
 
-SCTL (ShardingSphere-Proxy control language) supports modify and query the state of Sharing-Proxy at runtime. The current supported syntax is:
+## Definition
+
+SCTL（ShardingSphere Control Language）responsible for the added-on feature of hint, transaction type switch, sharding execute planning and so on.
+
+## Usage
 
 | Statement                               | Function                                                                                                          | Example                                        |
 |:----------------------------------------|:------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------|
@@ -18,5 +22,7 @@ SCTL (ShardingSphere-Proxy control language) supports modify and query the state
 |sctl:hint clear                          | For current connection, clear all hint settings                                                                   | sctl:hint clear                                |
 |sctl:hint show status                    | For current connection, query hint status, primary_only:true/false, sharding_type:databases_only/databases_tables | sctl:hint show status                          |
 |sctl:hint show table status              | For current connection, query sharding values of logic tables                                                     | sctl:hint show table status                    |
+
+## Notice
 
 ShardingSphere-Proxy does not support hint by default, to support it, set the `properties` property `proxy-hint-enabled` to true in `conf/server.yaml`.
