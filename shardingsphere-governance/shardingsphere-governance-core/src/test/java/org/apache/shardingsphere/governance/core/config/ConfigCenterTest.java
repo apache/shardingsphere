@@ -23,7 +23,7 @@ import org.apache.shardingsphere.governance.core.event.model.datasource.DataSour
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataCreatedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDroppedEvent;
-import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAlteredEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlRuleConfigurationWrap;
@@ -509,7 +509,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertRenewRuleEvent() {
-        RuleConfigurationsPersistEvent event = new RuleConfigurationsPersistEvent("sharding_db", createRuleConfigurations());
+        RuleConfigurationsAlteredEvent event = new RuleConfigurationsAlteredEvent("sharding_db", createRuleConfigurations());
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
         verify(configurationRepository).persist(startsWith("/metadata/sharding_db/rule"), anyString());

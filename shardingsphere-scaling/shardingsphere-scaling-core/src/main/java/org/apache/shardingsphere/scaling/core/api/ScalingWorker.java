@@ -19,8 +19,8 @@ package org.apache.shardingsphere.scaling.core.api;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
+import org.apache.shardingsphere.governance.core.event.model.scaling.StartScalingEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
@@ -54,10 +54,10 @@ public final class ScalingWorker {
     /**
      * Start scaling job.
      *
-     * @param event rule configurations altered event.
+     * @param event start scaling event.
      */
     @Subscribe
-    public void start(final RuleConfigurationsAlteredEvent event) {
+    public void start(final StartScalingEvent event) {
         log.info("Start scaling job by {}", event);
         Optional<Long> jobId = scalingAPI.start(createJobConfig(event));
         if (!jobId.isPresent()) {
@@ -66,7 +66,7 @@ public final class ScalingWorker {
         }
     }
     
-    private JobConfiguration createJobConfig(final RuleConfigurationsAlteredEvent event) {
+    private JobConfiguration createJobConfig(final StartScalingEvent event) {
         JobConfiguration result = new JobConfiguration();
         result.setRuleConfig(new RuleConfiguration(
                 new ShardingSphereJDBCDataSourceConfiguration(event.getSourceDataSource(), event.getSourceRule()),
