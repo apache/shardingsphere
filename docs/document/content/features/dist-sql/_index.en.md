@@ -25,3 +25,7 @@ DistSQL is divided into RDL, RQL and SCTL.
 ## Goal
 
 **It is the design goal of DistSQL to break the boundary between middleware and database and let developers use Apache ShardingSphere just like database.**
+
+## Notice
+
+DistSQL can use for ShardingSphere-Proxy only, not for ShardingSphere-JDBC now.

@@ -1,13 +1,14 @@
 +++
 title = "RDL"
-weight = 4
+weight = 1
 +++
 
-## What's the RDL?
-RDL means rule definition language to create your distributed DBs, tables by SQL. In other words, this is a specific SQLs for ShardingSphere to inject some configurations.
-By means of RDL, users could inject data sources and configure sharding rules by SQL.
+## Definition
+
+RDL（Resource & Rule Definition Language）is used to define data resources and rules.
 
 At present, there are the following RDLs,
+
 - `Create DATASOURCES` to add database resources to ShardingSphere
 
 ```sql
@@ -42,7 +43,7 @@ t_item=mod(item_id, 2)
 )
 ```
 
-## A common scenario for RDL
+## Usage
 
 ### Pre-work
 

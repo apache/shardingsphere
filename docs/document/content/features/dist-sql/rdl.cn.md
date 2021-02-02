@@ -1,14 +1,13 @@
 +++
 title = "RDL"
-weight = 4
+weight = 1
 +++
 
-## 什么是 RDL?
+## 定义
 
-RDL（Rule Definition Language）是ShardingSphere特有的内置SQL语言。用户可以使用RDL语言向SharidngSphere注入数据源资源、创建分片规则等，即向ShardingSphere注入数据库资源信息和分片规则信息。
-RDL使得用户抛弃对传统Yaml或其他配置文件的依赖，像使用数据库一样，通过SQL进行资源信息的注入和规则的配置。
+RDL（Resource & Rule Definition Language）用于定义数据源资源、创建规则等。
 
-当前，RDL主要包括以下SQL内容：
+RDL 主要包括以下 SQL 内容：
 
 - `Create DATASOURCES`，用于注入数据源信息。
 
@@ -44,7 +43,7 @@ t_item=mod(item_id, 2)
 )
 ```
 
-## RDL使用实战
+## 使用实战
 
 ### 前置工作
 
