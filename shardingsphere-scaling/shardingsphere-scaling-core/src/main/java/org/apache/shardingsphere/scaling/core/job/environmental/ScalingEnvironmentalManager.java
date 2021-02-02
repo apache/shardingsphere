@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.scaling.core.job.environmental;
 
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceFactory;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceWrapper;
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilderFactory;
+import org.apache.shardingsphere.scaling.core.internal.common.datasource.DataSourceFactory;
+import org.apache.shardingsphere.scaling.core.internal.common.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.scaling.core.internal.common.sqlbuilder.ScalingSQLBuilderFactory;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 
 import java.sql.Connection;

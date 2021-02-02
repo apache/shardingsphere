@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.job.check;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.internal.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 import org.junit.Test;

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.scaling.mysql.component;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.AbstractJDBCImporter;
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.internal.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.internal.executor.importer.AbstractJDBCImporter;
+import org.apache.shardingsphere.scaling.core.internal.common.sqlbuilder.ScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.util.JDBCUtil;
 
 import java.util.Map;

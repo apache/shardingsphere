@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.job.task;
 
-import org.apache.shardingsphere.scaling.core.execute.executor.ScalingExecutor;
+import org.apache.shardingsphere.scaling.core.internal.executor.ScalingExecutor;
 import org.apache.shardingsphere.scaling.core.job.Progress;
 
 /**

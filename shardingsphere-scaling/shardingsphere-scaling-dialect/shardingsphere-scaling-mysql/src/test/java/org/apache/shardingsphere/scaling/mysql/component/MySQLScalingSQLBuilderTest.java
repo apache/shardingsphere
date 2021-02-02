@@ -19,8 +19,8 @@ package org.apache.shardingsphere.scaling.mysql.component;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
+import org.apache.shardingsphere.scaling.core.internal.common.record.Column;
+import org.apache.shardingsphere.scaling.core.internal.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.junit.Test;
 
