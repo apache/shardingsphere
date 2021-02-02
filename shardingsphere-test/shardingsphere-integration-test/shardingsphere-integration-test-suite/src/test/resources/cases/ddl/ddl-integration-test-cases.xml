@@ -102,7 +102,7 @@
 
     <test-case sql="DROP INDEX t_broadcast_index" db-types="PostgreSQL,Oracle">
         <assertion expected-data-file="broadcast_unchanged_table.xml">
-            <initial-sql sql="CREATE TABLE t_broadcast_details(id int, description varchar(10));CREATE INDEX t_broadcast_details_index ON t_broadcast_details(description)" affected-table="t_order_details" />
+            <initial-sql sql="CREATE TABLE t_broadcast_details(id int, description varchar(10));CREATE INDEX t_broadcast_details_index ON t_broadcast_details(description)" affected-table="t_broadcast_details" />
         </assertion>
     </test-case>
 
