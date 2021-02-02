@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.distsql.parser.core;
 
-import com.google.common.base.Joiner;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AddResourceContext;
@@ -123,7 +122,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         if (null != ctx.bindingTables()) {
             for (BindingTableContext each : ctx.bindingTables().bindingTable()) {
                 Collection<String> tables = each.tableNames().IDENTIFIER().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList());
-                result.getBindingTables().add(Joiner.on(",").join(tables));
+                result.getBindingTables().add(tables);
             }
         }
         if (null != ctx.broadcastTables()) {
@@ -154,10 +153,10 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
             for (AlterBindingTableContext each : ctx.alterBindingTables().alterBindingTable()) {
                 if (null != each.ADD()) {
                     Collection<String> tables = each.bindingTable().tableNames().IDENTIFIER().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList());
-                    result.getAddBindingTables().add(Joiner.on(",").join(tables));
+                    result.getAddBindingTables().add(tables);
                 } else if (null != each.DROP()) {
                     Collection<String> tables = each.bindingTable().tableNames().IDENTIFIER().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList());
-                    result.getDropBindingTables().add(Joiner.on(",").join(tables));
+                    result.getDropBindingTables().add(tables);
                 }
             }
         }
