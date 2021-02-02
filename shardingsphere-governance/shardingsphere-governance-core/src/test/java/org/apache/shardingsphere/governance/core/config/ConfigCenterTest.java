@@ -19,8 +19,8 @@ package org.apache.shardingsphere.governance.core.config;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAlteredEvent;
-import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataCreatedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDroppedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
@@ -501,7 +501,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertRenewDataSourceEvent() {
-        DataSourcePersistEvent event = new DataSourcePersistEvent("sharding_db", createDataSourceConfigurations());
+        DataSourceAddedEvent event = new DataSourceAddedEvent("sharding_db", createDataSourceConfigurations());
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
         verify(configurationRepository).persist(startsWith("/metadata/sharding_db/datasource"), anyString());

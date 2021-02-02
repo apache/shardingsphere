@@ -23,8 +23,8 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.governance.core.config.checker.RuleConfigurationCheckerFactory;
+import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAlteredEvent;
-import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataCreatedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDroppedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationCachedEvent;
@@ -110,10 +110,10 @@ public final class ConfigCenter {
     /**
      * persist data source configurations.
      * 
-     * @param event Data source event.
+     * @param event Data source added event.
      */
     @Subscribe
-    public synchronized void renew(final DataSourcePersistEvent event) {
+    public synchronized void renew(final DataSourceAddedEvent event) {
         addDataSourceConfigurations(event.getSchemaName(), event.getDataSourceConfigurations());
     }
 
