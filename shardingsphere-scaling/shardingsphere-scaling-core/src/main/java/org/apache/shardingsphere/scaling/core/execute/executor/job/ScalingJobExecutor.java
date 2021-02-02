@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.execute.executor.job;
 
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.utils.ElasticJobUtil;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -40,6 +42,8 @@ import java.util.regex.Pattern;
 public final class ScalingJobExecutor extends AbstractScalingExecutor implements ScalingExecutor {
     
     private static final Pattern CONFIG_PATTERN = Pattern.compile(ScalingConstant.SCALING_ROOT + "/(\\d+)/config");
+    
+    private static final Set<String> EXECUTING_JOBS = Sets.newConcurrentHashSet();
     
     @Override
     public void start() {
@@ -56,13 +60,14 @@ public final class ScalingJobExecutor extends AbstractScalingExecutor implements
             }
             JobConfigurationPOJO jobConfigPOJO = jobConfigPOJOOptional.get();
             if (DataChangedEvent.Type.DELETED.equals(event.getType()) || jobConfigPOJO.isDisabled()) {
+                EXECUTING_JOBS.remove(jobConfigPOJO.getJobName());
                 JobSchedulerCenter.stop(Long.parseLong(jobConfigPOJO.getJobName()));
                 return;
             }
             switch (event.getType()) {
                 case ADDED:
                 case UPDATED:
-                    new OneOffJobBootstrap(ElasticJobUtil.createRegistryCenter(), new ScalingJob(), jobConfigPOJO.toJobConfiguration()).execute();
+                    execute(jobConfigPOJO);
                     break;
                 default:
                     break;
@@ -82,5 +87,11 @@ public final class ScalingJobExecutor extends AbstractScalingExecutor implements
             log.error("analyze job config pojo failed.", ex);
         }
         return Optional.empty();
+    }
+    
+    private void execute(final JobConfigurationPOJO jobConfigPOJO) {
+        if (EXECUTING_JOBS.add(jobConfigPOJO.getJobName())) {
+            new OneOffJobBootstrap(ElasticJobUtil.createRegistryCenter(), new ScalingJob(), jobConfigPOJO.toJobConfiguration()).execute();
+        }
     }
 }
