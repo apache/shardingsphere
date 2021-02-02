@@ -49,7 +49,7 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends PositionInitializer> getPositionInitializer() {
+    public Class<? extends PositionInitializer<?>> getPositionInitializer() {
         return PostgreSQLPositionInitializer.class;
     }
     

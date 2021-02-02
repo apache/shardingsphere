@@ -52,7 +52,7 @@ public final class ImporterFactory {
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public static Importer newInstance(final String databaseType, final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
-        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
+        ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(databaseType);
         return scalingEntry.getImporterClass().getConstructor(ImporterConfiguration.class, DataSourceManager.class).newInstance(importerConfig, dataSourceManager);
     }
 }

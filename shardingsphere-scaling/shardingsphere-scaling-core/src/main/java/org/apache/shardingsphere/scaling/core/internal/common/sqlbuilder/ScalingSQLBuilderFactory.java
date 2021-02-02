@@ -37,7 +37,7 @@ public final class ScalingSQLBuilderFactory {
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public static ScalingSQLBuilder newInstance(final String databaseType) {
-        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
+        ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(databaseType);
         return scalingEntry.getSQLBuilderClass().getConstructor(Map.class).newInstance(Maps.newHashMap());
     }
 }

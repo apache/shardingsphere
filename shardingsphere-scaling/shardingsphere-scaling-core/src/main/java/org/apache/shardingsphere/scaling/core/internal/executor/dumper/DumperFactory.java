@@ -42,7 +42,7 @@ public final class DumperFactory {
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public static JDBCDumper newInstanceJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
-        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getName());
+        ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(inventoryDumperConfig.getDataSourceConfig().getDatabaseType().getName());
         return scalingEntry.getJdbcDumperClass().getConstructor(InventoryDumperConfiguration.class, DataSourceManager.class).newInstance(inventoryDumperConfig, dataSourceManager);
     }
     
@@ -67,7 +67,7 @@ public final class DumperFactory {
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public static LogDumper newInstanceLogDumper(final String databaseType, final DumperConfiguration dumperConfig, final Position<?> position) {
-        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType(databaseType);
+        ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(databaseType);
         return scalingEntry.getLogDumperClass().getConstructor(DumperConfiguration.class, Position.class).newInstance(dumperConfig, position);
     }
 }
