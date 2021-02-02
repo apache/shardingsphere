@@ -138,22 +138,4 @@ public final class JobScheduler implements Runnable {
             }
         };
     }
-    
-    /**
-     * Get inventory data task progress.
-     *
-     * @return all inventory data task progress
-     */
-    public Collection<InventoryTaskProgress> getInventoryTaskProgress() {
-        return jobContext.getInventoryTasks().stream().map(InventoryTask::getProgress).collect(Collectors.toList());
-    }
-    
-    /**
-     * Get incremental data task progress.
-     *
-     * @return all incremental data task progress
-     */
-    public Collection<IncrementalTaskProgress> getIncrementalTaskProgress() {
-        return jobContext.getIncrementalTasks().stream().map(IncrementalTask::getProgress).collect(Collectors.toList());
-    }
 }
