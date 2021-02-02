@@ -57,7 +57,7 @@ import static org.junit.Assert.assertThat;
 @Getter(AccessLevel.PROTECTED)
 public abstract class BatchIT extends BaseIT {
     
-    private static DataSetEnvironmentManager dataSetEnvironmentManager;
+    private DataSetEnvironmentManager dataSetEnvironmentManager;
     
     private final IntegrationTestCaseContext testCaseContext;
     
