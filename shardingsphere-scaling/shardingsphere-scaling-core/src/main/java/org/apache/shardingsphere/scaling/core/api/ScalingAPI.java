@@ -39,19 +39,19 @@ public interface ScalingAPI {
     List<JobInfo> list();
     
     /**
+     * Start a scaling job by id.
+     *
+     * @param jobId job id
+     */
+    void start(long jobId);
+    
+    /**
      * Start a scaling job by config.
      *
      * @param jobConfig job config
      * @return job id
      */
     Optional<Long> start(JobConfiguration jobConfig);
-    
-    /**
-     * Start a scaling job by id.
-     *
-     * @param jobId job id
-     */
-    void start(long jobId);
     
     /**
      * Stop a job.

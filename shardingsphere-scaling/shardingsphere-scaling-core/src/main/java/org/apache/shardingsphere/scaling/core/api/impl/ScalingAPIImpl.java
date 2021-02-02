@@ -18,13 +18,15 @@
 package org.apache.shardingsphere.scaling.core.api.impl;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
@@ -34,7 +36,6 @@ import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckerFa
 import org.apache.shardingsphere.scaling.core.job.environmental.ScalingEnvironmentalManager;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.JobProgress;
-import org.apache.shardingsphere.scaling.core.utils.ElasticJobUtil;
 import org.apache.shardingsphere.scaling.core.utils.JobConfigurationUtil;
 
 import java.sql.SQLException;
@@ -49,6 +50,8 @@ import java.util.stream.Stream;
 
 @Slf4j
 public final class ScalingAPIImpl implements ScalingAPI {
+    
+    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
     
     @Override
     public List<JobInfo> list() {
@@ -104,17 +107,6 @@ public final class ScalingAPIImpl implements ScalingAPI {
     }
     
     @Override
-    public Optional<Long> start(final JobConfiguration jobConfig) {
-        log.info("Start scaling job by {}", jobConfig);
-        JobConfigurationUtil.fillInProperties(jobConfig);
-        if (jobConfig.getHandleConfig().getShardingTotalCount() == 0) {
-            return Optional.empty();
-        }
-        executeScalingJob(jobConfig);
-        return Optional.of(jobConfig.getHandleConfig().getJobId());
-    }
-    
-    @Override
     public void start(final long jobId) {
         log.info("Start scaling job {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
@@ -122,15 +114,24 @@ public final class ScalingAPIImpl implements ScalingAPI {
         ScalingAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
     }
     
-    private void executeScalingJob(final JobConfiguration jobConfig) {
-        log.info("execute scaling job {}", jobConfig.getHandleConfig().getJobId());
-        new OneOffJobBootstrap(ElasticJobUtil.createRegistryCenter(), new ScalingJob(), createElasticJobConfig(jobConfig)).execute();
+    @Override
+    public Optional<Long> start(final JobConfiguration jobConfig) {
+        log.info("Start scaling job by {}", jobConfig);
+        JobConfigurationUtil.fillInProperties(jobConfig);
+        if (jobConfig.getHandleConfig().getShardingTotalCount() == 0) {
+            return Optional.empty();
+        }
+        ScalingAPIFactory.getRegistryRepositoryAPI().persist(String.format("%s/%d", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), ScalingJob.class.getCanonicalName());
+        ScalingAPIFactory.getRegistryRepositoryAPI().persist(String.format("%s/%d/config", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), createElasticJobConfig(jobConfig));
+        return Optional.of(jobConfig.getHandleConfig().getJobId());
     }
     
-    private org.apache.shardingsphere.elasticjob.api.JobConfiguration createElasticJobConfig(final JobConfiguration jobConfig) {
-        return org.apache.shardingsphere.elasticjob.api.JobConfiguration.newBuilder(String.valueOf(jobConfig.getHandleConfig().getJobId()), jobConfig.getHandleConfig().getShardingTotalCount())
-                .jobParameter(new Gson().toJson(jobConfig))
-                .build();
+    private String createElasticJobConfig(final JobConfiguration jobConfig) {
+        JobConfigurationPOJO jobConfigPOJO = new JobConfigurationPOJO();
+        jobConfigPOJO.setJobName(String.valueOf(jobConfig.getHandleConfig().getJobId()));
+        jobConfigPOJO.setShardingTotalCount(jobConfig.getHandleConfig().getShardingTotalCount());
+        jobConfigPOJO.setJobParameter(GSON.toJson(jobConfig));
+        return YamlEngine.marshal(jobConfigPOJO);
     }
     
     @Override
@@ -177,7 +178,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     }
     
     private JobConfiguration getJobConfig(final JobConfigurationPOJO elasticJobConfigPOJO) {
-        return new Gson().fromJson(elasticJobConfigPOJO.getJobParameter(), JobConfiguration.class);
+        return GSON.fromJson(elasticJobConfigPOJO.getJobParameter(), JobConfiguration.class);
     }
     
     private JobConfigurationPOJO getElasticJobConfigPOJO(final long jobId) {
