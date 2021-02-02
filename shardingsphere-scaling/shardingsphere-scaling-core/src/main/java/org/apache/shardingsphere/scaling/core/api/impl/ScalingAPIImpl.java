@@ -36,7 +36,7 @@ import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckerFa
 import org.apache.shardingsphere.scaling.core.job.environmental.ScalingEnvironmentalManager;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.JobProgress;
-import org.apache.shardingsphere.scaling.core.utils.JobConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 
 import java.sql.SQLException;
 import java.util.HashMap;

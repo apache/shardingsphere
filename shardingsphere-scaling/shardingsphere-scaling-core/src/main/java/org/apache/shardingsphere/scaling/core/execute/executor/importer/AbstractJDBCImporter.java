@@ -33,7 +33,7 @@ import org.apache.shardingsphere.scaling.core.execute.executor.record.GroupedDat
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.RecordUtil;
 import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.utils.ThreadUtil;
+import org.apache.shardingsphere.scaling.core.util.ThreadUtil;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

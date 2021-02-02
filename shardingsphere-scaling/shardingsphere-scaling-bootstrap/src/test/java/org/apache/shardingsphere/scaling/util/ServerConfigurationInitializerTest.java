@@ -15,27 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.utils;
+package org.apache.shardingsphere.scaling.util;
 
-import java.util.Map;
-import java.util.Set;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
+import org.junit.Test;
 
-/**
- * Sharding columns util.
- */
-public final class ShardingColumnsUtil {
+import static org.junit.Assert.assertNotNull;
+
+public final class ServerConfigurationInitializerTest {
     
-    /**
-     * Is Sharding column.
-     *
-     * @param shardingColumnsMap sharding columns map
-     * @param tableName table name
-     * @param columnName column name
-     * @return boolean
-     */
-    public static boolean isShardingColumn(final Map<String, Set<String>> shardingColumnsMap,
-                                           final String tableName, final String columnName) {
-        return shardingColumnsMap.containsKey(tableName)
-                && shardingColumnsMap.get(tableName).contains(columnName);
+    @Test
+    public void assertInitScalingConfig() {
+        ServerConfigurationInitializer.init();
+        assertNotNull(ScalingContext.getInstance().getServerConfig());
     }
 }

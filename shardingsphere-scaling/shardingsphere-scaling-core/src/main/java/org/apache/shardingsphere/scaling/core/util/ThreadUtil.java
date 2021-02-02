@@ -15,18 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.util;
+package org.apache.shardingsphere.scaling.core.util;
 
-import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.junit.Test;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import static org.junit.Assert.assertNotNull;
-
-public final class ServerConfigurationUtilTest {
+/**
+ * Thread util.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ThreadUtil {
     
-    @Test
-    public void assertInitScalingConfig() {
-        ServerConfigurationInitializer.init();
-        assertNotNull(ScalingContext.getInstance().getServerConfig());
+    /**
+     * Sleep ignored InterruptedException.
+     *
+     * @param millis sleep time.
+     */
+    public static void sleep(final long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (final InterruptedException ignored) {
+        }
     }
 }

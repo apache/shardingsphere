@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.job.preparer.splitter;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
@@ -33,7 +32,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -150,9 +148,8 @@ public final class InventoryTaskSplitterTest {
         }
     }
     
-    @SneakyThrows(IOException.class)
     private JobContext mockJobContext() {
-        JobContext result = JobConfigurationUtil.initJobContext("/config.json");
+        JobContext result = new JobContext(JobConfigurationUtil.initJobConfig("/config.json"));
         result.getJobConfig().getHandleConfig().setDatabaseType("H2");
         result.getJobConfig().getHandleConfig().setShardingSize(10);
         taskConfig = new TaskConfiguration(result.getJobConfig().getHandleConfig(), mockDumperConfig(), new ImporterConfiguration());

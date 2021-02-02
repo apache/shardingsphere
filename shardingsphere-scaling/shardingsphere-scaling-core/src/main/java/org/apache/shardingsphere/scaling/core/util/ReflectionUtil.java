@@ -15,41 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.utils;
+package org.apache.shardingsphere.scaling.core.util;
 
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Reflection utils.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReflectionUtil {
-    
-    /**
-     * Get field map.
-     *
-     * @param object object
-     * @return field map
-     * @throws IllegalAccessException illegal access exception
-     */
-    public static Map<String, Object> getFieldMap(final Object object) throws IllegalAccessException {
-        Map<String, Object> result = new HashMap<>();
-        for (Field field : object.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-            Object value = field.get(object);
-            if (null != value) {
-                result.put(field.getName(), value);
-            }
-        }
-        return result;
-    }
     
     /**
      * Set value into target object field.
@@ -63,37 +45,6 @@ public final class ReflectionUtil {
     public static void setFieldValue(final Object target, final String fieldName, final Object value) throws NoSuchFieldException, IllegalAccessException {
         Field field = getField(target.getClass(), fieldName, true);
         field.set(target, value);
-    }
-    
-    /**
-     * Set field value into target object.
-     *
-     * @param targetClass target class
-     * @param targetObject target object
-     * @param fieldName field name
-     * @param value target filed value
-     * @throws NoSuchFieldException no such field exception
-     * @throws IllegalAccessException illegal access exception
-     */
-    public static void setFieldValue(final Class<?> targetClass, final Object targetObject, final String fieldName, final Object value) throws NoSuchFieldException, IllegalAccessException {
-        Field field = getField(targetClass, fieldName, true);
-        field.setAccessible(true);
-        field.set(targetObject, value);
-    }
-    
-    /**
-     * Set static field value.
-     *
-     * @param targetClass target class
-     * @param fieldName field name
-     * @param value new value
-     * @throws NoSuchFieldException no such field exception
-     * @throws IllegalAccessException illegal access exception
-     */
-    public static void setStaticFieldValue(final Class<?> targetClass, final String fieldName, final Object value) throws NoSuchFieldException, IllegalAccessException {
-        Field field = getField(targetClass, fieldName, true);
-        field.setAccessible(true);
-        field.set(null, value);
     }
     
     /**

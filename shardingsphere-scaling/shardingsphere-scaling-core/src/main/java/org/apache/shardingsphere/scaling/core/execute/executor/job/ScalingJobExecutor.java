@@ -29,7 +29,6 @@ import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.execute.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.execute.executor.ScalingExecutor;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
-import org.apache.shardingsphere.scaling.core.utils.ElasticJobUtil;
 
 import java.util.Optional;
 import java.util.Set;
@@ -91,7 +90,7 @@ public final class ScalingJobExecutor extends AbstractScalingExecutor implements
     
     private void execute(final JobConfigurationPOJO jobConfigPOJO) {
         if (EXECUTING_JOBS.add(jobConfigPOJO.getJobName())) {
-            new OneOffJobBootstrap(ElasticJobUtil.createRegistryCenter(), new ScalingJob(), jobConfigPOJO.toJobConfiguration()).execute();
+            new OneOffJobBootstrap(ScalingAPIFactory.getRegistryCenter(), new ScalingJob(), jobConfigPOJO.toJobConfiguration()).execute();
         }
     }
 }
