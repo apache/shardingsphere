@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.execute.executor.channel;
 
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.scaling.core.utils.ThreadUtil;
+import org.apache.shardingsphere.scaling.core.util.ThreadUtil;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

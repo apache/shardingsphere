@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.job.position;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
-import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
+import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 
 /**
  * Position initializer factory.

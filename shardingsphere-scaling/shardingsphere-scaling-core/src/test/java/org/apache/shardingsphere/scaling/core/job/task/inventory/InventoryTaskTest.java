@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.scaling.core.job.task.inventory;
 
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
@@ -28,6 +28,7 @@ import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourc
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.exception.ScalingTaskExecuteException;
+import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.junit.After;
 import org.junit.Before;
@@ -83,7 +84,7 @@ public final class InventoryTaskTest {
         inventoryDumperConfig.setPosition(taskConfig.getDumperConfig().getPosition());
         InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(), dataSourceManager);
         inventoryTask.start();
-        assertFalse(((InventoryTaskProgress) inventoryTask.getProgress()).isFinished());
+        assertFalse(inventoryTask.getProgress().getPosition() instanceof FinishedPosition);
     }
     
     private void initTableData(final DumperConfiguration dumperConfig) throws SQLException {

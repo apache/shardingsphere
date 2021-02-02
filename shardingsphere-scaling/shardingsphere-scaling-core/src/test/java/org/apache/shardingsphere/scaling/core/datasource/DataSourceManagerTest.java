@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.scaling.core.datasource;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
-import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
+import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -39,9 +38,8 @@ public final class DataSourceManagerTest {
     private List<TaskConfiguration> taskConfigurations;
     
     @Before
-    @SneakyThrows(IOException.class)
     public void setUp() {
-        taskConfigurations = JobConfigurationUtil.initJobContext("/config.json").getTaskConfigs();
+        taskConfigurations = new JobContext(JobConfigurationUtil.initJobConfig("/config.json")).getTaskConfigs();
     }
     
     @Test

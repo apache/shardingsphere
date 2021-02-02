@@ -23,9 +23,8 @@ import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.auth.Grantee;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Optional;
 
 /**
@@ -34,12 +33,11 @@ import java.util.Optional;
 @Getter
 public final class DefaultAuthentication implements Authentication {
     
-    private final Map<String, ShardingSphereUser> users = new LinkedHashMap<>();
+    private final Collection<ShardingSphereUser> users = new LinkedHashSet<>();
     
     @Override
     public Optional<ShardingSphereUser> findUser(final Grantee grantee) {
-        Optional<Entry<String, ShardingSphereUser>> result = users.entrySet().stream().filter(entry -> entry.getKey().equals(grantee.getUsername())
-                && (entry.getValue().getHostname().equals(grantee.getHostname()) || Strings.isNullOrEmpty(entry.getValue().getHostname()))).findFirst();
-        return result.map(Entry::getValue);
+        return users.stream().filter(entry -> entry.getUsername().equals(grantee.getUsername())
+                && (entry.getHostname().equals(grantee.getHostname()) || Strings.isNullOrEmpty(entry.getHostname()))).findFirst();
     }
 }

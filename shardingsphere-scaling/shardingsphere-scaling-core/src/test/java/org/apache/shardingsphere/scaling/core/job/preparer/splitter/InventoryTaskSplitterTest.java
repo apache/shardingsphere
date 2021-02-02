@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.job.preparer.splitter;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
@@ -26,18 +25,16 @@ import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCData
 import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
-import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,17 +75,17 @@ public final class InventoryTaskSplitterTest {
     public void assertSplitInventoryDataWithIntPrimary() throws SQLException {
         taskConfig.getHandleConfig().setShardingSize(10);
         initIntPrimaryEnvironment(taskConfig.getDumperConfig());
-        List<ScalingTask> actual = (List<ScalingTask>) inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager);
+        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(10));
-        assertThat(((PrimaryKeyPosition) actual.get(9).getPosition()).getBeginValue(), is(91L));
-        assertThat(((PrimaryKeyPosition) actual.get(9).getPosition()).getEndValue(), is(100L));
+        assertThat(((PrimaryKeyPosition) actual.get(9).getProgress().getPosition()).getBeginValue(), is(91L));
+        assertThat(((PrimaryKeyPosition) actual.get(9).getProgress().getPosition()).getEndValue(), is(100L));
     }
     
     @Test
     public void assertSplitInventoryDataWithCharPrimary() throws SQLException {
         initCharPrimaryEnvironment(taskConfig.getDumperConfig());
-        Collection<ScalingTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager);
+        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
@@ -96,7 +93,7 @@ public final class InventoryTaskSplitterTest {
     @Test
     public void assertSplitInventoryDataWithUnionPrimary() throws SQLException {
         initUnionPrimaryEnvironment(taskConfig.getDumperConfig());
-        Collection<ScalingTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager);
+        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
@@ -104,7 +101,7 @@ public final class InventoryTaskSplitterTest {
     @Test
     public void assertSplitInventoryDataWithoutPrimary() throws SQLException {
         initNoPrimaryEnvironment(taskConfig.getDumperConfig());
-        Collection<ScalingTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager);
+        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
     }
@@ -151,9 +148,8 @@ public final class InventoryTaskSplitterTest {
         }
     }
     
-    @SneakyThrows(IOException.class)
     private JobContext mockJobContext() {
-        JobContext result = JobConfigurationUtil.initJobContext("/config.json");
+        JobContext result = new JobContext(JobConfigurationUtil.initJobConfig("/config.json"));
         result.getJobConfig().getHandleConfig().setDatabaseType("H2");
         result.getJobConfig().getHandleConfig().setShardingSize(10);
         taskConfig = new TaskConfiguration(result.getJobConfig().getHandleConfig(), mockDumperConfig(), new ImporterConfiguration());

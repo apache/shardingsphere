@@ -21,7 +21,6 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -46,9 +45,9 @@ public final class LockProxyState implements ProxyState {
     @Override
     public void execute(final ChannelHandlerContext context, final Object message, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final BackendConnection backendConnection) {
         block(context, databaseProtocolFrontendEngine);
-        if (StateContext.getCurrentState() == StateType.OK) {
+        if (ProxyContext.getInstance().getStateContext().getCurrentState() == StateType.OK) {
             doExecute(context, message, databaseProtocolFrontendEngine, backendConnection);
-        } else if (StateContext.getCurrentState() == StateType.CIRCUIT_BREAK) {
+        } else if (ProxyContext.getInstance().getStateContext().getCurrentState() == StateType.CIRCUIT_BREAK) {
             doError(context, databaseProtocolFrontendEngine, new CircuitBreakException());
         }
     }
