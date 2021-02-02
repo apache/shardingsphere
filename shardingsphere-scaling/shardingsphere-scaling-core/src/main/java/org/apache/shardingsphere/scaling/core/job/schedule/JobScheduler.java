@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.execute.engine.ExecuteCallback;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
+import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTask;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
@@ -34,17 +35,17 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Scaling task scheduler.
+ * Job scheduler.
  */
 @Slf4j
 @RequiredArgsConstructor
 @Getter
-public final class ScalingTaskScheduler implements Runnable {
+public final class JobScheduler implements Runnable {
     
     private final JobContext jobContext;
     
     /**
-     * Start execute scaling task.
+     * Start execute scaling job.
      */
     public void start() {
         new Thread(this).start();

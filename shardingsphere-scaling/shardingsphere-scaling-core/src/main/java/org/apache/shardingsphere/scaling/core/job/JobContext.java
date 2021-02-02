@@ -22,7 +22,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.job.position.JobProgress;
-import org.apache.shardingsphere.scaling.core.job.schedule.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTask;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.schedule;
+package org.apache.shardingsphere.scaling.core.job;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

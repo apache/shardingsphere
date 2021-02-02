@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class JobSchedulerCenter {
     
-    private static final Map<String, ScalingTaskScheduler> JOB_SCHEDULER_MAP = Maps.newConcurrentMap();
+    private static final Map<String, JobScheduler> JOB_SCHEDULER_MAP = Maps.newConcurrentMap();
     
     private static final ScheduledExecutorService JOB_PERSIST_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("scaling-job-persist-%d"));
     
@@ -57,7 +57,7 @@ public final class JobSchedulerCenter {
         if (JOB_SCHEDULER_MAP.containsKey(key)) {
             return;
         }
-        ScalingTaskScheduler jobScheduler = new ScalingTaskScheduler(jobContext);
+        JobScheduler jobScheduler = new JobScheduler(jobContext);
         jobScheduler.start();
         JOB_SCHEDULER_MAP.put(key, jobScheduler);
     }
@@ -68,9 +68,9 @@ public final class JobSchedulerCenter {
      * @param jobId job id
      */
     public static void stop(final long jobId) {
-        Iterator<Entry<String, ScalingTaskScheduler>> iterator = JOB_SCHEDULER_MAP.entrySet().iterator();
+        Iterator<Entry<String, JobScheduler>> iterator = JOB_SCHEDULER_MAP.entrySet().iterator();
         while (iterator.hasNext()) {
-            Entry<String, ScalingTaskScheduler> entry = iterator.next();
+            Entry<String, JobScheduler> entry = iterator.next();
             if (entry.getKey().startsWith(String.format("%d-", jobId))) {
                 entry.getValue().stop();
                 iterator.remove();
@@ -82,7 +82,7 @@ public final class JobSchedulerCenter {
         
         @Override
         public void run() {
-            for (Map.Entry<String, ScalingTaskScheduler> entry : JOB_SCHEDULER_MAP.entrySet()) {
+            for (Map.Entry<String, JobScheduler> entry : JOB_SCHEDULER_MAP.entrySet()) {
                 try {
                     REGISTRY_REPOSITORY_API.persistJobProgress(entry.getValue().getJobContext());
                     // CHECKSTYLE:OFF
