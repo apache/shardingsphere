@@ -15,38 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth;
+package org.apache.shardingsphere.infra.metadata.privilege.loader;
 
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
 
-import java.util.Map;
+import javax.sql.DataSource;
 import java.util.Optional;
 
 /**
- * Authentication.
-*/
-public interface Authentication {
+ * Privilege loader.
+ */
+public interface PrivilegeLoader {
     
     /**
-     * Get authentication.
+     * Load.
      *
-     * @return Authentication
+     * @param user user
+     * @param dataSource data source
+     * @return sharding sphere privilege
      */
-    Map<ShardingSphereUser, ShardingSpherePrivilege> getAuthentication();
-    
-    /**
-     * Find user.
-     * 
-     * @param grantee grantee
-     * @return found user
-     */
-    Optional<ShardingSphereUser> findUser(Grantee grantee);
-    
-    /**
-     * Find Privilege.
-     *
-     * @param grantee grantee
-     * @return found user
-     */
-    Optional<ShardingSpherePrivilege> findPrivilege(Grantee grantee);
+    Optional<ShardingSpherePrivilege> load(ShardingSphereUser user, DataSource dataSource);
 }

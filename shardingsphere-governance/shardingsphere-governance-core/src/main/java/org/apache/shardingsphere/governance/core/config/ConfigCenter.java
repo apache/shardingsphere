@@ -39,8 +39,8 @@ import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
-import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -51,6 +51,7 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -98,12 +99,12 @@ public final class ConfigCenter {
     /**
      * Persist global configuration.
      *
-     * @param authentication authentication
+     * @param users user
      * @param props properties
      * @param isOverwrite is overwrite config center's configuration
      */
-    public void persistGlobalConfiguration(final DefaultAuthentication authentication, final Properties props, final boolean isOverwrite) {
-        persistAuthentication(authentication, isOverwrite);
+    public void persistGlobalConfiguration(final Collection<ShardingSphereUser> users, final Properties props, final boolean isOverwrite) {
+        persistAuthentication(users, isOverwrite);
         persistProperties(props, isOverwrite);
     }
     
@@ -265,9 +266,10 @@ public final class ConfigCenter {
         return result;
     }
     
-    private void persistAuthentication(final DefaultAuthentication authentication, final boolean isOverwrite) {
-        if (null != authentication && (isOverwrite || !hasAuthentication())) {
-            repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(new AuthenticationYamlSwapper().swapToYamlConfiguration(authentication)));
+    private void persistAuthentication(final Collection<ShardingSphereUser> users, final boolean isOverwrite) {
+        if (!users.isEmpty() && (isOverwrite || !hasAuthentication())) {
+            repository.persist(node.getAuthenticationPath(),
+                    YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
         }
     }
     
@@ -319,14 +321,14 @@ public final class ConfigCenter {
     }
     
     /**
-     * Load authentication.
+     * Load user rule.
      *
      * @return authentication
      */
-    public DefaultAuthentication loadAuthentication() {
+    public Collection<ShardingSphereUser> loadUserRule() {
         return hasAuthentication()
-                ? YamlConfigurationConverter.convertAuthentication(repository.get(node.getAuthenticationPath()))
-                : new DefaultAuthentication();
+                ? YamlConfigurationConverter.convertUserRule(repository.get(node.getAuthenticationPath()))
+                : Collections.emptyList();
     }
     
     /**

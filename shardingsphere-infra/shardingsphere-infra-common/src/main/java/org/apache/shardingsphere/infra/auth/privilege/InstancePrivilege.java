@@ -15,38 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth;
+package org.apache.shardingsphere.infra.auth.privilege;
 
-import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
+import lombok.Getter;
 
-import java.util.Map;
-import java.util.Optional;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 /**
- * Authentication.
-*/
-public interface Authentication {
+ * Instance privilege.
+ */
+@Getter
+public final class InstancePrivilege {
+    
+    private final Collection<PrivilegeType> privileges = new LinkedHashSet<>();
     
     /**
-     * Get authentication.
+     * Has privileges.
      *
-     * @return Authentication
+     * @param privileges privileges
+     * @return has privileges or not
      */
-    Map<ShardingSphereUser, ShardingSpherePrivilege> getAuthentication();
-    
-    /**
-     * Find user.
-     * 
-     * @param grantee grantee
-     * @return found user
-     */
-    Optional<ShardingSphereUser> findUser(Grantee grantee);
-    
-    /**
-     * Find Privilege.
-     *
-     * @param grantee grantee
-     * @return found user
-     */
-    Optional<ShardingSpherePrivilege> findPrivilege(Grantee grantee);
+    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
+        if (this.privileges.contains(PrivilegeType.ALL)) {
+            return true;
+        }
+        return this.privileges.containsAll(privileges);
+    }
 }

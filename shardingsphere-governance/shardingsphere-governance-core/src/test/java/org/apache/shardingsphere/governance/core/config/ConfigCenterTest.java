@@ -34,8 +34,9 @@ import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
 import org.apache.shardingsphere.infra.auth.Grantee;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserRuleConfiguration;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
+import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -262,7 +263,7 @@ public final class ConfigCenterTest {
     @Test
     public void assertPersistGlobalConfiguration() {
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
-        configCenter.persistGlobalConfiguration(createAuthentication(), createProperties(), true);
+        configCenter.persistGlobalConfiguration(createAuthentication().getAuthentication().keySet(), createProperties(), true);
         verify(configurationRepository, times(0)).persist("/authentication", readYAML(AUTHENTICATION_YAML));
         verify(configurationRepository).persist("/props", PROPS_YAML);
     }
@@ -313,7 +314,13 @@ public final class ConfigCenterTest {
     }
     
     private DefaultAuthentication createAuthentication() {
-        return new AuthenticationYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(AUTHENTICATION_YAML), YamlAuthenticationConfiguration.class));
+        Collection<ShardingSphereUser> users =
+                new UserRuleYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(AUTHENTICATION_YAML), YamlUserRuleConfiguration.class));
+        DefaultAuthentication result = new DefaultAuthentication();
+        for (ShardingSphereUser each : users) {
+            result.getAuthentication().put(each, new ShardingSpherePrivilege());
+        }
+        return result;
     }
     
     private Properties createProperties() {
@@ -425,8 +432,8 @@ public final class ConfigCenterTest {
     public void assertLoadAuthentication() {
         when(configurationRepository.get("/authentication")).thenReturn(readYAML(AUTHENTICATION_YAML));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
-        DefaultAuthentication actual = configCenter.loadAuthentication();
-        Optional<ShardingSphereUser> user = actual.findUser(new Grantee("root1", ""));
+        Collection<ShardingSphereUser> actual = configCenter.loadUserRule();
+        Optional<ShardingSphereUser> user = actual.stream().filter(each -> each.getGrantee().equals(new Grantee("root1", ""))).findFirst();
         assertTrue(user.isPresent());
         assertThat(user.get().getPassword(), is("root1"));
     }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfi
 import org.apache.shardingsphere.infra.auth.Grantee;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
-import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserRuleConfiguration;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
@@ -103,7 +103,7 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertAuthentication(final ProxyConfiguration proxyConfig) {
-        DefaultAuthentication authentication = proxyConfig.getAuthentication();
+        DefaultAuthentication authentication = new DefaultAuthentication(proxyConfig.getUsers());
         assertNotNull(authentication);
         Optional<ShardingSphereUser> user = authentication.findUser(new Grantee("user1", ""));
         assertTrue(user.isPresent());
@@ -219,7 +219,7 @@ public final class YamlProxyConfigurationSwapperTest {
         when(yamlUserConfig.getPassword()).thenReturn("pass");
         when(yamlUserConfig.getAuthorizedSchemas()).thenReturn("db1");
         yamlUserConfigurationMap.put("user1", yamlUserConfig);
-        YamlAuthenticationConfiguration yamlAuthenticationConfig = mock(YamlAuthenticationConfiguration.class);
+        YamlUserRuleConfiguration yamlAuthenticationConfig = mock(YamlUserRuleConfiguration.class);
         when(yamlAuthenticationConfig.getUsers()).thenReturn(yamlUserConfigurationMap);
         when(yamlProxyServerConfig.getAuthentication()).thenReturn(yamlAuthenticationConfig);
     }

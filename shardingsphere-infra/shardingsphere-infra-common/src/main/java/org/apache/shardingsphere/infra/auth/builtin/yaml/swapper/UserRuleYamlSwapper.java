@@ -21,26 +21,27 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
-import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserConfiguration;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Authentication YAML swapper.
+ * User rule YAML swapper.
  */
-public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenticationConfiguration, DefaultAuthentication> {
+public final class UserRuleYamlSwapper implements YamlSwapper<YamlUserRuleConfiguration, Collection<ShardingSphereUser>> {
     
     @Override
-    public YamlAuthenticationConfiguration swapToYamlConfiguration(final DefaultAuthentication data) {
-        YamlAuthenticationConfiguration result = new YamlAuthenticationConfiguration();
+    public YamlUserRuleConfiguration swapToYamlConfiguration(final Collection<ShardingSphereUser> data) {
+        YamlUserRuleConfiguration result = new YamlUserRuleConfiguration();
         Map<String, YamlUserConfiguration> users = new LinkedHashMap<>();
-        for (ShardingSphereUser each : data.getUsers()) {
+        for (ShardingSphereUser each : data) {
             users.put(each.getUsername(), swapToYamlConfiguration(each));
         }
         result.setUsers(users);
@@ -57,13 +58,13 @@ public final class AuthenticationYamlSwapper implements YamlSwapper<YamlAuthenti
     }
     
     @Override
-    public DefaultAuthentication swapToObject(final YamlAuthenticationConfiguration yamlConfig) {
-        DefaultAuthentication result = new DefaultAuthentication();
+    public Collection<ShardingSphereUser> swapToObject(final YamlUserRuleConfiguration yamlConfig) {
+        Collection<ShardingSphereUser> result = new LinkedHashSet<>();
         if (null == yamlConfig) {
             return result;
         }
         for (Entry<String, YamlUserConfiguration> entry : yamlConfig.getUsers().entrySet()) {
-            result.getUsers().add(swapToObject(entry.getKey(), entry.getValue()));
+            result.add(swapToObject(entry.getKey(), entry.getValue()));
         }
         return result;
     }
