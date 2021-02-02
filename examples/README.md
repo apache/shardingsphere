@@ -4,7 +4,7 @@ Example for 1.x please see tags in `https://github.com/apache/shardingsphere/tre
 
 Example for 2.x or 3.x or 4.x please see tags in `https://github.com/apache/shardingsphere-example/tree/${tag}`
 
-**Need attention**
+**Notices**
 
 - *Please do not use `dev` branch to run your example, example of `dev` branch is not released yet.*
 
