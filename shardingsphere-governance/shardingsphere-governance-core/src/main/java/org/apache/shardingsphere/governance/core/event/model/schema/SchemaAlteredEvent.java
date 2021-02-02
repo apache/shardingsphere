@@ -15,30 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.event.notifier;
+package org.apache.shardingsphere.governance.core.event.model.schema;
 
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAlteredEvent;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.spi.SchemaChangedNotifier;
 
 /**
- * ShardingSphere schema changed notifier for governance.
+ * Schema persist event.
  */
-public final class GovernanceSchemaChangedNotifier implements SchemaChangedNotifier {
+@RequiredArgsConstructor
+@Getter
+public final class SchemaAlteredEvent {
     
-    @Override
-    public void notify(final String name, final ShardingSphereSchema schema) {
-        ShardingSphereEventBus.getInstance().post(new SchemaAlteredEvent(name, schema));
-    }
+    private final String schemaName;
     
-    @Override
-    public int getOrder() {
-        return 0;
-    }
-    
-    @Override
-    public Class<ShardingSphereSchema> getTypeClass() {
-        return ShardingSphereSchema.class;
-    }
+    private final ShardingSphereSchema schema;
 }
