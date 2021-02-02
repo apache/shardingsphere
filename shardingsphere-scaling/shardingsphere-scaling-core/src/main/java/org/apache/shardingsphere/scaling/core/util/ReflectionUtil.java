@@ -18,18 +18,19 @@
 package org.apache.shardingsphere.scaling.core.util;
 
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Reflection utils.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReflectionUtil {
     
     /**

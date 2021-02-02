@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 
-public final class ServerConfigurationUtilTest {
+public final class ServerConfigurationInitializerTest {
     
     @Test
     public void assertInitScalingConfig() {

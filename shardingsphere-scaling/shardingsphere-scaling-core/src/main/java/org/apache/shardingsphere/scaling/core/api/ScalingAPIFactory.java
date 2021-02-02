@@ -18,10 +18,14 @@
 package org.apache.shardingsphere.scaling.core.api;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobAPIFactory;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
+import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
+import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
+import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
@@ -33,6 +37,8 @@ import org.apache.shardingsphere.scaling.core.api.impl.ScalingAPIImpl;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
+
+import java.util.Properties;
 
 /**
  * Scaling API factory.
@@ -81,6 +87,15 @@ public final class ScalingAPIFactory {
         return ElasticJobAPIHolder.INSTANCE.getJobConfigurationAPI();
     }
     
+    /**
+     * Get registry center.
+     *
+     * @return Coordinator registry center
+     */
+    public static CoordinatorRegistryCenter getRegistryCenter() {
+        return RegistryCenterHolder.INSTANCE;
+    }
+    
     private static final class ScalingAPIHolder {
         
         private static final ScalingAPI INSTANCE = new ScalingAPIImpl();
@@ -115,6 +130,33 @@ public final class ScalingAPIFactory {
             String namespace = governanceConfig.getName() + ScalingConstant.SCALING_ROOT;
             jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
             jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
+        }
+    }
+    
+    private static final class RegistryCenterHolder {
+        
+        private static final CoordinatorRegistryCenter INSTANCE = createRegistryCenter();
+        
+        private static CoordinatorRegistryCenter createRegistryCenter() {
+            CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(getZookeeperConfig());
+            result.init();
+            return result;
+        }
+        
+        private static ZookeeperConfiguration getZookeeperConfig() {
+            GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
+            ZookeeperConfiguration result = new ZookeeperConfiguration(governanceConfig.getRegistryCenterConfiguration().getServerLists(),
+                    governanceConfig.getName() + ScalingConstant.SCALING_ROOT);
+            Properties props = governanceConfig.getRegistryCenterConfiguration().getProps();
+            result.setMaxSleepTimeMilliseconds(getProperty(props, "max.sleep.time.milliseconds", result.getMaxSleepTimeMilliseconds()));
+            result.setBaseSleepTimeMilliseconds(getProperty(props, "base.sleep.time.milliseconds", result.getBaseSleepTimeMilliseconds()));
+            result.setConnectionTimeoutMilliseconds(getProperty(props, "connection.timeout.milliseconds", result.getConnectionTimeoutMilliseconds()));
+            result.setSessionTimeoutMilliseconds(getProperty(props, "session.timeout.milliseconds", result.getSessionTimeoutMilliseconds()));
+            return result;
+        }
+        
+        private static int getProperty(final Properties props, final String key, final int defaultValue) {
+            return Strings.isNullOrEmpty(props.getProperty(key)) ? defaultValue : Integer.parseInt(props.getProperty(key));
         }
     }
 }
