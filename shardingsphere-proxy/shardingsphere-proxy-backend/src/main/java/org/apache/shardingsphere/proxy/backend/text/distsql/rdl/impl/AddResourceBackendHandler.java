@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
-import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -59,6 +59,6 @@ public final class AddResourceBackendHandler implements TextProtocolBackendHandl
     
     private void post(final BackendConnection backendConnection, final Map<String, DataSourceConfiguration> dataSources) {
         // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new DataSourcePersistEvent(backendConnection.getSchemaName(), dataSources));
+        ShardingSphereEventBus.getInstance().post(new DataSourceAddedEvent(backendConnection.getSchemaName(), dataSources));
     }
 }
