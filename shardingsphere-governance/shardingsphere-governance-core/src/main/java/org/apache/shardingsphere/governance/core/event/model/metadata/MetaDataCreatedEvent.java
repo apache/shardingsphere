@@ -20,23 +20,12 @@ package org.apache.shardingsphere.governance.core.event.model.metadata;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-
-import java.util.Collection;
-import java.util.Map;
-
 /**
- * Meta data added event.
+ * Meta data created event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MetaDataAddedEvent implements GovernanceEvent {
+public final class MetaDataCreatedEvent {
     
     private final String schemaName;
-    
-    private final Map<String, DataSourceConfiguration> dataSourceConfigurations;
-    
-    private final Collection<RuleConfiguration> ruleConfigurations;
 }

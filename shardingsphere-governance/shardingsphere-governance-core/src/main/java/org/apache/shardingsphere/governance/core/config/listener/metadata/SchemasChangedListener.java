@@ -21,8 +21,8 @@ import org.apache.commons.collections4.SetUtils;
 import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
 import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataPersistedEvent;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 
@@ -69,7 +69,7 @@ public final class SchemasChangedListener extends PostGovernanceRepositoryEventL
     
     private GovernanceEvent createAddedEvent(final String schemaName) {
         existedSchemaNames.add(schemaName);
-        return new MetaDataAddedEvent(schemaName, Collections.emptyMap(), Collections.emptyList());
+        return new MetaDataPersistedEvent(schemaName);
     }
     
     private GovernanceEvent createDeletedEvent(final String schemaName) {

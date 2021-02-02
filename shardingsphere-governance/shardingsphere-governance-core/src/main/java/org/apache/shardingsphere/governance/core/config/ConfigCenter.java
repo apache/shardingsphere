@@ -25,12 +25,13 @@ import org.apache.shardingsphere.governance.core.config.checker.RuleConfiguratio
 import org.apache.shardingsphere.governance.core.config.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataCreatedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDroppedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePersistEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaPersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAlteredEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
@@ -138,29 +139,42 @@ public final class ConfigCenter {
     }
     
     /**
-     * Persist schema name.
+     * Persist meta data.
      * 
-     * @param event Schema name event.
+     * @param event meta data created event.
      */
     @Subscribe
-    public synchronized void renew(final SchemaNamePersistEvent event) {
+    public synchronized void renew(final MetaDataCreatedEvent event) {
         String schemaNames = repository.get(node.getMetadataNodePath());
         Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
-        if (event.isDrop()) {
-            schemas.remove(event.getSchemaName());
-        } else if (!schemas.contains(event.getSchemaName())) {
+        if (!schemas.contains(event.getSchemaName())) {
             schemas.add(event.getSchemaName());
+            repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(schemas));
         }
-        repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(schemas));
     }
     
     /**
-     * Persist meta data.
+     * Delete meta data.
      *
-     * @param event Meta data event.
+     * @param event meta data dropped event
      */
     @Subscribe
-    public synchronized void renew(final SchemaPersistEvent event) {
+    public synchronized void renew(final MetaDataDroppedEvent event) {
+        String schemaNames = repository.get(node.getMetadataNodePath());
+        Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
+        if (schemas.contains(event.getSchemaName())) {
+            schemas.remove(event.getSchemaName());
+            repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(schemas));
+        }
+    }
+    
+    /**
+     * Persist schema.
+     *
+     * @param event schema altered event.
+     */
+    @Subscribe
+    public synchronized void renew(final SchemaAlteredEvent event) {
         persistSchema(event.getSchemaName(), event.getSchema());
     }
     

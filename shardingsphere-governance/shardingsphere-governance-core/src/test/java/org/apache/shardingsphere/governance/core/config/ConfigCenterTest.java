@@ -21,10 +21,11 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataCreatedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDroppedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePersistEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaPersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAlteredEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlRuleConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
@@ -516,7 +517,7 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertRenewSchemaNameEventWithDrop() {
-        SchemaNamePersistEvent event = new SchemaNamePersistEvent("sharding_db", true);
+        MetaDataDroppedEvent event = new MetaDataDroppedEvent("sharding_db");
         when(configurationRepository.get("/metadata")).thenReturn("sharding_db,replica_query_db");
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
@@ -524,8 +525,17 @@ public final class ConfigCenterTest {
     }
     
     @Test
+    public void assertRenewSchemaNameEventWithDropAndNotExist() {
+        MetaDataDroppedEvent event = new MetaDataDroppedEvent("sharding_db");
+        when(configurationRepository.get("/metadata")).thenReturn("replica_query_db");
+        ConfigCenter configCenter = new ConfigCenter(configurationRepository);
+        configCenter.renew(event);
+        verify(configurationRepository, times(0)).persist(eq("/metadata"), eq("replica_query_db"));
+    }
+    
+    @Test
     public void assertRenewSchemaNameEventWithAdd() {
-        SchemaNamePersistEvent event = new SchemaNamePersistEvent("sharding_db", false);
+        MetaDataCreatedEvent event = new MetaDataCreatedEvent("sharding_db");
         when(configurationRepository.get("/metadata")).thenReturn("replica_query_db");
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
@@ -534,11 +544,11 @@ public final class ConfigCenterTest {
     
     @Test
     public void assertRenewSchemaNameEventWithAddAndExist() {
-        SchemaNamePersistEvent event = new SchemaNamePersistEvent("sharding_db", false);
+        MetaDataCreatedEvent event = new MetaDataCreatedEvent("sharding_db");
         when(configurationRepository.get("/metadata")).thenReturn("sharding_db,replica_query_db");
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
-        verify(configurationRepository).persist(eq("/metadata"), eq("sharding_db,replica_query_db"));
+        verify(configurationRepository, times(0)).persist(eq("/metadata"), eq("sharding_db,replica_query_db"));
     }
     
     @Test
@@ -566,8 +576,8 @@ public final class ConfigCenterTest {
     }
     
     @Test
-    public void assertRenewSchemaPersistEvent() {
-        SchemaPersistEvent event = new SchemaPersistEvent("sharding_db", new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlSchema.class)));
+    public void assertRenewSchemaAlteredEvent() {
+        SchemaAlteredEvent event = new SchemaAlteredEvent("sharding_db", new SchemaYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(META_DATA_YAML), YamlSchema.class)));
         ConfigCenter configCenter = new ConfigCenter(configurationRepository);
         configCenter.renew(event);
         verify(configurationRepository).persist(eq("/metadata/sharding_db/schema"), anyString());

@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.event.model.schema;
+package org.apache.shardingsphere.governance.core.event.model.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 
 /**
- * Schema name persist event.
+ * Meta data dropped event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaNamePersistEvent implements GovernanceEvent {
+public final class MetaDataDroppedEvent {
     
     private final String schemaName;
-    
-    private final boolean isDrop; 
 }
