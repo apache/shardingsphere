@@ -3,7 +3,7 @@ title = "RDL"
 weight = 1
 +++
 
-## 定义?
+## 定义
 
 RDL（Resource & Rule Definition Language）用于定义数据源资源、创建规则等。
 

@@ -3,7 +3,7 @@ title = "RDL"
 weight = 1
 +++
 
-## Definition?
+## Definition
 
 RDL（Resource & Rule Definition Language）is used to define data resources and rules.
 
