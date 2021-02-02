@@ -38,7 +38,7 @@ import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.exception.ScalingJobNotFoundException;
+import org.apache.shardingsphere.scaling.core.internal.common.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.util.ResponseContentUtil;
 
 import java.sql.SQLException;

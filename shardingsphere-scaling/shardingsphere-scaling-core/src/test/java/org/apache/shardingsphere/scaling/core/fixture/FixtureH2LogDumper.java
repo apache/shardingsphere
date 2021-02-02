@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.scaling.core.fixture;
 
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.execute.executor.channel.Channel;
-import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
+import org.apache.shardingsphere.scaling.core.internal.common.channel.Channel;
+import org.apache.shardingsphere.scaling.core.internal.executor.dumper.LogDumper;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
 
 public final class FixtureH2LogDumper implements LogDumper {

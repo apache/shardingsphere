@@ -27,8 +27,8 @@ import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.WorkflowConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.execute.executor.job.FinishedCheckJobExecutor;
-import org.apache.shardingsphere.scaling.core.execute.executor.job.ScalingJobExecutor;
+import org.apache.shardingsphere.scaling.core.internal.executor.job.FinishedCheckJobExecutor;
+import org.apache.shardingsphere.scaling.core.internal.executor.job.ScalingJobExecutor;
 
 import java.util.Optional;
 
