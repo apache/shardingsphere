@@ -49,7 +49,7 @@ public final class MySQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends PositionInitializer> getPositionInitializer() {
+    public Class<? extends PositionInitializer<?>> getPositionInitializer() {
         return MySQLPositionInitializer.class;
     }
     

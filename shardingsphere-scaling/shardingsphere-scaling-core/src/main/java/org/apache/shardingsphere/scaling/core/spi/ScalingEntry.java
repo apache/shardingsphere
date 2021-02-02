@@ -50,7 +50,7 @@ public interface ScalingEntry extends DatabaseTypeAwareSPI {
      *
      * @return position initializer type
      */
-    Class<? extends PositionInitializer> getPositionInitializer();
+    Class<? extends PositionInitializer<?>> getPositionInitializer();
     
     /**
      * Get importer type.

@@ -39,7 +39,7 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends PositionInitializer> getPositionInitializer() {
+    public Class<? extends PositionInitializer<?>> getPositionInitializer() {
         return FixturePositionInitializer.class;
     }
     
