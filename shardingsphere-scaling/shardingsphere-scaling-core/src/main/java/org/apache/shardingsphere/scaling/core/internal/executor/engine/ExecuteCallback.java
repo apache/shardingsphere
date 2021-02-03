@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.internal.executor;
+package org.apache.shardingsphere.scaling.core.internal.executor.engine;
 
 /**
  * Scaling task execute callback.

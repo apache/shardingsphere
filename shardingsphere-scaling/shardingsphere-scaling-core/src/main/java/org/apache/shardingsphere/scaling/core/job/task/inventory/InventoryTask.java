@@ -27,7 +27,7 @@ import org.apache.shardingsphere.scaling.core.internal.common.datasource.DataSou
 import org.apache.shardingsphere.scaling.core.internal.common.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.internal.common.record.Record;
 import org.apache.shardingsphere.scaling.core.internal.executor.AbstractScalingExecutor;
-import org.apache.shardingsphere.scaling.core.internal.executor.ExecuteCallback;
+import org.apache.shardingsphere.scaling.core.internal.executor.engine.ExecuteCallback;
 import org.apache.shardingsphere.scaling.core.internal.executor.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.internal.executor.dumper.DumperFactory;
 import org.apache.shardingsphere.scaling.core.internal.executor.importer.Importer;

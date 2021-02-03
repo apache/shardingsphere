@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.internal.executor;
+package org.apache.shardingsphere.scaling.core.internal.executor.engine;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -25,6 +25,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
+import org.apache.shardingsphere.scaling.core.internal.executor.ScalingExecutor;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ import java.util.concurrent.Future;
  * Scaling executor engine.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TaskExecuteEngine {
+public final class ExecuteEngine {
     
     public static final String THREAD_NAME_FORMAT = "Scaling-execute-%d";
     
@@ -48,8 +49,8 @@ public final class TaskExecuteEngine {
      *
      * @return task execute engine instance
      */
-    public static TaskExecuteEngine newCachedThreadInstance() {
-        return new TaskExecuteEngine(MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(ExecutorThreadFactoryBuilder.build(THREAD_NAME_FORMAT))));
+    public static ExecuteEngine newCachedThreadInstance() {
+        return new ExecuteEngine(MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(ExecutorThreadFactoryBuilder.build(THREAD_NAME_FORMAT))));
     }
     
     /**
@@ -58,8 +59,8 @@ public final class TaskExecuteEngine {
      * @param threadNumber thread number
      * @return task execute engine instance
      */
-    public static TaskExecuteEngine newFixedThreadInstance(final int threadNumber) {
-        return new TaskExecuteEngine(MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(threadNumber, ExecutorThreadFactoryBuilder.build(THREAD_NAME_FORMAT))));
+    public static ExecuteEngine newFixedThreadInstance(final int threadNumber) {
+        return new ExecuteEngine(MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(threadNumber, ExecutorThreadFactoryBuilder.build(THREAD_NAME_FORMAT))));
     }
     
     /**

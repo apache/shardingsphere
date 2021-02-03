@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.internal.executor;
+package org.apache.shardingsphere.scaling.core.internal.executor.engine;
 
+import org.apache.shardingsphere.scaling.core.internal.executor.ScalingExecutor;
+import org.apache.shardingsphere.scaling.core.util.ThreadUtil;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -26,11 +28,11 @@ import java.util.concurrent.RejectedExecutionException;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
-public final class TaskExecuteEngineTest {
+public final class ExecuteEngineTest {
     
     @Test
     public void assertSubmitMoreThanMaxWorkerNumber() {
-        TaskExecuteEngine executeEngine = TaskExecuteEngine.newFixedThreadInstance(2);
+        ExecuteEngine executeEngine = ExecuteEngine.newFixedThreadInstance(2);
         try {
             for (int i = 0; i < 5; i++) {
                 Future<?> submit = executeEngine.submit(mockScalingExecutor());
@@ -43,7 +45,7 @@ public final class TaskExecuteEngineTest {
     
     @Test
     public void assertSubmitAllMoreThanMaxWorkerNumber() {
-        TaskExecuteEngine executeEngine = TaskExecuteEngine.newFixedThreadInstance(2);
+        ExecuteEngine executeEngine = ExecuteEngine.newFixedThreadInstance(2);
         try {
             for (int i = 0; i < 5; i++) {
                 Future<?> submit = executeEngine.submitAll(Collections.singletonList(mockScalingExecutor()), mockExecuteCallback());
@@ -58,24 +60,22 @@ public final class TaskExecuteEngineTest {
         return new ExecuteCallback() {
             @Override
             public void onSuccess() {
-        
+            
             }
-    
+            
             @Override
             public void onFailure(final Throwable throwable) {
-        
+            
             }
         };
     }
     
     private ScalingExecutor mockScalingExecutor() {
+        
         return new ScalingExecutor() {
             @Override
             public void run() {
-                try {
-                    Thread.sleep(100L);
-                } catch (final InterruptedException ignored) {
-                }
+                ThreadUtil.sleep(100L);
             }
             
             @Override

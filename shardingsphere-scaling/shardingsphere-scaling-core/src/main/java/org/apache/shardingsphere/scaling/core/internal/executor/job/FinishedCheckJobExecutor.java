@@ -26,7 +26,7 @@ import org.apache.shardingsphere.scaling.core.internal.executor.ScalingExecutor;
 import org.apache.shardingsphere.scaling.core.job.FinishedCheckJob;
 
 /**
- * Finished check worker.
+ * Finished check job executor.
  */
 @Slf4j
 public final class FinishedCheckJobExecutor extends AbstractScalingExecutor implements ScalingExecutor {
@@ -38,7 +38,7 @@ public final class FinishedCheckJobExecutor extends AbstractScalingExecutor impl
     @Override
     public void start() {
         super.start();
-        log.info("start finished check worker.");
+        log.info("Start finished check job executor.");
         new ScheduleJobBootstrap(ScalingAPIFactory.getRegistryCenter(), new FinishedCheckJob(), createJobConfig()).schedule();
     }
     
