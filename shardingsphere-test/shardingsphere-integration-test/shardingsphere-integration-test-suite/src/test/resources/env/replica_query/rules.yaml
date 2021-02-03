@@ -30,16 +30,26 @@ rules:
         none:
       databaseStrategy:
         none:
+    t_order_details:
+      actualDataNodes: primary-replica-ds.t_order_details
+      tableStrategy:
+        none:
+      databaseStrategy:
+        none:
     t_broadcast_table:
       actualDataNodes: primary-replica-ds.t_broadcast_table
+      tableStrategy:
+        none:
       databaseStrategy:
         none:
     t_broadcast_details:
       actualDataNodes: primary-replica-ds.t_broadcast_details
+      tableStrategy:
+        none:
       databaseStrategy:
         none:
   bindingTables:
-    - t_order,t_order_item
+    - t_order,t_order_item,t_order_details
   broadcastTables:
     - t_broadcast_table
     - t_broadcast_details
