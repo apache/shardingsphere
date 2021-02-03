@@ -71,7 +71,12 @@ public final class ITRunnerScheduler implements RunnerScheduler {
     }
     
     private void addExecutor(final String executorKey) {
-        executors.put(executorKey, getExecutorService(executorKey));
+        executors.put(executorKey, createExecutorService(executorKey));
+    }
+    
+    private ExecutorService createExecutorService(final String executorServiceKey) {
+        return new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setNameFormat("ITRunnerScheduler-" + executorServiceKey + "-pool-%d").build());
     }
     
     @Override
@@ -112,18 +117,13 @@ public final class ITRunnerScheduler implements RunnerScheduler {
     
     @Override
     public void finished() {
-        executors.values().forEach(executorService -> {
+        executors.values().forEach(each -> {
             try {
-                executorService.shutdown();
-                executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-            } catch (final InterruptedException e) {
-                e.printStackTrace(System.err);
+                each.shutdown();
+                each.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            } catch (final InterruptedException ex) {
+                ex.printStackTrace(System.err);
             }
         });
-    }
-    
-    private ExecutorService getExecutorService(final String executorServiceKey) {
-        return new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, 
-                new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setNameFormat("ITRunnerScheduler-" + executorServiceKey + "-pool-%d").build());
     }
 }
