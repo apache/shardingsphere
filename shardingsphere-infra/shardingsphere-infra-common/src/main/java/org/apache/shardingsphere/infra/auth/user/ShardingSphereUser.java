@@ -15,21 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth;
+package org.apache.shardingsphere.infra.auth.user;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+
 /**
- * Grantee.
+ * ShardingSphere user.
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-public final class Grantee {
+public final class ShardingSphereUser {
     
     private final String username;
     
+    private final String password;
+    
     private final String hostname;
+    
+    private final Collection<String> authorizedSchemas;
+    
+    /**
+     * Get grantee.
+     *
+     * @return grantee
+     */
+    public Grantee getGrantee() {
+        return new Grantee(username, hostname);
+    }
 }

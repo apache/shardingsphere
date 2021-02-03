@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.auth.builtin.yaml.swapper;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;

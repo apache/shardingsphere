@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
-import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
