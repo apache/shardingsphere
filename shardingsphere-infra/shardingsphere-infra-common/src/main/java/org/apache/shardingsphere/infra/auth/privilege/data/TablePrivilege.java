@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth.privilege;
+package org.apache.shardingsphere.infra.auth.privilege.data;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.auth.privilege.PrivilegeType;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
 
 /**
- * Instance privilege.
+ * Table privilege.
  */
+@RequiredArgsConstructor
 @Getter
-public final class InstancePrivilege {
+public final class TablePrivilege {
     
-    private final Collection<PrivilegeType> privileges = new LinkedHashSet<>();
+    private final String tableName;
+    
+    private final Collection<PrivilegeType> privileges;
     
     /**
      * Has privileges.

@@ -20,31 +20,31 @@ package org.apache.shardingsphere.infra.auth.privilege;
 import lombok.Getter;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.LinkedHashSet;
 
 /**
- * Schema privilege.
+ * Administration privilege.
  */
 @Getter
-public final class SchemaPrivilege {
+public final class AdministrationPrivilege {
     
-    private final Map<String, TablePrivilege> tablePrivileges = new LinkedHashMap<>();
+    private final Collection<PrivilegeType> privileges = new LinkedHashSet<>();
     
     /**
      * Has privileges.
      *
-     * @param table table
      * @param privileges privileges
      * @return has privileges or not
      */
-    public boolean hasPrivileges(final String table, final Collection<PrivilegeType> privileges) {
-        if (!tablePrivileges.containsKey(table)) {
-            return false;
-        }
-        if (tablePrivileges.containsKey("*")) {
-            return tablePrivileges.get("*").hasPrivileges(privileges);
-        }
-        return tablePrivileges.get(table).hasPrivileges(privileges);
+    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
+        return this.privileges.contains(PrivilegeType.ALL) || this.privileges.containsAll(privileges);
+    }
+    
+    /**
+     * Set super privilege.
+     *
+     */
+    public void setSuper() {
+        privileges.add(PrivilegeType.ALL);
     }
 }
