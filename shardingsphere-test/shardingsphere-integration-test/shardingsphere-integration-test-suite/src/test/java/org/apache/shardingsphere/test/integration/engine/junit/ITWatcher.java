@@ -15,34 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth;
+package org.apache.shardingsphere.test.integration.engine.junit;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 
 /**
- * ShardingSphere user.
+ * Integration test watcher.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShardingSphereUser {
+@Slf4j
+public final class ITWatcher extends TestWatcher {
     
-    private final String username;
-    
-    private final String password;
-    
-    private final String hostname;
-    
-    private final Collection<String> authorizedSchemas;
-    
-    /**
-     * Get grantee.
-     *
-     * @return grantee
-     */
-    public Grantee getGrantee() {
-        return new Grantee(username, hostname);
+    @Override
+    protected void failed(final Throwable ex, final Description description) {
+        log.error("Error case: {}", description.getMethodName());
+        super.failed(ex, description);
     }
 }

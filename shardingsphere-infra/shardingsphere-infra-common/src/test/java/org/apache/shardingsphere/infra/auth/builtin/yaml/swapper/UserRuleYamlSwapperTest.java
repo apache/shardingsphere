@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.infra.auth.builtin.yaml.swapper;
 
-import org.apache.shardingsphere.infra.auth.Grantee;
+import org.apache.shardingsphere.infra.auth.user.Grantee;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserRuleConfiguration;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;

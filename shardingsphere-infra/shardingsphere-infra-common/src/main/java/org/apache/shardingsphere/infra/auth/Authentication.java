@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.auth;
 
 import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
+import org.apache.shardingsphere.infra.auth.user.Grantee;
+import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
 
 import java.util.Map;
 import java.util.Optional;

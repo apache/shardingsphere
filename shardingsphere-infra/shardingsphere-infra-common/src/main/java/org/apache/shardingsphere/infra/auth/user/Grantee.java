@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.watcher;
+package org.apache.shardingsphere.infra.auth.user;
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Integration test watcher.
+ * Grantee.
  */
-@Slf4j
-public final class ITWatcher extends TestWatcher {
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+public final class Grantee {
     
-    @Override
-    protected void failed(final Throwable ex, final Description description) {
-        log.error("Error case: {}", description.getMethodName());
-        super.failed(ex, description);
-    }
+    private final String username;
+    
+    private final String hostname;
 }
