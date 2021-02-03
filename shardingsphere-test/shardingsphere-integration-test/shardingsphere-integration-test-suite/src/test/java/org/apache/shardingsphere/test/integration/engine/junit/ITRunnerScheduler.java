@@ -29,7 +29,6 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -37,14 +36,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Represents a strategy for scheduling when individual test methods
- * should be run (in serial or parallel).
+ * Represents a strategy for scheduling when individual test methods should be run (in serial or parallel).
+ * 
  * <p>
  * WARNING: still experimental, may go away.
  * </p>
  */
 @Slf4j
-public class ITRunnerScheduler implements RunnerScheduler {
+public final class ITRunnerScheduler implements RunnerScheduler {
     
     private static final String DEFAULT_EXECUTOR_KEY = "default";
     
@@ -53,51 +52,69 @@ public class ITRunnerScheduler implements RunnerScheduler {
     private final Map<String, AtomicInteger> executorCounter = new HashMap<>();
     
     public ITRunnerScheduler() {
-        Collection<String> adapters = IntegrationTestEnvironment.getInstance().getAdapters();
-        Collection<String> scenarios = IntegrationTestEnvironment.getInstance().getScenarios();
-        Set<DatabaseType> databaseTypes = IntegrationTestEnvironment.getInstance().getDatabaseEnvironments().keySet();
-        
-        executors.put(DEFAULT_EXECUTOR_KEY, getExecutorService(DEFAULT_EXECUTOR_KEY));
-        executorCounter.put(DEFAULT_EXECUTOR_KEY, new AtomicInteger(0));
+        IntegrationTestEnvironment itEnv = IntegrationTestEnvironment.getInstance();
+        addExecutors(itEnv.getAdapters(), itEnv.getScenarios(), itEnv.getDatabaseEnvironments().keySet());
+        addExecutor(DEFAULT_EXECUTOR_KEY);
+    }
+    
+    private void addExecutors(final Collection<String> adapters, final Collection<String> scenarios, final Collection<DatabaseType> databaseTypes) {
         for (String each : adapters) {
-            for (String scenario : scenarios) {
-                for (DatabaseType databaseType : databaseTypes) {
-                    String executorServiceKey = getExecutorServiceKey(each, scenario, databaseType.getName());
-                    executors.put(executorServiceKey, getExecutorService(executorServiceKey));
-                    executorCounter.put(executorServiceKey, new AtomicInteger(0));
-                }
-            }
+            addExecutors(each, scenarios, databaseTypes);
         }
     }
     
-    @SneakyThrows
+    private void addExecutors(final String adapter, final Collection<String> scenarios, final Collection<DatabaseType> databaseTypes) {
+        for (String each : scenarios) {
+            addExecutors(adapter, each, databaseTypes);
+        }
+    }
+    
+    private void addExecutors(final String adapter, final String scenario, final Collection<DatabaseType> databaseTypes) {
+        for (DatabaseType each : databaseTypes) {
+            addExecutor(String.join("_", adapter, scenario, each.getName()));
+        }
+    }
+    
+    private void addExecutor(final String executorKey) {
+        executors.put(executorKey, getExecutorService(executorKey));
+        executorCounter.put(executorKey, new AtomicInteger(0));
+    }
+    
     @Override
     public void schedule(final Runnable childStatement) {
         // TODO Gets the parameters of the Runnable closure
+        ITBlockJUnit4ClassRunnerWithParameters runnerWithParameters = getRunnerWithParameters(childStatement);
+        String executorKey = getExecutorKey(runnerWithParameters.getTestClass(), runnerWithParameters.getParameters());
+        executorCounter.get(executorKey).incrementAndGet();
+        executors.get(executorKey).submit(childStatement);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private ITBlockJUnit4ClassRunnerWithParameters getRunnerWithParameters(final Runnable childStatement) {
         Field field = childStatement.getClass().getDeclaredField("val$each");
         field.setAccessible(true);
-        ITBlockJUnit4ClassRunnerWithParameters runnerWithParameters = (ITBlockJUnit4ClassRunnerWithParameters) field.get(childStatement);
-        String executorServiceKey = getExecutorServiceKey(runnerWithParameters.getParameters(), runnerWithParameters.getTestClass());
-        executorCounter.get(executorServiceKey).incrementAndGet();
-        executors.get(executorServiceKey).submit(childStatement);
+        return (ITBlockJUnit4ClassRunnerWithParameters) field.get(childStatement);
     }
     
-    private String getExecutorServiceKey(final String adapter, final String scenario, final String databaseTypeName) {
-        return String.join("_", adapter, scenario, databaseTypeName);
-    }
-    
-    private String getExecutorServiceKey(final Object[] parameters, final TestClass testClass) {
-        Class<?> realTestClass = testClass.getJavaClass();
-        if (realTestClass == null) {
+    private String getExecutorKey(final TestClass testClass, final Object[] parameters) {
+        if (null == testClass.getJavaClass()) {
             return DEFAULT_EXECUTOR_KEY;
         }
         int parametersLength = parameters.length;
-        if (parametersLength == 7) {
+        if (isSingleTest(parametersLength)) {
             return String.join("_", String.valueOf(parameters[2]), String.valueOf(parameters[3]), String.valueOf(parameters[4]));
-        } else if (parametersLength == 5) {
+        } else if (isBatchTest(parametersLength)) {
             return String.join("_", String.valueOf(parameters[1]), String.valueOf(parameters[2]), String.valueOf(parameters[3]));
         }
         return DEFAULT_EXECUTOR_KEY;
+    }
+    
+    private boolean isSingleTest(final int parametersLength) {
+        return 7 == parametersLength;
+    }
+    
+    private boolean isBatchTest(final int parametersLength) {
+        return 5 == parametersLength;
     }
     
     @Override
@@ -109,7 +126,7 @@ public class ITRunnerScheduler implements RunnerScheduler {
             try {
                 executorService.shutdown();
                 executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 e.printStackTrace(System.err);
             }
         });
@@ -117,6 +134,6 @@ public class ITRunnerScheduler implements RunnerScheduler {
     
     private ExecutorService getExecutorService(final String executorServiceKey) {
         return new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>(), new ThreadFactoryBuilder().setNameFormat("ITRunnerScheduler-" + executorServiceKey + "-pool-%d").build());
+                new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setNameFormat("ITRunnerScheduler-" + executorServiceKey + "-pool-%d").build());
     }
 }
