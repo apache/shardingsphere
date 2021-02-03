@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.governance.core.config.listener.metadata;
 
+import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 
 import java.util.Collection;
 
@@ -29,17 +32,21 @@ public final class MetaDataListener {
     
     private final SchemasChangedListener schemasChangedListener;
     
-    private final RuleChangedListener ruleChangedListener;
+    private volatile RuleChangedListener ruleChangedListener;
     
-    private final DataSourceChangedListener dataSourceChangedListener;
+    private volatile DataSourceChangedListener dataSourceChangedListener;
     
-    private final SchemaChangedListener schemaChangedListener;
+    private volatile SchemaChangedListener schemaChangedListener;
+    
+    private final ConfigurationRepository configurationRepository;
     
     public MetaDataListener(final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
+        this.configurationRepository = configurationRepository;
         schemasChangedListener = new SchemasChangedListener(configurationRepository, schemaNames);
         ruleChangedListener = new RuleChangedListener(configurationRepository, schemaNames);
         dataSourceChangedListener = new DataSourceChangedListener(configurationRepository, schemaNames);
         schemaChangedListener = new SchemaChangedListener(configurationRepository, schemaNames);
+        ShardingSphereEventBus.getInstance().register(this);
     }
     
     /**
@@ -47,6 +54,21 @@ public final class MetaDataListener {
      */
     public void watch() {
         schemasChangedListener.watch(Type.UPDATED);
+        ruleChangedListener.watch(Type.UPDATED);
+        dataSourceChangedListener.watch(Type.UPDATED);
+        schemaChangedListener.watch(Type.UPDATED);
+    }
+    
+    /**
+     * Renew listeners.
+     * 
+     * @param event meta data changed event.
+     */
+    @Subscribe
+    public void renew(final MetaDataChangedEvent event) {
+        ruleChangedListener = new RuleChangedListener(configurationRepository, event.getSchemaNames());
+        dataSourceChangedListener = new DataSourceChangedListener(configurationRepository, event.getSchemaNames());
+        schemaChangedListener = new SchemaChangedListener(configurationRepository, event.getSchemaNames());
         ruleChangedListener.watch(Type.UPDATED);
         dataSourceChangedListener.watch(Type.UPDATED);
         schemaChangedListener.watch(Type.UPDATED);
