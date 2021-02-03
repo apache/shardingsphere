@@ -40,6 +40,18 @@ public final class DataPrivilege {
      * Has privileges.
      *
      * @param schema schema
+     * @param privileges privileges
+     * @return has privileges or not
+     */
+    public boolean hasPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
+        return globalPrivileges.contains(PrivilegeType.ALL) || globalPrivileges.containsAll(privileges)
+                || hasPrivileges0(schema, privileges);
+    }
+    
+    /**
+     * Has privileges.
+     *
+     * @param schema schema
      * @param table table
      * @param privileges privileges
      * @return has privileges or not
@@ -47,6 +59,11 @@ public final class DataPrivilege {
     public boolean hasPrivileges(final String schema, final String table, final Collection<PrivilegeType> privileges) {
         return globalPrivileges.contains(PrivilegeType.ALL) || globalPrivileges.containsAll(privileges)
                 || hasPrivileges0(schema, table, privileges);
+    }
+    
+    private boolean hasPrivileges0(final String schema, final Collection<PrivilegeType> privileges) {
+        Collection<PrivilegeType> targets = privileges.stream().filter(each -> !globalPrivileges.contains(each)).collect(Collectors.toList());
+        return specificPrivileges.containsKey(schema) && specificPrivileges.get(schema).hasPrivileges(targets);
     }
     
     private boolean hasPrivileges0(final String schema, final String table, final Collection<PrivilegeType> privileges) {

@@ -80,8 +80,7 @@ public final class YamlEngineTest {
     
     @Test
     public void assertUnmarshalProperties() {
-        Properties actual = YamlEngine.unmarshalWithFilter("password: pwd\nauthorizedSchemas: db1", Properties.class);
-        assertThat(actual.getProperty("authorizedSchemas"), is("db1"));
+        Properties actual = YamlEngine.unmarshalWithFilter("password: pwd", Properties.class);
         assertThat(actual.getProperty("password"), is("pwd"));
     }
     

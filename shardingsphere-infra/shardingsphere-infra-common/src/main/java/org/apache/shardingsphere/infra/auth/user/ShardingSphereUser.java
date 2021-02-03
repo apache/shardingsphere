@@ -20,8 +20,6 @@ package org.apache.shardingsphere.infra.auth.user;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-
 /**
  * ShardingSphere user.
  */
@@ -34,8 +32,6 @@ public final class ShardingSphereUser {
     private final String password;
     
     private final String hostname;
-    
-    private final Collection<String> authorizedSchemas;
     
     /**
      * Get grantee.

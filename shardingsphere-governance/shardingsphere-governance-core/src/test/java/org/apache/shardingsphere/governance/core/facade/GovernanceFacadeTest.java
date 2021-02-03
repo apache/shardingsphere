@@ -75,7 +75,7 @@ public final class GovernanceFacadeTest {
     public void assertOnlineInstanceWithParameters() {
         Map<String, DataSourceConfiguration> dataSourceConfigMap = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));
         Map<String, Collection<RuleConfiguration>> ruleConfigurationMap = Collections.singletonMap("sharding_db", Collections.singletonList(mock(RuleConfiguration.class)));
-        ShardingSphereUser user = new ShardingSphereUser("root", "root", "", Collections.singleton("db1"));
+        ShardingSphereUser user = new ShardingSphereUser("root", "root", "");
         DefaultAuthentication authentication = new DefaultAuthentication();
         authentication.getAuthentication().put(user, new ShardingSpherePrivilege());
         Properties props = new Properties();

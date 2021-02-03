@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
@@ -48,11 +48,15 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private Collection<Object> getSchemaNames(final BackendConnection backendConnection) {
-        Collection<Object> result = new LinkedList<>(ProxyContext.getInstance().getAllSchemaNames());
-        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(backendConnection.getGrantee());
-        Collection<String> authorizedSchemas = user.isPresent() ? user.get().getAuthorizedSchemas() : Collections.emptyList();
-        if (!authorizedSchemas.isEmpty()) {
-            result.retainAll(authorizedSchemas);
+        Optional<ShardingSpherePrivilege> privilege = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findPrivilege(backendConnection.getGrantee());
+        if (!privilege.isPresent()) {
+            return Collections.emptyList();
+        }
+        Collection<Object> result = new LinkedList<>();
+        for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
+            if (privilege.get().getDataPrivilege().hasPrivileges(each, Collections.emptyList())) {
+                result.add(each);
+            }
         }
         return result;
     }

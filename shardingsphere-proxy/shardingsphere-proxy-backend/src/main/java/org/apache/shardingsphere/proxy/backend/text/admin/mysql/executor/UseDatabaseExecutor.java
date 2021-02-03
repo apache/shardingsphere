@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
@@ -26,7 +26,6 @@ import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdmin
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -48,8 +47,7 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     }
     
     private boolean isAuthorizedSchema(final BackendConnection backendConnection, final String schema) {
-        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(backendConnection.getGrantee());
-        Collection<String> authorizedSchemas = user.isPresent() ? user.get().getAuthorizedSchemas() : Collections.emptyList();
-        return authorizedSchemas.isEmpty() || authorizedSchemas.contains(schema);
+        Optional<ShardingSpherePrivilege> privilege = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findPrivilege(backendConnection.getGrantee());
+        return privilege.isPresent() && privilege.get().getDataPrivilege().hasPrivileges(schema, Collections.emptyList());
     }
 }

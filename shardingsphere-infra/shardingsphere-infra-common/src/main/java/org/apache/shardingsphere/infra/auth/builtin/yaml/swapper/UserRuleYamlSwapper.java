@@ -17,16 +17,12 @@
 
 package org.apache.shardingsphere.infra.auth.builtin.yaml.swapper;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserRuleConfiguration;
+import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -52,8 +48,6 @@ public final class UserRuleYamlSwapper implements YamlSwapper<YamlUserRuleConfig
         YamlUserConfiguration result = new YamlUserConfiguration();
         result.setHostname(data.getHostname());
         result.setPassword(data.getPassword());
-        String authorizedSchemas = null == data.getAuthorizedSchemas() ? "" : Joiner.on(',').join(data.getAuthorizedSchemas());
-        result.setAuthorizedSchemas(authorizedSchemas);
         return result;
     }
     
@@ -70,10 +64,6 @@ public final class UserRuleYamlSwapper implements YamlSwapper<YamlUserRuleConfig
     }
     
     private ShardingSphereUser swapToObject(final String username, final YamlUserConfiguration yamlConfig) {
-        if (Strings.isNullOrEmpty(yamlConfig.getAuthorizedSchemas())) {
-            return new ShardingSphereUser(username, yamlConfig.getPassword(), null == yamlConfig.getHostname() ? "" : yamlConfig.getHostname(), Collections.emptyList());
-        }
-        return new ShardingSphereUser(username, yamlConfig.getPassword(), null == yamlConfig.getHostname() ? "" : yamlConfig.getHostname(),
-                Splitter.on(',').trimResults().splitToList(yamlConfig.getAuthorizedSchemas()));
+        return new ShardingSphereUser(username, yamlConfig.getPassword(), null == yamlConfig.getHostname() ? "" : yamlConfig.getHostname());
     }
 }

@@ -118,17 +118,15 @@ public final class PostgreSQLAuthenticationEngineTest {
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
         PostgreSQLAuthenticationMD5PasswordPacket md5PasswordPacket = argumentCaptor.getValue();
         byte[] md5Salt = getMd5Salt(md5PasswordPacket);
-        
         payload = new PostgreSQLPacketPayload(createByteBuf(16, 128));
         String md5Digest = md5Encode(username, inputPassword, md5Salt);
         payload.writeInt1('p');
         payload.writeInt4(4 + md5Digest.length() + 1);
         payload.writeStringNul(md5Digest);
-        
         ProxyContext proxyContext = ProxyContext.getInstance();
         StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts();
         ((DefaultAuthentication) standardMetaDataContexts.getAuthentication()).getAuthentication().put(
-                new ShardingSphereUser(username, password, "", null), new ShardingSpherePrivilege());
+                new ShardingSphereUser(username, password, ""), new ShardingSpherePrivilege());
         proxyContext.init(standardMetaDataContexts, mock(TransactionContexts.class));
         actual = engine.auth(channelHandlerContext, payload);
         assertThat(actual.isFinished(), is(password.equals(inputPassword)));
