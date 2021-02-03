@@ -23,7 +23,6 @@ import com.wix.mysql.config.DownloadConfig;
 import com.wix.mysql.config.MysqldConfig;
 import com.wix.mysql.distribution.Version;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
 
 import java.io.File;
@@ -32,7 +31,6 @@ import java.io.File;
  * Embedded database resource for MySQL.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class MySQLEmbeddedDatabaseResource implements EmbeddedDatabaseResource {
     
     private final DatabaseEnvironment databaseEnvironment;
@@ -41,11 +39,7 @@ public final class MySQLEmbeddedDatabaseResource implements EmbeddedDatabaseReso
     
     @Override
     public void start() {
-        long startTime = System.currentTimeMillis();
-        log.info("Test embedded database resources MySQL prepare.");
-        DownloadConfig downloadConfig = DownloadConfig.aDownloadConfig()
-                .withBaseUrl(databaseEnvironment.getDistributionUrl())
-                .build();
+        DownloadConfig downloadConfig = DownloadConfig.aDownloadConfig().withBaseUrl(databaseEnvironment.getDistributionUrl()).build();
         MysqldConfig mysqldConfig = MysqldConfig.aMysqldConfig(Version.valueOf(databaseEnvironment.getDistributionVersion()))
                 .withCharset(Charset.UTF8MB4)
                 .withTempDir(new File(downloadConfig.getCacheDir(), "runtime").getPath())
@@ -55,7 +49,6 @@ public final class MySQLEmbeddedDatabaseResource implements EmbeddedDatabaseReso
                 .withServerVariable("innodb_flush_log_at_trx_commit", 2)
                 .build();
         embeddedMySQL = EmbeddedMysql.anEmbeddedMysql(mysqldConfig, downloadConfig).start();
-        log.info("Test embedded database resources MySQL start mysqld elapsed time {}s", (System.currentTimeMillis() - startTime) / 1000);
     }
     
     @Override
