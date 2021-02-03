@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
+import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
@@ -31,6 +33,8 @@ import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfigurat
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Create sharding rule backend handler.
@@ -43,10 +47,26 @@ public final class CreateShardingRuleBackendHandler extends SchemaRequiredBacken
     
     @Override
     public ResponseHeader execute(final String schemaName, final CreateShardingRuleStatement sqlStatement) {
+        check(sqlStatement);
         YamlShardingRuleConfiguration config = ShardingRuleStatementConverter.convert(sqlStatement);
         Collection<RuleConfiguration> rules = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(config));
         post(schemaName, rules);
         return new UpdateResponseHeader(sqlStatement);
+    }
+    
+    private void check(final CreateShardingRuleStatement sqlStatement) {
+        Collection<String> validTables = sqlStatement.getTables().stream().map(TableRuleSegment::getLogicTable).collect(Collectors.toList());
+        Collection<String> invalidTables = new LinkedList<>();
+        for (Collection<String> each : sqlStatement.getBindingTables()) {
+            for (String t : each) {
+                if (!validTables.contains(t)) {
+                    invalidTables.add(t);
+                }
+            }
+        }
+        if (!invalidTables.isEmpty()) {
+            throw new ShardingTableRuleNotExistedException(invalidTables);
+        }
     }
     
     private void post(final String schemaName, final Collection<RuleConfiguration> rules) {

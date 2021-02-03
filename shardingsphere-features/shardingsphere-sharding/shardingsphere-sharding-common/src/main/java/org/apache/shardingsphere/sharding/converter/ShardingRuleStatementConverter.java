@@ -31,6 +31,8 @@ import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlHint
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration;
 
+import java.util.Collection;
+
 /**
  * Sharding rule statement converter.
  */
@@ -50,6 +52,9 @@ public final class ShardingRuleStatementConverter {
                 result.getShardingAlgorithms().put(getAlgorithmName(each.getLogicTable(), each.getTableStrategy().getAlgorithmName()), createAlgorithmConfiguration(each.getTableStrategy()));
                 result.getAutoTables().put(each.getLogicTable(), createAutoTableRuleConfiguration(each));
             }
+        }
+        for (Collection<String> each : sqlStatement.getBindingTables()) {
+            result.getBindingTables().add(Joiner.on(",").join(each));
         }
         return result;
     }
