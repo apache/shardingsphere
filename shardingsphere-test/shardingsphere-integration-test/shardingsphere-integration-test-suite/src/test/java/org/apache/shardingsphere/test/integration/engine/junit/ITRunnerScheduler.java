@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.engine.junit;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.junit.runners.model.RunnerScheduler;
@@ -33,7 +32,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Represents a strategy for scheduling when individual test methods should be run (in serial or parallel).
@@ -42,14 +40,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  * WARNING: still experimental, may go away.
  * </p>
  */
-@Slf4j
 public final class ITRunnerScheduler implements RunnerScheduler {
     
     private static final String DEFAULT_EXECUTOR_KEY = "default";
     
     private final Map<String, ExecutorService> executors = new HashMap<>();
-    
-    private final Map<String, AtomicInteger> executorCounter = new HashMap<>();
     
     public ITRunnerScheduler() {
         IntegrationTestEnvironment itEnv = IntegrationTestEnvironment.getInstance();
@@ -77,7 +72,6 @@ public final class ITRunnerScheduler implements RunnerScheduler {
     
     private void addExecutor(final String executorKey) {
         executors.put(executorKey, getExecutorService(executorKey));
-        executorCounter.put(executorKey, new AtomicInteger(0));
     }
     
     @Override
@@ -85,7 +79,6 @@ public final class ITRunnerScheduler implements RunnerScheduler {
         // TODO Gets the parameters of the Runnable closure
         ITBlockJUnit4ClassRunnerWithParameters runnerWithParameters = getRunnerWithParameters(childStatement);
         String executorKey = getExecutorKey(runnerWithParameters.getTestClass(), runnerWithParameters.getParameters());
-        executorCounter.get(executorKey).incrementAndGet();
         executors.get(executorKey).submit(childStatement);
     }
     
@@ -119,9 +112,6 @@ public final class ITRunnerScheduler implements RunnerScheduler {
     
     @Override
     public void finished() {
-        for (Map.Entry<String, AtomicInteger> each : executorCounter.entrySet()) {
-            log.info(String.join(" -> ", each.getKey(), String.valueOf(each.getValue().get())));
-        }
         executors.values().forEach(executorService -> {
             try {
                 executorService.shutdown();
@@ -133,7 +123,7 @@ public final class ITRunnerScheduler implements RunnerScheduler {
     }
     
     private ExecutorService getExecutorService(final String executorServiceKey) {
-        return new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
+        return new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, 
                 new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setNameFormat("ITRunnerScheduler-" + executorServiceKey + "-pool-%d").build());
     }
 }
