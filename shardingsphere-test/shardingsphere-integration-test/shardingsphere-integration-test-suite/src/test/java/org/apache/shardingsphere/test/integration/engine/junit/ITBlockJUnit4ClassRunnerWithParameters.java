@@ -37,15 +37,15 @@ import java.util.List;
  */
 public final class ITBlockJUnit4ClassRunnerWithParameters extends BlockJUnit4ClassRunner {
     
+    private final String name;
+    
     @Getter
     private final Object[] parameters;
     
-    private final String name;
-    
     public ITBlockJUnit4ClassRunnerWithParameters(final TestWithParameters test) throws InitializationError {
         super(test.getTestClass().getJavaClass());
-        parameters = test.getParameters().toArray(new Object[test.getParameters().size()]);
         name = test.getName();
+        parameters = test.getParameters().toArray(new Object[test.getParameters().size()]);
     }
     
     @Override
@@ -57,7 +57,7 @@ public final class ITBlockJUnit4ClassRunnerWithParameters extends BlockJUnit4Cla
         }
     }
     
-    private Object createTestUsingConstructorInjection() throws Exception {
+    private Object createTestUsingConstructorInjection() throws ReflectiveOperationException {
         return getTestClass().getOnlyConstructor().newInstance(parameters);
     }
     

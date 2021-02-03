@@ -20,19 +20,18 @@ package org.apache.shardingsphere.test.integration.engine.junit;
 import org.junit.runners.Parameterized;
 
 /**
- * Parallel parameterized by parameter.
+ * Parallel parameterized.
+ * 
+ * <p>
+ *     Reflective call only, do not use programmatically.
+ * </p>
  */
 public final class ParallelParameterized extends Parameterized {
     
-    /**
-     * Only called reflectively. Do not use programmatically.
-     *
-     * @param klass root of the suite
-     */
     //CHECKSTYLE:OFF
     public ParallelParameterized(final Class<?> klass) throws Throwable {
+        //CHECKSTYLE:ON
         super(klass);
         setScheduler(new ITRunnerScheduler());
-        //CHECKSTYLE:ON
     }
 }
