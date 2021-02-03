@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class PropertiesChangedListenerTest {
     
-    private static final String PROPERTIES_YAML = ConfigurationPropertyKey.ACCEPTOR_SIZE.getKey() + ": 16\n" + ConfigurationPropertyKey.SQL_SHOW.getKey() + ": true";
+    private static final String PROPERTIES_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": true";
     
     private PropertiesChangedListener propertiesChangedListener;
     
@@ -55,6 +55,5 @@ public final class PropertiesChangedListenerTest {
         Optional<GovernanceEvent> actual = propertiesChangedListener.createEvent(new DataChangedEvent("test", PROPERTIES_YAML, Type.UPDATED));
         assertTrue(actual.isPresent());
         assertThat(((PropertiesChangedEvent) actual.get()).getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(true));
-        assertThat(((PropertiesChangedEvent) actual.get()).getProps().get(ConfigurationPropertyKey.ACCEPTOR_SIZE.getKey()), is(16));
     }
 }
