@@ -57,13 +57,14 @@ import static org.junit.Assert.assertThat;
 @Getter(AccessLevel.PROTECTED)
 public abstract class BatchIT extends BaseIT {
     
-    private DataSetEnvironmentManager dataSetEnvironmentManager;
-    
     private final IntegrationTestCaseContext testCaseContext;
     
     private final String sql;
     
     private final Collection<DataSet> dataSets;
+
+    @Getter(AccessLevel.NONE)
+    private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
     protected BatchIT(final IntegrationTestCaseContext testCaseContext,
                       final String adapter, final String scenario, final DatabaseType databaseType, final String sql) throws IOException, JAXBException, SQLException {
