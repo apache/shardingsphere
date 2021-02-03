@@ -237,16 +237,16 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         String path = key + PATH_SEPARATOR;
         if (!caches.containsKey(path)) {
             addCacheData(key);
+            CuratorCache cache = caches.get(path);
+            cache.listenable().addListener((type, oldData, data) -> {
+                String eventPath = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getPath() : data.getPath();
+                byte[] eventDataByte = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getData() : data.getData();
+                Type changedType = getChangedType(type);
+                if (Type.IGNORED != changedType) {
+                    listener.onChange(new DataChangedEvent(eventPath, null == eventDataByte ? null : new String(eventDataByte, StandardCharsets.UTF_8), changedType));
+                }
+            });
         }
-        CuratorCache cache = caches.get(path);
-        cache.listenable().addListener((type, oldData, data) -> {
-            String eventPath = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getPath() : data.getPath();
-            byte[] eventDataByte = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getData() : data.getData();
-            Type changedType = getChangedType(type);
-            if (Type.IGNORED != changedType) {
-                listener.onChange(new DataChangedEvent(eventPath, null == eventDataByte ? null : new String(eventDataByte, StandardCharsets.UTF_8), changedType));
-            }
-        });
     }
     
     private void addCacheData(final String cachePath) {

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChange
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.lock.UnlockEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataPersistedEvent;
 import org.apache.shardingsphere.governance.core.event.model.props.PropertiesChangedEvent;
@@ -171,6 +172,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         governanceFacade.getConfigCenter().persistSchema(event.getSchemaName(), metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getSchema());
         ShardingSphereEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(), 
                 metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getResource().getDatabaseType(), metaDataMap.get(event.getSchemaName()).getResource().getDataSources()));
+        ShardingSphereEventBus.getInstance().post(new MetaDataChangedEvent(governanceFacade.getConfigCenter().getAllSchemaNames()));
     }
     
     /**
