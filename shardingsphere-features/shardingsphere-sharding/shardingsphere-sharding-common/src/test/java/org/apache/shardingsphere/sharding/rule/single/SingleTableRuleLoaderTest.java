@@ -10,7 +10,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -42,7 +41,7 @@ public class SingleTableRuleLoaderTest {
     @Mock
     private DatabaseType dbType;
 
-    private DataSource initDataSource(String dataSourceName, Set<String> tables) throws SQLException {
+    private DataSource initDataSource(final String dataSourceName, final Set<String> tables) throws SQLException {
         if (Strings.isNullOrEmpty(dataSourceName) || tables == null) {
             throw new IllegalArgumentException("dataSourceNam is empty or tables is null");
         }
