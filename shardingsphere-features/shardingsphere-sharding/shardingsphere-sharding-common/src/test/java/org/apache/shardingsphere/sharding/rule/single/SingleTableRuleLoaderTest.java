@@ -37,7 +37,7 @@ public class SingleTableRuleLoaderTest {
 
     private static final String TABLE_NAME = "TABLE_NAME";
 
-    private Map<String, DataSource> dataSourceMap = new HashMap<>();
+    private final Map<String, DataSource> dataSourceMap = new HashMap<>();
 
     @Mock
     private DatabaseType dbType;
@@ -90,7 +90,7 @@ public class SingleTableRuleLoaderTest {
     }
 
     @Test
-    public void assertLoad() throws SQLException {
+    public void assertLoad() {
         Map<String, SingleTableRule> singleTableRuleMap = SingleTableRuleLoader.load(dbType, dataSourceMap, Collections.emptyList());
         Set<String> tableSet = singleTableRuleMap.keySet();
         assertTrue(tableSet.contains("employee"));
