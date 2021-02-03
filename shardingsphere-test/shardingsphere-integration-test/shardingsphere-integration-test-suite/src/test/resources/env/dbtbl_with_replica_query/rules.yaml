@@ -53,10 +53,19 @@ rules:
         standard:
           shardingColumn: order_id
           shardingAlgorithmName: standard_test
+    t_broadcast_table:
+      actualDataNodes: pr_ds_${0..9}.t_broadcast_table
+      databaseStrategy:
+        none:
+    t_broadcast_details:
+      actualDataNodes: pr_ds_${0..9}.t_broadcast_details
+      databaseStrategy:
+        none:
   bindingTables:
     - t_order,t_order_item
   broadcastTables:
     - t_broadcast_table
+    - t_broadcast_details
   
   shardingAlgorithms:
     standard_test:
