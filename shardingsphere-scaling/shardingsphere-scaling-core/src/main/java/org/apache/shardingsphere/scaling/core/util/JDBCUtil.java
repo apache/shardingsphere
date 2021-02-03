@@ -20,11 +20,11 @@ package org.apache.shardingsphere.scaling.core.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.common.datasource.JdbcUri;
 import org.apache.shardingsphere.scaling.core.config.datasource.ConfigurationYamlConverter;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.internal.common.datasource.JdbcUri;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.job.preparer.checker;
 
-import org.apache.shardingsphere.scaling.core.internal.common.exception.PrepareFailedException;
-import org.apache.shardingsphere.scaling.core.internal.common.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
+import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;

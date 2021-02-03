@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.scaling.postgresql.component;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.scaling.core.internal.common.record.Column;
-import org.apache.shardingsphere.scaling.core.internal.common.record.DataRecord;
+import org.apache.shardingsphere.scaling.core.common.record.Column;
+import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalPosition;
 import org.junit.Test;
 import org.postgresql.replication.LogSequenceNumber;
