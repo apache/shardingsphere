@@ -23,7 +23,7 @@ import org.apache.shardingsphere.governance.core.facade.listener.GovernanceListe
 import org.apache.shardingsphere.governance.core.facade.repository.GovernanceRepositoryFacade;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 
@@ -72,12 +72,12 @@ public final class GovernanceFacade implements AutoCloseable {
      *
      * @param dataSourceConfigMap schema data source configuration map
      * @param schemaRuleMap schema rule map
-     * @param authentication authentication
+     * @param users users
      * @param props properties
      */
     public void onlineInstance(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigMap,
-                               final Map<String, Collection<RuleConfiguration>> schemaRuleMap, final DefaultAuthentication authentication, final Properties props) {
-        configCenter.persistGlobalConfiguration(authentication, props, isOverwrite);
+                               final Map<String, Collection<RuleConfiguration>> schemaRuleMap, final Collection<ShardingSphereUser> users, final Properties props) {
+        configCenter.persistGlobalConfiguration(users, props, isOverwrite);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigMap.entrySet()) {
             configCenter.persistConfigurations(entry.getKey(), dataSourceConfigMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), isOverwrite);
         }

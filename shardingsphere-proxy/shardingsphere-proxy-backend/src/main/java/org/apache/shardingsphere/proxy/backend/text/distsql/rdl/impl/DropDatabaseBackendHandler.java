@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDroppedEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
@@ -50,6 +50,6 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
     
     private void post(final DropDatabaseStatement sqlStatement) {
         // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new SchemaNamePersistEvent(sqlStatement.getDatabaseName(), true));
+        ShardingSphereEventBus.getInstance().post(new MetaDataDroppedEvent(sqlStatement.getDatabaseName()));
     }
 }

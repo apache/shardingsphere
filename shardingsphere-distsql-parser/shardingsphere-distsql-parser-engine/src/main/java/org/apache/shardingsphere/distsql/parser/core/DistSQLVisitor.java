@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.distsql.parser.core;
 
-import com.google.common.base.Joiner;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AddResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlgorithmPropertyContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterBindingTableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterReplicaQueryRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterShardingTableRuleDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.BindingTableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
@@ -41,7 +42,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.S
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.TableNameContext;
-import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.TableNamesContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
@@ -120,9 +120,9 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
             result.getTables().add((TableRuleSegment) visit(each));
         }
         if (null != ctx.bindingTables()) {
-            for (TableNamesContext each : ctx.bindingTables().tableNames()) {
-                Collection<String> tables = each.IDENTIFIER().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList());
-                result.getBindingTables().add(Joiner.on(",").join(tables));
+            for (BindingTableContext each : ctx.bindingTables().bindingTable()) {
+                Collection<String> tables = each.tableNames().IDENTIFIER().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList());
+                result.getBindingTables().add(tables);
             }
         }
         if (null != ctx.broadcastTables()) {
@@ -149,10 +149,15 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
                 result.getModifyShardingRules().add((TableRuleSegment) visit(each.shardingTableRuleDefinition()));
             }
         }
-        if (null != ctx.bindingTables()) {
-            for (TableNamesContext each : ctx.bindingTables().tableNames()) {
-                Collection<String> tables = each.IDENTIFIER().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList());
-                result.getBindingTables().add(Joiner.on(",").join(tables));
+        if (null != ctx.alterBindingTables()) {
+            for (AlterBindingTableContext each : ctx.alterBindingTables().alterBindingTable()) {
+                if (null != each.ADD()) {
+                    Collection<String> tables = each.bindingTable().tableNames().IDENTIFIER().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList());
+                    result.getAddBindingTables().add(tables);
+                } else if (null != each.DROP()) {
+                    Collection<String> tables = each.bindingTable().tableNames().IDENTIFIER().stream().map(t -> new IdentifierValue(t.getText()).getValue()).collect(Collectors.toList());
+                    result.getDropBindingTables().add(tables);
+                }
             }
         }
         if (null != ctx.broadcastTables()) {

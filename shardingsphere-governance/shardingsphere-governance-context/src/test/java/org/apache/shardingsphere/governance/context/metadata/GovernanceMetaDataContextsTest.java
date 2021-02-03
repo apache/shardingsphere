@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.governance.context.metadata;
 
 import org.apache.shardingsphere.governance.core.config.ConfigCenter;
-import org.apache.shardingsphere.governance.core.event.model.auth.AuthenticationChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataPersistedEvent;
 import org.apache.shardingsphere.governance.core.event.model.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
@@ -34,14 +34,13 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
-import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryRule;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,7 +50,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -76,9 +74,6 @@ public final class GovernanceMetaDataContextsTest {
     private final DefaultAuthentication authentication = new DefaultAuthentication();
     
     private final ConfigurationProperties props = new ConfigurationProperties(new Properties());
-    
-    @Mock
-    private DatabaseType databaseType;
     
     @Mock
     private GovernanceFacade governanceFacade;
@@ -135,7 +130,7 @@ public final class GovernanceMetaDataContextsTest {
     
     @Test
     public void assertSchemaAdd() throws SQLException {
-        MetaDataAddedEvent event = new MetaDataAddedEvent("schema_add", new HashMap<>(), new LinkedList<>());
+        MetaDataPersistedEvent event = new MetaDataPersistedEvent("schema_add");
         when(configCenter.loadDataSourceConfigurations("schema_add")).thenReturn(getDataSourceConfigurations());
         governanceMetaDataContexts.renew(event);
         assertNotNull(governanceMetaDataContexts.getMetaData("schema_add"));
@@ -170,9 +165,9 @@ public final class GovernanceMetaDataContextsTest {
     @Test
     public void assertAuthenticationChanged() {
         DefaultAuthentication authentication = new DefaultAuthentication();
-        AuthenticationChangedEvent event = new AuthenticationChangedEvent(authentication);
+        UserRuleChangedEvent event = new UserRuleChangedEvent(authentication.getAuthentication().keySet());
         governanceMetaDataContexts.renew(event);
-        assertThat(governanceMetaDataContexts.getAuthentication(), is(authentication));
+        assertThat(governanceMetaDataContexts.getAuthentication().getAuthentication().size(), is(authentication.getAuthentication().size()));
     }
     
     @Test

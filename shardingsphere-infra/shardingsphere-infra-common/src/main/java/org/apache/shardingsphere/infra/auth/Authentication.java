@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.infra.auth;
 
+import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
+
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -25,10 +28,25 @@ import java.util.Optional;
 public interface Authentication {
     
     /**
+     * Get authentication.
+     *
+     * @return Authentication
+     */
+    Map<ShardingSphereUser, ShardingSpherePrivilege> getAuthentication();
+    
+    /**
      * Find user.
      * 
      * @param grantee grantee
      * @return found user
      */
     Optional<ShardingSphereUser> findUser(Grantee grantee);
+    
+    /**
+     * Find Privilege.
+     *
+     * @param grantee grantee
+     * @return found user
+     */
+    Optional<ShardingSpherePrivilege> findPrivilege(Grantee grantee);
 }

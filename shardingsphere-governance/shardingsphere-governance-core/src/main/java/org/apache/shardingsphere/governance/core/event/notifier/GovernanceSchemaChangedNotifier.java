@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.event.notifier;
 
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaPersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.spi.SchemaChangedNotifier;
@@ -29,7 +29,7 @@ public final class GovernanceSchemaChangedNotifier implements SchemaChangedNotif
     
     @Override
     public void notify(final String name, final ShardingSphereSchema schema) {
-        ShardingSphereEventBus.getInstance().post(new SchemaPersistEvent(name, schema));
+        ShardingSphereEventBus.getInstance().post(new SchemaAlteredEvent(name, schema));
     }
     
     @Override

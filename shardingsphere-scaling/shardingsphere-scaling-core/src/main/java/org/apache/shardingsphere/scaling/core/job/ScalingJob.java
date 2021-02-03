@@ -22,11 +22,11 @@ import com.google.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
-import org.apache.shardingsphere.scaling.core.api.JobSchedulerCenter;
 import org.apache.shardingsphere.scaling.core.api.RegistryRepositoryAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.job.preparer.ScalingJobPreparer;
+import org.apache.shardingsphere.scaling.core.job.schedule.JobSchedulerCenter;
 
 /**
  * Scaling job.
