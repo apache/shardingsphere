@@ -43,6 +43,16 @@ public final class SchemaPrivilege {
     /**
      * Has privileges.
      *
+     * @param privileges privileges
+     * @return has privileges or not
+     */
+    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
+        return globalPrivileges.containsAll(privileges);
+    }
+    
+    /**
+     * Has privileges.
+     *
      * @param table table
      * @param privileges privileges
      * @return has privileges or not

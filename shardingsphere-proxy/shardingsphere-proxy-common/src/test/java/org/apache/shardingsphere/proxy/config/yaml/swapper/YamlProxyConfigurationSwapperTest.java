@@ -108,10 +108,7 @@ public final class YamlProxyConfigurationSwapperTest {
         Optional<ShardingSphereUser> user = authentication.findUser(new Grantee("user1", ""));
         assertTrue(user.isPresent());
         assertThat(user.get().getPassword(), is("pass"));
-        Collection<String> authorizedSchemas = user.get().getAuthorizedSchemas();
         assertNotNull(authentication);
-        assertThat(authorizedSchemas.size(), is(1));
-        assertTrue(authorizedSchemas.contains("db1"));
     }
     
     private YamlProxyConfiguration getYamlProxyConfiguration() {
@@ -217,7 +214,6 @@ public final class YamlProxyConfigurationSwapperTest {
         Map<String, YamlUserConfiguration> yamlUserConfigurationMap = new HashMap<>(1, 1);
         YamlUserConfiguration yamlUserConfig = mock(YamlUserConfiguration.class);
         when(yamlUserConfig.getPassword()).thenReturn("pass");
-        when(yamlUserConfig.getAuthorizedSchemas()).thenReturn("db1");
         yamlUserConfigurationMap.put("user1", yamlUserConfig);
         YamlUserRuleConfiguration userRuleConfiguration = mock(YamlUserRuleConfiguration.class);
         when(userRuleConfiguration.getUsers()).thenReturn(yamlUserConfigurationMap);

@@ -31,6 +31,4 @@ public final class YamlUserConfiguration implements YamlConfiguration {
     private String hostname;
     
     private String password;
-    
-    private String authorizedSchemas;
 }

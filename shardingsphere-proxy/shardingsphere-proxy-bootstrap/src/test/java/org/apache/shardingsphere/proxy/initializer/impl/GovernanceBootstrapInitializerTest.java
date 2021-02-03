@@ -200,12 +200,9 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         Optional<ShardingSphereUser> rootUser = actual.findUser(new Grantee("root", ""));
         assertTrue(rootUser.isPresent());
         assertThat(rootUser.get().getPassword(), is("root"));
-        assertThat(rootUser.get().getAuthorizedSchemas().size(), is(0));
         Optional<ShardingSphereUser> shardingUser = actual.findUser(new Grantee("sharding", ""));
         assertTrue(shardingUser.isPresent());
         assertThat(shardingUser.get().getPassword(), is("sharding"));
-        assertThat(shardingUser.get().getAuthorizedSchemas().size(), is(1));
-        assertTrue(shardingUser.get().getAuthorizedSchemas().contains("sharding_db"));
     }
     
     @Test
