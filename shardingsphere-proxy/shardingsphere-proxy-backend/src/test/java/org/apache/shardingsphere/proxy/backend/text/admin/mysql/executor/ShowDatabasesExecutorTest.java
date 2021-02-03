@@ -37,7 +37,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -64,7 +64,7 @@ public final class ShowDatabasesExecutorTest {
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(10);
+        Map<String, ShardingSphereMetaData> result = new LinkedHashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
             when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
@@ -76,8 +76,7 @@ public final class ShowDatabasesExecutorTest {
     
     private DefaultAuthentication getAuthentication() {
         DefaultAuthentication result = new DefaultAuthentication();
-        result.getAuthentication().put(new ShardingSphereUser("root", "root", ""),
-                new ShardingSpherePrivilege());
+        result.getAuthentication().put(new ShardingSphereUser("root", "root", ""), new ShardingSpherePrivilege());
         return result;
     }
     

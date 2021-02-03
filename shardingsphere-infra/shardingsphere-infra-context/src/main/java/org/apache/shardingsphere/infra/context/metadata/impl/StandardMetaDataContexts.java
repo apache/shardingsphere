@@ -32,9 +32,9 @@ import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
 import org.apache.shardingsphere.infra.state.StateContext;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Standard meta data contexts.
@@ -57,12 +57,12 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     private final StateContext stateContext;
     
     public StandardMetaDataContexts() {
-        this(new ConcurrentHashMap<>(), null, new DefaultAuthentication(), new ConfigurationProperties(new Properties()));
+        this(new LinkedHashMap<>(), null, new DefaultAuthentication(), new ConfigurationProperties(new Properties()));
     }
     
     public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap, 
                                     final ExecutorEngine executorEngine, final Authentication authentication, final ConfigurationProperties props) {
-        this.metaDataMap = new ConcurrentHashMap<>(metaDataMap);
+        this.metaDataMap = new LinkedHashMap<>(metaDataMap);
         this.executorEngine = executorEngine;
         calciteContextFactory = new CalciteContextFactory(metaDataMap);
         this.authentication = AuthenticationEngine.findSPIAuthentication().orElse(authentication);
