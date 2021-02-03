@@ -23,4 +23,8 @@
     <commit sql-case-id="commitForce" />
     <commit sql-case-id="commitPrepare" />
     <commit sql-case-id="commit_in_pg" />
+    <commit sql-case-id="commitWorkWithComment" />
+    <commit sql-case-id="commitWork" />
+    <commit sql-case-id="commitWriteBatch" />
+    <commit sql-case-id="commitWorkForce" />
 </sql-parser-test-cases>

@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.scaling.mysql.component;
 
-import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.AbstractScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.utils.ShardingColumnsUtil;
+import org.apache.shardingsphere.scaling.core.common.record.Column;
+import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
+import org.apache.shardingsphere.scaling.core.common.sqlbuilder.AbstractScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 
 import java.util.Map;
 import java.util.Set;
@@ -54,14 +53,19 @@ public final class MySQLScalingSQLBuilder extends AbstractScalingSQLBuilder impl
         StringBuilder result = new StringBuilder(" ON DUPLICATE KEY UPDATE ");
         for (int i = 0; i < dataRecord.getColumnCount(); i++) {
             Column column = dataRecord.getColumn(i);
-            if (column.isPrimaryKey() || ShardingColumnsUtil.isShardingColumn(
-                    getShardingColumnsMap(), dataRecord.getTableName(), column.getName())) {
+            if (column.isPrimaryKey() || isShardingColumn(getShardingColumnsMap(), dataRecord.getTableName(), column.getName())) {
                 continue;
             }
             result.append(quote(column.getName())).append("=VALUES(").append(quote(column.getName())).append("),");
         }
         result.setLength(result.length() - 1);
         return result.toString();
+    }
+    
+    private boolean isShardingColumn(final Map<String, Set<String>> shardingColumnsMap,
+                                     final String tableName, final String columnName) {
+        return shardingColumnsMap.containsKey(tableName)
+                && shardingColumnsMap.get(tableName).contains(columnName);
     }
     
     /**

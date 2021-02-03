@@ -21,7 +21,11 @@
     <sql-case id="commit" value="COMMIT" db-types="MySQL,Oracle,SQLServer,PostgreSQL" />
     <sql-case id="commitWithName" value="COMMIT TRANSACTION transaction1" db-types="SQLServer" />
     <sql-case id="commitWithComment" value="COMMIT COMMENT 'comment1'" db-types="Oracle" />
+    <sql-case id="commitWorkWithComment" value="COMMIT WORK COMMENT 'comment1'" db-types="Oracle" />
+    <sql-case id="commitWork" value="COMMIT WORK" db-types="Oracle" />
+    <sql-case id="commitWriteBatch" value="COMMIT WRITE BATCH" db-types="Oracle" />
     <sql-case id="commitForce" value="COMMIT FORCE 'transaction1'" db-types="Oracle" />
+    <sql-case id="commitWorkForce" value="COMMIT WORK FORCE '22.14.67'" db-types="Oracle" />
     <sql-case id="rollback" value="ROLLBACK" db-types="MySQL,Oracle,PostgreSQL,SQLServer" />
     <sql-case id="rollbackWithName" value="ROLLBACK TRANSACTION transaction1" db-types="SQLServer" />
     <sql-case id="rollbackForce" value="ROLLBACK FORCE 'transaction1'" db-types="Oracle" />

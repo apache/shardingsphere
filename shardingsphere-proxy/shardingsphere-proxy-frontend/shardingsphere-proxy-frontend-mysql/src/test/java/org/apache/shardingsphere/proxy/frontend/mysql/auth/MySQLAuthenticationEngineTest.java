@@ -41,6 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Collections;
 import java.util.Optional;
@@ -87,6 +88,11 @@ public final class MySQLAuthenticationEngineTest {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
         ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);
+        Channel channel = mock(Channel.class);
+        when(payload.readStringEOFByBytes()).thenReturn(authResponse);
+        when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
+        when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
+        when(channelHandlerContext.channel()).thenReturn(channel);
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue());
         authenticationEngine.auth(channelHandlerContext, payload);
         assertThat(getConnectionPhase(), is(MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH));
@@ -96,8 +102,12 @@ public final class MySQLAuthenticationEngineTest {
     public void assertAuthSwitchResponse() {
         setConnectionPhase(MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH);
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
+        Channel channel = mock(Channel.class);
         ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);
         when(payload.readStringEOFByBytes()).thenReturn(authResponse);
+        when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
+        when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
+        when(channelHandlerContext.channel()).thenReturn(channel);
         setAuthenticationResult();
         authenticationEngine.auth(channelHandlerContext, payload);
         assertThat(getAuthResponse(), is(authResponse));
@@ -107,7 +117,7 @@ public final class MySQLAuthenticationEngineTest {
     private void setAuthenticationResult() {
         Field field = MySQLAuthenticationEngine.class.getDeclaredField("currentAuthResult");
         field.setAccessible(true);
-        field.set(authenticationEngine, AuthenticationResultBuilder.continued("root", "sharding_db"));
+        field.set(authenticationEngine, AuthenticationResultBuilder.continued("root", "", "sharding_db"));
     }
     
     @Test
@@ -115,7 +125,7 @@ public final class MySQLAuthenticationEngineTest {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ChannelHandlerContext context = getContext();
         setMetaDataContexts();
-        when(authenticationHandler.login(anyString(), any(), anyString())).thenReturn(Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
+        when(authenticationHandler.login(anyString(), any(), any(), anyString())).thenReturn(Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
     }
@@ -133,7 +143,7 @@ public final class MySQLAuthenticationEngineTest {
     public void assertAuth() throws NoSuchFieldException, IllegalAccessException {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ChannelHandlerContext context = getContext();
-        when(authenticationHandler.login(anyString(), any(), anyString())).thenReturn(Optional.empty());
+        when(authenticationHandler.login(anyString(), any(), any(), anyString())).thenReturn(Optional.empty());
         setMetaDataContexts();
         authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse));
         verify(context).writeAndFlush(any(MySQLOKPacket.class));

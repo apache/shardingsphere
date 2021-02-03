@@ -23,23 +23,24 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.governance.core.config.checker.RuleConfigurationCheckerFactory;
+import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAlteredEvent;
-import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourcePersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataCreatedEvent;
+import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDroppedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationCachedEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
-import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsPersistEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaNamePersistEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaPersistEvent;
+import org.apache.shardingsphere.governance.core.event.model.scaling.StartScalingEvent;
+import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAlteredEvent;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
-import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -98,22 +99,22 @@ public final class ConfigCenter {
     /**
      * Persist global configuration.
      *
-     * @param authentication authentication
+     * @param users user
      * @param props properties
      * @param isOverwrite is overwrite config center's configuration
      */
-    public void persistGlobalConfiguration(final DefaultAuthentication authentication, final Properties props, final boolean isOverwrite) {
-        persistAuthentication(authentication, isOverwrite);
+    public void persistGlobalConfiguration(final Collection<ShardingSphereUser> users, final Properties props, final boolean isOverwrite) {
+        persistAuthentication(users, isOverwrite);
         persistProperties(props, isOverwrite);
     }
     
     /**
      * persist data source configurations.
      * 
-     * @param event Data source event.
+     * @param event Data source added event.
      */
     @Subscribe
-    public synchronized void renew(final DataSourcePersistEvent event) {
+    public synchronized void renew(final DataSourceAddedEvent event) {
         addDataSourceConfigurations(event.getSchemaName(), event.getDataSourceConfigurations());
     }
 
@@ -130,38 +131,51 @@ public final class ConfigCenter {
     /**
      * Persist rule configurations.
      * 
-     * @param event Rule event.
+     * @param event rule configurations altered event.
      */
     @Subscribe
-    public synchronized void renew(final RuleConfigurationsPersistEvent event) {
+    public synchronized void renew(final RuleConfigurationsAlteredEvent event) {
         //TODO
         persistRuleConfigurations(event.getSchemaName(), event.getRuleConfigurations());
     }
     
     /**
-     * Persist schema name.
+     * Persist meta data.
      * 
-     * @param event Schema name event.
+     * @param event meta data created event.
      */
     @Subscribe
-    public synchronized void renew(final SchemaNamePersistEvent event) {
+    public synchronized void renew(final MetaDataCreatedEvent event) {
         String schemaNames = repository.get(node.getMetadataNodePath());
         Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
-        if (event.isDrop()) {
-            schemas.remove(event.getSchemaName());
-        } else if (!schemas.contains(event.getSchemaName())) {
+        if (!schemas.contains(event.getSchemaName())) {
             schemas.add(event.getSchemaName());
+            repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(schemas));
         }
-        repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(schemas));
     }
     
     /**
-     * Persist meta data.
+     * Delete meta data.
      *
-     * @param event Meta data event.
+     * @param event meta data dropped event
      */
     @Subscribe
-    public synchronized void renew(final SchemaPersistEvent event) {
+    public synchronized void renew(final MetaDataDroppedEvent event) {
+        String schemaNames = repository.get(node.getMetadataNodePath());
+        Collection<String> schemas = Strings.isNullOrEmpty(schemaNames) ? new LinkedHashSet<>() : new LinkedHashSet<>(Splitter.on(",").splitToList(schemaNames));
+        if (schemas.contains(event.getSchemaName())) {
+            schemas.remove(event.getSchemaName());
+            repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(schemas));
+        }
+    }
+    
+    /**
+     * Persist schema.
+     *
+     * @param event schema altered event.
+     */
+    @Subscribe
+    public synchronized void renew(final SchemaAlteredEvent event) {
         persistSchema(event.getSchemaName(), event.getSchema());
     }
     
@@ -183,11 +197,11 @@ public final class ConfigCenter {
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationCachedEvent event) {
-        RuleConfigurationsAlteredEvent ruleConfigurationsAlteredEvent = new RuleConfigurationsAlteredEvent(event.getSchemaName(),
+        StartScalingEvent startScalingEvent = new StartScalingEvent(event.getSchemaName(),
                 repository.get(node.getDataSourcePath(event.getSchemaName())),
                 repository.get(node.getRulePath(event.getSchemaName())),
                 configCacheManager.loadCache(node.getRulePath(event.getSchemaName()), event.getCacheId()), event.getCacheId());
-        ShardingSphereEventBus.getInstance().post(ruleConfigurationsAlteredEvent);
+        ShardingSphereEventBus.getInstance().post(startScalingEvent);
     }
     
     private Collection<RuleConfiguration> loadCachedRuleConfigurations(final String schemaName, final String ruleConfigurationCacheId) {
@@ -231,7 +245,7 @@ public final class ConfigCenter {
     
     private void cacheRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
         String cacheId = configCacheManager.cache(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRootRuleConfigurations(schemaName, ruleConfigurations)));
-        RuleConfigurationsAlteredEvent event = new RuleConfigurationsAlteredEvent(schemaName,
+        StartScalingEvent event = new StartScalingEvent(schemaName,
                 repository.get(node.getDataSourcePath(schemaName)),
                 repository.get(node.getRulePath(schemaName)),
                 configCacheManager.loadCache(node.getRulePath(schemaName), cacheId), cacheId);
@@ -252,9 +266,10 @@ public final class ConfigCenter {
         return result;
     }
     
-    private void persistAuthentication(final DefaultAuthentication authentication, final boolean isOverwrite) {
-        if (null != authentication && (isOverwrite || !hasAuthentication())) {
-            repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(new AuthenticationYamlSwapper().swapToYamlConfiguration(authentication)));
+    private void persistAuthentication(final Collection<ShardingSphereUser> users, final boolean isOverwrite) {
+        if (!users.isEmpty() && (isOverwrite || !hasAuthentication())) {
+            repository.persist(node.getAuthenticationPath(),
+                    YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
         }
     }
     
@@ -290,12 +305,8 @@ public final class ConfigCenter {
      * @return data source configurations
      */
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String schemaName) {
-        if (!hasDataSourceConfiguration(schemaName)) {
-            return new LinkedHashMap<>();
-        }
-        YamlDataSourceConfigurationWrap result = YamlEngine.unmarshal(repository.get(node.getDataSourcePath(schemaName)), YamlDataSourceConfigurationWrap.class, true);
-        return result.getDataSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey,
-            entry -> new DataSourceConfigurationYamlSwapper().swapToObject(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return hasDataSourceConfiguration(schemaName) 
+                ? YamlConfigurationConverter.convertDataSourceConfigurations(repository.get(node.getDataSourcePath(schemaName))) : new LinkedHashMap<>();
     }
     
     /**
@@ -305,19 +316,19 @@ public final class ConfigCenter {
      * @return rule configurations
      */
     public Collection<RuleConfiguration> loadRuleConfigurations(final String schemaName) {
-        return hasRuleConfiguration(schemaName) ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                YamlEngine.unmarshal(repository.get(node.getRulePath(schemaName)), YamlRootRuleConfigurations.class, true).getRules()) : new LinkedList<>();
+        return hasRuleConfiguration(schemaName) 
+                ? YamlConfigurationConverter.convertRuleConfigurations(repository.get(node.getRulePath(schemaName))) : new LinkedList<>();
     }
     
     /**
-     * Load authentication.
+     * Load user rule.
      *
      * @return authentication
      */
-    public DefaultAuthentication loadAuthentication() {
+    public Collection<ShardingSphereUser> loadUserRule() {
         return hasAuthentication()
-                ? new AuthenticationYamlSwapper().swapToObject(YamlEngine.unmarshal(repository.get(node.getAuthenticationPath()), YamlAuthenticationConfiguration.class))
-                : new DefaultAuthentication();
+                ? YamlConfigurationConverter.convertUserRule(repository.get(node.getAuthenticationPath()))
+                : Collections.emptyList();
     }
     
     /**
@@ -326,7 +337,8 @@ public final class ConfigCenter {
      * @return properties
      */
     public Properties loadProperties() {
-        return YamlEngine.unmarshalProperties(repository.get(node.getPropsPath()), Collections.singletonList(Properties.class));
+        return Strings.isNullOrEmpty(repository.get(node.getPropsPath())) ? new Properties() 
+                : YamlConfigurationConverter.convertProperties(repository.get(node.getPropsPath()));
     }
     
     /**

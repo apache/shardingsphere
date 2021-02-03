@@ -23,8 +23,6 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -33,6 +31,7 @@ import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Lock driver state.
@@ -42,18 +41,19 @@ public final class LockDriverState implements DriverState {
     @Override
     public Connection getConnection(final Map<String, DataSource> dataSourceMap, 
                                     final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
-        block(metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
-        if (StateContext.getCurrentState() == StateType.OK) {
+        block(metaDataContexts);
+        if (metaDataContexts.getStateContext().getCurrentState() == StateType.OK) {
             return new ShardingSphereConnection(dataSourceMap, metaDataContexts, transactionContexts, TransactionTypeHolder.get());
-        } else if (StateContext.getCurrentState() == StateType.CIRCUIT_BREAK) {
+        } else if (metaDataContexts.getStateContext().getCurrentState() == StateType.CIRCUIT_BREAK) {
             return new CircuitBreakerDataSource().getConnection();
         }
-        throw new UnsupportedOperationException(String.format("Unknown driver state type: %s", StateContext.getCurrentState().name()));
+        throw new UnsupportedOperationException(String.format("Unknown driver state type: %s", metaDataContexts.getStateContext().getCurrentState().name()));
     }
     
-    private void block(final long lockTimeoutMilliseconds) {
-        if (!LockContext.await(lockTimeoutMilliseconds)) {
-            throw new ShardingSphereException("Service lock wait timeout of %s ms exceeded", lockTimeoutMilliseconds);
+    private void block(final MetaDataContexts metaDataContexts) {
+        long lockTimeoutMilliseconds = metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS);
+        if (!metaDataContexts.getLockContext().await(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
+            throw new ShardingSphereException("Service lock wait timeout of %s ms exceeded", lockTimeoutMilliseconds); 
         }
     }
 }

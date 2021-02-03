@@ -61,14 +61,13 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
         TransactionContexts transactionContexts = decorateTransactionContexts(createTransactionContexts(metaDataContexts), xaTransactionMangerType);
         ProxyContext.getInstance().init(metaDataContexts, transactionContexts);
         setDatabaseServerInfo();
-        initLockContext();
         initScalingWorker(yamlConfig);
         shardingSphereProxy.start(port);
     }
     
     private MetaDataContexts createMetaDataContexts(final ProxyConfiguration proxyConfig) throws SQLException {
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(proxyConfig.getSchemaDataSources());
-        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap, proxyConfig.getSchemaRules(), proxyConfig.getAuthentication(), proxyConfig.getProps());
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap, proxyConfig.getSchemaRules(), proxyConfig.getUsers(), proxyConfig.getProps());
         return metaDataContextsBuilder.build();
     }
     
@@ -133,8 +132,6 @@ public abstract class AbstractBootstrapInitializer implements BootstrapInitializ
     protected abstract MetaDataContexts decorateMetaDataContexts(MetaDataContexts metaDataContexts);
     
     protected abstract TransactionContexts decorateTransactionContexts(TransactionContexts transactionContexts, String xaTransactionMangerType);
-    
-    protected abstract void initLockContext();
     
     protected abstract void initScalingWorker(YamlProxyConfiguration yamlConfig);
 }

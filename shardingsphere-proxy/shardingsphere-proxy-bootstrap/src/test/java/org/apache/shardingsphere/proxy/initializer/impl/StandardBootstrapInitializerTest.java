@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
+import org.apache.shardingsphere.infra.auth.Grantee;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
-import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserRuleConfiguration;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
@@ -109,7 +110,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     private void assertProxyConfiguration(final ProxyConfiguration actual) {
         assertSchemaDataSources(actual.getSchemaDataSources());
         assertSchemaRules(actual.getSchemaRules());
-        assertAuthentication(actual.getAuthentication());
+        assertAuthentication(new DefaultAuthentication(actual.getUsers()));
         assertProps(actual.getProps());
     }
     
@@ -148,7 +149,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     }
     
     private void assertAuthentication(final DefaultAuthentication actual) {
-        Optional<ShardingSphereUser> rootUser = actual.findUser("root");
+        Optional<ShardingSphereUser> rootUser = actual.findUser(new Grantee("root", ""));
         assertTrue(rootUser.isPresent());
         assertThat(rootUser.get().getPassword(), is("root"));
         assertThat(rootUser.get().getAuthorizedSchemas().size(), is(2));
@@ -158,7 +159,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     
     private YamlProxyServerConfiguration createYamlProxyServerConfiguration() {
         YamlProxyServerConfiguration result = new YamlProxyServerConfiguration();
-        result.setAuthentication(createYamlAuthenticationConfiguration());
+        result.setAuthentication(createYamlUserRuleConfiguration());
         result.setProps(createProperties());
         return result;
     }
@@ -170,10 +171,10 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         return result;
     }
     
-    private YamlAuthenticationConfiguration createYamlAuthenticationConfiguration() {
+    private YamlUserRuleConfiguration createYamlUserRuleConfiguration() {
         Map<String, YamlUserConfiguration> users = new HashMap<>(1, 1);
         users.put("root", createYamlUserConfiguration());
-        YamlAuthenticationConfiguration result = new YamlAuthenticationConfiguration();
+        YamlUserRuleConfiguration result = new YamlUserRuleConfiguration();
         result.setUsers(users);
         return result;
     }

@@ -46,7 +46,7 @@ public final class YamlEngineUserConfigurationTest {
     
     @Test
     public void assertUnmarshalProperties() {
-        Properties actual = YamlEngine.unmarshalProperties("password: pwd\nauthorizedSchemas: db1", Collections.singletonList(Properties.class));
+        Properties actual = YamlEngine.unmarshalWithFilter("password: pwd\nauthorizedSchemas: db1", Properties.class);
         assertThat(actual.getProperty("authorizedSchemas"), is("db1"));
         assertThat(actual.getProperty("password"), is("pwd"));
     }

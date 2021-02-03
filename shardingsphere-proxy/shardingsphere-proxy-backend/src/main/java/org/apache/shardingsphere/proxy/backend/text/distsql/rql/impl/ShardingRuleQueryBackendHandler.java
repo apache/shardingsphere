@@ -84,7 +84,7 @@ public final class ShardingRuleQueryBackendHandler extends SchemaRequiredBackend
     private Iterator<Map<String, Object>> loadRuleConfiguration() {
         List<Map<String, Object>> result = new LinkedList<>();
         Optional<ShardingRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schema).getRuleMetaData().getConfigurations()
-                .stream().map(each -> (ShardingRuleConfiguration) each).findFirst();
+                .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
         if (ruleConfig.isPresent()) {
             List<List<String>> bindingTables = ruleConfig.get().getBindingTableGroups().stream().filter(each -> null != each && !each.isEmpty()).map(each -> Arrays.asList(each.split(",")))
                     .collect(Collectors.toList());

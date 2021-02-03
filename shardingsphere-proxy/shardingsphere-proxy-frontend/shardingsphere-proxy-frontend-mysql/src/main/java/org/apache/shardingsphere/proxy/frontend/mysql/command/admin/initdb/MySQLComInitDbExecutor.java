@@ -53,7 +53,7 @@ public final class MySQLComInitDbExecutor implements CommandExecutor {
     }
     
     private boolean isAuthorizedSchema(final String schema) {
-        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(backendConnection.getUsername());
+        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(backendConnection.getGrantee());
         Collection<String> authorizedSchemas = user.isPresent() ? user.get().getAuthorizedSchemas() : Collections.emptyList();
         return authorizedSchemas.isEmpty() || authorizedSchemas.contains(schema);
     }

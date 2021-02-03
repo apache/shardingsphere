@@ -22,6 +22,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.engine.junit.ITRunnerWithParametersFactory;
+import org.apache.shardingsphere.test.integration.engine.junit.ParallelParameterized;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
@@ -30,7 +32,6 @@ import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironme
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -40,7 +41,8 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.TimeZone;
 
-@RunWith(Parameterized.class)
+@RunWith(ParallelParameterized.class)
+@ParallelParameterized.UseParametersRunnerFactory(ITRunnerWithParametersFactory.class)
 @Getter(AccessLevel.PROTECTED)
 public abstract class BaseIT {
     
@@ -66,6 +68,12 @@ public abstract class BaseIT {
         this.databaseType = databaseType;
         actualDataSources = ActualDataSourceBuilder.createActualDataSources(scenario, databaseType);
         targetDataSource = createTargetDataSource();
+        // TODO maybe use @AfterClass, but targetDataSource should be static
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (targetDataSource instanceof ShardingSphereDataSource) {
+                closeTargetDataSource();
+            }
+        }));
     }
     
     private DataSource createTargetDataSource() throws SQLException, IOException {
@@ -77,6 +85,17 @@ public abstract class BaseIT {
     
     protected final void resetTargetDataSource() throws IOException, SQLException {
         targetDataSource = createTargetDataSource();
+    }
+    
+    private void closeTargetDataSource() {
+        ((ShardingSphereDataSource) targetDataSource).getDataSourceMap().values().forEach(dataSource -> {
+            try {
+                ((AutoCloseable) dataSource).close();
+                //CHECKSTYLE:OFF
+            } catch (final Exception ignored) {
+            }
+            //CHECKSTYLE:ON
+        });
     }
     
     @BeforeClass

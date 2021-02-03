@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.scaling.core.config;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * Handle configuration.
  */
+@NoArgsConstructor
 @Setter
 @Getter
 public final class HandleConfiguration {
@@ -44,4 +46,17 @@ public final class HandleConfiguration {
     private String databaseType;
     
     private WorkflowConfiguration workflowConfig;
+    
+    public HandleConfiguration(final WorkflowConfiguration workflowConfig) {
+        this.workflowConfig = workflowConfig;
+    }
+    
+    /**
+     * Get sharding total count.
+     *
+     * @return sharding total count
+     */
+    public int getShardingTotalCount() {
+        return null == shardingTables ? 0 : shardingTables.length;
+    }
 }

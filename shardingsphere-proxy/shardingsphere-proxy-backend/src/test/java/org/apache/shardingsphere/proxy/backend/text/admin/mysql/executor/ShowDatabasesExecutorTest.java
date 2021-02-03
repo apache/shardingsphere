@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
+import org.apache.shardingsphere.infra.auth.Grantee;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -74,9 +76,9 @@ public final class ShowDatabasesExecutorTest {
     }
     
     private DefaultAuthentication getAuthentication() {
-        ShardingSphereUser user = new ShardingSphereUser("root", Arrays.asList(String.format(SCHEMA_PATTERN, 0), String.format(SCHEMA_PATTERN, 1)));
         DefaultAuthentication result = new DefaultAuthentication();
-        result.getUsers().put("root", user);
+        result.getAuthentication().put(new ShardingSphereUser("root", "root", "", Arrays.asList(String.format(SCHEMA_PATTERN, 0), String.format(SCHEMA_PATTERN, 1))),
+                new ShardingSpherePrivilege());
         return result;
     }
     
@@ -93,7 +95,7 @@ public final class ShowDatabasesExecutorTest {
     
     private BackendConnection mockBackendConnection() {
         BackendConnection result = mock(BackendConnection.class);
-        when(result.getUsername()).thenReturn("root");
+        when(result.getGrantee()).thenReturn(new Grantee("root", ""));
         return result;
     }
 }

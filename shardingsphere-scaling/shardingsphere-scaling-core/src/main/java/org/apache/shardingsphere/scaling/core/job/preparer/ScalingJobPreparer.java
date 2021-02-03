@@ -18,20 +18,19 @@
 package org.apache.shardingsphere.scaling.core.job.preparer;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
+import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.position.PositionInitializerFactory;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryTaskSplitter;
 import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
-import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
-import org.apache.shardingsphere.scaling.core.schedule.JobStatus;
-import org.apache.shardingsphere.scaling.core.utils.JobConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -53,14 +52,13 @@ public final class ScalingJobPreparer {
      * @param jobContext job context
      */
     public void prepare(final JobContext jobContext) {
-        JobConfigurationUtil.fillInProperties(jobContext.getJobConfig());
         try (DataSourceManager dataSourceManager = new DataSourceManager(jobContext.getTaskConfigs())) {
             checkDataSource(jobContext, dataSourceManager);
             initIncrementalTasks(jobContext, dataSourceManager);
             initInventoryTasks(jobContext, dataSourceManager);
-        } catch (final PrepareFailedException | SQLException ex) {
-            log.error("Preparing scaling job {} failed", jobContext.getJobId(), ex);
-            jobContext.setStatus(JobStatus.PREPARING_FAILURE.name());
+        } catch (final SQLException ex) {
+            jobContext.setStatus(JobStatus.PREPARING_FAILURE);
+            throw new PrepareFailedException("Scaling job preparing failed", ex);
         }
     }
     
@@ -70,19 +68,19 @@ public final class ScalingJobPreparer {
     }
     
     private void checkSourceDataSources(final JobContext jobContext, final DataSourceManager dataSourceManager) {
-        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(jobContext.getDatabaseType());
+        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getDatabaseType());
         dataSourceChecker.checkConnection(dataSourceManager.getCachedDataSources().values());
         dataSourceChecker.checkPrivilege(dataSourceManager.getSourceDataSources().values());
         dataSourceChecker.checkVariable(dataSourceManager.getSourceDataSources().values());
     }
     
     private void checkTargetDataSources(final JobContext jobContext, final DataSourceManager dataSourceManager) {
-        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(jobContext.getDatabaseType());
+        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getDatabaseType());
         dataSourceChecker.checkTargetTable(dataSourceManager.getTargetDataSources().values(), jobContext.getTaskConfigs().iterator().next().getImporterConfig().getShardingColumnsMap().keySet());
     }
     
     private void initInventoryTasks(final JobContext jobContext, final DataSourceManager dataSourceManager) {
-        List<ScalingTask> allInventoryTasks = new LinkedList<>();
+        List<InventoryTask> allInventoryTasks = new LinkedList<>();
         for (TaskConfiguration each : jobContext.getTaskConfigs()) {
             allInventoryTasks.addAll(inventoryTaskSplitter.splitInventoryData(jobContext, each, dataSourceManager));
         }
@@ -97,8 +95,8 @@ public final class ScalingJobPreparer {
     }
     
     private Position<?> getIncrementalPosition(final JobContext jobContext, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager) throws SQLException {
-        if (null != jobContext.getInitPosition()) {
-            return jobContext.getInitPosition().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
+        if (null != jobContext.getInitProgress()) {
+            return jobContext.getInitProgress().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
         }
         return PositionInitializerFactory.newInstance(taskConfig.getHandleConfig().getDatabaseType()).init(dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig()));
     }

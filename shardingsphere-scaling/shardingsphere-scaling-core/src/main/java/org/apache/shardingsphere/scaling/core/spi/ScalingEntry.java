@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.scaling.core.spi;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
-import org.apache.shardingsphere.scaling.core.execute.executor.dumper.JDBCDumper;
-import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.executor.dumper.JDBCDumper;
+import org.apache.shardingsphere.scaling.core.executor.dumper.LogDumper;
+import org.apache.shardingsphere.scaling.core.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
@@ -50,7 +50,7 @@ public interface ScalingEntry extends DatabaseTypeAwareSPI {
      *
      * @return position initializer type
      */
-    Class<? extends PositionInitializer> getPositionInitializer();
+    Class<? extends PositionInitializer<?>> getPositionInitializer();
     
     /**
      * Get importer type.

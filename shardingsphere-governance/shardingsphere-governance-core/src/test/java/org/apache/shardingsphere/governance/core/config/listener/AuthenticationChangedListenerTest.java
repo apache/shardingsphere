@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.governance.core.config.listener;
 
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.event.model.auth.AuthenticationChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.infra.auth.Grantee;
 import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +56,8 @@ public final class AuthenticationChangedListenerTest {
     public void assertCreateEvent() {
         Optional<GovernanceEvent> actual = authenticationChangedListener.createEvent(new DataChangedEvent("test", AUTHENTICATION_YAML, Type.UPDATED));
         assertTrue(actual.isPresent());
-        Optional<ShardingSphereUser> user = ((AuthenticationChangedEvent) actual.get()).getAuthentication().findUser("root1");
+        Optional<ShardingSphereUser> user =
+                ((UserRuleChangedEvent) actual.get()).getUsers().stream().filter(each -> each.getGrantee().equals(new Grantee("root1", ""))).findFirst();
         assertTrue(user.isPresent());
         assertThat(user.get().getPassword(), is("root1"));
     }

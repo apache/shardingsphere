@@ -26,7 +26,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 public final class WorkflowConfiguration {
     
-    private long allowDelay = 60 * 1000L;
+    private long allowDelayMilliseconds = 60 * 1000L;
     
     private final String schemaName;
     

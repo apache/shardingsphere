@@ -11,6 +11,7 @@ ShardingSphere-Proxy has provided the solution of Zookeeper in default, which im
 [Configuration Rules](/en/user-manual/shardingsphere-jdbc/configuration/yaml/governance/) consistent with ShardingSphere-JDBC YAML.
 
 ## Other Third Party Components
+
 Refer to [Supported Third Party Components](/en/features/governance/management/dependency/) for details.
 
 1. Use SPI methods in logic coding and put the generated jar package to the lib folder of ShardingSphere-Proxy.
