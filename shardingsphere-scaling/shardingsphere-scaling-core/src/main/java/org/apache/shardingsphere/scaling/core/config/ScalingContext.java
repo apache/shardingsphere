@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.config;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.scaling.core.internal.executor.engine.ExecuteEngine;
+import org.apache.shardingsphere.scaling.core.executor.engine.ExecuteEngine;
 
 /**
  * ShardingSphere-Scaling context.

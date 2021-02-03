@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.scaling.postgresql.component;
 
-import org.apache.shardingsphere.scaling.core.internal.common.record.Column;
-import org.apache.shardingsphere.scaling.core.internal.common.record.DataRecord;
-import org.apache.shardingsphere.scaling.core.internal.common.record.RecordUtil;
-import org.apache.shardingsphere.scaling.core.internal.common.sqlbuilder.AbstractScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.internal.common.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.common.record.Column;
+import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
+import org.apache.shardingsphere.scaling.core.common.record.RecordUtil;
+import org.apache.shardingsphere.scaling.core.common.sqlbuilder.AbstractScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 
 import java.util.Map;
 import java.util.Set;
