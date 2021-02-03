@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job;
+package org.apache.shardingsphere.scaling.core.job.progress;
 
 /**
  * Scaling progress.
