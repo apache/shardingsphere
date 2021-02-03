@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.database;
+package org.apache.shardingsphere.test.integration.env.database.type;
 
 import com.wix.mysql.EmbeddedMysql;
 import com.wix.mysql.config.Charset;
@@ -23,6 +23,7 @@ import com.wix.mysql.config.DownloadConfig;
 import com.wix.mysql.config.MysqldConfig;
 import com.wix.mysql.distribution.Version;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.integration.env.database.EmbeddedDatabaseResource;
 import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
 
 import java.io.File;
