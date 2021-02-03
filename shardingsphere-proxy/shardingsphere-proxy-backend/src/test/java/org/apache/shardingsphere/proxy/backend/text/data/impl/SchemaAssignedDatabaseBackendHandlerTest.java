@@ -108,8 +108,7 @@ public final class SchemaAssignedDatabaseBackendHandlerTest {
     
     private DefaultAuthentication getAuthentication() {
         DefaultAuthentication result = new DefaultAuthentication();
-        result.getAuthentication().put(new ShardingSphereUser("root", "root", ""),
-                new ShardingSpherePrivilege());
+        result.getAuthentication().put(new ShardingSphereUser("root", "root", ""), new ShardingSpherePrivilege());
         return result;
     }
     
