@@ -64,15 +64,14 @@ public final class IntegrationTestEnvironment {
     
     private IntegrationTestEnvironment() {
         Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
-        envType = EnvironmentType.valueOf(engineEnvProps.getProperty("it.env.type"));
+        envType = getEnvironmentType(engineEnvProps);
         adapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.adapters"));
         runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
         scenarios = getScenarios(engineEnvProps);
-        EmbeddedDatabaseDistributionProperties embeddedDatabaseProps = getEmbeddedDatabaseDistributionProperties();
         Map<String, DatabaseScenarioProperties> databaseProps = getDatabaseScenarioProperties();
-        databaseEnvironments = createDatabaseEnvironments(getDatabaseTypes(engineEnvProps), embeddedDatabaseProps, databaseProps);
+        databaseEnvironments = createDatabaseEnvironments(getDatabaseTypes(engineEnvProps), databaseProps);
         if (EnvironmentType.EMBEDDED == envType) {
-            createEmbeddedDatabaseResources();
+            createEmbeddedDatabases(new EmbeddedDatabaseDistributionProperties(EnvironmentProperties.loadProperties("env/embedded-databases.properties")));
         }
         proxyEnvironments = createProxyEnvironments(databaseProps);
         if (EnvironmentType.DOCKER == envType) {
@@ -81,11 +80,15 @@ public final class IntegrationTestEnvironment {
             }
         }
     }
-    
-    private EmbeddedDatabaseDistributionProperties getEmbeddedDatabaseDistributionProperties() {
-        return new EmbeddedDatabaseDistributionProperties(EnvironmentProperties.loadProperties("env/embedded-databases.properties"));
+
+    private EnvironmentType getEnvironmentType(final Properties engineEnvProps) {
+        try {
+            return EnvironmentType.valueOf(engineEnvProps.getProperty("it.env.type"));
+        } catch (final IllegalArgumentException ignored) {
+            return EnvironmentType.EMBEDDED;
+        }
     }
-    
+
     private Collection<String> getScenarios(final Properties engineEnvProps) {
         Collection<String> result = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.scenarios"));
         for (String each : result) {
@@ -106,39 +109,36 @@ public final class IntegrationTestEnvironment {
         return Arrays.stream(engineEnvProps.getProperty("it.databases", "H2").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
     }
     
-    private Map<DatabaseType, Map<String, DatabaseEnvironment>> createDatabaseEnvironments(final Collection<DatabaseType> databaseTypes, 
-                                                                                           final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, 
-                                                                                           final Map<String, DatabaseScenarioProperties> databaseProps) {
+    private Map<DatabaseType, Map<String, DatabaseEnvironment>> createDatabaseEnvironments(final Collection<DatabaseType> databaseTypes, final Map<String, DatabaseScenarioProperties> databaseProps) {
         Map<DatabaseType, Map<String, DatabaseEnvironment>> result = new LinkedHashMap<>(databaseTypes.size(), 1);
         for (DatabaseType each : databaseTypes) {
             Map<String, DatabaseEnvironment> databaseEnvironments = new LinkedHashMap<>(scenarios.size(), 1);
             for (String scenario : scenarios) {
-                databaseEnvironments.put(scenario, createDatabaseEnvironment(each, embeddedDatabaseProps, databaseProps.get(scenario)));
+                databaseEnvironments.put(scenario, createDatabaseEnvironment(each, databaseProps.get(scenario)));
                 result.put(each, databaseEnvironments);
             }
         }
         return result;
     }
     
-    private DatabaseEnvironment createDatabaseEnvironment(final DatabaseType databaseType, 
-                                                          final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final DatabaseScenarioProperties databaseProps) {
+    private DatabaseEnvironment createDatabaseEnvironment(final DatabaseType databaseType, final DatabaseScenarioProperties databaseProps) {
         if (databaseType instanceof H2DatabaseType) {
-            return new DatabaseEnvironment(databaseType, "", 0, "sa", "", "", "");
+            return new DatabaseEnvironment(databaseType, "", 0, "sa", "");
         }
-        return new DatabaseEnvironment(databaseType, databaseProps.getDatabaseHost(databaseType), databaseProps.getDatabasePort(databaseType),
-                databaseProps.getDatabaseUsername(databaseType), databaseProps.getDatabasePassword(databaseType),
-                embeddedDatabaseProps.getURL(databaseType), embeddedDatabaseProps.getVersion(databaseType));
+        return new DatabaseEnvironment(databaseType, databaseProps.getDatabaseHost(databaseType), 
+                databaseProps.getDatabasePort(databaseType), databaseProps.getDatabaseUsername(databaseType), databaseProps.getDatabasePassword(databaseType));
     }
     
-    private void createEmbeddedDatabaseResources() {
+    private void createEmbeddedDatabases(final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps) {
         for (Entry<DatabaseType, Map<String, DatabaseEnvironment>> entry : databaseEnvironments.entrySet()) {
-            createEmbeddedDatabaseResources(entry.getKey(), entry.getValue());
+            createEmbeddedDatabases(entry.getKey(), entry.getValue(), embeddedDatabaseProps);
         }
     }
     
-    private void createEmbeddedDatabaseResources(final DatabaseType databaseType, final Map<String, DatabaseEnvironment> databaseEnvs) {
-        for (Entry<String, DatabaseEnvironment> databaseEnvironmentEntry : databaseEnvs.entrySet()) {
-            DatabaseEnvironmentManager.createEmbeddedDatabaseResource(databaseType, databaseEnvironmentEntry.getKey(), databaseEnvironmentEntry.getValue());
+    private void createEmbeddedDatabases(final DatabaseType databaseType,
+                                         final Map<String, DatabaseEnvironment> databaseEnvs, final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps) {
+        for (Entry<String, DatabaseEnvironment> entry : databaseEnvs.entrySet()) {
+            DatabaseEnvironmentManager.createEmbeddedDatabaseResource(databaseType, entry.getKey(), embeddedDatabaseProps, entry.getValue().getPort());
         }
     }
     
@@ -152,8 +152,8 @@ public final class IntegrationTestEnvironment {
     
     private DatabaseEnvironment createProxyEnvironment(final DatabaseScenarioProperties databaseProps) {
         // TODO hard code for MySQL, should configurable
-        return new DatabaseEnvironment(new MySQLDatabaseType(), databaseProps.getProxyHost(), databaseProps.getProxyPort(), databaseProps.getProxyUsername(), databaseProps.getProxyPassword(),
-                "", "");
+        return new DatabaseEnvironment(
+                new MySQLDatabaseType(), databaseProps.getProxyHost(), databaseProps.getProxyPort(), databaseProps.getProxyUsername(), databaseProps.getProxyPassword());
     }
     
     private void waitForEnvironmentReady(final String scenario) {

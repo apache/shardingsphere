@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.database.type.MySQLEmbeddedDatabaseResource;
-import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.h2.tools.RunScript;
 
@@ -119,9 +118,10 @@ public final class DatabaseEnvironmentManager {
      *
      * @param databaseType database type
      * @param scenario scenario
-     * @param databaseEnvironment database environment
+     * @param embeddedDatabaseProps embedded database distribution properties
+     * @param port port
      */
-    public static void createEmbeddedDatabaseResource(final DatabaseType databaseType, final String scenario, final DatabaseEnvironment databaseEnvironment) {
+    public static void createEmbeddedDatabaseResource(final DatabaseType databaseType, final String scenario, final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final int port) {
         if (null == databaseType) {
             return;
         }
@@ -138,7 +138,7 @@ public final class DatabaseEnvironmentManager {
                 return;
             }
             if (databaseType instanceof MySQLDatabaseType) {
-                embeddedDatabaseResource = new MySQLEmbeddedDatabaseResource(databaseEnvironment);
+                embeddedDatabaseResource = new MySQLEmbeddedDatabaseResource(embeddedDatabaseProps, port);
             } else {
                 // TODO return default database resource
                 embeddedDatabaseResource = new EmbeddedDatabaseResource() {

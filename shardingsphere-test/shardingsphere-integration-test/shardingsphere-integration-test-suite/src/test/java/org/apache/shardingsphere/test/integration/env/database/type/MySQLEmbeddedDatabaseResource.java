@@ -23,8 +23,10 @@ import com.wix.mysql.config.DownloadConfig;
 import com.wix.mysql.config.MysqldConfig;
 import com.wix.mysql.distribution.Version;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.test.integration.env.database.EmbeddedDatabaseDistributionProperties;
 import org.apache.shardingsphere.test.integration.env.database.EmbeddedDatabaseResource;
-import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
 
 import java.io.File;
 
@@ -34,17 +36,20 @@ import java.io.File;
 @RequiredArgsConstructor
 public final class MySQLEmbeddedDatabaseResource implements EmbeddedDatabaseResource {
     
-    private final DatabaseEnvironment databaseEnvironment;
+    private final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps;
+    
+    private final int port;
     
     private EmbeddedMysql embeddedMySQL;
     
     @Override
     public void start() {
-        DownloadConfig downloadConfig = DownloadConfig.aDownloadConfig().withBaseUrl(databaseEnvironment.getDistributionUrl()).build();
-        MysqldConfig mysqldConfig = MysqldConfig.aMysqldConfig(Version.valueOf(databaseEnvironment.getDistributionVersion()))
+        DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("MySQL");
+        DownloadConfig downloadConfig = DownloadConfig.aDownloadConfig().withBaseUrl(embeddedDatabaseProps.getURL(databaseType)).build();
+        MysqldConfig mysqldConfig = MysqldConfig.aMysqldConfig(Version.valueOf(embeddedDatabaseProps.getVersion(databaseType)))
                 .withCharset(Charset.UTF8MB4)
                 .withTempDir(new File(downloadConfig.getCacheDir(), "runtime").getPath())
-                .withPort(databaseEnvironment.getPort())
+                .withPort(port)
                 .withUser("test", "test")
                 .withServerVariable("bind-address", "0.0.0.0")
                 .withServerVariable("innodb_flush_log_at_trx_commit", 2)
