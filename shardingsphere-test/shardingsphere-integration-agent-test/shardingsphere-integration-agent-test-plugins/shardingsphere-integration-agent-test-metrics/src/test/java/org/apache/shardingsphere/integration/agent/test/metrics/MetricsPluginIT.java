@@ -74,8 +74,7 @@ public final class MetricsPluginIT {
             OrderEntity orderEntity = new OrderEntity(1000, 1000, "ROLL_BACK");
             JdbcUtils.insertOrderRollback(orderEntity, dataSource);
             JdbcUtils.updateOrderStatus(orderEntity, dataSource);
-            Collection<OrderEntity> orderEntities = JdbcUtils.selectAllOrders(dataSource);
-            assertThat(orderEntities.size(), is(10));
+            JdbcUtils.selectAllOrders(dataSource);
             for (Long each : results) {
                 JdbcUtils.deleteOrderByOrderId(each, dataSource);
             }
