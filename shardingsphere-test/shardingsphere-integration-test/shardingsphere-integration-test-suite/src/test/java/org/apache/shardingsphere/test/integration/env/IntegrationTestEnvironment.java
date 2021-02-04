@@ -64,7 +64,7 @@ public final class IntegrationTestEnvironment {
     
     private IntegrationTestEnvironment() {
         Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
-        envType = EnvironmentType.valueOf(engineEnvProps.getProperty("it.env.type"));
+        envType = getEnvironmentType(engineEnvProps);
         adapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.adapters"));
         runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
         scenarios = getScenarios(engineEnvProps);
@@ -80,7 +80,15 @@ public final class IntegrationTestEnvironment {
             }
         }
     }
-    
+
+    private EnvironmentType getEnvironmentType(final Properties engineEnvProps) {
+        try {
+            return EnvironmentType.valueOf(engineEnvProps.getProperty("it.env.type"));
+        } catch (final IllegalArgumentException ignored) {
+            return EnvironmentType.EMBEDDED;
+        }
+    }
+
     private Collection<String> getScenarios(final Properties engineEnvProps) {
         Collection<String> result = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.scenarios"));
         for (String each : result) {
