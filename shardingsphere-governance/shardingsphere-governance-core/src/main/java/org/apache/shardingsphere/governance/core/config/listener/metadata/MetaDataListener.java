@@ -53,7 +53,7 @@ public final class MetaDataListener {
      * watch event.
      */
     public void watch() {
-        metaDataChangedListener.watch(Type.UPDATED);
+        metaDataChangedListener.watch(Type.UPDATED, Type.ADDED);
         ruleChangedListener.watch(Type.UPDATED);
         dataSourceChangedListener.watch(Type.UPDATED);
         schemaChangedListener.watch(Type.UPDATED);
