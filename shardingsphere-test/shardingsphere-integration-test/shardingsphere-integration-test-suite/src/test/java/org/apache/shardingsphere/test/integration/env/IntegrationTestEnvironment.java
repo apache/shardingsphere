@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.database.EmbeddedDatabaseDistributionProperties;
-import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
+import org.apache.shardingsphere.test.integration.env.datasource.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.props.DatabaseScenarioProperties;
 import org.apache.shardingsphere.test.integration.env.props.EnvironmentProperties;
 
@@ -58,9 +58,9 @@ public final class IntegrationTestEnvironment {
     
     private final Collection<String> scenarios;
     
-    private final Map<DatabaseType, Map<String, DatabaseEnvironment>> databaseEnvironments;
+    private final Map<DatabaseType, Map<String, DataSourceEnvironment>> dataSourceEnvironments;
     
-    private final Map<String, DatabaseEnvironment> proxyEnvironments;
+    private final Map<String, DataSourceEnvironment> proxyEnvironments;
     
     private IntegrationTestEnvironment() {
         Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
@@ -69,7 +69,7 @@ public final class IntegrationTestEnvironment {
         runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
         scenarios = getScenarios(engineEnvProps);
         Map<String, DatabaseScenarioProperties> databaseProps = getDatabaseScenarioProperties();
-        databaseEnvironments = createDatabaseEnvironments(getDatabaseTypes(engineEnvProps), databaseProps);
+        dataSourceEnvironments = createDataSourceEnvironments(getDatabaseTypes(engineEnvProps), databaseProps);
         if (EnvironmentType.EMBEDDED == envType) {
             createEmbeddedDatabases(new EmbeddedDatabaseDistributionProperties(EnvironmentProperties.loadProperties("env/embedded-databases.properties")));
         }
@@ -80,7 +80,7 @@ public final class IntegrationTestEnvironment {
             }
         }
     }
-
+    
     private EnvironmentType getEnvironmentType(final Properties engineEnvProps) {
         try {
             return EnvironmentType.valueOf(engineEnvProps.getProperty("it.env.type"));
@@ -88,7 +88,7 @@ public final class IntegrationTestEnvironment {
             return EnvironmentType.EMBEDDED;
         }
     }
-
+    
     private Collection<String> getScenarios(final Properties engineEnvProps) {
         Collection<String> result = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.scenarios"));
         for (String each : result) {
@@ -109,50 +109,50 @@ public final class IntegrationTestEnvironment {
         return Arrays.stream(engineEnvProps.getProperty("it.databases", "H2").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
     }
     
-    private Map<DatabaseType, Map<String, DatabaseEnvironment>> createDatabaseEnvironments(final Collection<DatabaseType> databaseTypes, final Map<String, DatabaseScenarioProperties> databaseProps) {
-        Map<DatabaseType, Map<String, DatabaseEnvironment>> result = new LinkedHashMap<>(databaseTypes.size(), 1);
+    private Map<DatabaseType, Map<String, DataSourceEnvironment>> createDataSourceEnvironments(final Collection<DatabaseType> databaseTypes, final Map<String, DatabaseScenarioProperties> databaseProps) {
+        Map<DatabaseType, Map<String, DataSourceEnvironment>> result = new LinkedHashMap<>(databaseTypes.size(), 1);
         for (DatabaseType each : databaseTypes) {
-            Map<String, DatabaseEnvironment> databaseEnvironments = new LinkedHashMap<>(scenarios.size(), 1);
+            Map<String, DataSourceEnvironment> dataSourceEnvs = new LinkedHashMap<>(scenarios.size(), 1);
             for (String scenario : scenarios) {
-                databaseEnvironments.put(scenario, createDatabaseEnvironment(each, databaseProps.get(scenario)));
-                result.put(each, databaseEnvironments);
+                dataSourceEnvs.put(scenario, createDataSourceEnvironment(each, databaseProps.get(scenario)));
+                result.put(each, dataSourceEnvs);
             }
         }
         return result;
     }
     
-    private DatabaseEnvironment createDatabaseEnvironment(final DatabaseType databaseType, final DatabaseScenarioProperties databaseProps) {
+    private DataSourceEnvironment createDataSourceEnvironment(final DatabaseType databaseType, final DatabaseScenarioProperties databaseProps) {
         if (databaseType instanceof H2DatabaseType) {
-            return new DatabaseEnvironment(databaseType, "", 0, "sa", "");
+            return new DataSourceEnvironment(databaseType, "", 0, "sa", "");
         }
-        return new DatabaseEnvironment(databaseType, databaseProps.getDatabaseHost(databaseType), 
+        return new DataSourceEnvironment(databaseType, databaseProps.getDatabaseHost(databaseType), 
                 databaseProps.getDatabasePort(databaseType), databaseProps.getDatabaseUsername(databaseType), databaseProps.getDatabasePassword(databaseType));
     }
     
     private void createEmbeddedDatabases(final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps) {
-        for (Entry<DatabaseType, Map<String, DatabaseEnvironment>> entry : databaseEnvironments.entrySet()) {
+        for (Entry<DatabaseType, Map<String, DataSourceEnvironment>> entry : dataSourceEnvironments.entrySet()) {
             createEmbeddedDatabases(entry.getKey(), entry.getValue(), embeddedDatabaseProps);
         }
     }
     
     private void createEmbeddedDatabases(final DatabaseType databaseType,
-                                         final Map<String, DatabaseEnvironment> databaseEnvs, final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps) {
-        for (Entry<String, DatabaseEnvironment> entry : databaseEnvs.entrySet()) {
+                                         final Map<String, DataSourceEnvironment> dataSourceEnvs, final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps) {
+        for (Entry<String, DataSourceEnvironment> entry : dataSourceEnvs.entrySet()) {
             DatabaseEnvironmentManager.createEmbeddedDatabaseResource(databaseType, entry.getKey(), embeddedDatabaseProps, entry.getValue().getPort());
         }
     }
     
-    private Map<String, DatabaseEnvironment> createProxyEnvironments(final Map<String, DatabaseScenarioProperties> databaseProps) {
-        Map<String, DatabaseEnvironment> result = new HashMap<>(scenarios.size(), 1);
+    private Map<String, DataSourceEnvironment> createProxyEnvironments(final Map<String, DatabaseScenarioProperties> databaseProps) {
+        Map<String, DataSourceEnvironment> result = new HashMap<>(scenarios.size(), 1);
         for (String each : scenarios) {
             result.put(each, createProxyEnvironment(databaseProps.get(each)));
         }
         return result;
     }
     
-    private DatabaseEnvironment createProxyEnvironment(final DatabaseScenarioProperties databaseProps) {
+    private DataSourceEnvironment createProxyEnvironment(final DatabaseScenarioProperties databaseProps) {
         // TODO hard code for MySQL, should configurable
-        return new DatabaseEnvironment(
+        return new DataSourceEnvironment(
                 new MySQLDatabaseType(), databaseProps.getProxyHost(), databaseProps.getProxyPort(), databaseProps.getProxyUsername(), databaseProps.getProxyPassword());
     }
     
@@ -169,8 +169,8 @@ public final class IntegrationTestEnvironment {
     
     @SuppressWarnings("CallToDriverManagerGetConnection")
     private boolean isProxyReady(final String scenario) {
-        DatabaseEnvironment dbEnv = proxyEnvironments.get(scenario);
-        try (Connection connection = DriverManager.getConnection(dbEnv.getURL(scenario), dbEnv.getUsername(), dbEnv.getPassword());
+        DataSourceEnvironment dataSourceEnv = proxyEnvironments.get(scenario);
+        try (Connection connection = DriverManager.getConnection(dataSourceEnv.getURL(scenario), dataSourceEnv.getUsername(), dataSourceEnv.getPassword());
              Statement statement = connection.createStatement()) {
             statement.execute("SELECT 1");
         } catch (final SQLException ignore) {

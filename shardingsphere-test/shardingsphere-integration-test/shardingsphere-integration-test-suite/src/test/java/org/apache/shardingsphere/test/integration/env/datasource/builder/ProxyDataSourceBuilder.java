@@ -22,7 +22,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
+import org.apache.shardingsphere.test.integration.env.datasource.DataSourceEnvironment;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -41,25 +41,25 @@ public final class ProxyDataSourceBuilder {
      *
      * @param name data source name
      * @param databaseType database type
-     * @param databaseEnvironment database environment
+     * @param dataSourceEnv data source environment
      * @return proxy data source
      */
-    public static DataSource build(final String name, final DatabaseType databaseType, final DatabaseEnvironment databaseEnvironment) {
+    public static DataSource build(final String name, final DatabaseType databaseType, final DataSourceEnvironment dataSourceEnv) {
         DataSourceCacheKey cacheKey = new DataSourceCacheKey(name, name, databaseType);
         if (CACHE.containsKey(cacheKey)) {
             return CACHE.get(cacheKey);
         }
-        DataSource result = createHikariCP(name, databaseEnvironment);
+        DataSource result = createHikariCP(name, dataSourceEnv);
         CACHE.put(cacheKey, result);
         return result;
     }
     
-    private static DataSource createHikariCP(final String dataSourceName, final DatabaseEnvironment databaseEnvironment) {
+    private static DataSource createHikariCP(final String dataSourceName, final DataSourceEnvironment dataSourceEnv) {
         HikariConfig result = new HikariConfig();
-        result.setDriverClassName(databaseEnvironment.getDriverClassName());
-        result.setJdbcUrl(databaseEnvironment.getURL(dataSourceName));
-        result.setUsername(databaseEnvironment.getUsername());
-        result.setPassword(databaseEnvironment.getPassword());
+        result.setDriverClassName(dataSourceEnv.getDriverClassName());
+        result.setJdbcUrl(dataSourceEnv.getURL(dataSourceName));
+        result.setUsername(dataSourceEnv.getUsername());
+        result.setPassword(dataSourceEnv.getPassword());
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return new HikariDataSource(result);
