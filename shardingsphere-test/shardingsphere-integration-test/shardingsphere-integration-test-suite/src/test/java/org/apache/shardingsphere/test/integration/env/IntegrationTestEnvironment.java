@@ -68,8 +68,8 @@ public final class IntegrationTestEnvironment {
         adapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.adapters"));
         runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
         scenarios = getScenarios(engineEnvProps);
-        EmbeddedDatabaseDistributionProperties embeddedDatabaseProps = getEmbeddedDatabaseDistributionProperties();
         Map<String, DatabaseScenarioProperties> databaseProps = getDatabaseScenarioProperties();
+        EmbeddedDatabaseDistributionProperties embeddedDatabaseProps = new EmbeddedDatabaseDistributionProperties(EnvironmentProperties.loadProperties("env/embedded-databases.properties"));
         databaseEnvironments = createDatabaseEnvironments(getDatabaseTypes(engineEnvProps), embeddedDatabaseProps, databaseProps);
         if (EnvironmentType.EMBEDDED == envType) {
             createEmbeddedDatabaseResources();
@@ -80,10 +80,6 @@ public final class IntegrationTestEnvironment {
                 waitForEnvironmentReady(each);
             }
         }
-    }
-    
-    private EmbeddedDatabaseDistributionProperties getEmbeddedDatabaseDistributionProperties() {
-        return new EmbeddedDatabaseDistributionProperties(EnvironmentProperties.loadProperties("env/embedded-databases.properties"));
     }
     
     private Collection<String> getScenarios(final Properties engineEnvProps) {
@@ -152,8 +148,8 @@ public final class IntegrationTestEnvironment {
     
     private DatabaseEnvironment createProxyEnvironment(final DatabaseScenarioProperties databaseProps) {
         // TODO hard code for MySQL, should configurable
-        return new DatabaseEnvironment(new MySQLDatabaseType(), databaseProps.getProxyHost(), databaseProps.getProxyPort(), databaseProps.getProxyUsername(), databaseProps.getProxyPassword(),
-                "", "");
+        return new DatabaseEnvironment(
+                new MySQLDatabaseType(), databaseProps.getProxyHost(), databaseProps.getProxyPort(), databaseProps.getProxyUsername(), databaseProps.getProxyPassword(), "", "");
     }
     
     private void waitForEnvironmentReady(final String scenario) {
