@@ -24,7 +24,7 @@ import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
+import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
 import org.junit.After;
 import org.junit.Before;
 
@@ -44,7 +44,7 @@ public final class IncrementalTaskTest {
     @Before
     public void setUp() {
         ScalingContext.getInstance().init(new ServerConfiguration());
-        incrementalTask = new DefaultScalingTaskFactory().createIncrementalTask(3, mockDumperConfig(), mockImporterConfiguration());
+        incrementalTask = ScalingTaskFactory.createIncrementalTask(3, mockDumperConfig(), mockImporterConfiguration());
     }
     
     @After
