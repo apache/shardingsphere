@@ -85,7 +85,7 @@
         <profile>
             <id>it.env.docker</id>
             <properties>
-                <it.env>docker</it.env>
+                <it.env>DOCKER</it.env>
             </properties>
             <build>
                 <plugins>

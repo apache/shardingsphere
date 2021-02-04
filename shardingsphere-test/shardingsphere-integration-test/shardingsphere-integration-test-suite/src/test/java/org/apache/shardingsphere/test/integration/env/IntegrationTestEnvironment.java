@@ -50,7 +50,7 @@ public final class IntegrationTestEnvironment {
     
     private static final IntegrationTestEnvironment INSTANCE = new IntegrationTestEnvironment();
     
-    private final boolean isEnvironmentPrepared;
+    private final EnvironmentType envType;
     
     private final Collection<String> adapters;
     
@@ -62,23 +62,20 @@ public final class IntegrationTestEnvironment {
     
     private final Map<String, DatabaseEnvironment> proxyEnvironments;
     
-    private final boolean isDatabasesEmbedded;
-    
     private IntegrationTestEnvironment() {
         Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
-        isEnvironmentPrepared = "docker".equals(engineEnvProps.getProperty("it.env.type"));
+        envType = EnvironmentType.valueOf(engineEnvProps.getProperty("it.env.type"));
         adapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.adapters"));
         runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
-        isDatabasesEmbedded = Boolean.parseBoolean(engineEnvProps.getProperty("it.databases.embedded"));
         scenarios = getScenarios(engineEnvProps);
         EmbeddedDatabaseDistributionProperties embeddedDatabaseProps = getEmbeddedDatabaseDistributionProperties();
         Map<String, DatabaseScenarioProperties> databaseProps = getDatabaseScenarioProperties();
         databaseEnvironments = createDatabaseEnvironments(getDatabaseTypes(engineEnvProps), embeddedDatabaseProps, databaseProps);
-        if (isDatabasesEmbedded) {
+        if (EnvironmentType.EMBEDDED == envType) {
             createEmbeddedDatabaseResources();
         }
         proxyEnvironments = createProxyEnvironments(databaseProps);
-        if (isEnvironmentPrepared) {
+        if (EnvironmentType.DOCKER == envType) {
             for (String each : scenarios) {
                 waitForEnvironmentReady(each);
             }
@@ -134,10 +131,8 @@ public final class IntegrationTestEnvironment {
     }
     
     private void createEmbeddedDatabaseResources() {
-        if (!isEnvironmentPrepared) {
-            for (Entry<DatabaseType, Map<String, DatabaseEnvironment>> entry : databaseEnvironments.entrySet()) {
-                createEmbeddedDatabaseResources(entry.getKey(), entry.getValue());
-            }
+        for (Entry<DatabaseType, Map<String, DatabaseEnvironment>> entry : databaseEnvironments.entrySet()) {
+            createEmbeddedDatabaseResources(entry.getKey(), entry.getValue());
         }
     }
     
