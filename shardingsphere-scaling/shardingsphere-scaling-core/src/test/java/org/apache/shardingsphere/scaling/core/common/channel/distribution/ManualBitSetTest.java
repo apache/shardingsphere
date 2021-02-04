@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.channel.bitset;
+package org.apache.shardingsphere.scaling.core.common.channel.distribution;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;

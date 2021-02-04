@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.common.channel.bitset;
+package org.apache.shardingsphere.scaling.core.common.channel.distribution;
 
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;

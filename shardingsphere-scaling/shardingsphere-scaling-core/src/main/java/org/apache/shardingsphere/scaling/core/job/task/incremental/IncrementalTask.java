@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.job.task.incremental;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.scaling.core.common.channel.DistributionChannel;
+import org.apache.shardingsphere.scaling.core.common.channel.distribution.DistributionChannel;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.common.record.Record;
