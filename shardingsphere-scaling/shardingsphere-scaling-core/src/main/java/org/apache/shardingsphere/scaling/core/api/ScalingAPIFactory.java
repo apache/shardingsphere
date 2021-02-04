@@ -19,7 +19,9 @@ package org.apache.shardingsphere.scaling.core.api;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobAPIFactory;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
@@ -43,6 +45,7 @@ import java.util.Properties;
 /**
  * Scaling API factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ScalingAPIFactory {
     
     static {

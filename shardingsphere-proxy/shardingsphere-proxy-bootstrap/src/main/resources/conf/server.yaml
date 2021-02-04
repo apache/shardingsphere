@@ -39,7 +39,6 @@
 #      password: root
 #    sharding:
 #      password: sharding
-#      authorizedSchemas: sharding_db
 #
 #scaling:
 #  blockQueueSize: 10000

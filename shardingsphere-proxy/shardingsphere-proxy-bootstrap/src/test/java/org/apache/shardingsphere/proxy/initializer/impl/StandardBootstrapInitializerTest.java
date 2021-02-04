@@ -152,9 +152,6 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         Optional<ShardingSphereUser> rootUser = actual.findUser(new Grantee("root", ""));
         assertTrue(rootUser.isPresent());
         assertThat(rootUser.get().getPassword(), is("root"));
-        assertThat(rootUser.get().getAuthorizedSchemas().size(), is(2));
-        assertTrue(rootUser.get().getAuthorizedSchemas().contains("ds-1"));
-        assertTrue(rootUser.get().getAuthorizedSchemas().contains("ds-2"));
     }
     
     private YamlProxyServerConfiguration createYamlProxyServerConfiguration() {
@@ -182,7 +179,6 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     private YamlUserConfiguration createYamlUserConfiguration() {
         YamlUserConfiguration result = new YamlUserConfiguration();
         result.setPassword("root");
-        result.setAuthorizedSchemas("ds-1,ds-2");
         return result;
     }
     

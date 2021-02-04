@@ -41,7 +41,6 @@ authentication:
       password: root
     sharding:
       password: sharding
-      authorizedSchemas: sharding_db
 
 props:
   alpha-1: alpha-A
