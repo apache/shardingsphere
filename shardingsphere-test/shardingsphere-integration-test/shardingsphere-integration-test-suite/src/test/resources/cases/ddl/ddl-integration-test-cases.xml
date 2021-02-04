@@ -64,51 +64,51 @@
         </assertion>
     </test-case>
 
-    <test-case sql="CREATE TABLE t_broadcast_details(id int PRIMARY KEY, description varchar(10))">
+    <test-case sql="CREATE TABLE t_broadcast_table_for_ddl_test(id int PRIMARY KEY, description varchar(10))">
         <assertion expected-data-file="broadcast_create_table.xml">
-            <initial-sql affected-table="t_broadcast_details" />
+            <initial-sql affected-table="t_broadcast_table_for_ddl_test" />
         </assertion>
     </test-case>
 
-    <test-case sql="CREATE INDEX t_broadcast_details_index ON t_broadcast_details (id)">
+    <test-case sql="CREATE INDEX t_broadcast_table_for_ddl_test_index ON t_broadcast_table_for_ddl_test (id)">
         <assertion expected-data-file="broadcast_create_index.xml">
-            <initial-sql sql="CREATE TABLE t_broadcast_details(id int, description varchar(10))" affected-table="t_broadcast_details" />
+            <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl_test(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl_test" />
         </assertion>
     </test-case>
 
-    <test-case sql="CREATE UNIQUE INDEX t_broadcast_details_index ON t_broadcast_details (id)">
+    <test-case sql="CREATE UNIQUE INDEX t_broadcast_table_for_ddl_test_index ON t_broadcast_table_for_ddl_test (id)">
         <assertion expected-data-file="broadcast_create_unique_index.xml">
-            <initial-sql sql="CREATE TABLE t_broadcast_details(id int, description varchar(10))" affected-table="t_broadcast_details" />
+            <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl_test(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl_test" />
         </assertion>
     </test-case>
 
-    <test-case sql="ALTER TABLE t_broadcast_details ADD name varchar(10)">
+    <test-case sql="ALTER TABLE t_broadcast_table_for_ddl_test ADD name varchar(10)">
         <assertion expected-data-file="broadcast_alter_table.xml">
-            <initial-sql sql="CREATE TABLE t_broadcast_details(id int, description varchar(10))" affected-table="t_broadcast_details" />
+            <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl_test(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl_test" />
         </assertion>
     </test-case>
 
-    <test-case sql="DROP TABLE t_broadcast_details">
+    <test-case sql="DROP TABLE t_broadcast_table_for_ddl_test">
         <assertion expected-data-file="broadcast_drop_table.xml">
-            <initial-sql sql="CREATE TABLE t_broadcast_details(id int, description varchar(10))" affected-table="t_broadcast_details" />
+            <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl_test(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl_test" />
         </assertion>
     </test-case>
 
-    <test-case sql="DROP INDEX t_broadcast_details_index ON t_broadcast_details" db-types="MySQL,SQLServer">
+    <test-case sql="DROP INDEX t_broadcast_table_for_ddl_test_index ON t_broadcast_table_for_ddl_test" db-types="MySQL,SQLServer">
         <assertion expected-data-file="broadcast_unchanged_table.xml">
-            <initial-sql sql="CREATE TABLE t_broadcast_details(id int, description varchar(10));CREATE INDEX t_broadcast_details_index ON t_broadcast_details(description)" affected-table="t_broadcast_details" />
+            <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl_test(id int, description varchar(10));CREATE INDEX t_broadcast_table_for_ddl_test_index ON t_broadcast_table_for_ddl_test(description)" affected-table="t_broadcast_table_for_ddl_test" />
         </assertion>
     </test-case>
 
-    <test-case sql="DROP INDEX t_broadcast_index" db-types="PostgreSQL,Oracle">
+    <test-case sql="DROP INDEX t_broadcast_table_for_ddl_test_index" db-types="PostgreSQL,Oracle">
         <assertion expected-data-file="broadcast_unchanged_table.xml">
-            <initial-sql sql="CREATE TABLE t_broadcast_details(id int, description varchar(10));CREATE INDEX t_broadcast_details_index ON t_broadcast_details(description)" affected-table="t_broadcast_details" />
+            <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl_test(id int, description varchar(10));CREATE INDEX t_broadcast_table_for_ddl_test_index ON t_broadcast_table_for_ddl_test(description)" affected-table="t_broadcast_table_for_ddl_test" />
         </assertion>
     </test-case>
 
-    <test-case sql="TRUNCATE TABLE t_broadcast_details">
+    <test-case sql="TRUNCATE TABLE t_broadcast_table_for_ddl_test">
         <assertion expected-data-file="broadcast_unchanged_table.xml">
-            <initial-sql sql="CREATE TABLE t_broadcast_details(id int, description varchar(10))" affected-table="t_broadcast_details" />
+            <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl_test(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl_test" />
         </assertion>
     </test-case>
     <!-- TODO add single table DDL test cases -->

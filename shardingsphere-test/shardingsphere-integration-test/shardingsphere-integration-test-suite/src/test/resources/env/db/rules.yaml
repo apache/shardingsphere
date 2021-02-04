@@ -45,8 +45,8 @@ rules:
         none:
       databaseStrategy:
         none:
-    t_broadcast_details:
-      actualDataNodes: db_${0..9}.t_broadcast_details
+    t_broadcast_table_for_ddl_test:
+      actualDataNodes: db_${0..9}.t_broadcast_table_for_ddl_test
       tableStrategy:
         none:
       databaseStrategy:
@@ -55,7 +55,7 @@ rules:
     - t_order,t_order_item,t_order_details
   broadcastTables:
     - t_broadcast_table
-    - t_broadcast_details
+    - t_broadcast_table_for_ddl_test
 
   shardingAlgorithms:
     standard_test:

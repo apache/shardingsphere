@@ -16,5 +16,5 @@
   -->
 
 <dataset>
-    <metadata table-name="t_broadcast_details" data-nodes="tbl.t_broadcast_details" />
+    <metadata table-name="t_broadcast_table_for_ddl_test" data-nodes="tbl.t_broadcast_table_for_ddl_test" />
 </dataset>

@@ -16,5 +16,5 @@
   -->
 
 <dataset>
-    <metadata table-name="t_broadcast_details" data-nodes="primary_ds.t_broadcast_details,replica_${0..1}.t_broadcast_details" />
+    <metadata table-name="t_broadcast_table_for_ddl_test" data-nodes="primary_ds.t_broadcast_table_for_ddl_test,replica_${0..1}.t_broadcast_table_for_ddl_test" />
 </dataset>
