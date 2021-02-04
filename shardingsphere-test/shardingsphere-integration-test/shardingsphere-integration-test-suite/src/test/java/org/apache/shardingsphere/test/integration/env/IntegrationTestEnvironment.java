@@ -68,11 +68,11 @@ public final class IntegrationTestEnvironment {
         adapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.adapters"));
         scenarios = getScenarios(engineEnvProps);
         runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
+        Map<String, DatabaseScenarioProperties> databaseProps = getDatabaseScenarioProperties();
+        dataSourceEnvironments = createDataSourceEnvironments(getDatabaseTypes(engineEnvProps), databaseProps);
         if (EnvironmentType.EMBEDDED == envType) {
             createEmbeddedDatabases(new EmbeddedDatabaseDistributionProperties(EnvironmentProperties.loadProperties("env/embedded-databases.properties")));
         }
-        Map<String, DatabaseScenarioProperties> databaseProps = getDatabaseScenarioProperties();
-        dataSourceEnvironments = createDataSourceEnvironments(getDatabaseTypes(engineEnvProps), databaseProps);
         proxyEnvironments = createProxyEnvironments(databaseProps);
         if (EnvironmentType.DOCKER == envType) {
             for (String each : scenarios) {
@@ -106,7 +106,7 @@ public final class IntegrationTestEnvironment {
     }
     
     private Collection<DatabaseType> getDatabaseTypes(final Properties engineEnvProps) {
-        return Arrays.stream(engineEnvProps.getProperty("it.databases", "H2").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
+        return Arrays.stream(engineEnvProps.getProperty("it.databases").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
     }
     
     private Map<DatabaseType, Map<String, DataSourceEnvironment>> createDataSourceEnvironments(final Collection<DatabaseType> databaseTypes, 
