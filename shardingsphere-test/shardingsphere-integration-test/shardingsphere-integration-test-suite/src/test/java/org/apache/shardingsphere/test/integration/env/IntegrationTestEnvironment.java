@@ -54,9 +54,9 @@ public final class IntegrationTestEnvironment {
     
     private final Collection<String> adapters;
     
-    private final boolean runAdditionalTestCases;
-    
     private final Collection<String> scenarios;
+    
+    private final boolean runAdditionalTestCases;
     
     private final Map<DatabaseType, Map<String, DataSourceEnvironment>> dataSourceEnvironments;
     
@@ -66,8 +66,8 @@ public final class IntegrationTestEnvironment {
         Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
         envType = getEnvironmentType(engineEnvProps);
         adapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.adapters"));
-        runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
         scenarios = getScenarios(engineEnvProps);
+        runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
         Map<String, DatabaseScenarioProperties> databaseProps = getDatabaseScenarioProperties();
         dataSourceEnvironments = createDataSourceEnvironments(getDatabaseTypes(engineEnvProps), databaseProps);
         if (EnvironmentType.EMBEDDED == envType) {
@@ -109,7 +109,8 @@ public final class IntegrationTestEnvironment {
         return Arrays.stream(engineEnvProps.getProperty("it.databases", "H2").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
     }
     
-    private Map<DatabaseType, Map<String, DataSourceEnvironment>> createDataSourceEnvironments(final Collection<DatabaseType> databaseTypes, final Map<String, DatabaseScenarioProperties> databaseProps) {
+    private Map<DatabaseType, Map<String, DataSourceEnvironment>> createDataSourceEnvironments(final Collection<DatabaseType> databaseTypes, 
+                                                                                               final Map<String, DatabaseScenarioProperties> databaseProps) {
         Map<DatabaseType, Map<String, DataSourceEnvironment>> result = new LinkedHashMap<>(databaseTypes.size(), 1);
         for (DatabaseType each : databaseTypes) {
             Map<String, DataSourceEnvironment> dataSourceEnvs = new LinkedHashMap<>(scenarios.size(), 1);
