@@ -26,9 +26,8 @@ import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLAuthenticationMD5PasswordPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
+import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationResult;
@@ -125,8 +124,9 @@ public final class PostgreSQLAuthenticationEngineTest {
         payload.writeStringNul(md5Digest);
         ProxyContext proxyContext = ProxyContext.getInstance();
         StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts();
-        ((DefaultAuthentication) standardMetaDataContexts.getAuthentication()).getAuthentication().put(
-                new ShardingSphereUser(username, password, ""), new ShardingSpherePrivilege());
+        ShardingSpherePrivilege privilege = new ShardingSpherePrivilege();
+        privilege.setSuper();
+        (standardMetaDataContexts.getAuthentication()).getAuthentication().put(new ShardingSphereUser(username, password, ""), privilege);
         proxyContext.init(standardMetaDataContexts, mock(TransactionContexts.class));
         actual = engine.auth(channelHandlerContext, payload);
         assertThat(actual.isFinished(), is(password.equals(inputPassword)));
