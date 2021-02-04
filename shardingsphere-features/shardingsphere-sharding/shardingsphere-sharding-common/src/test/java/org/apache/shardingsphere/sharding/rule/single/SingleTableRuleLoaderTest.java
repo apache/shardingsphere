@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.rule.single;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,8 +24,6 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -35,11 +32,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -61,56 +58,44 @@ public final class SingleTableRuleLoaderTest {
         dataSourceMap.put("ds1", mockDataSource("ds1", Arrays.asList("student", "teacher", "class", "salary")));
     }
     
-    private DataSource mockDataSource(final String dataSourceName, final Collection<String> tableNames) throws SQLException {
-        DataSource result = mock(DataSource.class);
-        Connection connection = mock(Connection.class);
-        when(result.getConnection()).thenReturn(connection);
-        when(connection.getCatalog()).thenReturn(dataSourceName);
-        ResultSet resultSet = mock(ResultSet.class);
-        List<String> tableList = Lists.newArrayList(tableNames);
-        if (tableList.isEmpty()) {
-            when(resultSet.next()).thenReturn(false);
-        } else if (1 == tableList.size()) {
-            when(resultSet.next()).thenReturn(true, false);
-            when(resultSet.getString(TABLE_NAME)).thenReturn(tableList.get(0));
-        } else {
-            List<String> subTableList = tableList.subList(1, tableNames.size());
-            List<Boolean> subNextList = subTableList.stream().map(item -> true).collect(Collectors.toList());
-            subNextList.add(false);
-            String[] subTableArray = new String[subTableList.size()];
-            Boolean[] subNextArray = new Boolean[subNextList.size()];
-            subTableList.toArray(subTableArray);
-            subNextList.toArray(subNextArray);
-            when(resultSet.next()).thenReturn(true, subNextArray);
-            when(resultSet.getString(TABLE_NAME)).thenReturn(tableList.get(0), subTableArray);
-        }
-        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        when(connection.getMetaData()).thenReturn(metaData);
-        when(metaData.getTables(connection.getCatalog(), connection.getSchema(), null, new String[]{TABLE_TYPE, VIEW_TYPE})).thenReturn(resultSet);
+    private DataSource mockDataSource(final String dataSourceName, final List<String> tableNames) throws SQLException {
+        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        when(result.getConnection().getCatalog()).thenReturn(dataSourceName);
+        ResultSet resultSet = mockResultSet(tableNames);
+        when(result.getConnection().getMetaData().getTables(dataSourceName, null, null, new String[]{TABLE_TYPE, VIEW_TYPE})).thenReturn(resultSet);
+        return result;
+    }
+    
+    private ResultSet mockResultSet(final List<String> tableNames) throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        String firstTableName = tableNames.get(0);
+        Collection<String> remainTableNames = tableNames.subList(1, tableNames.size());
+        Collection<Boolean> remainNextResults = remainTableNames.stream().map(each -> true).collect(Collectors.toList());
+        remainNextResults.add(false);
+        when(result.next()).thenReturn(true, remainNextResults.toArray(new Boolean[tableNames.size()]));
+        when(result.getString(TABLE_NAME)).thenReturn(firstTableName, remainTableNames.toArray(new String[tableNames.size() - 1]));
         return result;
     }
     
     @Test
     public void assertLoad() {
-        Map<String, SingleTableRule> singleTableRuleMap = SingleTableRuleLoader.load(mock(DatabaseType.class), dataSourceMap, Collections.emptyList());
-        Set<String> tableSet = singleTableRuleMap.keySet();
-        assertTrue(tableSet.contains("employee"));
-        assertTrue(tableSet.contains("dept"));
-        assertTrue(tableSet.contains("salary"));
-        assertTrue(tableSet.contains("student"));
-        assertTrue(tableSet.contains("teacher"));
-        assertTrue(tableSet.contains("class"));
+        Collection<String> tableNames = SingleTableRuleLoader.load(mock(DatabaseType.class), dataSourceMap, Collections.emptyList()).keySet();
+        assertTrue(tableNames.contains("employee"));
+        assertTrue(tableNames.contains("dept"));
+        assertTrue(tableNames.contains("salary"));
+        assertTrue(tableNames.contains("student"));
+        assertTrue(tableNames.contains("teacher"));
+        assertTrue(tableNames.contains("class"));
     }
     
     @Test
-    public void assertLoadWithExcludeTable() {
-        Map<String, SingleTableRule> singleTableRuleMap = SingleTableRuleLoader.load(mock(DatabaseType.class), dataSourceMap, Arrays.asList("salary", "employee", "student"));
-        Set<String> tableSet = singleTableRuleMap.keySet();
-        assertFalse(tableSet.contains("employee"));
-        assertFalse(tableSet.contains("salary"));
-        assertFalse(tableSet.contains("student"));
-        assertTrue(tableSet.contains("dept"));
-        assertTrue(tableSet.contains("teacher"));
-        assertTrue(tableSet.contains("class"));
+    public void assertLoadWithExcludeTables() {
+        Collection<String> tableNames = SingleTableRuleLoader.load(mock(DatabaseType.class), dataSourceMap, Arrays.asList("salary", "employee", "student")).keySet();
+        assertFalse(tableNames.contains("employee"));
+        assertFalse(tableNames.contains("salary"));
+        assertFalse(tableNames.contains("student"));
+        assertTrue(tableNames.contains("dept"));
+        assertTrue(tableNames.contains("teacher"));
+        assertTrue(tableNames.contains("class"));
     }
 }
