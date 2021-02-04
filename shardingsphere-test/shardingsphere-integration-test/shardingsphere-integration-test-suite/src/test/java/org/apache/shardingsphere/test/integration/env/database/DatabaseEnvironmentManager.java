@@ -84,7 +84,7 @@ public final class DatabaseEnvironmentManager {
     }
     
     private static void executeInitSQLs(final String scenario) throws IOException, JAXBException, SQLException {
-        for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
+        for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()) {
             if (each instanceof H2DatabaseType) {
                 executeInitSQLForSchemaNotSupportedDatabase(scenario, each);
                 continue;

@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 /**
- * Database environment.
+ * Data source environment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseEnvironment {
+public final class DataSourceEnvironment {
     
     private final DatabaseType databaseType;
     
