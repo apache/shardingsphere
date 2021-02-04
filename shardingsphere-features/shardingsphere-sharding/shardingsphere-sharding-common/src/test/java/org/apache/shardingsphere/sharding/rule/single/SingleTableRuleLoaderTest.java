@@ -45,19 +45,27 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SingleTableRuleLoaderTest {
-
+public final class SingleTableRuleLoaderTest {
+    
     private static final String TABLE_TYPE = "TABLE";
-
+    
     private static final String VIEW_TYPE = "VIEW";
-
+    
     private static final String TABLE_NAME = "TABLE_NAME";
-
+    
     private final Map<String, DataSource> dataSourceMap = new HashMap<>();
-
+    
     @Mock
     private DatabaseType dbType;
-
+    
+    @Before
+    public void init() throws SQLException {
+        DataSource ds1 = initDataSource("ds1", Sets.newHashSet("employee", "dept", "salary"));
+        DataSource ds2 = initDataSource("ds2", Sets.newHashSet("student", "teacher", "class", "salary"));
+        dataSourceMap.put("ds1", ds1);
+        dataSourceMap.put("ds2", ds2);
+    }
+    
     private DataSource initDataSource(final String dataSourceName, final Set<String> tables) throws SQLException {
         if (Strings.isNullOrEmpty(dataSourceName) || tables == null) {
             throw new IllegalArgumentException("dataSourceNam is empty or tables is null");
@@ -66,19 +74,16 @@ public class SingleTableRuleLoaderTest {
         Connection conn = mock(Connection.class);
         when(dataSource.getConnection()).thenReturn(conn);
         when(conn.getCatalog()).thenReturn(dataSourceName);
-
         ResultSet resultSet = mock(ResultSet.class);
         List<String> tableList = Lists.newArrayList(tables);
-        if (tableList.size() == 0) {
+        if (tableList.isEmpty()) {
             when(resultSet.next()).thenReturn(false);
-        } else if (tableList.size() == 1) {
+        } else if (1 == tableList.size()) {
             when(resultSet.next()).thenReturn(true, false);
             when(resultSet.getString(TABLE_NAME)).thenReturn(tableList.get(0));
         } else {
             List<String> subTableList = tableList.subList(1, tables.size());
-            List<Boolean> subNextList = subTableList.stream()
-                .map(item -> true)
-                .collect(Collectors.toList());
+            List<Boolean> subNextList = subTableList.stream().map(item -> true).collect(Collectors.toList());
             subNextList.add(false);
             String[] subTableArray = new String[subTableList.size()];
             Boolean[] subNextArray = new Boolean[subNextList.size()];
@@ -87,24 +92,12 @@ public class SingleTableRuleLoaderTest {
             when(resultSet.next()).thenReturn(true, subNextArray);
             when(resultSet.getString(TABLE_NAME)).thenReturn(tableList.get(0), subTableArray);
         }
-
         DatabaseMetaData metaData = mock(DatabaseMetaData.class);
         when(conn.getMetaData()).thenReturn(metaData);
-
-        when(
-            metaData.getTables(conn.getCatalog(), conn.getSchema(), null, new String[]{TABLE_TYPE, VIEW_TYPE})
-        ).thenReturn(resultSet);
+        when(metaData.getTables(conn.getCatalog(), conn.getSchema(), null, new String[]{TABLE_TYPE, VIEW_TYPE})).thenReturn(resultSet);
         return dataSource;
     }
-
-    @Before
-    public void init() throws SQLException {
-        DataSource ds1 = initDataSource("ds1", Sets.newHashSet("employee", "dept", "salary"));
-        DataSource ds2 = initDataSource("ds2", Sets.newHashSet("student", "teacher", "class", "salary"));
-        dataSourceMap.put("ds1", ds1);
-        dataSourceMap.put("ds2", ds2);
-    }
-
+    
     @Test
     public void assertLoad() {
         Map<String, SingleTableRule> singleTableRuleMap = SingleTableRuleLoader.load(dbType, dataSourceMap, Collections.emptyList());
@@ -116,11 +109,10 @@ public class SingleTableRuleLoaderTest {
         assertTrue(tableSet.contains("teacher"));
         assertTrue(tableSet.contains("class"));
     }
-
+    
     @Test
     public void assertLoadWithExcludeTable() {
-        Map<String, SingleTableRule> singleTableRuleMap = SingleTableRuleLoader.load(dbType, dataSourceMap,
-            Sets.newHashSet("salary", "employee", "student"));
+        Map<String, SingleTableRule> singleTableRuleMap = SingleTableRuleLoader.load(dbType, dataSourceMap, Sets.newHashSet("salary", "employee", "student"));
         Set<String> tableSet = singleTableRuleMap.keySet();
         assertFalse(tableSet.contains("employee"));
         assertFalse(tableSet.contains("salary"));
