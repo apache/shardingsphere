@@ -26,7 +26,7 @@ import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTa
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 
 /**
- * Default Scaling task factory.
+ * Scaling task factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ScalingTaskFactory {
