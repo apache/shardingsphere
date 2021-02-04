@@ -52,15 +52,16 @@ public final class SingleTableRuleLoaderTest {
     
     private static final String TABLE_NAME = "TABLE_NAME";
     
-    private final Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+    private Map<String, DataSource> dataSourceMap;
     
     @Before
-    public void init() throws SQLException {
-        dataSourceMap.put("ds0", initDataSource("ds0", Arrays.asList("employee", "dept", "salary")));
-        dataSourceMap.put("ds1", initDataSource("ds1", Arrays.asList("student", "teacher", "class", "salary")));
+    public void setUp() throws SQLException {
+        dataSourceMap = new HashMap<>(2, 1);
+        dataSourceMap.put("ds0", mockDataSource("ds0", Arrays.asList("employee", "dept", "salary")));
+        dataSourceMap.put("ds1", mockDataSource("ds1", Arrays.asList("student", "teacher", "class", "salary")));
     }
     
-    private DataSource initDataSource(final String dataSourceName, final Collection<String> tableNames) throws SQLException {
+    private DataSource mockDataSource(final String dataSourceName, final Collection<String> tableNames) throws SQLException {
         DataSource result = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         when(result.getConnection()).thenReturn(connection);
