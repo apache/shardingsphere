@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
+import org.apache.shardingsphere.test.integration.env.database.EmbeddedDatabaseDistributionProperties;
 import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
 import org.apache.shardingsphere.test.integration.env.props.DatabaseScenarioProperties;
 import org.apache.shardingsphere.test.integration.env.props.EnvironmentProperties;
@@ -70,8 +71,9 @@ public final class IntegrationTestEnvironment {
         runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
         isDatabasesEmbedded = Boolean.parseBoolean(engineEnvProps.getProperty("it.databases.embedded"));
         scenarios = getScenarios(engineEnvProps);
+        EmbeddedDatabaseDistributionProperties embeddedDatabaseProps = getEmbeddedDatabaseDistributionProperties();
         Map<String, DatabaseScenarioProperties> databaseProps = getDatabaseScenarioProperties();
-        databaseEnvironments = createDatabaseEnvironments(getDatabaseTypes(engineEnvProps), databaseProps);
+        databaseEnvironments = createDatabaseEnvironments(getDatabaseTypes(engineEnvProps), embeddedDatabaseProps, databaseProps);
         if (isDatabasesEmbedded) {
             createEmbeddedDatabaseResources();
         }
@@ -81,6 +83,10 @@ public final class IntegrationTestEnvironment {
                 waitForEnvironmentReady(each);
             }
         }
+    }
+    
+    private EmbeddedDatabaseDistributionProperties getEmbeddedDatabaseDistributionProperties() {
+        return new EmbeddedDatabaseDistributionProperties(EnvironmentProperties.loadProperties("env/embedded-databases.properties"));
     }
     
     private Collection<String> getScenarios(final Properties engineEnvProps) {
@@ -103,25 +109,28 @@ public final class IntegrationTestEnvironment {
         return Arrays.stream(engineEnvProps.getProperty("it.databases", "H2").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
     }
     
-    private Map<DatabaseType, Map<String, DatabaseEnvironment>> createDatabaseEnvironments(final Collection<DatabaseType> databaseTypes, final Map<String, DatabaseScenarioProperties> databaseProps) {
+    private Map<DatabaseType, Map<String, DatabaseEnvironment>> createDatabaseEnvironments(final Collection<DatabaseType> databaseTypes, 
+                                                                                           final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, 
+                                                                                           final Map<String, DatabaseScenarioProperties> databaseProps) {
         Map<DatabaseType, Map<String, DatabaseEnvironment>> result = new LinkedHashMap<>(databaseTypes.size(), 1);
         for (DatabaseType each : databaseTypes) {
             Map<String, DatabaseEnvironment> databaseEnvironments = new LinkedHashMap<>(scenarios.size(), 1);
             for (String scenario : scenarios) {
-                databaseEnvironments.put(scenario, createDatabaseEnvironment(each, databaseProps.get(scenario)));
+                databaseEnvironments.put(scenario, createDatabaseEnvironment(each, embeddedDatabaseProps, databaseProps.get(scenario)));
                 result.put(each, databaseEnvironments);
             }
         }
         return result;
     }
     
-    private DatabaseEnvironment createDatabaseEnvironment(final DatabaseType databaseType, final DatabaseScenarioProperties databaseProps) {
+    private DatabaseEnvironment createDatabaseEnvironment(final DatabaseType databaseType, 
+                                                          final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final DatabaseScenarioProperties databaseProps) {
         if (databaseType instanceof H2DatabaseType) {
             return new DatabaseEnvironment(databaseType, "", 0, "sa", "", "", "");
         }
         return new DatabaseEnvironment(databaseType, databaseProps.getDatabaseHost(databaseType), databaseProps.getDatabasePort(databaseType),
                 databaseProps.getDatabaseUsername(databaseType), databaseProps.getDatabasePassword(databaseType),
-                databaseProps.getDatabaseDistributionUrl(databaseType), databaseProps.getDatabaseDistributionVersion(databaseType));
+                embeddedDatabaseProps.getURL(databaseType), embeddedDatabaseProps.getVersion(databaseType));
     }
     
     private void createEmbeddedDatabaseResources() {

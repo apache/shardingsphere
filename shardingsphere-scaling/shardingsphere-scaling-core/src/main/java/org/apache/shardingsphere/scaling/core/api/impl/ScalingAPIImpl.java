@@ -33,7 +33,7 @@ import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckerFactory;
-import org.apache.shardingsphere.scaling.core.job.environmental.ScalingEnvironmentalManager;
+import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
@@ -169,7 +169,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     @Override
     public void resetTargetTable(final long jobId) throws SQLException {
         log.info("Scaling job {} reset target table", jobId);
-        new ScalingEnvironmentalManager().resetTargetTable(new JobContext(getJobConfig(jobId)));
+        new ScalingEnvironmentManager().resetTargetTable(new JobContext(getJobConfig(jobId)));
     }
     
     @Override
