@@ -36,13 +36,13 @@ import java.util.Set;
 /**
  * Schemas changed listener.
  */
-public final class SchemasChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
+public final class MetaDataChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
     private final Collection<String> existedSchemaNames;
     
     private final ConfigCenterNode configurationNode;
     
-    public SchemasChangedListener(final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
+    public MetaDataChangedListener(final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
         super(configurationRepository, Collections.singleton(new ConfigCenterNode().getMetadataNodePath()));
         configurationNode = new ConfigCenterNode();
         existedSchemaNames = new LinkedHashSet<>(schemaNames);

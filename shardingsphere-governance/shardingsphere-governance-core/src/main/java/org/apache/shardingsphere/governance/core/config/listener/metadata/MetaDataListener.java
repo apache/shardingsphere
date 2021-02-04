@@ -30,7 +30,7 @@ import java.util.Collection;
  */
 public final class MetaDataListener {
     
-    private final SchemasChangedListener schemasChangedListener;
+    private final MetaDataChangedListener metaDataChangedListener;
     
     private volatile RuleChangedListener ruleChangedListener;
     
@@ -42,7 +42,7 @@ public final class MetaDataListener {
     
     public MetaDataListener(final ConfigurationRepository configurationRepository, final Collection<String> schemaNames) {
         this.configurationRepository = configurationRepository;
-        schemasChangedListener = new SchemasChangedListener(configurationRepository, schemaNames);
+        metaDataChangedListener = new MetaDataChangedListener(configurationRepository, schemaNames);
         ruleChangedListener = new RuleChangedListener(configurationRepository, schemaNames);
         dataSourceChangedListener = new DataSourceChangedListener(configurationRepository, schemaNames);
         schemaChangedListener = new SchemaChangedListener(configurationRepository, schemaNames);
@@ -53,7 +53,7 @@ public final class MetaDataListener {
      * watch event.
      */
     public void watch() {
-        schemasChangedListener.watch(Type.UPDATED);
+        metaDataChangedListener.watch(Type.UPDATED);
         ruleChangedListener.watch(Type.UPDATED);
         dataSourceChangedListener.watch(Type.UPDATED);
         schemaChangedListener.watch(Type.UPDATED);
