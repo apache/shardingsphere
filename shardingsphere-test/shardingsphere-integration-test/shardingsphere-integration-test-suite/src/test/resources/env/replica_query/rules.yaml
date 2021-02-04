@@ -42,8 +42,8 @@ rules:
         none:
       databaseStrategy:
         none:
-    t_broadcast_table_for_ddl_test:
-      actualDataNodes: primary-replica-ds.t_broadcast_table_for_ddl_test
+    t_broadcast_table_for_ddl:
+      actualDataNodes: primary-replica-ds.t_broadcast_table_for_ddl
       tableStrategy:
         none:
       databaseStrategy:
@@ -52,7 +52,7 @@ rules:
     - t_order,t_order_item,t_order_details
   broadcastTables:
     - t_broadcast_table
-    - t_broadcast_table_for_ddl_test
+    - t_broadcast_table_for_ddl
 
 - !REPLICA_QUERY
   dataSources:
