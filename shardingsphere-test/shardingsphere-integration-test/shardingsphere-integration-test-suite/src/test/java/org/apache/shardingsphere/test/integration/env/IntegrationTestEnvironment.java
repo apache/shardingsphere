@@ -66,7 +66,8 @@ public final class IntegrationTestEnvironment {
     
     private IntegrationTestEnvironment() {
         Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
-        isEnvironmentPrepared = "docker".equals(engineEnvProps.getProperty("it.env.type"));
+        EnvironmentType envType = EnvironmentType.valueOf(engineEnvProps.getProperty("it.env.type"));
+        isEnvironmentPrepared = EnvironmentType.DOCKER == envType;
         adapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.adapters"));
         runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
         isDatabasesEmbedded = Boolean.parseBoolean(engineEnvProps.getProperty("it.databases.embedded"));
