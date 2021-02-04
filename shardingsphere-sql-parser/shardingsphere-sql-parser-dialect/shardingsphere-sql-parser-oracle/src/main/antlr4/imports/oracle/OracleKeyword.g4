@@ -838,3 +838,15 @@ NOWAIT
 BATCH
     : B A T C H
     ;
+
+LOG
+    : L O G
+    ;
+
+REUSE
+    : R E U S E
+    ;
+
+STORAGE
+    : S T O R A G E
+    ;

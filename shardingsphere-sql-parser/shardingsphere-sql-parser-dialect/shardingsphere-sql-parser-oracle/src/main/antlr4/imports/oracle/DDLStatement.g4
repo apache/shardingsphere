@@ -45,7 +45,7 @@ dropIndex
     ;
 
 truncateTable
-    : TRUNCATE TABLE tableName
+    : TRUNCATE TABLE tableName materializedViewLogClause? storageClause? CASCADE?
     ;
 
 createTableSpecification
@@ -393,4 +393,12 @@ enableDisableClause
 
 enableDisableOthers
     : (ENABLE | DISABLE) (TABLE LOCK | ALL TRIGGERS | CONTAINER_MAP | CONTAINERS_DEFAULT)
+    ;
+
+materializedViewLogClause
+    : (PRESERVE | PURGE) MATERIALIZED VIEW LOG
+    ;
+
+storageClause
+    : (DROP (ALL)? | REUSE) STORAGE
     ;
