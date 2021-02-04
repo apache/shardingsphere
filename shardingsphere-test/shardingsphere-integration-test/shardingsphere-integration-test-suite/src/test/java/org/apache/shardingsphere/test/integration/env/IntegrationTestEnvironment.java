@@ -133,8 +133,8 @@ public final class IntegrationTestEnvironment {
     }
     
     private void createEmbeddedDatabaseResources(final DatabaseType databaseType, final Map<String, DatabaseEnvironment> databaseEnvs) {
-        for (Entry<String, DatabaseEnvironment> databaseEnvironmentEntry : databaseEnvs.entrySet()) {
-            DatabaseEnvironmentManager.createEmbeddedDatabaseResource(databaseType, databaseEnvironmentEntry.getKey(), databaseEnvironmentEntry.getValue());
+        for (Entry<String, DatabaseEnvironment> entry : databaseEnvs.entrySet()) {
+            DatabaseEnvironmentManager.createEmbeddedDatabaseResource(databaseType, entry.getKey(), entry.getValue());
         }
     }
     
