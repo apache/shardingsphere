@@ -15,21 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.watcher;
+package org.apache.shardingsphere.infra.auth.privilege;
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
+import lombok.Getter;
+
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 /**
- * Integration test watcher.
+ * Administration privilege.
  */
-@Slf4j
-public final class ITWatcher extends TestWatcher {
+@Getter
+public final class AdministrationPrivilege {
     
-    @Override
-    protected void failed(final Throwable ex, final Description description) {
-        log.error("Error case: {}", description.getMethodName());
-        super.failed(ex, description);
+    private final Collection<PrivilegeType> privileges = new LinkedHashSet<>();
+    
+    /**
+     * Has privileges.
+     *
+     * @param privileges privileges
+     * @return has privileges or not
+     */
+    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
+        return this.privileges.contains(PrivilegeType.ALL) || this.privileges.containsAll(privileges);
+    }
+    
+    /**
+     * Set super privilege.
+     *
+     */
+    public void setSuper() {
+        privileges.add(PrivilegeType.ALL);
     }
 }

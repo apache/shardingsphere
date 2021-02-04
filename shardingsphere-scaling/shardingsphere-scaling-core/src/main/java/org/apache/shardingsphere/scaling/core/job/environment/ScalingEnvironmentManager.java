@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.environmental;
+package org.apache.shardingsphere.scaling.core.job.environment;
 
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
@@ -29,9 +29,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Scaling environmental manager.
+ * Scaling environment manager.
  */
-public final class ScalingEnvironmentalManager {
+public final class ScalingEnvironmentManager {
     
     private final DataSourceFactory dataSourceFactory = new DataSourceFactory();
     

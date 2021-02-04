@@ -28,7 +28,6 @@ import org.apache.shardingsphere.scaling.core.job.position.PositionInitializerFa
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryTaskSplitter;
-import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 
@@ -41,8 +40,6 @@ import java.util.List;
  */
 @Slf4j
 public final class ScalingJobPreparer {
-    
-    private final ScalingTaskFactory scalingTaskFactory = new DefaultScalingTaskFactory();
     
     private final InventoryTaskSplitter inventoryTaskSplitter = new InventoryTaskSplitter();
     
@@ -90,7 +87,7 @@ public final class ScalingJobPreparer {
     private void initIncrementalTasks(final JobContext jobContext, final DataSourceManager dataSourceManager) throws SQLException {
         for (TaskConfiguration each : jobContext.getTaskConfigs()) {
             each.getDumperConfig().setPosition(getIncrementalPosition(jobContext, each, dataSourceManager));
-            jobContext.getIncrementalTasks().add(scalingTaskFactory.createIncrementalTask(each.getHandleConfig().getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
+            jobContext.getIncrementalTasks().add(ScalingTaskFactory.createIncrementalTask(each.getHandleConfig().getConcurrency(), each.getDumperConfig(), each.getImporterConfig()));
         }
     }
     

@@ -29,7 +29,7 @@ rules:
             shardingColumn: user_id
             shardingAlgorithmName: t_user_inline
     shardingAlgorithms:
-      t_order_inline:
+      t_user_inline:
         type: INLINE
         props:
           algorithm-expression: t_user_${user_id % 2}

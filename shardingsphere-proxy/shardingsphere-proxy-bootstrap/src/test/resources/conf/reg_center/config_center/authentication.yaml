@@ -20,4 +20,3 @@ users:
     password: root
   sharding:
     password: sharding
-    authorizedSchemas: sharding_db

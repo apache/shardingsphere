@@ -87,8 +87,8 @@ REPLICA
     : R E P L I C A
     ;
 
-BINDING_TABLES
-    : B I N D I N G UL_ T A B L E S
+BINDING_TABLE
+    : B I N D I N G UL_ T A B L E
     ;
 
 BROADCAST_TABLES

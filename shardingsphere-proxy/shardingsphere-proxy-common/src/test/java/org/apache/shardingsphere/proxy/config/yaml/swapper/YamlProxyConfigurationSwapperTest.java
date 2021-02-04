@@ -19,9 +19,9 @@ package org.apache.shardingsphere.proxy.config.yaml.swapper;
 
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
-import org.apache.shardingsphere.infra.auth.Grantee;
+import org.apache.shardingsphere.infra.auth.user.Grantee;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserRuleConfiguration;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -108,10 +108,7 @@ public final class YamlProxyConfigurationSwapperTest {
         Optional<ShardingSphereUser> user = authentication.findUser(new Grantee("user1", ""));
         assertTrue(user.isPresent());
         assertThat(user.get().getPassword(), is("pass"));
-        Collection<String> authorizedSchemas = user.get().getAuthorizedSchemas();
         assertNotNull(authentication);
-        assertThat(authorizedSchemas.size(), is(1));
-        assertTrue(authorizedSchemas.contains("db1"));
     }
     
     private YamlProxyConfiguration getYamlProxyConfiguration() {
@@ -217,7 +214,6 @@ public final class YamlProxyConfigurationSwapperTest {
         Map<String, YamlUserConfiguration> yamlUserConfigurationMap = new HashMap<>(1, 1);
         YamlUserConfiguration yamlUserConfig = mock(YamlUserConfiguration.class);
         when(yamlUserConfig.getPassword()).thenReturn("pass");
-        when(yamlUserConfig.getAuthorizedSchemas()).thenReturn("db1");
         yamlUserConfigurationMap.put("user1", yamlUserConfig);
         YamlUserRuleConfiguration userRuleConfiguration = mock(YamlUserRuleConfiguration.class);
         when(userRuleConfiguration.getUsers()).thenReturn(yamlUserConfigurationMap);

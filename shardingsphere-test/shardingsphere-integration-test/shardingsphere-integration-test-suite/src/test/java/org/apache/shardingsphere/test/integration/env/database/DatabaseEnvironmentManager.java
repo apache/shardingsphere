@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.integration.env.database.type.MySQLEmbeddedDatabaseResource;
 import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.h2.tools.RunScript;

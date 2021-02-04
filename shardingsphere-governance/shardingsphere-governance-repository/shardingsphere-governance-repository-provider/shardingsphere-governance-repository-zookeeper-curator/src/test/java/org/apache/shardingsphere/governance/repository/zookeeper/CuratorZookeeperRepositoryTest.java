@@ -19,15 +19,37 @@ package org.apache.shardingsphere.governance.repository.zookeeper;
 
 import com.google.common.util.concurrent.SettableFuture;
 import lombok.SneakyThrows;
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
+import org.apache.curator.framework.api.ACLProvider;
+import org.apache.curator.framework.api.AddWatchBuilder;
+import org.apache.curator.framework.api.AddWatchBuilder2;
+import org.apache.curator.framework.api.BackgroundCallback;
+import org.apache.curator.framework.api.BackgroundVersionable;
+import org.apache.curator.framework.api.CreateBuilder;
+import org.apache.curator.framework.api.DeleteBuilder;
+import org.apache.curator.framework.api.ExistsBuilder;
+import org.apache.curator.framework.api.GetChildrenBuilder;
+import org.apache.curator.framework.api.Pathable;
+import org.apache.curator.framework.api.ProtectACLCreateModeStatPathAndBytesable;
+import org.apache.curator.framework.api.SetDataBuilder;
+import org.apache.curator.framework.api.WatchableBase;
+import org.apache.curator.framework.api.WatchesBuilder;
 import org.apache.curator.framework.listen.Listenable;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
+import org.apache.curator.framework.recipes.locks.InterProcessLock;
+import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
-import org.apache.shardingsphere.governance.repository.api.exception.GovernanceException;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.junit.BeforeClass;
+import org.apache.zookeeper.AddWatchMode;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.data.Stat;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.AdditionalAnswers;
@@ -36,21 +58,25 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.VoidAnswer1;
 
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -58,7 +84,7 @@ public final class CuratorZookeeperRepositoryTest {
     
     private static final CuratorZookeeperRepository REPOSITORY = new CuratorZookeeperRepository();
     
-    private static String serverLists;
+    private static String serverLists = "127.0.0.1:2181";
     
     @Mock
     private Map<String, CuratorCache> caches;
@@ -67,40 +93,141 @@ public final class CuratorZookeeperRepositoryTest {
     private CuratorCache curatorCache;
     
     @Mock
+    private CuratorFramework client;
+    
+    @Mock
     private Listenable<CuratorCacheListener> listenable;
     
-    @BeforeClass
-    public static void init() {
-        EmbedTestingServer.start();
-        serverLists = EmbedTestingServer.getTestingServerConnectionString();
-        REPOSITORY.init("governance", new GovernanceCenterConfiguration(REPOSITORY.getType(), serverLists, new Properties()));
+    @Mock
+    private ExistsBuilder existsBuilder;
+    
+    @Mock
+    private CreateBuilder createBuilder;
+    
+    @Mock
+    private SetDataBuilder setDataBuilder;
+    
+    @Mock
+    private DeleteBuilder deleteBuilder;
+    
+    @Mock
+    private GetChildrenBuilder getChildrenBuilder;
+    
+    @Mock
+    private ProtectACLCreateModeStatPathAndBytesable<String> protect;
+    
+    @Mock
+    private BackgroundVersionable backgroundVersionable;
+    
+    @Mock
+    private Builder builder;
+    
+    @Mock
+    private InterProcessLock interProcessLock;
+    
+    @Mock
+    private Listenable<ConnectionStateListener> listenerListenable;
+    
+    @Mock
+    private WatchesBuilder watchesBuilder;
+    
+    @Before
+    @SneakyThrows
+    public void init() {
+        mockClient();
+        mockField();
+        mockBuilder();
+        GovernanceCenterConfiguration config = new GovernanceCenterConfiguration(REPOSITORY.getType(), serverLists, new Properties());
+        REPOSITORY.init("governance", config);
+    }
+    
+    @SneakyThrows
+    private void mockClient() {
+        Field builderFiled = CuratorZookeeperRepository.class.getDeclaredField("builder");
+        builderFiled.setAccessible(true);
+        builderFiled.set(REPOSITORY, builder);
+        when(builder.connectString(anyString())).thenReturn(builder);
+        when(builder.retryPolicy(any(RetryPolicy.class))).thenReturn(builder);
+        when(builder.namespace(anyString())).thenReturn(builder);
+        when(builder.sessionTimeoutMs(anyInt())).thenReturn(builder);
+        when(builder.connectionTimeoutMs(anyInt())).thenReturn(builder);
+        when(builder.authorization(anyString(), any(byte[].class))).thenReturn(builder);
+        when(builder.aclProvider(any(ACLProvider.class))).thenReturn(builder);
+        when(builder.build()).thenReturn(client);
+        when(client.blockUntilConnected(anyInt(), eq(TimeUnit.MILLISECONDS))).thenReturn(true);
+        when(client.getConnectionStateListenable()).thenReturn(listenerListenable);
+        when(client.watchers()).thenReturn(watchesBuilder);
+        AddWatchBuilder addWatchBuilder = mock(AddWatchBuilder.class);
+        when(watchesBuilder.add()).thenReturn(addWatchBuilder);
+        AddWatchBuilder2 addWatchBuilder2 = mock(AddWatchBuilder2.class);
+        when(addWatchBuilder.withMode(any(AddWatchMode.class))).thenReturn(addWatchBuilder2);
+        WatchableBase<Pathable<Void>> watchableBase = mock(WatchableBase.class);
+        when(addWatchBuilder2.inBackground(any(BackgroundCallback.class))).thenReturn(watchableBase);
+        when(watchableBase.usingWatcher(any(Watcher.class))).thenReturn(mock(Pathable.class));
+    }
+    
+    @SneakyThrows
+    private void mockField() {
+        Field locksFiled = CuratorZookeeperRepository.class.getDeclaredField("locks");
+        locksFiled.setAccessible(true);
+        Map<String, InterProcessLock> locks = new HashMap<>();
+        locks.put("/locks/glock", interProcessLock);
+        locksFiled.set(REPOSITORY, locks);
+    }
+    
+    private void mockBuilder() {
+        when(client.checkExists()).thenReturn(existsBuilder);
+        when(client.create()).thenReturn(createBuilder);
+        when(createBuilder.creatingParentsIfNeeded()).thenReturn(protect);
+        when(client.setData()).thenReturn(setDataBuilder);
+        when(client.delete()).thenReturn(deleteBuilder);
+        when(deleteBuilder.deletingChildrenIfNeeded()).thenReturn(backgroundVersionable);
+        when(client.getChildren()).thenReturn(getChildrenBuilder);
     }
     
     @Test
+    @SneakyThrows
     public void assertPersist() {
+        when(existsBuilder.forPath(eq("/test"))).thenReturn(null);
+        when(protect.withMode(eq(CreateMode.PERSISTENT))).thenReturn(protect);
         REPOSITORY.persist("/test", "value1");
-        assertThat(REPOSITORY.get("/test"), is("value1"));
+        verify(protect).forPath(eq("/test"), eq("value1".getBytes(StandardCharsets.UTF_8)));
     }
     
     @Test
+    @SneakyThrows
     public void assertUpdate() {
+        when(existsBuilder.forPath(eq("/test"))).thenReturn(new Stat());
         REPOSITORY.persist("/test", "value2");
-        assertThat(REPOSITORY.get("/test"), is("value2"));
+        verify(setDataBuilder).forPath(eq("/test"), eq("value2".getBytes(StandardCharsets.UTF_8)));
     }
     
     @Test
-    public void assertPersistEphemeral() {
+    @SneakyThrows
+    public void assertPersistEphemeralNotExist() {
+        when(existsBuilder.forPath(eq("/test/ephemeral"))).thenReturn(null);
+        when(protect.withMode(eq(CreateMode.EPHEMERAL))).thenReturn(protect);
         REPOSITORY.persistEphemeral("/test/ephemeral", "value3");
-        assertThat(REPOSITORY.get("/test/ephemeral"), is("value3"));
+        verify(protect).forPath(eq("/test/ephemeral"), eq("value3".getBytes(StandardCharsets.UTF_8)));
     }
     
     @Test
+    @SneakyThrows
+    public void assertPersistEphemeralExist() {
+        when(existsBuilder.forPath(eq("/test/ephemeral"))).thenReturn(new Stat());
+        when(protect.withMode(eq(CreateMode.EPHEMERAL))).thenReturn(protect);
+        REPOSITORY.persistEphemeral("/test/ephemeral", "value4");
+        verify(backgroundVersionable).forPath(eq("/test/ephemeral"));
+        verify(protect).forPath(eq("/test/ephemeral"), eq("value4".getBytes(StandardCharsets.UTF_8)));
+    }
+    
+    @Test
+    @SneakyThrows
     public void assertGetChildrenKeys() {
-        REPOSITORY.persist("/test/children/keys/1", "value11");
-        REPOSITORY.persist("/test/children/keys/2", "value12");
-        REPOSITORY.persist("/test/children/keys/3", "value13");
+        List<String> keys = Arrays.asList("/test/children/keys/1", "/test/children/keys/2");
+        when(getChildrenBuilder.forPath("/test/children/keys")).thenReturn(keys);
         List<String> childrenKeys = REPOSITORY.getChildrenKeys("/test/children/keys");
-        assertThat(childrenKeys.size(), is(3));
+        assertThat(childrenKeys.size(), is(2));
     }
     
     @Test
@@ -162,143 +289,80 @@ public final class CuratorZookeeperRepositoryTest {
     }
     
     @Test
-    public void assertGetWithNonExistentKey() {
-        assertNull(REPOSITORY.get("/test/nonExistentKey"));
-    }
-    
-    @Test
     public void assertBuildCuratorClientWithCustomConfig() {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey(), "1000");
         props.setProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "1");
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "1000");
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "2000");
-        CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
-        GovernanceCenterConfiguration config = new GovernanceCenterConfiguration(repository.getType(), serverLists, new Properties());
-        repository.setProps(props);
-        repository.init("governance", config);
-        assertThat(repository.getProps().getProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey()), is("1000"));
-        assertThat(repository.getProps().getProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey()), is("1"));
-        assertThat(repository.getProps().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("1000"));
-        assertThat(repository.getProps().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("2000"));
-        repository.persist("/test/children/build/1", "value1");
-        assertThat(repository.get("/test/children/build/1"), is("value1"));
+        GovernanceCenterConfiguration config = new GovernanceCenterConfiguration(REPOSITORY.getType(), serverLists, new Properties());
+        REPOSITORY.setProps(props);
+        REPOSITORY.init("governance", config);
+        assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey()), is("1000"));
+        assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.MAX_RETRIES.getKey()), is("1"));
+        assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("1000"));
+        assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("2000"));
     }
     
     @Test
     public void assertBuildCuratorClientWithTimeToLiveSecondsEqualsZero() {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0");
-        CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
-        GovernanceCenterConfiguration config = new GovernanceCenterConfiguration(repository.getType(), serverLists, new Properties());
-        repository.setProps(props);
-        repository.init("governance", config);
-        assertThat(repository.getProps().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("0"));
-        repository.persist("/test/children/build/2", "value1");
-        assertThat(repository.get("/test/children/build/2"), is("value1"));
+        GovernanceCenterConfiguration config = new GovernanceCenterConfiguration(REPOSITORY.getType(), serverLists, new Properties());
+        REPOSITORY.setProps(props);
+        REPOSITORY.init("governance", config);
+        assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey()), is("0"));
     }
     
     @Test
     public void assertBuildCuratorClientWithOperationTimeoutMillisecondsEqualsZero() {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0");
-        CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
-        GovernanceCenterConfiguration config = new GovernanceCenterConfiguration(repository.getType(), serverLists, new Properties());
-        repository.setProps(props);
-        repository.init("governance", config);
-        assertThat(repository.getProps().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("0"));
-        repository.persist("/test/children/build/3", "value1");
-        assertThat(repository.get("/test/children/build/3"), is("value1"));
+        GovernanceCenterConfiguration config = new GovernanceCenterConfiguration(REPOSITORY.getType(), serverLists, new Properties());
+        REPOSITORY.setProps(props);
+        REPOSITORY.init("governance", config);
+        assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey()), is("0"));
     }
     
     @Test
     public void assertBuildCuratorClientWithDigest() {
         Properties props = new Properties();
         props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "any");
-        CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
-        GovernanceCenterConfiguration config = new GovernanceCenterConfiguration(repository.getType(), serverLists, new Properties());
-        repository.setProps(props);
-        repository.init("governance", config);
-        assertThat(repository.getProps().getProperty(ZookeeperPropertyKey.DIGEST.getKey()), is("any"));
-        repository.persist("/test/children/build/4", "value1");
-        assertThat(repository.get("/test/children/build/4"), is("value1"));
+        GovernanceCenterConfiguration config = new GovernanceCenterConfiguration(REPOSITORY.getType(), serverLists, new Properties());
+        REPOSITORY.setProps(props);
+        REPOSITORY.init("governance", config);
+        assertThat(REPOSITORY.getProps().getProperty(ZookeeperPropertyKey.DIGEST.getKey()), is("any"));
+        verify(builder).aclProvider(any(ACLProvider.class));
     }
     
     @Test
-    public void assertDelete() {
-        REPOSITORY.persist("/test/children/1", "value1");
-        REPOSITORY.persist("/test/children/2", "value2");
-        assertThat(REPOSITORY.get("/test/children/1"), is("value1"));
-        assertThat(REPOSITORY.get("/test/children/2"), is("value2"));
-        REPOSITORY.delete("/test/children");
-        assertNull(REPOSITORY.get("/test/children/1"));
-        assertNull(REPOSITORY.get("/test/children/2"));
+    @SneakyThrows
+    public void assertDeleteNotExistKey() {
+        when(existsBuilder.forPath(eq("/test/children/1"))).thenReturn(null);
+        REPOSITORY.delete("/test/children/1");
+        verify(client, times(0)).delete();
     }
     
     @Test
-    public void assertZKCloseAndException() {
-        CuratorZookeeperRepository repository = new CuratorZookeeperRepository();
-        GovernanceCenterConfiguration config = new GovernanceCenterConfiguration(repository.getType(), serverLists, new Properties());
-        Properties props = new Properties();
-        props.setProperty(ZookeeperPropertyKey.DIGEST.getKey(), "digest");
-        repository.setProps(props);
-        repository.init("governance", config);
-        repository.close();
-        try {
-            repository.get("/test/children/1");
-            fail("must be failed after close.");
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            assertTrue(ex instanceof GovernanceException);
-        }
-        try {
-            repository.persist("/test/children/01", "value1");
-            fail("must be failed after close.");
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            assertTrue(ex instanceof GovernanceException);
-        }
-        try {
-            repository.delete("/test/children/02");
-            fail("must be failed after close.");
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            assertTrue(ex instanceof GovernanceException);
-        }
-        try {
-            repository.persistEphemeral("/test/children/03", "value1");
-            fail("must be failed after close.");
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            assertTrue(ex instanceof GovernanceException);
-        }
-        try {
-            repository.getChildrenKeys("/test/children");
-            fail("must be failed after close.");
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            assertTrue(ex instanceof GovernanceException);
-        }
+    @SneakyThrows
+    public void assertDeleteExistKey() {
+        when(existsBuilder.forPath(eq("/test/children/1"))).thenReturn(new Stat());
+        when(deleteBuilder.deletingChildrenIfNeeded()).thenReturn(backgroundVersionable);
+        REPOSITORY.delete("/test/children/1");
+        verify(backgroundVersionable).forPath("/test/children/1");
     }
     
     @Test
+    @SneakyThrows
     public void assertTryLock() {
-        assertThat(REPOSITORY.tryLock("/lock/glock", 5, TimeUnit.SECONDS), is(true));
-        REPOSITORY.releaseLock("/lock/glock");
+        when(interProcessLock.acquire(eq(5L), eq(TimeUnit.SECONDS))).thenReturn(true);
+        assertThat(REPOSITORY.tryLock("/locks/glock", 5, TimeUnit.SECONDS), is(true));
     }
     
     @Test
     @SneakyThrows
     public void assertTryLockFailed() {
-        assertThat(REPOSITORY.tryLock("/lock/glock", 1, TimeUnit.SECONDS), is(true));
-        FutureTask<Boolean> task = new FutureTask(() -> REPOSITORY.tryLock("/lock/glock", 1, TimeUnit.SECONDS));
-        new Thread(task).start();
-        assertThat(task.get(), is(false));
-        REPOSITORY.releaseLock("/lock/glock");
+        when(interProcessLock.acquire(eq(5L), eq(TimeUnit.SECONDS))).thenReturn(false);
+        assertThat(REPOSITORY.tryLock("/locks/glock", 5, TimeUnit.SECONDS), is(false));
     }
 }

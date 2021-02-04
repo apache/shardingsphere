@@ -31,23 +31,20 @@ public final class YamlEngineUserConfigurationTest {
     
     @Test
     public void assertUnmarshal() {
-        YamlUserConfiguration actual = YamlEngine.unmarshal("password: pwd\nauthorizedSchemas: db1", YamlUserConfiguration.class);
+        YamlUserConfiguration actual = YamlEngine.unmarshal("password: pwd", YamlUserConfiguration.class);
         assertThat(actual.getPassword(), is("pwd"));
-        assertThat(actual.getAuthorizedSchemas(), is("db1"));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     public void assertUnmarshalMap() {
-        Map<String, Object> actual = (Map<String, Object>) YamlEngine.unmarshal("password: pwd\nauthorizedSchemas: db1", Collections.emptyList());
+        Map<String, Object> actual = (Map<String, Object>) YamlEngine.unmarshal("password: pwd", Collections.emptyList());
         assertThat(actual.get("password").toString(), is("pwd"));
-        assertThat(actual.get("authorizedSchemas").toString(), is("db1"));
     }
     
     @Test
     public void assertUnmarshalProperties() {
-        Properties actual = YamlEngine.unmarshalWithFilter("password: pwd\nauthorizedSchemas: db1", Properties.class);
-        assertThat(actual.getProperty("authorizedSchemas"), is("db1"));
+        Properties actual = YamlEngine.unmarshalWithFilter("password: pwd", Properties.class);
         assertThat(actual.getProperty("password"), is("pwd"));
     }
     
@@ -55,7 +52,6 @@ public final class YamlEngineUserConfigurationTest {
     public void assertMarshal() {
         YamlUserConfiguration actual = new YamlUserConfiguration();
         actual.setPassword("pwd");
-        actual.setAuthorizedSchemas("db1");
-        assertThat(YamlEngine.marshal(actual), is("authorizedSchemas: db1\npassword: pwd\n"));
+        assertThat(YamlEngine.marshal(actual), is("password: pwd\n"));
     }
 }

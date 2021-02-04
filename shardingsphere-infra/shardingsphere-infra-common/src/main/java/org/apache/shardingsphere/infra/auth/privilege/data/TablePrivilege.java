@@ -15,36 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth.privilege;
+package org.apache.shardingsphere.infra.auth.privilege.data;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.auth.privilege.PrivilegeType;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
- * Schema privilege.
+ * Table privilege.
  */
+@RequiredArgsConstructor
 @Getter
-public final class SchemaPrivilege {
+public final class TablePrivilege {
     
-    private final Map<String, TablePrivilege> tablePrivileges = new LinkedHashMap<>();
+    private final String tableName;
+    
+    private final Collection<PrivilegeType> privileges;
     
     /**
      * Has privileges.
      *
-     * @param table table
      * @param privileges privileges
      * @return has privileges or not
      */
-    public boolean hasPrivileges(final String table, final Collection<PrivilegeType> privileges) {
-        if (!tablePrivileges.containsKey(table)) {
-            return false;
+    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
+        if (this.privileges.contains(PrivilegeType.ALL)) {
+            return true;
         }
-        if (tablePrivileges.containsKey("*")) {
-            return tablePrivileges.get("*").hasPrivileges(privileges);
-        }
-        return tablePrivileges.get(table).hasPrivileges(privileges);
+        return this.privileges.containsAll(privileges);
     }
 }

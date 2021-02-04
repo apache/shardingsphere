@@ -68,7 +68,7 @@ createShardingRule
     ;
 
 alterShardingRule
-    : ALTER SHARDING RULE LP alterShardingTableRuleDefinition (COMMA alterShardingTableRuleDefinition)* bindingTables? defaultTableStrategy? broadcastTables? RP
+    : ALTER SHARDING RULE LP alterShardingTableRuleDefinition (COMMA alterShardingTableRuleDefinition)* alterBindingTables? defaultTableStrategy? broadcastTables? RP
     ;
 
 createReplicaQueryRule
@@ -99,8 +99,20 @@ resources
     : RESOURCE LP IDENTIFIER (COMMA IDENTIFIER)* RP
     ;
 
+alterBindingTables
+    : alterBindingTable (COMMA alterBindingTable)*
+    ;
+
+alterBindingTable
+    : (ADD | DROP) bindingTable
+    ;
+
 bindingTables
-    : BINDING_TABLES LP tableNames (COMMA tableNames)* RP
+    : bindingTable (COMMA bindingTable)*
+    ;
+
+bindingTable
+    : BINDING_TABLE LP tableNames RP
     ;
 
 defaultTableStrategy

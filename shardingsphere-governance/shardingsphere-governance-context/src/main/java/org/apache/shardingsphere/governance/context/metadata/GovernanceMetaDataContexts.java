@@ -35,7 +35,7 @@ import org.apache.shardingsphere.governance.core.registry.event.DisabledStateCha
 import org.apache.shardingsphere.governance.core.registry.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
 import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -167,7 +167,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     @Subscribe
     public synchronized void renew(final MetaDataPersistedEvent event) throws SQLException {
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
-        metaDataMap.put(event.getSchemaName(), createAddedMetaData(event));
+        metaDataMap.put(event.getSchemaName(), buildMetaData(event));
         metaDataContexts = new StandardMetaDataContexts(metaDataMap, metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), metaDataContexts.getProps());
         governanceFacade.getConfigCenter().persistSchema(event.getSchemaName(), metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getSchema());
         ShardingSphereEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(), 
@@ -298,8 +298,14 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         }
     }
     
-    private ShardingSphereMetaData createAddedMetaData(final MetaDataPersistedEvent event) throws SQLException {
+    private ShardingSphereMetaData buildMetaData(final MetaDataPersistedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
+        if (!governanceFacade.getConfigCenter().hasDataSourceConfiguration(schemaName)) {
+            governanceFacade.getConfigCenter().persistDataSourceConfigurations(schemaName, new LinkedHashMap<>());
+        }
+        if (!governanceFacade.getConfigCenter().hasRuleConfiguration(schemaName)) {
+            governanceFacade.getConfigCenter().persistRuleConfigurations(schemaName, new LinkedList<>());
+        }
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, 
                 governanceFacade.getConfigCenter().loadDataSourceConfigurations(schemaName)));
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap, 

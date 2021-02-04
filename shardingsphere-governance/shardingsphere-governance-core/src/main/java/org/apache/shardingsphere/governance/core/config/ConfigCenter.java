@@ -39,7 +39,7 @@ import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
-import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -215,7 +215,13 @@ public final class ConfigCenter {
         }
     }
     
-    private void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
+    /**
+     * Persist data source configurations.
+     *
+     * @param schemaName schema name
+     * @param dataSourceConfigurations data source configurations
+     */
+    public void persistDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
         repository.persist(node.getDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfigurationWrap(dataSourceConfigurations)));
     }
     
@@ -239,7 +245,13 @@ public final class ConfigCenter {
         }
     }
     
-    private void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
+    /**
+     * Persist rule configurations.
+     *
+     * @param schemaName schema name
+     * @param ruleConfigurations rule configurations
+     */
+    public void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
         repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRootRuleConfigurations(schemaName, ruleConfigurations)));
     }
     

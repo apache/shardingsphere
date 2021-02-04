@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.initializer.impl;
 
-import org.apache.shardingsphere.infra.auth.Grantee;
+import org.apache.shardingsphere.infra.auth.user.Grantee;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserRuleConfiguration;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -152,9 +152,6 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         Optional<ShardingSphereUser> rootUser = actual.findUser(new Grantee("root", ""));
         assertTrue(rootUser.isPresent());
         assertThat(rootUser.get().getPassword(), is("root"));
-        assertThat(rootUser.get().getAuthorizedSchemas().size(), is(2));
-        assertTrue(rootUser.get().getAuthorizedSchemas().contains("ds-1"));
-        assertTrue(rootUser.get().getAuthorizedSchemas().contains("ds-2"));
     }
     
     private YamlProxyServerConfiguration createYamlProxyServerConfiguration() {
@@ -182,7 +179,6 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     private YamlUserConfiguration createYamlUserConfiguration() {
         YamlUserConfiguration result = new YamlUserConfiguration();
         result.setPassword("root");
-        result.setAuthorizedSchemas("ds-1,ds-2");
         return result;
     }
     

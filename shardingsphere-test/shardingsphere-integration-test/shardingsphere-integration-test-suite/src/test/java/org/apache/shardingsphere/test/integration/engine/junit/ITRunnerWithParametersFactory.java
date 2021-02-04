@@ -23,19 +23,11 @@ import org.junit.runners.parameterized.ParametersRunnerFactory;
 import org.junit.runners.parameterized.TestWithParameters;
 
 /**
- * A {@code ParameterizedRunnerFactory} creates a runner for a single
- * {@link TestWithParameters}.
+ * Integration test runner with parameters factory.
  */
 public final class ITRunnerWithParametersFactory implements ParametersRunnerFactory {
     
-    /**
-     * Returns a runner for the specified {@link TestWithParameters}.
-     *
-     * @param test test with parameters
-     * @return runner runner
-     * @throws InitializationError
-     *             if the runner could not be created.
-     */
+    @Override
     public Runner createRunnerForTestWithParameters(final TestWithParameters test) throws InitializationError {
         return new ITBlockJUnit4ClassRunnerWithParameters(test);
     }

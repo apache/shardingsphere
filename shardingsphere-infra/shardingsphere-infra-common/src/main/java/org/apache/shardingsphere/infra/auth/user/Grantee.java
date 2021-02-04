@@ -15,31 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth.privilege;
+package org.apache.shardingsphere.infra.auth.user;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-
-import java.util.Collection;
-import java.util.LinkedHashSet;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Instance privilege.
+ * Grantee.
  */
+@RequiredArgsConstructor
 @Getter
-public final class InstancePrivilege {
+@EqualsAndHashCode
+public final class Grantee {
     
-    private final Collection<PrivilegeType> privileges = new LinkedHashSet<>();
+    private final String username;
     
-    /**
-     * Has privileges.
-     *
-     * @param privileges privileges
-     * @return has privileges or not
-     */
-    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        if (this.privileges.contains(PrivilegeType.ALL)) {
-            return true;
-        }
-        return this.privileges.containsAll(privileges);
-    }
+    private final String hostname;
 }
