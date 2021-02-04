@@ -106,7 +106,7 @@ public final class IntegrationTestEnvironment {
     }
     
     private Collection<DatabaseType> getDatabaseTypes(final Properties engineEnvProps) {
-        return Arrays.stream(engineEnvProps.getProperty("it.databases", "H2").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
+        return Arrays.stream(engineEnvProps.getProperty("it.databases").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
     }
     
     private Map<DatabaseType, Map<String, DataSourceEnvironment>> createDataSourceEnvironments(final Collection<DatabaseType> databaseTypes, 
