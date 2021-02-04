@@ -70,7 +70,7 @@ public final class IntegrationTestEnvironment {
         isEnvironmentPrepared = EnvironmentType.DOCKER == envType;
         adapters = Splitter.on(",").trimResults().splitToList(engineEnvProps.getProperty("it.adapters"));
         runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
-        isDatabasesEmbedded = Boolean.parseBoolean(engineEnvProps.getProperty("it.databases.embedded"));
+        isDatabasesEmbedded = EnvironmentType.EMBEDDED == envType;
         scenarios = getScenarios(engineEnvProps);
         EmbeddedDatabaseDistributionProperties embeddedDatabaseProps = getEmbeddedDatabaseDistributionProperties();
         Map<String, DatabaseScenarioProperties> databaseProps = getDatabaseScenarioProperties();

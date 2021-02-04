@@ -22,5 +22,5 @@ package org.apache.shardingsphere.test.integration.env;
  */
 public enum EnvironmentType {
     
-    NATIVE, EMBEDDED, DOCKER
+    EMBEDDED, DOCKER, NATIVE
 }
