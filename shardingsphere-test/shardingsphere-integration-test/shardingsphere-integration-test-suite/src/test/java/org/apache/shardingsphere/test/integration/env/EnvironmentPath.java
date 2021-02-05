@@ -42,7 +42,7 @@ public final class EnvironmentPath {
     private static final String RULES_CONFIG_FILE = "rules.yaml";
     
     private static final String AUTHORITY_FILE = "authority.xml";
-
+    
     /**
      * Assert scenario directory existed.
      * 
