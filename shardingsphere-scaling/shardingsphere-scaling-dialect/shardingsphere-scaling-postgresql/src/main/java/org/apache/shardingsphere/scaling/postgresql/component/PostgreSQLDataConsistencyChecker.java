@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.postgresql.component;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.scaling.core.internal.common.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.check.AbstractDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;

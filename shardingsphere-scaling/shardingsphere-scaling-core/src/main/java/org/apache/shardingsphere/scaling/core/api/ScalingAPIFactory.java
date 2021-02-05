@@ -19,7 +19,9 @@ package org.apache.shardingsphere.scaling.core.api;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobAPIFactory;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
@@ -34,15 +36,16 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.scaling.core.api.impl.RegistryRepositoryAPIImpl;
 import org.apache.shardingsphere.scaling.core.api.impl.ScalingAPIImpl;
+import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.internal.common.constant.ScalingConstant;
 
 import java.util.Properties;
 
 /**
  * Scaling API factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ScalingAPIFactory {
     
     static {

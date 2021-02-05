@@ -19,8 +19,8 @@ package org.apache.shardingsphere.scaling.core.job.task.inventory;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.Progress;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.job.progress.Progress;
 
 /**
  * Inventory task progress.

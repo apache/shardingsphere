@@ -33,7 +33,6 @@ public final class ConfigurationPropertiesTest {
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
         props.setProperty(ConfigurationPropertyKey.SQL_SIMPLE.getKey(), Boolean.TRUE.toString());
-        props.setProperty(ConfigurationPropertyKey.ACCEPTOR_SIZE.getKey(), "20");
         props.setProperty(ConfigurationPropertyKey.EXECUTOR_SIZE.getKey(), "20");
         props.setProperty(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), "20");
         props.setProperty(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN.getKey(), Boolean.FALSE.toString());
@@ -44,7 +43,6 @@ public final class ConfigurationPropertiesTest {
         ConfigurationProperties actual = new ConfigurationProperties(props);
         assertTrue(actual.getValue(ConfigurationPropertyKey.SQL_SHOW));
         assertTrue(actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
-        assertThat(actual.getValue(ConfigurationPropertyKey.ACCEPTOR_SIZE), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), is(20));
         assertFalse(actual.getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN));
@@ -59,7 +57,6 @@ public final class ConfigurationPropertiesTest {
         ConfigurationProperties actual = new ConfigurationProperties(new Properties());
         assertFalse(actual.getValue(ConfigurationPropertyKey.SQL_SHOW));
         assertFalse(actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
-        assertThat(actual.getValue(ConfigurationPropertyKey.ACCEPTOR_SIZE), is(Runtime.getRuntime().availableProcessors() * 2));
         assertThat(actual.getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(0));
         assertThat(actual.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), is(1));
         assertTrue(actual.getValue(ConfigurationPropertyKey.QUERY_WITH_CIPHER_COLUMN));

@@ -36,7 +36,9 @@ public final class AlterShardingRuleStatement extends RDLStatement {
     
     private final Collection<TableRuleSegment> addShardingRules = new LinkedList<>();
     
-    private final Collection<String> bindingTables = new LinkedList<>();
+    private final Collection<Collection<String>> addBindingTables = new LinkedList<>();
+    
+    private final Collection<Collection<String>> dropBindingTables = new LinkedList<>();
     
     private final Collection<String> broadcastTables = new LinkedList();
     

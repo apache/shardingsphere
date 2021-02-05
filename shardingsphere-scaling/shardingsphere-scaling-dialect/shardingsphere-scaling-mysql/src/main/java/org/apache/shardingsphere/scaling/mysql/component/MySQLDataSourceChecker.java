@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.mysql.component;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.scaling.core.internal.common.exception.PrepareFailedException;
+import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.job.preparer.checker.AbstractDataSourceChecker;
 
 import javax.sql.DataSource;

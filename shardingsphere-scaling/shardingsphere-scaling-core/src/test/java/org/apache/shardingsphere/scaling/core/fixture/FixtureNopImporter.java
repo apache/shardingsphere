@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
+import org.apache.shardingsphere.scaling.core.common.channel.Channel;
+import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.internal.common.channel.Channel;
-import org.apache.shardingsphere.scaling.core.internal.common.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.internal.executor.importer.Importer;
+import org.apache.shardingsphere.scaling.core.executor.importer.Importer;
 
 public final class FixtureNopImporter implements Importer {
     

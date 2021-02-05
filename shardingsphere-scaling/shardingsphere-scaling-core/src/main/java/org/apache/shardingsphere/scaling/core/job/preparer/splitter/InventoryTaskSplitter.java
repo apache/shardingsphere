@@ -20,18 +20,17 @@ package org.apache.shardingsphere.scaling.core.job.preparer.splitter;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.common.datasource.MetaDataManager;
+import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
+import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilderFactory;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.scaling.core.internal.common.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.internal.common.datasource.MetaDataManager;
-import org.apache.shardingsphere.scaling.core.internal.common.exception.PrepareFailedException;
-import org.apache.shardingsphere.scaling.core.internal.common.sqlbuilder.ScalingSQLBuilderFactory;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
-import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 
@@ -52,8 +51,6 @@ import java.util.List;
 @Slf4j
 public final class InventoryTaskSplitter {
     
-    private final ScalingTaskFactory scalingTaskFactory = new DefaultScalingTaskFactory();
-    
     /**
      * Split inventory data to multi-tasks.
      *
@@ -65,7 +62,7 @@ public final class InventoryTaskSplitter {
     public List<InventoryTask> splitInventoryData(final JobContext jobContext, final TaskConfiguration taskConfig, final DataSourceManager dataSourceManager) {
         List<InventoryTask> result = new LinkedList<>();
         for (InventoryDumperConfiguration each : splitDumperConfig(jobContext, taskConfig.getDumperConfig(), dataSourceManager)) {
-            result.add(scalingTaskFactory.createInventoryTask(each, taskConfig.getImporterConfig()));
+            result.add(ScalingTaskFactory.createInventoryTask(each, taskConfig.getImporterConfig()));
         }
         return result;
     }

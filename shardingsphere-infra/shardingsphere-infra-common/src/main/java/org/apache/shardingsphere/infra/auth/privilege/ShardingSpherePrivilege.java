@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.infra.auth.privilege;
 
 import lombok.Getter;
-
-import java.util.Collections;
+import org.apache.shardingsphere.infra.auth.privilege.data.DataPrivilege;
 
 /**
  * ShardingSphere privilege.
@@ -27,17 +26,16 @@ import java.util.Collections;
 @Getter
 public final class ShardingSpherePrivilege {
     
-    private final InstancePrivilege instancePrivilege = new InstancePrivilege();
+    private final AdministrationPrivilege administrationPrivilege = new AdministrationPrivilege();
     
-    private final SchemaPrivilege schemaPrivilege = new SchemaPrivilege();
+    private final DataPrivilege dataPrivilege = new DataPrivilege();
     
     /**
      * Set super privilege.
      *
      */
     public void setSuper() {
-        instancePrivilege.getPrivileges().add(PrivilegeType.ALL);
-        schemaPrivilege.getTablePrivileges().put(PrivilegeType.ALL.getName(),
-                new TablePrivilege(PrivilegeType.ALL.getName(), Collections.singletonList(PrivilegeType.ALL)));
+        administrationPrivilege.setSuper();
+        dataPrivilege.setSuper();
     }
 }

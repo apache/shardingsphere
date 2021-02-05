@@ -35,7 +35,7 @@ public final class CreateShardingRuleStatement extends CreateRDLStatement {
     
     private final Collection<TableRuleSegment> tables = new LinkedList<>();
     
-    private final Collection<String> bindingTables = new LinkedList<>();
+    private final Collection<Collection<String>> bindingTables = new LinkedList<>();
     
     private final Collection<String> broadcastTables = new LinkedList<>();
     

@@ -42,8 +42,11 @@ import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfigur
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Alter sharding rule backend handler.
@@ -77,6 +80,7 @@ public final class AlterShardingRuleBackendHandler extends SchemaRequiredBackend
     private void check(final ShardingRuleConfiguration shardingRuleConfig, final AlterShardingRuleStatement statement) {
         checkModifyRule(shardingRuleConfig, statement);
         checkAddRule(shardingRuleConfig, statement);
+        checkBindingTable(shardingRuleConfig, statement);
     }
     
     private void checkModifyRule(final ShardingRuleConfiguration shardingRuleConfig, final AlterShardingRuleStatement statement) {
@@ -115,11 +119,44 @@ public final class AlterShardingRuleBackendHandler extends SchemaRequiredBackend
         }
     }
     
+    private void checkBindingTable(final ShardingRuleConfiguration shardingRuleConfig, final AlterShardingRuleStatement statement) {
+        Set<String> validTables = new HashSet<>();
+        validTables.addAll(shardingRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        validTables.addAll(shardingRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
+        validTables.addAll(statement.getAddShardingRules().stream().map(TableRuleSegment::getLogicTable).collect(Collectors.toList()));
+        Collection<String> invalidTables = new LinkedList<>();
+        for (Collection<String> each : statement.getAddBindingTables()) {
+            for (String t : each) {
+                if (!validTables.contains(t)) {
+                    invalidTables.add(t);
+                }
+            }
+        }
+        for (Collection<String> each : statement.getDropBindingTables()) {
+            for (String t : each) {
+                if (!validTables.contains(t)) {
+                    invalidTables.add(t);
+                }
+            }
+        }
+        if (!invalidTables.isEmpty()) {
+            throw new ShardingTableRuleNotExistedException(invalidTables);
+        }
+    }
+    
     private void alter(final YamlShardingRuleConfiguration yamlShardingRuleConfig, final AlterShardingRuleStatement statement) {
         modifyTableRule(yamlShardingRuleConfig, statement);
         addTableRule(yamlShardingRuleConfig, statement);
-        if (!statement.getBindingTables().isEmpty()) {
-            yamlShardingRuleConfig.setBindingTables(statement.getBindingTables());
+        Collection<String> existBindingTables = yamlShardingRuleConfig.getBindingTables();
+        for (Collection<String> each : statement.getAddBindingTables()) {
+            String addBindingTable = Joiner.on(",").join(each);
+            if (!existBindingTables.contains(addBindingTable)) {
+                existBindingTables.add(addBindingTable);
+            }
+        }
+        for (Collection<String> each : statement.getDropBindingTables()) {
+            String dropBindingTable = Joiner.on(",").join(each);
+            existBindingTables.remove(dropBindingTable);
         }
         if (!statement.getBroadcastTables().isEmpty()) {
             yamlShardingRuleConfig.setBroadcastTables(statement.getBroadcastTables());
@@ -150,7 +187,7 @@ public final class AlterShardingRuleBackendHandler extends SchemaRequiredBackend
                 yamlShardingRuleConfig.getShardingAlgorithms().put(ShardingRuleStatementConverter.getAlgorithmName(each.getLogicTable(), each.getKeyGenerateStrategy().getAlgorithmName()),
                         ShardingRuleStatementConverter.createAlgorithmConfiguration(each.getKeyGenerateStrategy()));
             }
-            yamlShardingRuleConfig.getAutoTables().put(existTable.getLogicTable(), autoTable);
+            yamlShardingRuleConfig.getAutoTables().put(each.getLogicTable(), autoTable);
         }
     }
     

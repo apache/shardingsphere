@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.context.metadata;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -115,7 +115,7 @@ public final class MetaDataContextsBuilder {
             Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
             result = databaseType;
         }
-        return result;
+        return null == result ? DatabaseTypeRegistry.getDefaultDatabaseType() : result;
     }
     
     private DatabaseType getDatabaseType(final DataSource dataSource) {

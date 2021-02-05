@@ -22,15 +22,18 @@ import lombok.Getter;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.engine.junit.ITRunnerWithParametersFactory;
+import org.apache.shardingsphere.test.integration.engine.junit.ParallelParameterized;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
+import org.apache.shardingsphere.test.integration.env.EnvironmentType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ProxyDataSourceBuilder;
-import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -40,7 +43,8 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.TimeZone;
 
-@RunWith(Parameterized.class)
+@RunWith(ParallelParameterized.class)
+@UseParametersRunnerFactory(ITRunnerWithParametersFactory.class)
 @Getter(AccessLevel.PROTECTED)
 public abstract class BaseIT {
     
@@ -91,14 +95,14 @@ public abstract class BaseIT {
                 ((AutoCloseable) dataSource).close();
                 //CHECKSTYLE:OFF
             } catch (final Exception ignored) {
+                //CHECKSTYLE:ON
             }
-            //CHECKSTYLE:ON
         });
     }
     
     @BeforeClass
     public static void executeInitSQLs() throws IOException, JAXBException, SQLException {
-        if (!IntegrationTestEnvironment.getInstance().isEnvironmentPrepared()) {
+        if (EnvironmentType.DOCKER != IntegrationTestEnvironment.getInstance().getEnvType()) {
             DatabaseEnvironmentManager.executeInitSQLs();
         }
     }

@@ -22,8 +22,8 @@ import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChange
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.infra.auth.Grantee;
-import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.user.Grantee;
+import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,8 +39,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class AuthenticationChangedListenerTest {
     
-    private static final String AUTHENTICATION_YAML = "  users:\n" + "    root1:\n      password: root1\n" 
-            + "      authorizedSchemas: sharding_db\n" + "    root2:\n" + "      password: root2\n" + "      authorizedSchemas: sharding_db,pr_db";
+    private static final String AUTHENTICATION_YAML = "  users:\n" + "    root1:\n      password: root1\n" + "    root2:\n" + "      password: root2\n";
     
     private AuthenticationChangedListener authenticationChangedListener;
     
