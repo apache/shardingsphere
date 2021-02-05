@@ -19,11 +19,11 @@ package org.apache.shardingsphere.test.integration.env.database.embedded;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.test.integration.env.database.embedded.type.MySQLEmbeddedDatabase;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -38,6 +38,10 @@ public final class EmbeddedDatabaseManager {
     
     private static final Lock DATABASE_RESOURCE_LOCK = new ReentrantLock();
     
+    static {
+        ShardingSphereServiceLoader.register(EmbeddedDatabase.class);
+    }
+    
     /**
      * Start up embedded database.
      *
@@ -46,8 +50,8 @@ public final class EmbeddedDatabaseManager {
      * @param embeddedDatabaseProps embedded database distribution properties
      * @param port port
      */
-    public static void startUp(final DatabaseType databaseType, final String scenario, final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final int port) {
-        String embeddedDatabaseKey = String.join("_", databaseType.getName(), scenario);
+    public static void startUp(final String databaseType, final String scenario, final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final int port) {
+        String embeddedDatabaseKey = String.join("_", databaseType, scenario);
         if (EMBEDDED_DATABASES_CACHE.containsKey(embeddedDatabaseKey)) {
             return;
         }
@@ -56,18 +60,11 @@ public final class EmbeddedDatabaseManager {
             if (EMBEDDED_DATABASES_CACHE.containsKey(embeddedDatabaseKey)) {
                 return;
             }
-            EmbeddedDatabase embeddedDatabase = newInstance(databaseType, embeddedDatabaseProps, port);
-            embeddedDatabase.start();
+            EmbeddedDatabase embeddedDatabase = TypedSPIRegistry.getRegisteredService(EmbeddedDatabase.class, databaseType, new Properties());
+            embeddedDatabase.start(embeddedDatabaseProps, port);
             EMBEDDED_DATABASES_CACHE.put(embeddedDatabaseKey, embeddedDatabase);
         } finally {
             DATABASE_RESOURCE_LOCK.unlock();
         }
-    }
-    
-    private static EmbeddedDatabase newInstance(final DatabaseType databaseType, final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final int port) {
-        if (databaseType instanceof MySQLDatabaseType) {
-            return new MySQLEmbeddedDatabase(embeddedDatabaseProps, port);
-        }
-        throw new UnsupportedOperationException(String.format("Unsupported embedded database type: `%s`", databaseType.getName()));
     }
 }

@@ -17,15 +17,20 @@
 
 package org.apache.shardingsphere.test.integration.env.database.embedded;
 
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+
 /**
  * Embedded database.
  */
-public interface EmbeddedDatabase {
+public interface EmbeddedDatabase extends TypedSPI {
     
     /**
      * Start embedded database.
+     * 
+     * @param embeddedDatabaseProps embedded database properties
+     * @param port port of database access
      */
-    void start();
+    void start(EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, int port);
     
     /**
      * Stop embedded database.

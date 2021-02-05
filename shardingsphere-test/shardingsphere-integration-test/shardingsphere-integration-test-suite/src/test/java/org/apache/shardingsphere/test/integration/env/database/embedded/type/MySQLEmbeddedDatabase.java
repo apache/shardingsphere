@@ -22,28 +22,22 @@ import com.wix.mysql.config.Charset;
 import com.wix.mysql.config.DownloadConfig;
 import com.wix.mysql.config.MysqldConfig;
 import com.wix.mysql.distribution.Version;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.test.integration.env.database.embedded.EmbeddedDatabaseDistributionProperties;
 import org.apache.shardingsphere.test.integration.env.database.embedded.EmbeddedDatabase;
+import org.apache.shardingsphere.test.integration.env.database.embedded.EmbeddedDatabaseDistributionProperties;
 
 import java.io.File;
 
 /**
  * Embedded database for MySQL.
  */
-@RequiredArgsConstructor
 public final class MySQLEmbeddedDatabase implements EmbeddedDatabase {
-    
-    private final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps;
-    
-    private final int port;
     
     private EmbeddedMysql embeddedMySQL;
     
     @Override
-    public void start() {
+    public void start(final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final int port) {
         DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("MySQL");
         DownloadConfig downloadConfig = DownloadConfig.aDownloadConfig().withBaseUrl(embeddedDatabaseProps.getURL(databaseType)).build();
         MysqldConfig mysqldConfig = MysqldConfig.aMysqldConfig(Version.valueOf(embeddedDatabaseProps.getVersion(databaseType)))
@@ -62,5 +56,10 @@ public final class MySQLEmbeddedDatabase implements EmbeddedDatabase {
         if (null != embeddedMySQL) {
             embeddedMySQL.stop();
         }
+    }
+    
+    @Override
+    public String getType() {
+        return "MySQL";
     }
 }

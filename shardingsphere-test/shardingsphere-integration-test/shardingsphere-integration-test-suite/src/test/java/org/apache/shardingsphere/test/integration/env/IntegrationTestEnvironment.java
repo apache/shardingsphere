@@ -139,7 +139,7 @@ public final class IntegrationTestEnvironment {
     private void createEmbeddedDatabases(final DatabaseType databaseType,
                                          final Map<String, DataSourceEnvironment> dataSourceEnvs, final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps) {
         for (Entry<String, DataSourceEnvironment> entry : dataSourceEnvs.entrySet()) {
-            EmbeddedDatabaseManager.startUp(databaseType, entry.getKey(), embeddedDatabaseProps, entry.getValue().getPort());
+            EmbeddedDatabaseManager.startUp(databaseType.getName(), entry.getKey(), embeddedDatabaseProps, entry.getValue().getPort());
         }
     }
     
