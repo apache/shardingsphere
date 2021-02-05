@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
-import org.apache.shardingsphere.test.integration.env.database.EmbeddedDatabaseDistributionProperties;
+import org.apache.shardingsphere.test.integration.env.database.embedded.EmbeddedDatabaseDistributionProperties;
 import org.apache.shardingsphere.test.integration.env.datasource.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.props.DatabaseScenarioProperties;
 import org.apache.shardingsphere.test.integration.env.props.EnvironmentProperties;
@@ -139,7 +139,7 @@ public final class IntegrationTestEnvironment {
     private void createEmbeddedDatabases(final DatabaseType databaseType,
                                          final Map<String, DataSourceEnvironment> dataSourceEnvs, final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps) {
         for (Entry<String, DataSourceEnvironment> entry : dataSourceEnvs.entrySet()) {
-            DatabaseEnvironmentManager.createEmbeddedDatabaseResource(databaseType, entry.getKey(), embeddedDatabaseProps, entry.getValue().getPort());
+            DatabaseEnvironmentManager.createEmbeddedDatabase(databaseType, entry.getKey(), embeddedDatabaseProps, entry.getValue().getPort());
         }
     }
     

@@ -21,10 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.test.integration.env.database.type.MySQLEmbeddedDatabaseResource;
+import org.apache.shardingsphere.test.integration.env.database.embedded.EmbeddedDatabaseDistributionProperties;
+import org.apache.shardingsphere.test.integration.env.database.embedded.EmbeddedDatabaseResource;
+import org.apache.shardingsphere.test.integration.env.database.embedded.EmbeddedDatabaseResourceFactory;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.h2.tools.RunScript;
 
@@ -43,7 +44,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Schema environment manager.
+ * Database environment manager.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseEnvironmentManager {
@@ -114,46 +115,28 @@ public final class DatabaseEnvironmentManager {
     }
     
     /**
-     * Create embedded database resource.
+     * Create embedded database.
      *
      * @param databaseType database type
      * @param scenario scenario
      * @param embeddedDatabaseProps embedded database distribution properties
      * @param port port
      */
-    public static void createEmbeddedDatabaseResource(final DatabaseType databaseType, final String scenario, final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final int port) {
-        if (null == databaseType) {
-            return;
-        }
-        String databaseTypeName = databaseType.getName();
-        String embeddedDatabaseResourceKey = String.join("_", databaseTypeName, scenario);
-        EmbeddedDatabaseResource embeddedDatabaseResource = DATABASE_RESOURCE_CACHE.get(embeddedDatabaseResourceKey);
+    public static void createEmbeddedDatabase(final DatabaseType databaseType, final String scenario, final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final int port) {
+        String embeddedDatabaseKey = String.join("_", databaseType.getName(), scenario);
+        EmbeddedDatabaseResource embeddedDatabaseResource = DATABASE_RESOURCE_CACHE.get(embeddedDatabaseKey);
         if (null != embeddedDatabaseResource) {
             return;
         }
+        DATABASE_RESOURCE_LOCK.lock();
         try {
-            DATABASE_RESOURCE_LOCK.lock();
-            embeddedDatabaseResource = DATABASE_RESOURCE_CACHE.get(embeddedDatabaseResourceKey);
+            embeddedDatabaseResource = DATABASE_RESOURCE_CACHE.get(embeddedDatabaseKey);
             if (null != embeddedDatabaseResource) {
                 return;
             }
-            if (databaseType instanceof MySQLDatabaseType) {
-                embeddedDatabaseResource = new MySQLEmbeddedDatabaseResource(embeddedDatabaseProps, port);
-            } else {
-                // TODO return default database resource
-                embeddedDatabaseResource = new EmbeddedDatabaseResource() {
-                    
-                    @Override
-                    public void start() {
-                    }
-                    
-                    @Override
-                    public void stop() {
-                    }
-                };
-            }
+            embeddedDatabaseResource = EmbeddedDatabaseResourceFactory.newInstance(databaseType, embeddedDatabaseProps, port);
             embeddedDatabaseResource.start();
-            DATABASE_RESOURCE_CACHE.put(embeddedDatabaseResourceKey, embeddedDatabaseResource);
+            DATABASE_RESOURCE_CACHE.put(embeddedDatabaseKey, embeddedDatabaseResource);
         } finally {
             DATABASE_RESOURCE_LOCK.unlock();
         }

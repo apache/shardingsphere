@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.database;
+package org.apache.shardingsphere.test.integration.env.database.embedded;
 
 /**
  * Embedded database resource.
