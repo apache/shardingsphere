@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.mysql;
 
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.CodePointBuffer;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -34,13 +35,15 @@ import java.nio.CharBuffer;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.hamcrest.Matchers;
-import org.junit.Assert;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
-public final class MySQLTableVisterTest {
-    private static Collection<Object[]> testUnits = new LinkedList();
-
+@RequiredArgsConstructor
+public final class MySQLTableVistorTest {
+    
+    private static Collection<Object[]> testUnits = new LinkedList<>();
+    
     static {
         testUnits.add(new Object[]{"select_with_union", "select a+1 as b, name n from table1 join table2 where id=1 and name='lu';", 2, 3});
         testUnits.add(new Object[]{"select_item_nums", "select id, name, age, sex, ss, yy from table1 where id=1", 1, 6});
@@ -56,36 +59,29 @@ public final class MySQLTableVisterTest {
                 + "PRIMARY KEY ( `runoob_id` )\n"
                 + ")ENGINE=InnoDB DEFAULT CHARSET=utf8;", 1, 5});
     }
-
+    
     private final String caseId;
-
+    
     private final String inputSql;
-
+    
     private final int tableNum;
-
+    
     private final int columnNum;
-
-    public MySQLTableVisterTest(final String caseId, final String inputSql, final int tableNum, final int columnNum) {
-        this.caseId = caseId;
-        this.inputSql = inputSql;
-        this.tableNum = tableNum;
-        this.columnNum = columnNum;
-    }
-
+    
     @Parameterized.Parameters(name = "{0}")
     public static Collection<Object[]> getTestParameters() {
         return testUnits;
     }
-
+    
     @Test
-    public void assertSqlStats() {
+    public void assertSQLStats() {
         CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(inputSql.toCharArray()));
         MySQLLexer lexer = new MySQLLexer(CodePointCharStream.fromBuffer(buffer));
         MySQLParser parser = new MySQLParser(new CommonTokenStream(lexer));
         ParseTree tree = ((ParseASTNode) parser.parse()).getRootNode();
         MySQLSQLStatVisitor visitor = new MySQLSQLStatVisitor();
         SqlStats sqlStats = visitor.visit(tree);
-        Assert.assertThat("table assert error", sqlStats.getTables().keySet().size(), Matchers.is(tableNum));
-        Assert.assertThat("column assert error", sqlStats.getColumns().keySet().size(), Matchers.is(columnNum));
+        assertThat("table assert error", sqlStats.getTables().keySet().size(), is(tableNum));
+        assertThat("column assert error", sqlStats.getColumns().keySet().size(), is(columnNum));
     }
 }
