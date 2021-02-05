@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.integration.env.database.embedded;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.test.integration.env.database.embedded.type.MySQLEmbeddedDatabase;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,11 +56,18 @@ public final class EmbeddedDatabaseManager {
             if (EMBEDDED_DATABASES_CACHE.containsKey(embeddedDatabaseKey)) {
                 return;
             }
-            EmbeddedDatabase embeddedDatabase = EmbeddedDatabaseFactory.newInstance(databaseType, embeddedDatabaseProps, port);
+            EmbeddedDatabase embeddedDatabase = newInstance(databaseType, embeddedDatabaseProps, port);
             embeddedDatabase.start();
             EMBEDDED_DATABASES_CACHE.put(embeddedDatabaseKey, embeddedDatabase);
         } finally {
             DATABASE_RESOURCE_LOCK.unlock();
         }
+    }
+    
+    private static EmbeddedDatabase newInstance(final DatabaseType databaseType, final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final int port) {
+        if (databaseType instanceof MySQLDatabaseType) {
+            return new MySQLEmbeddedDatabase(embeddedDatabaseProps, port);
+        }
+        throw new UnsupportedOperationException(String.format("Unsupported embedded database type: `%s`", databaseType.getName()));
     }
 }
