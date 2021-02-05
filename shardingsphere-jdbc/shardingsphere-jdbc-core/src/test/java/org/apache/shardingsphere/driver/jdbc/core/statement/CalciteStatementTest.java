@@ -48,7 +48,7 @@ public final class CalciteStatementTest extends AbstractShardingSphereDataSource
                     + "where t_order_calcite.order_id = t_order_item_calcite_sharding.item_id "
                     + "AND t_order_item_calcite_sharding.remarks = 't_order_item_calcite_sharding'";
 
-    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ORDERBY =
+    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ORDER_BY =
             "select t_order_calcite.* from t_order_calcite, t_order_item_calcite_sharding "
                     + "where t_order_calcite.order_id = t_order_item_calcite_sharding.item_id "
                     + "ORDER BY t_order_item_calcite_sharding.user_id";
@@ -149,7 +149,7 @@ public final class CalciteStatementTest extends AbstractShardingSphereDataSource
     @Test
     public void assertQueryWithCalciteInSingleAndShardingTableOrderBy() throws SQLException {
         ShardingSphereStatement preparedStatement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
-        ResultSet resultSet = preparedStatement.executeQuery(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ORDERBY);
+        ResultSet resultSet = preparedStatement.executeQuery(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ORDER_BY);
         assertNotNull(resultSet);
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(1000));

@@ -53,6 +53,7 @@ public class ReplicaQuerySpringBootStarterTest {
     @Test
     public void assertReplicaQueryRuleConfiguration() {
         assertThat(config.getDataSources().size(), is(1));
+        assertTrue(config.getDataSources().stream().findFirst().isPresent());
         ReplicaQueryDataSourceRuleConfiguration dataSourceRuleConfig = config.getDataSources().stream().findFirst().get();
         assertThat(dataSourceRuleConfig.getName(), is("pr_ds"));
         assertThat(dataSourceRuleConfig.getPrimaryDataSourceName(), is("primary_ds"));
