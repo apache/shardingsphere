@@ -15,20 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit;
-
-import org.junit.runner.Runner;
-import org.junit.runners.model.InitializationError;
-import org.junit.runners.parameterized.ParametersRunnerFactory;
-import org.junit.runners.parameterized.TestWithParameters;
+package org.apache.shardingsphere.test.integration.engine.it;
 
 /**
- * Integration test runner with parameters factory.
+ * Parallel flag.
  */
-public final class ITRunnerWithParametersFactory implements ParametersRunnerFactory {
-    
-    @Override
-    public Runner createRunnerForTestWithParameters(final TestWithParameters test) throws InitializationError {
-        return new ITBlockJUnit4ClassRunnerWithParameters(test);
-    }
+public interface ParallelIT {
 }

@@ -19,6 +19,9 @@ package org.apache.shardingsphere.test.integration.env.database.embedded;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
@@ -51,7 +54,14 @@ public final class EmbeddedDatabaseManager {
      * @param port port
      */
     public static void startUp(final String databaseType, final String scenario, final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final int port) {
-        String embeddedDatabaseKey = String.join("_", databaseType, scenario);
+        DatabaseType databaseTypeImpl = DatabaseTypeRegistry.getActualDatabaseType(databaseType);
+        // TODO This can be a single instance if the GitHub Action port has been adjusted
+        String embeddedDatabaseKey;
+        if (databaseTypeImpl instanceof PostgreSQLDatabaseType) {
+            embeddedDatabaseKey = databaseType;
+        } else {
+            embeddedDatabaseKey = String.join("_", databaseType, scenario);
+        }
         if (EMBEDDED_DATABASES_CACHE.containsKey(embeddedDatabaseKey)) {
             return;
         }

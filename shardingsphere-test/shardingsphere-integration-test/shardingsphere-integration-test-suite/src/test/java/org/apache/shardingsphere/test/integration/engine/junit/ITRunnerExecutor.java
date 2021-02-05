@@ -17,21 +17,21 @@
 
 package org.apache.shardingsphere.test.integration.engine.junit;
 
-import org.junit.runners.Parameterized;
-
 /**
- * Parallel parameterized.
- * 
- * <p>
- *     Reflective call only, do not use programmatically.
- * </p>
+ * IT runner executor.
  */
-public final class ParallelParameterized extends Parameterized {
+public interface ITRunnerExecutor {
     
-    //CHECKSTYLE:OFF
-    public ParallelParameterized(final Class<?> klass) throws Throwable {
-        //CHECKSTYLE:ON
-        super(klass);
-        setScheduler(new ITRunnerScheduler(klass));
-    }
+    /**
+     * a child statement to run.
+     *
+     * @param parameters case parameters
+     * @param childStatement case runnable
+     */
+    void execute(Object[] parameters, Runnable childStatement);
+    
+    /**
+     * Override to implement any behavior that must occur after all children have been scheduled (for example, waiting for them all to finish).
+     */
+    void finished();
 }

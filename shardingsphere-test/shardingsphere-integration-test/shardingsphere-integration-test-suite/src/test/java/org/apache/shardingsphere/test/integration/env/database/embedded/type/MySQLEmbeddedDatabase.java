@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.test.integration.env.database.embedded.type;
 
+import com.google.common.base.Enums;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.sun.jna.Platform;
 import com.wix.mysql.EmbeddedMysql;
 import com.wix.mysql.config.Charset;
 import com.wix.mysql.config.DownloadConfig;
@@ -28,6 +32,8 @@ import org.apache.shardingsphere.test.integration.env.database.embedded.Embedded
 import org.apache.shardingsphere.test.integration.env.database.embedded.EmbeddedDatabaseDistributionProperties;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Embedded database for MySQL.
@@ -38,9 +44,9 @@ public final class MySQLEmbeddedDatabase implements EmbeddedDatabase {
     
     @Override
     public void start(final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final int port) {
-        DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType("MySQL");
+        DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType(getType());
         DownloadConfig downloadConfig = DownloadConfig.aDownloadConfig().withBaseUrl(embeddedDatabaseProps.getURL(databaseType)).build();
-        MysqldConfig mysqldConfig = MysqldConfig.aMysqldConfig(Version.valueOf(embeddedDatabaseProps.getVersion(databaseType)))
+        MysqldConfig mysqldConfig = MysqldConfig.aMysqldConfig(detectVersion(embeddedDatabaseProps.getVersion(databaseType)))
                 .withCharset(Charset.UTF8MB4)
                 .withTempDir(new File(downloadConfig.getCacheDir(), "runtime").getPath())
                 .withPort(port)
@@ -49,6 +55,36 @@ public final class MySQLEmbeddedDatabase implements EmbeddedDatabase {
                 .withServerVariable("innodb_flush_log_at_trx_commit", 2)
                 .build();
         embeddedMySQL = EmbeddedMysql.anEmbeddedMysql(mysqldConfig, downloadConfig).start();
+    }
+    
+    private Version detectVersion(final String distributionVersion) {
+        Version version;
+        if (Strings.isNullOrEmpty(distributionVersion) && Platform.isMac()) {
+            String osName = System.getProperty("os.name");
+            String osVersion = System.getProperty("os.version");
+            if (osVersion.startsWith("10.6")) {
+                version = Version.v5_5_40;
+            } else if (osVersion.startsWith("10.9")) {
+                version = Version.v5_6_24;
+            } else if (osVersion.startsWith("10.10")) {
+                version = Version.v5_7_10;
+            } else if (osVersion.startsWith("10.11")) {
+                version = Version.v5_7_16;
+            } else if (osVersion.startsWith("10.12")) {
+                version = Version.v5_7_19;
+            } else if (osVersion.startsWith("10.13")) {
+                version = Version.v8_0_11;
+            } else if (osVersion.startsWith("10.14") || osVersion.startsWith("10.15")) {
+                version = Version.v5_7_27;
+            } else {
+                throw new UnsupportedOperationException(String.format("%s-%s is not supported", osName, osVersion));
+            }
+        } else {
+            version = Enums.getIfPresent(Version.class, distributionVersion).orNull();
+            Preconditions.checkArgument(null != version, String.format("The current setup version %s is not supported, only the following versions [%s] are currently supported",
+                    distributionVersion, Arrays.stream(Version.values()).map(v -> String.join(".", v.getMajorVersion(), v.getMinorVersion() + "")).collect(Collectors.joining(", "))));
+        }
+        return version;
     }
     
     @Override

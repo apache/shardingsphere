@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.engine.it.dql;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
+import org.apache.shardingsphere.test.integration.engine.it.ParallelIT;
 import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
@@ -38,7 +39,7 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertTrue;
 
-public final class GeneralDQLIT extends BaseDQLIT {
+public final class GeneralDQLIT extends BaseDQLIT implements ParallelIT {
     
     private final IntegrationTestCaseAssertion assertion;
     

@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
@@ -34,6 +35,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 
 /**
@@ -74,8 +76,9 @@ public final class DatabaseEnvironmentManager {
     }
     
     private static void executeInitSQLs(final String scenario) throws IOException, JAXBException, SQLException {
+        // TODO It may be possible to implement different initialization implementations depending on the database type
         for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()) {
-            if (each instanceof H2DatabaseType) {
+            if (each instanceof H2DatabaseType || each instanceof PostgreSQLDatabaseType) {
                 executeInitSQLForSchemaNotSupportedDatabase(scenario, each);
                 continue;
             }
@@ -90,6 +93,14 @@ public final class DatabaseEnvironmentManager {
         File file = new File(EnvironmentPath.getInitSQLFile(databaseType, scenario));
         for (String each : getDatabaseNames(scenario)) {
             // TODO use multiple threads to improve performance
+            if (databaseType instanceof PostgreSQLDatabaseType) {
+                DataSource dataSource = ActualDataSourceBuilder.build(null, scenario, databaseType);
+                try (Connection connection = dataSource.getConnection();
+                     Statement statement = connection.createStatement()) {
+                    statement.execute(String.format("DROP DATABASE IF EXISTS %s;", each));
+                    statement.execute(String.format("CREATE DATABASE %s;", each));
+                }
+            }
             DataSource dataSource = ActualDataSourceBuilder.build(each, scenario, databaseType);
             executeSQLScript(dataSource, file);
         }
