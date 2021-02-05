@@ -15,36 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder;
+package org.apache.shardingsphere.infra.metadata.privilege.refresher.type;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-
-import javax.sql.DataSource;
-import java.util.Collection;
-import java.util.Map;
+import org.apache.shardingsphere.infra.metadata.privilege.refresher.PrivilegeRefresher;
 
 /**
- * ShardingSphere schema builder materials.
+ * Grant statement privilege refresher.
  */
-@RequiredArgsConstructor
-@Getter
-public final class SchemaBuilderMaterials {
+public final class GrantStatementPrivilegeRefresher implements PrivilegeRefresher {
     
-    private final DatabaseType databaseType;
-    
-    private final Map<String, DataSource> dataSourceMap;
-    
-    private final Collection<ShardingSphereRule> rules;
-    
-    private final ConfigurationProperties props;
-    
-    private final Collection<String> routeDataSourceNames;
-    
-    private final Map<ShardingSphereUser, ShardingSpherePrivilege> auth;
+    @Override
+    public void refresh(final ShardingSphereUser user, final ShardingSpherePrivilege privilege) {
+    }
 }

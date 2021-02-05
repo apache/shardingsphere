@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher;
 
+import org.apache.shardingsphere.infra.metadata.engine.SchemaRefresherFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;

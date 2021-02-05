@@ -15,36 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder;
+package org.apache.shardingsphere.infra.metadata.privilege.refresher.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-
-import javax.sql.DataSource;
-import java.util.Collection;
-import java.util.Map;
 
 /**
- * ShardingSphere schema builder materials.
+ * Privilege event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaBuilderMaterials {
+public final class PrivilegeEvent {
     
-    private final DatabaseType databaseType;
-    
-    private final Map<String, DataSource> dataSourceMap;
-    
-    private final Collection<ShardingSphereRule> rules;
-    
-    private final ConfigurationProperties props;
-    
-    private final Collection<String> routeDataSourceNames;
-    
-    private final Map<ShardingSphereUser, ShardingSpherePrivilege> auth;
+    private final ShardingSphereUser user;
 }

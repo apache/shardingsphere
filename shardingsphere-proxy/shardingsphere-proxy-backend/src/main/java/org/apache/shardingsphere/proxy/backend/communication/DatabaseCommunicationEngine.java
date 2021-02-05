@@ -31,14 +31,12 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.engine.MetadataRefreshEngine;
+import org.apache.shardingsphere.infra.metadata.engine.SchemaRefresherFactory;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresherFactory;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.spi.SchemaChangedNotifier;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.LockWaitTimeoutException;
@@ -114,7 +112,7 @@ public final class DatabaseCommunicationEngine {
             locked = tryGlobalLock(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
             proxySQLExecutor.checkExecutePrerequisites(executionContext);
             executeResults = proxySQLExecutor.execute(executionContext);
-            refreshSchema(executionContext);
+            refreshMetadata(executionContext);
         } finally {
             if (locked) {
                 releaseGlobalLock();
@@ -192,23 +190,17 @@ public final class DatabaseCommunicationEngine {
         return result;
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private void refreshSchema(final ExecutionContext executionContext) throws SQLException {
+    private void refreshMetadata(final ExecutionContext executionContext) throws SQLException {
         SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        Optional<SchemaRefresher> schemaRefresher = SchemaRefresherFactory.newInstance(sqlStatement);
-        if (schemaRefresher.isPresent()) {
-            Collection<String> routeDataSourceNames = executionContext.getRouteContext().getRouteUnits().stream()
-                    .map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
-            SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
-                    ProxyContext.getInstance().getMetaDataContexts().getMetaData(metaData.getName()).getResource().getDatabaseType(),
-                    metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), ProxyContext.getInstance().getMetaDataContexts().getProps());
-            schemaRefresher.get().refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, materials);
-            notifySchemaChanged(metaData.getName(), metaData.getSchema());
-        }
+        MetadataRefreshEngine.refresh(sqlStatement, metaData, getSchemaBuilderMaterials(executionContext));
     }
     
-    private void notifySchemaChanged(final String schemaName, final ShardingSphereSchema schema) {
-        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(schemaName, schema));
+    private SchemaBuilderMaterials getSchemaBuilderMaterials(final ExecutionContext executionContext) {
+        Collection<String> routeDataSourceNames = executionContext.getRouteContext().getRouteUnits().stream()
+                .map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
+        return new SchemaBuilderMaterials(ProxyContext.getInstance().getMetaDataContexts().getMetaData(metaData.getName()).getResource().getDatabaseType(),
+                metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), ProxyContext.getInstance().getMetaDataContexts().getProps(),
+                routeDataSourceNames, Collections.emptyMap());
     }
     
     private void mergeUpdateCount(final SQLStatementContext<?> sqlStatementContext, final UpdateResponseHeader response) {
