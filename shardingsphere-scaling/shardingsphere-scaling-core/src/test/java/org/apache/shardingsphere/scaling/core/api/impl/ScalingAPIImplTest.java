@@ -52,8 +52,7 @@ public final class ScalingAPIImplTest {
     
     private static ServerConfiguration mockServerConfig() {
         ServerConfiguration result = new ServerConfiguration();
-        result.setGovernanceConfig(new GovernanceConfiguration("test",
-                new GovernanceCenterConfiguration("Zookeeper", EmbedTestingServer.getConnectionString(), new Properties()), true));
+        result.setGovernanceConfig(new GovernanceConfiguration("test", new GovernanceCenterConfiguration("Zookeeper", EmbedTestingServer.getConnectionString(), new Properties()), true));
         return result;
     }
     
@@ -71,9 +70,7 @@ public final class ScalingAPIImplTest {
     }
     
     private Optional<JobInfo> getJobInfo(final long jobId) {
-        return scalingAPI.list().stream()
-                .filter(each -> each.getJobId() == jobId)
-                .reduce((a, b) -> a);
+        return scalingAPI.list().stream().filter(each -> each.getJobId() == jobId).reduce((a, b) -> a);
     }
     
     private JobInfo getNonNullJobInfo(final long jobId) {

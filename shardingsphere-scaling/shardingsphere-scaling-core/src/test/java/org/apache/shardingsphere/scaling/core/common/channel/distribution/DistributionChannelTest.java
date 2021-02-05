@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.common.channel.distribution;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.common.channel.AckCallback;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
@@ -114,7 +114,7 @@ public final class DistributionChannelTest {
         return (int) Arrays.stream(records).filter(each -> each instanceof DataRecord).count();
     }
     
-    @AllArgsConstructor
+    @RequiredArgsConstructor
     @Getter
     private static final class IntPosition implements Position<IntPosition> {
         

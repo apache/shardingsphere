@@ -160,7 +160,7 @@ public final class InventoryTaskSplitterTest {
         ScalingDataSourceConfiguration dataSourceConfig = new StandardJDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceConfig(dataSourceConfig);
-        Map<String, String> tableMap = new HashMap<>();
+        Map<String, String> tableMap = new HashMap<>(1, 1);
         tableMap.put("t_order", "t_order");
         result.setTableNameMap(tableMap);
         return result;
