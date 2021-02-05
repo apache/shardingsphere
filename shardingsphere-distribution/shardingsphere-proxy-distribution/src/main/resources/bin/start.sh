@@ -54,7 +54,7 @@ echo "Starting the $SERVER_NAME ..."
 if [ $# == 1 ]; then
     MAIN_CLASS=${MAIN_CLASS}" "$1
     echo "The port is $1"
-    set CLASS_PATH=../conf;%CLASS_PATH%
+    CLASS_PATH=${DEPLOY_DIR}/conf:${CLASS_PATH}
 fi
 
 if [ $# == 2 ]; then
