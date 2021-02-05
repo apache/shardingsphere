@@ -39,7 +39,7 @@ public final class EmbeddedDatabaseManager {
     private static final Lock DATABASE_RESOURCE_LOCK = new ReentrantLock();
     
     /**
-     * start up embedded database.
+     * Start up embedded database.
      *
      * @param databaseType database type
      * @param scenario scenario
