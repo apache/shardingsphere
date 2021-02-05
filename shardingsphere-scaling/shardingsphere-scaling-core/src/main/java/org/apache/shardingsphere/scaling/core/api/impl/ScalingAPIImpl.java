@@ -29,6 +29,7 @@ import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
+import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
@@ -44,9 +45,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @Slf4j
 public final class ScalingAPIImpl implements ScalingAPI {
@@ -76,12 +77,16 @@ public final class ScalingAPIImpl implements ScalingAPI {
     }
     
     private String getStatus(final Map<Integer, JobProgress> jobProgressMap) {
-        Stream<JobProgress> jobPositionStream = jobProgressMap.values().stream()
-                .filter(Objects::nonNull);
-        Optional<JobProgress> jobPositionOptional = jobPositionStream
-                .filter(each -> !each.getStatus().isRunning())
-                .reduce((a, b) -> a);
-        return jobPositionOptional.orElse(jobPositionStream.findAny().orElse(new JobProgress())).getStatus().name();
+        String result = null;
+        Set<JobProgress> jobProgressSet = jobProgressMap.values().stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        for (JobProgress each : jobProgressSet) {
+            if (null == result || !each.getStatus().isRunning()) {
+                result = each.getStatus().name();
+            }
+        }
+        return null == result ? JobStatus.RUNNING.name() : result;
     }
     
     private int getInventoryFinishedPercentage(final Map<Integer, JobProgress> jobProgressMap) {
@@ -94,7 +99,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
                 .flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
                 .filter(each -> each.getPosition() instanceof FinishedPosition)
                 .count();
-        return (int) ((finished * 100 / total) * (jobProgressMap.size() - isNull) / jobProgressMap.size());
+        return total == 0 ? 0 : (int) ((finished * 100 / total) * (jobProgressMap.size() - isNull) / jobProgressMap.size());
     }
     
     private long getIncrementalAverageDelayMilliseconds(final Map<Integer, JobProgress> jobProgressMap) {
