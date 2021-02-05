@@ -37,8 +37,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -48,7 +48,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseEnvironmentManager {
     
-    private static final ConcurrentMap<String, EmbeddedDatabaseResource> DATABASE_RESOURCE_CACHE = new ConcurrentHashMap<>();
+    private static final Map<String, EmbeddedDatabaseResource> DATABASE_RESOURCE_CACHE = new ConcurrentHashMap<>();
     
     private static final Lock DATABASE_RESOURCE_LOCK = new ReentrantLock();
     
@@ -157,13 +157,5 @@ public final class DatabaseEnvironmentManager {
         } finally {
             DATABASE_RESOURCE_LOCK.unlock();
         }
-    }
-    
-    /**
-     * Drop embedded database resource.
-     */
-    public static void dropEmbeddedDatabaseResource() {
-        DATABASE_RESOURCE_CACHE.values().forEach(EmbeddedDatabaseResource::stop);
-        DATABASE_RESOURCE_CACHE.clear();
     }
 }
