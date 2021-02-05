@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.test.integration.env.database.embedded;
 
 /**
- * Embedded database resource.
+ * Embedded database.
  */
-public interface EmbeddedDatabaseResource {
+public interface EmbeddedDatabase {
     
     /**
-     * Start embedded database resource.
+     * Start embedded database.
      */
     void start();
     
     /**
-     * Stop embedded database resource.
+     * Stop embedded database.
      */
     void stop();
 }

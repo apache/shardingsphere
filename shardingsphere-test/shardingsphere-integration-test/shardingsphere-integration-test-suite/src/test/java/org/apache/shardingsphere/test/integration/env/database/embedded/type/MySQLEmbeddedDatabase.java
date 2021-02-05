@@ -26,15 +26,15 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.env.database.embedded.EmbeddedDatabaseDistributionProperties;
-import org.apache.shardingsphere.test.integration.env.database.embedded.EmbeddedDatabaseResource;
+import org.apache.shardingsphere.test.integration.env.database.embedded.EmbeddedDatabase;
 
 import java.io.File;
 
 /**
- * Embedded database resource for MySQL.
+ * Embedded database for MySQL.
  */
 @RequiredArgsConstructor
-public final class MySQLEmbeddedDatabaseResource implements EmbeddedDatabaseResource {
+public final class MySQLEmbeddedDatabase implements EmbeddedDatabase {
     
     private final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps;
     

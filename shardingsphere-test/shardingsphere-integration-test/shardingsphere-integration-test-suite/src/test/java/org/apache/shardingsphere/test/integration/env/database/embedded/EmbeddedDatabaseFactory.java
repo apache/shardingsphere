@@ -21,25 +21,25 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.test.integration.env.database.embedded.type.MySQLEmbeddedDatabaseResource;
+import org.apache.shardingsphere.test.integration.env.database.embedded.type.MySQLEmbeddedDatabase;
 
 /**
- * Embedded database resource factory.
+ * Embedded database factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class EmbeddedDatabaseResourceFactory {
+public final class EmbeddedDatabaseFactory {
     
     /**
-     * Create new instance of embedded database resource.
+     * Create new instance of embedded database.
      * 
      * @param databaseType database type
      * @param embeddedDatabaseProps embedded database properties
      * @param port database access port
-     * @return instance of embedded database resource
+     * @return instance of embedded database
      */
-    public static EmbeddedDatabaseResource newInstance(final DatabaseType databaseType, final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final int port) {
+    public static EmbeddedDatabase newInstance(final DatabaseType databaseType, final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final int port) {
         if (databaseType instanceof MySQLDatabaseType) {
-            return new MySQLEmbeddedDatabaseResource(embeddedDatabaseProps, port);
+            return new MySQLEmbeddedDatabase(embeddedDatabaseProps, port);
         }
         throw new UnsupportedOperationException(String.format("Unsupported embedded database type: `%s`", databaseType.getName()));
     }
