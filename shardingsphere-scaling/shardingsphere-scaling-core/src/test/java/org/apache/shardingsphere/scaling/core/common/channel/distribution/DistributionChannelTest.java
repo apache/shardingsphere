@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.common.channel.distribution;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.common.channel.AckCallback;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
@@ -56,7 +56,7 @@ public final class DistributionChannelTest {
         AtomicInteger lastId = new AtomicInteger();
         execute(ackRecords -> {
             for (Record record : ackRecords) {
-                final int currentId = ((IntPosition) record.getPosition()).getId();
+                int currentId = ((IntPosition) record.getPosition()).getId();
                 assertTrue(currentId > lastId.get());
                 lastId.set(currentId);
             }
@@ -114,7 +114,7 @@ public final class DistributionChannelTest {
         return (int) Arrays.stream(records).filter(each -> each instanceof DataRecord).count();
     }
     
-    @AllArgsConstructor
+    @RequiredArgsConstructor
     @Getter
     private static final class IntPosition implements Position<IntPosition> {
         

@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.scaling.core.job.schedule;
 
 import com.google.common.collect.Maps;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 import org.apache.shardingsphere.scaling.core.api.RegistryRepositoryAPI;
@@ -34,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Job scheduler center.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class JobSchedulerCenter {
     

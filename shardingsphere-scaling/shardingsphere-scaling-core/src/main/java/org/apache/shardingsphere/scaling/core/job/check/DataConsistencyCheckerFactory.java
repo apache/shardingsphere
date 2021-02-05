@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.job.check;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
@@ -25,6 +27,7 @@ import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 /**
  * Data consistency checker factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataConsistencyCheckerFactory {
     
     /**
