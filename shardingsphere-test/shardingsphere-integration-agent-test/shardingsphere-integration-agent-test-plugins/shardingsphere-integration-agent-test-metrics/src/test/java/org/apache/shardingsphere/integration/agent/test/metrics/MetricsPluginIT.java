@@ -17,24 +17,25 @@
 
 package org.apache.shardingsphere.integration.agent.test.metrics;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.integration.agent.test.common.entity.OrderEntity;
+import org.apache.shardingsphere.integration.agent.test.common.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.agent.test.common.util.JDBCAgentTestUtils;
+import org.apache.shardingsphere.integration.agent.test.common.util.OkHttpUtils;
+import org.apache.shardingsphere.integration.agent.test.metrics.result.MetricResult;
+import org.junit.Test;
+
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
-import javax.sql.DataSource;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.integration.agent.test.common.entity.OrderEntity;
-import org.apache.shardingsphere.integration.agent.test.common.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.agent.test.common.util.JdbcUtils;
-import org.apache.shardingsphere.integration.agent.test.common.util.OkHttpUtils;
-import org.apache.shardingsphere.integration.agent.test.metrics.result.MetricResult;
-import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @Slf4j
 public final class MetricsPluginIT {
@@ -68,15 +69,15 @@ public final class MetricsPluginIT {
             List<Long> results = new ArrayList<>(10);
             for (int i = 1; i <= 10; i++) {
                 OrderEntity orderEntity = new OrderEntity(i, i, "INSERT_TEST");
-                JdbcUtils.insertOrder(orderEntity, dataSource);
+                JDBCAgentTestUtils.insertOrder(orderEntity, dataSource);
                 results.add(orderEntity.getOrderId());
             }
             OrderEntity orderEntity = new OrderEntity(1000, 1000, "ROLL_BACK");
-            JdbcUtils.insertOrderRollback(orderEntity, dataSource);
-            JdbcUtils.updateOrderStatus(orderEntity, dataSource);
-            JdbcUtils.selectAllOrders(dataSource);
+            JDBCAgentTestUtils.insertOrderRollback(orderEntity, dataSource);
+            JDBCAgentTestUtils.updateOrderStatus(orderEntity, dataSource);
+            JDBCAgentTestUtils.selectAllOrders(dataSource);
             for (Long each : results) {
-                JdbcUtils.deleteOrderByOrderId(each, dataSource);
+                JDBCAgentTestUtils.deleteOrderByOrderId(each, dataSource);
             }
             Properties engineEnvProps = IntegrationTestEnvironment.getInstance().getEngineEnvProps();
             try {
@@ -90,8 +91,8 @@ public final class MetricsPluginIT {
                 try {
                     MetricResult metricResult = OkHttpUtils.getInstance().get(metricURL, MetricResult.class);
                     assertResult(metricResult, each);
-                } catch (IOException e) {
-                    log.info("http get prometheus is error :", e);
+                } catch (final IOException ex) {
+                    log.info("http get prometheus is error :", ex);
                 }
             }
         }
@@ -99,13 +100,13 @@ public final class MetricsPluginIT {
     
     private void assertResult(final MetricResult metricResult, final String metricsName) {
         assertThat(metricResult.getStatus(), is("success"));
-        assertTrue(metricResult.getData().size() > 0);
+        assertFalse(metricResult.getData().isEmpty());
         List<MetricResult.Metric> metricList = metricResult.getData().get(metricsName);
-        assertTrue(metricList.size() > 0);
+        assertFalse(metricList.isEmpty());
     }
     
     private Collection<String> buildMetricsNames() {
-        Collection<String> result = new HashSet<>();
+        Collection<String> result = new HashSet<>(11, 1);
         result.add(REQUEST_TOTAL);
         result.add(COLLECTION_TOTAL);
         result.add(EXECUTE_LATENCY);

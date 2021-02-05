@@ -102,7 +102,7 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
                 setParameterized(Boolean.parseBoolean(props.getProperty("parameterized")));
             }
             if (props.containsKey("projectionsCountOfLine")) {
-                setProjectionsCountOfLine(Integer.valueOf(props.getProperty("projectionsCountOfLine")));
+                setProjectionsCountOfLine(Integer.parseInt(props.getProperty("projectionsCountOfLine")));
             }
         }
     }

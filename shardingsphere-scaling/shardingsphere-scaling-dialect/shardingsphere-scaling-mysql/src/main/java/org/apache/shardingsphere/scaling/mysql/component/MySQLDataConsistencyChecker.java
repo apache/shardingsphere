@@ -22,7 +22,6 @@ import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrappe
 import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.check.AbstractDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -41,7 +40,7 @@ import java.util.stream.Collectors;
 /**
  * MySQL data consistency checker.
  */
-public final class MySQLDataConsistencyChecker extends AbstractDataConsistencyChecker implements DataConsistencyChecker {
+public final class MySQLDataConsistencyChecker extends AbstractDataConsistencyChecker {
     
     public MySQLDataConsistencyChecker(final JobContext jobContext) {
         super(jobContext);

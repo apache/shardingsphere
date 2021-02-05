@@ -21,7 +21,6 @@ import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.check.AbstractDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 
 import java.util.Collections;
 import java.util.Map;
@@ -29,7 +28,7 @@ import java.util.Map;
 /**
  * PostgreSQL data consistency checker.
  */
-public final class PostgreSQLDataConsistencyChecker extends AbstractDataConsistencyChecker implements DataConsistencyChecker {
+public final class PostgreSQLDataConsistencyChecker extends AbstractDataConsistencyChecker {
     
     public PostgreSQLDataConsistencyChecker(final JobContext jobContext) {
         super(jobContext);

@@ -56,7 +56,7 @@ public final class DistributionChannelTest {
         AtomicInteger lastId = new AtomicInteger();
         execute(ackRecords -> {
             for (Record record : ackRecords) {
-                final int currentId = ((IntPosition) record.getPosition()).getId();
+                int currentId = ((IntPosition) record.getPosition()).getId();
                 assertTrue(currentId > lastId.get());
                 lastId.set(currentId);
             }

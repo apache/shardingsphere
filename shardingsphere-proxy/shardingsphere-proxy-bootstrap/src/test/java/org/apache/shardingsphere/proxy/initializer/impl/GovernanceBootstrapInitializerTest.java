@@ -90,8 +90,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     @SneakyThrows({URISyntaxException.class, IOException.class})
     private String readYAML(final String yamlFile) {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI()))
-                .stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
     
     private void closeConfigCenter() {

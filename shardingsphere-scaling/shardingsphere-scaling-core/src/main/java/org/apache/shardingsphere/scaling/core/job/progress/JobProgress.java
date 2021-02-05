@@ -155,7 +155,7 @@ public final class JobProgress {
     private static Map<String, InventoryTaskProgress> getInventoryTaskProgressMap(final JsonObject inventory) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("inventory", inventory);
-        return INVENTORY_POSITION_ADAPTED_GSON.fromJson(jsonObject, JobProgress.class).getInventoryTaskProgressMap();
+        return INVENTORY_POSITION_ADAPTED_GSON.fromJson(jsonObject, JobProgress.class).inventoryTaskProgressMap;
     }
     
     private static Map<String, IncrementalTaskProgress> getIncrementalTaskProgressMap(final JsonObject incremental, final String databaseType) {

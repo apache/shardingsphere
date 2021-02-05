@@ -17,14 +17,18 @@
 
 package org.apache.shardingsphere.agent.metrics.api.reporter;
 
-import java.util.Collection;
-import java.util.List;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.metrics.api.MetricsRegister;
 import org.apache.shardingsphere.agent.metrics.api.entity.Metric;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Metrics reporter.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MetricsReporter {
     
     private static MetricsRegister metricsRegister;

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.scaling.mysql.component;
 import org.apache.shardingsphere.scaling.core.common.record.Column;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.AbstractScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +27,7 @@ import java.util.Set;
 /**
  * MySQL SQL builder.
  */
-public final class MySQLScalingSQLBuilder extends AbstractScalingSQLBuilder implements ScalingSQLBuilder {
+public final class MySQLScalingSQLBuilder extends AbstractScalingSQLBuilder {
     
     public MySQLScalingSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
         super(shardingColumnsMap);

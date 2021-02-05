@@ -965,7 +965,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         }
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setParameterCount(getCurrentParameterIndex());
+        result.setParameterCount(currentParameterIndex);
         return result;
     }
     

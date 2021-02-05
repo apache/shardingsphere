@@ -17,6 +17,11 @@
 
 package org.apache.shardingsphere.integration.agent.test.common.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.integration.agent.test.common.entity.OrderEntity;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,13 +29,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
-import javax.sql.DataSource;
-import org.apache.shardingsphere.integration.agent.test.common.entity.OrderEntity;
 
 /**
- * Jdbc utils.
+ * JDBC agent test utils.
  */
-public class JdbcUtils {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class JDBCAgentTestUtils {
     
     /**
      * Insert order.
@@ -39,7 +43,7 @@ public class JdbcUtils {
      * @param dataSource data source
      */
     public static void insertOrder(final OrderEntity orderEntity, final DataSource dataSource) {
-        String sql = "INSERT INTO t_order (order_id,user_id, status) VALUES (?, ?,?)";
+        String sql = "INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)";
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             connection.setAutoCommit(false);
             preparedStatement.setLong(1, orderEntity.getOrderId());
@@ -58,7 +62,7 @@ public class JdbcUtils {
      * @param dataSource data source
      */
     public static void insertOrderRollback(final OrderEntity orderEntity, final DataSource dataSource) {
-        String sql = "INSERT INTO t_order (order_id,user_id, status) VALUES (?, ?,?)";
+        String sql = "INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)";
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             connection.setAutoCommit(false);
             preparedStatement.setLong(1, orderEntity.getOrderId());
@@ -92,7 +96,7 @@ public class JdbcUtils {
      * @param dataSource data source
      */
     public static void updateOrderStatus(final OrderEntity orderEntity, final DataSource dataSource) {
-        String sql = "UPDATE t_order SET status = ? where order_id =?";
+        String sql = "UPDATE t_order SET status = ? WHERE order_id =?";
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             connection.setAutoCommit(false);
             preparedStatement.setString(1, orderEntity.getStatus());
