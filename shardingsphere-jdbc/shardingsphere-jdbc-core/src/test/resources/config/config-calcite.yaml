@@ -19,13 +19,13 @@ rules:
   - !SHARDING
     tables:
       t_order_item_calcite_sharding:
-        actualDataNodes: calcite_jdbc_1.t_order_item_calcite_sharding_${0..1}
+        actualDataNodes: calcite_ds.t_order_item_calcite_sharding_${0..1}
         tableStrategy:
           standard:
             shardingColumn: item_id
             shardingAlgorithmName: table_inline_item_id
       t_user_encrypt_calcite_sharding:
-        actualDataNodes: calcite_jdbc_1.t_user_encrypt_calcite_sharding_${0..1}
+        actualDataNodes: calcite_ds.t_user_encrypt_calcite_sharding_${0..1}
         tableStrategy:
           standard:
             shardingColumn: user_id
@@ -45,19 +45,21 @@ rules:
         type: aes
         props:
           aes-key-value: 123456abc
+      test:
+        type: test
     tables:
       t_user_encrypt_calcite:
         columns:
           pwd:
             plainColumn: plain_pwd
             cipherColumn: cipher_pwd
-            encryptorName: encryptor_aes
+            encryptorName: test
       t_user_encrypt_calcite_sharding:
         columns:
           pwd:
             plainColumn: plain_pwd
             cipherColumn: cipher_pwd
-            encryptorName: encryptor_aes
+            encryptorName: test
   - !REPLICA_QUERY
     dataSources:
       calcite_ds:
@@ -72,5 +74,5 @@ rules:
         type: ROUND_ROBIN
 props:
   sql-show: true
-  query-with-cipher-column: false
+  query-with-cipher-column: true
 

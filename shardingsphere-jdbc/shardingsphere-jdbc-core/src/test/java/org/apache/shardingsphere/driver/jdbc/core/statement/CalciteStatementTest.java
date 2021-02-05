@@ -89,17 +89,12 @@ public final class CalciteStatementTest extends AbstractShardingSphereDataSource
         assertThat(resultSet.getString(3), is("init"));
         assertThat(resultSet.getInt(4), is(1000));
         assertThat(resultSet.getInt(5), is(10000));
-        assertThat(resultSet.getInt(6), is(10));
-        assertThat(resultSet.getString(7), is("init"));
-        assertThat(resultSet.getString(7), is("init"));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(1001));
         assertThat(resultSet.getInt(2), is(11));
         assertThat(resultSet.getString(3), is("init"));
         assertThat(resultSet.getInt(4), is(1001));
         assertThat(resultSet.getInt(5), is(10001));
-        assertThat(resultSet.getInt(6), is(11));
-        assertThat(resultSet.getString(7), is("init"));
         assertFalse(resultSet.next());
     }
 
@@ -114,18 +109,12 @@ public final class CalciteStatementTest extends AbstractShardingSphereDataSource
         assertThat(resultSet.getString(3), is("init"));
         assertThat(resultSet.getInt(4), is(1000));
         assertThat(resultSet.getInt(5), is(10000));
-        assertThat(resultSet.getInt(6), is(10));
-        assertThat(resultSet.getString(7), is("init"));
-        assertThat(resultSet.getString(8), is("t_order_item_calcite_sharding"));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(1001));
         assertThat(resultSet.getInt(2), is(11));
         assertThat(resultSet.getString(3), is("init"));
         assertThat(resultSet.getInt(4), is(1001));
         assertThat(resultSet.getInt(5), is(10001));
-        assertThat(resultSet.getInt(6), is(11));
-        assertThat(resultSet.getString(7), is("init"));
-        assertThat(resultSet.getString(8), is("t_order_item_calcite_sharding"));
         assertFalse(resultSet.next());
     }
 
@@ -140,18 +129,12 @@ public final class CalciteStatementTest extends AbstractShardingSphereDataSource
         assertThat(resultSet.getString(3), is("init"));
         assertThat(resultSet.getInt(4), is(1000));
         assertThat(resultSet.getInt(5), is(10000));
-        assertThat(resultSet.getInt(6), is(10));
-        assertThat(resultSet.getString(7), is("init"));
-        assertThat(resultSet.getString(8), is("t_order_item_calcite_sharding"));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(1001));
         assertThat(resultSet.getInt(2), is(11));
         assertThat(resultSet.getString(3), is("init"));
         assertThat(resultSet.getInt(4), is(1001));
         assertThat(resultSet.getInt(5), is(10001));
-        assertThat(resultSet.getInt(6), is(11));
-        assertThat(resultSet.getString(7), is("init"));
-        assertThat(resultSet.getString(8), is("t_order_item_calcite_sharding"));
         assertFalse(resultSet.next());
     }
 
@@ -172,25 +155,25 @@ public final class CalciteStatementTest extends AbstractShardingSphereDataSource
     }
 
     @Test
-    public void assertQueryWithCalciteInSinglesWithEncryptRule() throws SQLException {
+    public void assertQueryWithCalciteInSingleTablesWithEncryptRule() throws SQLException {
         ShardingSphereStatement preparedStatement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
         ResultSet resultSet = preparedStatement.executeQuery(SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES_WITH_ENCRYPT);
         assertNotNull(resultSet);
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(0));
-        assertThat(resultSet.getString(2), is("plain password1"));
+        assertThat(resultSet.getString(2), is("decryptValue"));
         assertThat(resultSet.getString(3), is("description0"));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(1));
-        assertThat(resultSet.getString(2), is("plain password2"));
+        assertThat(resultSet.getString(2), is("decryptValue"));
         assertThat(resultSet.getString(3), is("description1"));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(2));
-        assertThat(resultSet.getString(2), is("plain password3"));
+        assertThat(resultSet.getString(2), is("decryptValue"));
         assertThat(resultSet.getString(3), is("description2"));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(3));
-        assertThat(resultSet.getString(2), is("plain password4"));
+        assertThat(resultSet.getString(2), is("decryptValue"));
         assertThat(resultSet.getString(3), is("description3"));
         assertFalse(resultSet.next());
     }
@@ -202,19 +185,19 @@ public final class CalciteStatementTest extends AbstractShardingSphereDataSource
         assertNotNull(resultSet);
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(0));
-        assertThat(resultSet.getString(2), is("plain password1"));
+        assertThat(resultSet.getString(2), is("decryptValue"));
         assertThat(resultSet.getString(3), is("description0"));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(1));
-        assertThat(resultSet.getString(2), is("plain password2"));
+        assertThat(resultSet.getString(2), is("decryptValue"));
         assertThat(resultSet.getString(3), is("description1"));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(2));
-        assertThat(resultSet.getString(2), is("plain password3"));
+        assertThat(resultSet.getString(2), is("decryptValue"));
         assertThat(resultSet.getString(3), is("description2"));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(3));
-        assertThat(resultSet.getString(2), is("plain password4"));
+        assertThat(resultSet.getString(2), is("decryptValue"));
         assertThat(resultSet.getString(3), is("description3"));
         assertFalse(resultSet.next());
     }
