@@ -78,4 +78,10 @@
         <input sql="SELECT t_account.amount, t_account_bak.amount FROM t_account LEFT JOIN t_account_bak ON t_account.id = t_account_bak.id WHERE t_account.amount = ? OR t_account_bak.amount = ?" parameters="1, 2" />
         <output sql="SELECT t_account.cipher_amount AS amount, t_account_bak.cipher_amount AS amount FROM t_account LEFT JOIN t_account_bak ON t_account.id = t_account_bak.id WHERE t_account.cipher_amount = ? OR t_account_bak.cipher_amount = ?" parameters="encrypt_1, encrypt_2" />
     </rewrite-assertion>
+    
+    <!-- TODO encrypt for sub-query -->
+<!--    <rewrite-assertion id="select_with_subquery">-->
+<!--        <input sql="SELECT amount FROM (SELECT amount FROM t_account WHERE amount = ?) AS a" parameters="1" />-->
+<!--        <output sql="SELECT amount FROM (SELECT cipher_amount AS amount FROM t_account WHERE cipher_amount = ?) AS a" parameters="encrypt_1" />-->
+<!--    </rewrite-assertion>-->
 </rewrite-assertions>
