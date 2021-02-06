@@ -25,7 +25,6 @@ import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOper
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 
@@ -49,11 +48,11 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     }
     
     @Override
-    public void setCatalog(final String catalog) throws SQLException {
+    public void setCatalog(final String catalog) {
     }
     
     @Override
-    public String getCatalog() throws SQLException {
+    public String getCatalog() {
         return "";
     }
     
@@ -137,11 +136,11 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     }
     
     @Override
-    public void setSchema(final String schema) throws SQLException {
+    public void setSchema(final String schema) {
     }
     
     @Override
-    public String getSchema() throws SQLException {
+    public String getSchema() {
         return "";
     }
     

@@ -69,7 +69,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     private static final String PROPS_YAML = "conf/reg_center/config_center/props.yaml";
     
-    private FixtureConfigurationRepository configurationRepository = new FixtureConfigurationRepository();
+    private final FixtureConfigurationRepository configurationRepository = new FixtureConfigurationRepository();
     
     @Test
     public void assertGetProxyConfiguration() throws IOException {
@@ -77,11 +77,6 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/reg_center/");
         assertProxyConfiguration(getInitializer().getProxyConfiguration(yamlProxyConfig));
         closeConfigCenter();
-    }
-    
-    @SneakyThrows(IOException.class)
-    protected YamlProxyConfiguration makeProxyConfiguration() {
-        return ProxyConfigurationLoader.load("/conf/reg_center/");
     }
     
     private void initConfigCenter() {
@@ -95,8 +90,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     @SneakyThrows({URISyntaxException.class, IOException.class})
     private String readYAML(final String yamlFile) {
-        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI()))
-                .stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
     
     private void closeConfigCenter() {

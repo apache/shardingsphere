@@ -49,13 +49,20 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
     @Override
     public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
         for (String each : getLogicTableNames()) {
-            routeContext.getRouteUnits().addAll(getAllRouteUnits(shardingRule, each));
+            if (shardingRule.getBroadcastTables().contains(each)) {
+                routeContext.getRouteUnits().addAll(getBroadcastTableRouteUnits(shardingRule, each));
+            } else {
+                routeContext.getRouteUnits().addAll(getAllRouteUnits(shardingRule, each));
+            }
         }
     }
     
     private Collection<String> getLogicTableNames() {
-        return sqlStatementContext.getSqlStatement() instanceof DropIndexStatement && !((DropIndexStatement) sqlStatementContext.getSqlStatement()).getIndexes().isEmpty()
-                ? getTableNamesFromMetaData((DropIndexStatement) sqlStatementContext.getSqlStatement()) : sqlStatementContext.getTablesContext().getTableNames();
+        Collection<String> tableNamesInSQL = sqlStatementContext.getTablesContext().getTableNames();
+        if (!tableNamesInSQL.isEmpty()) {
+            return tableNamesInSQL;
+        }
+        return sqlStatementContext.getSqlStatement() instanceof DropIndexStatement ? getTableNamesFromMetaData((DropIndexStatement) sqlStatementContext.getSqlStatement()) : Collections.emptyList();
     }
     
     private Collection<String> getTableNamesFromMetaData(final DropIndexStatement dropIndexStatement) {
@@ -77,12 +84,19 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
         return Optional.empty();
     }
     
+    private Collection<RouteUnit> getBroadcastTableRouteUnits(final ShardingRule shardingRule, final String broadcastTableName) {
+        Collection<RouteUnit> result = new LinkedList<>();
+        for (String each : shardingRule.getDataSourceNames()) {
+            result.add(new RouteUnit(new RouteMapper(each, each), Collections.singletonList(new RouteMapper(broadcastTableName, broadcastTableName))));
+        }
+        return result;
+    }
+    
     private Collection<RouteUnit> getAllRouteUnits(final ShardingRule shardingRule, final String logicTableName) {
         Collection<RouteUnit> result = new LinkedList<>();
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         for (DataNode each : tableRule.getActualDataNodes()) {
-            RouteUnit routeUnit = new RouteUnit(new RouteMapper(each.getDataSourceName(), each.getDataSourceName()), Collections.singletonList(new RouteMapper(logicTableName, each.getTableName())));
-            result.add(routeUnit);
+            result.add(new RouteUnit(new RouteMapper(each.getDataSourceName(), each.getDataSourceName()), Collections.singletonList(new RouteMapper(logicTableName, each.getTableName()))));
         }
         return result;
     }

@@ -476,7 +476,7 @@ public final class PostgreSQLDMLStatementSQLVisitor extends PostgreSQLStatementS
             result.setRight((TableSegment) visit(ctx.tableReference()));
             return result;
         }
-        return (TableSegment) visit(ctx.tableReference());
+        return visit(ctx.tableReference());
     }
     
     @Override

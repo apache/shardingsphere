@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
+import org.apache.shardingsphere.test.integration.env.datasource.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 
 import javax.sql.DataSource;
@@ -83,34 +83,34 @@ public final class ActualDataSourceBuilder {
     }
     
     private static DataSource createDataSource(final String name, final String scenario, final DatabaseType databaseType) {
-        DatabaseEnvironment databaseEnvironment = IntegrationTestEnvironment.getInstance().getDatabaseEnvironments().get(databaseType).get(scenario);
+        DataSourceEnvironment dataSourceEnv = IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().get(databaseType).get(scenario);
         switch (DATA_SOURCE_POOL_TYPE) {
             case DBCP:
-                return createDBCP(name, databaseType, databaseEnvironment);
+                return createDBCP(name, databaseType, dataSourceEnv);
             case HikariCP:
-                return createHikariCP(name, databaseType, databaseEnvironment);
+                return createHikariCP(name, databaseType, dataSourceEnv);
             default:
                 throw new UnsupportedOperationException(DATA_SOURCE_POOL_TYPE.name());
         }
     }
     
-    private static DataSource createDBCP(final String dataSourceName, final DatabaseType databaseType, final DatabaseEnvironment databaseEnvironment) {
+    private static DataSource createDBCP(final String dataSourceName, final DatabaseType databaseType, final DataSourceEnvironment dataSourceEnv) {
         BasicDataSource result = new BasicDataSource();
-        result.setDriverClassName(databaseEnvironment.getDriverClassName());
-        result.setUrl(null == dataSourceName ? databaseEnvironment.getURL() : databaseEnvironment.getURL(dataSourceName));
-        result.setUsername(databaseEnvironment.getUsername());
-        result.setPassword(databaseEnvironment.getPassword());
+        result.setDriverClassName(dataSourceEnv.getDriverClassName());
+        result.setUrl(null == dataSourceName ? dataSourceEnv.getURL() : dataSourceEnv.getURL(dataSourceName));
+        result.setUsername(dataSourceEnv.getUsername());
+        result.setPassword(dataSourceEnv.getPassword());
         result.setMaxTotal(2);
         getConnectionInitSQL(dataSourceName, databaseType).ifPresent(optional -> result.setConnectionInitSqls(Collections.singleton(optional)));
         return result;
     }
     
-    private static DataSource createHikariCP(final String dataSourceName, final DatabaseType databaseType, final DatabaseEnvironment databaseEnvironment) {
+    private static DataSource createHikariCP(final String dataSourceName, final DatabaseType databaseType, final DataSourceEnvironment dataSourceEnv) {
         HikariConfig result = new HikariConfig();
-        result.setDriverClassName(databaseEnvironment.getDriverClassName());
-        result.setJdbcUrl(null == dataSourceName ? databaseEnvironment.getURL() : databaseEnvironment.getURL(dataSourceName));
-        result.setUsername(databaseEnvironment.getUsername());
-        result.setPassword(databaseEnvironment.getPassword());
+        result.setDriverClassName(dataSourceEnv.getDriverClassName());
+        result.setJdbcUrl(null == dataSourceName ? dataSourceEnv.getURL() : dataSourceEnv.getURL(dataSourceName));
+        result.setUsername(dataSourceEnv.getUsername());
+        result.setPassword(dataSourceEnv.getPassword());
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         getConnectionInitSQL(dataSourceName, databaseType).ifPresent(result::setConnectionInitSql);

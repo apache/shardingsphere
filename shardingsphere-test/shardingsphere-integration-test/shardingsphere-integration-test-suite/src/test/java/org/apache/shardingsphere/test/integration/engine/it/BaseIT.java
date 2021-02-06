@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.engine.junit.ITRunnerWithParametersFactory;
 import org.apache.shardingsphere.test.integration.engine.junit.ParallelParameterized;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
+import org.apache.shardingsphere.test.integration.env.EnvironmentType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
@@ -94,14 +95,14 @@ public abstract class BaseIT {
                 ((AutoCloseable) dataSource).close();
                 //CHECKSTYLE:OFF
             } catch (final Exception ignored) {
+                //CHECKSTYLE:ON
             }
-            //CHECKSTYLE:ON
         });
     }
     
     @BeforeClass
     public static void executeInitSQLs() throws IOException, JAXBException, SQLException {
-        if (!IntegrationTestEnvironment.getInstance().isEnvironmentPrepared()) {
+        if (EnvironmentType.DOCKER != IntegrationTestEnvironment.getInstance().getEnvType()) {
             DatabaseEnvironmentManager.executeInitSQLs();
         }
     }

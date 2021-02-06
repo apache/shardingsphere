@@ -18,11 +18,14 @@
 package org.apache.shardingsphere.integration.agent.test.common.util;
 
 import com.google.gson.Gson;
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Ok http utils.
@@ -64,7 +67,7 @@ public final class OkHttpUtils {
     public <T> T get(final String url, final Class<T> clazz) throws IOException {
         Request request = new Request.Builder().url(url).build();
         Response response = client.newCall(request).execute();
-        assert response.body() != null;
+        assertNotNull(response.body());
         String result = response.body().string();
         return GSON.fromJson(result, clazz);
     }

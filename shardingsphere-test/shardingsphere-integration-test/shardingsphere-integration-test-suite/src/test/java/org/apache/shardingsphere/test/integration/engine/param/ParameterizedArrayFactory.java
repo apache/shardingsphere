@@ -66,7 +66,7 @@ public final class ParameterizedArrayFactory {
     private static Collection<ParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext) {
         Collection<ParameterizedArray> result = new LinkedList<>();
         for (DatabaseType each : getDatabaseTypes(testCaseContext.getTestCase().getDbTypes())) {
-            if (IntegrationTestEnvironment.getInstance().getDatabaseEnvironments().containsKey(each)) {
+            if (IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().containsKey(each)) {
                 result.addAll(getAssertionParameterizedArray(testCaseContext, each));
             }
         }
@@ -122,7 +122,7 @@ public final class ParameterizedArrayFactory {
     private static Collection<ParameterizedArray> getCaseParameterizedArray(final IntegrationTestCaseContext testCaseContext) {
         Collection<ParameterizedArray> result = new LinkedList<>();
         for (DatabaseType each : getDatabaseTypes(testCaseContext.getTestCase().getDbTypes())) {
-            if (IntegrationTestEnvironment.getInstance().getDatabaseEnvironments().containsKey(each)) {
+            if (IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().containsKey(each)) {
                 result.addAll(getCaseParameterizedArray(testCaseContext, each));
             }
         }

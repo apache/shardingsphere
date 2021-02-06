@@ -45,7 +45,7 @@ public final class ITBlockJUnit4ClassRunnerWithParameters extends BlockJUnit4Cla
     public ITBlockJUnit4ClassRunnerWithParameters(final TestWithParameters test) throws InitializationError {
         super(test.getTestClass().getJavaClass());
         name = test.getName();
-        parameters = test.getParameters().toArray(new Object[test.getParameters().size()]);
+        parameters = test.getParameters().toArray(new Object[0]);
     }
     
     @Override
@@ -98,7 +98,7 @@ public final class ITBlockJUnit4ClassRunnerWithParameters extends BlockJUnit4Cla
     
     @Override
     protected String testName(final FrameworkMethod method) {
-        return method.getName() + getName();
+        return method.getName() + name;
     }
     
     @Override

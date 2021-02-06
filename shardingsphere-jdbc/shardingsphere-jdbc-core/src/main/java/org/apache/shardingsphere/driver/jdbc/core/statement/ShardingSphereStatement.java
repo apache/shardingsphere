@@ -385,7 +385,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         };
         return driverJDBCExecutor.execute(executionGroups, sqlStatement, routeUnits, jdbcExecutorCallback);
     }
-
+    
     private ExecutionContext createExecutionContext(final String sql) throws SQLException {
         clearStatements();
         LogicSQL logicSQL = createLogicSQL(sql);
