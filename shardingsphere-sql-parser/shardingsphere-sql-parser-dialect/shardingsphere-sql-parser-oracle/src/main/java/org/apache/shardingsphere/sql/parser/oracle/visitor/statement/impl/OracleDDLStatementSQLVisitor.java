@@ -265,8 +265,8 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
         OracleCreateIndexStatement result = new OracleCreateIndexStatement();
         if (null != ctx.createIndexDefinitionClause().tableIndexClause()) {
             result.setTable((SimpleTableSegment) visit(ctx.createIndexDefinitionClause().tableIndexClause().tableName()));
-            result.setIndex((IndexSegment) visit(ctx.indexName()));
         }
+        result.setIndex((IndexSegment) visit(ctx.indexName()));
         return result;
     }
     
