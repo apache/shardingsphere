@@ -59,7 +59,7 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
     
     private Collection<String> getLogicTableNames() {
         Collection<String> tableNamesInSQL = sqlStatementContext.getTablesContext().getTableNames();
-        if (tableNamesInSQL.isEmpty()) {
+        if (!tableNamesInSQL.isEmpty()) {
             return tableNamesInSQL;
         }
         return sqlStatementContext.getSqlStatement() instanceof DropIndexStatement ? getTableNamesFromMetaData((DropIndexStatement) sqlStatementContext.getSqlStatement()) : Collections.emptyList();
