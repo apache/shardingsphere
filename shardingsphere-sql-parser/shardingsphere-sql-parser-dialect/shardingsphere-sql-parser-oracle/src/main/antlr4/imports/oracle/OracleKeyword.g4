@@ -838,3 +838,19 @@ NOWAIT
 BATCH
     : B A T C H
     ;
+
+MATCHED
+    : M A T C H E D 
+    ;
+
+LOG
+    : L O G
+    ;
+
+ERRORS
+    : E R R O R S
+    ;
+
+REJECT
+    : R E J E C T
+    ;
