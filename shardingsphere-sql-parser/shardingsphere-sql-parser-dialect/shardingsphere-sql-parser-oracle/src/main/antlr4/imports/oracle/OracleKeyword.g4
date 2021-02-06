@@ -840,7 +840,7 @@ BATCH
     ;
 
 MATCHED
-    : M A T C H E D 
+    : M A T C H E D
     ;
 
 LOG
