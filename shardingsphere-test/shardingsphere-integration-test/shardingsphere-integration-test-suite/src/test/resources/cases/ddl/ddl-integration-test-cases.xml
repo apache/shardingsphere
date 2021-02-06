@@ -63,31 +63,31 @@
             <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10))" affected-table="t_order_details" />
         </assertion>
     </test-case>
-
+    
     <test-case sql="CREATE TABLE t_broadcast_table_for_ddl(id int PRIMARY KEY, description varchar(10))">
         <assertion expected-data-file="broadcast_create_table.xml">
             <initial-sql affected-table="t_broadcast_table_for_ddl" />
         </assertion>
     </test-case>
-
+    
     <test-case sql="CREATE INDEX t_broadcast_table_for_ddl_index ON t_broadcast_table_for_ddl (id)">
         <assertion expected-data-file="broadcast_create_index.xml">
             <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl" />
         </assertion>
     </test-case>
-
+    
     <test-case sql="CREATE UNIQUE INDEX t_broadcast_table_for_ddl_index ON t_broadcast_table_for_ddl (id)">
         <assertion expected-data-file="broadcast_create_unique_index.xml">
             <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl" />
         </assertion>
     </test-case>
-
+    
     <test-case sql="ALTER TABLE t_broadcast_table_for_ddl ADD name varchar(10)">
         <assertion expected-data-file="broadcast_alter_table.xml">
             <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl" />
         </assertion>
     </test-case>
-
+    
     <test-case sql="DROP TABLE t_broadcast_table_for_ddl">
         <assertion expected-data-file="broadcast_drop_table.xml">
             <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl" />
