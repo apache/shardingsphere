@@ -74,7 +74,7 @@ public final class EncryptConditionEngine {
             for (AndPredicate each : andPredicates) {
                 result.addAll(createEncryptConditions(sqlStatementContext, each));
             }
-        };
+        }
         // FIXME process subquery
 //        for (SubqueryPredicateSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class)) {
 //            for (AndPredicate andPredicate : each.getAndPredicates()) {
