@@ -63,7 +63,7 @@ public final class AlterIndexStatementAssert {
     
     private static void assertIndex(final SQLCaseAssertContext assertContext, final AlterIndexStatement actual, final AlterIndexStatementTestCase expected) {
         // TODO should assert index for all databases(mysql and sqlserver do not parse index right now)
-        if (actual instanceof OracleAlterIndexStatement) {
+        if (actual instanceof OracleAlterIndexStatement && actual.getIndex().isPresent()) {
             IndexAssert.assertIs(assertContext, actual.getIndex().get(), expected.getIndex());
         }
     }
