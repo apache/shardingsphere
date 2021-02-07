@@ -69,7 +69,7 @@ public final class StandardShardingStrategy implements ShardingStrategy {
             if (null != target && availableTargetNames.contains(target)) {
                 result.add(target);
             } else if (null != target && !availableTargetNames.contains(target)) {
-                throw new ShardingSphereException(String.format("Route table %s is not exist, available actual table:%s", target, availableTargetNames));
+                throw new ShardingSphereException(String.format("Route table %s does not exist, available actual table: %s", target, availableTargetNames));
             }
         }
         return result;
