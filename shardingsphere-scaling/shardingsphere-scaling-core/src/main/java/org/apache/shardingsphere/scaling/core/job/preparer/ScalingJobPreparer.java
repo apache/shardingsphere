@@ -61,7 +61,9 @@ public final class ScalingJobPreparer {
     
     private void checkDataSource(final JobContext jobContext, final DataSourceManager dataSourceManager) {
         checkSourceDataSources(jobContext, dataSourceManager);
-        checkTargetDataSources(jobContext, dataSourceManager);
+        if (null == jobContext.getInitProgress()) {
+            checkTargetDataSources(jobContext, dataSourceManager);
+        }
     }
     
     private void checkSourceDataSources(final JobContext jobContext, final DataSourceManager dataSourceManager) {
