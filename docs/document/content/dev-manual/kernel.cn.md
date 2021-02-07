@@ -21,17 +21,6 @@ chapter = true
 | SQLServerDatabaseType  | SQLServer 数据库          |
 | H2DatabaseType         | H2 数据库                 |
 
-## LogicMetaDataLoader
-
-| *SPI 名称*             | *详细说明*         |
-| ---------------------- | ----------------- |
-| LogicMetaDataLoader    | 用于元数据初始化    |
-
-| *已知实现类*            | *详细说明*         |
-| ---------------------- | ----------------- |
-| ShardingMetaDataLoader | 用于分片元数据初始化 |
-| EncryptMetaDataLoader  | 用于加密元数据初始化 |
-
 ## LogicMetaDataDecorator
 
 | *SPI 名称*                | *详细说明*        |
