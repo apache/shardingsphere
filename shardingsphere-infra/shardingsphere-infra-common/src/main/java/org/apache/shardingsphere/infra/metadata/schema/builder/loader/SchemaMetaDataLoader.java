@@ -28,7 +28,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Schema meta data loader.
@@ -57,7 +56,7 @@ public final class SchemaMetaDataLoader {
     }
     
     private static Collection<String> loadAllTableNames(final Connection connection) throws SQLException {
-        List<String> result = new LinkedList<>();
+        Collection<String> result = new LinkedList<>();
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), null, new String[]{TABLE_TYPE, VIEW_TYPE})) {
             while (resultSet.next()) {
                 String table = resultSet.getString(TABLE_NAME);
