@@ -35,7 +35,7 @@ public final class DataNodeContainedFixtureRuleBasedTableMetaDataBuilder impleme
     @Override
     public Optional<TableMetaData> load(final String tableName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
                                         final DataNodes dataNodes, final DataNodeContainedFixtureRule rule, final ConfigurationProperties props) {
-        return ("data_node_routed_table_0".equals(tableName) || "data_node_routed_table_1".equals(tableName))
+        return ("data_node_routed_table1".equals(tableName) || "data_node_routed_table2".equals(tableName))
                 ? Optional.of(new TableMetaData(Collections.emptyList(), Collections.emptyList())) : Optional.empty();
     }
     

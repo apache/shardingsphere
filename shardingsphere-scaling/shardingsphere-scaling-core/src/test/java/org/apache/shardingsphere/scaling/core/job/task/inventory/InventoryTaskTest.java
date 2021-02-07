@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.scaling.core.job.task.inventory;
 
+import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.exception.ScalingTaskExecuteException;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.junit.After;
 import org.junit.Before;
@@ -59,7 +59,7 @@ public final class InventoryTaskTest {
         DumperConfiguration dumperConfig = mockDumperConfig();
         ImporterConfiguration importerConfig = mockImporterConfig();
         ScalingContext.getInstance().init(new ServerConfiguration());
-        taskConfig = new TaskConfiguration(new JobConfiguration(), dumperConfig, importerConfig);
+        taskConfig = new TaskConfiguration(new HandleConfiguration(), dumperConfig, importerConfig);
         dataSourceManager = new DataSourceManager();
     }
     
@@ -81,10 +81,10 @@ public final class InventoryTaskTest {
         initTableData(taskConfig.getDumperConfig());
         InventoryDumperConfiguration inventoryDumperConfig = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
         inventoryDumperConfig.setTableName("t_order");
-        inventoryDumperConfig.setPositionManager(taskConfig.getDumperConfig().getPositionManager());
+        inventoryDumperConfig.setPosition(taskConfig.getDumperConfig().getPosition());
         InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(), dataSourceManager);
         inventoryTask.start();
-        assertFalse(((InventoryTaskProgress) inventoryTask.getProgress()).isFinished());
+        assertFalse(inventoryTask.getProgress().getPosition() instanceof FinishedPosition);
     }
     
     private void initTableData(final DumperConfiguration dumperConfig) throws SQLException {
@@ -101,7 +101,7 @@ public final class InventoryTaskTest {
         ScalingDataSourceConfiguration dataSourceConfig = new StandardJDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceConfig(dataSourceConfig);
-        result.setPositionManager(new PositionManager(new PrimaryKeyPosition(1, 100)));
+        result.setPosition(new PrimaryKeyPosition(1, 100));
         result.setTableNameMap(Collections.emptyMap());
         return result;
     }

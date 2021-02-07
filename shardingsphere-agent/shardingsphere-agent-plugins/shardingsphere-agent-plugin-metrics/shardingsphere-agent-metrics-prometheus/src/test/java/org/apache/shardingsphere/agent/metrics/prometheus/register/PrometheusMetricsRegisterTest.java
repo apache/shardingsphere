@@ -20,9 +20,10 @@ package org.apache.shardingsphere.agent.metrics.prometheus.register;
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 import io.prometheus.client.Histogram;
-import java.util.Map;
 import org.apache.shardingsphere.agent.metrics.prometheus.util.ReflectiveUtil;
 import org.junit.Test;
+
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -35,7 +36,7 @@ public final class PrometheusMetricsRegisterTest {
     @SuppressWarnings("unchecked")
     public void assertCounter() {
         String routeDatasource = "route_datasource";
-        String[] labelNames = new String[] {"name"};
+        String[] labelNames = {"name"};
         prometheusMetricsRegister.registerCounter(routeDatasource, labelNames, "the shardingsphere proxy route datasource");
         prometheusMetricsRegister.counterIncrement(routeDatasource, labelNames);
         prometheusMetricsRegister.counterIncrement(routeDatasource, labelNames, 2);
@@ -55,7 +56,7 @@ public final class PrometheusMetricsRegisterTest {
     @SuppressWarnings("unchecked")
     public void assertGauge() {
         String connectionTotal = "proxy_connection_total";
-        String[] labelNames = new String[] {"connectionTotal"};
+        String[] labelNames = {"connectionTotal"};
         prometheusMetricsRegister.registerGauge(connectionTotal, labelNames, "the shardingsphere proxy request total");
         prometheusMetricsRegister.gaugeIncrement(connectionTotal, labelNames);
         prometheusMetricsRegister.gaugeIncrement(connectionTotal, labelNames);
@@ -77,7 +78,7 @@ public final class PrometheusMetricsRegisterTest {
     @SuppressWarnings("unchecked")
     public void assertHistogram() {
         String name = "proxy_execute_latency_millis";
-        String[] labelNames = new String[] {"name"};
+        String[] labelNames = {"name"};
         prometheusMetricsRegister.registerHistogram(name, labelNames, "the shardingsphere proxy executor latency millis");
         prometheusMetricsRegister.recordTime(name, labelNames, 1000);
         String latencyMillis = "execute_latency_millis";

@@ -48,7 +48,10 @@ public final class SingleTableRuleLoader {
     public static Map<String, SingleTableRule> load(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<String> excludedTables) {
         Map<String, SingleTableRule> result = new HashMap<>();
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            result.putAll(load(databaseType, entry.getKey(), entry.getValue(), excludedTables));
+            Map<String, SingleTableRule> singleTableRules = load(databaseType, entry.getKey(), entry.getValue(), excludedTables);
+            // TODO recover check single table must be unique. Current situation cannot recognize replica query rule or ha rule for single table duplicate. 
+//            singleTableRules.keySet().forEach(each -> Preconditions.checkState(!result.containsKey(each), "Single table conflict, there are multiple tables `%s` existed.", each));
+            result.putAll(singleTableRules);
         }
         return result;
     }

@@ -46,7 +46,7 @@ public final class YamlRuleConfigurationSwapperEngine {
      * @param ruleConfigurations rule configurations
      * @return YAML rule configurations
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Collection<YamlRuleConfiguration> swapToYamlConfigurations(final Collection<RuleConfiguration> ruleConfigurations) {
         Collection<YamlRuleConfiguration> result = new LinkedList<>();
         for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : OrderedSPIRegistry.getRegisteredServices(ruleConfigurations, YamlRuleConfigurationSwapper.class).entrySet()) {
@@ -61,6 +61,7 @@ public final class YamlRuleConfigurationSwapperEngine {
      * @param yamlRuleConfigs YAML rule configurations
      * @return rule configurations
      */
+    @SuppressWarnings("rawtypes")
     public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
         Collection<RuleConfiguration> result = new LinkedList<>();
         Collection<Class<?>> ruleConfigurationTypes = yamlRuleConfigs.stream().map(YamlRuleConfiguration::getRuleConfigurationType).collect(Collectors.toList());
@@ -87,12 +88,14 @@ public final class YamlRuleConfigurationSwapperEngine {
      * 
      * @return YAML shortcuts
      */
+    @SuppressWarnings("rawtypes")
     @SneakyThrows(ReflectiveOperationException.class)
     public static Map<String, Class<?>> getYamlShortcuts() {
-        Map<String, Class<?>> result = new HashMap<>();
-        for (YamlRuleConfigurationSwapper each : ShardingSphereServiceLoader.newServiceInstances(YamlRuleConfigurationSwapper.class)) {
+        Collection<YamlRuleConfigurationSwapper> swappers = ShardingSphereServiceLoader.newServiceInstances(YamlRuleConfigurationSwapper.class);
+        Map<String, Class<?>> result = new HashMap<>(swappers.size(), 1);
+        for (YamlRuleConfigurationSwapper each : swappers) {
             Class<?> yamlRuleConfigurationClass = Class.forName(((ParameterizedType) each.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0].getTypeName());
-            result.put("!" + each.getRuleTagName(), yamlRuleConfigurationClass);
+            result.put(String.format("!%s", each.getRuleTagName()), yamlRuleConfigurationClass);
         }
         return result;
     }

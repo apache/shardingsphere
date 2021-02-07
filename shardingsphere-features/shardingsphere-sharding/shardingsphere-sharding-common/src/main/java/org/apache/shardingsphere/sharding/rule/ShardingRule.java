@@ -179,6 +179,7 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
     private Collection<String> getExcludedTables() {
         Collection<String> result = new HashSet<>(getTables());
         result.addAll(getAllActualTables());
+        result.addAll(broadcastTables);
         return result;
     }
     

@@ -30,12 +30,12 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresher;
+import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresherFactory;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresherFactory;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.spi.SchemaChangedNotifier;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -128,20 +128,20 @@ public final class DriverJDBCExecutor {
         List<T> results;
         boolean locked = false;
         try {
-            locked = tryLock(sqlStatement, metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
+            locked = tryGlobalLock(sqlStatement, metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
             results = jdbcExecutor.execute(executionGroups, callback);
             refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatement, routeUnits);
         } finally {
             if (locked) {
-                releaseLock();
+                releaseGlobalLock();
             }
         }
         return results;
     }
     
-    private boolean tryLock(final SQLStatement sqlStatement, final long lockTimeoutMilliseconds) {
+    private boolean tryGlobalLock(final SQLStatement sqlStatement, final long lockTimeoutMilliseconds) {
         if (needLock(sqlStatement)) {
-            if (!LockContext.getLockStrategy().tryLock(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
+            if (!metaDataContexts.getLockContext().tryGlobalLock(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
                 throw new ShardingSphereException("Service lock wait timeout of %s ms exceeded", lockTimeoutMilliseconds);
             }
             return true;
@@ -150,17 +150,17 @@ public final class DriverJDBCExecutor {
     }
     
     private boolean needLock(final SQLStatement sqlStatement) {
-        return SchemaRefresherFactory.newInstance(sqlStatement).isPresent();
+        return MetadataRefresherFactory.newInstance(sqlStatement).isPresent();
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void refreshSchema(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
-        Optional<SchemaRefresher> schemaRefresher = SchemaRefresherFactory.newInstance(sqlStatement);
-        if (schemaRefresher.isPresent()) {
+        Optional<MetadataRefresher> metadataRefresher = MetadataRefresherFactory.newInstance(sqlStatement);
+        if (metadataRefresher.isPresent() && metadataRefresher.get() instanceof SchemaRefresher) {
             Collection<String> routeDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
             SchemaBuilderMaterials materials = new SchemaBuilderMaterials(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                     dataSourceMap, metaData.getRuleMetaData().getRules(), metaDataContexts.getProps());
-            schemaRefresher.get().refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, materials);
+            ((SchemaRefresher) metadataRefresher.get()).refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, materials);
             notifySchemaChanged(metaData.getSchema());
         }
     }
@@ -169,7 +169,7 @@ public final class DriverJDBCExecutor {
         OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(DefaultSchema.LOGIC_NAME, schema));
     }
     
-    private void releaseLock() {
-        LockContext.getLockStrategy().releaseLock();
+    private void releaseGlobalLock() {
+        metaDataContexts.getLockContext().releaseGlobalLock();
     }
 }

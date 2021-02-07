@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -54,9 +54,11 @@ public final class GovernanceTransactionContextsTest {
     @Test
     public void assertNewInstance() {
         when(transactionContexts.getDefaultTransactionManagerEngine()).thenReturn(engine);
-        when(transactionContexts.getEngines()).thenReturn(Collections.singletonMap("name", engine));
+        Map<String, ShardingTransactionManagerEngine> engines = new HashMap<>(1, 1);
+        engines.put("name", engine);
+        when(transactionContexts.getEngines()).thenReturn(engines);
         GovernanceTransactionContexts actual = new GovernanceTransactionContexts(transactionContexts, XATransactionManagerType.ATOMIKOS.getType());
-        assertThat(actual.getEngines(), is(Collections.singletonMap("name", engine)));
+        assertThat(actual.getEngines(), is(engines));
         assertThat(actual.getDefaultTransactionManagerEngine(), is(engine));
     }
     

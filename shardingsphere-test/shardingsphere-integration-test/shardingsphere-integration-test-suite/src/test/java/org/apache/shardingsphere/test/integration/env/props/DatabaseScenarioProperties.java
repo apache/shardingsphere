@@ -27,7 +27,7 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 public final class DatabaseScenarioProperties {
-
+    
     private final String scenario;
     
     private final Properties props;

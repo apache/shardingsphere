@@ -22,7 +22,7 @@ import brave.Tracing;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractSQLParserEngineAdviceTest;
-import org.apache.shardingsphere.agent.plugin.tracing.rule.ZipkinCollector;
+import org.apache.shardingsphere.agent.plugin.tracing.zipkin.collector.ZipkinCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.junit.Before;

@@ -39,11 +39,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     SQL_SIMPLE("sql-simple", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
-     * The max thread size of accepter group to accept TCP connections.
-     */
-    ACCEPTOR_SIZE("acceptor-size", String.valueOf(Runtime.getRuntime().availableProcessors() * 2), int.class),
-    
-    /**
      * The max thread size of worker group to execute SQL.
      */
     EXECUTOR_SIZE("executor-size", String.valueOf(0), int.class),

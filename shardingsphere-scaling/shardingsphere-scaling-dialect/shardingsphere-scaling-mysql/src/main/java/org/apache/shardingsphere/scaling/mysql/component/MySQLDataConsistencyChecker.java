@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.scaling.mysql.component;
 
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceWrapper;
-import org.apache.shardingsphere.scaling.core.exception.DataCheckFailException;
-import org.apache.shardingsphere.scaling.core.job.ScalingJob;
+import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceWrapper;
+import org.apache.shardingsphere.scaling.core.common.exception.DataCheckFailException;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.check.AbstractDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -41,15 +40,15 @@ import java.util.stream.Collectors;
 /**
  * MySQL data consistency checker.
  */
-public final class MySQLDataConsistencyChecker extends AbstractDataConsistencyChecker implements DataConsistencyChecker {
+public final class MySQLDataConsistencyChecker extends AbstractDataConsistencyChecker {
     
-    public MySQLDataConsistencyChecker(final ScalingJob scalingJob) {
-        super(scalingJob);
+    public MySQLDataConsistencyChecker(final JobContext jobContext) {
+        super(jobContext);
     }
     
     @Override
     public Map<String, Boolean> dataCheck() {
-        return distinctByValue(getScalingJob().getTaskConfigs()
+        return distinctByValue(getJobContext().getTaskConfigs()
                 .stream().flatMap(each -> each.getDumperConfig().getTableNameMap().entrySet().stream())
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)))
                 .entrySet().stream().collect(Collectors.toMap(Entry::getValue, entry -> dataValid(entry.getKey(), entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));

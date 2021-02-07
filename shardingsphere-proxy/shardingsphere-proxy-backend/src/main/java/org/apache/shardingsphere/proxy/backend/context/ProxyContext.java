@@ -21,17 +21,16 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 
-import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Proxy context.
@@ -106,16 +105,20 @@ public final class ProxyContext {
     }
     
     /**
-     * Get data source sample.
+     * Get lock context.
      * 
-     * @return data source sample
+     * @return lock context
      */
-    public Optional<DataSource> getDataSourceSample() {
-        List<String> schemaNames = getAllSchemaNames();
-        if (schemaNames.isEmpty()) {
-            return Optional.empty();
-        }
-        Map<String, DataSource> dataSources = getMetaData(schemaNames.get(0)).getResource().getDataSources();
-        return dataSources.values().stream().findFirst();
+    public LockContext getLockContext() {
+        return metaDataContexts.getLockContext();
+    }
+    
+    /**
+     * Get state context.
+     * 
+     * @return state context
+     */
+    public StateContext getStateContext() {
+        return metaDataContexts.getStateContext();
     }
 }

@@ -818,3 +818,35 @@ IDENTIFIER
 WORK
     : W O R K
     ;
+
+CONTAINER_MAP
+    : C O N T A I N E R UL_ M A P
+    ;
+
+CONTAINERS_DEFAULT
+    : C O N T A I N E R S UL_ D E F A U L T
+    ;
+
+WAIT
+    : W A I T
+    ;
+
+NOWAIT
+    : N O W A I T
+    ;
+
+BATCH
+    : B A T C H
+    ;
+
+LOG
+    : L O G
+    ;
+
+REUSE
+    : R E U S E
+    ;
+
+STORAGE
+    : S T O R A G E
+    ;

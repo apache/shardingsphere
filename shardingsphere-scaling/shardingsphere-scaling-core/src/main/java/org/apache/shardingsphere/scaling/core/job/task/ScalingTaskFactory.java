@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.job.task;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
@@ -26,7 +28,8 @@ import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
 /**
  * Scaling task factory.
  */
-public interface ScalingTaskFactory {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ScalingTaskFactory {
     
     /**
      * Create inventory task.
@@ -35,7 +38,9 @@ public interface ScalingTaskFactory {
      * @param importerConfig importer configuration
      * @return inventory task
      */
-    InventoryTask createInventoryTask(InventoryDumperConfiguration inventoryDumperConfig, ImporterConfiguration importerConfig);
+    public static InventoryTask createInventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig) {
+        return new InventoryTask(inventoryDumperConfig, importerConfig);
+    }
     
     /**
      * Create incremental task.
@@ -45,5 +50,7 @@ public interface ScalingTaskFactory {
      * @param importerConfig importer configuration
      * @return incremental task
      */
-    IncrementalTask createIncrementalTask(int concurrency, DumperConfiguration dumperConfig, ImporterConfiguration importerConfig);
+    public static IncrementalTask createIncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig) {
+        return new IncrementalTask(concurrency, dumperConfig, importerConfig);
+    }
 }

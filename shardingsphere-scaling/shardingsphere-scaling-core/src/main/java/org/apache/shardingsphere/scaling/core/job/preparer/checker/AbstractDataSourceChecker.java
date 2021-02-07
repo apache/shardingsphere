@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.job.preparer.checker;
 
-import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
+import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
@@ -58,7 +58,7 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
             try (PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement(getSqlBuilder().buildCheckEmptySQL(each));
                  ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    throw new PrepareFailedException(String.format("Target table [%s] not empty!", each));
+                    throw new PrepareFailedException(String.format("Target table [%s] is not empty!", each));
                 }
             }
         }

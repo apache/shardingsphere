@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.governance.core.config.listener;
 
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.event.model.auth.AuthenticationChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.user.Grantee;
+import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,8 +39,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class AuthenticationChangedListenerTest {
     
-    private static final String AUTHENTICATION_YAML = "  users:\n" + "    root1:\n      password: root1\n" 
-            + "      authorizedSchemas: sharding_db\n" + "    root2:\n" + "      password: root2\n" + "      authorizedSchemas: sharding_db,pr_db";
+    private static final String AUTHENTICATION_YAML = "  users:\n" + "    root1:\n      password: root1\n" + "    root2:\n" + "      password: root2\n";
     
     private AuthenticationChangedListener authenticationChangedListener;
     
@@ -55,7 +55,8 @@ public final class AuthenticationChangedListenerTest {
     public void assertCreateEvent() {
         Optional<GovernanceEvent> actual = authenticationChangedListener.createEvent(new DataChangedEvent("test", AUTHENTICATION_YAML, Type.UPDATED));
         assertTrue(actual.isPresent());
-        Optional<ShardingSphereUser> user = ((AuthenticationChangedEvent) actual.get()).getAuthentication().findUser("root1");
+        Optional<ShardingSphereUser> user =
+                ((UserRuleChangedEvent) actual.get()).getUsers().stream().filter(each -> each.getGrantee().equals(new Grantee("root1", ""))).findFirst();
         assertTrue(user.isPresent());
         assertThat(user.get().getPassword(), is("root1"));
     }

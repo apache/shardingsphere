@@ -32,7 +32,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Scaling configuration initializer.
+ * Scaling server configuration initializer.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
@@ -41,11 +41,11 @@ public final class ServerConfigurationInitializer {
     private static final String SERVER_FILE = "conf/server.yaml";
     
     /**
-     * Init scaling configuration.
+     * Init server configuration.
      */
     @SneakyThrows(IOException.class)
     public static void init() {
-        log.info("Initialize scaling configuration.");
+        log.info("Initialize server configuration.");
         File yamlFile = new File(Resources.getResource(SERVER_FILE).getPath());
         YamlServerConfiguration serverConfig = YamlEngine.unmarshal(yamlFile, YamlServerConfiguration.class);
         Preconditions.checkNotNull(serverConfig, "Server configuration file `%s` is invalid.", yamlFile.getName());

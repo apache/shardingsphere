@@ -20,28 +20,22 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
-import org.apache.shardingsphere.governance.core.lock.strategy.GovernanceLockStrategy;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
-import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlAuthenticationConfiguration;
-import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.AuthenticationYamlSwapper;
+import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
-import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockStrategyType;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
+import org.apache.shardingsphere.scaling.core.api.ScalingWorker;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.spi.ScalingWorkerLoader;
-import org.apache.shardingsphere.scaling.core.workflow.ScalingServiceHolder;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 import java.util.Collection;
@@ -73,7 +67,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
             governanceFacade.onlineInstance();
         } else {
             governanceFacade.onlineInstance(
-                    getDataSourceConfigurationMap(ruleConfigs), getRuleConfigurations(ruleConfigs), getAuthentication(serverConfig.getAuthentication()), serverConfig.getProps());
+                    getDataSourceConfigurationMap(ruleConfigs), getRuleConfigurations(ruleConfigs), new UserRuleYamlSwapper().swapToObject(serverConfig.getAuthentication()), serverConfig.getProps());
         }
     }
     
@@ -96,17 +90,12 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
             entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private DefaultAuthentication getAuthentication(final YamlAuthenticationConfiguration authConfig) {
-        return new AuthenticationYamlSwapper().swapToObject(authConfig);
-    }
-    
     private ProxyConfiguration loadProxyConfiguration() {
         Collection<String> schemaNames = governanceFacade.getConfigCenter().getAllSchemaNames();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
         Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules(schemaNames);
-        DefaultAuthentication authentication = governanceFacade.getConfigCenter().loadAuthentication();
         Properties props = governanceFacade.getConfigCenter().loadProperties();
-        return new ProxyConfiguration(schemaDataSources, schemaRules, authentication, props);
+        return new ProxyConfiguration(schemaDataSources, schemaRules, governanceFacade.getConfigCenter().loadUserRule(), props);
     }
     
     private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {
@@ -131,20 +120,13 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     @Override
-    protected void initLockContext() {
-        LockContext.init(LockStrategyType.GOVERNANCE);
-        ((GovernanceLockStrategy) LockContext.getLockStrategy()).init(governanceFacade.getRegistryCenter());
-    }
-    
-    @Override
     protected void initScalingWorker(final YamlProxyConfiguration yamlConfig) {
         Optional<ServerConfiguration> scalingConfigurationOptional = getScalingConfiguration(yamlConfig);
         if (scalingConfigurationOptional.isPresent()) {
             ServerConfiguration serverConfiguration = scalingConfigurationOptional.get();
-            serverConfiguration.setDistributedScalingService(new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance()));
+            serverConfiguration.setGovernanceConfig(new GovernanceConfigurationYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getGovernance()));
             ScalingContext.getInstance().init(serverConfiguration);
-            ScalingWorkerLoader.initScalingWorker();
-            ScalingServiceHolder.getInstance().init();
+            ScalingWorker.init();
         }
     }
 }

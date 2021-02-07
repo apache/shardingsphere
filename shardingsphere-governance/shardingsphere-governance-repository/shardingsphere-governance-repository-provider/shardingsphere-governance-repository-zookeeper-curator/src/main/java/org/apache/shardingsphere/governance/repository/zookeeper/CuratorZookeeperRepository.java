@@ -23,7 +23,6 @@ import lombok.Setter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
-import org.apache.curator.framework.api.transaction.TransactionOp;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
@@ -65,6 +64,8 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     
     private CuratorFramework client;
     
+    private CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder();
+    
     private final Map<String, InterProcessLock> locks = new ConcurrentHashMap<>();
     
     @Getter
@@ -83,9 +84,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         int maxRetries = zookeeperProperties.getValue(ZookeeperPropertyKey.MAX_RETRIES);
         int timeToLiveSeconds = zookeeperProperties.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS);
         int operationTimeoutMilliseconds = zookeeperProperties.getValue(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS);
-        String digest = zookeeperProperties.getValue(ZookeeperPropertyKey.DIGEST);
-        CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
-            .connectString(config.getServerLists())
+        builder.connectString(config.getServerLists())
             .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries))
             .namespace(namespace);
         if (0 != timeToLiveSeconds) {
@@ -94,6 +93,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         if (0 != operationTimeoutMilliseconds) {
             builder.connectionTimeoutMs(operationTimeoutMilliseconds);
         }
+        String digest = zookeeperProperties.getValue(ZookeeperPropertyKey.DIGEST);
         if (!Strings.isNullOrEmpty(digest)) {
             builder.authorization(ZookeeperPropertyKey.DIGEST.getKey(), digest.getBytes(StandardCharsets.UTF_8))
                 .aclProvider(new ACLProvider() {
@@ -174,8 +174,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     
     private void update(final String key, final String value) {
         try {
-            TransactionOp transactionOp = client.transactionOp();
-            client.transaction().forOperations(transactionOp.check().forPath(key), transactionOp.setData().forPath(key, value.getBytes(StandardCharsets.UTF_8)));
+            client.setData().forPath(key, value.getBytes(StandardCharsets.UTF_8));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -237,16 +236,16 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         String path = key + PATH_SEPARATOR;
         if (!caches.containsKey(path)) {
             addCacheData(key);
+            CuratorCache cache = caches.get(path);
+            cache.listenable().addListener((type, oldData, data) -> {
+                String eventPath = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getPath() : data.getPath();
+                byte[] eventDataByte = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getData() : data.getData();
+                Type changedType = getChangedType(type);
+                if (Type.IGNORED != changedType) {
+                    listener.onChange(new DataChangedEvent(eventPath, null == eventDataByte ? null : new String(eventDataByte, StandardCharsets.UTF_8), changedType));
+                }
+            });
         }
-        CuratorCache cache = caches.get(path);
-        cache.listenable().addListener((type, oldData, data) -> {
-            String eventPath = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getPath() : data.getPath();
-            byte[] eventDataByte = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getData() : data.getData();
-            Type changedType = getChangedType(type);
-            if (Type.IGNORED != changedType) {
-                listener.onChange(new DataChangedEvent(eventPath, null == eventDataByte ? null : new String(eventDataByte, StandardCharsets.UTF_8), changedType));
-            }
-        });
     }
     
     private void addCacheData(final String cachePath) {

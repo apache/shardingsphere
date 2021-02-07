@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.mysql;
 
+import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.CodePointBuffer;
 import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -34,13 +35,15 @@ import java.nio.CharBuffer;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
+@RequiredArgsConstructor
 public final class MySQLParameterizedTest {
-
-    private static Collection<String[]> testUnits = new LinkedList();
-
+    
+    private static Collection<String[]> testUnits = new LinkedList<>();
+    
     static {
         testUnits.add(new String[]{"select_with_union", "select a+1 as b, name n from table1 join table2 where id=1 and name='lu';", "SELECT a + ? AS b, name n\n"
                 + "FROM table1 JOIN table2\n"
@@ -100,32 +103,25 @@ public final class MySQLParameterizedTest {
                 + "\tPRIMARY KEY (`runoob_id`)\n"
                 + ") ENGINE = InnoDB DEFAULT CHARSET = utf8"});
     }
-
+    
     private final String caseId;
-
+    
     private final String inputSql;
-
-    private final String expectFormartedSql;
-
-    public MySQLParameterizedTest(final String caseId, final String inputSql, final String expectFormartedSql) {
-        this.caseId = caseId;
-        this.inputSql = inputSql;
-        this.expectFormartedSql = expectFormartedSql;
-    }
-
+    
+    private final String expectFormattedSQL;
+    
     @Parameterized.Parameters(name = "{0}")
     public static Collection<String[]> getTestParameters() {
         return testUnits;
     }
-
+    
     @Test
-    public void assertSqlFormat() {
+    public void assertSQLFormat() {
         CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(inputSql.toCharArray()));
         MySQLLexer lexer = new MySQLLexer(CodePointCharStream.fromBuffer(buffer));
         MySQLParser parser = new MySQLParser(new CommonTokenStream(lexer));
         ParseTree tree = ((ParseASTNode) parser.parse()).getRootNode();
         MySQLFormatSQLVisitor visitor = new MySQLDMLFormatSQLVisitor();
-        String result = visitor.visit(tree);
-        assertTrue("SQL format error", expectFormartedSql.equals(result));
+        assertThat("SQL format error", expectFormattedSQL, is(visitor.visit(tree)));
     }
 }

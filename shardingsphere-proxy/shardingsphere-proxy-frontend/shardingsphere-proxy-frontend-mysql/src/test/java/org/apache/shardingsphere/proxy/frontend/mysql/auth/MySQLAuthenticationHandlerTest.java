@@ -21,8 +21,11 @@ import com.google.common.primitives.Bytes;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
-import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.privilege.PrivilegeType;
+import org.apache.shardingsphere.infra.auth.privilege.data.SchemaPrivilege;
+import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -72,37 +75,37 @@ public final class MySQLAuthenticationHandlerTest {
     
     @Test
     public void assertLoginWithPassword() {
-        setAuthentication(new ShardingSphereUser("root", Collections.singleton("db1")));
+        setAuthentication(new ShardingSphereUser("root", "root", ""));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertFalse(authenticationHandler.login("root", authResponse, "db1").isPresent());
+        assertFalse(authenticationHandler.login("root", "", authResponse, "db1").isPresent());
     }
     
     @Test
     public void assertLoginWithAbsentUser() {
-        setAuthentication(new ShardingSphereUser("root", Collections.singleton("db1")));
+        setAuthentication(new ShardingSphereUser("root", "root", ""));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertThat(authenticationHandler.login("root1", authResponse, "db1").orElse(null), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
+        assertThat(authenticationHandler.login("root1", "", authResponse, "db1").orElse(null), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
     }
     
     @Test
     public void assertLoginWithIncorrectPassword() {
-        setAuthentication(new ShardingSphereUser("root", Collections.singleton("db1")));
+        setAuthentication(new ShardingSphereUser("root", "root", ""));
         byte[] authResponse = {0, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertThat(authenticationHandler.login("root", authResponse, "db1").orElse(null), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
+        assertThat(authenticationHandler.login("root", "", authResponse, "db1").orElse(null), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
     }
     
     @Test
     public void assertLoginWithoutPassword() {
-        setAuthentication(new ShardingSphereUser(null, null));
+        setAuthentication(new ShardingSphereUser("root", null, ""));
         byte[] authResponse = {};
-        assertFalse(authenticationHandler.login("root", authResponse, "db1").isPresent());
+        assertFalse(authenticationHandler.login("root", "", authResponse, "db1").isPresent());
     }
     
     @Test
     public void assertLoginWithUnauthorizedSchema() {
-        setAuthentication(new ShardingSphereUser("root", Collections.singleton("db1")));
+        setAuthenticationForDB(new ShardingSphereUser("root", "root", ""));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
-        assertThat(authenticationHandler.login("root", authResponse, "db2").orElse(null), is(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR));
+        assertThat(authenticationHandler.login("root", "", authResponse, "db2").orElse(null), is(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR));
     }
     
     @Test
@@ -112,7 +115,19 @@ public final class MySQLAuthenticationHandlerTest {
     
     private void setAuthentication(final ShardingSphereUser user) {
         DefaultAuthentication authentication = new DefaultAuthentication();
-        authentication.getUsers().put("root", user);
+        ShardingSpherePrivilege privilege = new ShardingSpherePrivilege();
+        privilege.setSuper();
+        authentication.getAuthentication().put(user, privilege);
+        initProxyContext(authentication);
+    }
+    
+    private void setAuthenticationForDB(final ShardingSphereUser user) {
+        DefaultAuthentication authentication = new DefaultAuthentication();
+        ShardingSpherePrivilege privilege = new ShardingSpherePrivilege();
+        SchemaPrivilege schema = new SchemaPrivilege("db1");
+        schema.getGlobalPrivileges().add(PrivilegeType.ALL);
+        privilege.getDataPrivilege().getSpecificPrivileges().put("db1", schema);
+        authentication.getAuthentication().put(user, privilege);
         initProxyContext(authentication);
     }
     

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.yaml.engine;
 
+import org.apache.shardingsphere.infra.yaml.swapper.fixture.FixtureYamlPropsRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.fixture.FixtureYamlRuleConfiguration;
 import org.junit.Test;
 import org.yaml.snakeyaml.constructor.ConstructorException;
@@ -79,8 +80,7 @@ public final class YamlEngineTest {
     
     @Test
     public void assertUnmarshalProperties() {
-        Properties actual = YamlEngine.unmarshalProperties("password: pwd\nauthorizedSchemas: db1", Collections.singletonList(Properties.class));
-        assertThat(actual.getProperty("authorizedSchemas"), is("db1"));
+        Properties actual = YamlEngine.unmarshalWithFilter("password: pwd", Properties.class);
         assertThat(actual.getProperty("password"), is("pwd"));
     }
     
@@ -93,7 +93,7 @@ public final class YamlEngineTest {
     
     @Test(expected = ConstructorException.class)
     public void assertUnmarshalMapWithIllegalClasses() {
-        YamlEngine.unmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", Collections.<Class<?>>emptyList());
+        YamlEngine.unmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", Collections.emptyList());
     }
     
     @Test
@@ -103,5 +103,45 @@ public final class YamlEngineTest {
         acceptClasses.add(URL.class);
         Map<String, URLClassLoader> actual = (Map) YamlEngine.unmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", acceptClasses);
         assertThat(actual.get("url").getClass().getName(), is(URLClassLoader.class.getName()));
+    }
+    
+    @Test
+    public void assertUnmarshalWithAcceptClass() throws IOException {
+        URL url = getClass().getClassLoader().getResource("yaml/fixture-rule-with-props.yaml");
+        assertNotNull(url);
+        StringBuilder yamlContent = new StringBuilder();
+        try (
+                FileReader fileReader = new FileReader(url.getFile());
+                BufferedReader reader = new BufferedReader(fileReader)) {
+            String line;
+            while (null != (line = reader.readLine())) {
+                yamlContent.append(line).append("\n");
+            }
+        }
+        Collection<Class<?>> acceptClasses = new LinkedList<>();
+        acceptClasses.add(URLClassLoader.class);
+        acceptClasses.add(URL.class);
+        acceptClasses.add(FixtureYamlPropsRuleConfiguration.class);
+        FixtureYamlPropsRuleConfiguration actual = YamlEngine.unmarshal(yamlContent.toString(), 
+                FixtureYamlPropsRuleConfiguration.class, acceptClasses);
+        assertThat(actual.getName(), is("test"));
+    }
+    
+    @Test(expected = ConstructorException.class)
+    public void assertUnmarshalWithoutAcceptClass() throws IOException {
+        URL url = getClass().getClassLoader().getResource("yaml/fixture-rule-with-props.yaml");
+        assertNotNull(url);
+        StringBuilder yamlContent = new StringBuilder();
+        try (
+                FileReader fileReader = new FileReader(url.getFile());
+                BufferedReader reader = new BufferedReader(fileReader)) {
+            String line;
+            while (null != (line = reader.readLine())) {
+                yamlContent.append(line).append("\n");
+            }
+        }
+        FixtureYamlPropsRuleConfiguration actual = YamlEngine.unmarshalWithFilter(yamlContent.toString(), 
+                FixtureYamlPropsRuleConfiguration.class);
+        assertThat(actual.getName(), is("test"));
     }
 }

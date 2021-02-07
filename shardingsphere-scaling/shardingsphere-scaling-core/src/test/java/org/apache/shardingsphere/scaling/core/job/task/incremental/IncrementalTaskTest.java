@@ -19,24 +19,17 @@ package org.apache.shardingsphere.scaling.core.job.task.incremental;
 
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.job.TaskProgress;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
-import org.apache.shardingsphere.scaling.core.job.task.DefaultScalingTaskFactory;
+import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class IncrementalTaskTest {
     
@@ -51,16 +44,7 @@ public final class IncrementalTaskTest {
     @Before
     public void setUp() {
         ScalingContext.getInstance().init(new ServerConfiguration());
-        incrementalTask = new DefaultScalingTaskFactory().createIncrementalTask(3, mockDumperConfig(), mockImporterConfiguration());
-    }
-    
-    @Test
-    public void assertStart() {
-        incrementalTask.start();
-        TaskProgress progress = incrementalTask.getProgress();
-        assertTrue(progress instanceof IncrementalTaskProgress);
-        assertThat(((IncrementalTaskProgress) progress).getId(), is("ds0"));
-        assertThat(((IncrementalTaskProgress) progress).getDelayMillisecond(), is(Long.MAX_VALUE));
+        incrementalTask = ScalingTaskFactory.createIncrementalTask(3, mockDumperConfig(), mockImporterConfiguration());
     }
     
     @After
@@ -82,7 +66,7 @@ public final class IncrementalTaskTest {
         Map<String, String> tableMap = new HashMap<>(1, 1);
         tableMap.put("t_order", "t_order");
         result.setTableNameMap(tableMap);
-        result.setPositionManager(new PositionManager(new PlaceholderPosition()));
+        result.setPosition(new PlaceholderPosition());
         return result;
     }
 }

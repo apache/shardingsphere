@@ -30,11 +30,12 @@ public final class AuthenticationResultBuilder {
      * Create finished authentication result.
      * 
      * @param username username
+     * @param hostname hostname
      * @param database database
      * @return finished authentication result
      */
-    public static AuthenticationResult finished(final String username, final String database) {
-        return new AuthenticationResult(username, database, true);
+    public static AuthenticationResult finished(final String username, final String hostname, final String database) {
+        return new AuthenticationResult(username, hostname, database, true);
     }
     
     /**
@@ -43,17 +44,18 @@ public final class AuthenticationResultBuilder {
      * @return continued authentication result
      */
     public static AuthenticationResult continued() {
-        return new AuthenticationResult(null, null, false);
+        return new AuthenticationResult(null, null, null, false);
     }
     
     /**
      * Create continued authentication result.
      * 
      * @param username username
+     * @param hostname hostname
      * @param database database
      * @return continued authentication result
      */
-    public static AuthenticationResult continued(final String username, final String database) {
-        return new AuthenticationResult(username, database, false);
+    public static AuthenticationResult continued(final String username, final String hostname, final String database) {
+        return new AuthenticationResult(username, hostname, database, false);
     }
 }

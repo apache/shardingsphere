@@ -139,6 +139,8 @@ rules:
         keyGeneratorName: constant
   bindingTables:
     - t_order,t_order_item
+  broadcastTables:
+    - t_broadcast_table
   
   shardingAlgorithms:
     standard_test:

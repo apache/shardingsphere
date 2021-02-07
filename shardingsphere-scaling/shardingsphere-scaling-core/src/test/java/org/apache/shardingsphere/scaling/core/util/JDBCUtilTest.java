@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.scaling.core.config.datasource.ConfigurationYamlConverter;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.utils.JDBCUtil;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -30,7 +29,7 @@ import java.util.ArrayList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class JDBCUtilTest {
+public final class JDBCUtilTest {
     
     @Test
     public void assertAppendStandardJDBCDataSourceConfiguration() {
