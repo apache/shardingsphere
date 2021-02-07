@@ -27,7 +27,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,14 +51,9 @@ public final class SchemaMetaDataLoader {
      * @throws SQLException SQL exception
      */
     public static Collection<String> loadAllTableNames(final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
-        Collection<String> result;
         try (MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
-            result = loadAllTableNames(connectionAdapter);
+            return loadAllTableNames(connectionAdapter);
         }
-        if (result.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return result;
     }
     
     private static Collection<String> loadAllTableNames(final Connection connection) throws SQLException {
