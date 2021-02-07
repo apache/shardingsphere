@@ -43,6 +43,7 @@ import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -150,7 +151,7 @@ public final class DriverJDBCExecutor {
     }
     
     private boolean needLock(final SQLStatement sqlStatement) {
-        return MetadataRefresherFactory.newInstance(sqlStatement).isPresent();
+        return sqlStatement instanceof DDLStatement;
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
