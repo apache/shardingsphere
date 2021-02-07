@@ -750,7 +750,7 @@
         <table start-index="95" stop-index="101">
             <simple-table name="t_order" start-index="95" stop-index="101" />
         </table>
-        <set start-index="103" stop-index="116" literal-stop-index="116">
+        <set start-index="103" stop-index="175">
             <assignment start-index="107" stop-index="116" literal-stop-index="116">
                 <column name="status" start-index="107" stop-index="112" />
                 <assignment-value>
@@ -759,11 +759,13 @@
                 </assignment-value>
             </assignment>
         </set>
-        <where start-index="178" stop-index="196">
+        <where start-index="177" stop-index="196">
             <expr>
                 <binary-operation-expression start-index="183" stop-index="196">
                     <left>
-                        <column name="order_id" start-index="185" stop-index="192" />
+                        <column name="order_id" start-index="183" stop-index="192">
+                            <owner name="c" start-index="183" stop-index="183" />
+                        </column>
                     </left>
                     <operator>=</operator>
                     <right>

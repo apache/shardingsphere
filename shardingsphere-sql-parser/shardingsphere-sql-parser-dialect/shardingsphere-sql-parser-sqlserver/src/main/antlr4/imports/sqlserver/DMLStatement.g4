@@ -44,7 +44,7 @@ assignment
     ;
 
 setAssignmentsClause
-    : SET assignment (COMMA_ assignment)* fromClause? whereClause?
+    : SET assignment (COMMA_ assignment)* fromClause?
     ;
 
 assignmentValues
