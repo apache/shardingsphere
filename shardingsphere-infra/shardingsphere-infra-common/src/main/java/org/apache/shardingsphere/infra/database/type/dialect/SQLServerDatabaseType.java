@@ -35,6 +35,11 @@ public final class SQLServerDatabaseType implements DatabaseType {
     }
     
     @Override
+    public QuoteCharacter getQuoteCharacter() {
+        return QuoteCharacter.BRACKETS;
+    }
+    
+    @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singletonList("jdbc:microsoft:sqlserver:");
     }
@@ -42,10 +47,5 @@ public final class SQLServerDatabaseType implements DatabaseType {
     @Override
     public SQLServerDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new SQLServerDataSourceMetaData(url);
-    }
-    
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.BRACKETS;
     }
 }

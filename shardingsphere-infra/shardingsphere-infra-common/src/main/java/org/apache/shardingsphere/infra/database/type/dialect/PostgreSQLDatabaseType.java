@@ -35,6 +35,11 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     }
     
     @Override
+    public QuoteCharacter getQuoteCharacter() {
+        return QuoteCharacter.QUOTE;
+    }
+    
+    @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singleton(String.format("jdbc:%s:", getName().toLowerCase()));
     }
@@ -42,10 +47,5 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     @Override
     public PostgreSQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new PostgreSQLDataSourceMetaData(url);
-    }
-    
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.QUOTE;
     }
 }

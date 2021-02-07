@@ -35,6 +35,11 @@ public final class SQL92DatabaseType implements DatabaseType {
     }
     
     @Override
+    public QuoteCharacter getQuoteCharacter() {
+        return QuoteCharacter.QUOTE;
+    }
+    
+    @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.emptyList();
     }
@@ -42,10 +47,5 @@ public final class SQL92DatabaseType implements DatabaseType {
     @Override
     public SQL92DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new SQL92DataSourceMetaData(url);
-    }
-    
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.QUOTE;
     }
 }

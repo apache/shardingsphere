@@ -37,6 +37,13 @@ public interface DatabaseType {
     String getName();
     
     /**
+     * Get quote character.
+     *
+     * @return quote character
+     */
+    QuoteCharacter getQuoteCharacter();
+    
+    /**
      * Get alias of JDBC URL prefixes.
      * 
      * @return Alias of JDBC URL prefixes
@@ -75,14 +82,5 @@ public interface DatabaseType {
      */
     default String formatTableNamePattern(final String tableNamePattern) {
         return tableNamePattern;
-    }
-    
-    /**
-     * Get quote character.
-     *
-     * @return quote character
-     */
-    default QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.NONE;
     }
 }

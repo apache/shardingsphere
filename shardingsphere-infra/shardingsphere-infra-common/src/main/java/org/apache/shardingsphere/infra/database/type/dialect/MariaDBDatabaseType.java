@@ -37,6 +37,11 @@ public final class MariaDBDatabaseType implements BranchDatabaseType {
     }
     
     @Override
+    public QuoteCharacter getQuoteCharacter() {
+        return QuoteCharacter.BACK_QUOTE;
+    }
+    
+    @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singleton(String.format("jdbc:%s:", getName().toLowerCase()));
     }
@@ -49,10 +54,5 @@ public final class MariaDBDatabaseType implements BranchDatabaseType {
     @Override
     public DatabaseType getTrunkDatabaseType() {
         return DatabaseTypeRegistry.getActualDatabaseType("MySQL");
-    }
-    
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.BACK_QUOTE;
     }
 }

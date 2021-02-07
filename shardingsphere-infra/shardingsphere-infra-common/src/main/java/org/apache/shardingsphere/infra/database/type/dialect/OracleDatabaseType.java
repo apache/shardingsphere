@@ -38,6 +38,11 @@ public final class OracleDatabaseType implements DatabaseType {
     }
     
     @Override
+    public QuoteCharacter getQuoteCharacter() {
+        return QuoteCharacter.QUOTE;
+    }
+    
+    @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Collections.singleton(String.format("jdbc:%s:", getName().toLowerCase()));
     }
@@ -60,10 +65,5 @@ public final class OracleDatabaseType implements DatabaseType {
     @Override
     public String formatTableNamePattern(final String tableNamePattern) {
         return tableNamePattern.toUpperCase();
-    }
-    
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.QUOTE;
     }
 }

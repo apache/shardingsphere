@@ -35,6 +35,11 @@ public final class MySQLDatabaseType implements DatabaseType {
     }
     
     @Override
+    public QuoteCharacter getQuoteCharacter() {
+        return QuoteCharacter.BACK_QUOTE;
+    }
+    
+    @Override
     public Collection<String> getJdbcUrlPrefixes() {
         return Arrays.asList("jdbc:mysql:", "jdbc:mysqlx:");
     }
@@ -42,10 +47,5 @@ public final class MySQLDatabaseType implements DatabaseType {
     @Override
     public MySQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new MySQLDataSourceMetaData(url);
-    }
-    
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.BACK_QUOTE;
     }
 }
