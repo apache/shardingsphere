@@ -43,52 +43,72 @@ CREATE DATABASE db_7;
 CREATE DATABASE db_8;
 CREATE DATABASE db_9;
 
+CREATE TABLE db_0.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE db_0.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE db_0.t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE db_0.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE INDEX user_index_t_user ON db_0.t_user (user_id);
 CREATE INDEX order_index_t_order ON db_0.t_order (order_id);
 
+CREATE TABLE db_1.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE db_1.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE db_1.t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE db_1.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE INDEX user_index_t_user ON db_1.t_user (user_id);
 CREATE INDEX order_index_t_order ON db_1.t_order (order_id);
 
+CREATE TABLE db_2.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE db_2.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE db_2.t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE db_2.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE INDEX user_index_t_user ON db_2.t_user (user_id);
 CREATE INDEX order_index_t_order ON db_2.t_order (order_id);
 
+CREATE TABLE db_3.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE db_3.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE db_3.t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE db_3.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE INDEX user_index_t_user ON db_3.t_user (user_id);
 CREATE INDEX order_index_t_order ON db_3.t_order (order_id);
 
+CREATE TABLE db_4.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE db_4.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE db_4.t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE db_4.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE INDEX user_index_t_user ON db_4.t_user (user_id);
 CREATE INDEX order_index_t_order ON db_4.t_order (order_id);
 
+CREATE TABLE db_5.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE db_5.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE db_5.t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE db_5.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE INDEX user_index_t_user ON db_5.t_user (user_id);
 CREATE INDEX order_index_t_order ON db_5.t_order (order_id);
 
+CREATE TABLE db_6.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE db_6.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE db_6.t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE db_6.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE INDEX user_index_t_user ON db_6.t_user (user_id);
 CREATE INDEX order_index_t_order ON db_6.t_order (order_id);
 
+CREATE TABLE db_7.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE db_7.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE db_7.t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE db_7.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE INDEX user_index_t_user ON db_7.t_user (user_id);
 CREATE INDEX order_index_t_order ON db_7.t_order (order_id);
 
+CREATE TABLE db_8.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE db_8.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE db_8.t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE db_8.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE INDEX user_index_t_user ON db_8.t_user (user_id);
 CREATE INDEX order_index_t_order ON db_8.t_order (order_id);
 
+CREATE TABLE db_9.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE db_9.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE db_9.t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE db_9.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE INDEX user_index_t_user ON db_9.t_user (user_id);
 CREATE INDEX order_index_t_order ON db_9.t_order (order_id);

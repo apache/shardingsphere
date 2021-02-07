@@ -120,32 +120,40 @@ dataSources:
     maintenanceIntervalMilliseconds: 30000
 
 rules:
-- !SHARDING
-  tables:
-    t_order:
-      actualDataNodes: ds_${0..9}.t_order
-      databaseStrategy:
-        standard:
-          shardingColumn: user_id
-          shardingAlgorithmName: standard_test
-    t_order_item:
-      actualDataNodes: ds_${0..9}.t_order_item
-      databaseStrategy:
-        standard:
-          shardingColumn: user_id
-          shardingAlgorithmName: standard_test
-      keyGenerateStrategy:
-        column: item_id
-        keyGeneratorName: constant
-  bindingTables:
-    - t_order,t_order_item
-  broadcastTables:
-    - t_broadcast_table
-  
-  shardingAlgorithms:
-    standard_test:
-      type: STANDARD_TEST
-  
-  keyGenerators:
+  - !SHARDING
+    tables:
+      t_order:
+        actualDataNodes: db_${0..9}.t_order
+        databaseStrategy:
+          standard:
+            shardingColumn: user_id
+            shardingAlgorithmName: standard_test
+      t_order_item:
+        actualDataNodes: db_${0..9}.t_order_item
+        databaseStrategy:
+          standard:
+            shardingColumn: user_id
+            shardingAlgorithmName: standard_test
+        keyGenerateStrategy:
+          column: item_id
+          keyGeneratorName: constant
+      t_order_details:
+        actualDataNodes: db_${0..9}.t_order_details
+        databaseStrategy:
+          standard:
+            shardingColumn: user_id
+            shardingAlgorithmName: standard_test
+    bindingTables:
+      - t_order,t_order_item,t_order_details
+    broadcastTables:
+      - t_broadcast_table
+      - t_broadcast_table_for_ddl
+      - t_user
+
+    shardingAlgorithms:
+      standard_test:
+        type: STANDARD_TEST
+
+    keyGenerators:
       constant:
-        type: CONSTANT
+        type: Constant

@@ -63,6 +63,7 @@ CREATE DATABASE replica_ds_7;
 CREATE DATABASE replica_ds_8;
 CREATE DATABASE replica_ds_9;
 
+CREATE TABLE primary_ds_0.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE primary_ds_0.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE primary_ds_0.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE primary_ds_0.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -94,7 +95,9 @@ CREATE INDEX order_index_t_order_6 ON primary_ds_0.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON primary_ds_0.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON primary_ds_0.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON primary_ds_0.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON primary_ds_0.t_user (user_id);
 
+CREATE TABLE primary_ds_1.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE primary_ds_1.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE primary_ds_1.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE primary_ds_1.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -126,7 +129,9 @@ CREATE INDEX order_index_t_order_6 ON primary_ds_1.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON primary_ds_1.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON primary_ds_1.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON primary_ds_1.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON primary_ds_1.t_user (user_id);
 
+CREATE TABLE primary_ds_2.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE primary_ds_2.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE primary_ds_2.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE primary_ds_2.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -158,7 +163,9 @@ CREATE INDEX order_index_t_order_6 ON primary_ds_2.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON primary_ds_2.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON primary_ds_2.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON primary_ds_2.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON primary_ds_2.t_user (user_id);
 
+CREATE TABLE primary_ds_3.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE primary_ds_3.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE primary_ds_3.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE primary_ds_3.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -190,7 +197,9 @@ CREATE INDEX order_index_t_order_6 ON primary_ds_3.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON primary_ds_3.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON primary_ds_3.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON primary_ds_3.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON primary_ds_3.t_user (user_id);
 
+CREATE TABLE primary_ds_4.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE primary_ds_4.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE primary_ds_4.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE primary_ds_4.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -222,7 +231,9 @@ CREATE INDEX order_index_t_order_6 ON primary_ds_4.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON primary_ds_4.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON primary_ds_4.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON primary_ds_4.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON primary_ds_4.t_user (user_id);
 
+CREATE TABLE primary_ds_5.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE primary_ds_5.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE primary_ds_5.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE primary_ds_5.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -254,7 +265,9 @@ CREATE INDEX order_index_t_order_6 ON primary_ds_5.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON primary_ds_5.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON primary_ds_5.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON primary_ds_5.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON primary_ds_5.t_user (user_id);
 
+CREATE TABLE primary_ds_6.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE primary_ds_6.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE primary_ds_6.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE primary_ds_6.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -286,7 +299,9 @@ CREATE INDEX order_index_t_order_6 ON primary_ds_6.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON primary_ds_6.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON primary_ds_6.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON primary_ds_6.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON primary_ds_6.t_user (user_id);
 
+CREATE TABLE primary_ds_7.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE primary_ds_7.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE primary_ds_7.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE primary_ds_7.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -318,7 +333,9 @@ CREATE INDEX order_index_t_order_6 ON primary_ds_7.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON primary_ds_7.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON primary_ds_7.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON primary_ds_7.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON primary_ds_7.t_user (user_id);
 
+CREATE TABLE primary_ds_8.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE primary_ds_8.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE primary_ds_8.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE primary_ds_8.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -350,7 +367,9 @@ CREATE INDEX order_index_t_order_6 ON primary_ds_8.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON primary_ds_8.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON primary_ds_8.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON primary_ds_8.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON primary_ds_8.t_user (user_id);
 
+CREATE TABLE primary_ds_9.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE primary_ds_9.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE primary_ds_9.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE primary_ds_9.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -382,7 +401,9 @@ CREATE INDEX order_index_t_order_6 ON primary_ds_9.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON primary_ds_9.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON primary_ds_9.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON primary_ds_9.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON primary_ds_9.t_user (user_id);
 
+CREATE TABLE replica_ds_0.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE replica_ds_0.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE replica_ds_0.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE replica_ds_0.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -414,7 +435,9 @@ CREATE INDEX order_index_t_order_6 ON replica_ds_0.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON replica_ds_0.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON replica_ds_0.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON replica_ds_0.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON replica_ds_0.t_user (user_id);
 
+CREATE TABLE replica_ds_1.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE replica_ds_1.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE replica_ds_1.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE replica_ds_1.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -446,7 +469,9 @@ CREATE INDEX order_index_t_order_6 ON replica_ds_1.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON replica_ds_1.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON replica_ds_1.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON replica_ds_1.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON replica_ds_1.t_user (user_id);
 
+CREATE TABLE replica_ds_2.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE replica_ds_2.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE replica_ds_2.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE replica_ds_2.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -478,7 +503,9 @@ CREATE INDEX order_index_t_order_6 ON replica_ds_2.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON replica_ds_2.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON replica_ds_2.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON replica_ds_2.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON replica_ds_2.t_user (user_id);
 
+CREATE TABLE replica_ds_3.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE replica_ds_3.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE replica_ds_3.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE replica_ds_3.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -510,7 +537,9 @@ CREATE INDEX order_index_t_order_6 ON replica_ds_3.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON replica_ds_3.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON replica_ds_3.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON replica_ds_3.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON replica_ds_3.t_user (user_id);
 
+CREATE TABLE replica_ds_4.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE replica_ds_4.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE replica_ds_4.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE replica_ds_4.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -542,7 +571,9 @@ CREATE INDEX order_index_t_order_6 ON replica_ds_4.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON replica_ds_4.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON replica_ds_4.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON replica_ds_4.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON replica_ds_4.t_user (user_id);
 
+CREATE TABLE replica_ds_5.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE replica_ds_5.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE replica_ds_5.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE replica_ds_5.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -574,7 +605,9 @@ CREATE INDEX order_index_t_order_6 ON replica_ds_5.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON replica_ds_5.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON replica_ds_5.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON replica_ds_5.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON replica_ds_5.t_user (user_id);
 
+CREATE TABLE replica_ds_6.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE replica_ds_6.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE replica_ds_6.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE replica_ds_6.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -606,7 +639,9 @@ CREATE INDEX order_index_t_order_6 ON replica_ds_6.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON replica_ds_6.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON replica_ds_6.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON replica_ds_6.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON replica_ds_6.t_user (user_id);
 
+CREATE TABLE replica_ds_7.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE replica_ds_7.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE replica_ds_7.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE replica_ds_7.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -638,7 +673,9 @@ CREATE INDEX order_index_t_order_6 ON replica_ds_7.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON replica_ds_7.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON replica_ds_7.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON replica_ds_7.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON replica_ds_7.t_user (user_id);
 
+CREATE TABLE replica_ds_8.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE replica_ds_8.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE replica_ds_8.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE replica_ds_8.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -670,7 +707,9 @@ CREATE INDEX order_index_t_order_6 ON replica_ds_8.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON replica_ds_8.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON replica_ds_8.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON replica_ds_8.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON replica_ds_8.t_user (user_id);
 
+CREATE TABLE replica_ds_9.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE replica_ds_9.t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE replica_ds_9.t_order_item_0 (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE replica_ds_9.t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -702,3 +741,4 @@ CREATE INDEX order_index_t_order_6 ON replica_ds_9.t_order_6 (order_id);
 CREATE INDEX order_index_t_order_7 ON replica_ds_9.t_order_7 (order_id);
 CREATE INDEX order_index_t_order_8 ON replica_ds_9.t_order_8 (order_id);
 CREATE INDEX order_index_t_order_9 ON replica_ds_9.t_order_9 (order_id);
+CREATE INDEX user_index_t_user ON replica_ds_9.t_user (user_id);
