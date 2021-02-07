@@ -21,17 +21,6 @@ chapter = true
 | SQLServerDatabaseType  | SQLServer database      |
 | H2DatabaseType         | H2 database             |
 
-## LogicMetaDataDecorator
-
-| *SPI Name*                | *Description*                        |
-| ------------------------- | ------------------------------------ |
-| LogicMetaDataDecorator    | Used to update meta data             |
-
-| *Implementation Class*    | *Description*                        |
-| ------------------------- | ------------------------------------ |
-| ShardingMetaDataDecorator | Used to update sharding meta data    |
-| EncryptMetaDataDecorator  | Used to update encryption meta data  |
-
 ## SQLRouter
 
 | *SPI Name*                    | *Description*                                         |
