@@ -125,8 +125,6 @@ public final class TableMetaDataLoaderTest {
     
     @Test
     public void assertLoadWithNotExistedTable() throws SQLException {
-        when(dataSource.getConnection().getMetaData().getTables(TEST_CATALOG, null, TEST_TABLE, null)).thenReturn(tableNotExistResultSet);
-        when(tableNotExistResultSet.next()).thenReturn(false);
         assertFalse(TableMetaDataLoader.load(dataSource, TEST_TABLE, mock(DatabaseType.class)).isPresent());
     }
 }
