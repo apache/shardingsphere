@@ -11,7 +11,8 @@ weight = 6
 ## 配置项说明
 ```properties
 # 数据源配置
-spring.shardingsphere.datasource.names= primary-ds0,primary-ds1,primary-ds0-replica0,primary-ds1-replica0 # 数据源名称，多数据源以逗号分隔
+# 数据源名称，多数据源以逗号分隔
+spring.shardingsphere.datasource.names= primary-ds0,primary-ds1,primary-ds0-replica0,primary-ds1-replica0
 
 spring.shardingsphere.datasource.primary-ds0.url= # 数据库 URL 连接
 spring.shardingsphere.datasource.primary-ds0.type=  # 数据库连接池类名称
@@ -21,28 +22,30 @@ spring.shardingsphere.datasource.primary-ds0.password= # 数据库密码
 spring.shardingsphere.datasource.primary-ds0.xxx=  # 数据库连接池的其它属性
 
 spring.shardingsphere.datasource.primary-ds1.url= # 数据库 URL 连接
-...忽略其他数据库配置项
+... 忽略其他数据库配置项
 
 spring.shardingsphere.datasource.primary-ds0-replica0.url= # 数据库 URL 连接
-...忽略其他数据库配置项
+... 忽略其他数据库配置项
 
 spring.shardingsphere.datasource.primary-ds1-replica0.url= # 数据库 URL 连接
-...忽略其他数据库配置项
+... 忽略其他数据库配置项
 
 # 分片规则配置
 # 分库策略
-spring.shardingsphere.rules.sharding.default-database-strategy.standard.sharding-column=user_id # 默认分库策略分片列名称
-spring.shardingsphere.rules.sharding.default-database-strategy.standard.sharding-algorithm-name=default-database-strategy-inline # 默认分库策略算法名
+spring.shardingsphere.rules.sharding.default-database-strategy.standard.sharding-column=user_id
+spring.shardingsphere.rules.sharding.default-database-strategy.standard.sharding-algorithm-name=default-database-strategy-inline
 spring.shardingsphere.rules.sharding.binding-tables= # 绑定表名称，多个表之间以逗号分隔
 spring.shardingsphere.rules.sharding.broadcast-tables= # 广播表名称，多个表之间以逗号分隔
 
 # 分表策略
-spring.shardingsphere.rules.sharding.tables.t_user.actual-data-nodes=ds.t_user_$->{0..1} # 数据源名称 `ds` 使用读写分离配置的逻辑数据源名称
+# 数据源名称 `ds` 使用读写分离配置的逻辑数据源名称
+spring.shardingsphere.rules.sharding.tables.t_user.actual-data-nodes=ds.t_user_$->{0..1}
 spring.shardingsphere.rules.sharding.tables.t_user.table-strategy.standard.sharding-column=user_id
 spring.shardingsphere.rules.sharding.tables.t_user.table-strategy.standard.sharding-algorithm-name=user-table-strategy-inline
 
 # 数据加密配置
-spring.shardingsphere.rules.encrypt.tables.t_user.columns.user_name.cipher-column=user_name # `t_user` 使用分片规则配置的逻辑表名称
+# `t_user` 使用分片规则配置的逻辑表名称
+spring.shardingsphere.rules.encrypt.tables.t_user.columns.user_name.cipher-column=user_name
 spring.shardingsphere.rules.encrypt.tables.t_user.columns.user_name.encryptor-name=name-encryptor
 spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.cipher-column=pwd
 spring.shardingsphere.rules.encrypt.tables.t_user.columns.pwd.encryptor-name=pwd-encryptor
@@ -59,13 +62,20 @@ spring.shardingsphere.rules.sharding.tables.t_user.key-generate-strategy.key-gen
 
 # 分片算法配置
 spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.type=INLINE
-spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.algorithm-expression=ds$->{user_id % 2} # 数据源名称 `ds` 使用读写分离配置的逻辑数据源名称
+# 数据源名称 `ds` 使用读写分离配置的逻辑数据源名称
+spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.algorithm-expression=ds$->{user_id % 2}
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.type=INLINE
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.algorithm-expression=t_user_$->{user_id % 2}
 
 # 读写分离策略配置
-spring.shardingsphere.rules.replica-query.data-sources.ds_0.primary-data-source-name=primary-ds0 # ds_0为读写分离配置的逻辑数据源名称
+# ds_0,ds_1为读写分离配置的逻辑数据源名称
+spring.shardingsphere.rules.replica-query.data-sources.ds_0.primary-data-source-name=primary-ds0 
 spring.shardingsphere.rules.replica-query.data-sources.ds_0.replica-data-source-names=primary-ds0-replica0
-spring.shardingsphere.rules.replica-query.data-sources.ds_1.primary-data-source-name=primary-ds1 # ds_1为读写分离配置的逻辑数据源名称
+spring.shardingsphere.rules.replica-query.data-sources.ds_0.load-balancer-name=replica-random
+spring.shardingsphere.rules.replica-query.data-sources.ds_1.primary-data-source-name=primary-ds1
 spring.shardingsphere.rules.replica-query.data-sources.ds_1.replica-data-source-names=primary-ds1-replica0
+spring.shardingsphere.rules.replica-query.data-sources.ds_1.load-balancer-name=replica-random
+
+# 负载均衡算法配置
+spring.shardingsphere.rules.replica-query.load-balancers.replica-random.type=RANDOM
 ```
