@@ -66,10 +66,7 @@ public final class ProxyConfigurationLoader {
     
     private static File getResourceFile(final String path) {
         URL url = ProxyConfigurationLoader.class.getResource(path);
-        if (null != url) {
-            return new File(url.getFile());
-        }
-        return new File(path);
+        return null == url ? new File(path) : new File(url.getFile());
     }
     
     private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
