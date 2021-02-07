@@ -50,30 +50,31 @@ public final class DropReplicaQueryRuleBackendHandler extends SchemaRequiredBack
     @Override
     public ResponseHeader execute(final String schemaName, final DropReplicaQueryRuleStatement sqlStatement) {
         Collection<String> ruleNames = sqlStatement.getRuleNames();
-        check(schemaName, ruleNames);
-        Collection<RuleConfiguration> rules = drop(schemaName, ruleNames);
-        post(schemaName, rules);
-        return new UpdateResponseHeader(sqlStatement);
-    }
-    
-    private void check(final String schemaName, final Collection<String> ruleNames) {
         Optional<ReplicaQueryRuleConfiguration> replicaQueryRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
                 .filter(each -> each instanceof ReplicaQueryRuleConfiguration).map(each -> (ReplicaQueryRuleConfiguration) each).findFirst();
         if (!replicaQueryRuleConfig.isPresent()) {
             throw new ReplicaQueryRuleNotExistedException();
         }
-        Collection<String> replicaQueryNames = replicaQueryRuleConfig.get().getDataSources().stream().map(ReplicaQueryDataSourceRuleConfiguration::getName).collect(Collectors.toList());
+        check(replicaQueryRuleConfig.get(), ruleNames);
+        Optional<YamlReplicaQueryRuleConfiguration> yamlConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(Collections.singletonList(replicaQueryRuleConfig.get())).stream()
+                .map(each -> (YamlReplicaQueryRuleConfiguration) each).findFirst();
+        if (!yamlConfig.isPresent()) {
+            throw new ReplicaQueryRuleNotExistedException();
+        }
+        Collection<RuleConfiguration> rules = drop(yamlConfig.get(), ruleNames);
+        post(schemaName, rules);
+        return new UpdateResponseHeader(sqlStatement);
+    }
+    
+    private void check(final ReplicaQueryRuleConfiguration replicaQueryRuleConfig, final Collection<String> ruleNames) {
+        Collection<String> replicaQueryNames = replicaQueryRuleConfig.getDataSources().stream().map(ReplicaQueryDataSourceRuleConfiguration::getName).collect(Collectors.toList());
         Collection<String> notExistedRuleNames = ruleNames.stream().filter(each -> !replicaQueryNames.contains(each)).collect(Collectors.toList());
         if (!notExistedRuleNames.isEmpty()) {
             throw new ReplicaQueryRuleDataSourcesNotExistedException(notExistedRuleNames);
         }
     }
 
-    private Collection<RuleConfiguration> drop(final String schemaName, final Collection<String> ruleNames) {
-        Collection<RuleConfiguration> replicaQueryRuleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations().stream()
-                .filter(each -> each instanceof ReplicaQueryRuleConfiguration).map(each -> (ReplicaQueryRuleConfiguration) each).collect(Collectors.toList());
-        YamlReplicaQueryRuleConfiguration yamlConfig = (YamlReplicaQueryRuleConfiguration) new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(replicaQueryRuleConfig).stream()
-                .findFirst().get();
+    private Collection<RuleConfiguration> drop(final YamlReplicaQueryRuleConfiguration yamlConfig, final Collection<String> ruleNames) {
         for (String each : ruleNames) {
             yamlConfig.getDataSources().remove(each);
         }

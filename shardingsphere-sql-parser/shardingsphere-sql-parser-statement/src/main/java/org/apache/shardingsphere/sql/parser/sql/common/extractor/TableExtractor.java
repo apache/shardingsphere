@@ -185,8 +185,7 @@ public final class TableExtractor {
             if (each instanceof ColumnOrderByItemSegment) {
                 Optional<OwnerSegment> owner = ((ColumnOrderByItemSegment) each).getColumn().getOwner();
                 if (owner.isPresent() && needRewrite(owner.get())) {
-                    OwnerSegment segment = ((ColumnOrderByItemSegment) each).getColumn().getOwner().get();
-                    rewriteTables.add(new SimpleTableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier()));
+                    rewriteTables.add(new SimpleTableSegment(owner.get().getStartIndex(), owner.get().getStopIndex(), owner.get().getIdentifier()));
                 }
             }
         }
