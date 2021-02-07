@@ -13,10 +13,10 @@ chapter = true
 
 | *已知实现类*                      | *详细说明*               |
 | -------------------------------- | ----------------------- |
-| CuratorZookeeperRepository | 基于 ZooKeeper 的配置中心 |
-| EtcdRepository             | 基于 etcd 的配置中心      |
-| NacosRepository            | 基于 Nacos 的配置中心     |
-| ApolloRepository           | 基于 Apollo 的配置中心    |
+| CuratorZookeeperRepository       | 基于 ZooKeeper 的配置中心 |
+| EtcdRepository                   | 基于 etcd 的配置中心      |
+| NacosRepository                  | 基于 Nacos 的配置中心     |
+| ApolloRepository                 | 基于 Apollo 的配置中心    |
 
 ## RegistryRepository
 
@@ -26,5 +26,5 @@ chapter = true
 
 | *已知实现类*                      | *详细说明*               |
 | -------------------------------- | ----------------------- |
-| CuratorZookeeperRepository | 基于 ZooKeeper 的注册中心 |
-| EtcdRepository             | 基于 etcd 的注册中心      |
+| CuratorZookeeperRepository       | 基于 ZooKeeper 的注册中心 |
+| EtcdRepository                   | 基于 etcd 的注册中心      |
