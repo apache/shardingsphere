@@ -21,17 +21,6 @@ chapter = true
 | SQLServerDatabaseType  | SQLServer database      |
 | H2DatabaseType         | H2 database             |
 
-## LogicMetaDataLoader
-
-| *SPI Name*             | *Description*                           |
-| ---------------------- | --------------------------------------- |
-| LogicMetaDataLoader    | Used to initialize meta data            |
-
-| *Implementation Class* | *Description*                           |
-| ---------------------- | --------------------------------------- |
-| ShardingMetaDataLoader | Used to initialize sharding meta data   |
-| EncryptMetaDataLoader  | Used to initialize encryption meta data |
-
 ## LogicMetaDataDecorator
 
 | *SPI Name*                | *Description*                        |
