@@ -21,15 +21,17 @@ import org.apache.shardingsphere.infra.database.metadata.dialect.H2DataSourceMet
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class H2DatabaseTypeTest extends AbstractDatabaseTypeTest {
+public final class H2DatabaseTypeTest {
     
     @Test
     public void assertGetName() {
@@ -54,15 +56,14 @@ public final class H2DatabaseTypeTest extends AbstractDatabaseTypeTest {
     
     @Test
     public void assertGetSchema() throws SQLException {
-        when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
-        String h2Schema = getSchema(new H2DatabaseType());
-        assertThat(h2Schema, is(DATABASE_NAME));
+        Connection connection = mock(Connection.class);
+        when(connection.getSchema()).thenReturn("ds");
+        assertThat(new H2DatabaseType().getSchema(connection), is("ds"));
     }
     
     @Test
     public void assertFormatTableNamePattern() {
-        String h2TableNamePattern = formatTableNamePattern(new H2DatabaseType());
-        assertThat(h2TableNamePattern, is(TABLE_NAME_PATTERN));
+        assertThat(new H2DatabaseType().formatTableNamePattern("tbl"), is("tbl"));
     }
     
     @Test

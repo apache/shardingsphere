@@ -21,15 +21,18 @@ import org.apache.shardingsphere.infra.database.metadata.dialect.OracleDataSourc
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class OracleDatabaseTypeTest extends AbstractDatabaseTypeTest {
+public final class OracleDatabaseTypeTest {
     
     @Test
     public void assertGetName() {
@@ -48,16 +51,14 @@ public final class OracleDatabaseTypeTest extends AbstractDatabaseTypeTest {
     
     @Test
     public void assertGetSchema() throws SQLException {
-        when(getConnection().getSchema()).thenReturn(USER_NAME);
-        when(getConnection().getMetaData()).thenReturn(getDatabaseMetaData());
-        String oracleSchema = getSchema(new OracleDatabaseType());
-        assertThat(oracleSchema, is(USER_NAME));
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getUserName()).thenReturn("scott");
+        assertThat(new OracleDatabaseType().getSchema(connection), is("SCOTT"));
     }
     
     @Test
     public void assertFormatTableNamePattern() {
-        String oracleTableNamePattern = formatTableNamePattern(new OracleDatabaseType());
-        assertThat(oracleTableNamePattern, is(TABLE_NAME_PATTERN.toUpperCase()));
+        assertThat(new OracleDatabaseType().formatTableNamePattern("tbl"), is("TBL"));
     }
     
     @Test

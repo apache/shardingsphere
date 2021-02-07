@@ -21,15 +21,17 @@ import org.apache.shardingsphere.infra.database.metadata.dialect.SQLServerDataSo
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SQLServerDatabaseTypeTest extends AbstractDatabaseTypeTest {
+public final class SQLServerDatabaseTypeTest {
     
     @Test
     public void assertGetName() {
@@ -49,14 +51,14 @@ public final class SQLServerDatabaseTypeTest extends AbstractDatabaseTypeTest {
     
     @Test
     public void assertGetSchema() throws SQLException {
-        when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
-        String actualSQLServerSchema = getSchema(new SQLServerDatabaseType());
-        assertThat(actualSQLServerSchema, is(DATABASE_NAME));
+        Connection connection = mock(Connection.class);
+        when(connection.getSchema()).thenReturn("ds");
+        assertThat(new SQLServerDatabaseType().getSchema(connection), is("ds"));
     }
     
     @Test
     public void assertFormatTableNamePattern() {
-        assertThat(formatTableNamePattern(new SQLServerDatabaseType()), is(TABLE_NAME_PATTERN));
+        assertThat(new SQLServerDatabaseType().formatTableNamePattern("tbl"), is("tbl"));
     }
     
     @Test

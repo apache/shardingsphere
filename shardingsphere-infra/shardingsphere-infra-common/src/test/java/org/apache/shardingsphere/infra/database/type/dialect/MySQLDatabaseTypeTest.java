@@ -21,15 +21,17 @@ import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSource
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MySQLDatabaseTypeTest extends AbstractDatabaseTypeTest {
+public final class MySQLDatabaseTypeTest {
     
     @Test
     public void assertGetName() {
@@ -48,15 +50,14 @@ public final class MySQLDatabaseTypeTest extends AbstractDatabaseTypeTest {
     
     @Test
     public void assertGetSchema() throws SQLException {
-        when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
-        String mysqlSchema = getSchema(new MySQLDatabaseType());
-        assertThat(mysqlSchema, is(DATABASE_NAME));
+        Connection connection = mock(Connection.class);
+        when(connection.getSchema()).thenReturn("ds");
+        assertThat(new MySQLDatabaseType().getSchema(connection), is("ds"));
     }
     
     @Test
     public void assertFormatTableNamePattern() {
-        String mysqlTableNamePattern = formatTableNamePattern(new MySQLDatabaseType());
-        assertThat(mysqlTableNamePattern, is(TABLE_NAME_PATTERN));
+        assertThat(new MySQLDatabaseType().formatTableNamePattern("tbl"), is("tbl"));
     }
     
     @Test

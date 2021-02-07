@@ -21,15 +21,17 @@ import org.apache.shardingsphere.infra.database.metadata.dialect.SQL92DataSource
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SQL92DatabaseTypeTest extends AbstractDatabaseTypeTest {
+public final class SQL92DatabaseTypeTest {
     
     @Test
     public void assertGetName() {
@@ -53,15 +55,14 @@ public final class SQL92DatabaseTypeTest extends AbstractDatabaseTypeTest {
     
     @Test
     public void assertGetSchema() throws SQLException {
-        when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
-        String sql92Schema = getSchema(new SQL92DatabaseType());
-        assertThat(sql92Schema, is(DATABASE_NAME));
+        Connection connection = mock(Connection.class);
+        when(connection.getSchema()).thenReturn("ds");
+        assertThat(new SQL92DatabaseType().getSchema(connection), is("ds"));
     }
     
     @Test
     public void assertFormatTableNamePattern() {
-        String sql92TableNamePattern = formatTableNamePattern(new SQL92DatabaseType());
-        assertThat(sql92TableNamePattern, is(TABLE_NAME_PATTERN));
+        assertThat(new SQL92DatabaseType().formatTableNamePattern("tbl"), is("tbl"));
     }
     
     @Test

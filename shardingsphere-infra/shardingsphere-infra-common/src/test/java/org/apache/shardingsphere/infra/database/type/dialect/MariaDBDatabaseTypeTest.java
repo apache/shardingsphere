@@ -21,15 +21,17 @@ import org.apache.shardingsphere.infra.database.metadata.dialect.MariaDBDataSour
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MariaDBDatabaseTypeTest extends AbstractDatabaseTypeTest {
+public final class MariaDBDatabaseTypeTest {
     
     @Test
     public void assertGetName() {
@@ -54,15 +56,14 @@ public final class MariaDBDatabaseTypeTest extends AbstractDatabaseTypeTest {
     
     @Test
     public void assertGetSchema() throws SQLException {
-        when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
-        String mariadbSchema = getSchema(new MariaDBDatabaseType());
-        assertThat(mariadbSchema, is(DATABASE_NAME));
+        Connection connection = mock(Connection.class);
+        when(connection.getSchema()).thenReturn("ds");
+        assertThat(new MariaDBDatabaseType().getSchema(connection), is("ds"));
     }
     
     @Test
     public void assertFormatTableNamePattern() {
-        String mariadbTableNamePattern = formatTableNamePattern(new MariaDBDatabaseType());
-        assertThat(mariadbTableNamePattern, is(TABLE_NAME_PATTERN));
+        assertThat(new MariaDBDatabaseType().formatTableNamePattern("tbl"), is("tbl"));
     }
     
     @Test
