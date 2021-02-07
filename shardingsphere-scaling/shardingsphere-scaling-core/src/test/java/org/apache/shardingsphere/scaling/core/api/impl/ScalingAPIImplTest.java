@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.api.impl;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.scaling.core.api.JobInfo;
@@ -28,7 +29,7 @@ import org.apache.shardingsphere.scaling.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
-import org.junit.Before;
+import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -43,16 +44,13 @@ import static org.junit.Assert.assertTrue;
 
 public final class ScalingAPIImplTest {
     
-    private ScalingAPI scalingAPI;
+    private static ScalingAPI scalingAPI;
     
     @BeforeClass
+    @SneakyThrows(ReflectiveOperationException.class)
     public static void init() {
         EmbedTestingServer.start();
-        ScalingContext.getInstance().init(mockServerConfig());
-    }
-    
-    @Before
-    public void setUp() {
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", mockServerConfig());
         scalingAPI = ScalingAPIFactory.getScalingAPI();
     }
     
