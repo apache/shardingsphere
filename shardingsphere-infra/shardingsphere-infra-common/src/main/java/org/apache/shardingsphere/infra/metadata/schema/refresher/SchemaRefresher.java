@@ -28,7 +28,7 @@ import java.util.Collection;
 /**
  * ShardingSphere schema refresher.
  *
- * @param <T> sql statement
+ * @param <T> type of SQL statement
  */
 public interface SchemaRefresher<T extends SQLStatement> extends MetadataRefresher {
     
