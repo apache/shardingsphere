@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.engine.MetadataRefreshEngine;
-import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresherFactory;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.spi.SchemaChangedNotifier;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -49,6 +48,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryH
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -137,7 +137,7 @@ public final class DatabaseCommunicationEngine {
     }
     
     private boolean needLock(final ExecutionContext executionContext) {
-        return MetadataRefresherFactory.newInstance(executionContext.getSqlStatementContext().getSqlStatement()).isPresent();
+        return executionContext.getSqlStatementContext().getSqlStatement() instanceof DDLStatement;
     }
     
     private void releaseGlobalLock() {
