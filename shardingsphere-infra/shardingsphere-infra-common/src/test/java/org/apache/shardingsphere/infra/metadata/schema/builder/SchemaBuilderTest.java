@@ -73,7 +73,8 @@ public final class SchemaBuilderTest {
     @Before
     public void setUp() {
         schemaBuilderMaterials = new SchemaBuilderMaterials(
-                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props);
+                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(),
+                new DataNodeContainedFixtureRule()), props);
     }
     
     @Test

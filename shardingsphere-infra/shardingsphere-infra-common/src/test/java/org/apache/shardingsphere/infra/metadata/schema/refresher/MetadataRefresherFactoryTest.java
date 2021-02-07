@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher;
 
+import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresherFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
@@ -32,35 +33,35 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SchemaRefresherFactoryTest {
+public final class MetadataRefresherFactoryTest {
     
     @Test
     public void assertNewInstanceWithCreateTableStatement() {
-        assertTrue(SchemaRefresherFactory.newInstance(mock(CreateTableStatement.class)).isPresent());
+        assertTrue(MetadataRefresherFactory.newInstance(mock(CreateTableStatement.class)).isPresent());
     }
     
     @Test
     public void assertNewInstanceWithAlterTableStatement() {
-        assertTrue(SchemaRefresherFactory.newInstance(mock(AlterTableStatement.class)).isPresent());
+        assertTrue(MetadataRefresherFactory.newInstance(mock(AlterTableStatement.class)).isPresent());
     }
     
     @Test
     public void assertNewInstanceWithDropTableStatement() {
-        assertTrue(SchemaRefresherFactory.newInstance(mock(DropTableStatement.class)).isPresent());
+        assertTrue(MetadataRefresherFactory.newInstance(mock(DropTableStatement.class)).isPresent());
     }
     
     @Test
     public void assertNewInstanceWithCreateIndexStatement() {
-        assertTrue(SchemaRefresherFactory.newInstance(mock(CreateIndexStatement.class)).isPresent());
+        assertTrue(MetadataRefresherFactory.newInstance(mock(CreateIndexStatement.class)).isPresent());
     }
     
     @Test
     public void assertNewInstanceWithDropIndexStatement() {
-        assertTrue(SchemaRefresherFactory.newInstance(mock(DropIndexStatement.class)).isPresent());
+        assertTrue(MetadataRefresherFactory.newInstance(mock(DropIndexStatement.class)).isPresent());
     }
     
     @Test
     public void assertNewInstanceWithSQLStatementNotNeedRefresh() {
-        assertFalse(SchemaRefresherFactory.newInstance(mock(AlterIndexStatement.class)).isPresent());
+        assertFalse(MetadataRefresherFactory.newInstance(mock(AlterIndexStatement.class)).isPresent());
     }
 }

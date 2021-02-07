@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresher;
+package org.apache.shardingsphere.infra.metadata.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.privilege.refresher.type.GrantStatementPrivilegeRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.type.AlterTableStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.CreateIndexStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.CreateTableStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.CreateViewStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.DropIndexStatementSchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.type.AlterTableStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.DropTableStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.DropViewStatementSchemaRefresher;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
@@ -44,9 +46,9 @@ import java.util.Optional;
  * ShardingSphere schema refresher factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaRefresherFactory {
+public final class MetadataRefresherFactory {
     
-    private static final Map<Class<?>, SchemaRefresher<?>> REGISTRY = new HashMap<>();
+    private static final Map<Class<?>, MetadataRefresher> REGISTRY = new HashMap<>();
     
     static {
         REGISTRY.put(CreateTableStatement.class, new CreateTableStatementSchemaRefresher());
@@ -56,6 +58,7 @@ public final class SchemaRefresherFactory {
         REGISTRY.put(DropIndexStatement.class, new DropIndexStatementSchemaRefresher());
         REGISTRY.put(CreateViewStatement.class, new CreateViewStatementSchemaRefresher());
         REGISTRY.put(DropViewStatement.class, new DropViewStatementSchemaRefresher());
+        REGISTRY.put(GrantStatement.class, new GrantStatementPrivilegeRefresher());
     }
     
     /**
@@ -64,7 +67,7 @@ public final class SchemaRefresherFactory {
      * @param sqlStatement SQL statement
      * @return instance of schema refresher
      */
-    public static Optional<SchemaRefresher> newInstance(final SQLStatement sqlStatement) {
+    public static Optional<MetadataRefresher> newInstance(final SQLStatement sqlStatement) {
         return REGISTRY.entrySet().stream().filter(entry -> entry.getKey().isAssignableFrom(sqlStatement.getClass())).findFirst().map(Entry::getValue);
     }
 }

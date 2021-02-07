@@ -15,31 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresher;
+package org.apache.shardingsphere.infra.metadata.privilege.refresher.type;
 
-import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.metadata.privilege.refresher.PrivilegeRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.sql.SQLException;
-import java.util.Collection;
-
 /**
- * ShardingSphere schema refresher.
- *
- * @param <T> type of SQL statement
+ * Grant statement privilege refresher.
  */
-public interface SchemaRefresher<T extends SQLStatement> extends MetadataRefresher {
+public final class GrantStatementPrivilegeRefresher implements PrivilegeRefresher {
     
-    /**
-     * Refresh ShardingSphere schema.
-     *
-     * @param schema ShardingSphere schema to be refreshed
-     * @param routeDataSourceNames route dataSource names
-     * @param sqlStatement SQL statement
-     * @param materials schema builder materials
-     * @throws SQLException SQL exception
-     */
-    void refresh(ShardingSphereSchema schema, Collection<String> routeDataSourceNames, T sqlStatement, SchemaBuilderMaterials materials) throws SQLException;
+    @Override
+    public void refresh(final Authentication authentication, final SQLStatement sqlStatement, final SchemaBuilderMaterials materials) {
+    }
 }
