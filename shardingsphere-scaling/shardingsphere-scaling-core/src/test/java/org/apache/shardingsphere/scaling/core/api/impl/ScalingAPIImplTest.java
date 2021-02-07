@@ -30,6 +30,7 @@ import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -103,6 +104,12 @@ public final class ScalingAPIImplTest {
         assertTrue(jobId.isPresent());
         Map<Integer, JobProgress> jobProgressMap = scalingAPI.getProgress(jobId.get());
         assertThat(jobProgressMap.size(), is(2));
+    }
+    
+    @AfterClass
+    @SneakyThrows(ReflectiveOperationException.class)
+    public static void afterClass() {
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", null);
     }
     
     private static ServerConfiguration mockServerConfig() {
