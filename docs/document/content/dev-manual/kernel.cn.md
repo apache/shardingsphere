@@ -21,17 +21,6 @@ chapter = true
 | SQLServerDatabaseType  | SQLServer 数据库          |
 | H2DatabaseType         | H2 数据库                 |
 
-## LogicMetaDataDecorator
-
-| *SPI 名称*                | *详细说明*        |
-| ------------------------ | ---------------- |
-| LogicMetaDataDecorator   | 用于元数据更新     |
-
-| *已知实现类*               | *详细说明*        |
-| ------------------------- | ---------------- |
-| ShardingMetaDataDecorator | 用于分片元数据更新 |
-| EncryptMetaDataDecorator  | 用于加密元数据更新 |
-
 ## SQLRouter
 
 | *SPI 名称*                   | *详细说明*                 |
