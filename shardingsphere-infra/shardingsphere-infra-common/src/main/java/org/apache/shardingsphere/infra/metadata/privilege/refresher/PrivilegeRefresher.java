@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.infra.metadata.privilege.refresher;
 
-import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
-import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * Privilege refresher.
@@ -29,8 +30,9 @@ public interface PrivilegeRefresher extends MetadataRefresher {
     /**
      * Refresh.
      *
-     * @param user user
-     * @param privilege privilege
+     * @param authentication authentication
+     * @param sqlStatement sql statement
+     * @param materials materials
      */
-    void refresh(ShardingSphereUser user, ShardingSpherePrivilege privilege);
+    void refresh(Authentication authentication, SQLStatement sqlStatement, SchemaBuilderMaterials materials);
 }

@@ -46,7 +46,7 @@ import java.util.Optional;
  * ShardingSphere schema refresher factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SchemaRefresherFactory {
+public final class MetadataRefresherFactory {
     
     private static final Map<Class<?>, MetadataRefresher> REGISTRY = new HashMap<>();
     

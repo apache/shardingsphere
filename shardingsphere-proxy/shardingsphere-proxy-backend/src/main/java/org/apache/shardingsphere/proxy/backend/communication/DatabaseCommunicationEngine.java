@@ -32,8 +32,7 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.engine.MetadataRefreshEngine;
-import org.apache.shardingsphere.infra.metadata.engine.SchemaRefresherFactory;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresherFactory;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.spi.SchemaChangedNotifier;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -54,7 +53,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -80,6 +78,8 @@ public final class DatabaseCommunicationEngine {
     
     private final KernelProcessor kernelProcessor;
     
+    private final MetadataRefreshEngine engine;
+    
     private List<QueryHeader> queryHeaders;
     
     private MergedResult mergedResult;
@@ -90,6 +90,8 @@ public final class DatabaseCommunicationEngine {
         this.logicSQL = logicSQL;
         proxySQLExecutor = new ProxySQLExecutor(driverType, backendConnection);
         kernelProcessor = new KernelProcessor();
+        engine = new MetadataRefreshEngine(metaData,
+                ProxyContext.getInstance().getMetaDataContexts().getAuthentication(), ProxyContext.getInstance().getMetaDataContexts().getProps());
     }
     
     /**
@@ -135,7 +137,7 @@ public final class DatabaseCommunicationEngine {
     }
     
     private boolean needLock(final ExecutionContext executionContext) {
-        return SchemaRefresherFactory.newInstance(executionContext.getSqlStatementContext().getSqlStatement()).isPresent();
+        return MetadataRefresherFactory.newInstance(executionContext.getSqlStatementContext().getSqlStatement()).isPresent();
     }
     
     private void releaseGlobalLock() {
@@ -192,15 +194,7 @@ public final class DatabaseCommunicationEngine {
     
     private void refreshMetadata(final ExecutionContext executionContext) throws SQLException {
         SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        MetadataRefreshEngine.refresh(sqlStatement, metaData, getSchemaBuilderMaterials(executionContext));
-    }
-    
-    private SchemaBuilderMaterials getSchemaBuilderMaterials(final ExecutionContext executionContext) {
-        Collection<String> routeDataSourceNames = executionContext.getRouteContext().getRouteUnits().stream()
-                .map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
-        return new SchemaBuilderMaterials(ProxyContext.getInstance().getMetaDataContexts().getMetaData(metaData.getName()).getResource().getDatabaseType(),
-                metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), ProxyContext.getInstance().getMetaDataContexts().getProps(),
-                routeDataSourceNames, Collections.emptyMap());
+        engine.refresh(sqlStatement, executionContext.getRouteContext().getRouteUnits().stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList()));
     }
     
     private void mergeUpdateCount(final SQLStatementContext<?> sqlStatementContext, final UpdateResponseHeader response) {

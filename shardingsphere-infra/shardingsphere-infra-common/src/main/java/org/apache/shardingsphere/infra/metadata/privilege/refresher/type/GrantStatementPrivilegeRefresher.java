@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.infra.metadata.privilege.refresher.type;
 
-import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
-import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.metadata.privilege.refresher.PrivilegeRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * Grant statement privilege refresher.
@@ -27,6 +28,6 @@ import org.apache.shardingsphere.infra.metadata.privilege.refresher.PrivilegeRef
 public final class GrantStatementPrivilegeRefresher implements PrivilegeRefresher {
     
     @Override
-    public void refresh(final ShardingSphereUser user, final ShardingSpherePrivilege privilege) {
+    public void refresh(final Authentication authentication, final SQLStatement sqlStatement, final SchemaBuilderMaterials materials) {
     }
 }

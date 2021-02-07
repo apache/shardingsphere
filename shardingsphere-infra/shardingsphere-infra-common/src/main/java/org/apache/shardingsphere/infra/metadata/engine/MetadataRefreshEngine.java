@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.engine;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
-import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.privilege.refresher.PrivilegeRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -31,47 +29,56 @@ import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 
 /**
  * Metadata refresh engine.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MetadataRefreshEngine {
+    
+    private final ShardingSphereMetaData metaData;
+    
+    private final Authentication authentication;
+    
+    private final SchemaBuilderMaterials materials;
+    
+    public MetadataRefreshEngine(final ShardingSphereMetaData metaData, final Authentication authentication, final ConfigurationProperties properties) {
+        this.metaData = metaData;
+        this.authentication = authentication;
+        materials = new SchemaBuilderMaterials(metaData.getResource().getDatabaseType(), metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), properties);
+    }
     
     /**
      * Refresh.
      *
      * @param sqlStatement sql statement
-     * @param metaData metadata
-     * @param materials materials
+     * @param routeDataSourceNames route data source names
      * @throws SQLException sql exception
      */
     @SuppressWarnings("rawtypes")
-    public static void refresh(final SQLStatement sqlStatement, final ShardingSphereMetaData metaData, final SchemaBuilderMaterials materials) throws SQLException {
-        Optional<MetadataRefresher> metadataRefresher = SchemaRefresherFactory.newInstance(sqlStatement);
+    public void refresh(final SQLStatement sqlStatement, final Collection<String> routeDataSourceNames) throws SQLException {
+        Optional<MetadataRefresher> metadataRefresher = MetadataRefresherFactory.newInstance(sqlStatement);
         if (metadataRefresher.isPresent()) {
             if (metadataRefresher.get() instanceof SchemaRefresher) {
-                refreshSchema(sqlStatement, metaData, materials, (SchemaRefresher) metadataRefresher.get());
+                refreshSchema(sqlStatement, routeDataSourceNames, (SchemaRefresher) metadataRefresher.get());
             }
             if (metadataRefresher.get() instanceof PrivilegeRefresher) {
-                refreshPrivilege(materials.getAuth(), (PrivilegeRefresher) metadataRefresher.get());
+                refreshPrivilege(sqlStatement, (PrivilegeRefresher) metadataRefresher.get());
             }
         }
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static void refreshSchema(final SQLStatement sqlStatement,
-                                      final ShardingSphereMetaData metaData, final SchemaBuilderMaterials materials, final SchemaRefresher refresher) throws SQLException {
+    private void refreshSchema(final SQLStatement sqlStatement, final Collection<String> routeDataSourceNames, final SchemaRefresher refresher) throws SQLException {
         ShardingSphereSchema schema = metaData.getSchema();
-        refresher.refresh(metaData.getSchema(), materials.getRouteDataSourceNames(), sqlStatement, materials);
+        refresher.refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, materials);
         OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(metaData.getName(), schema));
     }
     
-    private static void refreshPrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final PrivilegeRefresher refresher) {
-        privileges.forEach(refresher::refresh);
+    private void refreshPrivilege(final SQLStatement sqlStatement, final PrivilegeRefresher refresher) {
+        refresher.refresh(authentication, sqlStatement, materials);
         // TODO :notify
     }
 }
