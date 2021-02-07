@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.metadata.schema.builder.loader;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.adapter.MetaDataLoaderConnectionAdapter;
 
@@ -36,7 +35,6 @@ import java.util.List;
  * Schema meta data loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Slf4j(topic = "ShardingSphere-metadata")
 public final class SchemaMetaDataLoader {
     
     private static final String TABLE_TYPE = "TABLE";
@@ -58,7 +56,6 @@ public final class SchemaMetaDataLoader {
         try (MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
             result = loadAllTableNames(connectionAdapter);
         }
-        log.info("Loading {} tables' meta data for unconfigured tables.", result.size());
         if (result.isEmpty()) {
             return Collections.emptyList();
         }
