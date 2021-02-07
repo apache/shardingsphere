@@ -32,13 +32,3 @@ chapter = true
 | SQLServerStatementSQLVisitorFacade  | SQL visitor of statement extracted facade for SQLServer  |
 | OracleStatementSQLVisitorFacade     | SQL visitor of statement extracted facade for Oracle     |
 | SQL92StatementSQLVisitorFacade      | SQL visitor of statement extracted facade for SQL92      |
-
-## ParsingHook
-
-| *SPI Name*             | *Description*                                     |
-| ---------------------- | ------------------------------------------------- |
-| ParsingHook            | Used to trace SQL parse process                   |
-
-| *Implementation Class* | *Description*                                     |
-| ---------------------- | ------------------------------------------------- |
-| OpenTracingParsingHook | Use OpenTrace protocol to trace SQL parse process |
