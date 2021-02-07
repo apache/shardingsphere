@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.fixture;
 
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +31,11 @@ public final class FixtureDatabaseType implements DatabaseType {
     @Override
     public String getName() {
         return "FixtureDB";
+    }
+    
+    @Override
+    public QuoteCharacter getQuoteCharacter() {
+        return QuoteCharacter.NONE;
     }
     
     @Override

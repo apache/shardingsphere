@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -61,7 +62,7 @@ public final class EncryptTableMetaDataBuilderTest {
         ShardingSphereServiceLoader.register(RuleBasedTableMetaDataBuilder.class);
     }
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DatabaseType databaseType;
     
     @Mock
@@ -98,6 +99,7 @@ public final class EncryptTableMetaDataBuilderTest {
     public void assertLoadByExistedTable() throws SQLException {
         EncryptRule rule = createEncryptRule();
         EncryptTableMetaDataBuilder loader = (EncryptTableMetaDataBuilder) OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(rule), RuleBasedTableMetaDataBuilder.class).get(rule);
+        when(databaseType.formatTableNamePattern(TABLE_NAME)).thenReturn(TABLE_NAME);
         Optional<TableMetaData> actual = loader.load(TABLE_NAME, databaseType, Collections.singletonMap("logic_db", dataSource), new DataNodes(Collections.singletonList(rule)), rule, props);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getColumnMetaData(0).getName(), is("id"));

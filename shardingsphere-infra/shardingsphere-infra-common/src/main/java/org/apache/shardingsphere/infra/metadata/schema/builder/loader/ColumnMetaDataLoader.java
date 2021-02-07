@@ -20,10 +20,7 @@ package org.apache.shardingsphere.infra.metadata.schema.builder.loader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandler;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandlerFactory;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -91,8 +88,7 @@ public final class ColumnMetaDataLoader {
     }
     
     private static String generateEmptyResultSQL(final String table, final DatabaseType databaseType) {
-        QuoteCharacter quoteCharacter = DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(DatabaseMetaDataDialectHandler::getQuoteCharacter).orElse(QuoteCharacter.NONE);
-        return String.format("SELECT * FROM %s WHERE 1 != 1", quoteCharacter.wrap(table));
+        return String.format("SELECT * FROM %s WHERE 1 != 1", databaseType.getQuoteCharacter().wrap(table));
     }
     
     private static Collection<String> loadPrimaryKeys(final Connection connection, final String table) throws SQLException {
