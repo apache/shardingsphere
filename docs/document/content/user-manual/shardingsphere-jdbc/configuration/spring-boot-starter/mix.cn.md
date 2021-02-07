@@ -67,9 +67,13 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strate
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.type=INLINE
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.algorithm-expression=t_user_$->{user_id % 2}
 
+# 分布式序列算法配置
+spring.shardingsphere.rules.sharding.key-generators.snowflake.type=SNOWFLAKE
+spring.shardingsphere.rules.sharding.key-generators.snowflake.props.worker-id=123
+
 # 读写分离策略配置
 # ds_0,ds_1为读写分离配置的逻辑数据源名称
-spring.shardingsphere.rules.replica-query.data-sources.ds_0.primary-data-source-name=primary-ds0 
+spring.shardingsphere.rules.replica-query.data-sources.ds_0.primary-data-source-name=primary-ds0
 spring.shardingsphere.rules.replica-query.data-sources.ds_0.replica-data-source-names=primary-ds0-replica0
 spring.shardingsphere.rules.replica-query.data-sources.ds_0.load-balancer-name=replica-random
 spring.shardingsphere.rules.replica-query.data-sources.ds_1.primary-data-source-name=primary-ds1

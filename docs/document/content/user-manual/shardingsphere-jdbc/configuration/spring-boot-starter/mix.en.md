@@ -59,12 +59,16 @@ spring.shardingsphere.rules.encrypt.encryptors.pwd-encryptor.props.aes-key-value
 spring.shardingsphere.rules.sharding.tables.t_user.key-generate-strategy.column=user_id
 spring.shardingsphere.rules.sharding.tables.t_user.key-generate-strategy.key-generator-name=snowflake
 
-# sharding algorithm configuration
+# Sharding algorithm configuration
 spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.type=INLINE
 # Data source name 'ds' uses the logical data source name of the replica-query configuration.
 spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.algorithm-expression=ds$->{user_id % 2}
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.type=INLINE
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.algorithm-expression=t_user_$->{user_id % 2}
+
+# Key generate algorithm configuration
+spring.shardingsphere.rules.sharding.key-generators.snowflake.type=SNOWFLAKE
+spring.shardingsphere.rules.sharding.key-generators.snowflake.props.worker-id=123
 
 # Replica query configuration
 # ds_0,ds_1 is the logical data source name of the replica-query
