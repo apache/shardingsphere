@@ -18,15 +18,18 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.SQLServerDataSourceMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
-public final class SQLServerDatabaseTypeTest {
+public final class SQLServerDatabaseTypeTest extends AbstractDatabaseTypeTest {
     
     @Test
     public void assertGetName() {
@@ -42,5 +45,24 @@ public final class SQLServerDatabaseTypeTest {
     public void assertGetDataSourceMetaData() {
         assertThat(new SQLServerDatabaseType().getDataSourceMetaData("jdbc:sqlserver://127.0.0.1;DatabaseName=ds_0", "root"), instanceOf(SQLServerDataSourceMetaData.class));
         assertThat(new SQLServerDatabaseType().getDataSourceMetaData("jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=ds_0", "sa"), instanceOf(SQLServerDataSourceMetaData.class));
+    }
+    
+    @Test
+    public void assertGetSchema() throws SQLException {
+        when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
+        String actualSQLServerSchema = getSchema(new SQLServerDatabaseType());
+        assertThat(actualSQLServerSchema, is(DATABASE_NAME));
+    }
+    
+    @Test
+    public void assertFormatTableNamePattern() {
+        assertThat(formatTableNamePattern(new SQLServerDatabaseType()), is(TABLE_NAME_PATTERN));
+    }
+    
+    @Test
+    public void assertGetQuoteCharacter() {
+        QuoteCharacter actual = new SQLServerDatabaseType().getQuoteCharacter();
+        assertThat(actual.getStartDelimiter(), is("["));
+        assertThat(actual.getEndDelimiter(), is("]"));
     }
 }

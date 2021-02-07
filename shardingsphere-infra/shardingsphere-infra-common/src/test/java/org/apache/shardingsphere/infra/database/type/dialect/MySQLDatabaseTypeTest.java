@@ -18,15 +18,18 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
-public final class MySQLDatabaseTypeTest {
+public final class MySQLDatabaseTypeTest extends AbstractDatabaseTypeTest {
     
     @Test
     public void assertGetName() {
@@ -41,5 +44,25 @@ public final class MySQLDatabaseTypeTest {
     @Test
     public void assertGetDataSourceMetaData() {
         assertThat(new MySQLDatabaseType().getDataSourceMetaData("jdbc:mysql://127.0.0.1/ds", "root"), instanceOf(MySQLDataSourceMetaData.class));
+    }
+    
+    @Test
+    public void assertGetSchema() throws SQLException {
+        when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
+        String mysqlSchema = getSchema(new MySQLDatabaseType());
+        assertThat(mysqlSchema, is(DATABASE_NAME));
+    }
+    
+    @Test
+    public void assertFormatTableNamePattern() {
+        String mysqlTableNamePattern = formatTableNamePattern(new MySQLDatabaseType());
+        assertThat(mysqlTableNamePattern, is(TABLE_NAME_PATTERN));
+    }
+    
+    @Test
+    public void assertGetQuoteCharacter() {
+        QuoteCharacter actual = new MySQLDatabaseType().getQuoteCharacter();
+        assertThat(actual.getStartDelimiter(), is("`"));
+        assertThat(actual.getEndDelimiter(), is("`"));
     }
 }

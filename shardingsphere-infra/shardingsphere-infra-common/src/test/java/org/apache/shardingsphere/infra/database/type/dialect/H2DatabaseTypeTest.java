@@ -18,15 +18,18 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.H2DataSourceMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
-public final class H2DatabaseTypeTest {
+public final class H2DatabaseTypeTest extends AbstractDatabaseTypeTest {
     
     @Test
     public void assertGetName() {
@@ -47,5 +50,25 @@ public final class H2DatabaseTypeTest {
     @Test
     public void assertGetTrunkDatabaseType() {
         assertThat(new H2DatabaseType().getTrunkDatabaseType().getName(), is("MySQL"));
+    }
+    
+    @Test
+    public void assertGetSchema() throws SQLException {
+        when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
+        String h2Schema = getSchema(new H2DatabaseType());
+        assertThat(h2Schema, is(DATABASE_NAME));
+    }
+    
+    @Test
+    public void assertFormatTableNamePattern() {
+        String h2TableNamePattern = formatTableNamePattern(new H2DatabaseType());
+        assertThat(h2TableNamePattern, is(TABLE_NAME_PATTERN));
+    }
+    
+    @Test
+    public void assertGetQuoteCharacter() {
+        QuoteCharacter actual = new H2DatabaseType().getQuoteCharacter();
+        assertThat(actual.getStartDelimiter(), is("\""));
+        assertThat(actual.getEndDelimiter(), is("\""));
     }
 }

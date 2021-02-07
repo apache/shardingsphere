@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect;
+package org.apache.shardingsphere.infra.database.type.dialect;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 
 @Getter
 @RunWith(MockitoJUnitRunner.class)
-public abstract class AbstractDatabaseMetaDataDialectHandlerTest {
+public abstract class AbstractDatabaseTypeTest {
     
     protected static final String DATABASE_NAME = "demo_ds";
     
@@ -44,23 +42,11 @@ public abstract class AbstractDatabaseMetaDataDialectHandlerTest {
     @Mock
     private DatabaseMetaData databaseMetaData;
     
-    protected QuoteCharacter getQuoteCharacter(final DatabaseType databaseType) {
-        return DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(DatabaseMetaDataDialectHandler::getQuoteCharacter).orElse(QuoteCharacter.NONE);
+    protected final String formatTableNamePattern(final DatabaseType databaseType) {
+        return databaseType.formatTableNamePattern(TABLE_NAME_PATTERN);
     }
     
-    protected String formatTableNamePattern(final DatabaseType databaseType) {
-        return DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(handler -> handler.formatTableNamePattern(TABLE_NAME_PATTERN)).orElse(TABLE_NAME_PATTERN);
-    }
-    
-    protected String getSchema(final DatabaseType databaseType) {
-        return DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(handler -> handler.getSchema(connection)).orElse(getSchema(connection));
-    }
-    
-    private String getSchema(final Connection connection) {
-        try {
-            return connection.getSchema();
-        } catch (final SQLException ignored) {
-            return null;
-        }
+    protected final String getSchema(final DatabaseType databaseType) {
+        return databaseType.getSchema(connection);
     }
 }

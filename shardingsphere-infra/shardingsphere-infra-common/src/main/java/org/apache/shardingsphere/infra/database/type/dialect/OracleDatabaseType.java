@@ -19,9 +19,13 @@ package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.OracleDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Database type of Oracle.
@@ -41,5 +45,25 @@ public final class OracleDatabaseType implements DatabaseType {
     @Override
     public OracleDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new OracleDataSourceMetaData(url, username);
+    }
+    
+    @SuppressWarnings("ReturnOfNull")
+    @Override
+    public String getSchema(final Connection connection) {
+        try {
+            return Optional.ofNullable(connection.getMetaData().getUserName()).map(String::toUpperCase).orElse(null);
+        } catch (final SQLException ignored) {
+            return null;
+        }
+    }
+    
+    @Override
+    public String formatTableNamePattern(final String tableNamePattern) {
+        return tableNamePattern.toUpperCase();
+    }
+    
+    @Override
+    public QuoteCharacter getQuoteCharacter() {
+        return QuoteCharacter.QUOTE;
     }
 }

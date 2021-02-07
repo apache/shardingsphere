@@ -18,15 +18,18 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.SQL92DataSourceMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
-public final class SQL92DatabaseTypeTest {
+public final class SQL92DatabaseTypeTest extends AbstractDatabaseTypeTest {
     
     @Test
     public void assertGetName() {
@@ -46,5 +49,25 @@ public final class SQL92DatabaseTypeTest {
         assertThat(new SQL92DatabaseType().getDataSourceMetaData("jdbc:postgresql://localhost:5432/demo_ds_0", "postgres"), instanceOf(SQL92DataSourceMetaData.class));
         assertThat(new SQL92DatabaseType().getDataSourceMetaData("jdbc:oracle:oci:@127.0.0.1/demo_ds_0", "scott"), instanceOf(SQL92DataSourceMetaData.class));
         assertThat(new SQL92DatabaseType().getDataSourceMetaData("jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=ds_0", "sa"), instanceOf(SQL92DataSourceMetaData.class));
+    }
+    
+    @Test
+    public void assertGetSchema() throws SQLException {
+        when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
+        String sql92Schema = getSchema(new SQL92DatabaseType());
+        assertThat(sql92Schema, is(DATABASE_NAME));
+    }
+    
+    @Test
+    public void assertFormatTableNamePattern() {
+        String sql92TableNamePattern = formatTableNamePattern(new SQL92DatabaseType());
+        assertThat(sql92TableNamePattern, is(TABLE_NAME_PATTERN));
+    }
+    
+    @Test
+    public void assertGetQuoteCharacter() {
+        QuoteCharacter actual = new SQL92DatabaseType().getQuoteCharacter();
+        assertThat(actual.getStartDelimiter(), is("\""));
+        assertThat(actual.getEndDelimiter(), is("\""));
     }
 }

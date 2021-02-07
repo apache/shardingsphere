@@ -18,15 +18,18 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.PostgreSQLDataSourceMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
-public final class PostgreSQLDatabaseTypeTest {
+public final class PostgreSQLDatabaseTypeTest extends AbstractDatabaseTypeTest {
     
     @Test
     public void assertGetName() {
@@ -41,5 +44,25 @@ public final class PostgreSQLDatabaseTypeTest {
     @Test
     public void assertGetDataSourceMetaData() {
         assertThat(new PostgreSQLDatabaseType().getDataSourceMetaData("jdbc:postgresql://localhost:5432/demo_ds_0", "postgres"), instanceOf(PostgreSQLDataSourceMetaData.class));
+    }
+    
+    @Test
+    public void assertGetSchema() throws SQLException {
+        when(getConnection().getSchema()).thenReturn(DATABASE_NAME);
+        String postgresqlSchema = getSchema(new PostgreSQLDatabaseType());
+        assertThat(postgresqlSchema, is(DATABASE_NAME));
+    }
+    
+    @Test
+    public void assertFormatTableNamePattern() {
+        String postgresqlTableNamePattern = formatTableNamePattern(new PostgreSQLDatabaseType());
+        assertThat(postgresqlTableNamePattern, is(TABLE_NAME_PATTERN));
+    }
+    
+    @Test
+    public void assertGetQuoteCharacter() {
+        QuoteCharacter actual = new PostgreSQLDatabaseType().getQuoteCharacter();
+        assertThat(actual.getStartDelimiter(), is("\""));
+        assertThat(actual.getEndDelimiter(), is("\""));
     }
 }
