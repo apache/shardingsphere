@@ -17,15 +17,19 @@
 
 package org.apache.shardingsphere.agent.core.spi;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
-import org.apache.shardingsphere.agent.core.plugin.PluginLoader;
 
 /**
  * Plugin service loader.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PluginServiceLoader {
     
     /**

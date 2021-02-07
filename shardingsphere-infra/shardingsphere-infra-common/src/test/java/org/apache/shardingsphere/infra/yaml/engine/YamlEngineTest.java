@@ -93,7 +93,7 @@ public final class YamlEngineTest {
     
     @Test(expected = ConstructorException.class)
     public void assertUnmarshalMapWithIllegalClasses() {
-        YamlEngine.unmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", Collections.<Class<?>>emptyList());
+        YamlEngine.unmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", Collections.emptyList());
     }
     
     @Test

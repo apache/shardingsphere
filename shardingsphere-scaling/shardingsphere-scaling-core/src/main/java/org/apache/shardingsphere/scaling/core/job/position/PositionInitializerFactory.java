@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
@@ -24,6 +26,7 @@ import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 /**
  * Position initializer factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PositionInitializerFactory {
     
     /**

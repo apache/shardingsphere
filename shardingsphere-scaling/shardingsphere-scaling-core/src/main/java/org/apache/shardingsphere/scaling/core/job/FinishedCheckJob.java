@@ -79,11 +79,11 @@ public final class FinishedCheckJob implements SimpleJob {
         if (scalingResult.isEmpty()) {
             return false;
         }
-        for (String key : scalingResult.keySet()) {
-            boolean isDataValid = scalingResult.get(key).isDataValid();
-            boolean isCountValid = scalingResult.get(key).isCountValid();
+        for (String each : scalingResult.keySet()) {
+            boolean isDataValid = scalingResult.get(each).isDataValid();
+            boolean isCountValid = scalingResult.get(each).isCountValid();
             if (!isDataValid || !isCountValid) {
-                log.error("Scaling job: {}, table: {} data consistency check failed, dataValid: {}, countValid: {}", jobId, key, isDataValid, isCountValid);
+                log.error("Scaling job: {}, table: {} data consistency check failed, dataValid: {}, countValid: {}", jobId, each, isDataValid, isCountValid);
                 return false;
             }
         }

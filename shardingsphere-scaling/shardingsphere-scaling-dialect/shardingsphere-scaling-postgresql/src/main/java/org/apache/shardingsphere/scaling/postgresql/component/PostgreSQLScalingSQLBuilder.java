@@ -21,7 +21,6 @@ import org.apache.shardingsphere.scaling.core.common.record.Column;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.common.record.RecordUtil;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.AbstractScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 
 import java.util.Map;
 import java.util.Set;
@@ -29,7 +28,7 @@ import java.util.Set;
 /**
  * PostgreSQL SQL builder.
  */
-public final class PostgreSQLScalingSQLBuilder extends AbstractScalingSQLBuilder implements ScalingSQLBuilder {
+public final class PostgreSQLScalingSQLBuilder extends AbstractScalingSQLBuilder {
     
     public PostgreSQLScalingSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
         super(shardingColumnsMap);

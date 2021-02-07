@@ -270,12 +270,12 @@ public final class DataRecordMergerTest {
     }
     
     private DataRecord mockDeleteDataRecord(final String tableName, final int id, final int userId, final int totalPrice) {
-        DataRecord preDataRecord = new DataRecord(new PlaceholderPosition(), 3);
-        preDataRecord.setType(ScalingConstant.DELETE);
-        preDataRecord.setTableName(tableName);
-        preDataRecord.addColumn(new Column("id", id, true, true));
-        preDataRecord.addColumn(new Column("user_id", userId, true, false));
-        preDataRecord.addColumn(new Column("total_price", totalPrice, true, false));
-        return preDataRecord;
+        DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
+        result.setType(ScalingConstant.DELETE);
+        result.setTableName(tableName);
+        result.addColumn(new Column("id", id, true, true));
+        result.addColumn(new Column("user_id", userId, true, false));
+        result.addColumn(new Column("total_price", totalPrice, true, false));
+        return result;
     }
 }

@@ -36,21 +36,21 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class AbstractDataSourceCheckerTest {
-
+    
     @Mock
     private DataSource dataSource;
-
+    
     @Mock
     private Connection connection;
-
+    
     private AbstractDataSourceChecker dataSourceChecker;
-
+    
     private Collection<DataSource> dataSources;
-
+    
     @Before
     public void setUp() {
         dataSourceChecker = new AbstractDataSourceChecker() {
-    
+            
             @Override
             public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
             }
@@ -67,14 +67,14 @@ public final class AbstractDataSourceCheckerTest {
         dataSources = new LinkedList<>();
         dataSources.add(dataSource);
     }
-
+    
     @Test
     public void assertCheckConnection() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         dataSourceChecker.checkConnection(dataSources);
         verify(dataSource).getConnection();
     }
-
+    
     @Test(expected = PrepareFailedException.class)
     public void assertCheckConnectionFailed() throws SQLException {
         when(dataSource.getConnection()).thenThrow(new SQLException("error"));

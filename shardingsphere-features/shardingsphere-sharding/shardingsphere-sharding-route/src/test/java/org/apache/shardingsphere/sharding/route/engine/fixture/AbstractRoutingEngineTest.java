@@ -56,6 +56,18 @@ public abstract class AbstractRoutingEngineTest {
         return new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap());
     }
     
+    protected final ShardingRule createErrorShardingRule() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${order_id % 2}", "ds_${user_id % 2}"));
+        Properties props0 = new Properties();
+        props0.setProperty("algorithm-expression", "ds_${user_id % 2}");
+        shardingRuleConfig.getShardingAlgorithms().put("ds_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props0));
+        Properties props1 = new Properties();
+        props1.setProperty("algorithm-expression", "t_order_${order_id % 3}");
+        shardingRuleConfig.getShardingAlgorithms().put("t_order_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props1));
+        return new ShardingRule(shardingRuleConfig, mock(DatabaseType.class), createDataSourceMap());
+    }
+    
     protected final ShardingRule createBindingShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${order_id % 2}", "ds_${user_id % 2}"));
@@ -171,6 +183,17 @@ public abstract class AbstractRoutingEngineTest {
         List<ShardingCondition> result = new ArrayList<>(1);
         ShardingConditionValue shardingConditionValue1 = new ListShardingConditionValue<>("user_id", tableName, Collections.singleton(1L));
         ShardingConditionValue shardingConditionValue2 = new ListShardingConditionValue<>("order_id", tableName, Collections.singleton(1L));
+        ShardingCondition shardingCondition = new ShardingCondition();
+        shardingCondition.getValues().add(shardingConditionValue1);
+        shardingCondition.getValues().add(shardingConditionValue2);
+        result.add(shardingCondition);
+        return new ShardingConditions(result);
+    }
+    
+    protected final ShardingConditions createErrorShardingConditions(final String tableName) {
+        List<ShardingCondition> result = new ArrayList<>(1);
+        ShardingConditionValue shardingConditionValue1 = new ListShardingConditionValue<>("user_id", tableName, Collections.singleton(1L));
+        ShardingConditionValue shardingConditionValue2 = new ListShardingConditionValue<>("order_id", tableName, Collections.singleton(2L));
         ShardingCondition shardingCondition = new ShardingCondition();
         shardingCondition.getValues().add(shardingConditionValue1);
         shardingCondition.getValues().add(shardingConditionValue2);

@@ -49,11 +49,8 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        if (null == backendConnection.getSchemaName()) {
-            // TODO should remove set default ShardingSphere schema after parser can recognize all DAL broadcast SQL.
-            backendConnection.setCurrentSchema(getFirstSchemaName());
-        }
-        if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
+        String schemaName = null == backendConnection.getSchemaName() ? getFirstSchemaName() : backendConnection.getSchemaName();
+        if (!ProxyContext.getInstance().getMetaData(schemaName).isComplete()) {
             throw new RuleNotExistsException();
         }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);
