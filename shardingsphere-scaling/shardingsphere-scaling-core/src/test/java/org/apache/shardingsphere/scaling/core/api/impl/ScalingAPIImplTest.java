@@ -42,12 +42,13 @@ import static org.junit.Assert.assertTrue;
 
 public final class ScalingAPIImplTest {
     
-    private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
+    private static ScalingAPI scalingAPI;
     
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
         ScalingContext.getInstance().init(mockServerConfig());
+        scalingAPI = ScalingAPIFactory.getScalingAPI();
     }
     
     private static ServerConfiguration mockServerConfig() {
