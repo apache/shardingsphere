@@ -90,7 +90,7 @@ public final class ManualBitSet {
         if (size == 0) {
             return fromIndex;
         }
-        int correctIndex = (int) (fromIndex - startIndex);
+        int correctIndex = fromIndex < startIndex ? 0 : (int) (fromIndex - startIndex);
         int listIndex = correctIndex / BIT_SET_SIZE;
         int count = size;
         for (int i = listIndex; i < bitSets.size(); i++) {
