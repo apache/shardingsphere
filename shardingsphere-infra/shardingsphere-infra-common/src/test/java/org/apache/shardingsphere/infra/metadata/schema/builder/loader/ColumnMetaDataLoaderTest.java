@@ -37,6 +37,7 @@ import java.util.Iterator;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -79,7 +80,7 @@ public final class ColumnMetaDataLoaderTest {
     
     @Test
     public void assertLoad() throws SQLException {
-        Collection<ColumnMetaData> actual = ColumnMetaDataLoader.load(connection, "tbl", mock(DatabaseType.class));
+        Collection<ColumnMetaData> actual = ColumnMetaDataLoader.load(connection, "tbl", mock(DatabaseType.class, RETURNS_DEEP_STUBS));
         assertThat(actual.size(), is(2));
         Iterator<ColumnMetaData> columnMetaDataIterator = actual.iterator();
         assertColumnMetaData(columnMetaDataIterator.next(), "pk_col", Types.INTEGER, "INT", true, true);
