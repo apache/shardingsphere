@@ -36,7 +36,7 @@ public final class UserRuleYamlSwapper implements YamlSwapper<YamlUserRuleConfig
     @Override
     public YamlUserRuleConfiguration swapToYamlConfiguration(final Collection<ShardingSphereUser> data) {
         YamlUserRuleConfiguration result = new YamlUserRuleConfiguration();
-        Map<String, YamlUserConfiguration> users = new LinkedHashMap<>();
+        Map<String, YamlUserConfiguration> users = new LinkedHashMap<>(data.size(), 1);
         for (ShardingSphereUser each : data) {
             users.put(each.getUsername(), swapToYamlConfiguration(each));
         }

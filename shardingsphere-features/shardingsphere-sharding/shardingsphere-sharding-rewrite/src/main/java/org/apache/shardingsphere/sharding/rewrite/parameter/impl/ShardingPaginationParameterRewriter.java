@@ -48,7 +48,7 @@ public final class ShardingPaginationParameterRewriter implements ParameterRewri
         PaginationContext pagination = selectStatementContext.getPaginationContext();
         pagination.getOffsetParameterIndex().ifPresent(offsetParameterIndex -> rewriteOffset(pagination, offsetParameterIndex, (StandardParameterBuilder) parameterBuilder));
         pagination.getRowCountParameterIndex().ifPresent(
-            rowCountParameterIndex -> rewriteRowCount(pagination, rowCountParameterIndex, (StandardParameterBuilder) parameterBuilder, selectStatementContext));
+            optional -> rewriteRowCount(pagination, optional, (StandardParameterBuilder) parameterBuilder, selectStatementContext));
     }
     
     private void rewriteOffset(final PaginationContext pagination, final int offsetParameterIndex, final StandardParameterBuilder parameterBuilder) {

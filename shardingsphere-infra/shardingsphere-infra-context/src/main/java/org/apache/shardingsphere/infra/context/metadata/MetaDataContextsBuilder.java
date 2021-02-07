@@ -115,7 +115,7 @@ public final class MetaDataContextsBuilder {
             Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
             result = databaseType;
         }
-        return result;
+        return null == result ? DatabaseTypeRegistry.getDefaultDatabaseType() : result;
     }
     
     private DatabaseType getDatabaseType(final DataSource dataSource) {

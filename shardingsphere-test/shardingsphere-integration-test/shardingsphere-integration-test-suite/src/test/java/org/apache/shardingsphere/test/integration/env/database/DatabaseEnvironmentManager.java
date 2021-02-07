@@ -21,11 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.test.integration.env.database.type.MySQLEmbeddedDatabaseResource;
-import org.apache.shardingsphere.test.integration.env.datasource.DatabaseEnvironment;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.h2.tools.RunScript;
 
@@ -38,20 +35,12 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Schema environment manager.
+ * Database environment manager.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseEnvironmentManager {
-    
-    private static final ConcurrentMap<String, EmbeddedDatabaseResource> DATABASE_RESOURCE_CACHE = new ConcurrentHashMap<>();
-    
-    private static final Lock DATABASE_RESOURCE_LOCK = new ReentrantLock();
     
     /**
      * Get database names.
@@ -85,7 +74,7 @@ public final class DatabaseEnvironmentManager {
     }
     
     private static void executeInitSQLs(final String scenario) throws IOException, JAXBException, SQLException {
-        for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
+        for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()) {
             if (each instanceof H2DatabaseType) {
                 executeInitSQLForSchemaNotSupportedDatabase(scenario, each);
                 continue;
@@ -112,58 +101,5 @@ public final class DatabaseEnvironmentManager {
             // TODO If you don't use H2 in the future, you need to implement this method.
             RunScript.execute(connection, reader);
         }
-    }
-    
-    /**
-     * Create embedded database resource.
-     *
-     * @param databaseType database type
-     * @param scenario scenario
-     * @param databaseEnvironment database environment
-     */
-    public static void createEmbeddedDatabaseResource(final DatabaseType databaseType, final String scenario, final DatabaseEnvironment databaseEnvironment) {
-        if (null == databaseType) {
-            return;
-        }
-        String databaseTypeName = databaseType.getName();
-        String embeddedDatabaseResourceKey = String.join("_", databaseTypeName, scenario);
-        EmbeddedDatabaseResource embeddedDatabaseResource = DATABASE_RESOURCE_CACHE.get(embeddedDatabaseResourceKey);
-        if (null != embeddedDatabaseResource) {
-            return;
-        }
-        try {
-            DATABASE_RESOURCE_LOCK.lock();
-            embeddedDatabaseResource = DATABASE_RESOURCE_CACHE.get(embeddedDatabaseResourceKey);
-            if (null != embeddedDatabaseResource) {
-                return;
-            }
-            if (databaseType instanceof MySQLDatabaseType) {
-                embeddedDatabaseResource = new MySQLEmbeddedDatabaseResource(databaseEnvironment);
-            } else {
-                // TODO return default database resource
-                embeddedDatabaseResource = new EmbeddedDatabaseResource() {
-                    
-                    @Override
-                    public void start() {
-                    }
-                    
-                    @Override
-                    public void stop() {
-                    }
-                };
-            }
-            embeddedDatabaseResource.start();
-            DATABASE_RESOURCE_CACHE.put(embeddedDatabaseResourceKey, embeddedDatabaseResource);
-        } finally {
-            DATABASE_RESOURCE_LOCK.unlock();
-        }
-    }
-    
-    /**
-     * Drop embedded database resource.
-     */
-    public static void dropEmbeddedDatabaseResource() {
-        DATABASE_RESOURCE_CACHE.values().forEach(EmbeddedDatabaseResource::stop);
-        DATABASE_RESOURCE_CACHE.clear();
     }
 }

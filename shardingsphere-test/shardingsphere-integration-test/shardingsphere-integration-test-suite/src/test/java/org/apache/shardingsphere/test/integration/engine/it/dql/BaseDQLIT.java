@@ -55,7 +55,7 @@ public abstract class BaseDQLIT extends SingleIT {
     
     @BeforeClass
     public static void fillData() throws IOException, JAXBException, SQLException, ParseException {
-        for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDatabaseEnvironments().keySet()) {
+        for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()) {
             fillData(each);
         }
     }

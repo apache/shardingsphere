@@ -58,11 +58,14 @@ public final class SchemaPrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final String table, final Collection<PrivilegeType> privileges) {
-        return globalPrivileges.contains(PrivilegeType.ALL) || globalPrivileges.containsAll(privileges)
-                || hasPrivileges0(table, privileges);
+        return hasGlobalPrivileges(privileges) || hasSpecificPrivileges(table, privileges);
     }
     
-    private boolean hasPrivileges0(final String table, final Collection<PrivilegeType> privileges) {
+    private boolean hasGlobalPrivileges(final Collection<PrivilegeType> privileges) {
+        return globalPrivileges.contains(PrivilegeType.ALL) || !globalPrivileges.isEmpty() && globalPrivileges.containsAll(privileges);
+    }
+    
+    private boolean hasSpecificPrivileges(final String table, final Collection<PrivilegeType> privileges) {
         Collection<PrivilegeType> targets = privileges.stream().filter(each -> !globalPrivileges.contains(each)).collect(Collectors.toList());
         return specificPrivileges.containsKey(table) && specificPrivileges.get(table).hasPrivileges(targets);
     }

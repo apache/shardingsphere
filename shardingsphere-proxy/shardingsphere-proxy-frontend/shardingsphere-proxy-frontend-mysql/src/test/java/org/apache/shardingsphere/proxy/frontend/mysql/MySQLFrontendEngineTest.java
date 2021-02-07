@@ -151,7 +151,9 @@ public final class MySQLFrontendEngineTest {
 
     private void setAuthentication(final ShardingSphereUser user) {
         DefaultAuthentication authentication = new DefaultAuthentication();
-        authentication.getAuthentication().put(user, new ShardingSpherePrivilege());
+        ShardingSpherePrivilege privilege = new ShardingSpherePrivilege();
+        privilege.setSuper();
+        authentication.getAuthentication().put(user, privilege);
         initProxyContext(authentication);
     }
 

@@ -144,7 +144,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     @Override
     public LockContext getLockContext() {
-        return this.lockContext;
+        return lockContext;
     }
     
     @Override

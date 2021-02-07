@@ -33,10 +33,7 @@ public class ZipkinCollector extends ExternalResource implements CollectorRule {
     @Override
     @SneakyThrows
     protected void before() {
-        Tracing.newBuilder()
-                .currentTraceContext(StrictCurrentTraceContext.create())
-                .spanReporter(SPANS::add)
-                .build();
+        Tracing.newBuilder().currentTraceContext(StrictCurrentTraceContext.create()).spanReporter(SPANS::add).build();
     }
     
     @Override

@@ -45,7 +45,7 @@ dropIndex
     ;
 
 truncateTable
-    : TRUNCATE TABLE tableName
+    : TRUNCATE TABLE tableName materializedViewLogClause? storageClause? CASCADE?
     ;
 
 createTableSpecification
@@ -409,4 +409,12 @@ usableSpecification
 
 invalidationSpecification
     : (DEFERRED | IMMEDIATE) INVALIDATION
+    ;
+
+materializedViewLogClause
+    : (PRESERVE | PURGE) MATERIALIZED VIEW LOG
+    ;
+
+storageClause
+    : (DROP (ALL)? | REUSE) STORAGE
     ;

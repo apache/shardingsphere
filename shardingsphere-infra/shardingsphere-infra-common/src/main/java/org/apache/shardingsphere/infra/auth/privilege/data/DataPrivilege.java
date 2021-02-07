@@ -44,8 +44,7 @@ public final class DataPrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
-        return globalPrivileges.contains(PrivilegeType.ALL) || globalPrivileges.containsAll(privileges)
-                || hasPrivileges0(schema, privileges);
+        return hasGlobalPrivileges(privileges) || hasSpecificPrivileges(schema, privileges);
     }
     
     /**
@@ -57,16 +56,19 @@ public final class DataPrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final String schema, final String table, final Collection<PrivilegeType> privileges) {
-        return globalPrivileges.contains(PrivilegeType.ALL) || globalPrivileges.containsAll(privileges)
-                || hasPrivileges0(schema, table, privileges);
+        return hasGlobalPrivileges(privileges) || hasSpecificPrivileges(schema, table, privileges);
     }
     
-    private boolean hasPrivileges0(final String schema, final Collection<PrivilegeType> privileges) {
+    private boolean hasGlobalPrivileges(final Collection<PrivilegeType> privileges) {
+        return globalPrivileges.contains(PrivilegeType.ALL) || !globalPrivileges.isEmpty() && globalPrivileges.containsAll(privileges);
+    }
+    
+    private boolean hasSpecificPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
         Collection<PrivilegeType> targets = privileges.stream().filter(each -> !globalPrivileges.contains(each)).collect(Collectors.toList());
         return specificPrivileges.containsKey(schema) && specificPrivileges.get(schema).hasPrivileges(targets);
     }
     
-    private boolean hasPrivileges0(final String schema, final String table, final Collection<PrivilegeType> privileges) {
+    private boolean hasSpecificPrivileges(final String schema, final String table, final Collection<PrivilegeType> privileges) {
         Collection<PrivilegeType> targets = privileges.stream().filter(each -> !globalPrivileges.contains(each)).collect(Collectors.toList());
         return specificPrivileges.containsKey(schema) && specificPrivileges.get(schema).hasPrivileges(table, targets);
     }

@@ -28,17 +28,14 @@ public final class DataSourceFactoryTest {
     
     @Test
     public void assertNewJDBCInstance() {
-        StandardJDBCDataSourceConfiguration config = new StandardJDBCDataSourceConfiguration(
-                "jdbc:h2:mem:test_db_2;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "password");
-        DataSourceWrapper actual = new DataSourceFactory().newInstance(config);
-        assertNotNull(actual);
+        StandardJDBCDataSourceConfiguration config = new StandardJDBCDataSourceConfiguration("jdbc:h2:mem:test_db_2;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "password");
+        assertNotNull(new DataSourceFactory().newInstance(config));
     }
     
     @Test
     public void assertNewShardingSphereJDBCInstance() {
         ShardingSphereJDBCDataSourceConfiguration config = new ShardingSphereJDBCDataSourceConfiguration(
                 FixtureShardingSphereJDBCConfiguration.DATA_SOURCE, FixtureShardingSphereJDBCConfiguration.RULE);
-        DataSourceWrapper actual = new DataSourceFactory().newInstance(config);
-        assertNotNull(actual);
+        assertNotNull(new DataSourceFactory().newInstance(config));
     }
 }

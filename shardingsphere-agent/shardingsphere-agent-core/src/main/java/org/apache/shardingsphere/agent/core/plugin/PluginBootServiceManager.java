@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.agent.core.plugin;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.config.AgentConfiguration;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
@@ -30,6 +32,7 @@ import java.util.Set;
 /**
  * Plugin boot service manager.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class PluginBootServiceManager {
     

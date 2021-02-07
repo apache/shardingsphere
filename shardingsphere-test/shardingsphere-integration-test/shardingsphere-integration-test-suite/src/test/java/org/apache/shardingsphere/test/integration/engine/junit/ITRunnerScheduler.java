@@ -48,7 +48,7 @@ public final class ITRunnerScheduler implements RunnerScheduler {
     
     public ITRunnerScheduler() {
         IntegrationTestEnvironment itEnv = IntegrationTestEnvironment.getInstance();
-        addExecutors(itEnv.getAdapters(), itEnv.getScenarios(), itEnv.getDatabaseEnvironments().keySet());
+        addExecutors(itEnv.getAdapters(), itEnv.getScenarios(), itEnv.getDataSourceEnvironments().keySet());
         addExecutor(DEFAULT_EXECUTOR_KEY);
     }
     

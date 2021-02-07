@@ -22,14 +22,13 @@ import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.ScheduleJobBootstrap;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 import org.apache.shardingsphere.scaling.core.executor.AbstractScalingExecutor;
-import org.apache.shardingsphere.scaling.core.executor.ScalingExecutor;
 import org.apache.shardingsphere.scaling.core.job.FinishedCheckJob;
 
 /**
  * Finished check job executor.
  */
 @Slf4j
-public final class FinishedCheckJobExecutor extends AbstractScalingExecutor implements ScalingExecutor {
+public final class FinishedCheckJobExecutor extends AbstractScalingExecutor {
     
     private static final String JOB_NAME = "_finished_check";
     

@@ -67,7 +67,6 @@ public final class EncryptConditionEngine {
         if (!whereSegment.isPresent()) {
             return Collections.emptyList();
         }
-    
         ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
         ExpressionBuilder expressionBuilder = new ExpressionBuilder(expression);
         Collection<AndPredicate> andPredicates = new LinkedList<>(expressionBuilder.extractAndPredicates().getAndPredicates());
