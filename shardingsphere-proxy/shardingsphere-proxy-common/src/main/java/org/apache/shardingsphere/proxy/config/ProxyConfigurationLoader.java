@@ -56,11 +56,10 @@ public final class ProxyConfigurationLoader {
      * @throws IOException IO exception
      */
     public static YamlProxyConfiguration load(final String path) throws IOException {
-        Collection<String> schemaNames = new HashSet<>();
-        YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getResourceFile(path + "/" + SERVER_CONFIG_FILE));
+        YamlProxyServerConfiguration serverConfig = loadServerConfiguration(getResourceFile(String.join("/", path, SERVER_CONFIG_FILE)));
         File configPath = getResourceFile(path);
-        Collection<YamlProxyRuleConfiguration> ruleConfigurations = loadRuleConfigurations(schemaNames, configPath);
-        Preconditions.checkState(!ruleConfigurations.isEmpty() || null != serverConfig.getGovernance(), "Can not find any rule configurations file in path `%s`.", configPath.getPath());
+        Collection<YamlProxyRuleConfiguration> ruleConfigurations = loadRuleConfigurations(configPath);
+        Preconditions.checkState(!ruleConfigurations.isEmpty() || null != serverConfig.getGovernance(), "Can not find any valid rule configurations file in path `%s`.", configPath.getPath());
         return new YamlProxyConfiguration(serverConfig, ruleConfigurations.stream().collect(Collectors.toMap(
                 YamlProxyRuleConfiguration::getSchemaName, each -> each, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
@@ -81,11 +80,12 @@ public final class ProxyConfigurationLoader {
         return result;
     }
     
-    private static Collection<YamlProxyRuleConfiguration> loadRuleConfigurations(final Collection<String> schemaNames, final File configPath) throws IOException {
+    private static Collection<YamlProxyRuleConfiguration> loadRuleConfigurations(final File configPath) throws IOException {
+        Collection<String> loadedSchemaNames = new HashSet<>();
         Collection<YamlProxyRuleConfiguration> result = new LinkedList<>();
         for (File each : findRuleConfigurationFiles(configPath)) {
             loadRuleConfiguration(each).ifPresent(yamlProxyRuleConfig -> {
-                Preconditions.checkState(schemaNames.add(yamlProxyRuleConfig.getSchemaName()), "Schema name `%s` must unique at all rule configurations.", yamlProxyRuleConfig.getSchemaName());
+                Preconditions.checkState(loadedSchemaNames.add(yamlProxyRuleConfig.getSchemaName()), "Schema name `%s` must unique at all rule configurations.", yamlProxyRuleConfig.getSchemaName());
                 result.add(yamlProxyRuleConfig);
             });
         }
