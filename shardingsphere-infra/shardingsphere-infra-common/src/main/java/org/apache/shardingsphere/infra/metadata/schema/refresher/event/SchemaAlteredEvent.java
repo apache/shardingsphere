@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.privilege.refresher.event;
+package org.apache.shardingsphere.infra.metadata.schema.refresher.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 
 /**
- * Privilege event.
+ * Schema persist event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class PrivilegeEvent {
+public final class SchemaAlteredEvent {
     
-    private final ShardingSphereUser user;
+    private final String schemaName;
+    
+    private final ShardingSphereSchema schema;
 }

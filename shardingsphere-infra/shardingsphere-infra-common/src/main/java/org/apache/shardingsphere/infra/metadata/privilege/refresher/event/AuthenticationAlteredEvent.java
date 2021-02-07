@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.privilege.refresher.type;
+package org.apache.shardingsphere.infra.metadata.privilege.refresher.event;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.metadata.privilege.refresher.PrivilegeRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Grant statement privilege refresher.
+ * Authentication altered event.
  */
-public final class GrantStatementPrivilegeRefresher implements PrivilegeRefresher {
+@RequiredArgsConstructor
+@Getter
+public final class AuthenticationAlteredEvent {
     
-    @Override
-    public void refresh(final Authentication authentication, final SQLStatement sqlStatement, final SchemaBuilderMaterials materials) {
-    }
+    private final Authentication authentication;
 }

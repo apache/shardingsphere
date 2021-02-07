@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresher.spi;
+package org.apache.shardingsphere.infra.metadata.privilege.refresher;
 
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * ShardingSphere schema changed notifier.
+ * Privilege refresher.
  */
-public interface SchemaChangedNotifier extends OrderedSPI<ShardingSphereSchema> {
+public interface AuthenticationRefresher extends MetadataRefresher {
     
     /**
-     * Notify when ShardingSphere schema changed.
-     * 
-     * @param name schema name
-     * @param schema ShardingSphere schema
+     * Refresh.
+     *
+     * @param authentication authentication
+     * @param sqlStatement sql statement
+     * @param materials materials
      */
-    void notify(String name, ShardingSphereSchema schema);
+    void refresh(Authentication authentication, SQLStatement sqlStatement, SchemaBuilderMaterials materials);
 }

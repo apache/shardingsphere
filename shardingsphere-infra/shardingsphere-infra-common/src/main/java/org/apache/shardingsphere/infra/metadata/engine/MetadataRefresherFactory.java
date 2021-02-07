@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.privilege.refresher.type.GrantStatementPrivilegeRefresher;
+import org.apache.shardingsphere.infra.metadata.privilege.refresher.type.GrantStatementAuthRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.AlterTableStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.CreateIndexStatementSchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.type.CreateTableStatementSchemaRefresher;
@@ -58,7 +58,7 @@ public final class MetadataRefresherFactory {
         REGISTRY.put(DropIndexStatement.class, new DropIndexStatementSchemaRefresher());
         REGISTRY.put(CreateViewStatement.class, new CreateViewStatementSchemaRefresher());
         REGISTRY.put(DropViewStatement.class, new DropViewStatementSchemaRefresher());
-        REGISTRY.put(GrantStatement.class, new GrantStatementPrivilegeRefresher());
+        REGISTRY.put(GrantStatement.class, new GrantStatementAuthRefresher());
     }
     
     /**
