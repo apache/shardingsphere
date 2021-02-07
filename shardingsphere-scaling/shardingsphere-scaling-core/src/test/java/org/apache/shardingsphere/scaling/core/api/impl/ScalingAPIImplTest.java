@@ -28,6 +28,7 @@ import org.apache.shardingsphere.scaling.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -42,19 +43,17 @@ import static org.junit.Assert.assertTrue;
 
 public final class ScalingAPIImplTest {
     
-    private static ScalingAPI scalingAPI;
+    private ScalingAPI scalingAPI;
     
     @BeforeClass
     public static void init() {
         EmbedTestingServer.start();
         ScalingContext.getInstance().init(mockServerConfig());
-        scalingAPI = ScalingAPIFactory.getScalingAPI();
     }
     
-    private static ServerConfiguration mockServerConfig() {
-        ServerConfiguration result = new ServerConfiguration();
-        result.setGovernanceConfig(new GovernanceConfiguration("test", new GovernanceCenterConfiguration("Zookeeper", EmbedTestingServer.getConnectionString(), new Properties()), true));
-        return result;
+    @Before
+    public void setUp() {
+        scalingAPI = ScalingAPIFactory.getScalingAPI();
     }
     
     @Test
@@ -106,5 +105,11 @@ public final class ScalingAPIImplTest {
         assertTrue(jobId.isPresent());
         Map<Integer, JobProgress> jobProgressMap = scalingAPI.getProgress(jobId.get());
         assertThat(jobProgressMap.size(), is(2));
+    }
+    
+    private static ServerConfiguration mockServerConfig() {
+        ServerConfiguration result = new ServerConfiguration();
+        result.setGovernanceConfig(new GovernanceConfiguration("test", new GovernanceCenterConfiguration("Zookeeper", EmbedTestingServer.getConnectionString(), new Properties()), true));
+        return result;
     }
 }
