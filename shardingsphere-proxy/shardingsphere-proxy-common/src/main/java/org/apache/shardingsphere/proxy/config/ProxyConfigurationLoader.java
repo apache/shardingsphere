@@ -106,6 +106,6 @@ public final class ProxyConfigurationLoader {
     }
     
     private static File[] findRuleConfigurationFiles(final File path) {
-        return path.listFiles(pathname -> RULE_CONFIG_FILE_PATTERN.matcher(pathname.getName()).matches());
+        return path.listFiles(each -> RULE_CONFIG_FILE_PATTERN.matcher(each.getName()).matches());
     }
 }
