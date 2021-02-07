@@ -28,13 +28,3 @@ chapter = true
 | -------------------------------- | ----------------------- |
 | CuratorZookeeperRepository | 基于 ZooKeeper 的注册中心 |
 | EtcdRepository             | 基于 etcd 的注册中心      |
-
-## RootInvokeHook
-
-| *SPI 名称*                 | *详细说明*                           |
-| ------------------------- | ------------------------------------ |
-| RootInvokeHook            | 请求调用入口追踪                       |
-
-| *已知实现类*               | *详细说明*                            |
-| ------------------------- | ------------------------------------ |
-| OpenTracingRootInvokeHook | 基于 OpenTracing 协议的请求调用入口追踪 |

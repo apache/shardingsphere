@@ -28,14 +28,3 @@ chapter = true
 | -------------------------------- | ------------------------- |
 | CuratorZookeeperRepository | ZooKeeper registry repository |
 | EtcdRepository             | etcd registry repository      |
-
-## RootInvokeHook
-
-| *SPI Name*                | *Description*                                  |
-| ------------------------- | ---------------------------------------------- |
-| RootInvokeHook            | Used to trace request root                     |
-
-| *Implementation Class*    | *Description*                                  |
-| ------------------------- | ---------------------------------------------- |
-| OpenTracingRootInvokeHook | Use OpenTracing protocol to trace request root |
-
