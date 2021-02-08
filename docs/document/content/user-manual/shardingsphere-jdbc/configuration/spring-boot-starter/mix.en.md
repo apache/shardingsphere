@@ -37,8 +37,8 @@ spring.shardingsphere.rules.sharding.binding-tables= # Binding table names,multi
 spring.shardingsphere.rules.sharding.broadcast-tables= # Broadcast table names,multiple table name are separated by commas
 
 # Table sharding strategy
-# Data source name 'ds' uses the logical data source name of the replica-query configuration.
-spring.shardingsphere.rules.sharding.tables.t_user.actual-data-nodes=ds.t_user_$->{0..1}
+# The enumeration value of `ds_$->{0..1}` is the name of the logical data source configured with replica-query
+spring.shardingsphere.rules.sharding.tables.t_user.actual-data-nodes=ds_$->{0..1}.t_user_$->{0..1}
 spring.shardingsphere.rules.sharding.tables.t_user.table-strategy.standard.sharding-column=user_id
 spring.shardingsphere.rules.sharding.tables.t_user.table-strategy.standard.sharding-algorithm-name=user-table-strategy-inline
 
@@ -61,7 +61,7 @@ spring.shardingsphere.rules.sharding.tables.t_user.key-generate-strategy.key-gen
 
 # Sharding algorithm configuration
 spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.type=INLINE
-# Data source name 'ds' uses the logical data source name of the replica-query configuration.
+# The enumeration value of `ds_$->{user_id % 2}` is the name of the logical data source configured with replica-query
 spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.algorithm-expression=ds$->{user_id % 2}
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.type=INLINE
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.algorithm-expression=t_user_$->{user_id % 2}

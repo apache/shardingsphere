@@ -38,8 +38,8 @@ spring.shardingsphere.rules.sharding.binding-tables= # 绑定表名称，多个�
 spring.shardingsphere.rules.sharding.broadcast-tables= # 广播表名称，多个表之间以逗号分隔
 
 # 分表策略
-# 数据源名称 `ds` 使用读写分离配置的逻辑数据源名称
-spring.shardingsphere.rules.sharding.tables.t_user.actual-data-nodes=ds.t_user_$->{0..1}
+# 表达式 `ds_$->{0..1}`枚举的数据源为读写分离配置的逻辑数据源名称
+spring.shardingsphere.rules.sharding.tables.t_user.actual-data-nodes=ds_$->{0..1}.t_user_$->{0..1}
 spring.shardingsphere.rules.sharding.tables.t_user.table-strategy.standard.sharding-column=user_id
 spring.shardingsphere.rules.sharding.tables.t_user.table-strategy.standard.sharding-algorithm-name=user-table-strategy-inline
 
@@ -62,8 +62,8 @@ spring.shardingsphere.rules.sharding.tables.t_user.key-generate-strategy.key-gen
 
 # 分片算法配置
 spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.type=INLINE
-# 数据源名称 `ds` 使用读写分离配置的逻辑数据源名称
-spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.algorithm-expression=ds$->{user_id % 2}
+# 表达式`ds_$->{user_id % 2}` 枚举的数据源为读写分离配置的逻辑数据源名称
+spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.algorithm-expression=ds_$->{user_id % 2}
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.type=INLINE
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.algorithm-expression=t_user_$->{user_id % 2}
 
