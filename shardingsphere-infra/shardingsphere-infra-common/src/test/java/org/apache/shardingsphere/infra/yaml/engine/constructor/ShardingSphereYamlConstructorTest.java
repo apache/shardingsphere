@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.yaml.engine.constructor;
 
-import org.apache.shardingsphere.infra.yaml.engine.fixture.DefaultYamlRepresenterFixture;
+import org.apache.shardingsphere.infra.yaml.engine.fixture.ShardingSphereYamlRepresenterFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
@@ -40,7 +40,7 @@ public final class ShardingSphereYamlConstructorTest {
                 + "  key2: value2\n"
                 + "value: value\n"
                 + "customClass:";
-        DefaultYamlRepresenterFixture actual = new Yaml(new ShardingSphereYamlConstructor(DefaultYamlRepresenterFixture.class)).loadAs(yamlString, DefaultYamlRepresenterFixture.class);
+        ShardingSphereYamlRepresenterFixture actual = new Yaml(new ShardingSphereYamlConstructor(ShardingSphereYamlRepresenterFixture.class)).loadAs(yamlString, ShardingSphereYamlRepresenterFixture.class);
         assertThat(actual.getValue(), is("value"));
         assertThat(actual.getCollection().size(), is(2));
         Iterator<String> iterator = actual.getCollection().iterator();
