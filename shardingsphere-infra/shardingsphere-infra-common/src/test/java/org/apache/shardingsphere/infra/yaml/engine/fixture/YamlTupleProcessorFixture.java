@@ -22,7 +22,7 @@ import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;
 import org.yaml.snakeyaml.nodes.Tag;
 
-public final class CustomizedYamlTupleProcessorFixture implements ShardingSphereYamlTupleProcessor {
+public final class YamlTupleProcessorFixture implements ShardingSphereYamlTupleProcessor {
     
     @Override
     public String getTupleName() {
