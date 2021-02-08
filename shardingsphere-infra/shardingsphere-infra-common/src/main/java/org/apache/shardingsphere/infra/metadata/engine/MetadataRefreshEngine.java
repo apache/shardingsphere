@@ -57,6 +57,7 @@ public final class MetadataRefreshEngine {
      * @param routeDataSourceNames route data source names
      * @throws SQLException SQL exception
      */
+    @SuppressWarnings("rawtypes")
     public void refresh(final SQLStatement sqlStatement, final Collection<String> routeDataSourceNames) throws SQLException {
         Optional<MetadataRefresher> metadataRefresher = MetadataRefresherFactory.newInstance(sqlStatement);
         if (metadataRefresher.isPresent()) {
@@ -77,7 +78,7 @@ public final class MetadataRefreshEngine {
     }
     
     private void refreshAuthentication(final SQLStatement sqlStatement, final AuthenticationRefresher refresher) {
-        refresher.refresh(authentication, sqlStatement, materials);
+        refresher.refresh(authentication, sqlStatement, metaData);
         // TODO :Subscribe and handle this event
         ShardingSphereEventBus.getInstance().post(new AuthenticationAlteredEvent(authentication));
     }

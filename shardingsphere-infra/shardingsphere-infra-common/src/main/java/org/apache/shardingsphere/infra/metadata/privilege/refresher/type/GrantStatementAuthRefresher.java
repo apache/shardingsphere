@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.metadata.privilege.refresher.type;
 
 import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.privilege.refresher.AuthenticationRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
@@ -28,6 +28,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 public final class GrantStatementAuthRefresher implements AuthenticationRefresher {
     
     @Override
-    public void refresh(final Authentication authentication, final SQLStatement sqlStatement, final SchemaBuilderMaterials materials) {
+    public void refresh(final Authentication authentication, final SQLStatement sqlStatement, final ShardingSphereMetaData metaData) {
     }
 }

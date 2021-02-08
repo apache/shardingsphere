@@ -17,15 +17,12 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
-import com.google.gson.Gson;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class PlaceholderPositionTest {
-    
-    public static final Gson GSON = new Gson();
     
     @Test
     public void assertCompareTo() {
@@ -35,8 +32,7 @@ public final class PlaceholderPositionTest {
     }
     
     @Test
-    public void assertTypeAdapter() {
-        PlaceholderPosition position = GSON.fromJson("[]", PlaceholderPosition.class);
-        assertThat(GSON.toJson(position), is("[]"));
+    public void assertToString() {
+        assertThat(new PlaceholderPosition().toString(), is(""));
     }
 }

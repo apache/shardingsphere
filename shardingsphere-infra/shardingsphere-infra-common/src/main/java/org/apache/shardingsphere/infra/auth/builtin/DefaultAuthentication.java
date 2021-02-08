@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.infra.auth.builtin;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.auth.user.Grantee;
 import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Default authentication.
@@ -37,7 +36,7 @@ import java.util.Optional;
 @Getter
 public final class DefaultAuthentication implements Authentication {
     
-    private final Map<ShardingSphereUser, ShardingSpherePrivilege> authentication = new LinkedHashMap<>();
+    private final Map<ShardingSphereUser, ShardingSpherePrivilege> authentication = new ConcurrentHashMap<>();
     
     public DefaultAuthentication(final Collection<ShardingSphereUser> users) {
         for (ShardingSphereUser each : users) {
@@ -53,8 +52,7 @@ public final class DefaultAuthentication implements Authentication {
     
     @Override
     public Optional<ShardingSphereUser> findUser(final Grantee grantee) {
-        return authentication.keySet().stream().filter(each -> each.getUsername().equals(grantee.getUsername())
-                && (each.getHostname().equals(grantee.getHostname()) || Strings.isNullOrEmpty(each.getHostname()))).findFirst();
+        return authentication.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst();
     }
     
     @Override

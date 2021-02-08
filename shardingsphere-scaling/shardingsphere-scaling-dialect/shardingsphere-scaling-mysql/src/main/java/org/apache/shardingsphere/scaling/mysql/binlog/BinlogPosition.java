@@ -36,9 +36,7 @@ public final class BinlogPosition implements Position<BinlogPosition> {
     
     private final long position;
     
-    private transient long serverId;
-    
-    private long delay;
+    private long serverId;
     
     @Override
     public int compareTo(final BinlogPosition position) {
@@ -50,5 +48,10 @@ public final class BinlogPosition implements Position<BinlogPosition> {
     
     private long toLong() {
         return Long.parseLong(filename.substring(filename.lastIndexOf('.') + 1)) << 32 | position;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("%s#%d", filename, position);
     }
 }

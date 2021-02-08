@@ -46,12 +46,12 @@ public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
     
     @Override
     public void persistJobProgress(final JobContext jobContext) {
-        JobProgress jobPosition = new JobProgress();
-        jobPosition.setStatus(jobContext.getStatus());
-        jobPosition.setDatabaseType(jobContext.getJobConfig().getHandleConfig().getDatabaseType());
-        jobPosition.setIncrementalTaskProgressMap(getIncrementalTaskProgressMap(jobContext));
-        jobPosition.setInventoryTaskProgressMap(getInventoryTaskProgressMap(jobContext));
-        registryRepository.persist(getOffsetPath(jobContext.getJobId(), jobContext.getShardingItem()), jobPosition.toJson());
+        JobProgress jobProgress = new JobProgress();
+        jobProgress.setStatus(jobContext.getStatus());
+        jobProgress.setDatabaseType(jobContext.getJobConfig().getHandleConfig().getDatabaseType());
+        jobProgress.setIncrementalTaskProgressMap(getIncrementalTaskProgressMap(jobContext));
+        jobProgress.setInventoryTaskProgressMap(getInventoryTaskProgressMap(jobContext));
+        registryRepository.persist(getOffsetPath(jobContext.getJobId(), jobContext.getShardingItem()), jobProgress.toString());
     }
     
     private Map<String, IncrementalTaskProgress> getIncrementalTaskProgressMap(final JobContext jobContext) {
@@ -78,7 +78,7 @@ public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
         } catch (final NullPointerException ex) {
             log.info("job {}-{} without break point.", jobId, shardingItem);
         }
-        return Strings.isNullOrEmpty(data) ? null : JobProgress.fromJson(data);
+        return Strings.isNullOrEmpty(data) ? null : JobProgress.init(data);
     }
     
     @Override
