@@ -39,8 +39,9 @@ public final class ShardingSphereYamlConstructorTest {
                 + "  key1: value1\n"
                 + "  key2: value2\n"
                 + "value: value\n"
-                + "customClass:";
-        ShardingSphereYamlRepresenterFixture actual = new Yaml(new ShardingSphereYamlConstructor(ShardingSphereYamlRepresenterFixture.class)).loadAs(yamlString, ShardingSphereYamlRepresenterFixture.class);
+                + "customizedClass:";
+        ShardingSphereYamlRepresenterFixture actual = new Yaml(
+                new ShardingSphereYamlConstructor(ShardingSphereYamlRepresenterFixture.class)).loadAs(yamlString, ShardingSphereYamlRepresenterFixture.class);
         assertThat(actual.getValue(), is("value"));
         assertThat(actual.getCollection().size(), is(2));
         Iterator<String> iterator = actual.getCollection().iterator();
@@ -49,6 +50,6 @@ public final class ShardingSphereYamlConstructorTest {
         assertThat(actual.getMap().size(), is(2));
         assertThat(actual.getMap().get("key1"), is("value1"));
         assertThat(actual.getMap().get("key2"), is("value2"));
-        assertNotNull(actual.getCustomClass());
+        assertNotNull(actual.getCustomizedClass());
     }
 }

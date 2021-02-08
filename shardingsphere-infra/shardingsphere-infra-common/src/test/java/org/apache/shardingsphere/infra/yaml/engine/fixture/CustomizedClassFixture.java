@@ -17,5 +17,5 @@
 
 package org.apache.shardingsphere.infra.yaml.engine.fixture;
 
-public final class FixtureCustomClass {
+public final class CustomizedClassFixture {
 }

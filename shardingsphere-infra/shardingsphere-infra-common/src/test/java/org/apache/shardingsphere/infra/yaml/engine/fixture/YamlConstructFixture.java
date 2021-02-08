@@ -24,7 +24,7 @@ public final class YamlConstructFixture implements ShardingSphereYamlConstruct {
     
     @Override
     public Object construct(final Node node) {
-        return new FixtureCustomClass();
+        return new CustomizedClassFixture();
     }
     
     @Override
@@ -33,6 +33,6 @@ public final class YamlConstructFixture implements ShardingSphereYamlConstruct {
     
     @Override
     public Class<?> getType() {
-        return FixtureCustomClass.class;
+        return CustomizedClassFixture.class;
     }
 }

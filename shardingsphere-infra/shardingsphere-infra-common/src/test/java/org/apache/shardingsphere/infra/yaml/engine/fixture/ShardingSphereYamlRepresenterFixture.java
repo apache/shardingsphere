@@ -33,7 +33,7 @@ public final class ShardingSphereYamlRepresenterFixture {
     
     private Map<String, String> map;
     
-    private FixtureCustomClass customClass;
+    private CustomizedClassFixture customizedClass;
     
     private String customizedTag;
 }
