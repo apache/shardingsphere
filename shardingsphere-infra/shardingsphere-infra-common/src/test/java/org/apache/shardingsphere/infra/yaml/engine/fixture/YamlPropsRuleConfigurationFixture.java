@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.yaml.engine.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.fixture.RuleConfigurationFixture;
 
@@ -27,14 +26,14 @@ import java.util.Properties;
 
 @Getter
 @Setter
-public final class FixtureYamlPropsRuleConfiguration implements YamlRuleConfiguration {
+public final class YamlPropsRuleConfigurationFixture implements YamlRuleConfiguration {
     
     private String name;
     
     private Properties props;
     
     @Override
-    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
+    public Class<RuleConfigurationFixture> getRuleConfigurationType() {
         return RuleConfigurationFixture.class;
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.yaml.engine;
 
-import org.apache.shardingsphere.infra.yaml.engine.fixture.FixtureYamlPropsRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.engine.fixture.YamlPropsRuleConfigurationFixture;
 import org.apache.shardingsphere.infra.yaml.swapper.fixture.YamlRuleConfigurationFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.constructor.ConstructorException;
@@ -121,9 +121,9 @@ public final class YamlEngineTest {
         Collection<Class<?>> acceptClasses = new LinkedList<>();
         acceptClasses.add(URLClassLoader.class);
         acceptClasses.add(URL.class);
-        acceptClasses.add(FixtureYamlPropsRuleConfiguration.class);
-        FixtureYamlPropsRuleConfiguration actual = YamlEngine.unmarshal(yamlContent.toString(), 
-                FixtureYamlPropsRuleConfiguration.class, acceptClasses);
+        acceptClasses.add(YamlPropsRuleConfigurationFixture.class);
+        YamlPropsRuleConfigurationFixture actual = YamlEngine.unmarshal(yamlContent.toString(), 
+                YamlPropsRuleConfigurationFixture.class, acceptClasses);
         assertThat(actual.getName(), is("test"));
     }
     
@@ -140,8 +140,8 @@ public final class YamlEngineTest {
                 yamlContent.append(line).append("\n");
             }
         }
-        FixtureYamlPropsRuleConfiguration actual = YamlEngine.unmarshalWithFilter(yamlContent.toString(), 
-                FixtureYamlPropsRuleConfiguration.class);
+        YamlPropsRuleConfigurationFixture actual = YamlEngine.unmarshalWithFilter(yamlContent.toString(), 
+                YamlPropsRuleConfigurationFixture.class);
         assertThat(actual.getName(), is("test"));
     }
 }
