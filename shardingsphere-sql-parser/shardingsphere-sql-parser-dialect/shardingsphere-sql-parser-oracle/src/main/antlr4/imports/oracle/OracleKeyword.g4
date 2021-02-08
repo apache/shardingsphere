@@ -862,3 +862,7 @@ REUSE
 STORAGE
     : S T O R A G E
     ;
+
+ONLINE
+    : O N L I N E
+    ;
