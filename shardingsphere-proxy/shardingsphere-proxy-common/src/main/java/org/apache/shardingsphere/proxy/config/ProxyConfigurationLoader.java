@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.config;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.auth.AuthenticationEngine;
+import org.apache.shardingsphere.infra.metadata.auth.AuthenticationEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
