@@ -36,6 +36,8 @@ public enum SQLVisitorRule {
     
     DELETE("Delete", SQLStatementType.DML),
     
+    MERGE("Merge", SQLStatementType.DML),
+    
     REPLACE("Replace", SQLStatementType.DML),
     
     CREATE_TABLE("CreateTable", SQLStatementType.DDL),

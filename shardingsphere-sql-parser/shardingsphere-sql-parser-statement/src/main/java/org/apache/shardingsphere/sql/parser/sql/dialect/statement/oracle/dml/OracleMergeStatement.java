@@ -15,35 +15,15 @@
  * limitations under the License.
  */
 
-grammar OracleStatement;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, StoreProcedure;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | createIndex
-    | dropIndex
-    | alterIndex
-    | commit
-    | rollback
-    | setTransaction
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    | call
-    | merge
-    ) SEMI_?
-    ;
+/**
+ * Oracle merge statement.
+ */
+@ToString
+public final class OracleMergeStatement extends MergeStatement implements OracleStatement {
+}
