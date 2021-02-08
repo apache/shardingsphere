@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.swapper.fixture;
+package org.apache.shardingsphere.infra.yaml.engine.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.swapper.fixture.RuleConfigurationFixture;
 
 import java.util.Properties;
 
@@ -34,6 +35,6 @@ public final class FixtureYamlPropsRuleConfiguration implements YamlRuleConfigur
     
     @Override
     public Class<? extends RuleConfiguration> getRuleConfigurationType() {
-        return FixtureRuleConfiguration.class;
+        return RuleConfigurationFixture.class;
     }
 }
