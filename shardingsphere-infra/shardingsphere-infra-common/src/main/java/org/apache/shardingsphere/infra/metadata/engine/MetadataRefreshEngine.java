@@ -19,18 +19,18 @@ package org.apache.shardingsphere.infra.metadata.engine;
 
 import org.apache.shardingsphere.infra.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.privilege.refresher.PrivilegeRefresher;
+import org.apache.shardingsphere.infra.metadata.privilege.refresher.AuthenticationRefresher;
+import org.apache.shardingsphere.infra.metadata.privilege.refresher.event.AuthenticationAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.spi.SchemaChangedNotifier;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -64,8 +64,8 @@ public final class MetadataRefreshEngine {
             if (metadataRefresher.get() instanceof SchemaRefresher) {
                 refreshSchema(sqlStatement, routeDataSourceNames, (SchemaRefresher) metadataRefresher.get());
             }
-            if (metadataRefresher.get() instanceof PrivilegeRefresher) {
-                refreshPrivilege(sqlStatement, (PrivilegeRefresher) metadataRefresher.get());
+            if (metadataRefresher.get() instanceof AuthenticationRefresher) {
+                refreshAuthentication(sqlStatement, (AuthenticationRefresher) metadataRefresher.get());
             }
         }
     }
@@ -74,11 +74,12 @@ public final class MetadataRefreshEngine {
     private void refreshSchema(final SQLStatement sqlStatement, final Collection<String> routeDataSourceNames, final SchemaRefresher refresher) throws SQLException {
         ShardingSphereSchema schema = metaData.getSchema();
         refresher.refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, materials);
-        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(metaData.getName(), schema));
+        ShardingSphereEventBus.getInstance().post(new SchemaAlteredEvent(metaData.getName(), schema));
     }
     
-    private void refreshPrivilege(final SQLStatement sqlStatement, final PrivilegeRefresher refresher) {
+    private void refreshAuthentication(final SQLStatement sqlStatement, final AuthenticationRefresher refresher) {
         refresher.refresh(authentication, sqlStatement, materials);
-        // TODO :notify
+        // TODO :Subscribe and handle this event
+        ShardingSphereEventBus.getInstance().post(new AuthenticationAlteredEvent(authentication));
     }
 }

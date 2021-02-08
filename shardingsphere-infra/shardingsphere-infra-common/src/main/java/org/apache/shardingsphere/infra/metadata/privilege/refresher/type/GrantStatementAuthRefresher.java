@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.privilege.refresher.spi;
+package org.apache.shardingsphere.infra.metadata.privilege.refresher.type;
 
-import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.metadata.privilege.refresher.AuthenticationRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * ShardingSphere privilege changed notifier.
+ * Grant statement auth refresher.
  */
-public interface PrivilegeChangedNotifier extends OrderedSPI<ShardingSphereSchema> {
+public final class GrantStatementAuthRefresher implements AuthenticationRefresher {
     
-    /**
-     * Notify when privilege changed.
-     * 
-     * @param user user
-     */
-    void notify(ShardingSphereUser user);
+    @Override
+    public void refresh(final Authentication authentication, final SQLStatement sqlStatement, final SchemaBuilderMaterials materials) {
+    }
 }
