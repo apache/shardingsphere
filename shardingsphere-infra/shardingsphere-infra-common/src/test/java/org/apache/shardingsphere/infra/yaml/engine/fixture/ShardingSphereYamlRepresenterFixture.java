@@ -25,7 +25,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public final class DefaultYamlRepresenterFixture {
+public final class ShardingSphereYamlRepresenterFixture {
     
     private String value;
     
@@ -33,5 +33,7 @@ public final class DefaultYamlRepresenterFixture {
     
     private Map<String, String> map;
     
-    private FixtureCustomClass customClass;
+    private CustomizedClassFixture customizedClass;
+    
+    private String customizedTag;
 }

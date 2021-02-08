@@ -57,7 +57,6 @@ public final class MetadataRefreshEngine {
      * @param routeDataSourceNames route data source names
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings("rawtypes")
     public void refresh(final SQLStatement sqlStatement, final Collection<String> routeDataSourceNames) throws SQLException {
         Optional<MetadataRefresher> metadataRefresher = MetadataRefresherFactory.newInstance(sqlStatement);
         if (metadataRefresher.isPresent()) {

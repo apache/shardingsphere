@@ -17,22 +17,5 @@
 
 package org.apache.shardingsphere.infra.yaml.engine.fixture;
 
-import org.apache.shardingsphere.infra.yaml.engine.constructor.ShardingSphereYamlConstruct;
-import org.yaml.snakeyaml.nodes.Node;
-
-public final class FixtureShardingSphereYamlConstruct implements ShardingSphereYamlConstruct {
-    
-    @Override
-    public Object construct(final Node node) {
-        return new FixtureCustomClass();
-    }
-    
-    @Override
-    public void construct2ndStep(final Node node, final Object newInstance) {
-    }
-    
-    @Override
-    public Class<?> getType() {
-        return FixtureCustomClass.class;
-    }
+public final class CustomizedClassFixture {
 }
