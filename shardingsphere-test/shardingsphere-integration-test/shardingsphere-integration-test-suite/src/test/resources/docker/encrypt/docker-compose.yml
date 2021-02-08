@@ -42,7 +42,7 @@ services:
       - "33470:3307"
       - "33480:3308"
     links:
-      - "mysql:mysql.replica-query.host"
+      - "mysql:mysql.encrypt.host"
 #      - "zookeeper:zk"
     volumes:
       - ./proxy/conf:/opt/shardingsphere-proxy/conf
