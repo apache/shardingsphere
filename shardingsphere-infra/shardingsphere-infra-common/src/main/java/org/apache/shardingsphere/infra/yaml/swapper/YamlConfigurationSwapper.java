@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
  * @param <Y> type of YAML configuration
  * @param <T> type of swapped object
  */
-public interface YamlSwapper<Y extends YamlConfiguration, T> {
+public interface YamlConfigurationSwapper<Y extends YamlConfiguration, T> {
     
     /**
      * Swap to YAML configuration.

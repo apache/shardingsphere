@@ -19,12 +19,12 @@ package org.apache.shardingsphere.governance.core.yaml.swapper;
 
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
 
 /**
  * Governance center configuration YAML swapper.
  */
-public final class GovernanceCenterConfigurationYamlSwapper implements YamlSwapper<YamlGovernanceCenterConfiguration, GovernanceCenterConfiguration> {
+public final class GovernanceCenterConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlGovernanceCenterConfiguration, GovernanceCenterConfiguration> {
     
     @Override
     public YamlGovernanceCenterConfiguration swapToYamlConfiguration(final GovernanceCenterConfiguration config) {
