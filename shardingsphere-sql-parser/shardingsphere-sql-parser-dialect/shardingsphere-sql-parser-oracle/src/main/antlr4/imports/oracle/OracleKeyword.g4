@@ -886,3 +886,15 @@ CLEANUP
 PARALLEL
     : P A R A L L E L
     ;
+
+LOG
+    : L O G
+    ;
+
+REUSE
+    : R E U S E
+    ;
+
+STORAGE
+    : S T O R A G E
+    ;

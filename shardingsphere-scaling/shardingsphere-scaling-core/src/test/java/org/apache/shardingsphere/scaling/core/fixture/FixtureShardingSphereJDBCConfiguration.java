@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FixtureShardingSphereJDBCConfiguration {
     
     public static final String DATA_SOURCE = "dataSources:\n ds_0:\n  dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n  props:\n    "

@@ -38,7 +38,7 @@ public final class ShardingSphereFilterYamlConstructor extends ShardingSphereYam
     
     @Override
     protected Class<?> getClassForName(final String name) throws ClassNotFoundException {
-        for (Class<? extends Object> each : acceptClasses) {
+        for (Class<?> each : acceptClasses) {
             if (name.equals(each.getName())) {
                 return super.getClassForName(name);
             }

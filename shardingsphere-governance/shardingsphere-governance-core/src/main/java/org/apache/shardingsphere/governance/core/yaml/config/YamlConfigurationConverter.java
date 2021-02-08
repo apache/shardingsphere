@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.governance.core.yaml.config;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
-import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserRuleConfiguration;
 import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
+import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -36,6 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Configuration converter for YAML content.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlConfigurationConverter {
     
     /**

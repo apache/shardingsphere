@@ -35,6 +35,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -62,7 +63,7 @@ public final class UpdateStatementAssert {
         if (null != expected.getTable()) {
             TableAssert.assertIs(assertContext, actual.getTableSegment(), expected.getTable());
         } else {
-            assertFalse(assertContext.getText("Actual from should not exist."), null != actual.getTableSegment());
+            assertNull(assertContext.getText("Actual from should not exist."), actual.getTableSegment());
         }
     }
     

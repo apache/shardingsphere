@@ -32,13 +32,3 @@ chapter = true
 | SQLServerStatementSQLVisitorFacade  | 基于 SQLServer 的提取 SQL 语句的语法树访问器   |
 | OracleStatementSQLVisitorFacade     | 基于 Oracle 的提取 SQL 语句的语法树访问器      |
 | SQL92StatementSQLVisitorFacade      | 基于 SQL92 的SQL 解析器入口                   |
-
-## ParsingHook
-
-| *SPI 名称*             | *详细说明*                            |
-| ---------------------- | ------------------------------------ |
-| ParsingHook            | 用于SQL 解析过程追踪                   |
-
-| *已知实现类*            | *详细说明*                            |
-| ---------------------- | ------------------------------------ |
-| OpenTracingParsingHook | 使用 OpenTracing 协议追踪 SQL 解析过程 |

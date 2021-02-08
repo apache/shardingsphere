@@ -41,6 +41,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -101,7 +102,9 @@ public final class TableMetaDataLoaderTest {
     
     @Test
     public void assertLoadWithExistedTable() throws SQLException {
-        Optional<TableMetaData> actual = TableMetaDataLoader.load(dataSource, TEST_TABLE, mock(DatabaseType.class));
+        DatabaseType databaseType = mock(DatabaseType.class, RETURNS_DEEP_STUBS);
+        when(databaseType.formatTableNamePattern(TEST_TABLE)).thenReturn(TEST_TABLE);
+        Optional<TableMetaData> actual = TableMetaDataLoader.load(dataSource, TEST_TABLE, databaseType);
         assertTrue(actual.isPresent());
         Map<String, ColumnMetaData> columnMetaDataMap = actual.get().getColumns();
         assertThat(columnMetaDataMap.size(), is(2));
@@ -122,8 +125,6 @@ public final class TableMetaDataLoaderTest {
     
     @Test
     public void assertLoadWithNotExistedTable() throws SQLException {
-        when(dataSource.getConnection().getMetaData().getTables(TEST_CATALOG, null, TEST_TABLE, null)).thenReturn(tableNotExistResultSet);
-        when(tableNotExistResultSet.next()).thenReturn(false);
         assertFalse(TableMetaDataLoader.load(dataSource, TEST_TABLE, mock(DatabaseType.class)).isPresent());
     }
 }

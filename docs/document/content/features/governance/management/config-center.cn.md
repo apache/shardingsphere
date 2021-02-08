@@ -111,9 +111,9 @@ tables:                                       # 表
       order_id:
         caseSensitive: false
         dataType: 0
-         generated: false
-         name: order_id
-         primaryKey: false
+        generated: false
+        name: order_id
+        primaryKey: false
     indexs:                                   # 索引
       t_user_order_id_index:                  # 索引名
         name: t_user_order_id_index

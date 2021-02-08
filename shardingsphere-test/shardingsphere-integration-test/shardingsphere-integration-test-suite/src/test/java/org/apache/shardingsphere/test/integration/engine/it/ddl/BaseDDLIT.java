@@ -93,8 +93,7 @@ public abstract class BaseDDLIT extends SingleIT {
     private void dropInitializedTable(final Connection connection) {
         try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DROP TABLE %s", getAssertion().getInitialSQL().getAffectedTable()))) {
             preparedStatement.executeUpdate();
-        } catch (final SQLException ignored) {
-        } catch (final NoSuchTableException ignored) {
+        } catch (final SQLException | NoSuchTableException ignored) {
         }
     }
     

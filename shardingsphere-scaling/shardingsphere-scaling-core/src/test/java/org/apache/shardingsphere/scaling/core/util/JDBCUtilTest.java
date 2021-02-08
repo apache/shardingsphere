@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class JDBCUtilTest {
+public final class JDBCUtilTest {
     
     @Test
     public void assertAppendStandardJDBCDataSourceConfiguration() {

@@ -70,10 +70,7 @@ public final class TextProtocolBackendHandlerFactory {
             return distSQLBackendHandler.get();
         }
         Optional<TextProtocolBackendHandler> databaseAdminBackendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection);
-        if (databaseAdminBackendHandler.isPresent()) {
-            return databaseAdminBackendHandler.get();
-        }
-        return DatabaseBackendHandlerFactory.newInstance(sqlStatement, sql, backendConnection);
+        return databaseAdminBackendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(sqlStatement, sql, backendConnection));
     }
     
     private static DatabaseType getBackendDatabaseType(final DatabaseType defaultDatabaseType, final BackendConnection backendConnection) {

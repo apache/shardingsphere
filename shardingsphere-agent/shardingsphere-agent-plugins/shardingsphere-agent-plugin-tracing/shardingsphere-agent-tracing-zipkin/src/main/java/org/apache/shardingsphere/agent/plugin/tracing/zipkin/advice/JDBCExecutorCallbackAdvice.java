@@ -20,12 +20,11 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 import brave.Span;
 import brave.Tracing;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
-import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 
@@ -47,19 +46,18 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdv
         if ((boolean) args[1]) {
             target.setAttachment(Tracing.currentTracer().newChild(root.context()).name(OPERATION_NAME).start());
         } else {
-            final JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
-            final ExecutionUnit unit = executionUnit.getExecutionUnit();
+            JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
             Method getMetadataMethod = JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class);
             getMetadataMethod.setAccessible(true);
             DataSourceMetaData metaData = (DataSourceMetaData) getMetadataMethod.invoke(target, new Object[]{executionUnit.getStorageResource().getConnection().getMetaData()});
             Span span = Tracing.currentTracer().nextSpan().name(OPERATION_NAME);
             span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
             span.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
-            span.tag(ZipkinConstants.Tags.DB_INSTANCE, unit.getDataSourceName());
+            span.tag(ZipkinConstants.Tags.DB_INSTANCE, executionUnit.getExecutionUnit().getDataSourceName());
             span.tag(ZipkinConstants.Tags.PEER_HOSTNAME, metaData.getHostName());
             span.tag(ZipkinConstants.Tags.PEER_PORT, String.valueOf(metaData.getPort()));
-            span.tag(ZipkinConstants.Tags.DB_STATEMENT, unit.getSqlUnit().getSql());
-            span.tag(ZipkinConstants.Tags.DB_BIND_VARIABLES, unit.getSqlUnit().getParameters().toString());
+            span.tag(ZipkinConstants.Tags.DB_STATEMENT, executionUnit.getExecutionUnit().getSqlUnit().getSql());
+            span.tag(ZipkinConstants.Tags.DB_BIND_VARIABLES, executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString());
             span.start();
             target.setAttachment(span);
         }

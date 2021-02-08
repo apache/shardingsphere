@@ -32,6 +32,7 @@ public final class ZipkinConstants {
     
     public static final String DB_TYPE_VALUE = "shardingsphere-proxy";
     
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Tags {
         
         /**

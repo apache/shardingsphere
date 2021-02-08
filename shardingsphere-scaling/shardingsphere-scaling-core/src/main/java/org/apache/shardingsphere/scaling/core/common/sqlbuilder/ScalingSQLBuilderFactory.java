@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.scaling.core.common.sqlbuilder;
 
 import com.google.common.collect.Maps;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
@@ -27,6 +29,7 @@ import java.util.Map;
 /**
  * Scaling SQL builder factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ScalingSQLBuilderFactory {
     
     /**

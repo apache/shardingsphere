@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant;
 
 import io.opentracing.tag.StringTag;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-public class JaegerConstants {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class JaegerConstants {
     
     public static final String ROOT_SPAN = "jaeger_root_span";
     
@@ -33,6 +36,7 @@ public class JaegerConstants {
     /**
      * Error log tag keys.
      */
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class ErrorLogTagKeys {
     
         public static final String EVENT = "event";
@@ -47,6 +51,7 @@ public class JaegerConstants {
     /**
      * ShardingSphere tags.
      */
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class ShardingSphereTags {
         
         /**
