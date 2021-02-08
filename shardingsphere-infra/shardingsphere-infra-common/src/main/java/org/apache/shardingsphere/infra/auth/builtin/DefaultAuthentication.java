@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.auth.builtin;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.auth.Authentication;
@@ -53,8 +52,7 @@ public final class DefaultAuthentication implements Authentication {
     
     @Override
     public Optional<ShardingSphereUser> findUser(final Grantee grantee) {
-        return authentication.keySet().stream().filter(each -> each.getGrantee().equals(grantee)
-                || Strings.isNullOrEmpty(each.getGrantee().getHostname())).findFirst();
+        return authentication.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst();
     }
     
     @Override
