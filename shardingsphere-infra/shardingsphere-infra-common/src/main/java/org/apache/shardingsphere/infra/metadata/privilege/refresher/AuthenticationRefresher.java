@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.infra.metadata.privilege.refresher;
 
 import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Privilege refresher.
+ * Authentication refresher.
  */
 public interface AuthenticationRefresher extends MetadataRefresher {
     
@@ -32,7 +32,7 @@ public interface AuthenticationRefresher extends MetadataRefresher {
      *
      * @param authentication authentication
      * @param sqlStatement sql statement
-     * @param materials materials
+     * @param metaData metaData
      */
-    void refresh(Authentication authentication, SQLStatement sqlStatement, SchemaBuilderMaterials materials);
+    void refresh(Authentication authentication, SQLStatement sqlStatement, ShardingSphereMetaData metaData);
 }

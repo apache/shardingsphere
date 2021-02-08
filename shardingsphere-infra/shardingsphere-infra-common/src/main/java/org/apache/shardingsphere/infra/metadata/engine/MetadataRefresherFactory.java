@@ -63,7 +63,7 @@ public final class MetadataRefresherFactory {
     
     /**
      * Create new instance of schema refresher.
-     *
+     *†
      * @param sqlStatement SQL statement
      * @return instance of schema refresher
      */

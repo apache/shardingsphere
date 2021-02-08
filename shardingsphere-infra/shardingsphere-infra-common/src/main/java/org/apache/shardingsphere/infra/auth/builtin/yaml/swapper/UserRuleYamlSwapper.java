@@ -38,7 +38,7 @@ public final class UserRuleYamlSwapper implements YamlSwapper<YamlUserRuleConfig
         YamlUserRuleConfiguration result = new YamlUserRuleConfiguration();
         Map<String, YamlUserConfiguration> users = new LinkedHashMap<>(data.size(), 1);
         for (ShardingSphereUser each : data) {
-            users.put(each.getUsername(), swapToYamlConfiguration(each));
+            users.put(each.getGrantee().getUsername(), swapToYamlConfiguration(each));
         }
         result.setUsers(users);
         return result;
@@ -46,7 +46,7 @@ public final class UserRuleYamlSwapper implements YamlSwapper<YamlUserRuleConfig
     
     private YamlUserConfiguration swapToYamlConfiguration(final ShardingSphereUser data) {
         YamlUserConfiguration result = new YamlUserConfiguration();
-        result.setHostname(data.getHostname());
+        result.setHostname(data.getGrantee().getHostname());
         result.setPassword(data.getPassword());
         return result;
     }
