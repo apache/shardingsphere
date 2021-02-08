@@ -855,6 +855,10 @@ COMPILE
     : C O M P I L E
     ;
 
+USABLE
+    : U S A B L E
+    ;
+
 UNUSABLE
     : U N U S A B L E
     ;
@@ -885,6 +889,10 @@ CLEANUP
 
 PARALLEL
     : P A R A L L E L
+    ;
+
+INVALIDATION
+    : I N V A L I D A T I O N
     ;
 
 LOG

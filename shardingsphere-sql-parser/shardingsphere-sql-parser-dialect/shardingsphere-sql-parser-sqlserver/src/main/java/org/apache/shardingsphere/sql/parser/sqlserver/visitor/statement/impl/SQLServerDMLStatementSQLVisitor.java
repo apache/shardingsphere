@@ -257,6 +257,9 @@ public final class SQLServerDMLStatementSQLVisitor extends SQLServerStatementSQL
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         SQLServerUpdateStatement result = new SQLServerUpdateStatement();
+        if (null != ctx.withClause()) {
+            result.setWithSegment((WithSegment) visit(ctx.withClause()));
+        }
         result.setTableSegment((TableSegment) visit(ctx.tableReferences()));
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
