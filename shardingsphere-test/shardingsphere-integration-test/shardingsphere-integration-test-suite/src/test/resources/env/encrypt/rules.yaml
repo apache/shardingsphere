@@ -61,4 +61,4 @@ rules:
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
 props:
-  query-with-cipher-column: false
+  query-with-cipher-column: true
