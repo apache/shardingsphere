@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.infra.audit;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 /**
  * SQL state for audit fail.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AuditSQLState {
+@RequiredArgsConstructor
+public enum AuditSQLState {
+
+    AUTHENTICATION("authentication"), SQL_AUDIT("sql_audit");
     
-    public static final String COMMON_AUDIT_FAIL = "AU001";
-    
-    public static final int COMMON_VENDOR_CODE = 50000;
+    private final String name;
 }

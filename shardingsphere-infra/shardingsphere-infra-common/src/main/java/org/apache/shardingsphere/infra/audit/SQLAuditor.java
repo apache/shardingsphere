@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.infra.audit;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -26,18 +27,17 @@ import java.util.List;
 /**
  * SQL auditor.
  * 
- * @param <T> type of ShardingSphere rule
  */
-public interface SQLAuditor<T extends ShardingSphereRule> extends OrderedSPI<T> {
+public interface SQLAuditor extends OrderedSPI {
     
     /**
      * Audit SQL.
      * 
      * @param sqlStatement SQL statement
      * @param parameters SQL parameters
-     * @param schemaName schema name
-     * @param rule ShardingSphere rule
+     * @param metaData meta data
+     * @param auth auth
      * @return SQL audit result
      */
-    SQLAuditResult audit(SQLStatement sqlStatement, List<Object> parameters, String schemaName, T rule);
+    SQLAuditResult audit(SQLStatement sqlStatement, List<Object> parameters, ShardingSphereMetaData metaData, Authentication auth);
 }

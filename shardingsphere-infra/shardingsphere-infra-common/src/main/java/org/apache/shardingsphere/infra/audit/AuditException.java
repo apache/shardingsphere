@@ -18,16 +18,20 @@
 package org.apache.shardingsphere.infra.audit;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 /**
- * SQL audit result.
+ * Audit exception.
  */
-@RequiredArgsConstructor
 @Getter
-public final class SQLAuditResult {
+public final class AuditException extends ShardingSphereException {
     
-    private final boolean isPassed;
+    private static final long serialVersionUID = 4183020614721058122L;
     
-    private final AuditSQLState failedReason;
+    private final AuditSQLState auditSQLState;
+    
+    public AuditException(final AuditSQLState state) {
+        super(String.format("SQL audit failed due to %s.", state.name()));
+        this.auditSQLState = state;
+    }
 }

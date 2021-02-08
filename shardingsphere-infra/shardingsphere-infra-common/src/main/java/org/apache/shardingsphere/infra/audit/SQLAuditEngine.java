@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.infra.audit;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * SQL audit engine.
@@ -42,17 +40,15 @@ public final class SQLAuditEngine {
      * 
      * @param sqlStatement SQL statement
      * @param parameters SQL parameters
-     * @param schemaName schema name
-     * @param rules ShardingSphere rules
-     * @throws SQLException SQL exception
+     * @param metaData meta data
+     * @param auth auth
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public void audit(final SQLStatement sqlStatement, final List<Object> parameters, final String schemaName, final Collection<ShardingSphereRule> rules) throws SQLException {
-        Map<ShardingSphereRule, SQLAuditor> auditors = OrderedSPIRegistry.getRegisteredServices(rules, SQLAuditor.class);
-        for (Entry<ShardingSphereRule, SQLAuditor> entry : auditors.entrySet()) {
-            SQLAuditResult auditResult = entry.getValue().audit(sqlStatement, parameters, schemaName, entry.getKey());
+    public void audit(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingSphereMetaData metaData, final Authentication auth) {
+        Collection<SQLAuditor> auditors = OrderedSPIRegistry.getRegisteredServices(SQLAuditor.class);
+        for (SQLAuditor each : auditors) {
+            SQLAuditResult auditResult = each.audit(sqlStatement, parameters, metaData, auth);
             if (!auditResult.isPassed()) {
-                throw new SQLException(auditResult.getFailedReason(), AuditSQLState.COMMON_AUDIT_FAIL);
+                throw new AuditException(auditResult.getFailedReason());
             }
         }
     }
