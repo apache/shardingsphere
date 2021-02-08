@@ -15,22 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.fixture;
+package org.apache.shardingsphere.scaling.core.job.progress.yaml;
 
-import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskDelay;
 
-import javax.sql.DataSource;
+import java.util.Map;
 
-public final class FixturePositionInitializer implements PositionInitializer {
+/**
+ * Yaml job progress.
+ */
+@Getter
+@Setter
+public final class YamlJobProgress {
     
-    @Override
-    public PlaceholderPosition init(final DataSource dataSource) {
-        return new PlaceholderPosition();
+    private String status;
+    
+    private String databaseType;
+    
+    private YamlInventory inventory;
+    
+    private Map<String, YamlIncremental> incremental;
+    
+    @Getter
+    @Setter
+    public static final class YamlInventory {
+        
+        private String[] finished;
+        
+        private Map<String, String> unfinished;
     }
     
-    @Override
-    public PlaceholderPosition init(final String data) {
-        return new PlaceholderPosition();
+    @Getter
+    @Setter
+    public static final class YamlIncremental {
+        
+        private String position;
+        
+        private IncrementalTaskDelay delay;
     }
 }
