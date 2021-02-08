@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.yaml.engine.fixture;
 import org.apache.shardingsphere.infra.yaml.engine.constructor.ShardingSphereYamlConstruct;
 import org.yaml.snakeyaml.nodes.Node;
 
-public final class FixtureShardingSphereYamlConstruct implements ShardingSphereYamlConstruct {
+public final class YamlConstructFixture implements ShardingSphereYamlConstruct {
     
     @Override
     public Object construct(final Node node) {
