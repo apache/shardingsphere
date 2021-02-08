@@ -839,6 +839,18 @@ BATCH
     : B A T C H
     ;
 
+USABLE
+    : U S A B L E
+    ;
+
+UNUSABLE
+    : U N U S A B L E
+    ;
+
+INVALIDATION
+    : I N V A L I D A T I O N
+    ;
+
 LOG
     : L O G
     ;
