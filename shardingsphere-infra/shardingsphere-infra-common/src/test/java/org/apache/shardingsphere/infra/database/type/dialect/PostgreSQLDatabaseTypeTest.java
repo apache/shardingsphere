@@ -18,13 +18,18 @@
 package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.PostgreSQLDataSourceMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class PostgreSQLDatabaseTypeTest {
     
@@ -41,5 +46,24 @@ public final class PostgreSQLDatabaseTypeTest {
     @Test
     public void assertGetDataSourceMetaData() {
         assertThat(new PostgreSQLDatabaseType().getDataSourceMetaData("jdbc:postgresql://localhost:5432/demo_ds_0", "postgres"), instanceOf(PostgreSQLDataSourceMetaData.class));
+    }
+    
+    @Test
+    public void assertGetSchema() throws SQLException {
+        Connection connection = mock(Connection.class);
+        when(connection.getSchema()).thenReturn("ds");
+        assertThat(new PostgreSQLDatabaseType().getSchema(connection), is("ds"));
+    }
+    
+    @Test
+    public void assertFormatTableNamePattern() {
+        assertThat(new PostgreSQLDatabaseType().formatTableNamePattern("tbl"), is("tbl"));
+    }
+    
+    @Test
+    public void assertGetQuoteCharacter() {
+        QuoteCharacter actual = new PostgreSQLDatabaseType().getQuoteCharacter();
+        assertThat(actual.getStartDelimiter(), is("\""));
+        assertThat(actual.getEndDelimiter(), is("\""));
     }
 }

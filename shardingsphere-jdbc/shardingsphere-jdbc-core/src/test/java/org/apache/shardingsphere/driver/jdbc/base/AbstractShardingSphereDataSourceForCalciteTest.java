@@ -42,7 +42,7 @@ public abstract class AbstractShardingSphereDataSourceForCalciteTest extends Abs
     
     private static ShardingSphereDataSource dataSource;
     
-    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("calcite_jdbc_0", "calcite_jdbc_1");
+    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("calcite_jdbc_0", "calcite_jdbc_1", "calcite_jdbc_2");
     
     private static final String CONFIG_CALCITE = "config/config-calcite.yaml";
     
@@ -65,8 +65,10 @@ public abstract class AbstractShardingSphereDataSourceForCalciteTest extends Abs
             Map<String, DataSource> dataSourceMap = conn.getDataSourceMap();
             Connection database0 = dataSourceMap.get("calcite_jdbc_0").getConnection();
             Connection database1 = dataSourceMap.get("calcite_jdbc_1").getConnection();
+            Connection database2 = dataSourceMap.get("calcite_jdbc_2").getConnection();
             RunScript.execute(database0, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/calcite_data_0.sql"))));
             RunScript.execute(database1, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/calcite_data_1.sql"))));
+            RunScript.execute(database2, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/calcite_data_2.sql"))));
             conn.close();
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);

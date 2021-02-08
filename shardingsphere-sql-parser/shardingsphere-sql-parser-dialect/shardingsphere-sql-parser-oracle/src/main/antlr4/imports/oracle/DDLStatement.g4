@@ -24,7 +24,7 @@ createTable
     ;
 
 createIndex
-    : CREATE createIndexSpecification INDEX indexName ON createIndexDefinitionClause
+    : CREATE createIndexSpecification INDEX indexName ON createIndexDefinitionClause usableSpecification? invalidationSpecification?
     ;
 
 alterTable
@@ -45,7 +45,7 @@ dropIndex
     ;
 
 truncateTable
-    : TRUNCATE TABLE tableName
+    : TRUNCATE TABLE tableName materializedViewLogClause? storageClause? CASCADE?
     ;
 
 createTableSpecification
@@ -200,6 +200,14 @@ createIndexSpecification
     : (UNIQUE | BITMAP)?
     ;
 
+clusterIndexClause
+    : CLUSTER clusterName indexAttributes?
+    ;
+
+indexAttributes
+    : (ONLINE | (SORT|NOSORT) | REVERSE | (VISIBLE | INVISIBLE))
+    ;
+
 tableIndexClause
     : tableName alias? indexExpressions
     ;
@@ -225,7 +233,7 @@ columnSortClause_
     ;
 
 createIndexDefinitionClause
-    : tableIndexClause | bitmapJoinIndexClause
+    : clusterIndexClause | tableIndexClause | bitmapJoinIndexClause
     ;
 
 tableAlias
@@ -393,4 +401,20 @@ enableDisableClause
 
 enableDisableOthers
     : (ENABLE | DISABLE) (TABLE LOCK | ALL TRIGGERS | CONTAINER_MAP | CONTAINERS_DEFAULT)
+    ;
+
+usableSpecification
+    : (USABLE | UNUSABLE)
+    ;
+
+invalidationSpecification
+    : (DEFERRED | IMMEDIATE) INVALIDATION
+    ;
+
+materializedViewLogClause
+    : (PRESERVE | PURGE) MATERIALIZED VIEW LOG
+    ;
+
+storageClause
+    : (DROP (ALL)? | REUSE) STORAGE
     ;

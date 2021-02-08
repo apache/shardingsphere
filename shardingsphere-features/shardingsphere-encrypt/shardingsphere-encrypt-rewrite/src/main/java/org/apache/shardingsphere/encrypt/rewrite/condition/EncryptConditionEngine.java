@@ -67,12 +67,13 @@ public final class EncryptConditionEngine {
         if (!whereSegment.isPresent()) {
             return Collections.emptyList();
         }
-        ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
-        ExpressionBuilder expressionBuilder = new ExpressionBuilder(expression);
-        Collection<AndPredicate> andPredicates = new LinkedList<>(expressionBuilder.extractAndPredicates().getAndPredicates());
         List<EncryptCondition> result = new LinkedList<>();
-        for (AndPredicate each : andPredicates) {
-            result.addAll(createEncryptConditions(sqlStatementContext, each));
+        if (((WhereAvailable) sqlStatementContext).getWhere().isPresent()) {
+            ExpressionBuilder expressionBuilder = new ExpressionBuilder(((WhereAvailable) sqlStatementContext).getWhere().get().getExpr());
+            Collection<AndPredicate> andPredicates = new LinkedList<>(expressionBuilder.extractAndPredicates().getAndPredicates());
+            for (AndPredicate each : andPredicates) {
+                result.addAll(createEncryptConditions(sqlStatementContext, each));
+            }
         }
         // FIXME process subquery
 //        for (SubqueryPredicateSegment each : sqlStatementContext.getSqlStatement().findSQLSegments(SubqueryPredicateSegment.class)) {

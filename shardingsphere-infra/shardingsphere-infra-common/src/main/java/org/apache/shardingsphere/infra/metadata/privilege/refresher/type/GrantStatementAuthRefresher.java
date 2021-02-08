@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.impl;
+package org.apache.shardingsphere.infra.metadata.privilege.refresher.type;
 
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.metadata.privilege.refresher.AuthenticationRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Database meta data dialect handler of MariaDB.
+ * Grant statement auth refresher.
  */
-public final class MariaDBDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
+public final class GrantStatementAuthRefresher implements AuthenticationRefresher {
     
     @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.BACK_QUOTE;
-    }
-    
-    @Override
-    public String getType() {
-        return "MariaDB";
+    public void refresh(final Authentication authentication, final SQLStatement sqlStatement, final SchemaBuilderMaterials materials) {
     }
 }

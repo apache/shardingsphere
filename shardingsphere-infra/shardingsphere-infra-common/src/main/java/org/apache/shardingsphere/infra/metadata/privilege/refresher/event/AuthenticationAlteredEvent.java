@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect;
+package org.apache.shardingsphere.infra.metadata.privilege.refresher.event;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.auth.Authentication;
 
-import static org.junit.Assert.assertTrue;
-
-@RunWith(MockitoJUnitRunner.class)
-public final class DatabaseMetaDataDialectHandlerFactoryTest {
+/**
+ * Authentication altered event.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class AuthenticationAlteredEvent {
     
-    @Test
-    public void assertFindHandler() {
-        assertTrue(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypeRegistry.getTrunkDatabaseType("Oracle")).isPresent());
-        assertTrue(DatabaseMetaDataDialectHandlerFactory.findHandler(DatabaseTypeRegistry.getTrunkDatabaseType("MySQL")).isPresent());
-    }
+    private final Authentication authentication;
 }

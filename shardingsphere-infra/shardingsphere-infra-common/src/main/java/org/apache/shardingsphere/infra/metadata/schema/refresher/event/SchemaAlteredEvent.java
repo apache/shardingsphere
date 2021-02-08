@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.refresher.spi;
+package org.apache.shardingsphere.infra.metadata.schema.refresher.event;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
 /**
- * ShardingSphere schema changed notifier.
+ * Schema persist event.
  */
-public interface SchemaChangedNotifier extends OrderedSPI<ShardingSphereSchema> {
+@RequiredArgsConstructor
+@Getter
+public final class SchemaAlteredEvent {
     
-    /**
-     * Notify when ShardingSphere schema changed.
-     * 
-     * @param name schema name
-     * @param schema ShardingSphere schema
-     */
-    void notify(String name, ShardingSphereSchema schema);
+    private final String schemaName;
+    
+    private final ShardingSphereSchema schema;
 }

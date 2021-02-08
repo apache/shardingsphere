@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.impl;
+package org.apache.shardingsphere.infra.metadata.privilege.refresher;
 
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresher;
+import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Database meta data dialect handler of H2.
+ * Privilege refresher.
  */
-public final class H2DatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
+public interface AuthenticationRefresher extends MetadataRefresher {
     
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.QUOTE;
-    }
-    
-    @Override
-    public String getType() {
-        return "H2";
-    }
+    /**
+     * Refresh.
+     *
+     * @param authentication authentication
+     * @param sqlStatement sql statement
+     * @param materials materials
+     */
+    void refresh(Authentication authentication, SQLStatement sqlStatement, SchemaBuilderMaterials materials);
 }

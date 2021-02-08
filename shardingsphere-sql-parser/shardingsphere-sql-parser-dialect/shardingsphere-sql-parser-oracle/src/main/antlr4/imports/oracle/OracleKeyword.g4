@@ -839,12 +839,32 @@ BATCH
     : B A T C H
     ;
 
-MATCHED
-    : M A T C H E D
+USABLE
+    : U S A B L E
+    ;
+
+UNUSABLE
+    : U N U S A B L E
+    ;
+
+INVALIDATION
+    : I N V A L I D A T I O N
     ;
 
 LOG
     : L O G
+    ;
+
+REUSE
+    : R E U S E
+    ;
+
+STORAGE
+    : S T O R A G E
+    ;
+
+MATCHED
+    : M A T C H E D
     ;
 
 ERRORS

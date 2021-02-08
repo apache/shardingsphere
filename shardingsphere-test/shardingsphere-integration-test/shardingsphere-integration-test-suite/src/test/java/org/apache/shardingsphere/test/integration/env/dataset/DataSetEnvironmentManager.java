@@ -23,8 +23,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandler;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandlerFactory;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
@@ -48,7 +46,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 
 /**
@@ -67,14 +64,6 @@ public final class DataSetEnvironmentManager {
             dataSet = (DataSet) JAXBContext.newInstance(DataSet.class).createUnmarshaller().unmarshal(reader);
         }
         this.actualDataSources = actualDataSources;
-    }
-    
-    private static String generateTableName(final String tableName, final DatabaseType databaseType) {
-        Optional<DatabaseMetaDataDialectHandler> databaseMetaDataDialectHandler = DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType);
-        if (databaseMetaDataDialectHandler.isPresent()) {
-            return databaseMetaDataDialectHandler.get().getQuoteCharacter().wrap(tableName);
-        }
-        throw new UnsupportedOperationException(String.format("Cannot support database [%s].", databaseType));
     }
     
     /**
@@ -96,7 +85,8 @@ public final class DataSetEnvironmentManager {
             }
             String insertSQL;
             try (Connection connection = actualDataSources.get(dataNode.getDataSourceName()).getConnection()) {
-                insertSQL = generateInsertSQL(generateTableName(dataNode.getTableName(), DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL())), dataSetMetadata.getColumns());
+                DatabaseType databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
+                insertSQL = generateInsertSQL(databaseType.getQuoteCharacter().wrap(dataNode.getTableName()), dataSetMetadata.getColumns());
             }
             fillDataTasks.add(new InsertTask(actualDataSources.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
         }
@@ -213,8 +203,8 @@ public final class DataSetEnvironmentManager {
         public Void call() throws SQLException {
             try (Connection connection = dataSource.getConnection()) {
                 for (String each : tableNames) {
-                    String tableName = generateTableName(each, DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL()));
-                    try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DELETE FROM %s", tableName))) {
+                    DatabaseType databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(String.format("DELETE FROM %s", databaseType.getQuoteCharacter().wrap(each)))) {
                         preparedStatement.execute();
                     }
                 }

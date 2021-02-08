@@ -15,23 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.impl;
-
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+package org.apache.shardingsphere.infra.metadata.engine;
 
 /**
- * Database meta data dialect handler of MySQL.
+ * Metadata refresher.
+ *
  */
-public final class MySQLDatabaseMetaDataDialectHandler implements DatabaseMetaDataDialectHandler {
-    
-    @Override
-    public QuoteCharacter getQuoteCharacter() {
-        return QuoteCharacter.BACK_QUOTE;
-    }
-    
-    @Override
-    public String getType() {
-        return "MySQL";
-    }
+public interface MetadataRefresher {
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.api.impl;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.scaling.core.api.JobInfo;
@@ -28,6 +29,8 @@ import org.apache.shardingsphere.scaling.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -42,18 +45,14 @@ import static org.junit.Assert.assertTrue;
 
 public final class ScalingAPIImplTest {
     
-    private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
+    private static ScalingAPI scalingAPI;
     
     @BeforeClass
+    @SneakyThrows(ReflectiveOperationException.class)
     public static void init() {
         EmbedTestingServer.start();
-        ScalingContext.getInstance().init(mockServerConfig());
-    }
-    
-    private static ServerConfiguration mockServerConfig() {
-        ServerConfiguration result = new ServerConfiguration();
-        result.setGovernanceConfig(new GovernanceConfiguration("test", new GovernanceCenterConfiguration("Zookeeper", EmbedTestingServer.getConnectionString(), new Properties()), true));
-        return result;
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", mockServerConfig());
+        scalingAPI = ScalingAPIFactory.getScalingAPI();
     }
     
     @Test
@@ -105,5 +104,17 @@ public final class ScalingAPIImplTest {
         assertTrue(jobId.isPresent());
         Map<Integer, JobProgress> jobProgressMap = scalingAPI.getProgress(jobId.get());
         assertThat(jobProgressMap.size(), is(2));
+    }
+    
+    @AfterClass
+    @SneakyThrows(ReflectiveOperationException.class)
+    public static void afterClass() {
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", null);
+    }
+    
+    private static ServerConfiguration mockServerConfig() {
+        ServerConfiguration result = new ServerConfiguration();
+        result.setGovernanceConfig(new GovernanceConfiguration("test", new GovernanceCenterConfiguration("Zookeeper", EmbedTestingServer.getConnectionString(), new Properties()), true));
+        return result;
     }
 }
