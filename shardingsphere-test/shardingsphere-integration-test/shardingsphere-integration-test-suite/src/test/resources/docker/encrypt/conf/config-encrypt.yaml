@@ -30,47 +30,47 @@ dataSources:
     maintenanceIntervalMilliseconds: 30000
 
 rules:
-  - !SHARDING
-    tables:
-      t_order:
-        actualDataNodes: encrypt.t_order
-        tableStrategy:
-          none:
-        databaseStrategy:
-          none:
-      t_order_item:
-        actualDataNodes: encrypt.t_order_item
-        tableStrategy:
-          none:
-        databaseStrategy:
-          none:
-      t_order_details:
-        actualDataNodes: encrypt.t_order_details
-        tableStrategy:
-          none:
-        databaseStrategy:
-          none:
-      t_user:
-        actualDataNodes: encrypt.t_user
-        tableStrategy:
-          none:
-        databaseStrategy:
-          none:
-    bindingTables:
-      - t_order,t_user,t_order_item,t_order_details
-    broadcastTables:
-      - t_broadcast_table
-      - t_broadcast_table_for_ddl
-  - !ENCRYPT
-    encryptors:
-      aes_encryptor:
-        type: AES
-        props:
-          aes-key-value: 123456abc
-    tables:
-      t_user:
-        columns:
-          pwd:
-            plainColumn: pwd
-            cipherColumn: pwd_cipher
-            encryptorName: aes_encryptor
+- !SHARDING
+  tables:
+    t_order:
+      actualDataNodes: encrypt.t_order
+      tableStrategy:
+        none:
+      databaseStrategy:
+        none:
+    t_order_item:
+      actualDataNodes: encrypt.t_order_item
+      tableStrategy:
+        none:
+      databaseStrategy:
+        none:
+    t_order_details:
+      actualDataNodes: encrypt.t_order_details
+      tableStrategy:
+        none:
+      databaseStrategy:
+        none:
+    t_user:
+      actualDataNodes: encrypt.t_user
+      tableStrategy:
+        none:
+      databaseStrategy:
+        none:
+  bindingTables:
+    - t_order,t_user,t_order_item,t_order_details
+  broadcastTables:
+    - t_broadcast_table
+    - t_broadcast_table_for_ddl
+- !ENCRYPT
+  encryptors:
+    aes_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+  tables:
+    t_user:
+      columns:
+        pwd:
+          plainColumn: pwd
+          cipherColumn: pwd_cipher
+          encryptorName: aes_encryptor
