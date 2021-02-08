@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.metadata.engine;
 
-import org.apache.shardingsphere.infra.auth.Authentication;
+import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.privilege.refresher.AuthenticationRefresher;
-import org.apache.shardingsphere.infra.metadata.privilege.refresher.event.AuthenticationAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.auth.refresher.AuthenticationRefresher;
+import org.apache.shardingsphere.infra.metadata.auth.refresher.event.AuthenticationAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
