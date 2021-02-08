@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.mysql.component;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 
@@ -29,7 +30,7 @@ import java.sql.SQLException;
 /**
  * MySQL binlog position initializer.
  */
-public final class MySQLPositionInitializer implements PositionInitializer<BinlogPosition> {
+public final class MySQLPositionInitializer implements PositionInitializer {
     
     @Override
     public BinlogPosition init(final DataSource dataSource) throws SQLException {
@@ -38,6 +39,13 @@ public final class MySQLPositionInitializer implements PositionInitializer<Binlo
             result.setServerId(getServerId(connection));
             return result;
         }
+    }
+    
+    @Override
+    public BinlogPosition init(final String data) {
+        String[] array = data.split("#");
+        Preconditions.checkArgument(array.length == 2, "Unknown binlog position: " + data);
+        return new BinlogPosition(array[0], Long.parseLong(array[1]));
     }
     
     private BinlogPosition getBinlogPosition(final Connection connection) throws SQLException {
