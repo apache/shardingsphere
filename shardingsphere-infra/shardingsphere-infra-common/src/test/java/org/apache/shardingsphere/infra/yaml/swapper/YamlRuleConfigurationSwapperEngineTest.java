@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.fixture.FixtureRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.fixture.FixtureYamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.swapper.fixture.RuleConfigurationFixture;
+import org.apache.shardingsphere.infra.yaml.swapper.fixture.YamlRuleConfigurationFixture;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -29,30 +29,32 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class YamlRuleConfigurationSwapperEngineTest {
     
     @Test
     public void assertSwapToYamlConfigurations() {
-        FixtureRuleConfiguration ruleConfig = new FixtureRuleConfiguration();
+        RuleConfigurationFixture ruleConfig = new RuleConfigurationFixture();
         ruleConfig.setName("test");
-        Collection<YamlRuleConfiguration> actual = new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(Collections.singletonList(ruleConfig));
+        Collection<YamlRuleConfiguration> actual = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(Collections.singletonList(ruleConfig));
         assertThat(actual.size(), is(1));
-        assertThat(((FixtureYamlRuleConfiguration) actual.iterator().next()).getName(), is("test"));
+        assertThat(((YamlRuleConfigurationFixture) actual.iterator().next()).getName(), is("test"));
     }
     
     @Test
     public void assertSwapToRuleConfigurations() {
-        FixtureYamlRuleConfiguration yamlRuleConfig = new FixtureYamlRuleConfiguration();
+        YamlRuleConfigurationFixture yamlRuleConfig = new YamlRuleConfigurationFixture();
         yamlRuleConfig.setName("test");
         Collection<RuleConfiguration> actual = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singletonList(yamlRuleConfig));
         assertThat(actual.size(), is(1));
-        assertThat(((FixtureRuleConfiguration) actual.iterator().next()).getName(), is("test"));
+        assertThat(((RuleConfigurationFixture) actual.iterator().next()).getName(), is("test"));
     }
     
     @Test
     public void assertGetYamlShortcuts() {
         Map<String, Class<?>> actual = YamlRuleConfigurationSwapperEngine.getYamlShortcuts();
         assertThat(actual.size(), is(1));
+        assertTrue(actual.containsKey("!FIXTURE"));
     }
 }

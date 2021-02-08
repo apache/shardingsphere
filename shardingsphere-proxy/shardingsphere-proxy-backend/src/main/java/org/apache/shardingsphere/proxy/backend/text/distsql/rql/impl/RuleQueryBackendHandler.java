@@ -88,7 +88,7 @@ public final class RuleQueryBackendHandler extends SchemaRequiredBackendHandler<
     @Override
     public Collection<Object> getRowData() {
         RuleConfiguration ruleConfig = data.next();
-        YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(Collections.singleton(ruleConfig)).iterator().next();
+        YamlRuleConfiguration yamlRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(Collections.singleton(ruleConfig)).iterator().next();
         return Collections.singleton(YamlEngine.marshal(yamlRuleConfig));
     }
 }
