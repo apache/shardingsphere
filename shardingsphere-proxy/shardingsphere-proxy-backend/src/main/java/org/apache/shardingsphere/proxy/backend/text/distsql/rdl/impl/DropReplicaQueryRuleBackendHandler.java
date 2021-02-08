@@ -56,7 +56,7 @@ public final class DropReplicaQueryRuleBackendHandler extends SchemaRequiredBack
             throw new ReplicaQueryRuleNotExistedException();
         }
         check(replicaQueryRuleConfig.get(), ruleNames);
-        Optional<YamlReplicaQueryRuleConfiguration> yamlConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(Collections.singletonList(replicaQueryRuleConfig.get())).stream()
+        Optional<YamlReplicaQueryRuleConfiguration> yamlConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(Collections.singletonList(replicaQueryRuleConfig.get())).stream()
                 .map(each -> (YamlReplicaQueryRuleConfiguration) each).findFirst();
         if (!yamlConfig.isPresent()) {
             throw new ReplicaQueryRuleNotExistedException();

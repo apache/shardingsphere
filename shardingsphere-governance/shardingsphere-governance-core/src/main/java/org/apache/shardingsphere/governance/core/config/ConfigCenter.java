@@ -274,7 +274,7 @@ public final class ConfigCenter {
             }
         }
         YamlRootRuleConfigurations result = new YamlRootRuleConfigurations();
-        result.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(configs));
+        result.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs));
         return result;
     }
     
