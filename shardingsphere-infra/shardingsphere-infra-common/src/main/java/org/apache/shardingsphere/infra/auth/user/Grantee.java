@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.infra.auth.user;
 
-import lombok.EqualsAndHashCode;
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -26,10 +27,24 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
 public final class Grantee {
     
     private final String username;
     
     private final String hostname;
+    
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj instanceof Grantee) {
+            Grantee grantee = (Grantee) obj;
+            return grantee.getUsername().equalsIgnoreCase(username) && (grantee.getHostname().equalsIgnoreCase(hostname) || Strings.isNullOrEmpty(hostname));
+        }
+        return false;
+    }
+    
+    @Override
+    public int hashCode() {
+        return Strings.isNullOrEmpty(hostname)
+                ? Objects.hashCode(username.toUpperCase()) : Objects.hashCode(username.toUpperCase(), hostname.toUpperCase());
+    }
 }

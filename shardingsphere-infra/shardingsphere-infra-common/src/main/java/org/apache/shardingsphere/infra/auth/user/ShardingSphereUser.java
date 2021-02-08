@@ -17,28 +17,22 @@
 
 package org.apache.shardingsphere.infra.auth.user;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * ShardingSphere user.
  */
-@RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode(of = "grantee")
 public final class ShardingSphereUser {
     
-    private final String username;
+    private final Grantee grantee;
     
     private final String password;
     
-    private final String hostname;
-    
-    /**
-     * Get grantee.
-     *
-     * @return grantee
-     */
-    public Grantee getGrantee() {
-        return new Grantee(username, hostname);
+    public ShardingSphereUser(final String username, final String password, final String hostname) {
+        this.grantee = new Grantee(username, hostname);
+        this.password = password;
     }
 }
