@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.audit;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
-/**
- * SQL audit result.
- */
 @RequiredArgsConstructor
 @Getter
-public final class SQLAuditResult {
+@Setter
+public final class TLSOptionSegment implements SQLSegment {
     
-    private final boolean isPassed;
+    private int startIndex;
     
-    private final String failedReason;
+    private int stopIndex;
+    
+    private SSLTypeEnum type;
+    
+    private String x509Subject;
+    
+    private String x509Issuer;
+    
+    private String x509Cipher;
 }

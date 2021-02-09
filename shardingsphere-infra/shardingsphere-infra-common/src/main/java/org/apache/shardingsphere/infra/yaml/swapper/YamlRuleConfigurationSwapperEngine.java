@@ -43,16 +43,13 @@ public final class YamlRuleConfigurationSwapperEngine {
     /**
      * Swap to YAML rule configurations.
      * 
-     * @param ruleConfigurations rule configurations
+     * @param ruleConfigs rule configurations
      * @return YAML rule configurations
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public Collection<YamlRuleConfiguration> swapToYamlConfigurations(final Collection<RuleConfiguration> ruleConfigurations) {
-        Collection<YamlRuleConfiguration> result = new LinkedList<>();
-        for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : OrderedSPIRegistry.getRegisteredServices(ruleConfigurations, YamlRuleConfigurationSwapper.class).entrySet()) {
-            result.add((YamlRuleConfiguration) entry.getValue().swapToYamlConfiguration(entry.getKey()));
-        }
-        return result;
+    @SuppressWarnings("unchecked")
+    public Collection<YamlRuleConfiguration> swapToYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
+        return OrderedSPIRegistry.getRegisteredServices(ruleConfigs, YamlRuleConfigurationSwapper.class).entrySet().stream().map(
+            entry -> (YamlRuleConfiguration) entry.getValue().swapToYamlConfiguration(entry.getKey())).collect(Collectors.toList());
     }
     
     /**
@@ -64,23 +61,18 @@ public final class YamlRuleConfigurationSwapperEngine {
     @SuppressWarnings("rawtypes")
     public Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
         Collection<RuleConfiguration> result = new LinkedList<>();
-        Collection<Class<?>> ruleConfigurationTypes = yamlRuleConfigs.stream().map(YamlRuleConfiguration::getRuleConfigurationType).collect(Collectors.toList());
-        for (Entry<Class<?>, YamlRuleConfigurationSwapper> entry : OrderedSPIRegistry.getRegisteredServicesByClass(ruleConfigurationTypes, YamlRuleConfigurationSwapper.class).entrySet()) {
+        Collection<Class<?>> ruleConfigTypes = yamlRuleConfigs.stream().map(YamlRuleConfiguration::getRuleConfigurationType).collect(Collectors.toList());
+        for (Entry<Class<?>, YamlRuleConfigurationSwapper> entry : OrderedSPIRegistry.getRegisteredServicesByClass(ruleConfigTypes, YamlRuleConfigurationSwapper.class).entrySet()) {
             result.addAll(swapToRuleConfigurations(yamlRuleConfigs, entry.getKey(), entry.getValue()));
         }
         return result;
     }
     
-    @SuppressWarnings("unchecked")
-    private Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlRuleConfiguration> yamlRuleConfigurations, 
-                                                                   final Class<?> ruleConfigurationType, final YamlRuleConfigurationSwapper swapper) {
-        Collection<RuleConfiguration> result = new LinkedList<>();
-        for (YamlRuleConfiguration each : yamlRuleConfigurations) {
-            if (each.getRuleConfigurationType().equals(ruleConfigurationType)) {
-                result.add((RuleConfiguration) swapper.swapToObject(each));
-            }
-        }
-        return result;
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private Collection<RuleConfiguration> swapToRuleConfigurations(final Collection<YamlRuleConfiguration> yamlRuleConfigs, 
+                                                                   final Class<?> ruleConfigType, final YamlRuleConfigurationSwapper swapper) {
+        return yamlRuleConfigs.stream().filter(
+            each -> each.getRuleConfigurationType().equals(ruleConfigType)).map(each -> (RuleConfiguration) swapper.swapToObject(each)).collect(Collectors.toList());
     }
     
     /**

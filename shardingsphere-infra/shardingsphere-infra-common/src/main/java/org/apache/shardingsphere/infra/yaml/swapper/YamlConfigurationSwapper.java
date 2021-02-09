@@ -15,25 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine.fixture;
+package org.apache.shardingsphere.infra.yaml.swapper;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 
-import java.util.Collection;
-import java.util.Map;
-
-@Getter
-@Setter
-public final class ShardingSphereYamlRepresenterFixture {
+/**
+ * YAML configuration swapper.
+ *
+ * @param <Y> type of YAML configuration
+ * @param <T> type of swapped object
+ */
+public interface YamlConfigurationSwapper<Y extends YamlConfiguration, T> {
     
-    private String value;
+    /**
+     * Swap to YAML configuration.
+     *
+     * @param data data to be swapped
+     * @return YAML configuration
+     */
+    Y swapToYamlConfiguration(T data);
     
-    private Collection<String> collection;
-    
-    private Map<String, String> map;
-    
-    private CustomizedClassFixture customizedClass;
-    
-    private String customizedTag;
+    /**
+     * Swap from YAML configuration to object.
+     *
+     * @param yamlConfig YAML configuration
+     * @return swapped object
+     */
+    T swapToObject(Y yamlConfig);
 }

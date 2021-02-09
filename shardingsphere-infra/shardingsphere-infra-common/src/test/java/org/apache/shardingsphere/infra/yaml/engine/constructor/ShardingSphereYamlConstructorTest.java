@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.infra.yaml.engine.constructor;
 
-import org.apache.shardingsphere.infra.yaml.engine.fixture.ShardingSphereYamlRepresenterFixture;
+import org.apache.shardingsphere.infra.yaml.engine.fixture.ShardingSphereYamlObjectFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
-import java.util.Iterator;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -30,23 +32,17 @@ import static org.junit.Assert.assertThat;
 public final class ShardingSphereYamlConstructorTest {
     
     @Test
-    public void assertToObject() {
-        String yamlString = ""
-                + "collection:\n"
-                + "- value1\n"
-                + "- value2\n"
-                + "map:\n"
-                + "  key1: value1\n"
-                + "  key2: value2\n"
-                + "value: value\n"
-                + "customizedClass:";
-        ShardingSphereYamlRepresenterFixture actual = new Yaml(
-                new ShardingSphereYamlConstructor(ShardingSphereYamlRepresenterFixture.class)).loadAs(yamlString, ShardingSphereYamlRepresenterFixture.class);
+    public void assertToObject() throws IOException {
+        try (InputStream inputStream = ShardingSphereYamlConstructorTest.class.getClassLoader().getResourceAsStream("yaml/customized-obj.yaml")) {
+            ShardingSphereYamlObjectFixture actual = new Yaml(new ShardingSphereYamlConstructor(ShardingSphereYamlObjectFixture.class)).loadAs(inputStream, ShardingSphereYamlObjectFixture.class);
+            assertYamlObject(actual);
+        }
+    }
+    
+    private void assertYamlObject(final ShardingSphereYamlObjectFixture actual) {
         assertThat(actual.getValue(), is("value"));
         assertThat(actual.getCollection().size(), is(2));
-        Iterator<String> iterator = actual.getCollection().iterator();
-        assertThat(iterator.next(), is("value1"));
-        assertThat(iterator.next(), is("value2"));
+        assertThat(actual.getCollection(), is(Arrays.asList("value1", "value2")));
         assertThat(actual.getMap().size(), is(2));
         assertThat(actual.getMap().get("key1"), is("value1"));
         assertThat(actual.getMap().get("key2"), is("value2"));

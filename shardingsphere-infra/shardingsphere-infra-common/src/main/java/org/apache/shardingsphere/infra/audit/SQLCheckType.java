@@ -15,15 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.swapper.fixture;
+package org.apache.shardingsphere.infra.audit;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import lombok.RequiredArgsConstructor;
 
-@Getter
-@Setter
-public final class FixtureRuleConfiguration implements RuleConfiguration {
+/**
+ * SQL check type.
+ */
+@RequiredArgsConstructor
+public enum SQLCheckType {
+
+    AUTHENTICATION("authentication"), SQL_AUDIT("audit");
     
-    private String name;
+    private final String name;
 }

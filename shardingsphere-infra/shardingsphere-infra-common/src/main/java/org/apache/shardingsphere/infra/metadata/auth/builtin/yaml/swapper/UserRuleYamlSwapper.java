@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -31,7 +31,7 @@ import java.util.Map.Entry;
 /**
  * User rule YAML swapper.
  */
-public final class UserRuleYamlSwapper implements YamlSwapper<YamlUserRuleConfiguration, Collection<ShardingSphereUser>> {
+public final class UserRuleYamlSwapper implements YamlConfigurationSwapper<YamlUserRuleConfiguration, Collection<ShardingSphereUser>> {
     
     @Override
     public YamlUserRuleConfiguration swapToYamlConfiguration(final Collection<ShardingSphereUser> data) {

@@ -19,7 +19,26 @@ package org.apache.shardingsphere.infra.yaml.swapper.fixture;
 
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 
-public final class FixtureConfigurationYamlSwapper implements YamlRuleConfigurationSwapper<FixtureYamlRuleConfiguration, FixtureRuleConfiguration> {
+public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfigurationSwapper<YamlRuleConfigurationFixture, RuleConfigurationFixture> {
+    
+    @Override
+    public Class<RuleConfigurationFixture> getTypeClass() {
+        return RuleConfigurationFixture.class;
+    }
+    
+    @Override
+    public YamlRuleConfigurationFixture swapToYamlConfiguration(final RuleConfigurationFixture data) {
+        YamlRuleConfigurationFixture result = new YamlRuleConfigurationFixture();
+        result.setName(data.getName());
+        return result;
+    }
+    
+    @Override
+    public RuleConfigurationFixture swapToObject(final YamlRuleConfigurationFixture yamlConfig) {
+        RuleConfigurationFixture result = new RuleConfigurationFixture();
+        result.setName(yamlConfig.getName());
+        return result;
+    }
     
     @Override
     public String getRuleTagName() {
@@ -29,24 +48,5 @@ public final class FixtureConfigurationYamlSwapper implements YamlRuleConfigurat
     @Override
     public int getOrder() {
         return 0;
-    }
-    
-    @Override
-    public Class<FixtureRuleConfiguration> getTypeClass() {
-        return FixtureRuleConfiguration.class;
-    }
-    
-    @Override
-    public FixtureYamlRuleConfiguration swapToYamlConfiguration(final FixtureRuleConfiguration data) {
-        FixtureYamlRuleConfiguration result = new FixtureYamlRuleConfiguration();
-        result.setName(data.getName());
-        return result;
-    }
-    
-    @Override
-    public FixtureRuleConfiguration swapToObject(final FixtureYamlRuleConfiguration yamlConfig) {
-        FixtureRuleConfiguration result = new FixtureRuleConfiguration();
-        result.setName(yamlConfig.getName());
-        return result;
     }
 }

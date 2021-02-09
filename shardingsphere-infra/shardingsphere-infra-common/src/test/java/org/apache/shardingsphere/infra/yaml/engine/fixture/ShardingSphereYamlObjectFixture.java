@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.swapper.fixture;
+package org.apache.shardingsphere.infra.yaml.engine.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 
-import java.util.Properties;
+import java.util.Collection;
+import java.util.Map;
 
 @Getter
 @Setter
-public final class FixtureYamlPropsRuleConfiguration implements YamlRuleConfiguration {
+public final class ShardingSphereYamlObjectFixture {
     
-    private String name;
+    private String value;
     
-    private Properties props;
+    private Collection<String> collection;
     
-    @Override
-    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
-        return FixtureRuleConfiguration.class;
-    }
+    private Map<String, String> map;
+    
+    private CustomizedClassFixture customizedClass;
+    
+    private String customizedTag;
 }

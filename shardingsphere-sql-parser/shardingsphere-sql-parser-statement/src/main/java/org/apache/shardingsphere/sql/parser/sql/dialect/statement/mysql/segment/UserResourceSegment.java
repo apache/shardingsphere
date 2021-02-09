@@ -15,31 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.swapper;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
 
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
-/**
- * YAML configuration swapper.
- *
- * @param <Y> type of YAML configuration
- * @param <T> type of swapped object
- */
-public interface YamlSwapper<Y extends YamlConfiguration, T> {
+@Getter
+@Setter
+public final class UserResourceSegment implements SQLSegment {
     
-    /**
-     * Swap to YAML configuration.
-     *
-     * @param data data to be swapped
-     * @return YAML configuration
-     */
-    Y swapToYamlConfiguration(T data);
+    private int startIndex;
     
-    /**
-     * Swap from YAML configuration to object.
-     *
-     * @param yamlConfig YAML configuration
-     * @return swapped object
-     */
-    T swapToObject(Y yamlConfig);
+    private int stopIndex;
+    
+    private int questions;
+    
+    private int updates;
+    
+    private int connPerHour;
+    
+    private int userConn;
+    
+    private UserResourceSpecifiedLimitEnum specifiedLimits;
 }

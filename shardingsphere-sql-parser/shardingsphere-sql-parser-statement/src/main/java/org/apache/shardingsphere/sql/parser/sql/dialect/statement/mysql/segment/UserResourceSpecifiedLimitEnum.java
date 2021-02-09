@@ -15,18 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.audit;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-/**
- * SQL state for audit fail.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AuditSQLState {
+public enum UserResourceSpecifiedLimitEnum {
     
-    public static final String COMMON_AUDIT_FAIL = "AU001";
+    QUERIES_PER_HOUR,
     
-    public static final int COMMON_VENDOR_CODE = 50000;
+    UPDATES_PER_HOUR,
+    
+    CONNECTIONS_PER_HOUR,
+    
+    USER_CONNECTIONS
 }

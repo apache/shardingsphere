@@ -45,7 +45,7 @@ public class ShardingSphereYamlConstructor extends Constructor {
     }
     
     @Override
-    protected Construct getConstructor(final Node node) {
+    protected final Construct getConstructor(final Node node) {
         return typeConstructs.getOrDefault(node.getType(), super.getConstructor(node));
     }
 }
