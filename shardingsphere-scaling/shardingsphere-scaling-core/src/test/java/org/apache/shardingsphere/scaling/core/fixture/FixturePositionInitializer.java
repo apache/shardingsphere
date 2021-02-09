@@ -22,10 +22,15 @@ import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
 
 import javax.sql.DataSource;
 
-public final class FixturePositionInitializer implements PositionInitializer<PlaceholderPosition> {
+public final class FixturePositionInitializer implements PositionInitializer {
     
     @Override
     public PlaceholderPosition init(final DataSource dataSource) {
+        return new PlaceholderPosition();
+    }
+    
+    @Override
+    public PlaceholderPosition init(final String data) {
         return new PlaceholderPosition();
     }
 }

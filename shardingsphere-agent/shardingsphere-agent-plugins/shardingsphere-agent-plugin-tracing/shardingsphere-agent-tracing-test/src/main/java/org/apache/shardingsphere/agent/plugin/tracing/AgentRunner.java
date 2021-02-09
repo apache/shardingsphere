@@ -36,8 +36,8 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 public final class AgentRunner extends BlockJUnit4ClassRunner {
@@ -46,7 +46,7 @@ public final class AgentRunner extends BlockJUnit4ClassRunner {
     
     private static ResettableClassFileTransformer byteBuddyAgent;
     
-    private static final String[] ENHANCEMENT_CLASSES = new String[]{
+    private static final String[] ENHANCEMENT_CLASSES = {
         "org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask",
         "org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback",
         "org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine",
@@ -61,7 +61,7 @@ public final class AgentRunner extends BlockJUnit4ClassRunner {
     @Override
     protected Statement withBeforeClasses(final Statement statement) {
         ByteBuddyAgent.install();
-        final Set<String> classes = Sets.newHashSet(ENHANCEMENT_CLASSES);
+        Collection<String> classes = Sets.newHashSet(ENHANCEMENT_CLASSES);
         byteBuddyAgent = new AgentBuilder.Default()
                 .with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .type(ElementMatchers.namedOneOf(ENHANCEMENT_CLASSES))
@@ -78,7 +78,7 @@ public final class AgentRunner extends BlockJUnit4ClassRunner {
             try {
                 Class<?> klass = Class.forName(className);
                 log.info("It is successful to enhance the {}", klass);
-            } catch (ClassNotFoundException ignore) {
+            } catch (final ClassNotFoundException ignored) {
             }
         });
         return super.withBeforeClasses(statement);

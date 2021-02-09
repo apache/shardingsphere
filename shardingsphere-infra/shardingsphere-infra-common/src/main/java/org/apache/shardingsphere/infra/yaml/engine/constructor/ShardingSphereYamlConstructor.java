@@ -36,7 +36,7 @@ public class ShardingSphereYamlConstructor extends Constructor {
         ShardingSphereServiceLoader.register(ShardingSphereYamlConstruct.class);
     }
     
-    private final Map<Class, Construct> typeConstructs = new HashMap<>();
+    private final Map<Class<?>, Construct> typeConstructs = new HashMap<>();
     
     public ShardingSphereYamlConstructor(final Class<?> rootClass) {
         super(rootClass);

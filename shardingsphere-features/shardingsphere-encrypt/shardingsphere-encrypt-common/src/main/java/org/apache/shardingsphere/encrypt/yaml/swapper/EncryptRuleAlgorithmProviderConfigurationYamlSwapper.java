@@ -41,7 +41,7 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapper implemen
     public YamlEncryptRuleConfiguration swapToYamlConfiguration(final AlgorithmProvidedEncryptRuleConfiguration data) {
         YamlEncryptRuleConfiguration result = new YamlEncryptRuleConfiguration();
         data.getTables().forEach(each -> result.getTables().put(each.getName(), tableYamlSwapper.swapToYamlConfiguration(each)));
-        data.getEncryptors().forEach((key, value) -> result.getEncryptors().put(key, YamlShardingSphereAlgorithmConfiguration.buildByTypedSPI(value)));
+        data.getEncryptors().forEach((key, value) -> result.getEncryptors().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
         return result;
     }
     

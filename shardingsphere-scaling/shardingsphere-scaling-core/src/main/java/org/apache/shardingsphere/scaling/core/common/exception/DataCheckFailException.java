@@ -22,6 +22,8 @@ package org.apache.shardingsphere.scaling.core.common.exception;
  */
 public final class DataCheckFailException extends RuntimeException {
     
+    private static final long serialVersionUID = -4100671584682823997L;
+    
     public DataCheckFailException(final String message, final Throwable cause) {
         super(message, cause);
     }

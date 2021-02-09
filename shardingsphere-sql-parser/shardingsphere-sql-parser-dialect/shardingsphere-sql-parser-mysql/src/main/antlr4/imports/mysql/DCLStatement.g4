@@ -100,7 +100,21 @@ privilegeLevel
     ;
 
 createUser
-    : CREATE USER (IF NOT EXISTS)? alterUserList defaultRoleClause? requireClause? connectOptions? accountLockPasswordExpireOptions?
+    : CREATE USER (IF NOT EXISTS)? createUserList defaultRoleClause? requireClause? connectOptions? accountLockPasswordExpireOptions?
+    ;
+
+createUserEntry
+    : userName # createUserEntryNoOption
+    | userName IDENTIFIED BY string_ # createUserEntryIdentifiedBy
+    | userName IDENTIFIED BY RANDOM PASSWORD # createUserEntryIdentifiedBy
+    | userName IDENTIFIED WITH textOrIdentifier # createUserEntryIdentifiedWith
+    | userName IDENTIFIED WITH textOrIdentifier AS string_ # createUserEntryIdentifiedWith
+    | userName IDENTIFIED WITH textOrIdentifier BY string_ # createUserEntryIdentifiedWith
+    | userName IDENTIFIED WITH textOrIdentifier BY RANDOM PASSWORD # createUserEntryIdentifiedWith
+    ;
+
+createUserList
+    : createUserEntry (COMMA_ createUserEntry)*
     ;
 
 defaultRoleClause
@@ -108,7 +122,7 @@ defaultRoleClause
     ;
 
 requireClause
-    : REQUIRE (NONE | tlsOption (AND? tlsOption)*)
+    : REQUIRE (NONE | SSL | X509 | tlsOption (AND? tlsOption)*)
     ;
 
 connectOptions
@@ -215,7 +229,7 @@ connectOption
     ;
 
 tlsOption
-    : SSL | X509 | CIPHER string_ | ISSUER string_ | SUBJECT string_
+    : CIPHER string_ | ISSUER string_ | SUBJECT string_
     ;
 
 userFuncAuthOption

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher;
 
+import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -29,7 +30,7 @@ import java.util.Collection;
  *
  * @param <T> type of SQL statement
  */
-public interface SchemaRefresher<T extends SQLStatement> {
+public interface SchemaRefresher<T extends SQLStatement> extends MetadataRefresher {
     
     /**
      * Refresh ShardingSphere schema.

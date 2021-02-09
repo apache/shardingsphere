@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.infra.auth.builtin.yaml.swapper;
 
-import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserRuleConfiguration;
-import org.apache.shardingsphere.infra.auth.privilege.ShardingSpherePrivilege;
-import org.apache.shardingsphere.infra.auth.user.Grantee;
-import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfiguration;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -39,7 +40,7 @@ public final class UserRuleYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        DefaultAuthentication authentication = new DefaultAuthentication(new LinkedHashSet<>());
+        DefaultAuthentication authentication = new DefaultAuthentication(new LinkedHashSet<>(2, 1));
         authentication.getAuthentication().put(new ShardingSphereUser("user1", "pwd1", "127.0.0.1"), new ShardingSpherePrivilege());
         authentication.getAuthentication().put(new ShardingSphereUser("user2", "pwd2", "127.0.0.2"), new ShardingSpherePrivilege());
         YamlUserRuleConfiguration actual = new UserRuleYamlSwapper().swapToYamlConfiguration(authentication.getAuthentication().keySet());

@@ -17,17 +17,9 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-
-import java.io.IOException;
-
 /**
  * Placeholder position.
  */
-@JsonAdapter(PlaceholderPosition.PositionTypeAdapter.class)
 public final class PlaceholderPosition implements Position<PlaceholderPosition> {
     
     @Override
@@ -35,22 +27,8 @@ public final class PlaceholderPosition implements Position<PlaceholderPosition> 
         return 1;
     }
     
-    /**
-     * Position type adapter.
-     */
-    public static class PositionTypeAdapter extends TypeAdapter<PlaceholderPosition> {
-        
-        @Override
-        public void write(final JsonWriter out, final PlaceholderPosition value) throws IOException {
-            out.beginArray();
-            out.endArray();
-        }
-        
-        @Override
-        public PlaceholderPosition read(final JsonReader in) throws IOException {
-            in.beginArray();
-            in.endArray();
-            return new PlaceholderPosition();
-        }
+    @Override
+    public String toString() {
+        return "";
     }
 }

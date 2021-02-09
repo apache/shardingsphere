@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.scaling.core.fixture;
 
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.AbstractScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 
 import java.util.Map;
 import java.util.Set;
 
-public final class FixtureScalingSQLBuilder extends AbstractScalingSQLBuilder implements ScalingSQLBuilder {
+public final class FixtureScalingSQLBuilder extends AbstractScalingSQLBuilder {
     
     public FixtureScalingSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
         super(shardingColumnsMap);
