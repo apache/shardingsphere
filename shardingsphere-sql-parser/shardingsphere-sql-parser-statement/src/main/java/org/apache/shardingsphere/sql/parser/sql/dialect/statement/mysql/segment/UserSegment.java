@@ -54,5 +54,4 @@ public final class UserSegment implements SQLSegment {
     private boolean hasPasswordGenerator;
     
     private PasswordOrLockOptionSegment alterStatus;
-    
 }

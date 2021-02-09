@@ -63,5 +63,3 @@ public final class PasswordOrLockOptionSegment implements SQLSegment {
     
     private ACLAttributeEnum updatePasswordRequireCurrent;
 }
-
-

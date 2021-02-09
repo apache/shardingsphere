@@ -33,5 +33,3 @@ public final class UserAttributeSegment implements SQLSegment {
     
     private String userAttributeComment;
 }
-
-

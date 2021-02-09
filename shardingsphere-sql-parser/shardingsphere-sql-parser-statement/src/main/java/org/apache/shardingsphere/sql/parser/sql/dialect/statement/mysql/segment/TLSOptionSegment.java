@@ -39,4 +39,3 @@ public final class TLSOptionSegment implements SQLSegment {
     
     private String x509Cipher;
 }
-
