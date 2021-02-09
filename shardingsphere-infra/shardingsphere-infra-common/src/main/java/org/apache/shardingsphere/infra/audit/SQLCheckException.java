@@ -17,27 +17,21 @@
 
 package org.apache.shardingsphere.infra.audit;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-
-import java.util.List;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 /**
- * SQL auditor.
- * 
- * @param <T> type of ShardingSphere rule
+ * SQL check exception.
  */
-public interface SQLAuditor<T extends ShardingSphereRule> extends OrderedSPI<T> {
+@Getter
+public final class SQLCheckException extends ShardingSphereException {
     
-    /**
-     * Audit SQL.
-     * 
-     * @param sqlStatement SQL statement
-     * @param parameters SQL parameters
-     * @param schemaName schema name
-     * @param rule ShardingSphere rule
-     * @return SQL audit result
-     */
-    SQLAuditResult audit(SQLStatement sqlStatement, List<Object> parameters, String schemaName, T rule);
+    private static final long serialVersionUID = 4183020614721058122L;
+    
+    private final SQLCheckType sqlCheckType;
+    
+    public SQLCheckException(final SQLCheckType state, final String errorMessage) {
+        super(String.format("SQL %s checking failed. Error message: %s.", state.name(), errorMessage));
+        this.sqlCheckType = state;
+    }
 }

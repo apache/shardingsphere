@@ -17,17 +17,34 @@
 
 package org.apache.shardingsphere.infra.audit;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.auth.Authentication;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
+import java.util.List;
 
 /**
- * SQL audit result.
+ * SQL checker.
+ * 
  */
-@RequiredArgsConstructor
-@Getter
-public final class SQLAuditResult {
+public interface SQLChecker extends OrderedSPI {
     
-    private final boolean isPassed;
+    /**
+     * Get SQL check type.
+     *
+     * @return sql check type
+     */
+    SQLCheckType getSQLCheckType();
     
-    private final String failedReason;
+    /**
+     * Check SQL.
+     * 
+     * @param sqlStatement SQL statement
+     * @param parameters SQL parameters
+     * @param metaData meta data
+     * @param auth auth
+     * @return SQL check result
+     */
+    SQLCheckResult check(SQLStatement sqlStatement, List<Object> parameters, ShardingSphereMetaData metaData, Authentication auth);
 }
