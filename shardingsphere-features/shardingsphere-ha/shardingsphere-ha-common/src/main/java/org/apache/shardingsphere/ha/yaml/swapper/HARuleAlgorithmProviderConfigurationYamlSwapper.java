@@ -43,7 +43,7 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapper
         result.setDataSources(data.getDataSources().stream().collect(
                 Collectors.toMap(HADataSourceRuleConfiguration::getName, this::swapToYamlConfiguration, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
         if (null != data.getLoadBalanceAlgorithms()) {
-            data.getLoadBalanceAlgorithms().forEach((key, value) -> result.getLoadBalancers().put(key, YamlShardingSphereAlgorithmConfiguration.buildByTypedSPI(value)));
+            data.getLoadBalanceAlgorithms().forEach((key, value) -> result.getLoadBalancers().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
         }
         return result;
     }
