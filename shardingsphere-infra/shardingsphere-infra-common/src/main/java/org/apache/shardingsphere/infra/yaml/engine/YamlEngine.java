@@ -93,23 +93,23 @@ public final class YamlEngine {
      *
      * @param yamlContent YAML content
      * @param classType class type
-     * @param acceptClasses accept classes
+     * @param acceptedClasses accepted classes
      * @param <T> type of class
      * @return object from YAML
      */
-    public static <T> T unmarshal(final String yamlContent, final Class<T> classType, final Collection<Class<?>> acceptClasses) {
-        return new Yaml(new ShardingSphereFilterYamlConstructor(classType, acceptClasses)).loadAs(yamlContent, classType);
+    public static <T> T unmarshal(final String yamlContent, final Class<T> classType, final Collection<Class<?>> acceptedClasses) {
+        return new Yaml(new ShardingSphereFilterYamlConstructor(classType, acceptedClasses)).loadAs(yamlContent, classType);
     }
     
     /**
      * Unmarshal YAML.
      *
      * @param yamlContent YAML content
-     * @param acceptClasses accept classes
+     * @param acceptedClasses accepted classes
      * @return map from YAML
      */
-    public static Map<?, ?> unmarshal(final String yamlContent, final Collection<Class<?>> acceptClasses) {
-        return Strings.isNullOrEmpty(yamlContent) ? new LinkedHashMap<>() : (Map) new Yaml(new ShardingSphereFilterYamlConstructor(acceptClasses)).load(yamlContent);
+    public static Map<?, ?> unmarshal(final String yamlContent, final Collection<Class<?>> acceptedClasses) {
+        return Strings.isNullOrEmpty(yamlContent) ? new LinkedHashMap<>() : (Map) new Yaml(new ShardingSphereFilterYamlConstructor(acceptedClasses)).load(yamlContent);
     }
     
     /**
