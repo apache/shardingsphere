@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.param.domain;
+package org.apache.shardingsphere.test.integration.engine.junit;
+
+import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedWrapper;
 
 /**
- * Parameterized array.
+ * IT runner executor.
  */
-public interface ParameterizedArray {
+public interface ITRunnerExecutor {
     
     /**
-     * To parameterized arrays.
+     * a child statement to run.
      *
-     * @return parameterized arrays
+     * @param parameterizedWrapper parameterized wrapper
+     * @param childStatement case runnable
      */
-    Object[] toArrays();
+    void execute(ParameterizedWrapper parameterizedWrapper, Runnable childStatement);
     
     /**
-     * Get identify the individual test cases in a Parameterized test.
-     *
-     * @return identify the individual test cases
+     * Override to implement any behavior that must occur after all children have been scheduled (for example, waiting for them all to finish).
      */
-    String getTestCaseIdentifyIndividual();
+    void finished();
 }

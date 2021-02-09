@@ -22,15 +22,19 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
+import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 
 /**
- * Parameterized array of case based integration test.
+ * Parameterized wrapper based integration test.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CaseParameterizedArray implements ParameterizedArray {
+public class ParameterizedWrapper {
     
     private final IntegrationTestCaseContext testCaseContext;
+    
+    private final IntegrationTestCaseAssertion assertion;
     
     private final String adapter;
     
@@ -38,15 +42,14 @@ public final class CaseParameterizedArray implements ParameterizedArray {
     
     private final DatabaseType databaseType;
     
+    private final SQLExecuteType sqlExecuteType;
+    
     private final SQLCommandType sqlCommandType;
     
-    @Override
-    public Object[] toArrays() {
-        return new Object[] {new ParameterizedWrapper(testCaseContext, null, adapter, scenario, databaseType, null, sqlCommandType, this)};
-    }
+    private final ParameterizedArray parameterizedArray;
     
     @Override
-    public String getTestCaseIdentifyIndividual() {
-        return String.format("%s: %s -> %s -> %s", adapter, scenario, databaseType.getName(), testCaseContext.getTestCase().getSql());
+    public String toString() {
+        return parameterizedArray.getTestCaseIdentifyIndividual();
     }
 }

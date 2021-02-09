@@ -15,24 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.param.domain;
+package org.apache.shardingsphere.test.integration.env.database.initialization;
+
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.sql.SQLException;
 
 /**
- * Parameterized array.
+ * Database SQL initialization.
  */
-public interface ParameterizedArray {
+public interface DatabaseSQLInitialization extends TypedSPI {
     
     /**
-     * To parameterized arrays.
+     * Execute init SQLs.
      *
-     * @return parameterized arrays
-     */
-    Object[] toArrays();
-    
-    /**
-     * Get identify the individual test cases in a Parameterized test.
+     * @param scenario scenario
+     * @param databaseType database type
      *
-     * @return identify the individual test cases
+     * @throws IOException IO exception
+     * @throws SQLException SQL exception
+     * @throws JAXBException JAXB exception
      */
-    String getTestCaseIdentifyIndividual();
+    void executeInitSQLs(String scenario, DatabaseType databaseType) throws IOException, SQLException, JAXBException;
 }

@@ -17,21 +17,18 @@
 
 package org.apache.shardingsphere.test.integration.engine.junit;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
+import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedWrapper;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.junit.runners.model.RunnerScheduler;
-import org.junit.runners.model.TestClass;
+import org.junit.runners.parameterized.BlockJUnit4ClassRunnerWithParameters;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Represents a strategy for scheduling when individual test methods should be run (in serial or parallel).
@@ -42,88 +39,65 @@ import java.util.concurrent.TimeUnit;
  */
 public final class ITRunnerScheduler implements RunnerScheduler {
     
-    private static final String DEFAULT_EXECUTOR_KEY = "default";
+    private final Field parametersField;
     
-    private final Map<String, ExecutorService> executors = new HashMap<>();
+    private volatile Field runnerField;
     
+    private final Map<String, ITRunnerExecutor> runnerExecutors;
+    
+    @SneakyThrows
     public ITRunnerScheduler() {
-        IntegrationTestEnvironment itEnv = IntegrationTestEnvironment.getInstance();
-        addExecutors(itEnv.getAdapters(), itEnv.getScenarios(), itEnv.getDataSourceEnvironments().keySet());
-        addExecutor(DEFAULT_EXECUTOR_KEY);
+        parametersField = BlockJUnit4ClassRunnerWithParameters.class.getDeclaredField("parameters");
+        parametersField.setAccessible(true);
+        runnerExecutors = new HashMap<>();
+        initRunnerExecutors();
     }
     
-    private void addExecutors(final Collection<String> adapters, final Collection<String> scenarios, final Collection<DatabaseType> databaseTypes) {
-        for (String each : adapters) {
-            addExecutors(each, scenarios, databaseTypes);
+    private void initRunnerExecutors() {
+        for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()) {
+            runnerExecutors.put(getRunnerExecutorKey(each.getName(), SQLCommandType.DQL.name()), new ITRunnerParallelExecutor());
+            if (each instanceof PostgreSQLDatabaseType) {
+                runnerExecutors.put(getRunnerExecutorKey(each.getName(), SQLCommandType.DDL.name()), new ITRunnerSerialExecutor());
+            } else {
+                runnerExecutors.put(getRunnerExecutorKey(each.getName(), SQLCommandType.DDL.name()), new ITRunnerScenariosExecutor());
+            }
+            runnerExecutors.put(getRunnerExecutorKey(each.getName(), ""), new ITRunnerScenariosExecutor());
         }
     }
     
-    private void addExecutors(final String adapter, final Collection<String> scenarios, final Collection<DatabaseType> databaseTypes) {
-        for (String each : scenarios) {
-            addExecutors(adapter, each, databaseTypes);
-        }
+    private String getRunnerExecutorKey(final String databaseType, final String sqlCommandType) {
+        return String.join("_", databaseType, sqlCommandType);
     }
     
-    private void addExecutors(final String adapter, final String scenario, final Collection<DatabaseType> databaseTypes) {
-        for (DatabaseType each : databaseTypes) {
-            addExecutor(String.join("_", adapter, scenario, each.getName()));
-        }
-    }
-    
-    private void addExecutor(final String executorKey) {
-        executors.put(executorKey, createExecutorService(executorKey));
-    }
-    
-    private ExecutorService createExecutorService(final String executorServiceKey) {
-        return new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setNameFormat("ITRunnerScheduler-" + executorServiceKey + "-pool-%d").build());
-    }
-    
+    @SneakyThrows
     @Override
     public void schedule(final Runnable childStatement) {
         // TODO Gets the parameters of the Runnable closure
-        ITBlockJUnit4ClassRunnerWithParameters runnerWithParameters = getRunnerWithParameters(childStatement);
-        String executorKey = getExecutorKey(runnerWithParameters.getTestClass(), runnerWithParameters.getParameters());
-        executors.get(executorKey).submit(childStatement);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private ITBlockJUnit4ClassRunnerWithParameters getRunnerWithParameters(final Runnable childStatement) {
-        Field field = childStatement.getClass().getDeclaredField("val$each");
-        field.setAccessible(true);
-        return (ITBlockJUnit4ClassRunnerWithParameters) field.get(childStatement);
-    }
-    
-    private String getExecutorKey(final TestClass testClass, final Object[] parameters) {
-        if (null == testClass.getJavaClass()) {
-            return DEFAULT_EXECUTOR_KEY;
+        if (null == runnerField) {
+            runnerField = childStatement.getClass().getDeclaredField("val$each");
+            runnerField.setAccessible(true);
         }
-        int parametersLength = parameters.length;
-        if (isSingleTest(parametersLength)) {
-            return String.join("_", String.valueOf(parameters[2]), String.valueOf(parameters[3]), String.valueOf(parameters[4]));
-        } else if (isBatchTest(parametersLength)) {
-            return String.join("_", String.valueOf(parameters[1]), String.valueOf(parameters[2]), String.valueOf(parameters[3]));
+        BlockJUnit4ClassRunnerWithParameters runner = (BlockJUnit4ClassRunnerWithParameters) runnerField.get(childStatement);
+        Object[] parameters = (Object[]) parametersField.get(runner);
+        ParameterizedWrapper parameterizedWrapper = (ParameterizedWrapper) parameters[0];
+        getITRunnerExecutor(parameterizedWrapper).execute(parameterizedWrapper, childStatement);
+    }
+    
+    private ITRunnerExecutor getITRunnerExecutor(final ParameterizedWrapper parameterizedWrapper) {
+        switch (parameterizedWrapper.getSqlCommandType()) {
+            case DQL:
+                return runnerExecutors.get(getRunnerExecutorKey(parameterizedWrapper.getDatabaseType().getName(), SQLCommandType.DQL.name()));
+            case DDL:
+                return runnerExecutors.get(getRunnerExecutorKey(parameterizedWrapper.getDatabaseType().getName(), SQLCommandType.DDL.name()));
+            default:
+                return runnerExecutors.get(getRunnerExecutorKey(parameterizedWrapper.getDatabaseType().getName(), ""));
         }
-        return DEFAULT_EXECUTOR_KEY;
-    }
-    
-    private boolean isSingleTest(final int parametersLength) {
-        return 7 == parametersLength;
-    }
-    
-    private boolean isBatchTest(final int parametersLength) {
-        return 5 == parametersLength;
     }
     
     @Override
     public void finished() {
-        executors.values().forEach(each -> {
-            try {
-                each.shutdown();
-                each.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-            } catch (final InterruptedException ex) {
-                ex.printStackTrace(System.err);
-            }
-        });
+        if (null != runnerExecutors) {
+            runnerExecutors.values().forEach(ITRunnerExecutor::finished);
+        }
     }
 }

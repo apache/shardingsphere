@@ -22,7 +22,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.engine.junit.ITRunnerWithParametersFactory;
 import org.apache.shardingsphere.test.integration.engine.junit.ParallelParameterized;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.EnvironmentType;
@@ -33,7 +32,6 @@ import org.apache.shardingsphere.test.integration.env.datasource.builder.ProxyDa
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
@@ -44,7 +42,6 @@ import java.util.Map;
 import java.util.TimeZone;
 
 @RunWith(ParallelParameterized.class)
-@UseParametersRunnerFactory(ITRunnerWithParametersFactory.class)
 @Getter(AccessLevel.PROTECTED)
 public abstract class BaseIT {
     
