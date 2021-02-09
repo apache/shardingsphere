@@ -52,7 +52,7 @@ public final class AssertionParameterizedArray implements ParameterizedArray {
     }
     
     @Override
-    public String getTestCaseIdentifyIndividual() {
+    public String getIndividualTestCaseIdentify() {
         return String.format("%s: %s -> %s -> %s -> %s", adapter, scenario, databaseType.getName(), sqlExecuteType, testCaseContext.getTestCase().getSql());
     }
 }

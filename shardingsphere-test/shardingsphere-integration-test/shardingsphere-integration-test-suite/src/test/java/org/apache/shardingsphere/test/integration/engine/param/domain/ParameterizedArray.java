@@ -30,9 +30,9 @@ public interface ParameterizedArray {
     Object[] toArrays();
     
     /**
-     * Get identify the individual test cases in a Parameterized test.
+     * Get identify of individual test cases in a parameterized test.
      *
-     * @return identify the individual test cases
+     * @return identify of individual test cases
      */
-    String getTestCaseIdentifyIndividual();
+    String getIndividualTestCaseIdentify();
 }

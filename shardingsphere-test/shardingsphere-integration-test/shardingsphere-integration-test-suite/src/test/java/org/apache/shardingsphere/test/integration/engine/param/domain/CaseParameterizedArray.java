@@ -46,7 +46,7 @@ public final class CaseParameterizedArray implements ParameterizedArray {
     }
     
     @Override
-    public String getTestCaseIdentifyIndividual() {
+    public String getIndividualTestCaseIdentify() {
         return String.format("%s: %s -> %s -> %s", adapter, scenario, databaseType.getName(), testCaseContext.getTestCase().getSql());
     }
 }

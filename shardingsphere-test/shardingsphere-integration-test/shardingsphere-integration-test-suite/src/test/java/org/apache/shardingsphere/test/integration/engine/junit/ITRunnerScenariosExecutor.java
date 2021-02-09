@@ -47,9 +47,9 @@ import java.util.concurrent.ThreadFactory;
 /**
  * IT runner scenarios executor.
  */
-@Slf4j
 @Getter
-public class ITRunnerScenariosExecutor implements ITRunnerExecutor {
+@Slf4j
+public final class ITRunnerScenariosExecutor implements ITRunnerExecutor {
     
     private final Disruptor<CaseEntryEvent> disruptor;
     
@@ -59,7 +59,7 @@ public class ITRunnerScenariosExecutor implements ITRunnerExecutor {
     
     @SneakyThrows
     public ITRunnerScenariosExecutor() {
-        EventFactory<CaseEntryEvent> eventFactory = () -> new CaseEntryEvent();
+        EventFactory<CaseEntryEvent> eventFactory = CaseEntryEvent::new;
         ThreadFactory threadFactory = new ThreadFactoryBuilder().setDaemon(false).setNameFormat("disruptor-processors-%d")
                 .setUncaughtExceptionHandler((t, e) -> log.error("disruptor handler thread exception", e)).build();
         disruptor = new Disruptor<>(eventFactory, 16384, threadFactory, ProducerType.SINGLE, new BlockingWaitStrategy());
@@ -163,7 +163,7 @@ public class ITRunnerScenariosExecutor implements ITRunnerExecutor {
                 return;
             }
             event.childStatement.run();
-            if (reportingSeq != null) {
+            if (null != reportingSeq) {
                 reportingSeq.set(sequence);
             }
         }
