@@ -15,6 +15,14 @@
 # limitations under the License.
 #
 
-name: test
-props:
-  url: !!java.net.URLClassLoader [[!!java.net.URL ["http://localhost"]]]
+collection:
+- value1
+- value2
+
+map:
+  key1: value1
+  key2: value2
+
+value: value
+
+customizedClass:
