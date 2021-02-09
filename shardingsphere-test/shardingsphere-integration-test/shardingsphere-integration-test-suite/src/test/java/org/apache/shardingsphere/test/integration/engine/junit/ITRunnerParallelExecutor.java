@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.test.integration.engine.junit;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
 import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedWrapper;
 
@@ -29,13 +27,11 @@ import java.util.concurrent.TimeUnit;
 /**
  * IT runner parallel executor.
  */
-@Slf4j
 @Getter
-public class ITRunnerParallelExecutor implements ITRunnerExecutor {
+public final class ITRunnerParallelExecutor implements ITRunnerExecutor {
     
     private final ExecutorServiceManager executorServiceManager;
     
-    @SneakyThrows
     public ITRunnerParallelExecutor() {
         executorServiceManager = new ExecutorServiceManager(Runtime.getRuntime().availableProcessors() * 2 - 1);
     }

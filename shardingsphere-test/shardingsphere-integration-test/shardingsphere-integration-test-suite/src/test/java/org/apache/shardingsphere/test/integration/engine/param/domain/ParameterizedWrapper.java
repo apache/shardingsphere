@@ -30,7 +30,7 @@ import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
  */
 @RequiredArgsConstructor
 @Getter
-public class ParameterizedWrapper {
+public final class ParameterizedWrapper {
     
     private final IntegrationTestCaseContext testCaseContext;
     
@@ -50,6 +50,6 @@ public class ParameterizedWrapper {
     
     @Override
     public String toString() {
-        return parameterizedArray.getTestCaseIdentifyIndividual();
+        return parameterizedArray.getIndividualTestCaseIdentify();
     }
 }

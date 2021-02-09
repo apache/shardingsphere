@@ -25,10 +25,10 @@ import org.apache.shardingsphere.test.integration.engine.param.domain.Parameteri
 public interface ITRunnerExecutor {
     
     /**
-     * a child statement to run.
+     * Execute child statement.
      *
      * @param parameterizedWrapper parameterized wrapper
-     * @param childStatement case runnable
+     * @param childStatement child statement
      */
     void execute(ParameterizedWrapper parameterizedWrapper, Runnable childStatement);
     
