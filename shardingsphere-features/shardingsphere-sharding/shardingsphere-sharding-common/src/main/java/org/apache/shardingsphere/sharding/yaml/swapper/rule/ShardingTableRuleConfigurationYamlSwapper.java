@@ -20,14 +20,14 @@ package org.apache.shardingsphere.sharding.yaml.swapper.rule;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.KeyGenerateStrategyConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.ShardingStrategyConfigurationYamlSwapper;
 
 /**
  * Sharding table rule configuration YAML swapper.
  */
-public final class ShardingTableRuleConfigurationYamlSwapper implements YamlSwapper<YamlTableRuleConfiguration, ShardingTableRuleConfiguration> {
+public final class ShardingTableRuleConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlTableRuleConfiguration, ShardingTableRuleConfiguration> {
     
     private final ShardingStrategyConfigurationYamlSwapper shardingStrategyYamlSwapper = new ShardingStrategyConfigurationYamlSwapper();
     

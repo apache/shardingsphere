@@ -136,6 +136,12 @@
     <sql-case id="create_index_concurrently" value="CREATE INDEX CONCURRENTLY order_index ON t_order (order_id)" db-types="PostgreSQL" />
     <sql-case id="create_index_if_not_exists" value="CREATE INDEX IF NOT EXISTS order_index ON t_order (order_id)" db-types="PostgreSQL" />
     <sql-case id="create_index_using_btree" value="CREATE INDEX order_index ON t_order (order_id) USING BTREE" db-types="PostgreSQL" />
+    <sql-case id="create_index_with_unique" value="CREATE UNIQUE INDEX order_index ON t_order (order_id)" db-types="Oracle" />
+    <sql-case id="create_index_with_usable" value="CREATE UNIQUE INDEX order_index ON t_order (order_id) USABLE" db-types="Oracle" />
+    <sql-case id="create_index_with_unusable" value="CREATE UNIQUE INDEX order_index ON t_order (order_id) UNUSABLE" db-types="Oracle" />
+    <sql-case id="create_index_with_immediate_invalidation" value="CREATE UNIQUE INDEX order_index ON t_order (order_id) IMMEDIATE INVALIDATION" db-types="Oracle" />
+    <sql-case id="create_index_with_cluster_index" value="CREATE UNIQUE INDEX order_index ON CLUSTER t_cluster" db-types="Oracle" />
+    <sql-case id="create_index_with_bitmap" value="CREATE BITMAP INDEX order_index ON t_order (order_id)" db-types="Oracle" />
     
 <!--    create database test-->
     <sql-case id="create_database" value="CREATE DATABASE lusiadas" db-types="PostgreSQL" />

@@ -75,6 +75,7 @@ public final class EmbeddedDatabaseManager {
                 return;
             }
             EmbeddedDatabase embeddedDatabase = TypedSPIRegistry.getRegisteredService(EmbeddedDatabase.class, databaseType, new Properties());
+            Runtime.getRuntime().addShutdownHook(new Thread(embeddedDatabase::stop));
             embeddedDatabase.start(embeddedDatabaseProps, port);
             Runtime.getRuntime().addShutdownHook(new Thread(embeddedDatabase::stop));
             EMBEDDED_DATABASES_CACHE.put(embeddedDatabaseKey, embeddedDatabase);

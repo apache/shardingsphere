@@ -60,13 +60,15 @@ public final class ShadowConditionEngine {
         if (!whereSegment.isPresent()) {
             return Optional.empty();
         }
-        ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
-        ExpressionBuilder expressionBuilder = new ExpressionBuilder(expression);
-        Collection<AndPredicate> andPredicates = new LinkedList<>(expressionBuilder.extractAndPredicates().getAndPredicates());
-        for (AndPredicate each : andPredicates) {
-            Optional<ShadowCondition> condition = createShadowCondition(each);
-            if (condition.isPresent()) {
-                return condition;
+        if (((WhereAvailable) sqlStatementContext).getWhere().isPresent()) {
+            ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
+            ExpressionBuilder expressionBuilder = new ExpressionBuilder(expression);
+            Collection<AndPredicate> andPredicates = new LinkedList<>(expressionBuilder.extractAndPredicates().getAndPredicates());
+            for (AndPredicate each : andPredicates) {
+                Optional<ShadowCondition> condition = createShadowCondition(each);
+                if (condition.isPresent()) {
+                    return condition;
+                }
             }
         }
         // FIXME process subquery

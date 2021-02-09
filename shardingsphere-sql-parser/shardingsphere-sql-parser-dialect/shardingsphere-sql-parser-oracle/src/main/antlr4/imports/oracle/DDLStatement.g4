@@ -24,16 +24,15 @@ createTable
     ;
 
 createIndex
-    : CREATE createIndexSpecification INDEX indexName ON createIndexDefinitionClause
+    : CREATE createIndexSpecification INDEX indexName ON createIndexDefinitionClause usableSpecification? invalidationSpecification?
     ;
 
 alterTable
     : ALTER TABLE tableName memOptimizeClause alterDefinitionClause enableDisableClauses
     ;
 
-// TODO hongjun throw exeption when alter index on oracle
 alterIndex
-    : ALTER INDEX indexName renameIndexClause
+    : ALTER INDEX indexName alterIndexInformationClause
     ;
 
 dropTable
@@ -41,11 +40,11 @@ dropTable
     ;
  
 dropIndex
-    : DROP INDEX indexName
+    : DROP INDEX indexName ONLINE? FORCE? ((DEFERRED|IMMEDIATE) INVALIDATION)?
     ;
 
 truncateTable
-    : TRUNCATE TABLE tableName
+    : TRUNCATE TABLE tableName materializedViewLogClause? storageClause? CASCADE?
     ;
 
 createTableSpecification
@@ -200,6 +199,14 @@ createIndexSpecification
     : (UNIQUE | BITMAP)?
     ;
 
+clusterIndexClause
+    : CLUSTER clusterName indexAttributes?
+    ;
+
+indexAttributes
+    : (ONLINE | (SORT|NOSORT) | REVERSE | (VISIBLE | INVISIBLE))
+    ;
+
 tableIndexClause
     : tableName alias? indexExpressions
     ;
@@ -225,7 +232,7 @@ columnSortClause_
     ;
 
 createIndexDefinitionClause
-    : tableIndexClause | bitmapJoinIndexClause
+    : clusterIndexClause | tableIndexClause | bitmapJoinIndexClause
     ;
 
 tableAlias
@@ -363,6 +370,19 @@ objectProperty
     : (columnName | attributeName) (DEFAULT expr)? (inlineConstraint* | inlineRefConstraint?) | outOfLineConstraint | outOfLineRefConstraint
     ;
 
+alterIndexInformationClause
+    : rebuildClause ((DEFERRED|IMMEDIATE) | INVALIDATION)?
+    | parallelClause
+    | COMPILE
+    | (ENABLE | DISABLE)
+    | UNUSABLE ONLINE? ((DEFERRED|IMMEDIATE)|INVALIDATION)?
+    | (VISIBLE | INVISIBLE)
+    | renameIndexClause
+    | COALESCE CLEANUP? ONLY? parallelClause?
+    | ((MONITORING | NOMONITORING) USAGE)
+    | UPDATE BLOCK REFERENCES
+    ;
+
 renameIndexClause
     : (RENAME TO indexName)?
     ;
@@ -393,4 +413,28 @@ enableDisableClause
 
 enableDisableOthers
     : (ENABLE | DISABLE) (TABLE LOCK | ALL TRIGGERS | CONTAINER_MAP | CONTAINERS_DEFAULT)
+    ;
+
+rebuildClause
+    : REBUILD parallelClause?
+    ;
+
+parallelClause
+    : PARALLEL
+    ;
+
+usableSpecification
+    : (USABLE | UNUSABLE)
+    ;
+
+invalidationSpecification
+    : (DEFERRED | IMMEDIATE) INVALIDATION
+    ;
+
+materializedViewLogClause
+    : (PRESERVE | PURGE) MATERIALIZED VIEW LOG
+    ;
+
+storageClause
+    : (DROP (ALL)? | REUSE) STORAGE
     ;

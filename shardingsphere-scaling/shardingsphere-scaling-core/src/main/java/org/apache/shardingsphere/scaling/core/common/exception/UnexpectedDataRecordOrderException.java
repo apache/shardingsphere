@@ -23,6 +23,8 @@ import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 @RequiredArgsConstructor
 public final class UnexpectedDataRecordOrderException extends RuntimeException {
     
+    private static final long serialVersionUID = 6023695604738387750L;
+    
     private final DataRecord beforeDataRecord;
     
     private final DataRecord afterDataRecord;

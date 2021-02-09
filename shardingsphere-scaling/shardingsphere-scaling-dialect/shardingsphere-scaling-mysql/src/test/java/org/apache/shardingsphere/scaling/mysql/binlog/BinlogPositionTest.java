@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.mysql.binlog;
 
-import com.google.gson.Gson;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,8 +40,7 @@ public final class BinlogPositionTest {
     }
     
     @Test
-    public void assertToJson() {
-        BinlogPosition binlogPosition = new BinlogPosition("mysql-bin.000001", 4);
-        assertThat(new Gson().toJson(binlogPosition), is("{\"filename\":\"mysql-bin.000001\",\"position\":4,\"delay\":0}"));
+    public void assertToString() {
+        assertThat(new BinlogPosition("mysql-bin.000001", 4).toString(), is("mysql-bin.000001#4"));
     }
 }

@@ -22,12 +22,8 @@ package org.apache.shardingsphere.agent.exception;
  */
 public final class PluginConfigurationException extends RuntimeException {
     
-    /**
-     * Constructs an exception with formatted error message and arguments.
-     *
-     * @param errorMessage formatted error message
-     * @param args arguments of error message
-     */
+    private static final long serialVersionUID = -3298813951573088711L;
+    
     public PluginConfigurationException(final String errorMessage, final Object... args) {
         super(String.format(errorMessage, args));
     }

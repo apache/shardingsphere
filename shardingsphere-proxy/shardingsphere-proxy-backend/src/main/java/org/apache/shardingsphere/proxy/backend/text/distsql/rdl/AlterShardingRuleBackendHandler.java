@@ -45,7 +45,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -65,7 +64,7 @@ public final class AlterShardingRuleBackendHandler extends SchemaRequiredBackend
             throw new ShardingRuleNotExistedException();
         }
         check(shardingRuleConfig.get(), sqlStatement);
-        Optional<YamlShardingRuleConfiguration> yamlShardingRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(Collections.singleton(shardingRuleConfig.get())).stream()
+        Optional<YamlShardingRuleConfiguration> yamlShardingRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(Collections.singleton(shardingRuleConfig.get())).stream()
                 .filter(each -> each instanceof YamlShardingRuleConfiguration).map(each -> (YamlShardingRuleConfiguration) each).findFirst();
         if (!yamlShardingRuleConfig.isPresent()) {
             throw new ShardingRuleNotExistedException();
@@ -120,7 +119,7 @@ public final class AlterShardingRuleBackendHandler extends SchemaRequiredBackend
     }
     
     private void checkBindingTable(final ShardingRuleConfiguration shardingRuleConfig, final AlterShardingRuleStatement statement) {
-        Set<String> validTables = new HashSet<>();
+        Collection<String> validTables = new HashSet<>();
         validTables.addAll(shardingRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         validTables.addAll(shardingRuleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getLogicTable).collect(Collectors.toSet()));
         validTables.addAll(statement.getAddShardingRules().stream().map(TableRuleSegment::getLogicTable).collect(Collectors.toList()));

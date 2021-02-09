@@ -29,7 +29,6 @@ import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.span.JaegerErrorSpan;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 
@@ -52,19 +51,18 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdv
         if ((boolean) args[1]) {
             builder.asChildOf(root);
         } else {
-            final JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
-            final ExecutionUnit unit = executionUnit.getExecutionUnit();
+            JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
             Method getMetadataMethod = JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class);
             getMetadataMethod.setAccessible(true);
             DataSourceMetaData metaData = (DataSourceMetaData) getMetadataMethod.invoke(target, new Object[]{executionUnit.getStorageResource().getConnection().getMetaData()});
             builder.withTag(Tags.COMPONENT.getKey(), JaegerConstants.COMPONENT_NAME)
                     .withTag(Tags.DB_TYPE.getKey(), JaegerConstants.DB_TYPE_VALUE)
-                    .withTag(Tags.DB_INSTANCE.getKey(), unit.getDataSourceName())
+                    .withTag(Tags.DB_INSTANCE.getKey(), executionUnit.getExecutionUnit().getDataSourceName())
                     .withTag(Tags.PEER_HOSTNAME.getKey(), metaData.getHostName())
                     .withTag(Tags.PEER_PORT.getKey(), metaData.getPort())
                     .withTag(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT)
-                    .withTag(Tags.DB_STATEMENT.getKey(), unit.getSqlUnit().getSql())
-                    .withTag(JaegerConstants.ShardingSphereTags.DB_BIND_VARIABLES.getKey(), unit.getSqlUnit().getParameters().toString());
+                    .withTag(Tags.DB_STATEMENT.getKey(), executionUnit.getExecutionUnit().getSqlUnit().getSql())
+                    .withTag(JaegerConstants.ShardingSphereTags.DB_BIND_VARIABLES.getKey(), executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString());
         }
         target.setAttachment(builder.startActive(true));
     }
