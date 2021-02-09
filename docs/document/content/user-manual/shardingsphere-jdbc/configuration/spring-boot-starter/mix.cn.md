@@ -56,7 +56,7 @@ spring.shardingsphere.rules.encrypt.encryptors.name-encryptor.props.aes-key-valu
 spring.shardingsphere.rules.encrypt.encryptors.pwd-encryptor.type=AES
 spring.shardingsphere.rules.encrypt.encryptors.pwd-encryptor.props.aes-key-value=123456abc
 
-# 分布式序列算法配置
+# 分布式序列策略配置
 spring.shardingsphere.rules.sharding.tables.t_user.key-generate-strategy.column=user_id
 spring.shardingsphere.rules.sharding.tables.t_user.key-generate-strategy.key-generator-name=snowflake
 
