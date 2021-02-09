@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.yaml.engine.representer;
 
-import org.apache.shardingsphere.infra.yaml.engine.fixture.ShardingSphereYamlRepresenterFixture;
+import org.apache.shardingsphere.infra.yaml.engine.fixture.ShardingSphereYamlObjectFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
@@ -33,13 +33,13 @@ public final class ShardingSphereYamlRepresenterTest {
     
     @Test
     public void assertToYamlWithoutContent() {
-        ShardingSphereYamlRepresenterFixture actual = new ShardingSphereYamlRepresenterFixture();
+        ShardingSphereYamlObjectFixture actual = new ShardingSphereYamlObjectFixture();
         assertThat(new Yaml(new ShardingSphereYamlRepresenter()).dumpAsMap(actual), is("{}\n"));
     }
     
     @Test
     public void assertToYamlWithAllContents() {
-        ShardingSphereYamlRepresenterFixture actual = new ShardingSphereYamlRepresenterFixture();
+        ShardingSphereYamlObjectFixture actual = new ShardingSphereYamlObjectFixture();
         actual.setValue("value");
         actual.setCollection(Arrays.asList("value1", "value2"));
         Map<String, String> map = new LinkedHashMap<>(2, 1);

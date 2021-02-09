@@ -22,16 +22,6 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper
 public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfigurationSwapper<YamlRuleConfigurationFixture, RuleConfigurationFixture> {
     
     @Override
-    public String getRuleTagName() {
-        return "FIXTURE";
-    }
-    
-    @Override
-    public int getOrder() {
-        return 0;
-    }
-    
-    @Override
     public Class<RuleConfigurationFixture> getTypeClass() {
         return RuleConfigurationFixture.class;
     }
@@ -48,5 +38,15 @@ public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfig
         RuleConfigurationFixture result = new RuleConfigurationFixture();
         result.setName(yamlConfig.getName());
         return result;
+    }
+    
+    @Override
+    public String getRuleTagName() {
+        return "FIXTURE";
+    }
+    
+    @Override
+    public int getOrder() {
+        return 0;
     }
 }
