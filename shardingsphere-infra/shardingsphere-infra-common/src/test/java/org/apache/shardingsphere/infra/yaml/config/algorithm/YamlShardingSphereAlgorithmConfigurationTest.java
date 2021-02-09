@@ -40,7 +40,7 @@ public final class YamlShardingSphereAlgorithmConfigurationTest {
         assertTrue(spiOptional.isPresent());
         TypedSPIFixture typedSPIFixture = spiOptional.get();
         typedSPIFixture.setProps(createProps());
-        YamlShardingSphereAlgorithmConfiguration actual = YamlShardingSphereAlgorithmConfiguration.buildByTypedSPI(typedSPIFixture);
+        YamlShardingSphereAlgorithmConfiguration actual = YamlShardingSphereAlgorithmConfiguration.build(typedSPIFixture);
         assertThat(actual.getType(), is("FIXTURE"));
         assertThat(actual.getProps().getProperty("key"), is("value"));
     }
