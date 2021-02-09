@@ -21,17 +21,17 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 /**
- * Audit exception.
+ * SQL check exception.
  */
 @Getter
-public final class AuditException extends ShardingSphereException {
+public final class SQLCheckException extends ShardingSphereException {
     
     private static final long serialVersionUID = 4183020614721058122L;
     
-    private final AuditSQLState auditSQLState;
+    private final SQLCheckType sqlCheckType;
     
-    public AuditException(final AuditSQLState state) {
-        super(String.format("SQL audit failed due to %s.", state.name()));
-        this.auditSQLState = state;
+    public SQLCheckException(final SQLCheckType state, final String errorMessage) {
+        super(String.format("SQL %s checking failed. Error message: %s.", state.name(), errorMessage));
+        this.sqlCheckType = state;
     }
 }

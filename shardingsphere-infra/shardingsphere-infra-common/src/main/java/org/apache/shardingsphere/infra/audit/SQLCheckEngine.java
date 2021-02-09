@@ -17,27 +17,42 @@
 
 package org.apache.shardingsphere.infra.audit;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.auth.Authentication;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
- * SQL auditor.
- * 
+ * SQL check engine.
  */
-public interface SQLAuditor extends OrderedSPI {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SQLCheckEngine {
+    
+    static {
+        ShardingSphereServiceLoader.register(SQLChecker.class);
+    }
     
     /**
-     * Audit SQL.
+     * Check SQL.
      * 
      * @param sqlStatement SQL statement
      * @param parameters SQL parameters
      * @param metaData meta data
      * @param auth auth
-     * @return SQL audit result
      */
-    SQLAuditResult audit(SQLStatement sqlStatement, List<Object> parameters, ShardingSphereMetaData metaData, Authentication auth);
+    public static void check(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingSphereMetaData metaData, final Authentication auth) {
+        Collection<SQLChecker> auditors = OrderedSPIRegistry.getRegisteredServices(SQLChecker.class);
+        for (SQLChecker each : auditors) {
+            SQLCheckResult auditResult = each.check(sqlStatement, parameters, metaData, auth);
+            if (!auditResult.isPassed()) {
+                throw new SQLCheckException(each.getSQLCheckType(), auditResult.getErrorMessage());
+            }
+        }
+    }
 }

@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.infra.audit;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * SQL audit result.
+ * SQL check type.
  */
 @RequiredArgsConstructor
-@Getter
-public final class SQLAuditResult {
+public enum SQLCheckType {
+
+    AUTHENTICATION("authentication"), SQL_AUDIT("audit");
     
-    private final boolean isPassed;
-    
-    private final AuditSQLState failedReason;
+    private final String name;
 }
