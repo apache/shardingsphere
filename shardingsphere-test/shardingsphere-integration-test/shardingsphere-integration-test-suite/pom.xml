@@ -232,7 +232,7 @@
                             </execution>
 
                             <execution>
-                                <id>encrypt-query-up</id>
+                                <id>encrypt-up</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
                                     <goal>up</goal>

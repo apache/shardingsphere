@@ -33,7 +33,7 @@ services:
 #    image: "zookeeper:3.6.2"
 #    container_name: encrypt-register-center
 #    ports:
-#      - "2181:23810"
+#      - "2181:24810"
   
   shardingsphere-proxy:
     image: apache/shardingsphere-proxy-test
