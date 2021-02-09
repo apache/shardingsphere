@@ -29,8 +29,6 @@ import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 
-import java.sql.SQLException;
-
 /**
  * Kernel processor.
  */
