@@ -46,15 +46,17 @@ public final class MySQLEmbeddedDatabase implements EmbeddedDatabase {
     public void start(final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final int port) {
         DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType(getType());
         DownloadConfig downloadConfig = DownloadConfig.aDownloadConfig().withBaseUrl(embeddedDatabaseProps.getURL(databaseType)).build();
-        MysqldConfig mysqldConfig = MysqldConfig.aMysqldConfig(detectVersion(embeddedDatabaseProps.getVersion(databaseType)))
+        MysqldConfig.Builder mysqldConfigBuilder = MysqldConfig.aMysqldConfig(detectVersion(embeddedDatabaseProps.getVersion(databaseType)))
                 .withCharset(Charset.UTF8MB4)
                 .withTempDir(new File(downloadConfig.getCacheDir(), "runtime").getPath())
                 .withPort(port)
                 .withUser("test", "test")
                 .withServerVariable("bind-address", "0.0.0.0")
-                .withServerVariable("innodb_flush_log_at_trx_commit", 2)
-                .build();
-        embeddedMySQL = EmbeddedMysql.anEmbeddedMysql(mysqldConfig, downloadConfig).start();
+                .withServerVariable("innodb_flush_log_at_trx_commit", 2);
+        if (!Platform.isWindows()) {
+            mysqldConfigBuilder = mysqldConfigBuilder.withServerVariable("innodb_flush_method", "O_DIRECT");
+        }
+        embeddedMySQL = EmbeddedMysql.anEmbeddedMysql(mysqldConfigBuilder.build(), downloadConfig).start();
     }
     
     private Version detectVersion(final String distributionVersion) {
@@ -79,6 +81,10 @@ public final class MySQLEmbeddedDatabase implements EmbeddedDatabase {
             } else {
                 throw new UnsupportedOperationException(String.format("%s-%s is not supported", osName, osVersion));
             }
+        } else if (Strings.isNullOrEmpty(distributionVersion) && com.sun.jna.Platform.isLinux()) {
+            version = Version.v5_7_latest;
+        } else if (Strings.isNullOrEmpty(distributionVersion) && com.sun.jna.Platform.isWindows()) {
+            version = Version.v5_7_latest;
         } else {
             version = Enums.getIfPresent(Version.class, distributionVersion).orNull();
             Preconditions.checkArgument(null != version, String.format("The current setup version %s is not supported, only the following versions [%s] are currently supported",
@@ -91,6 +97,7 @@ public final class MySQLEmbeddedDatabase implements EmbeddedDatabase {
     public void stop() {
         if (null != embeddedMySQL) {
             embeddedMySQL.stop();
+            embeddedMySQL = null;
         }
     }
     

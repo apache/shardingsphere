@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -55,6 +56,9 @@ public final class EmbeddedDatabaseManager {
      */
     public static void startUp(final String databaseType, final String scenario, final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final int port) {
         DatabaseType databaseTypeImpl = DatabaseTypeRegistry.getActualDatabaseType(databaseType);
+        if (databaseTypeImpl instanceof H2DatabaseType) {
+            return;
+        }
         // TODO This can be a single instance if the GitHub Action port has been adjusted
         String embeddedDatabaseKey;
         if (databaseTypeImpl instanceof PostgreSQLDatabaseType) {
@@ -72,6 +76,7 @@ public final class EmbeddedDatabaseManager {
             }
             EmbeddedDatabase embeddedDatabase = TypedSPIRegistry.getRegisteredService(EmbeddedDatabase.class, databaseType, new Properties());
             embeddedDatabase.start(embeddedDatabaseProps, port);
+            Runtime.getRuntime().addShutdownHook(new Thread(embeddedDatabase::stop));
             EMBEDDED_DATABASES_CACHE.put(embeddedDatabaseKey, embeddedDatabase);
         } finally {
             DATABASE_RESOURCE_LOCK.unlock();

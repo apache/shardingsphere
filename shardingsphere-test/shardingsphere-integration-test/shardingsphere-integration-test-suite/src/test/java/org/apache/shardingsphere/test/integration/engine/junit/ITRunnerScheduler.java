@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.test.integration.engine.junit;
 
 import lombok.SneakyThrows;
-import org.apache.commons.lang.ClassUtils;
-import org.apache.shardingsphere.test.integration.engine.it.ParallelIT;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
+import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedWrapper;
 import org.junit.runners.model.RunnerScheduler;
 import org.junit.runners.parameterized.BlockJUnit4ClassRunnerWithParameters;
 
@@ -38,17 +39,12 @@ public final class ITRunnerScheduler implements RunnerScheduler {
     
     private volatile Field runnerField;
     
-    private final ITRunnerExecutor runnerExecutor;
+    private volatile ITRunnerExecutor runnerExecutor;
     
     @SneakyThrows
-    public ITRunnerScheduler(final Class<?> testClass) {
+    public ITRunnerScheduler() {
         parametersField = BlockJUnit4ClassRunnerWithParameters.class.getDeclaredField("parameters");
         parametersField.setAccessible(true);
-        if (ClassUtils.isAssignable(testClass, ParallelIT.class)) {
-            runnerExecutor = new ITRunnerNonScenariosExecutor();
-        } else {
-            runnerExecutor = new ITRunnerScenariosExecutor();
-        }
     }
     
     @SneakyThrows
@@ -60,11 +56,41 @@ public final class ITRunnerScheduler implements RunnerScheduler {
             runnerField.setAccessible(true);
         }
         BlockJUnit4ClassRunnerWithParameters runner = (BlockJUnit4ClassRunnerWithParameters) runnerField.get(childStatement);
-        runnerExecutor.execute((Object[]) parametersField.get(runner), childStatement);
+        Object[] parameters = (Object[]) parametersField.get(runner);
+        ParameterizedWrapper parameterizedWrapper = (ParameterizedWrapper) parameters[0];
+        if (null == runnerExecutor) {
+            initITRunnerExecutor(parameterizedWrapper);
+        }
+        runnerExecutor.execute(parameterizedWrapper, childStatement);
+    }
+    
+    private synchronized void initITRunnerExecutor(final ParameterizedWrapper parameterizedWrapper) {
+        if (null == runnerExecutor) {
+            if (parameterizedWrapper.getSqlCommandType() == SQLCommandType.DQL) {
+                runnerExecutor = new ITRunnerNonScenariosExecutor();
+            } else if (parameterizedWrapper.getSqlCommandType() == SQLCommandType.DDL
+                    && parameterizedWrapper.getDatabaseType() instanceof PostgreSQLDatabaseType) {
+                runnerExecutor = new ITRunnerExecutor() {
+            
+                    @Override
+                    public void execute(final ParameterizedWrapper parameterizedWrapper, final Runnable childStatement) {
+                        childStatement.run();
+                    }
+            
+                    @Override
+                    public void finished() {
+                    }
+                };
+            } else {
+                runnerExecutor = new ITRunnerScenariosExecutor();
+            }
+        }
     }
     
     @Override
     public void finished() {
-        runnerExecutor.finished();
+        if (null != runnerExecutor) {
+            runnerExecutor.finished();
+        }
     }
 }

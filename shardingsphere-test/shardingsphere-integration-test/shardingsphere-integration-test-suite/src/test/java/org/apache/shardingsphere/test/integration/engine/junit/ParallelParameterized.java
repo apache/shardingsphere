@@ -32,6 +32,6 @@ public final class ParallelParameterized extends Parameterized {
     public ParallelParameterized(final Class<?> klass) throws Throwable {
         //CHECKSTYLE:ON
         super(klass);
-        setScheduler(new ITRunnerScheduler(klass));
+        setScheduler(new ITRunnerScheduler());
     }
 }

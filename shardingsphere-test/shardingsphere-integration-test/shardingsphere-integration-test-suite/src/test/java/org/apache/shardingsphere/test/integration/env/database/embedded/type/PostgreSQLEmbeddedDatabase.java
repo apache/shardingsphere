@@ -17,26 +17,33 @@
 
 package org.apache.shardingsphere.test.integration.env.database.embedded.type;
 
+import com.google.common.base.Enums;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import de.flapdoodle.embed.process.config.IRuntimeConfig;
 import de.flapdoodle.embed.process.distribution.Platform;
+import de.flapdoodle.embed.process.io.directories.FixedPath;
 import de.flapdoodle.embed.process.runtime.ICommandLinePostProcessor;
 import de.flapdoodle.embed.process.store.PostgresArtifactStoreBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.env.database.embedded.EmbeddedDatabase;
 import org.apache.shardingsphere.test.integration.env.database.embedded.EmbeddedDatabaseDistributionProperties;
 import ru.yandex.qatools.embed.postgresql.Command;
 import ru.yandex.qatools.embed.postgresql.EmbeddedPostgres;
+import ru.yandex.qatools.embed.postgresql.PackagePaths;
 import ru.yandex.qatools.embed.postgresql.config.PostgresDownloadConfigBuilder;
 import ru.yandex.qatools.embed.postgresql.config.RuntimeConfigBuilder;
-import ru.yandex.qatools.embed.postgresql.distribution.Version.Main;
+import ru.yandex.qatools.embed.postgresql.distribution.Version;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Embedded database for PostgreSQL.
@@ -45,35 +52,68 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public final class PostgreSQLEmbeddedDatabase implements EmbeddedDatabase {
     
-    private EmbeddedPostgres postgres;
+    private EmbeddedPostgres embeddedPostgres;
     
     @SneakyThrows
     @Override
     public void start(final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final int port) {
-        final long startTime = System.currentTimeMillis();
-        log.info("Test embedded database resources PostgreSQL prepare.");
         String cacheDir = new File(System.getProperty("user.home"), ".embedpostgresql").getPath();
-        postgres = new EmbeddedPostgres(Main.V10, new File(cacheDir, "runtime" + File.separator + UUID.randomUUID().toString()).getPath());
+        DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType(getType());
+        Version version = detectVersion(embeddedDatabaseProps.getVersion(databaseType));
+        String extractedDir = new File(cacheDir, "extracted").getPath();
+        String instanceDir = new File(cacheDir, "runtime" + File.separator + "PostgreSQL-" + version.name() + File.separator + UUID.randomUUID().toString()).getPath();
+        embeddedPostgres = new EmbeddedPostgres(version, new File(instanceDir).getPath());
+        Command cmd = Command.Postgres;
+        FixedPath extractedCache = new FixedPath(extractedDir);
         IRuntimeConfig runtimeConfig = new RuntimeConfigBuilder()
-                .defaults(Command.Postgres)
+                .defaults(cmd)
                 .artifactStore(new PostgresArtifactStoreBuilder()
-                        .defaults(Command.Postgres)
+                        .defaults(cmd)
                         .useCache(true)
+                        .tempDir(extractedCache)
                         .download(new PostgresDownloadConfigBuilder()
-                                .defaultsForCommand(Command.Postgres)
+                                .defaultsForCommand(cmd)
                                 .downloadPath(embeddedDatabaseProps.getURL(DatabaseTypeRegistry.getActualDatabaseType(getType())))
+                                .packageResolver(new PackagePaths(cmd, extractedCache))
                                 .build()))
                 .commandLinePostProcessor(privilegedWindowsRunasPostprocessor())
                 .build();
-        List<String> additionalParams = Arrays.asList("-E", "SQL_ASCII",
-                "--locale=C",
-                "--lc-collate=C",
-                "--lc-ctype=C");
-        postgres.start(runtimeConfig, "127.0.0.1", port, EmbeddedPostgres.DEFAULT_DB_NAME, "postgres", "postgres", additionalParams);
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            stop();
-        }));
-        log.info("Test embedded database resources PostgreSQL start postgres elapsed time {}s", (System.currentTimeMillis() - startTime) / 1000);
+        List<String> additionalParams = Arrays.asList(
+                "-E", "UTF-8",
+                "--lc-collate=en_US.UTF-8",
+                "--lc-ctype=en_US.UTF-8");
+        List<String> additionalPostgresParams = Arrays.asList(
+                "-c", "max_connections=512",
+                "-c", "logging_collector=on",
+                "-c", "log_directory=log",
+                "-c", "fsync=off"
+        );
+        embeddedPostgres.start(runtimeConfig, "127.0.0.1", port, EmbeddedPostgres.DEFAULT_DB_NAME,
+                EmbeddedPostgres.DEFAULT_USER, EmbeddedPostgres.DEFAULT_PASSWORD, additionalParams, additionalPostgresParams);
+    }
+    
+    private Version detectVersion(final String distributionVersion) {
+        Version version;
+        if (Strings.isNullOrEmpty(distributionVersion) && com.sun.jna.Platform.isMac()) {
+            String osName = System.getProperty("os.name");
+            String osVersion = System.getProperty("os.version");
+            if (osVersion.startsWith("10.10") || osVersion.startsWith("10.11") || osVersion.startsWith("10.12")) {
+                version = Version.V10_6;
+            } else if (osVersion.startsWith("10.13") || osVersion.startsWith("10.14") || osVersion.startsWith("10.15")) {
+                version = Version.V11_1;
+            } else {
+                throw new UnsupportedOperationException(String.format("%s-%s is not supported", osName, osVersion));
+            }
+        } else if (Strings.isNullOrEmpty(distributionVersion) && com.sun.jna.Platform.isLinux()) {
+            version = Version.V10_6;
+        } else if (Strings.isNullOrEmpty(distributionVersion) && com.sun.jna.Platform.isWindows()) {
+            version = Version.V11_1;
+        } else {
+            version = Enums.getIfPresent(Version.class, distributionVersion).orNull();
+            Preconditions.checkArgument(null != version, String.format("The current setup version %s is not supported, only the following versions [%s] are currently supported",
+                    distributionVersion, Arrays.stream(Version.values()).map(Enum::name).collect(Collectors.joining(", "))));
+        }
+        return version;
     }
     
     @SneakyThrows
@@ -101,10 +141,12 @@ public final class PostgreSQLEmbeddedDatabase implements EmbeddedDatabase {
         return (distribution, args) -> args;
     }
     
+    @SneakyThrows
     @Override
     public void stop() {
-        if (null != postgres) {
-            postgres.stop();
+        if (null != embeddedPostgres) {
+            embeddedPostgres.stop();
+            embeddedPostgres = null;
         }
     }
     

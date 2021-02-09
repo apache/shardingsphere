@@ -15,10 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.it;
+package org.apache.shardingsphere.test.integration.env.database.initialization;
+
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.sql.SQLException;
 
 /**
- * Parallel flag.
+ * Database SQL initialization.
  */
-public interface ParallelIT {
+public interface DatabaseSQLInitialization extends TypedSPI {
+    
+    /**
+     * Execute init SQLs.
+     *
+     * @param scenario scenario
+     * @param databaseType database type
+     *
+     * @throws IOException IO exception
+     * @throws SQLException SQL exception
+     * @throws JAXBException JAXB exception
+     */
+    void executeInitSQLs(String scenario, DatabaseType databaseType) throws IOException, SQLException, JAXBException;
 }

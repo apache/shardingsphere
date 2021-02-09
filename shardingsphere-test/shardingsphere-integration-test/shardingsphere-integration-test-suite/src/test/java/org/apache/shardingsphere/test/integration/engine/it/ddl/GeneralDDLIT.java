@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.ddl;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedWrapper;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -34,12 +33,17 @@ import java.util.Collection;
 
 public final class GeneralDDLIT extends BaseDDLIT {
     
-    public GeneralDDLIT(final String parentPath, final IntegrationTestCaseAssertion assertion, final String adapter, final String scenario,
-                        final String databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(parentPath, assertion, adapter, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), sqlExecuteType, sql);
+    public GeneralDDLIT(final ParameterizedWrapper parameterizedWrapper) throws IOException, JAXBException, SQLException, ParseException {
+        super(parameterizedWrapper.getTestCaseContext().getParentPath(),
+                parameterizedWrapper.getAssertion(),
+                parameterizedWrapper.getAdapter(),
+                parameterizedWrapper.getScenario(),
+                parameterizedWrapper.getDatabaseType(),
+                parameterizedWrapper.getSqlExecuteType(),
+                parameterizedWrapper.getTestCaseContext().getTestCase().getSql());
     }
     
-    @Parameters(name = "{2}: {3} -> {4} -> {5} -> {6}")
+    @Parameters(name = "{0}")
     public static Collection<Object[]> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DDL);
     }

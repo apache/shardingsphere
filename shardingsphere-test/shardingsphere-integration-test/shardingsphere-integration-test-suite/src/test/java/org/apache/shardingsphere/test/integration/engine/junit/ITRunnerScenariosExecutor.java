@@ -35,6 +35,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedWrapper;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 
 import java.util.ArrayList;
@@ -94,31 +95,12 @@ public class ITRunnerScenariosExecutor implements ITRunnerExecutor {
     }
     
     @Override
-    public void execute(final Object[] parameters, final Runnable childStatement) {
-        CaseKey caseKey = getCaseKey(parameters);
+    public void execute(final ParameterizedWrapper parameterizedWrapper, final Runnable childStatement) {
         ringBuffer.publishEvent((e, seq) -> {
             e.reset();
-            e.setCaseKey(caseKey);
+            e.setCaseKey(new CaseKey(parameterizedWrapper.getAdapter(), parameterizedWrapper.getScenario(), parameterizedWrapper.getDatabaseType().getName()));
             e.setChildStatement(childStatement);
         });
-    }
-    
-    private ITRunnerScenariosExecutor.CaseKey getCaseKey(final Object[] parameters) {
-        int parametersLength = parameters.length;
-        if (isSingleTest(parametersLength)) {
-            return new ITRunnerScenariosExecutor.CaseKey(String.valueOf(parameters[2]), String.valueOf(parameters[3]), String.valueOf(parameters[4]));
-        } else if (isBatchTest(parametersLength)) {
-            return new ITRunnerScenariosExecutor.CaseKey(String.valueOf(parameters[1]), String.valueOf(parameters[2]), String.valueOf(parameters[3]));
-        }
-        return null;
-    }
-    
-    private boolean isSingleTest(final int parametersLength) {
-        return 7 == parametersLength;
-    }
-    
-    private boolean isBatchTest(final int parametersLength) {
-        return 5 == parametersLength;
     }
     
     @Override

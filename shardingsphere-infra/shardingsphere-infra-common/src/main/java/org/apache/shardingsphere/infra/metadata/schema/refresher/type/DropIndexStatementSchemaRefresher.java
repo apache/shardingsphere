@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.refresher.type;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -36,17 +38,27 @@ import java.util.stream.Collectors;
 public final class DropIndexStatementSchemaRefresher implements SchemaRefresher<DropIndexStatement> {
     
     @Override
-    public void refresh(final ShardingSphereSchema schema, 
+    public void refresh(final ShardingSphereSchema schema,
                         final Collection<String> routeDataSourceNames, final DropIndexStatement sqlStatement, final SchemaBuilderMaterials materials) {
         Collection<String> indexNames = getIndexNames(sqlStatement);
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(sqlStatement);
         String tableName = simpleTableSegment.map(tableSegment -> tableSegment.getTableName().getIdentifier().getValue()).orElse("");
         TableMetaData tableMetaData = schema.get(tableName);
-        if (simpleTableSegment.isPresent()) {
-            indexNames.forEach(each -> tableMetaData.getIndexes().remove(each));
+        if (!Strings.isNullOrEmpty(tableName)) {
+            for (String each : indexNames) {
+                tableMetaData.getIndexes().remove(each);
+            }
+            return;
         }
         for (String each : indexNames) {
-            if (findLogicTableName(schema, each).isPresent()) {
+            Optional<String> logicTableNameOptional = findLogicTableName(schema, each);
+            if (logicTableNameOptional.isPresent()) {
+                String logicTableName = logicTableNameOptional.orElse("");
+                Preconditions.checkArgument(!Strings.isNullOrEmpty(logicTableName), "Cannot get the table name!");
+                if (null == tableMetaData) {
+                    tableMetaData = schema.get(logicTableName);
+                }
+                Preconditions.checkNotNull(tableMetaData, "Cannot get the table metadata!");
                 tableMetaData.getIndexes().remove(each);
             }
         }

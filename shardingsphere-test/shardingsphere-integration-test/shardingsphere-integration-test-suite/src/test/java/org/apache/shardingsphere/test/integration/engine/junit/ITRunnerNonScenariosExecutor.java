@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
+import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedWrapper;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +41,7 @@ public class ITRunnerNonScenariosExecutor implements ITRunnerExecutor {
     }
     
     @Override
-    public void execute(final Object[] parameters, final Runnable childStatement) {
+    public void execute(final ParameterizedWrapper parameterizedWrapper, final Runnable childStatement) {
         executorServiceManager.getExecutorService().submit(childStatement);
     }
     
