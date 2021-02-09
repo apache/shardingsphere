@@ -63,8 +63,7 @@ public final class YamlConfigurationConverter {
      * @return rule configurations
      */
     public static Collection<RuleConfiguration> convertRuleConfigurations(final String yamlContent) {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                YamlEngine.unmarshalWithFilter(yamlContent, YamlRuleConfigurationWrap.class).getRules());
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshalWithFilter(yamlContent, YamlRuleConfigurationWrap.class).getRules());
     }
     
     /**
