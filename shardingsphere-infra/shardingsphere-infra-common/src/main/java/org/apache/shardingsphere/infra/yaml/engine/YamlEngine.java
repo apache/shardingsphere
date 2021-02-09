@@ -89,7 +89,7 @@ public final class YamlEngine {
     }
     
     /**
-     * Unmarshal YAML.
+     * Secure unmarshal YAML.
      *
      * @param yamlContent YAML content
      * @param classType class type
@@ -97,31 +97,31 @@ public final class YamlEngine {
      * @param <T> type of class
      * @return object from YAML
      */
-    public static <T> T unmarshal(final String yamlContent, final Class<T> classType, final Collection<Class<?>> acceptedClasses) {
+    public static <T> T secureUnmarshal(final String yamlContent, final Class<T> classType, final Collection<Class<?>> acceptedClasses) {
         return new Yaml(new ShardingSphereFilterYamlConstructor(classType, acceptedClasses)).loadAs(yamlContent, classType);
     }
     
     /**
-     * Unmarshal YAML.
+     * Secure unmarshal YAML.
      *
      * @param yamlContent YAML content
      * @param acceptedClasses accepted classes
      * @return map from YAML
      */
-    public static Map<?, ?> unmarshal(final String yamlContent, final Collection<Class<?>> acceptedClasses) {
+    public static Map<?, ?> secureUnmarshal(final String yamlContent, final Collection<Class<?>> acceptedClasses) {
         return Strings.isNullOrEmpty(yamlContent) ? new LinkedHashMap<>() : (Map) new Yaml(new ShardingSphereFilterYamlConstructor(acceptedClasses)).load(yamlContent);
     }
     
     /**
-     * Unmarshal YAML with filter.
+     * Secure unmarshal YAML.
      *
      * @param yamlContent YAML content
-     * @param classType class type
+     * @param acceptedClass accepted class
      * @param <T> type of class
      * @return object from YAML
      */
-    public static <T> T unmarshalWithFilter(final String yamlContent, final Class<T> classType) {
-        return new Yaml(new ShardingSphereFilterYamlConstructor(classType, Collections.singletonList(classType))).loadAs(yamlContent, classType);
+    public static <T> T secureUnmarshal(final String yamlContent, final Class<T> acceptedClass) {
+        return new Yaml(new ShardingSphereFilterYamlConstructor(acceptedClass, Collections.singletonList(acceptedClass))).loadAs(yamlContent, acceptedClass);
     }
     
     /**

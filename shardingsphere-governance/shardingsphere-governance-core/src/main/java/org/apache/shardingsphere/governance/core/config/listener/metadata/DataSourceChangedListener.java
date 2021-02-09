@@ -62,7 +62,7 @@ public final class DataSourceChangedListener extends PostGovernanceRepositoryEve
     }
     
     private DataSourceChangedEvent createDataSourceChangedEvent(final String schemaName, final DataChangedEvent event) {
-        YamlDataSourceConfigurationWrap result = YamlEngine.unmarshalWithFilter(event.getValue(), YamlDataSourceConfigurationWrap.class);
+        YamlDataSourceConfigurationWrap result = YamlEngine.secureUnmarshal(event.getValue(), YamlDataSourceConfigurationWrap.class);
         Preconditions.checkState(null != result && !result.getDataSources().isEmpty(), "No available data sources to load for governance.");
         return new DataSourceChangedEvent(schemaName, result.getDataSources().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new DataSourceConfigurationYamlSwapper().swapToObject(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
