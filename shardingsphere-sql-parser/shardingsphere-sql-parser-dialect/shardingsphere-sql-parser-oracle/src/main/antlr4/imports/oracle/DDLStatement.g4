@@ -31,9 +31,8 @@ alterTable
     : ALTER TABLE tableName memOptimizeClause alterDefinitionClause enableDisableClauses
     ;
 
-// TODO hongjun throw exeption when alter index on oracle
 alterIndex
-    : ALTER INDEX indexName renameIndexClause
+    : ALTER INDEX indexName alterIndexInformationClause
     ;
 
 dropTable
@@ -371,6 +370,19 @@ objectProperty
     : (columnName | attributeName) (DEFAULT expr)? (inlineConstraint* | inlineRefConstraint?) | outOfLineConstraint | outOfLineRefConstraint
     ;
 
+alterIndexInformationClause
+    : rebuildClause ((DEFERRED|IMMEDIATE) | INVALIDATION)?
+    | parallelClause
+    | COMPILE
+    | (ENABLE | DISABLE)
+    | UNUSABLE ONLINE? ((DEFERRED|IMMEDIATE)|INVALIDATION)?
+    | (VISIBLE | INVISIBLE)
+    | renameIndexClause
+    | COALESCE CLEANUP? ONLY? parallelClause?
+    | ((MONITORING | NOMONITORING) USAGE)
+    | UPDATE BLOCK REFERENCES
+    ;
+
 renameIndexClause
     : (RENAME TO indexName)?
     ;
@@ -401,6 +413,14 @@ enableDisableClause
 
 enableDisableOthers
     : (ENABLE | DISABLE) (TABLE LOCK | ALL TRIGGERS | CONTAINER_MAP | CONTAINERS_DEFAULT)
+    ;
+
+rebuildClause
+    : REBUILD parallelClause?
+    ;
+
+parallelClause
+    : PARALLEL
     ;
 
 usableSpecification

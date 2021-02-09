@@ -129,6 +129,15 @@
         order_index
     REBUILD PARALLEL    " db-types="Oracle" />
     <sql-case id="alter_index_with_quota" value="ALTER INDEX &quot;order_index&quot; REBUILD PARALLEL" db-types="Oracle" />
+    <sql-case id="alter_index_with_parallel" value="ALTER INDEX order_index PARALLEL" db-types="Oracle" />
+    <sql-case id="alter_index_with_compile" value="ALTER INDEX order_index COMPILE" db-types="Oracle" />
+    <sql-case id="alter_index_with_disable" value="ALTER INDEX order_index DISABLE" db-types="Oracle" />
+    <sql-case id="alter_index_with_unusable" value="ALTER INDEX order_index UNUSABLE ONLINE IMMEDIATE INVALIDATION" db-types="Oracle" />
+    <sql-case id="alter_index_with_visable" value="ALTER INDEX order_index VISIBLE" db-types="Oracle" />
+    <sql-case id="alter_index_with_rename" value="ALTER INDEX order_index RENAME TO order_index_new" db-types="Oracle" />
+    <sql-case id="alter_index_with_coalesce" value="ALTER INDEX order_index COALESCE CLEANUP ONLY PARALLEL" db-types="Oracle" />
+    <sql-case id="alter_index_with_usage" value="ALTER INDEX order_index MONITORING USAGE" db-types="Oracle" />
+    <sql-case id="alter_index_with_update" value="ALTER INDEX order_index UPDATE BLOCK REFERENCES" db-types="Oracle" />
     <sql-case id="alter_index_rebuild" value="ALTER INDEX order_index ON t_order REBUILD" db-types="SQLServer" />
     <sql-case id="alter_index_with_quota_bracket" value="ALTER INDEX [order_index] ON [t_order] REBUILD" db-types="SQLServer" />
     <sql-case id="alter_index_set_tablespace" value="ALTER INDEX distributors SET TABLESPACE fasttablespace" db-types="PostgreSQL" />
