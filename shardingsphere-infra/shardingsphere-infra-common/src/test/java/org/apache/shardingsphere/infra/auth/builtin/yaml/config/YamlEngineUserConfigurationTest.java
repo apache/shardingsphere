@@ -38,8 +38,8 @@ public final class YamlEngineUserConfigurationTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertUnmarshalMap() {
-        Map<String, Object> actual = (Map<String, Object>) YamlEngine.unmarshal("password: pwd", Collections.emptyList());
+    public void assertSecureUnmarshalMap() {
+        Map<String, Object> actual = (Map<String, Object>) YamlEngine.secureUnmarshal("password: pwd", Collections.emptyList());
         assertThat(actual.get("password").toString(), is("pwd"));
     }
     

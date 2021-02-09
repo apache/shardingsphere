@@ -75,8 +75,8 @@ public final class YamlEngineTest {
     
     @Test
     @SuppressWarnings("unchecked")
-    public void assertUnmarshalWithYamlContent() {
-        Map<String, Object> actual = (Map<String, Object>) YamlEngine.unmarshal("name: test", Collections.emptyList());
+    public void assertSecureUnmarshalWithYamlContent() {
+        Map<String, Object> actual = (Map<String, Object>) YamlEngine.secureUnmarshal("name: test", Collections.emptyList());
         assertThat(actual.get("name").toString(), is("test"));
     }
     
@@ -94,22 +94,22 @@ public final class YamlEngineTest {
     }
     
     @Test(expected = ConstructorException.class)
-    public void assertUnmarshalMapWithIllegalClasses() {
-        YamlEngine.unmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", Collections.emptyList());
+    public void assertSecureUnmarshalMapWithIllegalClasses() {
+        YamlEngine.secureUnmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", Collections.emptyList());
     }
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertUnmarshalMapWithAcceptedClasses() {
+    public void assertSecureUnmarshalMapWithAcceptedClasses() {
         Collection<Class<?>> acceptedClasses = new LinkedList<>();
         acceptedClasses.add(URLClassLoader.class);
         acceptedClasses.add(URL.class);
-        Map<String, URLClassLoader> actual = (Map) YamlEngine.unmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", acceptedClasses);
+        Map<String, URLClassLoader> actual = (Map) YamlEngine.secureUnmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", acceptedClasses);
         assertThat(actual.get("url").getClass().getName(), is(URLClassLoader.class.getName()));
     }
     
     @Test
-    public void assertUnmarshalWithAcceptedClass() throws IOException {
+    public void assertSecureUnmarshalWithAcceptedClass() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/accepted-class.yaml");
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();
@@ -125,7 +125,7 @@ public final class YamlEngineTest {
         acceptedClasses.add(URLClassLoader.class);
         acceptedClasses.add(URL.class);
         acceptedClasses.add(YamlRootRuleConfigurations.class);
-        YamlRootRuleConfigurations actual = YamlEngine.unmarshal(yamlContent.toString(), YamlRootRuleConfigurations.class, acceptedClasses);
+        YamlRootRuleConfigurations actual = YamlEngine.secureUnmarshal(yamlContent.toString(), YamlRootRuleConfigurations.class, acceptedClasses);
         assertThat(actual.getProps().size(), is(2));
         assertThat(actual.getProps().getProperty("normal"), is("normal"));
         assertTrue(actual.getProps().containsKey("url"));
