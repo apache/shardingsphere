@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.algorithm;
+package org.apache.shardingsphere.infra.yaml.engine.fixture;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.engine.constructor.ShardingSphereYamlConstruct;
+import org.yaml.snakeyaml.nodes.Node;
 
-import java.util.Properties;
-
-/**
- * ShardingSphere algorithm configuration for YAML.
- */
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-public final class YamlShardingSphereAlgorithmConfiguration implements YamlConfiguration {
+public final class YamlConstructFixture implements ShardingSphereYamlConstruct {
     
-    private String type;
+    @Override
+    public Object construct(final Node node) {
+        return new CustomizedClassFixture();
+    }
     
-    private Properties props = new Properties();
+    @Override
+    public void construct2ndStep(final Node node, final Object newInstance) {
+    }
+    
+    @Override
+    public Class<?> getType() {
+        return CustomizedClassFixture.class;
+    }
 }

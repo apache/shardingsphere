@@ -15,7 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine.fixture;
+package org.apache.shardingsphere.infra.yaml.swapper.fixture;
 
-public final class FixtureCustomClass {
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+
+@Getter
+@Setter
+public final class RuleConfigurationFixture implements RuleConfiguration {
+    
+    private String name;
 }

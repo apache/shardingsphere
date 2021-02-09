@@ -19,21 +19,16 @@ package org.apache.shardingsphere.infra.yaml.swapper.fixture;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-
-import java.util.Properties;
 
 @Getter
 @Setter
-public final class FixtureYamlPropsRuleConfiguration implements YamlRuleConfiguration {
+public final class YamlRuleConfigurationFixture implements YamlRuleConfiguration {
     
     private String name;
     
-    private Properties props;
-    
     @Override
-    public Class<? extends RuleConfiguration> getRuleConfigurationType() {
-        return FixtureRuleConfiguration.class;
+    public Class<RuleConfigurationFixture> getRuleConfigurationType() {
+        return RuleConfigurationFixture.class;
     }
 }

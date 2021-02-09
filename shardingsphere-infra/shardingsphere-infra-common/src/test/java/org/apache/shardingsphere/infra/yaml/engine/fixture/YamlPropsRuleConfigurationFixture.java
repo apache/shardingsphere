@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.algorithm;
+package org.apache.shardingsphere.infra.yaml.engine.fixture;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.swapper.fixture.RuleConfigurationFixture;
 
 import java.util.Properties;
 
-/**
- * ShardingSphere algorithm configuration for YAML.
- */
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
-public final class YamlShardingSphereAlgorithmConfiguration implements YamlConfiguration {
+public final class YamlPropsRuleConfigurationFixture implements YamlRuleConfiguration {
     
-    private String type;
+    private String name;
     
-    private Properties props = new Properties();
+    private Properties props;
+    
+    @Override
+    public Class<RuleConfigurationFixture> getRuleConfigurationType() {
+        return RuleConfigurationFixture.class;
+    }
 }

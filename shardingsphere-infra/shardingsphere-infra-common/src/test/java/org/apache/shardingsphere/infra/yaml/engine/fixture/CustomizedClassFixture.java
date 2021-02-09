@@ -15,31 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.swapper;
+package org.apache.shardingsphere.infra.yaml.engine.fixture;
 
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-
-/**
- * YAML configuration swapper.
- *
- * @param <Y> type of YAML configuration
- * @param <T> type of swapped object
- */
-public interface YamlSwapper<Y extends YamlConfiguration, T> {
-    
-    /**
-     * Swap to YAML configuration.
-     *
-     * @param data data to be swapped
-     * @return YAML configuration
-     */
-    Y swapToYamlConfiguration(T data);
-    
-    /**
-     * Swap from YAML configuration to object.
-     *
-     * @param yamlConfig YAML configuration
-     * @return swapped object
-     */
-    T swapToObject(Y yamlConfig);
+public final class CustomizedClassFixture {
 }

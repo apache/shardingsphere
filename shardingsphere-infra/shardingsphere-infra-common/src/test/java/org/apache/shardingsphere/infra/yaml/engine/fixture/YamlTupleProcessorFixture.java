@@ -17,22 +17,22 @@
 
 package org.apache.shardingsphere.infra.yaml.engine.fixture;
 
-import org.apache.shardingsphere.infra.yaml.engine.constructor.ShardingSphereYamlConstruct;
-import org.yaml.snakeyaml.nodes.Node;
+import org.apache.shardingsphere.infra.yaml.engine.representer.processor.ShardingSphereYamlTupleProcessor;
+import org.yaml.snakeyaml.nodes.NodeTuple;
+import org.yaml.snakeyaml.nodes.ScalarNode;
+import org.yaml.snakeyaml.nodes.Tag;
 
-public final class FixtureShardingSphereYamlConstruct implements ShardingSphereYamlConstruct {
+public final class YamlTupleProcessorFixture implements ShardingSphereYamlTupleProcessor {
     
     @Override
-    public Object construct(final Node node) {
-        return new FixtureCustomClass();
+    public String getTupleName() {
+        return "customizedTag";
     }
     
+    @SuppressWarnings("ReturnOfNull")
     @Override
-    public void construct2ndStep(final Node node, final Object newInstance) {
-    }
-    
-    @Override
-    public Class<?> getType() {
-        return FixtureCustomClass.class;
+    public NodeTuple process(final NodeTuple nodeTuple) {
+        String value = ((ScalarNode) nodeTuple.getValueNode()).getValue();
+        return "null".equals(value) ? null : new NodeTuple(nodeTuple.getKeyNode(), new ScalarNode(Tag.STR, String.join("_", "converted", value), null, null, null));
     }
 }
