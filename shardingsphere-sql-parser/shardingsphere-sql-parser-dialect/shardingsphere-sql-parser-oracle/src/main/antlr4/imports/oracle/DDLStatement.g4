@@ -40,7 +40,7 @@ dropTable
     ;
  
 dropIndex
-    : DROP INDEX indexName
+    : DROP INDEX indexName ONLINE? FORCE? ((DEFERRED|IMMEDIATE) INVALIDATION)?
     ;
 
 truncateTable
