@@ -25,7 +25,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public final class ShardingSphereYamlRepresenterFixture {
+public final class ShardingSphereYamlObjectFixture {
     
     private String value;
     
