@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.yaml.engine;
 
-import org.apache.shardingsphere.infra.yaml.engine.fixture.YamlPropsRuleConfigurationFixture;
+import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.swapper.fixture.YamlRuleConfigurationFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.constructor.ConstructorException;
@@ -36,7 +36,9 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class YamlEngineTest {
     
@@ -73,14 +75,14 @@ public final class YamlEngineTest {
     
     @Test
     @SuppressWarnings("unchecked")
-    public void assertUnmarshalWithYamlContent() {
-        Map<String, Object> actual = (Map<String, Object>) YamlEngine.unmarshal("name: test", Collections.emptyList());
+    public void assertSecureUnmarshalWithYamlContent() {
+        Map<String, Object> actual = (Map<String, Object>) YamlEngine.secureUnmarshal("name: test", Collections.emptyList());
         assertThat(actual.get("name").toString(), is("test"));
     }
     
     @Test
-    public void assertUnmarshalProperties() {
-        Properties actual = YamlEngine.unmarshalWithFilter("password: pwd", Properties.class);
+    public void assertSecureUnmarshalProperties() {
+        Properties actual = YamlEngine.secureUnmarshal("password: pwd", Properties.class);
         assertThat(actual.getProperty("password"), is("pwd"));
     }
     
@@ -92,22 +94,23 @@ public final class YamlEngineTest {
     }
     
     @Test(expected = ConstructorException.class)
-    public void assertUnmarshalMapWithIllegalClasses() {
-        YamlEngine.unmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", Collections.emptyList());
+    public void assertSecureUnmarshalMapWithIllegalClasses() {
+        YamlEngine.secureUnmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", Collections.emptyList());
     }
     
+    @SuppressWarnings("unchecked")
     @Test
-    public void assertUnmarshalMapWithAcceptClasses() {
-        Collection<Class<?>> acceptClasses = new LinkedList<>();
-        acceptClasses.add(URLClassLoader.class);
-        acceptClasses.add(URL.class);
-        Map<String, URLClassLoader> actual = (Map) YamlEngine.unmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", acceptClasses);
+    public void assertSecureUnmarshalMapWithAcceptedClasses() {
+        Collection<Class<?>> acceptedClasses = new LinkedList<>();
+        acceptedClasses.add(URLClassLoader.class);
+        acceptedClasses.add(URL.class);
+        Map<String, URLClassLoader> actual = (Map) YamlEngine.secureUnmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", acceptedClasses);
         assertThat(actual.get("url").getClass().getName(), is(URLClassLoader.class.getName()));
     }
     
     @Test
-    public void assertUnmarshalWithAcceptClass() throws IOException {
-        URL url = getClass().getClassLoader().getResource("yaml/fixture-rule-with-props.yaml");
+    public void assertSecureUnmarshalWithAcceptedClass() throws IOException {
+        URL url = getClass().getClassLoader().getResource("yaml/accepted-class.yaml");
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();
         try (
@@ -118,18 +121,20 @@ public final class YamlEngineTest {
                 yamlContent.append(line).append("\n");
             }
         }
-        Collection<Class<?>> acceptClasses = new LinkedList<>();
-        acceptClasses.add(URLClassLoader.class);
-        acceptClasses.add(URL.class);
-        acceptClasses.add(YamlPropsRuleConfigurationFixture.class);
-        YamlPropsRuleConfigurationFixture actual = YamlEngine.unmarshal(yamlContent.toString(), 
-                YamlPropsRuleConfigurationFixture.class, acceptClasses);
-        assertThat(actual.getName(), is("test"));
+        Collection<Class<?>> acceptedClasses = new LinkedList<>();
+        acceptedClasses.add(URLClassLoader.class);
+        acceptedClasses.add(URL.class);
+        acceptedClasses.add(YamlRootRuleConfigurations.class);
+        YamlRootRuleConfigurations actual = YamlEngine.secureUnmarshal(yamlContent.toString(), YamlRootRuleConfigurations.class, acceptedClasses);
+        assertThat(actual.getProps().size(), is(2));
+        assertThat(actual.getProps().getProperty("normal"), is("normal"));
+        assertTrue(actual.getProps().containsKey("url"));
+        assertNull(actual.getProps().getProperty("url"));
     }
     
     @Test(expected = ConstructorException.class)
-    public void assertUnmarshalWithoutAcceptClass() throws IOException {
-        URL url = getClass().getClassLoader().getResource("yaml/fixture-rule-with-props.yaml");
+    public void assertSecureUnmarshalWithoutAcceptedClass() throws IOException {
+        URL url = getClass().getClassLoader().getResource("yaml/accepted-class.yaml");
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();
         try (
@@ -140,8 +145,6 @@ public final class YamlEngineTest {
                 yamlContent.append(line).append("\n");
             }
         }
-        YamlPropsRuleConfigurationFixture actual = YamlEngine.unmarshalWithFilter(yamlContent.toString(), 
-                YamlPropsRuleConfigurationFixture.class);
-        assertThat(actual.getName(), is("test"));
+        YamlEngine.secureUnmarshal(yamlContent.toString(), YamlRootRuleConfigurations.class);
     }
 }
