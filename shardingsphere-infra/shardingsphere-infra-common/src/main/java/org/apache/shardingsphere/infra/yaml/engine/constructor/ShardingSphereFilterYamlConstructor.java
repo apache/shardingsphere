@@ -24,21 +24,21 @@ import java.util.Collection;
  */
 public final class ShardingSphereFilterYamlConstructor extends ShardingSphereYamlConstructor {
     
-    private final Collection<Class<?>> acceptClasses;
+    private final Collection<Class<?>> acceptedClasses;
     
-    public ShardingSphereFilterYamlConstructor(final Class<?> rootClass, final Collection<Class<?>> acceptClasses) {
+    public ShardingSphereFilterYamlConstructor(final Class<?> rootClass, final Collection<Class<?>> acceptedClasses) {
         super(rootClass);
-        this.acceptClasses = acceptClasses;
+        this.acceptedClasses = acceptedClasses;
     }
     
-    public ShardingSphereFilterYamlConstructor(final Collection<Class<?>> acceptClasses) {
+    public ShardingSphereFilterYamlConstructor(final Collection<Class<?>> acceptedClasses) {
         super(Object.class);
-        this.acceptClasses = acceptClasses;
+        this.acceptedClasses = acceptedClasses;
     }
     
     @Override
     protected Class<?> getClassForName(final String name) throws ClassNotFoundException {
-        for (Class<?> each : acceptClasses) {
+        for (Class<?> each : acceptedClasses) {
             if (name.equals(each.getName())) {
                 return super.getClassForName(name);
             }
