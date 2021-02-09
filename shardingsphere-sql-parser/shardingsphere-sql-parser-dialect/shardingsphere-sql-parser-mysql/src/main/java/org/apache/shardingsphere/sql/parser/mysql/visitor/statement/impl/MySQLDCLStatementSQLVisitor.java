@@ -261,7 +261,7 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         } else if (null != ctx.PASSWORD() && null != ctx.EXPIRE()) {
             fillPasswordExpire(segment, ctx);
         } else if (null != ctx.PASSWORD() && null != ctx.HISTORY()) {
-            fillPasswordHIstory(segment, ctx);
+            fillPasswordHistory(segment, ctx);
         } else if (null != ctx.PASSWORD() && null != ctx.REUSE()) {
             fillPasswordReuse(segment, ctx);
         } else if (null != ctx.PASSWORD() && null != ctx.REQUIRE()) {
@@ -314,7 +314,7 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
     }
     
-    private void fillPasswordHIstory(final PasswordOrLockOptionSegment segment, final AccountLockPasswordExpireOptionContext ctx) {
+    private void fillPasswordHistory(final PasswordOrLockOptionSegment segment, final AccountLockPasswordExpireOptionContext ctx) {
         if (null != ctx.DEFAULT()) {
             segment.setPasswordHistoryLength(0);
             segment.setUpdatePasswordHistory(true);
