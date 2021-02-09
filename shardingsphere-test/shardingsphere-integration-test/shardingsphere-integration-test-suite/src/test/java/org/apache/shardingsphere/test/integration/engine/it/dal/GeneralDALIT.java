@@ -52,8 +52,8 @@ public final class GeneralDALIT extends BaseDALIT {
     @Parameters(name = "{0}")
     public static Collection<Object[]> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DAL).stream()
-                .filter(each -> "proxy".equals(((ParameterizedWrapper)each[0]).getAdapter())
-                        && SQLExecuteType.Literal == ((ParameterizedWrapper)each[0]).getSqlExecuteType()).collect(Collectors.toList());
+                .filter(each -> "proxy".equals(((ParameterizedWrapper) each[0]).getAdapter())
+                        && SQLExecuteType.Literal == ((ParameterizedWrapper) each[0]).getSqlExecuteType()).collect(Collectors.toList());
     }
     
     @SuppressWarnings("JUnitTestMethodWithNoAssertions")

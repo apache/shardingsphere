@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class PostgreSQLEmbeddedDatabase implements EmbeddedDatabase {
     
-    private EmbeddedPostgres embeddedPostgres;
+    private volatile EmbeddedPostgres embeddedPostgres;
     
     @SneakyThrows
     @Override

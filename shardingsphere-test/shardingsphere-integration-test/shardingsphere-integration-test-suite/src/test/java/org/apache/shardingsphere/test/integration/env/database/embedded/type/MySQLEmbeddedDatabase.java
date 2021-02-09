@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  */
 public final class MySQLEmbeddedDatabase implements EmbeddedDatabase {
     
-    private EmbeddedMysql embeddedMySQL;
+    private volatile EmbeddedMysql embeddedMySQL;
     
     @Override
     public void start(final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final int port) {

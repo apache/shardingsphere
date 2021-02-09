@@ -69,18 +69,31 @@ public final class EmbeddedDatabaseManager {
         if (EMBEDDED_DATABASES_CACHE.containsKey(embeddedDatabaseKey)) {
             return;
         }
-        DATABASE_RESOURCE_LOCK.lock();
         try {
-            if (EMBEDDED_DATABASES_CACHE.containsKey(embeddedDatabaseKey)) {
-                return;
-            }
-            EmbeddedDatabase embeddedDatabase = TypedSPIRegistry.getRegisteredService(EmbeddedDatabase.class, databaseType, new Properties());
-            Runtime.getRuntime().addShutdownHook(new Thread(embeddedDatabase::stop));
-            embeddedDatabase.start(embeddedDatabaseProps, port);
-            Runtime.getRuntime().addShutdownHook(new Thread(embeddedDatabase::stop));
-            EMBEDDED_DATABASES_CACHE.put(embeddedDatabaseKey, embeddedDatabase);
+            DATABASE_RESOURCE_LOCK.lock();
+            startUpSafely(embeddedDatabaseKey, databaseType, embeddedDatabaseProps, port);
         } finally {
             DATABASE_RESOURCE_LOCK.unlock();
         }
+    }
+    
+    //CHECKSTYLE:OFF
+    private static void startUpSafely(final String embeddedDatabaseKey, final String databaseType, final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps, final int port) {
+        int retries = 3;
+        do {
+            try {
+                if (EMBEDDED_DATABASES_CACHE.containsKey(embeddedDatabaseKey)) {
+                    return;
+                }
+                EmbeddedDatabase embeddedDatabase = TypedSPIRegistry.getRegisteredService(EmbeddedDatabase.class, databaseType, new Properties());
+                Runtime.getRuntime().addShutdownHook(new Thread(embeddedDatabase::stop));
+                embeddedDatabase.start(embeddedDatabaseProps, port);
+                EMBEDDED_DATABASES_CACHE.put(embeddedDatabaseKey, embeddedDatabase);
+                break;
+            } catch (Throwable e) {
+                retries--;
+            }
+        } while (retries != 0);
+        //CHECKSTYLE:ON
     }
 }
