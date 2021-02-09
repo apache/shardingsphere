@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AccountLockPasswordExpireOptionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AccountLockPasswordExpireOptionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConnectOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ConnectOptionsContext;
@@ -246,79 +247,105 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
     
     @Override
-    public ASTNode visitAccountLockPasswordExpireOption(final AccountLockPasswordExpireOptionContext ctx) {
+    public ASTNode visitAccountLockPasswordExpireOptions(final AccountLockPasswordExpireOptionsContext ctx) {
         PasswordOrLockOptionSegment result = new PasswordOrLockOptionSegment();
-        if (null != ctx.ACCOUNT()) {
-            if (null != ctx.LOCK()) {
-                result.setUpdateAccountLockedColumn(true);
-                result.setAccountLocked(true);
-            } else {
-                result.setUpdateAccountLockedColumn(true);
-                result.setAccountLocked(false);
-            }
-        } else if (null != ctx.PASSWORD() && null != ctx.EXPIRE()) {
-            if (null != ctx.INTERVAL()) {
-                result.setExpireAfterDays(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue());
-                result.setUpdatePasswordExpiredColumn(false);
-                result.setUpdatePasswordExpiredFields(true);
-                result.setUseDefaultPasswordLifeTime(false);
-            } else if (null != ctx.NEVER()) {
-                result.setExpireAfterDays(0);
-                result.setUpdatePasswordExpiredColumn(false);
-                result.setUpdatePasswordExpiredFields(true);
-                result.setUseDefaultPasswordLifeTime(false);
-            } else if (null != ctx.DEFAULT()) {
-                result.setExpireAfterDays(0);
-                result.setUpdatePasswordExpiredColumn(false);
-                result.setUpdatePasswordExpiredFields(true);
-                result.setUseDefaultPasswordLifeTime(true);
-            } else {
-                result.setExpireAfterDays(0);
-                result.setUpdatePasswordExpiredColumn(true);
-                result.setUpdatePasswordExpiredFields(true);
-                result.setUseDefaultPasswordLifeTime(true);
-            }
-        } else if (null != ctx.PASSWORD() && null != ctx.HISTORY()) {
-            if (null != ctx.DEFAULT()) {
-                result.setPasswordHistoryLength(0);
-                result.setUpdatePasswordHistory(true);
-                result.setUseDefaultPasswordHistory(true);
-            } else {
-                result.setPasswordHistoryLength(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue());
-                result.setUpdatePasswordHistory(true);
-                result.setUseDefaultPasswordHistory(false);
-            }
-        } else if (null != ctx.PASSWORD() && null != ctx.REUSE()) {
-            if (null != ctx.DEFAULT()) {
-                result.setPasswordReuseInterval(0);
-                result.setUpdatePasswordReuseInterval(true);
-                result.setUseDefaultPasswordReuseInterval(true);
-            } else {
-                result.setPasswordReuseInterval(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue());
-                result.setUpdatePasswordReuseInterval(true);
-                result.setUseDefaultPasswordReuseInterval(false);
-            }
-        } else if (null != ctx.PASSWORD() && null != ctx.REQUIRE()) {
-            if (null != ctx.DEFAULT()) {
-                result.setUpdatePasswordRequireCurrent(ACLAttributeEnum.DEFAULT);
-            } else if (null != ctx.OPTIONAL()) {
-                result.setUpdatePasswordRequireCurrent(ACLAttributeEnum.NO);
-            } else {
-                result.setUpdatePasswordRequireCurrent(ACLAttributeEnum.YES);
-            }
-        } else if (null != ctx.FAILED_LOGIN_ATTEMPTS()) {
-            result.setUpdateFailedLoginAttempts(true);
-            result.setFailedLoginAttempts(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue());
-        } else {
-            if (null != ctx.UNBOUNDED()) {
-                result.setUpdatePasswordLockTime(true);
-                result.setPasswordLockTime(-1);
-            } else {
-                result.setUpdatePasswordLockTime(true);
-                result.setPasswordLockTime(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue());
-            }
+        for (AccountLockPasswordExpireOptionContext each : ctx.accountLockPasswordExpireOption()) {
+            fillAccountLockPasswordExpireOption(result, each);
         }
         return result;
+    }
+    
+    private void fillAccountLockPasswordExpireOption(final PasswordOrLockOptionSegment segment, final AccountLockPasswordExpireOptionContext ctx) {
+        if (null != ctx.ACCOUNT()) {
+            fillAccountLock(segment, ctx);
+        } else if (null != ctx.PASSWORD() && null != ctx.EXPIRE()) {
+            fillPasswordExpire(segment, ctx);
+        } else if (null != ctx.PASSWORD() && null != ctx.HISTORY()) {
+            fillPasswordHIstory(segment, ctx);
+        } else if (null != ctx.PASSWORD() && null != ctx.REUSE()) {
+            fillPasswordReuse(segment, ctx);
+        } else if (null != ctx.PASSWORD() && null != ctx.REQUIRE()) {
+            fillPasswordRequire(segment, ctx);
+        } else if (null != ctx.FAILED_LOGIN_ATTEMPTS()) {
+            segment.setUpdateFailedLoginAttempts(true);
+            segment.setFailedLoginAttempts(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue());
+        } else {
+            if (null != ctx.UNBOUNDED()) {
+                segment.setUpdatePasswordLockTime(true);
+                segment.setPasswordLockTime(-1);
+            } else {
+                segment.setUpdatePasswordLockTime(true);
+                segment.setPasswordLockTime(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue());
+            }
+        }
+    }
+    
+    private void fillAccountLock(final PasswordOrLockOptionSegment segment, final AccountLockPasswordExpireOptionContext ctx) {
+        if (null != ctx.LOCK()) {
+            segment.setUpdateAccountLockedColumn(true);
+            segment.setAccountLocked(true);
+        } else {
+            segment.setUpdateAccountLockedColumn(true);
+            segment.setAccountLocked(false);
+        }
+    }
+    
+    private void fillPasswordExpire(final PasswordOrLockOptionSegment segment, final AccountLockPasswordExpireOptionContext ctx) {
+        if (null != ctx.INTERVAL()) {
+            segment.setExpireAfterDays(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue());
+            segment.setUpdatePasswordExpiredColumn(false);
+            segment.setUpdatePasswordExpiredFields(true);
+            segment.setUseDefaultPasswordLifeTime(false);
+        } else if (null != ctx.NEVER()) {
+            segment.setExpireAfterDays(0);
+            segment.setUpdatePasswordExpiredColumn(false);
+            segment.setUpdatePasswordExpiredFields(true);
+            segment.setUseDefaultPasswordLifeTime(false);
+        } else if (null != ctx.DEFAULT()) {
+            segment.setExpireAfterDays(0);
+            segment.setUpdatePasswordExpiredColumn(false);
+            segment.setUpdatePasswordExpiredFields(true);
+            segment.setUseDefaultPasswordLifeTime(true);
+        } else {
+            segment.setExpireAfterDays(0);
+            segment.setUpdatePasswordExpiredColumn(true);
+            segment.setUpdatePasswordExpiredFields(true);
+            segment.setUseDefaultPasswordLifeTime(true);
+        }
+    }
+    
+    private void fillPasswordHIstory(final PasswordOrLockOptionSegment segment, final AccountLockPasswordExpireOptionContext ctx) {
+        if (null != ctx.DEFAULT()) {
+            segment.setPasswordHistoryLength(0);
+            segment.setUpdatePasswordHistory(true);
+            segment.setUseDefaultPasswordHistory(true);
+        } else {
+            segment.setPasswordHistoryLength(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue());
+            segment.setUpdatePasswordHistory(true);
+            segment.setUseDefaultPasswordHistory(false);
+        }
+    }
+    
+    private void fillPasswordReuse(final PasswordOrLockOptionSegment segment, final AccountLockPasswordExpireOptionContext ctx) {
+        if (null != ctx.DEFAULT()) {
+            segment.setPasswordReuseInterval(0);
+            segment.setUpdatePasswordReuseInterval(true);
+            segment.setUseDefaultPasswordReuseInterval(true);
+        } else {
+            segment.setPasswordReuseInterval(new NumberLiteralValue(ctx.NUMBER_().getText()).getValue().intValue());
+            segment.setUpdatePasswordReuseInterval(true);
+            segment.setUseDefaultPasswordReuseInterval(false);
+        }
+    }
+    
+    private void fillPasswordRequire(final PasswordOrLockOptionSegment segment, final AccountLockPasswordExpireOptionContext ctx) {
+        if (null != ctx.DEFAULT()) {
+            segment.setUpdatePasswordRequireCurrent(ACLAttributeEnum.DEFAULT);
+        } else if (null != ctx.OPTIONAL()) {
+            segment.setUpdatePasswordRequireCurrent(ACLAttributeEnum.NO);
+        } else {
+            segment.setUpdatePasswordRequireCurrent(ACLAttributeEnum.YES);
+        }
     }
     
     @Override
