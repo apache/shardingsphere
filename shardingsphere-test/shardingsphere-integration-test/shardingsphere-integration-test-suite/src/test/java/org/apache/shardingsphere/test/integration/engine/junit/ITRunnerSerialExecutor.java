@@ -17,18 +17,28 @@
 
 package org.apache.shardingsphere.test.integration.engine.junit;
 
-import org.junit.runner.Runner;
-import org.junit.runners.model.InitializationError;
-import org.junit.runners.parameterized.ParametersRunnerFactory;
-import org.junit.runners.parameterized.TestWithParameters;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedWrapper;
 
 /**
- * Integration test runner with parameters factory.
+ * IT runner serial executor.
  */
-public final class ITRunnerWithParametersFactory implements ParametersRunnerFactory {
+@Slf4j
+@Getter
+public class ITRunnerSerialExecutor implements ITRunnerExecutor {
+    
+    @SneakyThrows
+    public ITRunnerSerialExecutor() {
+    }
     
     @Override
-    public Runner createRunnerForTestWithParameters(final TestWithParameters test) throws InitializationError {
-        return new ITBlockJUnit4ClassRunnerWithParameters(test);
+    public void execute(final ParameterizedWrapper parameterizedWrapper, final Runnable childStatement) {
+        childStatement.run();
+    }
+    
+    @Override
+    public void finished() {
     }
 }

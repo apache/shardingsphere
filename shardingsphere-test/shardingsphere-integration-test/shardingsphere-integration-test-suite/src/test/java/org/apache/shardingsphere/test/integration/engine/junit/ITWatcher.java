@@ -21,6 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 /**
  * Integration test watcher.
  */
@@ -29,7 +32,24 @@ public final class ITWatcher extends TestWatcher {
     
     @Override
     protected void failed(final Throwable ex, final Description description) {
-        log.error("Error case: {}", description.getMethodName());
+        log.error("Error case: {}, message: {}", description.getMethodName(), stackTrace(ex));
         super.failed(ex, description);
+    }
+    
+    private String stackTrace(final Throwable t) {
+        if (t == null) {
+            return "";
+        }
+        //CHECKSTYLE:OFF
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+             PrintStream ps = new PrintStream(out)) {
+            t.printStackTrace(ps);
+            ps.flush();
+            return new String(out.toByteArray());
+        } catch (Exception ignored) {
+            // ignored
+            //CHECKSTYLE:ON
+        }
+        return "";
     }
 }
