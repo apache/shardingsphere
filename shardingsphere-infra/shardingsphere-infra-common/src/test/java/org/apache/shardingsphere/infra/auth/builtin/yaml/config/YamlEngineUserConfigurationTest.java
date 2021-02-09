@@ -44,8 +44,8 @@ public final class YamlEngineUserConfigurationTest {
     }
     
     @Test
-    public void assertUnmarshalProperties() {
-        Properties actual = YamlEngine.unmarshalWithFilter("password: pwd", Properties.class);
+    public void assertSecureUnmarshalProperties() {
+        Properties actual = YamlEngine.secureUnmarshal("password: pwd", Properties.class);
         assertThat(actual.getProperty("password"), is("pwd"));
     }
     

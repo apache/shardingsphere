@@ -113,14 +113,14 @@ public final class YamlEngine {
     }
     
     /**
-     * Unmarshal YAML with filter.
+     * Secure unmarshal YAML.
      *
      * @param yamlContent YAML content
      * @param classType class type
      * @param <T> type of class
      * @return object from YAML
      */
-    public static <T> T unmarshalWithFilter(final String yamlContent, final Class<T> classType) {
+    public static <T> T secureUnmarshal(final String yamlContent, final Class<T> classType) {
         return new Yaml(new ShardingSphereFilterYamlConstructor(classType, Collections.singletonList(classType))).loadAs(yamlContent, classType);
     }
     
