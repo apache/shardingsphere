@@ -20,7 +20,7 @@ package org.apache.shardingsphere.governance.core.event.model.lock;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 
 /**
- * Unlock event.
+ * Global lock released event.
  */
-public final class UnlockEvent implements GovernanceEvent {
+public final class GlobalLockReleasedEvent implements GovernanceEvent {
 }

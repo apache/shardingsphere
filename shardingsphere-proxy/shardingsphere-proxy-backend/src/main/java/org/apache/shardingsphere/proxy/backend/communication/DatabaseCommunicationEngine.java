@@ -102,18 +102,19 @@ public final class DatabaseCommunicationEngine {
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
+        proxySQLExecutor.checkExecutePrerequisites(executionContext);
         boolean locked = false;
         Collection<ExecuteResult> executeResults;
         try {
             locked = tryGlobalLock(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
-            proxySQLExecutor.checkExecutePrerequisites(executionContext);
             executeResults = proxySQLExecutor.execute(executionContext);
-            refreshMetadata(executionContext);
-        } finally {
+        } catch (final SQLException ex) {
             if (locked) {
                 releaseGlobalLock();
             }
+            throw ex;
         }
+        refreshMetadata(executionContext);
         ExecuteResult executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
                 ? processExecuteQuery(executionContext, executeResults.stream().map(each -> (QueryResult) each).collect(Collectors.toList()), (QueryResult) executeResultSample)
