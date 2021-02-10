@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropTableStatementHandler;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -44,7 +45,9 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DropTableStatement> sqlStatementContext,
                             final List<Object> parameters, final ShardingSphereSchema schema) {
         this.shardingRule = shardingRule;
-        validateTableExist(schema, sqlStatementContext.getTablesContext().getTables());
+        if (!DropTableStatementHandler.containsIfExistClause(sqlStatementContext.getSqlStatement())) {
+            validateTableExist(schema, sqlStatementContext.getTablesContext().getTables());
+        }
     }
     
     @Override
