@@ -253,6 +253,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitDropTable(final DropTableContext ctx) {
         PostgreSQLDropTableStatement result = new PostgreSQLDropTableStatement();
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
+        result.setContainsIfExistClause(null != ctx.tableExistClause());
         return result;
     }
     
