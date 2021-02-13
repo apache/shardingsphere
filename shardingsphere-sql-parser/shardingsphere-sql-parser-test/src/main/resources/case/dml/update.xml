@@ -776,4 +776,62 @@
             </expr>
         </where>
     </update>
+
+    <update sql-case-id="update_with_top" parameters="1, 1">
+        <table start-index="15" stop-index="21">
+            <simple-table name="t_order" start-index="15" stop-index="21"/>
+        </table>
+        <set start-index="23" stop-index="38" literal-stop-index="38">
+            <assignment start-index="27" stop-index="38" literal-stop-index="38">
+                <column name="order_id" start-index="27" stop-index="34" />
+                <assignment-value>
+                    <parameter-marker-expression value="0" start-index="38" stop-index="38" />
+                    <literal-expression value="1" start-index="38" stop-index="38" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="40" stop-index="56">
+            <expr>
+                <binary-operation-expression start-index="46" stop-index="56">
+                    <left>
+                        <column name="user_id" start-index="46" stop-index="52" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="56" stop-index="56" />
+                        <parameter-marker-expression value="1" start-index="56" stop-index="56" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
+
+    <update sql-case-id="update_with_top_percent" parameters="1, 1">
+        <table start-index="23" stop-index="30">
+            <simple-table name="t_order" start-index="23" stop-index="29"/>
+        </table>
+        <set start-index="31" stop-index="46" literal-stop-index="46">
+            <assignment start-index="35" stop-index="46" literal-stop-index="46">
+                <column name="order_id" start-index="35" stop-index="42" />
+                <assignment-value>
+                    <parameter-marker-expression value="0" start-index="46" stop-index="46" />
+                    <literal-expression value="1" start-index="46" stop-index="46" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="48" stop-index="64">
+            <expr>
+                <binary-operation-expression start-index="54" stop-index="64">
+                    <left>
+                        <column name="user_id" start-index="54" stop-index="60" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="64" stop-index="64" />
+                        <parameter-marker-expression value="1" start-index="64" stop-index="64" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
 </sql-parser-test-cases>

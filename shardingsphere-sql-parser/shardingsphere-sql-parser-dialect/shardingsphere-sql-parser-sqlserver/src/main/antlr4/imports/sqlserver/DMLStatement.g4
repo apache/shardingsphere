@@ -36,7 +36,7 @@ insertSelectClause
     ;
 
 update
-    : withClause? UPDATE tableReferences setAssignmentsClause whereClause?
+    : withClause? UPDATE top? tableReferences setAssignmentsClause whereClause?
     ;
 
 assignment
