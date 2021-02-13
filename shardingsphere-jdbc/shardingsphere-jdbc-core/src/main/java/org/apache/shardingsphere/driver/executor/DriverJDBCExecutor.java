@@ -125,12 +125,13 @@ public final class DriverJDBCExecutor {
         try {
             locked = tryGlobalLock(sqlStatement, metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
             results = jdbcExecutor.execute(executionGroups, callback);
-            refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatement, routeUnits);
-        } finally {
+        } catch (final SQLException ex) {
             if (locked) {
                 releaseGlobalLock();
             }
+            throw ex;
         }
+        refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatement, routeUnits);
         return results;
     }
     

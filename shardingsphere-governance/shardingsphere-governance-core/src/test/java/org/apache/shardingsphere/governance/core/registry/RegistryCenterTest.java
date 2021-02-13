@@ -94,6 +94,5 @@ public final class RegistryCenterTest {
     public void assertReleaseGlobalLock() {
         registryCenter.releaseGlobalLock();
         verify(registryRepository).releaseLock(eq(new LockNode().getGlobalLockNodePath()));
-        verify(registryRepository).delete(eq(new LockNode().getGlobalLockNodePath()));
     }
 }

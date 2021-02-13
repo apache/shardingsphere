@@ -169,11 +169,14 @@ public final class RegistryCenter {
      */
     public void releaseGlobalLock() {
         repository.releaseLock(lockNode.getGlobalLockNodePath());
-        repository.delete(lockNode.getGlobalLockNodePath());
     }
     
     private boolean checkLock() {
-        return checkOrRetry(loadAllInstances());
+        boolean result = checkOrRetry(loadAllInstances());
+        if (!result) {
+            releaseGlobalLock();
+        }
+        return result;
     }
     
     private boolean checkOrRetry(final Collection<String> instanceIds) {
