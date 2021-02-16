@@ -36,4 +36,5 @@
     <sql-case id="update_with_with_clause" value="WITH cte (order_id, user_id, status) AS (SELECT order_id, user_id, status FROM t_order) UPDATE t_order SET status = ? FROM t_order AS t JOIN cte AS c ON t.order_id = c.order_id WHERE c.order_id = ?" db-types="SQLServer" />
     <sql-case id="update_with_top" value="UPDATE TOP(10) t_order SET order_id = ? WHERE user_id = ?" db-types="SQLServer" />
     <sql-case id="update_with_top_percent" value="UPDATE TOP(10) PERCENT t_order SET order_id = ? WHERE user_id = ?" db-types="SQLServer" />
+    <sql-case id="update_with_query_hint" value="UPDATE t_order SET status = ? WHERE order_id = ? HASH GROUP" db-types="SQLServer" />
 </sql-cases>

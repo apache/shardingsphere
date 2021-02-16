@@ -834,4 +834,33 @@
             </expr>
         </where>
     </update>
+
+    <update sql-case-id="update_with_query_hint" parameters="'update', 1">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13"/>
+        </table>
+        <set start-index="15" stop-index="28" literal-stop-index="35">
+            <assignment start-index="19" stop-index="28" literal-stop-index="35">
+                <column name="status" start-index="19" stop-index="24" />
+                <assignment-value>
+                    <parameter-marker-expression value="0" start-index="28" stop-index="28" />
+                    <literal-expression value="update" start-index="28" stop-index="35" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="30" stop-index="47" literal-start-index="37" literal-stop-index="54">
+            <expr>
+                <binary-operation-expression start-index="36" stop-index="47" literal-start-index="43" literal-stop-index="54">
+                    <left>
+                        <column name="order_id" start-index="36" stop-index="43" literal-start-index="43" literal-stop-index="50" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="54" stop-index="54" />
+                        <parameter-marker-expression value="1" start-index="47" stop-index="47" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
 </sql-parser-test-cases>
