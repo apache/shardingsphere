@@ -39,7 +39,7 @@ public final class SQLValue {
     }
     
     private Object getValue(final String value, final String type) throws ParseException {
-        if (null == type || "varchar".equals(type) || "char".equals(type) || "String".equals(type) || "json".equals(type)) {
+        if (null == type || "varchar".equals(type) || "char".equals(type) || "String".equals(type)) {
             return value;
         }
         if ("int".equals(type)) {
