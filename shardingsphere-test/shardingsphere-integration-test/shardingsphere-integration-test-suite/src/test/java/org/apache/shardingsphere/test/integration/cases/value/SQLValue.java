@@ -42,14 +42,19 @@ public final class SQLValue {
     private Object getValue(final String value, final String type) throws ParseException {
         switch (type) {
             case "String":
+            case "varchar":
+            case "char":
                 return value;
             case "int":
-                return Integer.valueOf(value);
+                return Integer.parseInt(value);
             case "long":
-                return Long.valueOf(value);
+                return Long.parseLong(value);
             case "double":
-                return Double.valueOf(value);
+                return Double.parseDouble(value);
+            case "numeric":
+                return value.contains("//.") ? Double.parseDouble(value) : Long.parseLong(value);
             case "Date":
+            case "datetime":
                 return new Date(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(value).getTime());
             default:
                 throw new UnsupportedOperationException(String.format("Cannot support type: `%s`", type));
