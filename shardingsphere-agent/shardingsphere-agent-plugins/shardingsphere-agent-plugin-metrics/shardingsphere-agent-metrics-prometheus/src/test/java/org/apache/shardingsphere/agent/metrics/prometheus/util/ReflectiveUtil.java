@@ -39,18 +39,6 @@ public final class ReflectiveUtil {
         return getFieldValue(object, getField(object.getClass(), fieldName));
     }
     
-    private static Field getField(final Class<?> clazz, final String fieldName) {
-        Field[] fields = clazz.getDeclaredFields();
-        if (fields.length != 0) {
-            for (Field each : fields) {
-                if (fieldName.equals(each.getName())) {
-                    return each;
-                }
-            }
-        }
-        return null;
-    }
-    
     private static Object getFieldValue(final Object object, final Field field) {
         if (null == object || null == field) {
             return null;
@@ -62,5 +50,17 @@ public final class ReflectiveUtil {
         } catch (IllegalAccessException ignored) {
         }
         return result;
+    }
+
+    private static Field getField(final Class<?> clazz, final String fieldName) {
+        Field[] fields = clazz.getDeclaredFields();
+        if (fields.length != 0) {
+            for (Field each : fields) {
+                if (fieldName.equals(each.getName())) {
+                    return each;
+                }
+            }
+        }
+        return null;
     }
 }
