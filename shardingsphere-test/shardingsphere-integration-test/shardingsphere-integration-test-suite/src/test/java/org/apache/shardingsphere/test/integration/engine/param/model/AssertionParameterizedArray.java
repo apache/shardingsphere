@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.param.domain;
+package org.apache.shardingsphere.test.integration.engine.param.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +26,11 @@ import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTes
 import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 
 /**
- * Parameterized wrapper based integration test.
+ * Parameterized array of assertion based integration test.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ParameterizedWrapper {
+public final class AssertionParameterizedArray implements ParameterizedArray {
     
     private final IntegrationTestCaseContext testCaseContext;
     
@@ -46,10 +46,13 @@ public final class ParameterizedWrapper {
     
     private final SQLCommandType sqlCommandType;
     
-    private final ParameterizedArray parameterizedArray;
+    @Override
+    public Object[] toArrays() {
+        return new Object[] {new ParameterizedWrapper(testCaseContext, assertion, adapter, scenario, databaseType, sqlExecuteType, sqlCommandType, this)};
+    }
     
     @Override
-    public String toString() {
-        return parameterizedArray.getIndividualTestCaseIdentify();
+    public String getIndividualTestCaseIdentify() {
+        return String.format("%s: %s -> %s -> %s -> %s", adapter, scenario, databaseType.getName(), sqlExecuteType, testCaseContext.getTestCase().getSql());
     }
 }

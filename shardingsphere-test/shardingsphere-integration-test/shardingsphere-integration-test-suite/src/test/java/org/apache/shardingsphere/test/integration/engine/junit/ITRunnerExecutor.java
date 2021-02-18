@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.engine.junit;
 
-import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedWrapper;
+import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedWrapper;
 
 /**
  * IT runner executor.
