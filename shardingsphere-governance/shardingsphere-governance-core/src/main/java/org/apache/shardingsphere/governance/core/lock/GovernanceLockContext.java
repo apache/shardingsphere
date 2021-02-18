@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.lock;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockAddedEvent;
-import org.apache.shardingsphere.governance.core.event.model.lock.UnlockEvent;
+import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockReleasedEvent;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
@@ -64,11 +64,11 @@ public final class GovernanceLockContext extends AbstractLockContext {
     
     /**
      * Unlock instance.
-     * 
-     * @param event unlock event
+     *
+     * @param event global lock released event
      */
     @Subscribe
-    public void unlock(final UnlockEvent event) {
+    public void unlock(final GlobalLockReleasedEvent event) {
         ShardingSphereEventBus.getInstance().post(new StateEvent(StateType.LOCK, false));
         registryCenter.persistInstanceData("");
         signalAll();

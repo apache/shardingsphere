@@ -18,20 +18,13 @@
 package org.apache.shardingsphere.test.integration.engine.junit;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedWrapper;
 
 /**
  * IT runner serial executor.
  */
-@Slf4j
 @Getter
-public class ITRunnerSerialExecutor implements ITRunnerExecutor {
-    
-    @SneakyThrows
-    public ITRunnerSerialExecutor() {
-    }
+public final class ITRunnerSerialExecutor implements ITRunnerExecutor {
     
     @Override
     public void execute(final ParameterizedWrapper parameterizedWrapper, final Runnable childStatement) {

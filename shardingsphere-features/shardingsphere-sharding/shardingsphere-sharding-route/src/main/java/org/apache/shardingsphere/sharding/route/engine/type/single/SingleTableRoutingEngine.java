@@ -27,6 +27,8 @@ import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropTableStatementHandler;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -71,6 +73,8 @@ public final class SingleTableRoutingEngine implements ShardingRouteEngine {
         for (String each : logicTables) {
             if (shardingRule.getSingleTableRules().containsKey(each)) {
                 fillRouteUnits(each, shardingRule.getSingleTableRules().get(each).getDataSourceName(), result);
+            } else if (containsDropTableIfExistClause()) {
+                return Collections.singletonList(getRandomRouteUnit(shardingRule));
             } else {
                 throw new ShardingSphereException("`%s` single table does not exist.", each);
             }
@@ -84,5 +88,9 @@ public final class SingleTableRoutingEngine implements ShardingRouteEngine {
             routeMappers.put(dataSourceMapper, new LinkedHashSet<>());
         }
         routeMappers.get(dataSourceMapper).add(new RouteMapper(table, table));
+    }
+    
+    private boolean containsDropTableIfExistClause() {
+        return sqlStatement instanceof DropTableStatement && DropTableStatementHandler.containsIfExistClause((DropTableStatement) sqlStatement);
     }
 }
