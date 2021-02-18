@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.test.integration.engine.param.model;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
+import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
+
 /**
  * Parameterized array.
  */
@@ -28,4 +32,39 @@ public interface ParameterizedArray {
      * @return parameterized arrays
      */
     Object[] toArrays();
+    
+    /**
+     * Get test case context.
+     * 
+     * @return test case context
+     */
+    IntegrationTestCaseContext getTestCaseContext();
+    
+    /**
+     * Get adapter.
+     * 
+     * @return adapter
+     */
+    String getAdapter();
+    
+    /**
+     * Get scenario.
+     * 
+     * @return scenario
+     */
+    String getScenario();
+    
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    DatabaseType getDatabaseType();
+    
+    /**
+     * Get SQL command type.
+     *
+     * @return SQL command type
+     */
+    SQLCommandType getSqlCommandType();
 }
