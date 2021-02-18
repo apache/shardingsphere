@@ -39,7 +39,7 @@ import static org.junit.Assert.assertThat;
 public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdviceTest {
     
     @ClassRule
-    public static ZipkinCollector collector = new ZipkinCollector();
+    public final ZipkinCollector collector = new ZipkinCollector();
     
     private static final String SQL_STMT = "select 1";
     

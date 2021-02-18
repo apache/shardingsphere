@@ -37,7 +37,7 @@ import static org.junit.Assert.assertThat;
 public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
     
     @ClassRule
-    public static ZipkinCollector collector = new ZipkinCollector();
+    public final ZipkinCollector collector = new ZipkinCollector();
     
     private JDBCExecutorCallbackAdvice advice;
     

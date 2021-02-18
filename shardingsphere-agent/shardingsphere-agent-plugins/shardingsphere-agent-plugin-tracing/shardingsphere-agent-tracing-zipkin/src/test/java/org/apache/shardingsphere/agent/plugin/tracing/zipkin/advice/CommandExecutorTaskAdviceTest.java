@@ -36,7 +36,7 @@ import static org.junit.Assert.assertThat;
 public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
     
     @ClassRule
-    public static ZipkinCollector collector = new ZipkinCollector();
+    public final ZipkinCollector collector = new ZipkinCollector();
     
     private CommandExecutorTaskAdvice advice;
     

@@ -40,7 +40,7 @@ import static org.junit.Assert.assertThat;
 public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
     
     @ClassRule
-    public static JaegerCollector collector = new JaegerCollector();
+    public final JaegerCollector collector = new JaegerCollector();
     
     private static final CommandExecutorTaskAdvice ADVICE = new CommandExecutorTaskAdvice();
     
@@ -83,5 +83,4 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
         map.put(JaegerConstants.ErrorLogTagKeys.EVENT_ERROR_TYPE, true);
         assertThat(spans.get(0).tags(), is(map));
     }
-    
 }

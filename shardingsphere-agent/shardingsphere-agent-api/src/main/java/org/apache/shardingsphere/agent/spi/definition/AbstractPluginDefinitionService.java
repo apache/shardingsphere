@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.agent.spi.definition;
 
 import com.google.common.collect.Maps;
-import java.util.Collection;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
+
+import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 

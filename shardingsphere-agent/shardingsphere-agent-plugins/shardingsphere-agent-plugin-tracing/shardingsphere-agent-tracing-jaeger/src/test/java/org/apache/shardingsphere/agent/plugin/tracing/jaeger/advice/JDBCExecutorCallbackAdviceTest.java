@@ -36,7 +36,7 @@ import static org.junit.Assert.assertThat;
 public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
     
     @ClassRule
-    public static JaegerCollector collector = new JaegerCollector();
+    public final JaegerCollector collector = new JaegerCollector();
     
     private static final JDBCExecutorCallbackAdvice ADVICE = new JDBCExecutorCallbackAdvice();
     
