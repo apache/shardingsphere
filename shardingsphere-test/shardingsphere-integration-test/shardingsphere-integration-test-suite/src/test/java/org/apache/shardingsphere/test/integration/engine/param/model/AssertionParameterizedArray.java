@@ -47,11 +47,6 @@ public final class AssertionParameterizedArray implements ParameterizedArray {
     private final SQLCommandType sqlCommandType;
     
     @Override
-    public Object[] toArrays() {
-        return new Object[] {new ParameterizedWrapper(testCaseContext, assertion, adapter, scenario, databaseType, sqlExecuteType, sqlCommandType, this)};
-    }
-    
-    @Override
     public String toString() {
         return String.format("%s: %s -> %s -> %s -> %s", adapter, scenario, databaseType.getName(), sqlExecuteType, testCaseContext.getTestCase().getSql());
     }

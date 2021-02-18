@@ -27,13 +27,6 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 public interface ParameterizedArray {
     
     /**
-     * To parameterized arrays.
-     *
-     * @return parameterized arrays
-     */
-    Object[] toArrays();
-    
-    /**
      * Get test case context.
      * 
      * @return test case context

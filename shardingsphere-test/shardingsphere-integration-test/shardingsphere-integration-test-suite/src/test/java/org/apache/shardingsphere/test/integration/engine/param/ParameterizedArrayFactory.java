@@ -152,6 +152,6 @@ public final class ParameterizedArrayFactory {
     }
     
     private static List<Object[]> toArrays(final Collection<ParameterizedArray> parameterizedArrays) {
-        return parameterizedArrays.stream().map(ParameterizedArray::toArrays).collect(Collectors.toList());
+        return parameterizedArrays.stream().map(each -> new Object[]{each}).collect(Collectors.toList());
     }
 }
