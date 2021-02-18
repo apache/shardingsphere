@@ -186,7 +186,7 @@ public final class DataSetEnvironmentManager {
         }
         
         private void setParameters(final PreparedStatement preparedStatement, final SQLValueGroup sqlValueGroup) throws SQLException {
-            for (SQLValue each : sqlValueGroup.getSqlValues()) {
+            for (SQLValue each : sqlValueGroup.getValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
         }
