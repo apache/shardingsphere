@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTes
 import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 
 /**
- * Parameterized wrapper based integration test.
+ * Parameterized wrapper.
  */
 @RequiredArgsConstructor
 @Getter
@@ -50,6 +50,6 @@ public final class ParameterizedWrapper {
     
     @Override
     public String toString() {
-        return parameterizedArray.getIndividualTestCaseIdentify();
+        return parameterizedArray.toString();
     }
 }
