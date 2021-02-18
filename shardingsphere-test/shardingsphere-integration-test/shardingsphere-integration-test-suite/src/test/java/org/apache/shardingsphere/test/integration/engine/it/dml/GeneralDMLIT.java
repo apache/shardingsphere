@@ -49,7 +49,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
                 parameterizedWrapper.getDatabaseType(),
                 parameterizedWrapper.getSqlExecuteType(),
                 parameterizedWrapper.getTestCaseContext().getTestCase().getSql());
-        this.assertion = parameterizedWrapper.getAssertion();
+        assertion = parameterizedWrapper.getAssertion();
     }
     
     @Parameters(name = "{0}")

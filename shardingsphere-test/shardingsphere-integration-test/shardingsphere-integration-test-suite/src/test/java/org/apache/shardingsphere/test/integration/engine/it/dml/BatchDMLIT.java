@@ -48,7 +48,7 @@ public final class BatchDMLIT extends BatchIT {
                 parameterizedWrapper.getScenario(),
                 parameterizedWrapper.getDatabaseType(),
                 parameterizedWrapper.getTestCaseContext().getTestCase().getSql());
-        this.testCaseContext = parameterizedWrapper.getTestCaseContext();
+        testCaseContext = parameterizedWrapper.getTestCaseContext();
     }
     
     @Parameters(name = "{0}")
