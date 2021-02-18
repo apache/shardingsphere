@@ -22,6 +22,7 @@ import lombok.Getter;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /**
  * SQL value.
@@ -34,27 +35,25 @@ public final class SQLValue {
     private final int index;
     
     public SQLValue(final String value, final String type, final int index) throws ParseException {
-        this.value = getValue(value, type);
+        this.value = null == type ? value : getValue(value, type);
         this.index = index;
     }
     
     private Object getValue(final String value, final String type) throws ParseException {
-        if (null == type || "varchar".equals(type) || "char".equals(type) || "String".equals(type)) {
-            return value;
+        switch (type) {
+            case "String":
+                return value;
+            case "int":
+                return Integer.valueOf(value);
+            case "long":
+                return Long.valueOf(value);
+            case "double":
+                return Double.valueOf(value);
+            case "Date":
+                return new Date(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(value).getTime());
+            default:
+                throw new UnsupportedOperationException(String.format("Cannot support type: `%s`", type));
         }
-        if ("int".equals(type)) {
-            return Integer.valueOf(value);
-        }
-        if ("numeric".equals(type) && !value.contains("//.")) {
-            return Long.valueOf(value);
-        }
-        if ("numeric".equals(type) && value.contains("//.")) {
-            return Double.valueOf(value);
-        }
-        if ("datetime".equals(type)) {
-            return new Date(new SimpleDateFormat("yyyy-MM-dd").parse(value).getTime());
-        }
-        throw new UnsupportedOperationException(String.format("Cannot support type: `%s`", type));
     }
     
     @Override
@@ -63,7 +62,7 @@ public final class SQLValue {
             return "'" + value + "'";
         }
         if (value instanceof Date) {
-            return new SimpleDateFormat("yyyy-MM-dd").format(value);
+            return new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(value);
         }
         return value.toString();
     }
