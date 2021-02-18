@@ -136,7 +136,7 @@ public final class PluginInterceptorPoint {
             
             private boolean overrideArgs;
             
-            private ElementMatcher<? super MethodDescription> matcher;
+            private final ElementMatcher<? super MethodDescription> matcher;
             
             private InstanceMethodPointBuilder(final Builder builder, final ElementMatcher<? super MethodDescription> matcher) {
                 this.builder = builder;
@@ -187,7 +187,7 @@ public final class PluginInterceptorPoint {
             
             private boolean overrideArgs;
             
-            private ElementMatcher<? super MethodDescription> matcher;
+            private final ElementMatcher<? super MethodDescription> matcher;
             
             private StaticMethodPointBuilder(final Builder builder, final ElementMatcher<? super MethodDescription> matcher) {
                 this.builder = builder;
@@ -234,9 +234,9 @@ public final class PluginInterceptorPoint {
             
             private final Builder builder;
             
+            private final ElementMatcher<? super MethodDescription> matcher;
+
             private String classNameOfAdvice;
-            
-            private ElementMatcher<? super MethodDescription> matcher;
             
             private ConstructorPointBuilder(final Builder builder, final ElementMatcher<? super MethodDescription> matcher) {
                 this.builder = builder;

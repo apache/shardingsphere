@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import java.util.Map;
-import java.util.concurrent.atomic.LongAdder;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.util.ReflectiveUtil;
 import org.junit.Test;
+
+import java.util.Map;
+import java.util.concurrent.atomic.LongAdder;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -29,7 +30,7 @@ import static org.junit.Assert.assertThat;
 
 public final class CommandExecutorTaskAdviceTest extends MetricsAdviceBaseTest {
     
-    private CommandExecutorTaskAdvice commandExecutorTaskAdvice = new CommandExecutorTaskAdvice();
+    private final CommandExecutorTaskAdvice commandExecutorTaskAdvice = new CommandExecutorTaskAdvice();
     
     @Test
     @SuppressWarnings("unchecked")
