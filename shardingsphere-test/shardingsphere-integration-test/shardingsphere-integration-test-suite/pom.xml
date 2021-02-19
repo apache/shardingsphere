@@ -230,6 +230,29 @@
                                     <removeVolumes>true</removeVolumes>
                                 </configuration>
                             </execution>
+
+                            <execution>
+                                <id>encrypt-up</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>up</goal>
+                                </goals>
+                                <configuration>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/encrypt/docker-compose.yml</composeFile>
+                                    <detachedMode>true</detachedMode>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>encrypt-down</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>down</goal>
+                                </goals>
+                                <configuration>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/encrypt/docker-compose.yml</composeFile>
+                                    <removeVolumes>true</removeVolumes>
+                                </configuration>
+                            </execution>
                         </executions>
                     </plugin>
                 </plugins>

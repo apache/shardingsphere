@@ -15,15 +15,6 @@
 -- limitations under the License.
 --
 
-CREATE USER 'root'@'%' IDENTIFIED BY '';
-GRANT All privileges ON *.* TO 'root'@'%';
-
-SELECT pg_terminate_backend (pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = 'encrypt';
-
-DROP DATABASE IF EXISTS encrypt;
-
-CREATE DATABASE encrypt;
-
 CREATE TABLE encrypt.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE INDEX user_index_t_user ON encrypt.t_user (user_id);
 CREATE TABLE encrypt.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));

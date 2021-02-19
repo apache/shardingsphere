@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config;
+package org.apache.shardingsphere.scaling.core.spi;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.scaling.core.fixture.FixtureH2ScalingEntry;
+import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
+import static org.junit.Assert.assertTrue;
 
-/**
- * Data source configuration for YAML.
- */
-@Getter
-@Setter
-public final class YamlDataSourceConfiguration implements YamlConfiguration {
+public final class ScalingEntryLoaderTest {
     
-    private String dataSourceClassName;
+    @Test
+    public void assertGetFixtureInstance() {
+        ScalingEntry actual = ScalingEntryLoader.getInstance("H2");
+        assertTrue(actual instanceof FixtureH2ScalingEntry);
+    }
     
-    private Map<String, Object> props = new HashMap<>();
+    @Test(expected = UnsupportedOperationException.class)
+    public void assertGetInstanceFailure() {
+        ScalingEntryLoader.getInstance("None");
+    }
 }
