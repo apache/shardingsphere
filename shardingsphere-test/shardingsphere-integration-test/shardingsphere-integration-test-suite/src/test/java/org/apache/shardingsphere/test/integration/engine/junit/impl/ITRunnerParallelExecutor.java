@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit;
+package org.apache.shardingsphere.test.integration.engine.junit.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
+import org.apache.shardingsphere.test.integration.engine.junit.ITRunnerExecutor;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 
 import java.util.concurrent.ExecutorService;
