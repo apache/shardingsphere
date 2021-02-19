@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.swapper;
+package org.apache.shardingsphere.infra.yaml.swapper;
 
-import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.infra.yaml.config.YamlDataSourceConfiguration;
+
+import javax.sql.DataSource;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
- * Data source configuration YAML swapper.
+ * Yaml data source configuration swapper.
  */
-public final class DataSourceConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlDataSourceConfiguration, DataSourceConfiguration> {
+public final class YamlDataSourceConfigurationSwapper implements YamlConfigurationSwapper<YamlDataSourceConfiguration, DataSourceConfiguration> {
     
     @Override
     public YamlDataSourceConfiguration swapToYamlConfiguration(final DataSourceConfiguration config) {
@@ -39,5 +43,17 @@ public final class DataSourceConfigurationYamlSwapper implements YamlConfigurati
         DataSourceConfiguration result = new DataSourceConfiguration(yamlConfig.getDataSourceClassName());
         result.getProps().putAll(yamlConfig.getProps());
         return result;
+    }
+    
+    /**
+     * Swap to data sources from YAML data sources.
+     * 
+     * @param yamlDataSources YAML data sources
+     * @return data sources
+     */
+    public Map<String, DataSource> swapToDataSources(final Map<String, YamlDataSourceConfiguration> yamlDataSources) {
+        Map<String, DataSourceConfiguration> dataSourceConfigMap = yamlDataSources.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> swapToObject(entry.getValue())));
+        return DataSourceConverter.getDataSourceMap(dataSourceConfigMap);
     }
 }
