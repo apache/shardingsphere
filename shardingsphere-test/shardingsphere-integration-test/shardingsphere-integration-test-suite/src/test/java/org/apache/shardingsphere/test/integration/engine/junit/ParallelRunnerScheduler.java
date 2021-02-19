@@ -32,13 +32,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents a strategy for scheduling when individual test methods should be run (in serial or parallel).
- * 
- * <p>
- * WARNING: still experimental, may go away.
- * </p>
+ * Parallel runner scheduler.
  */
-public final class ITRunnerScheduler implements RunnerScheduler {
+public final class ParallelRunnerScheduler implements RunnerScheduler {
     
     private final Field parametersField;
     
@@ -46,7 +42,7 @@ public final class ITRunnerScheduler implements RunnerScheduler {
     
     private volatile Field runnerField;
     
-    public ITRunnerScheduler() {
+    public ParallelRunnerScheduler() {
         parametersField = getParametersField();
         runnerExecutors = getITRunnerExecutors();
     }
