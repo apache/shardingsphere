@@ -15,21 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit;
+package org.apache.shardingsphere.test.integration.engine.junit.impl;
 
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
+import org.apache.shardingsphere.test.integration.engine.junit.ITRunnerExecutor;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+
 /**
- * IT runner serial executor.
+ * IT runner parallel executor.
  */
-public final class ITRunnerSerialExecutor implements ITRunnerExecutor {
+public final class ITRunnerParallelExecutor implements ITRunnerExecutor {
+    
+    private final ExecutorServiceManager executorServiceManager = new ExecutorServiceManager(Runtime.getRuntime().availableProcessors() * 2 - 1);
     
     @Override
     public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
-        childStatement.run();
+        executorServiceManager.getExecutorService().submit(childStatement);
     }
     
+    @SneakyThrows(InterruptedException.class)
     @Override
     public void finished() {
+        ExecutorService executorService = executorServiceManager.getExecutorService();
+        executorService.shutdown();
+        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
     }
 }
