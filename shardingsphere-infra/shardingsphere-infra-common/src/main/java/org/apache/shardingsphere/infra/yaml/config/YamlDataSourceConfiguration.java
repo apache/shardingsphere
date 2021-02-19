@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit;
+package org.apache.shardingsphere.infra.yaml.config;
 
-import org.junit.runners.Parameterized;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Integration test parameterized.
+ * Data source configuration for YAML.
  */
-public final class ITParameterized extends Parameterized {
+@Getter
+@Setter
+public final class YamlDataSourceConfiguration implements YamlConfiguration {
     
-    //CHECKSTYLE:OFF
-    public ITParameterized(final Class<?> klass) throws Throwable {
-        //CHECKSTYLE:ON
-        super(klass);
-        setScheduler(new ITRunnerScheduler());
-    }
+    private String dataSourceClassName;
+    
+    private Map<String, Object> props = new HashMap<>();
 }

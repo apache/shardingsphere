@@ -108,13 +108,12 @@ public final class DatabaseCommunicationEngine {
         try {
             locked = tryGlobalLock(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
             executeResults = proxySQLExecutor.execute(executionContext);
-        } catch (final SQLException ex) {
+            refreshMetadata(executionContext);
+        } finally {
             if (locked) {
                 releaseGlobalLock();
             }
-            throw ex;
         }
-        refreshMetadata(executionContext);
         ExecuteResult executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
                 ? processExecuteQuery(executionContext, executeResults.stream().map(each -> (QueryResult) each).collect(Collectors.toList()), (QueryResult) executeResultSample)
