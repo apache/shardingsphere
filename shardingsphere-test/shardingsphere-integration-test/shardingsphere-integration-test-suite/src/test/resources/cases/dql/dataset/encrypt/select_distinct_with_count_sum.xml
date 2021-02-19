@@ -20,5 +20,5 @@
         <column name="COUNT(DISTINCT order_id)" />
         <column name="SUM(DISTINCT order_id)" />
     </metadata>
-    <row values="10, 10045" />
+    <row values="2, 2001" />
 </dataset>

@@ -19,5 +19,5 @@
     <metadata>
         <column name="orders_count" />
     </metadata>
-    <row values="20" />
+    <row values="40" />
 </dataset>

@@ -20,5 +20,5 @@
         <column name="user_id" />
         <column name="orders_sum" />
     </metadata>
-    <row values="10, 10045" />
+    <row values="10, 2001" />
 </dataset>

@@ -19,5 +19,5 @@
     <metadata>
         <column name="c" />
     </metadata>
-    <row values="10" />
+    <row values="2" />
 </dataset>

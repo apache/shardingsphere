@@ -19,5 +19,5 @@
     <metadata>
         <column name="items_count" />
     </metadata>
-    <row values="40" />
+    <row values="8" />
 </dataset>

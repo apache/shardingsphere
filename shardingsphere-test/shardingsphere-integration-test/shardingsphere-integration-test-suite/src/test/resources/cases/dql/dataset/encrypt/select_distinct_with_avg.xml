@@ -17,7 +17,7 @@
 
 <dataset>
     <metadata>
-        <column name="aggregation_distinct_derived_0" />
+        <column name="avg(distinct order_id)" />
     </metadata>
-    <row values="1004.5000" />
+    <row values="1000.5000" />
 </dataset>
