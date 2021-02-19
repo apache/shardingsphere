@@ -58,7 +58,7 @@ public final class ITRunnerScheduler implements RunnerScheduler {
     }
     
     private Map<String, ITRunnerExecutor> getRunnerExecutors() {
-        Map<String, ITRunnerExecutor> result = new HashMap<>(); 
+        Map<String, ITRunnerExecutor> result = new HashMap<>(IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().size() * 3, 1);
         for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()) {
             result.put(getRunnerExecutorKey(each.getName(), SQLCommandType.DQL.name()), new ITRunnerParallelExecutor());
             if (each instanceof PostgreSQLDatabaseType) {
