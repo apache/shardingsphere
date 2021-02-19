@@ -55,7 +55,7 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     }
     
     private Map<String, ParallelRunnerExecutor> getRunnerExecutors() {
-        Map<String, ParallelRunnerExecutor> result = new HashMap<>(IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().size() * 3, 1);
+        Map<String, ParallelRunnerExecutor> result = new HashMap<>(IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().size() * 2, 1);
         for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()) {
             result.put(getRunnerExecutorKey(each.getName(), SQLCommandType.DQL.name()), new CaseParallelRunnerExecutor());
             result.put(getRunnerExecutorKey(each.getName(), ""), new ScenarioParallelRunnerExecutor());
@@ -84,12 +84,9 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     }
     
     private ParallelRunnerExecutor getRunnerExecutor(final ParameterizedArray parameterizedArray) {
-        switch (parameterizedArray.getSqlCommandType()) {
-            case DQL:
-                return runnerExecutors.get(getRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), SQLCommandType.DQL.name()));
-            default:
-                return runnerExecutors.get(getRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), ""));
-        }
+        return SQLCommandType.DQL == parameterizedArray.getSqlCommandType() 
+                ? runnerExecutors.get(getRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), SQLCommandType.DQL.name()))
+                : runnerExecutors.get(getRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), ""));
     }
     
     @Override
