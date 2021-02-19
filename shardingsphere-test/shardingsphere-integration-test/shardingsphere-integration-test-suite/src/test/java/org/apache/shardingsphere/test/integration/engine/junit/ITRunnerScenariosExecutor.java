@@ -29,25 +29,22 @@ import com.lmax.disruptor.Sequence;
 import com.lmax.disruptor.SequenceReportingEventHandler;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedWrapper;
+import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.concurrent.ThreadFactory;
 
 /**
  * IT runner scenarios executor.
  */
-@Getter
 @Slf4j
 public final class ITRunnerScenariosExecutor implements ITRunnerExecutor {
     
@@ -55,7 +52,7 @@ public final class ITRunnerScenariosExecutor implements ITRunnerExecutor {
     
     private final RingBuffer<CaseEntryEvent> ringBuffer;
     
-    private final List<CaseEventHandler> caseEventHandlers;
+    private final Collection<CaseEventHandler> caseEventHandlers;
     
     @SneakyThrows
     public ITRunnerScenariosExecutor() {
@@ -67,7 +64,7 @@ public final class ITRunnerScenariosExecutor implements ITRunnerExecutor {
         Collection<String> adapters = integrationTestEnvironment.getAdapters();
         Collection<String> scenarios = integrationTestEnvironment.getScenarios();
         Set<DatabaseType> databaseTypes = integrationTestEnvironment.getDataSourceEnvironments().keySet();
-        caseEventHandlers = new ArrayList<>();
+        caseEventHandlers = new LinkedList<>();
         initCaseEventHandlers(adapters, scenarios, databaseTypes);
         CaseEventHandler[] caseEventHandlerArray = new CaseEventHandler[caseEventHandlers.size()];
         caseEventHandlers.toArray(caseEventHandlerArray);
@@ -95,10 +92,10 @@ public final class ITRunnerScenariosExecutor implements ITRunnerExecutor {
     }
     
     @Override
-    public void execute(final ParameterizedWrapper parameterizedWrapper, final Runnable childStatement) {
+    public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
         ringBuffer.publishEvent((e, seq) -> {
             e.reset();
-            e.setCaseKey(new CaseKey(parameterizedWrapper.getAdapter(), parameterizedWrapper.getScenario(), parameterizedWrapper.getDatabaseType().getName()));
+            e.setCaseKey(new CaseKey(parameterizedArray.getAdapter(), parameterizedArray.getScenario(), parameterizedArray.getDatabaseType().getName()));
             e.setChildStatement(childStatement);
         });
     }

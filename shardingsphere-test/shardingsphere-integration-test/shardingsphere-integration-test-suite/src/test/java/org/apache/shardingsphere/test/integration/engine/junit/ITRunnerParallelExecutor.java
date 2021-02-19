@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.test.integration.engine.junit;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
-import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedWrapper;
+import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * IT runner parallel executor.
  */
-@Getter
 public final class ITRunnerParallelExecutor implements ITRunnerExecutor {
     
     private final ExecutorServiceManager executorServiceManager;
@@ -37,7 +35,7 @@ public final class ITRunnerParallelExecutor implements ITRunnerExecutor {
     }
     
     @Override
-    public void execute(final ParameterizedWrapper parameterizedWrapper, final Runnable childStatement) {
+    public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
         executorServiceManager.getExecutorService().submit(childStatement);
     }
     

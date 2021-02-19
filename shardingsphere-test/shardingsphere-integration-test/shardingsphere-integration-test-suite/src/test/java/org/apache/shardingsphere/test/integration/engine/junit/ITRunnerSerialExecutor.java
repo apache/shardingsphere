@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.test.integration.engine.junit;
 
-import lombok.Getter;
-import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedWrapper;
+import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 
 /**
  * IT runner serial executor.
  */
-@Getter
 public final class ITRunnerSerialExecutor implements ITRunnerExecutor {
     
     @Override
-    public void execute(final ParameterizedWrapper parameterizedWrapper, final Runnable childStatement) {
+    public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
         childStatement.run();
     }
     

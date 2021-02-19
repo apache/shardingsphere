@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.dml;
 
-import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
+import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.it.BatchIT;
 import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedWrapper;
+import org.apache.shardingsphere.test.integration.engine.param.model.CaseParameterizedArray;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -42,13 +42,13 @@ public final class BatchDMLIT extends BatchIT {
     
     private final IntegrationTestCaseContext testCaseContext;
     
-    public BatchDMLIT(final ParameterizedWrapper parameterizedWrapper) throws IOException, JAXBException, SQLException {
-        super(parameterizedWrapper.getTestCaseContext(),
-                parameterizedWrapper.getAdapter(),
-                parameterizedWrapper.getScenario(),
-                parameterizedWrapper.getDatabaseType(),
-                parameterizedWrapper.getTestCaseContext().getTestCase().getSql());
-        this.testCaseContext = parameterizedWrapper.getTestCaseContext();
+    public BatchDMLIT(final CaseParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException {
+        super(parameterizedArray.getTestCaseContext(),
+                parameterizedArray.getAdapter(),
+                parameterizedArray.getScenario(),
+                parameterizedArray.getDatabaseType(),
+                parameterizedArray.getTestCaseContext().getTestCase().getSql());
+        testCaseContext = parameterizedArray.getTestCaseContext();
     }
     
     @Parameters(name = "{0}")

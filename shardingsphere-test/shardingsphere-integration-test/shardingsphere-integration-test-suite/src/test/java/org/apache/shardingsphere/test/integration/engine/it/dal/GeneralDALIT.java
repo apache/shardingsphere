@@ -20,7 +20,8 @@ package org.apache.shardingsphere.test.integration.engine.it.dal;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedWrapper;
+import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -39,21 +40,21 @@ import static org.junit.Assert.assertThat;
 
 public final class GeneralDALIT extends BaseDALIT {
     
-    public GeneralDALIT(final ParameterizedWrapper parameterizedWrapper) throws IOException, JAXBException, SQLException, ParseException {
-        super(parameterizedWrapper.getTestCaseContext().getParentPath(),
-                parameterizedWrapper.getAssertion(),
-                parameterizedWrapper.getAdapter(),
-                parameterizedWrapper.getScenario(),
-                parameterizedWrapper.getDatabaseType(),
-                parameterizedWrapper.getSqlExecuteType(),
-                parameterizedWrapper.getTestCaseContext().getTestCase().getSql());
+    public GeneralDALIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
+        super(parameterizedArray.getTestCaseContext().getParentPath(),
+                parameterizedArray.getAssertion(),
+                parameterizedArray.getAdapter(),
+                parameterizedArray.getScenario(),
+                parameterizedArray.getDatabaseType(),
+                parameterizedArray.getSqlExecuteType(),
+                parameterizedArray.getTestCaseContext().getTestCase().getSql());
     }
     
     @Parameters(name = "{0}")
     public static Collection<Object[]> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DAL).stream()
-                .filter(each -> "proxy".equals(((ParameterizedWrapper) each[0]).getAdapter())
-                        && SQLExecuteType.Literal == ((ParameterizedWrapper) each[0]).getSqlExecuteType()).collect(Collectors.toList());
+                .filter(each -> "proxy".equals(((ParameterizedArray) each[0]).getAdapter())
+                        && each[0] instanceof AssertionParameterizedArray && SQLExecuteType.Literal == ((AssertionParameterizedArray) each[0]).getSqlExecuteType()).collect(Collectors.toList());
     }
     
     @SuppressWarnings("JUnitTestMethodWithNoAssertions")

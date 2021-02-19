@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.engine.junit;
 
-import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedWrapper;
+import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 
 /**
  * IT runner executor.
@@ -27,10 +27,10 @@ public interface ITRunnerExecutor {
     /**
      * Execute child statement.
      *
-     * @param parameterizedWrapper parameterized wrapper
+     * @param parameterizedArray parameterized array
      * @param childStatement child statement
      */
-    void execute(ParameterizedWrapper parameterizedWrapper, Runnable childStatement);
+    void execute(ParameterizedArray parameterizedArray, Runnable childStatement);
     
     /**
      * Override to implement any behavior that must occur after all children have been scheduled (for example, waiting for them all to finish).

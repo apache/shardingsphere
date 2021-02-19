@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.test.integration.engine.it.dcl;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedWrapper;
+import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -33,14 +33,14 @@ import java.util.Collection;
 
 public final class GeneralDCLIT extends BaseDCLIT {
     
-    public GeneralDCLIT(final ParameterizedWrapper parameterizedWrapper) throws IOException, JAXBException, SQLException, ParseException {
-        super(parameterizedWrapper.getTestCaseContext().getParentPath(),
-                parameterizedWrapper.getAssertion(),
-                parameterizedWrapper.getAdapter(),
-                parameterizedWrapper.getScenario(),
-                parameterizedWrapper.getDatabaseType(),
-                parameterizedWrapper.getSqlExecuteType(),
-                parameterizedWrapper.getTestCaseContext().getTestCase().getSql());
+    public GeneralDCLIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
+        super(parameterizedArray.getTestCaseContext().getParentPath(),
+                parameterizedArray.getAssertion(),
+                parameterizedArray.getAdapter(),
+                parameterizedArray.getScenario(),
+                parameterizedArray.getDatabaseType(),
+                parameterizedArray.getSqlExecuteType(),
+                parameterizedArray.getTestCaseContext().getTestCase().getSql());
     }
     
     @Parameters(name = "{0}")

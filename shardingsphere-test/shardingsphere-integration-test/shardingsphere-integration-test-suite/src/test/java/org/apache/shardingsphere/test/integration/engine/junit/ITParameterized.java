@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.config.datasource;
+package org.apache.shardingsphere.test.integration.engine.junit;
 
-import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.scaling.core.fixture.FixtureShardingSphereJDBCConfiguration;
-import org.junit.Test;
+import org.junit.runners.Parameterized;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class ShardingSphereJDBCDataSourceConfigurationTest {
+/**
+ * Integration test parameterized.
+ */
+public final class ITParameterized extends Parameterized {
     
-    @Test
-    public void assertShardingSphereJDBCDataSourceConfigurationDatabaseType() {
-        ShardingSphereJDBCDataSourceConfiguration config = new ShardingSphereJDBCDataSourceConfiguration(
-                FixtureShardingSphereJDBCConfiguration.DATA_SOURCE, FixtureShardingSphereJDBCConfiguration.RULE);
-        assertThat(config.getDatabaseType(), instanceOf(H2DatabaseType.class));
+    //CHECKSTYLE:OFF
+    public ITParameterized(final Class<?> klass) throws Throwable {
+        //CHECKSTYLE:ON
+        super(klass);
+        setScheduler(new ITRunnerScheduler());
     }
 }
