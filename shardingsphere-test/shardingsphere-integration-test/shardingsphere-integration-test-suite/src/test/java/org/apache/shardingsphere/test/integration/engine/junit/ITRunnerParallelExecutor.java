@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.engine.junit;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 
@@ -35,14 +36,11 @@ public final class ITRunnerParallelExecutor implements ITRunnerExecutor {
         executorServiceManager.getExecutorService().submit(childStatement);
     }
     
+    @SneakyThrows(InterruptedException.class)
     @Override
     public void finished() {
-        try {
-            ExecutorService executorService = executorServiceManager.getExecutorService();
-            executorService.shutdown();
-            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-        } catch (final InterruptedException ex) {
-            ex.printStackTrace(System.err);
-        }
+        ExecutorService executorService = executorServiceManager.getExecutorService();
+        executorService.shutdown();
+        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
     }
 }
