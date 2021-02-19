@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.api.impl;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -51,8 +49,6 @@ import java.util.stream.IntStream;
 
 @Slf4j
 public final class ScalingAPIImpl implements ScalingAPI {
-    
-    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
     
     @Override
     public List<JobInfo> list() {
@@ -121,11 +117,12 @@ public final class ScalingAPIImpl implements ScalingAPI {
     
     @Override
     public Optional<Long> start(final JobConfiguration jobConfig) {
-        log.info("Start scaling job by {}", jobConfig);
         JobConfigurationUtil.fillInProperties(jobConfig);
         if (jobConfig.getHandleConfig().getShardingTotalCount() == 0) {
+            log.warn("Invalid scaling job config!");
             return Optional.empty();
         }
+        log.info("Start scaling job by {}", YamlEngine.marshal(jobConfig));
         ScalingAPIFactory.getRegistryRepositoryAPI().persist(String.format("%s/%d", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), ScalingJob.class.getCanonicalName());
         ScalingAPIFactory.getRegistryRepositoryAPI().persist(String.format("%s/%d/config", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), createElasticJobConfig(jobConfig));
         return Optional.of(jobConfig.getHandleConfig().getJobId());
@@ -135,7 +132,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
         JobConfigurationPOJO jobConfigPOJO = new JobConfigurationPOJO();
         jobConfigPOJO.setJobName(String.valueOf(jobConfig.getHandleConfig().getJobId()));
         jobConfigPOJO.setShardingTotalCount(jobConfig.getHandleConfig().getShardingTotalCount());
-        jobConfigPOJO.setJobParameter(GSON.toJson(jobConfig));
+        jobConfigPOJO.setJobParameter(YamlEngine.marshal(jobConfig));
         return YamlEngine.marshal(jobConfigPOJO);
     }
     
@@ -183,7 +180,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     }
     
     private JobConfiguration getJobConfig(final JobConfigurationPOJO elasticJobConfigPOJO) {
-        return GSON.fromJson(elasticJobConfigPOJO.getJobParameter(), JobConfiguration.class);
+        return YamlEngine.unmarshal(elasticJobConfigPOJO.getJobParameter(), JobConfiguration.class);
     }
     
     private JobConfigurationPOJO getElasticJobConfigPOJO(final long jobId) {

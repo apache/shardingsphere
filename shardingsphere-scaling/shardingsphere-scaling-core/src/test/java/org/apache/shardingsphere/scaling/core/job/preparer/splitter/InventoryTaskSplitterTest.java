@@ -21,12 +21,11 @@ import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManage
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
-import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -149,7 +148,7 @@ public final class InventoryTaskSplitterTest {
     }
     
     private JobContext mockJobContext() {
-        JobContext result = new JobContext(JobConfigurationUtil.initJobConfig("/config.json"));
+        JobContext result = new JobContext(ResourceUtil.mockJobConfig());
         result.getJobConfig().getHandleConfig().setDatabaseType("H2");
         result.getJobConfig().getHandleConfig().setShardingSize(10);
         taskConfig = new TaskConfiguration(result.getJobConfig().getHandleConfig(), mockDumperConfig(), new ImporterConfiguration());
@@ -157,9 +156,8 @@ public final class InventoryTaskSplitterTest {
     }
     
     private DumperConfiguration mockDumperConfig() {
-        ScalingDataSourceConfiguration dataSourceConfig = new StandardJDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
         DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfig(dataSourceConfig);
+        result.setDataSourceConfig(new StandardJDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD));
         Map<String, String> tableMap = new HashMap<>(1, 1);
         tableMap.put("t_order", "t_order");
         result.setTableNameMap(tableMap);

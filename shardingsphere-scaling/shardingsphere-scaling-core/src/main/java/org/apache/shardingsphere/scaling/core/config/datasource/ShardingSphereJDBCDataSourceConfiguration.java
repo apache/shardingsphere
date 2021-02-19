@@ -20,12 +20,12 @@ package org.apache.shardingsphere.scaling.core.config.datasource;
 import com.google.common.collect.Lists;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceRuleConfigurationWrap;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -34,9 +34,8 @@ import java.util.Map;
 /**
  * ShardingSphere-JDBC data source configuration.
  */
-@Setter
 @Getter
-@EqualsAndHashCode(exclude = "databaseType")
+@EqualsAndHashCode(of = "parameter")
 public final class ShardingSphereJDBCDataSourceConfiguration implements ScalingDataSourceConfiguration {
     
     /**
@@ -44,15 +43,21 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements ScalingD
      */
     public static final String CONFIG_TYPE = "ShardingSphereJDBC";
     
-    private String dataSource;
+    private final String parameter;
     
-    private String rule;
+    private final YamlDataSourceRuleConfigurationWrap dataSourceRuleConfig;
     
-    private transient DatabaseType databaseType;
+    private final DatabaseType databaseType;
     
-    public ShardingSphereJDBCDataSourceConfiguration(final String dataSource, final String rule) {
-        this.dataSource = dataSource;
-        this.rule = rule;
+    public ShardingSphereJDBCDataSourceConfiguration(final String parameter) {
+        this.parameter = parameter;
+        dataSourceRuleConfig = YamlEngine.unmarshal(parameter, YamlDataSourceRuleConfigurationWrap.class);
+        Map<String, Object> props = dataSourceRuleConfig.getDataSources().values().iterator().next().getProps();
+        databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(props.getOrDefault("url", props.get("jdbcUrl")).toString());
+    }
+    
+    public ShardingSphereJDBCDataSourceConfiguration(final String dataSources, final String rules) {
+        this(String.format("%s\n%s", dataSources, rules));
     }
     
     @Override
@@ -61,18 +66,16 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements ScalingD
     }
     
     @Override
-    public DatabaseType getDatabaseType() {
-        if (null == databaseType) {
-            Map<String, Object> props = ConfigurationYamlConverter.loadDataSourceConfigs(dataSource).values().iterator().next().getProps();
-            databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(props.getOrDefault("url", props.get("jdbcUrl")).toString());
-        }
-        return databaseType;
+    public ScalingDataSourceConfigurationWrap wrap() {
+        ScalingDataSourceConfigurationWrap result = new ScalingDataSourceConfigurationWrap();
+        result.setType(CONFIG_TYPE);
+        result.setParameter(parameter);
+        return result;
     }
     
     @Override
     public DataSource toDataSource() throws SQLException {
-        Map<String, DataSource> dataSourceMap = DataSourceConverter.getDataSourceMap(ConfigurationYamlConverter.loadDataSourceConfigs(dataSource));
-        ShardingRuleConfiguration ruleConfig = ConfigurationYamlConverter.loadShardingRuleConfig(rule);
-        return ShardingSphereDataSourceFactory.createDataSource(dataSourceMap, Lists.newArrayList(ruleConfig), null);
+        return ShardingSphereDataSourceFactory.createDataSource(YamlConfigurationConverter.convertDataSources(dataSourceRuleConfig.getDataSources()),
+                Lists.newArrayList(YamlConfigurationConverter.convertShardingRuleConfig(dataSourceRuleConfig.getRules())), null);
     }
 }
