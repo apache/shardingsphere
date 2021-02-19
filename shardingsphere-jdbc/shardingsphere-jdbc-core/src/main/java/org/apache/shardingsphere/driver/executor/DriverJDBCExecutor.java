@@ -21,11 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteQueryCallback;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
@@ -42,7 +40,6 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -50,7 +47,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -120,32 +116,9 @@ public final class DriverJDBCExecutor {
     
     private <T> List<T> doExecute(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final SQLStatement sqlStatement, 
                                   final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<T> callback) throws SQLException {
-        List<T> results;
-        boolean locked = false;
-        try {
-            locked = tryGlobalLock(sqlStatement, metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
-            results = jdbcExecutor.execute(executionGroups, callback);
-            refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatement, routeUnits);
-        } finally {
-            if (locked) {
-                releaseGlobalLock();
-            }
-        }
+        List<T> results = jdbcExecutor.execute(executionGroups, callback);
+        refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatement, routeUnits);
         return results;
-    }
-    
-    private boolean tryGlobalLock(final SQLStatement sqlStatement, final long lockTimeoutMilliseconds) {
-        if (needLock(sqlStatement)) {
-            if (!metaDataContexts.getLockContext().tryGlobalLock(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
-                throw new ShardingSphereException("Service lock wait timeout of %s ms exceeded", lockTimeoutMilliseconds);
-            }
-            return true;
-        }
-        return false;
-    }
-    
-    private boolean needLock(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof DDLStatement;
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -162,9 +135,5 @@ public final class DriverJDBCExecutor {
     
     private void notifySchemaChanged(final ShardingSphereSchema schema) {
         ShardingSphereEventBus.getInstance().post(new SchemaAlteredEvent(DefaultSchema.LOGIC_NAME, schema));
-    }
-    
-    private void releaseGlobalLock() {
-        metaDataContexts.getLockContext().releaseGlobalLock();
     }
 }
