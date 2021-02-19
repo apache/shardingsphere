@@ -28,9 +28,9 @@ import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseConte
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCasesLoader;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.engine.param.domain.AssertionParameterizedArray;
-import org.apache.shardingsphere.test.integration.engine.param.domain.CaseParameterizedArray;
-import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.engine.param.model.CaseParameterizedArray;
+import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 
 import java.util.Collection;
@@ -152,6 +152,6 @@ public final class ParameterizedArrayFactory {
     }
     
     private static List<Object[]> toArrays(final Collection<ParameterizedArray> parameterizedArrays) {
-        return parameterizedArrays.stream().map(ParameterizedArray::toArrays).collect(Collectors.toList());
+        return parameterizedArrays.stream().map(each -> new Object[]{each}).collect(Collectors.toList());
     }
 }

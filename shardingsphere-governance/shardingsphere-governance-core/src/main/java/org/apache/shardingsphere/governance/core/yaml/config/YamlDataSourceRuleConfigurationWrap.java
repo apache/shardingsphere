@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit;
+package org.apache.shardingsphere.governance.core.yaml.config;
 
-import org.junit.runners.Parameterized;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
- * Parallel parameterized.
- * 
- * <p>
- *     Reflective call only, do not use programmatically.
- * </p>
+ * Yaml data source and rule configuration wrap.
  */
-public final class ParallelParameterized extends Parameterized {
+@Getter
+@Setter
+public final class YamlDataSourceRuleConfigurationWrap implements YamlConfiguration {
     
-    //CHECKSTYLE:OFF
-    public ParallelParameterized(final Class<?> klass) throws Throwable {
-        //CHECKSTYLE:ON
-        super(klass);
-        setScheduler(new ITRunnerScheduler());
-    }
+    private Map<String, YamlDataSourceConfiguration> dataSources;
+    
+    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
 }

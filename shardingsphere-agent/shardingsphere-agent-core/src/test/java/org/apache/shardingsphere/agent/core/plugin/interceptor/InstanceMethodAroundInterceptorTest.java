@@ -118,4 +118,7 @@ public final class InstanceMethodAroundInterceptorTest {
     public static void destroy() {
         byteBuddyAgent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
     }
+    
+    private static class MockClassLoader extends ClassLoader {
+    }
 }

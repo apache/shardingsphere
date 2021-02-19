@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.param.domain;
+package org.apache.shardingsphere.test.integration.engine.param.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -47,12 +47,7 @@ public final class AssertionParameterizedArray implements ParameterizedArray {
     private final SQLCommandType sqlCommandType;
     
     @Override
-    public Object[] toArrays() {
-        return new Object[] {new ParameterizedWrapper(testCaseContext, assertion, adapter, scenario, databaseType, sqlExecuteType, sqlCommandType, this)};
-    }
-    
-    @Override
-    public String getIndividualTestCaseIdentify() {
+    public String toString() {
         return String.format("%s: %s -> %s -> %s -> %s", adapter, scenario, databaseType.getName(), sqlExecuteType, testCaseContext.getTestCase().getSql());
     }
 }

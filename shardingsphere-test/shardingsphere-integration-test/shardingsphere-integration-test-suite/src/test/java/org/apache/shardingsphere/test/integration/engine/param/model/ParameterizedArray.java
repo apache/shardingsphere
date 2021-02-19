@@ -15,41 +15,49 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.param.domain;
+package org.apache.shardingsphere.test.integration.engine.param.model;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 
 /**
- * Parameterized wrapper based integration test.
+ * Parameterized array.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ParameterizedWrapper {
+public interface ParameterizedArray {
     
-    private final IntegrationTestCaseContext testCaseContext;
+    /**
+     * Get test case context.
+     * 
+     * @return test case context
+     */
+    IntegrationTestCaseContext getTestCaseContext();
     
-    private final IntegrationTestCaseAssertion assertion;
+    /**
+     * Get adapter.
+     * 
+     * @return adapter
+     */
+    String getAdapter();
     
-    private final String adapter;
+    /**
+     * Get scenario.
+     * 
+     * @return scenario
+     */
+    String getScenario();
     
-    private final String scenario;
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    DatabaseType getDatabaseType();
     
-    private final DatabaseType databaseType;
-    
-    private final SQLExecuteType sqlExecuteType;
-    
-    private final SQLCommandType sqlCommandType;
-    
-    private final ParameterizedArray parameterizedArray;
-    
-    @Override
-    public String toString() {
-        return parameterizedArray.getIndividualTestCaseIdentify();
-    }
+    /**
+     * Get SQL command type.
+     *
+     * @return SQL command type
+     */
+    SQLCommandType getSqlCommandType();
 }
