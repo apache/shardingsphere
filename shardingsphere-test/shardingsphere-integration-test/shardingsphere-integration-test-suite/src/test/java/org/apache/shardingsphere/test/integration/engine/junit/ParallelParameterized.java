@@ -20,12 +20,12 @@ package org.apache.shardingsphere.test.integration.engine.junit;
 import org.junit.runners.Parameterized;
 
 /**
- * Integration test parameterized.
+ * Parallel parameterized.
  */
-public final class ITParameterized extends Parameterized {
+public final class ParallelParameterized extends Parameterized {
     
     //CHECKSTYLE:OFF
-    public ITParameterized(final Class<?> klass) throws Throwable {
+    public ParallelParameterized(final Class<?> klass) throws Throwable {
         //CHECKSTYLE:ON
         super(klass);
         setScheduler(new ITRunnerScheduler());
