@@ -19,9 +19,7 @@ package org.apache.shardingsphere.scaling.core.job.preparer.splitter;
 
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
@@ -34,21 +32,13 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class InventoryTaskSplitterTest {
-    
-    private static final String DATA_SOURCE_URL = "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
-    
-    private static final String USERNAME = "root";
-    
-    private static final String PASSWORD = "password";
     
     private JobContext jobContext;
     
@@ -60,14 +50,9 @@ public final class InventoryTaskSplitterTest {
     
     @Before
     public void setUp() {
-        jobContext = mockJobContext();
+        initJobContext();
         dataSourceManager = new DataSourceManager();
         inventoryTaskSplitter = new InventoryTaskSplitter();
-    }
-    
-    @After
-    public void tearDown() {
-        dataSourceManager.close();
     }
     
     @Test
@@ -103,6 +88,11 @@ public final class InventoryTaskSplitterTest {
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext, taskConfig, dataSourceManager);
         assertNotNull(actual);
         assertThat(actual.size(), is(1));
+    }
+    
+    @After
+    public void tearDown() {
+        dataSourceManager.close();
     }
     
     private void initIntPrimaryEnvironment(final DumperConfiguration dumperConfig) throws SQLException {
@@ -147,20 +137,8 @@ public final class InventoryTaskSplitterTest {
         }
     }
     
-    private JobContext mockJobContext() {
-        JobContext result = new JobContext(ResourceUtil.mockJobConfig());
-        result.getJobConfig().getHandleConfig().setDatabaseType("H2");
-        result.getJobConfig().getHandleConfig().setShardingSize(10);
-        taskConfig = new TaskConfiguration(result.getJobConfig().getHandleConfig(), mockDumperConfig(), new ImporterConfiguration());
-        return result;
-    }
-    
-    private DumperConfiguration mockDumperConfig() {
-        DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfig(new StandardJDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD));
-        Map<String, String> tableMap = new HashMap<>(1, 1);
-        tableMap.put("t_order", "t_order");
-        result.setTableNameMap(tableMap);
-        return result;
+    private void initJobContext() {
+        jobContext = new JobContext(ResourceUtil.mockJobConfig());
+        taskConfig = jobContext.getTaskConfigs().iterator().next();
     }
 }
