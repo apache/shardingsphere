@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit.impl;
+package org.apache.shardingsphere.infra.yaml.config;
 
-import org.apache.shardingsphere.test.integration.engine.junit.ITRunnerExecutor;
-import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * IT runner serial executor.
+ * Data source configuration for YAML.
  */
-public final class ITRunnerSerialExecutor implements ITRunnerExecutor {
+@Getter
+@Setter
+public final class YamlDataSourceConfiguration implements YamlConfiguration {
     
-    @Override
-    public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
-        childStatement.run();
-    }
+    private String dataSourceClassName;
     
-    @Override
-    public void finished() {
-    }
+    private Map<String, Object> props = new HashMap<>();
 }

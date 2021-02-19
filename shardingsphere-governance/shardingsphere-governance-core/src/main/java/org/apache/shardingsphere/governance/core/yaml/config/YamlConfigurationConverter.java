@@ -21,15 +21,15 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -61,7 +61,7 @@ public final class YamlConfigurationConverter {
         if (null == result.getDataSources() || result.getDataSources().isEmpty()) {
             return new LinkedHashMap<>();
         }
-        return result.getDataSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> new DataSourceConfigurationYamlSwapper()
+        return result.getDataSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper()
                 .swapToObject(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
@@ -72,7 +72,7 @@ public final class YamlConfigurationConverter {
      * @return data source configurations
      */
     public static Map<String, DataSourceConfiguration> convertDataSourceConfigurations(final Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigs) {
-        return Maps.transformValues(yamlDataSourceConfigs, new DataSourceConfigurationYamlSwapper()::swapToObject);
+        return Maps.transformValues(yamlDataSourceConfigs, new YamlDataSourceConfigurationSwapper()::swapToObject);
     }
     
     /**
@@ -82,9 +82,7 @@ public final class YamlConfigurationConverter {
      * @return data sources
      */
     public static Map<String, DataSource> convertDataSources(final Map<String, YamlDataSourceConfiguration> yamlDataSources) {
-        Map<String, DataSourceConfiguration> dataSourceConfigMap = yamlDataSources.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> new DataSourceConfigurationYamlSwapper().swapToObject(entry.getValue())));
-        return DataSourceConverter.getDataSourceMap(dataSourceConfigMap);
+        return new YamlDataSourceConfigurationSwapper().swapToDataSources(yamlDataSources);
     }
     
     /**

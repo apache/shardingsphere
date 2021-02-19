@@ -25,6 +25,7 @@ import org.apache.shardingsphere.driver.governance.internal.yaml.YamlGovernanceR
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import javax.sql.DataSource;
@@ -51,7 +52,8 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
         YamlGovernanceRootRuleConfigurations configurations = unmarshal(yamlFile);
-        return createDataSource(configurations.getDataSources(), configurations, configurations.getProps(), configurations.getGovernance());
+        return createDataSource(new YamlDataSourceConfigurationSwapper().swapToDataSources(configurations.getDataSources()),
+                configurations, configurations.getProps(), configurations.getGovernance());
     }
     
     /**
@@ -78,7 +80,8 @@ public final class YamlGovernanceShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
         YamlGovernanceRootRuleConfigurations configurations = unmarshal(yamlBytes);
-        return createDataSource(configurations.getDataSources(), configurations, configurations.getProps(), configurations.getGovernance());
+        return createDataSource(new YamlDataSourceConfigurationSwapper().swapToDataSources(configurations.getDataSources()),
+                configurations, configurations.getProps(), configurations.getGovernance());
     }
     
     /**

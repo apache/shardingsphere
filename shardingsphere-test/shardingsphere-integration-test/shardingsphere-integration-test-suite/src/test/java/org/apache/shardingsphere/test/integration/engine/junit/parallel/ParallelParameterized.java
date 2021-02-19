@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config;
+package org.apache.shardingsphere.test.integration.engine.junit.parallel;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.junit.runners.Parameterized;
 
 /**
- * Data source configuration for YAML.
+ * Parallel parameterized.
  */
-@Getter
-@Setter
-public final class YamlDataSourceConfiguration implements YamlConfiguration {
+public final class ParallelParameterized extends Parameterized {
     
-    private String dataSourceClassName;
-    
-    private Map<String, Object> props = new HashMap<>();
+    //CHECKSTYLE:OFF
+    public ParallelParameterized(final Class<?> klass) throws Throwable {
+        //CHECKSTYLE:ON
+        super(klass);
+        setScheduler(new ParallelRunnerScheduler());
+    }
 }
