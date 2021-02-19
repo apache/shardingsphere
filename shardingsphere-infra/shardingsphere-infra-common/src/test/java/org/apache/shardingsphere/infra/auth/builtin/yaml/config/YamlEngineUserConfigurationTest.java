@@ -21,8 +21,6 @@ import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUse
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -34,13 +32,6 @@ public final class YamlEngineUserConfigurationTest {
     public void assertUnmarshal() {
         YamlUserConfiguration actual = YamlEngine.unmarshal("password: pwd", YamlUserConfiguration.class);
         assertThat(actual.getPassword(), is("pwd"));
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Test
-    public void assertSecureUnmarshalMap() {
-        Map<String, Object> actual = (Map<String, Object>) YamlEngine.secureUnmarshal("password: pwd", Collections.emptyList());
-        assertThat(actual.get("password").toString(), is("pwd"));
     }
     
     @Test
