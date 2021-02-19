@@ -17,56 +17,63 @@
 
 package org.apache.shardingsphere.scaling.core.job.task.incremental;
 
-import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
+import org.apache.shardingsphere.scaling.core.executor.engine.ExecuteEngine;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
+import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
+import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.Future;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
 public final class IncrementalTaskTest {
     
-    private static final String DATA_SOURCE_URL = "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
+    @Mock
+    private ExecuteEngine executeEngine;
     
-    private static final String USERNAME = "root";
-    
-    private static final String PASSWORD = "password";
+    @Mock
+    @SuppressWarnings("rawtypes")
+    private Future future;
     
     private IncrementalTask incrementalTask;
     
     @Before
-    public void setUp() {
-        ScalingContext.getInstance().init(new ServerConfiguration());
-        incrementalTask = ScalingTaskFactory.createIncrementalTask(3, mockDumperConfig(), mockImporterConfiguration());
+    public void setUp() throws Exception {
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", new ServerConfiguration());
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "incrementalDumperExecuteEngine", executeEngine);
+        TaskConfiguration taskConfig = new JobContext(ResourceUtil.mockJobConfig()).getTaskConfigs().iterator().next();
+        taskConfig.getDumperConfig().setPosition(new PlaceholderPosition());
+        incrementalTask = ScalingTaskFactory.createIncrementalTask(3, taskConfig.getDumperConfig(), taskConfig.getImporterConfig());
+        
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    public void assertStart() {
+        when(executeEngine.submitAll(any(), any())).thenReturn(future);
+        incrementalTask.start();
+        assertThat(incrementalTask.getTaskId(), is("ds_0"));
+        assertTrue(incrementalTask.getProgress().getPosition() instanceof PlaceholderPosition);
     }
     
     @After
     public void tearDown() {
         incrementalTask.stop();
-    }
-    
-    private ImporterConfiguration mockImporterConfiguration() {
-        ImporterConfiguration result = new ImporterConfiguration();
-        result.setDataSourceConfig(new StandardJDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD));
-        return result;
-    }
-    
-    private DumperConfiguration mockDumperConfig() {
-        ScalingDataSourceConfiguration dataSourceConfig = new StandardJDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
-        DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceName("ds0");
-        result.setDataSourceConfig(dataSourceConfig);
-        Map<String, String> tableMap = new HashMap<>(1, 1);
-        tableMap.put("t_order", "t_order");
-        result.setTableNameMap(tableMap);
-        result.setPosition(new PlaceholderPosition());
-        return result;
     }
 }
