@@ -20,53 +20,37 @@ package org.apache.shardingsphere.scaling.core.job.task.incremental;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.scaling.core.executor.engine.ExecuteEngine;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.concurrent.Future;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class IncrementalTaskTest {
-    
-    @Mock
-    private ExecuteEngine executeEngine;
-    
-    @Mock
-    @SuppressWarnings("rawtypes")
-    private Future future;
     
     private IncrementalTask incrementalTask;
     
+    @BeforeClass
+    public static void beforeClass() {
+        ScalingContext.getInstance().init(new ServerConfiguration());
+    }
+    
     @Before
-    public void setUp() throws Exception {
-        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", new ServerConfiguration());
-        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "incrementalDumperExecuteEngine", executeEngine);
+    public void setUp() {
         TaskConfiguration taskConfig = new JobContext(ResourceUtil.mockJobConfig()).getTaskConfigs().iterator().next();
         taskConfig.getDumperConfig().setPosition(new PlaceholderPosition());
         incrementalTask = ScalingTaskFactory.createIncrementalTask(3, taskConfig.getDumperConfig(), taskConfig.getImporterConfig());
-        
     }
     
     @Test
-    @SuppressWarnings("unchecked")
     public void assertStart() {
-        when(executeEngine.submitAll(any(), any())).thenReturn(future);
         incrementalTask.start();
         assertThat(incrementalTask.getTaskId(), is("ds_0"));
         assertTrue(incrementalTask.getProgress().getPosition() instanceof PlaceholderPosition);
