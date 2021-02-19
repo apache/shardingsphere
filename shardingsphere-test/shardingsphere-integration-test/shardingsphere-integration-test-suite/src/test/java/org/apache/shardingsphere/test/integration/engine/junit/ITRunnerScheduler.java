@@ -41,56 +41,64 @@ public final class ITRunnerScheduler implements RunnerScheduler {
     
     private final Field parametersField;
     
-    private volatile Field runnerField;
-    
     private final Map<String, ITRunnerExecutor> runnerExecutors;
     
-    @SneakyThrows
+    private volatile Field runnerField;
+    
     public ITRunnerScheduler() {
-        parametersField = BlockJUnit4ClassRunnerWithParameters.class.getDeclaredField("parameters");
-        parametersField.setAccessible(true);
-        runnerExecutors = new HashMap<>();
-        initRunnerExecutors();
+        parametersField = getParametersField();
+        runnerExecutors = getITRunnerExecutors();
     }
     
-    private void initRunnerExecutors() {
+    @SneakyThrows(NoSuchFieldException.class)
+    private Field getParametersField() {
+        Field result = BlockJUnit4ClassRunnerWithParameters.class.getDeclaredField("parameters");
+        result.setAccessible(true);
+        return result;
+    }
+    
+    private Map<String, ITRunnerExecutor> getITRunnerExecutors() {
+        Map<String, ITRunnerExecutor> result = new HashMap<>(IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().size() * 3, 1);
         for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()) {
-            runnerExecutors.put(getRunnerExecutorKey(each.getName(), SQLCommandType.DQL.name()), new ITRunnerParallelExecutor());
+            result.put(getITRunnerExecutorKey(each.getName(), SQLCommandType.DQL.name()), new ITRunnerParallelExecutor());
             if (each instanceof PostgreSQLDatabaseType) {
-                runnerExecutors.put(getRunnerExecutorKey(each.getName(), SQLCommandType.DDL.name()), new ITRunnerSerialExecutor());
+                result.put(getITRunnerExecutorKey(each.getName(), SQLCommandType.DDL.name()), new ITRunnerSerialExecutor());
             } else {
-                runnerExecutors.put(getRunnerExecutorKey(each.getName(), SQLCommandType.DDL.name()), new ITRunnerScenariosExecutor());
+                result.put(getITRunnerExecutorKey(each.getName(), SQLCommandType.DDL.name()), new ITRunnerScenariosExecutor());
             }
-            runnerExecutors.put(getRunnerExecutorKey(each.getName(), ""), new ITRunnerScenariosExecutor());
+            result.put(getITRunnerExecutorKey(each.getName(), ""), new ITRunnerScenariosExecutor());
         }
+        return result;
     }
     
-    private String getRunnerExecutorKey(final String databaseType, final String sqlCommandType) {
+    private String getITRunnerExecutorKey(final String databaseType, final String sqlCommandType) {
         return String.join("_", databaseType, sqlCommandType);
     }
     
-    @SneakyThrows
     @Override
     public void schedule(final Runnable childStatement) {
-        // TODO Gets the parameters of the Runnable closure
+        Object[] parameters = getITParameters(childStatement);
+        ParameterizedArray parameterizedArray = (ParameterizedArray) parameters[0];
+        getITRunnerExecutor(parameterizedArray).execute(parameterizedArray, childStatement);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Object[] getITParameters(final Runnable childStatement) {
         if (null == runnerField) {
             runnerField = childStatement.getClass().getDeclaredField("val$each");
             runnerField.setAccessible(true);
         }
-        BlockJUnit4ClassRunnerWithParameters runner = (BlockJUnit4ClassRunnerWithParameters) runnerField.get(childStatement);
-        Object[] parameters = (Object[]) parametersField.get(runner);
-        ParameterizedArray parameterizedArray = (ParameterizedArray) parameters[0];
-        getITRunnerExecutor(parameterizedArray).execute(parameterizedArray, childStatement);
+        return (Object[]) parametersField.get(runnerField.get(childStatement));
     }
     
     private ITRunnerExecutor getITRunnerExecutor(final ParameterizedArray parameterizedArray) {
         switch (parameterizedArray.getSqlCommandType()) {
             case DQL:
-                return runnerExecutors.get(getRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), SQLCommandType.DQL.name()));
+                return runnerExecutors.get(getITRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), SQLCommandType.DQL.name()));
             case DDL:
-                return runnerExecutors.get(getRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), SQLCommandType.DDL.name()));
+                return runnerExecutors.get(getITRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), SQLCommandType.DDL.name()));
             default:
-                return runnerExecutors.get(getRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), ""));
+                return runnerExecutors.get(getITRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), ""));
         }
     }
     
