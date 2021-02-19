@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
@@ -31,9 +32,11 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.engine.MetadataRefreshEngine;
+import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresherFactory;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.LockWaitTimeoutException;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
@@ -50,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -99,12 +103,39 @@ public final class DatabaseCommunicationEngine {
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
         proxySQLExecutor.checkExecutePrerequisites(executionContext);
-        Collection<ExecuteResult> executeResults = proxySQLExecutor.execute(executionContext);
-        refreshMetadata(executionContext);
+        boolean locked = false;
+        Collection<ExecuteResult> executeResults;
+        try {
+            locked = tryGlobalLock(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
+            executeResults = proxySQLExecutor.execute(executionContext);
+            refreshMetadata(executionContext);
+        } finally {
+            if (locked) {
+                releaseGlobalLock();
+            }
+        }
         ExecuteResult executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
                 ? processExecuteQuery(executionContext, executeResults.stream().map(each -> (QueryResult) each).collect(Collectors.toList()), (QueryResult) executeResultSample)
                 : processExecuteUpdate(executionContext, executeResults.stream().map(each -> (UpdateResult) each).collect(Collectors.toList()));
+    }
+    
+    private boolean tryGlobalLock(final ExecutionContext executionContext, final Long lockTimeoutMilliseconds) {
+        if (needLock(executionContext)) {
+            if (!ProxyContext.getInstance().getLockContext().tryGlobalLock(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
+                throw new LockWaitTimeoutException(lockTimeoutMilliseconds);
+            }
+            return true;
+        }
+        return false;
+    }
+    
+    private boolean needLock(final ExecutionContext executionContext) {
+        return MetadataRefresherFactory.newInstance(executionContext.getSqlStatementContext().getSqlStatement()).isPresent();
+    }
+    
+    private void releaseGlobalLock() {
+        ProxyContext.getInstance().getLockContext().releaseGlobalLock();
     }
     
     private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
