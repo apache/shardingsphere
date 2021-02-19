@@ -28,11 +28,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class ITRunnerParallelExecutor implements ITRunnerExecutor {
     
-    private final ExecutorServiceManager executorServiceManager;
-    
-    public ITRunnerParallelExecutor() {
-        executorServiceManager = new ExecutorServiceManager(Runtime.getRuntime().availableProcessors() * 2 - 1);
-    }
+    private final ExecutorServiceManager executorServiceManager = new ExecutorServiceManager(Runtime.getRuntime().availableProcessors() * 2 - 1);
     
     @Override
     public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
@@ -41,14 +37,12 @@ public final class ITRunnerParallelExecutor implements ITRunnerExecutor {
     
     @Override
     public void finished() {
-        if (null != executorServiceManager) {
-            try {
-                ExecutorService executorService = executorServiceManager.getExecutorService();
-                executorService.shutdown();
-                executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-            } catch (InterruptedException e) {
-                e.printStackTrace(System.err);
-            }
+        try {
+            ExecutorService executorService = executorServiceManager.getExecutorService();
+            executorService.shutdown();
+            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (final InterruptedException ex) {
+            ex.printStackTrace(System.err);
         }
     }
 }
