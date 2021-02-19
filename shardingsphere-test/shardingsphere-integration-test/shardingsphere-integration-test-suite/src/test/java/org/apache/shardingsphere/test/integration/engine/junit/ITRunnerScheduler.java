@@ -45,12 +45,17 @@ public final class ITRunnerScheduler implements RunnerScheduler {
     
     private final Map<String, ITRunnerExecutor> runnerExecutors;
     
-    @SneakyThrows
     public ITRunnerScheduler() {
-        parametersField = BlockJUnit4ClassRunnerWithParameters.class.getDeclaredField("parameters");
-        parametersField.setAccessible(true);
+        parametersField = getParametersField();
         runnerExecutors = new HashMap<>();
         initRunnerExecutors();
+    }
+    
+    @SneakyThrows(NoSuchFieldException.class)
+    private Field getParametersField() {
+        Field result = BlockJUnit4ClassRunnerWithParameters.class.getDeclaredField("parameters");
+        result.setAccessible(true);
+        return result;
     }
     
     private void initRunnerExecutors() {
@@ -69,18 +74,20 @@ public final class ITRunnerScheduler implements RunnerScheduler {
         return String.join("_", databaseType, sqlCommandType);
     }
     
-    @SneakyThrows
     @Override
     public void schedule(final Runnable childStatement) {
-        // TODO Gets the parameters of the Runnable closure
+        Object[] parameters = getITParameters(childStatement);
+        ParameterizedArray parameterizedArray = (ParameterizedArray) parameters[0];
+        getITRunnerExecutor(parameterizedArray).execute(parameterizedArray, childStatement);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Object[] getITParameters(final Runnable childStatement) {
         if (null == runnerField) {
             runnerField = childStatement.getClass().getDeclaredField("val$each");
             runnerField.setAccessible(true);
         }
-        BlockJUnit4ClassRunnerWithParameters runner = (BlockJUnit4ClassRunnerWithParameters) runnerField.get(childStatement);
-        Object[] parameters = (Object[]) parametersField.get(runner);
-        ParameterizedArray parameterizedArray = (ParameterizedArray) parameters[0];
-        getITRunnerExecutor(parameterizedArray).execute(parameterizedArray, childStatement);
+        return (Object[]) parametersField.get(runnerField.get(childStatement));
     }
     
     private ITRunnerExecutor getITRunnerExecutor(final ParameterizedArray parameterizedArray) {
