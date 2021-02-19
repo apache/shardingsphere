@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.yaml.engine;
 
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
@@ -34,8 +33,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * YAML engine.
@@ -99,17 +96,6 @@ public final class YamlEngine {
      */
     public static <T> T secureUnmarshal(final String yamlContent, final Class<T> classType, final Collection<Class<?>> acceptedClasses) {
         return new Yaml(new ShardingSphereFilterYamlConstructor(classType, acceptedClasses)).loadAs(yamlContent, classType);
-    }
-    
-    /**
-     * Secure unmarshal YAML.
-     *
-     * @param yamlContent YAML content
-     * @param acceptedClasses accepted classes
-     * @return map from YAML
-     */
-    public static Map<?, ?> secureUnmarshal(final String yamlContent, final Collection<Class<?>> acceptedClasses) {
-        return Strings.isNullOrEmpty(yamlContent) ? new LinkedHashMap<>() : (Map) new Yaml(new ShardingSphereFilterYamlConstructor(acceptedClasses)).load(yamlContent);
     }
     
     /**

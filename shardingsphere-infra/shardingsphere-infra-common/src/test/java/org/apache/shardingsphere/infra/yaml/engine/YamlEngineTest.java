@@ -29,9 +29,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -74,13 +72,6 @@ public final class YamlEngineTest {
     }
     
     @Test
-    @SuppressWarnings("unchecked")
-    public void assertSecureUnmarshalWithYamlContent() {
-        Map<String, Object> actual = (Map<String, Object>) YamlEngine.secureUnmarshal("name: test", Collections.emptyList());
-        assertThat(actual.get("name").toString(), is("test"));
-    }
-    
-    @Test
     public void assertSecureUnmarshalProperties() {
         Properties actual = YamlEngine.secureUnmarshal("password: pwd", Properties.class);
         assertThat(actual.getProperty("password"), is("pwd"));
@@ -91,21 +82,6 @@ public final class YamlEngineTest {
         YamlRuleConfigurationFixture actual = new YamlRuleConfigurationFixture();
         actual.setName("test");
         assertThat(YamlEngine.marshal(actual), is("name: test\n"));
-    }
-    
-    @Test(expected = ConstructorException.class)
-    public void assertSecureUnmarshalMapWithIllegalClasses() {
-        YamlEngine.secureUnmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", Collections.emptyList());
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Test
-    public void assertSecureUnmarshalMapWithAcceptedClasses() {
-        Collection<Class<?>> acceptedClasses = new LinkedList<>();
-        acceptedClasses.add(URLClassLoader.class);
-        acceptedClasses.add(URL.class);
-        Map<String, URLClassLoader> actual = (Map) YamlEngine.secureUnmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", acceptedClasses);
-        assertThat(actual.get("url").getClass().getName(), is(URLClassLoader.class.getName()));
     }
     
     @Test
