@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.engine.param.domain.ParameterizedWrapper;
+import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.junit.runners.model.RunnerScheduler;
 import org.junit.runners.parameterized.BlockJUnit4ClassRunnerWithParameters;
@@ -79,18 +79,18 @@ public final class ITRunnerScheduler implements RunnerScheduler {
         }
         BlockJUnit4ClassRunnerWithParameters runner = (BlockJUnit4ClassRunnerWithParameters) runnerField.get(childStatement);
         Object[] parameters = (Object[]) parametersField.get(runner);
-        ParameterizedWrapper parameterizedWrapper = (ParameterizedWrapper) parameters[0];
-        getITRunnerExecutor(parameterizedWrapper).execute(parameterizedWrapper, childStatement);
+        ParameterizedArray parameterizedArray = (ParameterizedArray) parameters[0];
+        getITRunnerExecutor(parameterizedArray).execute(parameterizedArray, childStatement);
     }
     
-    private ITRunnerExecutor getITRunnerExecutor(final ParameterizedWrapper parameterizedWrapper) {
-        switch (parameterizedWrapper.getSqlCommandType()) {
+    private ITRunnerExecutor getITRunnerExecutor(final ParameterizedArray parameterizedArray) {
+        switch (parameterizedArray.getSqlCommandType()) {
             case DQL:
-                return runnerExecutors.get(getRunnerExecutorKey(parameterizedWrapper.getDatabaseType().getName(), SQLCommandType.DQL.name()));
+                return runnerExecutors.get(getRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), SQLCommandType.DQL.name()));
             case DDL:
-                return runnerExecutors.get(getRunnerExecutorKey(parameterizedWrapper.getDatabaseType().getName(), SQLCommandType.DDL.name()));
+                return runnerExecutors.get(getRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), SQLCommandType.DDL.name()));
             default:
-                return runnerExecutors.get(getRunnerExecutorKey(parameterizedWrapper.getDatabaseType().getName(), ""));
+                return runnerExecutors.get(getRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), ""));
         }
     }
     
