@@ -91,8 +91,6 @@ public final class ITRunnerScheduler implements RunnerScheduler {
         switch (parameterizedArray.getSqlCommandType()) {
             case DQL:
                 return runnerExecutors.get(getITRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), SQLCommandType.DQL.name()));
-            case DDL:
-                return runnerExecutors.get(getITRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), SQLCommandType.DDL.name()));
             default:
                 return runnerExecutors.get(getITRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), ""));
         }
