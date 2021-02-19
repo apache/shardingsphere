@@ -20,52 +20,34 @@ package org.apache.shardingsphere.scaling.core.job.task.inventory;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
-import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.junit.After;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
 
 public final class InventoryTaskTest {
     
-    private static final String DATA_SOURCE_URL = "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
+    private static TaskConfiguration taskConfig;
     
-    private static final String USERNAME = "root";
+    private final DataSourceManager dataSourceManager = new DataSourceManager();
     
-    private static final String PASSWORD = "password";
-    
-    private TaskConfiguration taskConfig;
-    
-    private DataSourceManager dataSourceManager;
-    
-    @Before
-    public void setUp() {
-        DumperConfiguration dumperConfig = mockDumperConfig();
-        ImporterConfiguration importerConfig = mockImporterConfig();
+    @BeforeClass
+    public static void beforeClass() {
         ScalingContext.getInstance().init(new ServerConfiguration());
-        taskConfig = new TaskConfiguration(new HandleConfiguration(), dumperConfig, importerConfig);
-        dataSourceManager = new DataSourceManager();
-    }
-    
-    @After
-    public void tearDown() {
-        dataSourceManager.close();
+        taskConfig = new JobContext(ResourceUtil.mockJobConfig()).getTaskConfigs().iterator().next();
     }
     
     @Test(expected = ScalingTaskExecuteException.class)
@@ -87,6 +69,11 @@ public final class InventoryTaskTest {
         assertFalse(inventoryTask.getProgress().getPosition() instanceof FinishedPosition);
     }
     
+    @After
+    public void tearDown() {
+        dataSourceManager.close();
+    }
+    
     private void initTableData(final DumperConfiguration dumperConfig) throws SQLException {
         DataSource dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig());
         try (Connection connection = dataSource.getConnection();
@@ -95,21 +82,5 @@ public final class InventoryTaskTest {
             statement.execute("CREATE TABLE t_order (id INT PRIMARY KEY, user_id VARCHAR(12))");
             statement.execute("INSERT INTO t_order (id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
         }
-    }
-    
-    private DumperConfiguration mockDumperConfig() {
-        ScalingDataSourceConfiguration dataSourceConfig = new StandardJDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
-        DumperConfiguration result = new DumperConfiguration();
-        result.setDataSourceConfig(dataSourceConfig);
-        result.setPosition(new PrimaryKeyPosition(1, 100));
-        result.setTableNameMap(Collections.emptyMap());
-        return result;
-    }
-    
-    private ImporterConfiguration mockImporterConfig() {
-        ScalingDataSourceConfiguration dataSourceConfig = new StandardJDBCDataSourceConfiguration(DATA_SOURCE_URL, USERNAME, PASSWORD);
-        ImporterConfiguration result = new ImporterConfiguration();
-        result.setDataSourceConfig(dataSourceConfig);
-        return result;
     }
 }

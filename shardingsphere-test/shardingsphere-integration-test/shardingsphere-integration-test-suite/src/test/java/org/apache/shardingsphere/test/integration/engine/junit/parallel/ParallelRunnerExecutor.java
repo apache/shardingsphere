@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit.impl;
+package org.apache.shardingsphere.test.integration.engine.junit.parallel;
 
-import org.apache.shardingsphere.test.integration.engine.junit.ITRunnerExecutor;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 
 /**
- * IT runner serial executor.
+ * Parallel runner executor.
  */
-public final class ITRunnerSerialExecutor implements ITRunnerExecutor {
+public interface ParallelRunnerExecutor {
     
-    @Override
-    public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
-        childStatement.run();
-    }
+    /**
+     * Execute child statement.
+     *
+     * @param parameterizedArray parameterized array
+     * @param childStatement child statement
+     */
+    void execute(ParameterizedArray parameterizedArray, Runnable childStatement);
     
-    @Override
-    public void finished() {
-    }
+    /**
+     * Override to implement any behavior that must occur after all children have been scheduled (for example, waiting for them all to finish).
+     */
+    void finished();
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit.impl;
+package org.apache.shardingsphere.test.integration.engine.junit.parallel.impl;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hasher;
@@ -31,73 +31,67 @@ import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.engine.junit.ITRunnerExecutor;
+import org.apache.shardingsphere.test.integration.engine.junit.parallel.ParallelRunnerExecutor;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Set;
 import java.util.concurrent.ThreadFactory;
+import java.util.stream.Collectors;
 
 /**
- * IT runner scenarios executor.
+ * Parallel runner executor with scenario.
  */
 @Slf4j
-public final class ITRunnerScenariosExecutor implements ITRunnerExecutor {
+public final class ScenarioParallelRunnerExecutor implements ParallelRunnerExecutor {
     
     private final Disruptor<CaseEntryEvent> disruptor;
     
     private final RingBuffer<CaseEntryEvent> ringBuffer;
     
-    private final Collection<CaseEventHandler> caseEventHandlers;
-    
-    @SneakyThrows
-    public ITRunnerScenariosExecutor() {
-        EventFactory<CaseEntryEvent> eventFactory = CaseEntryEvent::new;
-        ThreadFactory threadFactory = new ThreadFactoryBuilder().setDaemon(false).setNameFormat("disruptor-processors-%d")
-                .setUncaughtExceptionHandler((t, e) -> log.error("disruptor handler thread exception", e)).build();
-        disruptor = new Disruptor<>(eventFactory, 16384, threadFactory, ProducerType.SINGLE, new BlockingWaitStrategy());
-        IntegrationTestEnvironment integrationTestEnvironment = IntegrationTestEnvironment.getInstance();
-        Collection<String> adapters = integrationTestEnvironment.getAdapters();
-        Collection<String> scenarios = integrationTestEnvironment.getScenarios();
-        Set<DatabaseType> databaseTypes = integrationTestEnvironment.getDataSourceEnvironments().keySet();
-        caseEventHandlers = new LinkedList<>();
-        initCaseEventHandlers(adapters, scenarios, databaseTypes);
-        CaseEventHandler[] caseEventHandlerArray = new CaseEventHandler[caseEventHandlers.size()];
-        caseEventHandlers.toArray(caseEventHandlerArray);
-        disruptor.handleEventsWith(caseEventHandlerArray).then(new CleanupEventHandler());
+    public ScenarioParallelRunnerExecutor() {
+        disruptor = createDisruptor();
+        disruptor.handleEventsWith(createEventHandlers()).then(new CleanupEventHandler());
         disruptor.start();
         ringBuffer = disruptor.getRingBuffer();
     }
     
-    private void initCaseEventHandlers(final Collection<String> adapters, final Collection<String> scenarios, final Set<DatabaseType> databaseTypes) {
-        for (String each : adapters) {
-            initCaseEventHandlers(each, scenarios, databaseTypes);
-        }
+    private Disruptor<CaseEntryEvent> createDisruptor() {
+        EventFactory<CaseEntryEvent> eventFactory = CaseEntryEvent::new;
+        ThreadFactory threadFactory = new ThreadFactoryBuilder()
+                .setDaemon(false).setNameFormat("disruptor-processors-%d").setUncaughtExceptionHandler((thread, ex) -> log.error("Disruptor handler thread exception", ex)).build();
+        return new Disruptor<>(eventFactory, 16384, threadFactory, ProducerType.SINGLE, new BlockingWaitStrategy());
     }
     
-    private void initCaseEventHandlers(final String adapter, final Collection<String> scenarios, final Set<DatabaseType> databaseTypes) {
+    private CaseEventHandler[] createEventHandlers() {
+        Collection<CaseEventHandler> result = new LinkedList<>();
+        for (String each : IntegrationTestEnvironment.getInstance().getAdapters()) {
+            result.addAll(createEventHandlers(each, IntegrationTestEnvironment.getInstance().getScenarios(), IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()));
+        }
+        return result.toArray(new CaseEventHandler[0]);
+    }
+    
+    private Collection<CaseEventHandler> createEventHandlers(final String adapter, final Collection<String> scenarios, final Collection<DatabaseType> databaseTypes) {
+        Collection<CaseEventHandler> result = new LinkedList<>();
         for (String each : scenarios) {
-            initCaseEventHandlers(adapter, each, databaseTypes);
+            result.addAll(createEventHandlers(adapter, each, databaseTypes));
         }
+        return result;
     }
     
-    private void initCaseEventHandlers(final String adapter, final String scenario, final Collection<DatabaseType> databaseTypes) {
-        for (DatabaseType each : databaseTypes) {
-            caseEventHandlers.add(new CaseEventHandler(new CaseKey(adapter, scenario, each.getName()).hashCode()));
-        }
+    private Collection<CaseEventHandler> createEventHandlers(final String adapter, final String scenario, final Collection<DatabaseType> databaseTypes) {
+        return databaseTypes.stream().map(each -> new CaseEventHandler(new CaseKey(adapter, scenario, each.getName()).hashCode())).collect(Collectors.toList());
     }
     
     @Override
     public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
-        ringBuffer.publishEvent((e, seq) -> {
-            e.reset();
-            e.setCaseKey(new CaseKey(parameterizedArray.getAdapter(), parameterizedArray.getScenario(), parameterizedArray.getDatabaseType().getName()));
-            e.setChildStatement(childStatement);
+        ringBuffer.publishEvent((event, sequence) -> {
+            event.reset();
+            event.setCaseKey(new CaseKey(parameterizedArray.getAdapter(), parameterizedArray.getScenario(), parameterizedArray.getDatabaseType().getName()));
+            event.setChildStatement(childStatement);
         });
     }
     
@@ -109,14 +103,14 @@ public final class ITRunnerScenariosExecutor implements ITRunnerExecutor {
     }
     
     @RequiredArgsConstructor
-    public static final class CaseKey {
-    
+    private static final class CaseKey {
+        
         private final String adapter;
-    
+        
         private final String scenario;
-    
+        
         private final String databaseTypeName;
-    
+        
         @Override
         public int hashCode() {
             Hasher hasher = Hashing.murmur3_32().newHasher();
@@ -134,9 +128,9 @@ public final class ITRunnerScenariosExecutor implements ITRunnerExecutor {
     private static final class CaseEntryEvent {
         
         private CaseKey caseKey;
-    
+        
         private Runnable childStatement;
-    
+        
         @Override
         public int hashCode() {
             return caseKey.hashCode();
@@ -153,22 +147,22 @@ public final class ITRunnerScenariosExecutor implements ITRunnerExecutor {
         
         private final int hashCode;
         
-        private Sequence reportingSeq;
-    
+        private Sequence reportingSequence;
+        
         @Override
         public void onEvent(final CaseEntryEvent event, final long sequence, final boolean endOfBatch) {
             if (null == event.caseKey || event.hashCode() != hashCode) {
                 return;
             }
             event.childStatement.run();
-            if (null != reportingSeq) {
-                reportingSeq.set(sequence);
+            if (null != reportingSequence) {
+                reportingSequence.set(sequence);
             }
         }
         
         @Override
         public void setSequenceCallback(final Sequence sequenceCallback) {
-            this.reportingSeq = sequenceCallback;
+            reportingSequence = sequenceCallback;
         }
     }
     
