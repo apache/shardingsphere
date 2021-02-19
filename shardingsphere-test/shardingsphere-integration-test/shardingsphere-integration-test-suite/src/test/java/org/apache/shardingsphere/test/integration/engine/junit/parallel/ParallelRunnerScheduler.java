@@ -44,7 +44,7 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     
     public ParallelRunnerScheduler() {
         parametersField = getParametersField();
-        runnerExecutors = getITRunnerExecutors();
+        runnerExecutors = getRunnerExecutors();
     }
     
     @SneakyThrows(NoSuchFieldException.class)
@@ -54,28 +54,28 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
         return result;
     }
     
-    private Map<String, ParallelRunnerExecutor> getITRunnerExecutors() {
+    private Map<String, ParallelRunnerExecutor> getRunnerExecutors() {
         Map<String, ParallelRunnerExecutor> result = new HashMap<>(IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().size() * 3, 1);
         for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()) {
-            result.put(getITRunnerExecutorKey(each.getName(), SQLCommandType.DQL.name()), new CaseParallelRunnerExecutor());
-            result.put(getITRunnerExecutorKey(each.getName(), ""), new ScenarioParallelRunnerExecutor());
+            result.put(getRunnerExecutorKey(each.getName(), SQLCommandType.DQL.name()), new CaseParallelRunnerExecutor());
+            result.put(getRunnerExecutorKey(each.getName(), ""), new ScenarioParallelRunnerExecutor());
         }
         return result;
     }
     
-    private String getITRunnerExecutorKey(final String databaseType, final String sqlCommandType) {
+    private String getRunnerExecutorKey(final String databaseType, final String sqlCommandType) {
         return String.join("_", databaseType, sqlCommandType);
     }
     
     @Override
     public void schedule(final Runnable childStatement) {
-        Object[] parameters = getITParameters(childStatement);
+        Object[] parameters = getParameters(childStatement);
         ParameterizedArray parameterizedArray = (ParameterizedArray) parameters[0];
-        getITRunnerExecutor(parameterizedArray).execute(parameterizedArray, childStatement);
+        getRunnerExecutor(parameterizedArray).execute(parameterizedArray, childStatement);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private Object[] getITParameters(final Runnable childStatement) {
+    private Object[] getParameters(final Runnable childStatement) {
         if (null == runnerField) {
             runnerField = childStatement.getClass().getDeclaredField("val$each");
             runnerField.setAccessible(true);
@@ -83,12 +83,12 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
         return (Object[]) parametersField.get(runnerField.get(childStatement));
     }
     
-    private ParallelRunnerExecutor getITRunnerExecutor(final ParameterizedArray parameterizedArray) {
+    private ParallelRunnerExecutor getRunnerExecutor(final ParameterizedArray parameterizedArray) {
         switch (parameterizedArray.getSqlCommandType()) {
             case DQL:
-                return runnerExecutors.get(getITRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), SQLCommandType.DQL.name()));
+                return runnerExecutors.get(getRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), SQLCommandType.DQL.name()));
             default:
-                return runnerExecutors.get(getITRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), ""));
+                return runnerExecutors.get(getRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), ""));
         }
     }
     
