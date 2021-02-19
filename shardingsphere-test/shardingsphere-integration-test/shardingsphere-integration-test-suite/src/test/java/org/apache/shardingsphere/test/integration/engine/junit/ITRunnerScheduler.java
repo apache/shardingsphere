@@ -47,8 +47,7 @@ public final class ITRunnerScheduler implements RunnerScheduler {
     
     public ITRunnerScheduler() {
         parametersField = getParametersField();
-        runnerExecutors = new HashMap<>();
-        initRunnerExecutors();
+        runnerExecutors = getRunnerExecutors();
     }
     
     @SneakyThrows(NoSuchFieldException.class)
@@ -58,16 +57,18 @@ public final class ITRunnerScheduler implements RunnerScheduler {
         return result;
     }
     
-    private void initRunnerExecutors() {
+    private Map<String, ITRunnerExecutor> getRunnerExecutors() {
+        Map<String, ITRunnerExecutor> result = new HashMap<>(); 
         for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()) {
-            runnerExecutors.put(getRunnerExecutorKey(each.getName(), SQLCommandType.DQL.name()), new ITRunnerParallelExecutor());
+            result.put(getRunnerExecutorKey(each.getName(), SQLCommandType.DQL.name()), new ITRunnerParallelExecutor());
             if (each instanceof PostgreSQLDatabaseType) {
-                runnerExecutors.put(getRunnerExecutorKey(each.getName(), SQLCommandType.DDL.name()), new ITRunnerSerialExecutor());
+                result.put(getRunnerExecutorKey(each.getName(), SQLCommandType.DDL.name()), new ITRunnerSerialExecutor());
             } else {
-                runnerExecutors.put(getRunnerExecutorKey(each.getName(), SQLCommandType.DDL.name()), new ITRunnerScenariosExecutor());
+                result.put(getRunnerExecutorKey(each.getName(), SQLCommandType.DDL.name()), new ITRunnerScenariosExecutor());
             }
-            runnerExecutors.put(getRunnerExecutorKey(each.getName(), ""), new ITRunnerScenariosExecutor());
+            result.put(getRunnerExecutorKey(each.getName(), ""), new ITRunnerScenariosExecutor());
         }
+        return result;
     }
     
     private String getRunnerExecutorKey(final String databaseType, final String sqlCommandType) {
