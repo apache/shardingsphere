@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.swapper;
+package org.apache.shardingsphere.infra.yaml.swapper;
 
-import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlDataSourceConfiguration;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class DataSourceConfigurationYamlSwapperTest {
+public final class YamlDataSourceConfigurationSwapperTest {
     
-    private final DataSourceConfigurationYamlSwapper dataSourceConfigurationYamlSwapper = new DataSourceConfigurationYamlSwapper();
+    private final YamlDataSourceConfigurationSwapper yamlDataSourceConfigurationSwapper = new YamlDataSourceConfigurationSwapper();
     
     @Test
-    public void assertSwapToYaml() {
+    public void assertSwapToYamlConfiguration() {
         DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration("xxx.jdbc.driver");
         dataSourceConfig.getProps().put("url", "xx:xxx");
         dataSourceConfig.getProps().put("username", "root");
-        YamlDataSourceConfiguration actual = dataSourceConfigurationYamlSwapper.swapToYamlConfiguration(dataSourceConfig);
+        YamlDataSourceConfiguration actual = yamlDataSourceConfigurationSwapper.swapToYamlConfiguration(dataSourceConfig);
         assertThat(actual.getDataSourceClassName(), is("xxx.jdbc.driver"));
         assertThat(actual.getProps().size(), is(2));
         assertThat(actual.getProps().get("url").toString(), is("xx:xxx"));
@@ -46,7 +46,7 @@ public final class DataSourceConfigurationYamlSwapperTest {
         yamlConfig.setDataSourceClassName("xxx.jdbc.driver");
         yamlConfig.getProps().put("url", "xx:xxx");
         yamlConfig.getProps().put("username", "root");
-        DataSourceConfiguration actual = dataSourceConfigurationYamlSwapper.swapToObject(yamlConfig);
+        DataSourceConfiguration actual = yamlDataSourceConfigurationSwapper.swapToObject(yamlConfig);
         assertThat(actual.getDataSourceClassName(), is("xxx.jdbc.driver"));
         assertThat(actual.getProps().size(), is(2));
         assertThat(actual.getProps().get("url").toString(), is("xx:xxx"));
