@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.core.common.datasource;
 
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
-import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +39,7 @@ public final class DataSourceManagerTest {
     
     @Before
     public void setUp() {
-        taskConfigurations = new JobContext(JobConfigurationUtil.initJobConfig("/config.json")).getTaskConfigs();
+        taskConfigurations = new JobContext(ResourceUtil.mockJobConfig()).getTaskConfigs();
     }
     
     @Test
