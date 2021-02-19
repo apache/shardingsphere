@@ -15,31 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.api;
+package org.apache.shardingsphere.scaling.core.spi;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.fixture.FixtureH2ScalingEntry;
+import org.junit.Test;
 
-/**
- * Job info.
- */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public final class JobInfo {
+import static org.junit.Assert.assertTrue;
+
+public final class ScalingEntryLoaderTest {
     
-    private final long jobId;
+    @Test
+    public void assertGetFixtureInstance() {
+        ScalingEntry actual = ScalingEntryLoader.getInstance("H2");
+        assertTrue(actual instanceof FixtureH2ScalingEntry);
+    }
     
-    private boolean active;
-    
-    private String status;
-    
-    private String[] tables;
-    
-    private int shardingTotalCount;
-    
-    private int inventoryFinishedPercentage;
-    
-    private long incrementalAverageDelayMilliseconds = -1;
+    @Test(expected = UnsupportedOperationException.class)
+    public void assertGetInstanceFailure() {
+        ScalingEntryLoader.getInstance("None");
+    }
 }
