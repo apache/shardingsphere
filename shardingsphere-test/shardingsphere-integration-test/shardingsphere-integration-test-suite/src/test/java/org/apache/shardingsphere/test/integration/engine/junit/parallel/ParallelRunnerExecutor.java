@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit;
+package org.apache.shardingsphere.test.integration.engine.junit.parallel;
 
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 
 /**
- * IT runner parallel executor.
+ * Parallel runner executor.
  */
-public interface ITRunnerParallelExecutor {
+public interface ParallelRunnerExecutor {
     
     /**
      * Execute child statement.

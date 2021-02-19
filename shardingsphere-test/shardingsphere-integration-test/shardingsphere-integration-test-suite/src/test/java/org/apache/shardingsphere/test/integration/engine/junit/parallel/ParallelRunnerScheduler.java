@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit;
+package org.apache.shardingsphere.test.integration.engine.junit.parallel;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.engine.junit.impl.ITRunnerCaseBasedParallelExecutor;
-import org.apache.shardingsphere.test.integration.engine.junit.impl.ITRunnerScenarioBasedParallelExecutor;
+import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.CaseParallelRunnerExecutor;
+import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.ScenarioParallelRunnerExecutor;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.junit.runners.model.RunnerScheduler;
@@ -38,7 +38,7 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     
     private final Field parametersField;
     
-    private final Map<String, ITRunnerParallelExecutor> runnerExecutors;
+    private final Map<String, ParallelRunnerExecutor> runnerExecutors;
     
     private volatile Field runnerField;
     
@@ -54,11 +54,11 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
         return result;
     }
     
-    private Map<String, ITRunnerParallelExecutor> getITRunnerExecutors() {
-        Map<String, ITRunnerParallelExecutor> result = new HashMap<>(IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().size() * 3, 1);
+    private Map<String, ParallelRunnerExecutor> getITRunnerExecutors() {
+        Map<String, ParallelRunnerExecutor> result = new HashMap<>(IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().size() * 3, 1);
         for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()) {
-            result.put(getITRunnerExecutorKey(each.getName(), SQLCommandType.DQL.name()), new ITRunnerCaseBasedParallelExecutor());
-            result.put(getITRunnerExecutorKey(each.getName(), ""), new ITRunnerScenarioBasedParallelExecutor());
+            result.put(getITRunnerExecutorKey(each.getName(), SQLCommandType.DQL.name()), new CaseParallelRunnerExecutor());
+            result.put(getITRunnerExecutorKey(each.getName(), ""), new ScenarioParallelRunnerExecutor());
         }
         return result;
     }
@@ -83,7 +83,7 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
         return (Object[]) parametersField.get(runnerField.get(childStatement));
     }
     
-    private ITRunnerParallelExecutor getITRunnerExecutor(final ParameterizedArray parameterizedArray) {
+    private ParallelRunnerExecutor getITRunnerExecutor(final ParameterizedArray parameterizedArray) {
         switch (parameterizedArray.getSqlCommandType()) {
             case DQL:
                 return runnerExecutors.get(getITRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), SQLCommandType.DQL.name()));
@@ -95,7 +95,7 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     @Override
     public void finished() {
         if (null != runnerExecutors) {
-            runnerExecutors.values().forEach(ITRunnerParallelExecutor::finished);
+            runnerExecutors.values().forEach(ParallelRunnerExecutor::finished);
         }
     }
 }

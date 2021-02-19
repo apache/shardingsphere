@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit.impl;
+package org.apache.shardingsphere.test.integration.engine.junit.parallel.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
-import org.apache.shardingsphere.test.integration.engine.junit.ITRunnerParallelExecutor;
+import org.apache.shardingsphere.test.integration.engine.junit.parallel.ParallelRunnerExecutor;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * IT runner parallel executor with case based.
+ * Parallel runner executor with case.
  */
-public final class ITRunnerCaseBasedParallelExecutor implements ITRunnerParallelExecutor {
+public final class CaseParallelRunnerExecutor implements ParallelRunnerExecutor {
     
     private final ExecutorServiceManager executorServiceManager = new ExecutorServiceManager(Runtime.getRuntime().availableProcessors() * 2 - 1);
     

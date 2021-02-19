@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit.impl;
+package org.apache.shardingsphere.test.integration.engine.junit.parallel.impl;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hasher;
@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.engine.junit.ITRunnerParallelExecutor;
+import org.apache.shardingsphere.test.integration.engine.junit.parallel.ParallelRunnerExecutor;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 
@@ -43,16 +43,16 @@ import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
 /**
- * IT runner parallel executor with scenario based.
+ * Parallel runner executor with scenario.
  */
 @Slf4j
-public final class ITRunnerScenarioBasedParallelExecutor implements ITRunnerParallelExecutor {
+public final class ScenarioParallelRunnerExecutor implements ParallelRunnerExecutor {
     
     private final Disruptor<CaseEntryEvent> disruptor;
     
     private final RingBuffer<CaseEntryEvent> ringBuffer;
     
-    public ITRunnerScenarioBasedParallelExecutor() {
+    public ScenarioParallelRunnerExecutor() {
         disruptor = createDisruptor();
         disruptor.handleEventsWith(createEventHandlers()).then(new CleanupEventHandler());
         disruptor.start();
