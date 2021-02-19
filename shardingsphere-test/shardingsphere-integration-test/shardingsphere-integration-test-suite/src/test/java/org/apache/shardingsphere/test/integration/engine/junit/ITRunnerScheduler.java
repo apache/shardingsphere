@@ -19,11 +19,9 @@ package org.apache.shardingsphere.test.integration.engine.junit;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.engine.junit.impl.ITRunnerParallelExecutor;
 import org.apache.shardingsphere.test.integration.engine.junit.impl.ITRunnerScenariosExecutor;
-import org.apache.shardingsphere.test.integration.engine.junit.impl.ITRunnerSerialExecutor;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.junit.runners.model.RunnerScheduler;
@@ -64,11 +62,6 @@ public final class ITRunnerScheduler implements RunnerScheduler {
         Map<String, ITRunnerExecutor> result = new HashMap<>(IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().size() * 3, 1);
         for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()) {
             result.put(getITRunnerExecutorKey(each.getName(), SQLCommandType.DQL.name()), new ITRunnerParallelExecutor());
-            if (each instanceof PostgreSQLDatabaseType) {
-                result.put(getITRunnerExecutorKey(each.getName(), SQLCommandType.DDL.name()), new ITRunnerSerialExecutor());
-            } else {
-                result.put(getITRunnerExecutorKey(each.getName(), SQLCommandType.DDL.name()), new ITRunnerScenariosExecutor());
-            }
             result.put(getITRunnerExecutorKey(each.getName(), ""), new ITRunnerScenariosExecutor());
         }
         return result;
