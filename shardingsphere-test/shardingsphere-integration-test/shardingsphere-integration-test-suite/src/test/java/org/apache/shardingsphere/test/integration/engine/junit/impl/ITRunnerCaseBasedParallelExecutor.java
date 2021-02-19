@@ -19,16 +19,16 @@ package org.apache.shardingsphere.test.integration.engine.junit.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
-import org.apache.shardingsphere.test.integration.engine.junit.ITRunnerExecutor;
+import org.apache.shardingsphere.test.integration.engine.junit.ITRunnerParallelExecutor;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * IT runner parallel executor.
+ * IT runner parallel executor with case based.
  */
-public final class ITRunnerParallelExecutor implements ITRunnerExecutor {
+public final class ITRunnerCaseBasedParallelExecutor implements ITRunnerParallelExecutor {
     
     private final ExecutorServiceManager executorServiceManager = new ExecutorServiceManager(Runtime.getRuntime().availableProcessors() * 2 - 1);
     

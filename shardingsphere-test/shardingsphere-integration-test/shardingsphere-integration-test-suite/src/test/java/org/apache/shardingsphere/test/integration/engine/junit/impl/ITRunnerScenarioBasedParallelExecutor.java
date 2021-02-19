@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.engine.junit.ITRunnerExecutor;
+import org.apache.shardingsphere.test.integration.engine.junit.ITRunnerParallelExecutor;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 
@@ -43,16 +43,16 @@ import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
 /**
- * IT runner scenarios executor.
+ * IT runner parallel executor with scenario based.
  */
 @Slf4j
-public final class ITRunnerScenariosExecutor implements ITRunnerExecutor {
+public final class ITRunnerScenarioBasedParallelExecutor implements ITRunnerParallelExecutor {
     
     private final Disruptor<CaseEntryEvent> disruptor;
     
     private final RingBuffer<CaseEntryEvent> ringBuffer;
     
-    public ITRunnerScenariosExecutor() {
+    public ITRunnerScenarioBasedParallelExecutor() {
         disruptor = createDisruptor();
         disruptor.handleEventsWith(createEventHandlers()).then(new CleanupEventHandler());
         disruptor.start();

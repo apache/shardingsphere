@@ -20,9 +20,9 @@ package org.apache.shardingsphere.test.integration.engine.junit;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 
 /**
- * IT runner executor.
+ * IT runner parallel executor.
  */
-public interface ITRunnerExecutor {
+public interface ITRunnerParallelExecutor {
     
     /**
      * Execute child statement.
