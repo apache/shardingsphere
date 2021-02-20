@@ -16,14 +16,18 @@
 #
 
 dataSources:
-  ds_0: !!com.zaxxer.hikari.HikariDataSource
-    jdbcUrl: jdbc:postgresql://localhost:5432/demo_ds_0
-    username: postgres
-    password: postgres
-  ds_1: !!com.zaxxer.hikari.HikariDataSource
-    jdbcUrl: jdbc:postgresql://localhost:5432/demo_ds_1
-    username: postgres
-    password: postgres
+  ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    props:
+      jdbcUrl: jdbc:postgresql://localhost:5432/demo_ds_0
+      username: postgres
+      password: postgres
+  ds_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    props:
+      jdbcUrl: jdbc:postgresql://localhost:5432/demo_ds_1
+      username: postgres
+      password: postgres
 
 rules:
 - !SHARDING

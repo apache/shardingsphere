@@ -16,11 +16,13 @@
 #
 
 dataSources:
-  unique_ds: !!com.zaxxer.hikari.HikariDataSource
-    driverClassName: com.mysql.jdbc.Driver
-    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds
-    username: root
-    password:
+  unique_ds:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    props:
+      driverClassName: com.mysql.jdbc.Driver
+      jdbcUrl: jdbc:mysql://localhost:3306/demo_ds
+      username: root
+      password:
 
 rules:
 - !ENCRYPT
