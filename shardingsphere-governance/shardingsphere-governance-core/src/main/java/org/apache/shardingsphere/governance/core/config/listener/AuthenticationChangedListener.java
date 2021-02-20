@@ -21,11 +21,9 @@ import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
 import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -41,6 +39,6 @@ public final class AuthenticationChangedListener extends PostGovernanceRepositor
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        return Optional.of(new UserRuleChangedEvent(new UserRuleYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlUserRuleConfiguration.class))));
+        return Optional.of(new UserRuleChangedEvent(YamlConfigurationConverter.convertUserRule(event.getValue())));
     }
 }
