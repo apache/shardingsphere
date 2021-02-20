@@ -15,13 +15,24 @@
 # limitations under the License.
 #
 
-FROM openjdk:8-jdk-alpine
+FROM openjdk:8
 
 ARG APP_NAME
-ENV WAIT_VERSION 2.7.2
 
 ADD target/${APP_NAME}.tar.gz /opt
-ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
-RUN chmod +x /wait
 RUN mv /opt/${APP_NAME} /opt/shardingsphere-proxy
-ENTRYPOINT /wait && /opt/shardingsphere-proxy/bin/start.sh && tail -f /opt/shardingsphere-proxy/logs/stdout.log
+
+ADD ../../../../shardingsphere-integration-test-suite/target/shardingsphere-agent.tar.gz /opt/shardingsphere-proxy/shardingsphere-agent
+
+EXPOSE 3307
+EXPOSE 3308
+
+#HEALTHCHECK --timeout=90s CMD (tail -f -n0 /opt/shardingsphere-proxy/logs/stdout.log) |grep -q "ShardingSphere-Proxy start success"
+
+WORKDIR /opt/shardingsphere-proxy
+
+RUN cat bin/start.sh | tr -d '\r' > _start.sh && mv _start.sh bin/start.sh
+RUN cat bin/stop.sh | tr -d '\r' > _stop.sh && mv _stop.sh bin/stop.sh
+RUN chmod +x -R ./bin
+
+CMD /opt/shardingsphere-proxy/bin/start.sh && tail -f /opt/shardingsphere-proxy/logs/stdout.log
