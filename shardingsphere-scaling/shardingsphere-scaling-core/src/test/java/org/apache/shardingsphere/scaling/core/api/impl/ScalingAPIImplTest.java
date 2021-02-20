@@ -28,8 +28,8 @@ import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
-import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
+import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -48,10 +48,10 @@ public final class ScalingAPIImplTest {
     private static ScalingAPI scalingAPI;
     
     @BeforeClass
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static void init() {
+    public static void beforeClass() throws Exception {
         EmbedTestingServer.start();
-        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", mockServerConfig());
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", null);
+        ScalingContext.getInstance().init(mockServerConfig());
         scalingAPI = ScalingAPIFactory.getScalingAPI();
     }
     
