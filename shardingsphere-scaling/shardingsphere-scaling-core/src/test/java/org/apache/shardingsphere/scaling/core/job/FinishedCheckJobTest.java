@@ -61,8 +61,7 @@ public final class FinishedCheckJobTest {
     @BeforeClass
     public static void beforeClass() throws Exception {
         EmbedTestingServer.start();
-        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", null);
-        ScalingContext.getInstance().init(mockServerConfig());
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", mockServerConfig());
         finishedCheckJob = new FinishedCheckJob();
     }
     
