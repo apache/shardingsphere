@@ -137,11 +137,17 @@ rules:
       keyGenerateStrategy:
         column: item_id
         keyGeneratorName: constant
+    t_order_details:
+      actualDataNodes: ds_${0..9}.t_order_details
+      databaseStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: standard_test
   bindingTables:
-    - t_order,t_order_item
+    - t_order,t_order_item,t_order_details
   broadcastTables:
     - t_broadcast_table
-  
+    - t_broadcast_table_for_ddl
   shardingAlgorithms:
     standard_test:
       type: STANDARD_TEST

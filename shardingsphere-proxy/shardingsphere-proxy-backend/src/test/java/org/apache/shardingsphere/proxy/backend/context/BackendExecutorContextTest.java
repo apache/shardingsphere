@@ -17,12 +17,30 @@
 
 package org.apache.shardingsphere.proxy.backend.context;
 
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class BackendExecutorContextTest {
+    
+    @Before
+    public void setUp() {
+        MetaDataContexts metaDataContexts = new StandardMetaDataContexts(
+                Collections.emptyMap(), mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties()));
+        ProxyContext.getInstance().init(metaDataContexts, new StandardTransactionContexts());
+    }
     
     @Test
     public void assertGetInstance() {
