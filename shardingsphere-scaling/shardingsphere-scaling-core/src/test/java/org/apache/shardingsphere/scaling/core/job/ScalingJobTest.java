@@ -24,6 +24,7 @@ import org.apache.shardingsphere.governance.repository.api.config.GovernanceConf
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.scaling.core.executor.engine.ExecuteEngine;
 import org.apache.shardingsphere.scaling.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.scaling.core.job.schedule.JobScheduler;
 import org.apache.shardingsphere.scaling.core.job.schedule.JobSchedulerCenter;
@@ -37,14 +38,15 @@ import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 
 public final class ScalingJobTest {
     
     @BeforeClass
     public static void beforeClass() throws Exception {
         EmbedTestingServer.start();
-        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", null);
-        ScalingContext.getInstance().init(mockServerConfig());
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", mockServerConfig());
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "inventoryDumperExecuteEngine", mock(ExecuteEngine.class));
     }
     
     @Test
