@@ -73,7 +73,7 @@
     </test-case>
     
     <test-case sql="INSERT INTO t_order_item values(?, ?, 'insert', '2017-08-08')">
-        <assertion sharding-rule-type="dbtbl_with_replica_query" parameters="1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />
+        <assertion sharding-rule-type="dbtbl_with_replica_query" parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
         <!-- TODO add gen column on create table -->
         <!--<assertion parameters="1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />-->
     </test-case>
