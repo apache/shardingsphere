@@ -19,84 +19,157 @@ grammar DCLStatement;
 
 import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
 
+//grant
+//    : GRANT (proxyClause | privilegeClause | roleClause)
+//    ;
+
 grant
-    : GRANT (proxyClause | privilegeClause | roleClause)
+    : GRANT roleOrPrivileges TO userList withGrantOption? # grantRoleOrPrivilegeTo
+    | GRANT roleOrPrivileges ON aclType grantIdentifier TO userList withGrantOption? grantAs? # grantRoleOrPrivilegeOnTo
+    | GRANT ALL PRIVILEGES? ON aclType? grantIdentifier TO userList withGrantOption? grantAs? # grantRoleOrPrivilegeOnTo
+    | GRANT PROXY ON userName TO userList withGrantOption? # grantProxy
+//    | GRANT PROXY ON userOrRole TO userOrRoles withGrantOption?
     ;
+
+//revoke
+//    : REVOKE (proxyClause | privilegeClause | allClause | roleClause)
+//    ;
 
 revoke
-    : REVOKE (proxyClause | privilegeClause | allClause | roleClause)
+    : REVOKE roleOrPrivileges FROM userList
+    | REVOKE roleOrPrivileges ON aclType? grantIdentifier FROM userList
+    | REVOKE ALL PRIVILEGES? ON aclType? grantIdentifier FROM userList
+    | REVOKE ALL PRIVILEGES? COMMA_ GRANT OPTION FROM userList
+    | REVOKE PROXY ON userName FROM userList
     ;
 
-proxyClause
-    : PROXY ON userOrRole TO userOrRoles withGrantOption?
+userList
+    : userName (COMMA_ userName)*
     ;
 
-privilegeClause
-    : privileges ON onObjectClause (TO | FROM) userOrRoles withGrantOption? grantOption?
+//proxyClause
+//    : PROXY ON userOrRole TO userOrRoles withGrantOption?
+//    ;
+
+//privilegeClause
+//    : privileges ON onObjectClause (TO | FROM) userOrRoles withGrantOption? grantOption?
+//    ;
+
+//roleClause
+//    : roles ( TO| FROM) userOrRoles withGrantOption?
+//    ;
+
+//allClause
+//    : ALL PRIVILEGES? COMMA_ GRANT OPTION FROM userOrRoles
+//    ;
+
+roleOrPrivileges
+    : roleOrPrivilege (COMMA_ roleOrPrivilege)*
     ;
 
-roleClause
-    : roles ( TO| FROM) userOrRoles withGrantOption?
+roleOrPrivilege
+    : roleIdentifierOrText (LP_ columnNames RP_)? # roleOrDynamicPrivilege
+    | roleIdentifierOrText AT_ textOrIdentifier  # roleArhost
+    | SELECT (LP_ columnNames RP_)?  # staticPrivilegeSelect
+    | INSERT (LP_ columnNames RP_)?  # staticPrivilegeInsert
+    | UPDATE (LP_ columnNames RP_)?  # staticPrivilegeUpdate
+    | REFERENCES (LP_ columnNames RP_)?  # staticPrivilegeReferences
+    | DELETE  # staticPrivilegeDelete
+    | USAGE  # staticPrivilegeUsage
+    | INDEX  # staticPrivilegeIndex
+    | ALTER  # staticPrivilegeAlter
+    | CREATE  # staticPrivilegeCreate
+    | DROP  # staticPrivilegeDrop
+    | EXECUTE  # staticPrivilegeExecute
+    | RELOAD  # staticPrivilegeReload
+    | SHUTDOWN  # staticPrivilegeShutdown
+    | PROCESS  # staticPrivilegeProcess
+    | FILE  # staticPrivilegeFile
+    | GRANT OPTION  # staticPrivilegeGrant
+    | SHOW DATABASES  # staticPrivilegeShowDatabases
+    | SUPER  # staticPrivilegeSuper
+    | CREATE TEMPORARY TABLES  # staticPrivilegeCreateTemporaryTables
+    | LOCK TABLES  # staticPrivilegeLockTables
+    | REPLICATION SLAVE  # staticPrivilegeReplicationSlave
+    | REPLICATION CLIENT  # staticPrivilegeReplicationClient
+    | CREATE VIEW  # staticPrivilegeCreateView
+    | SHOW VIEW  # staticPrivilegeShowView
+    | CREATE ROUTINE  # staticPrivilegeCreateRoutine
+    | ALTER ROUTINE  # staticPrivilegeAlterRoutine
+    | CREATE USER  # staticPrivilegeCreateUser
+    | EVENT  # staticPrivilegeEvent
+    | TRIGGER  # staticPrivilegeTrigger
+    | CREATE TABLESPACE  # staticPrivilegeCreateTablespace
+    | CREATE ROLE  # staticPrivilegeCreateRole
+    | DROP ROLE  # staticPrivilegeDropRole
     ;
 
-allClause
-    : ALL PRIVILEGES? COMMA_ GRANT OPTION FROM userOrRoles
-    ;
+//privileges
+//    : privilege (COMMA_ privilege)*
+//    ;
 
-privileges
-    : privilege (COMMA_ privilege)*
-    ;
+//privilege
+//    : privilegeType (LP_ columnNames RP_)?
+//    ;
 
-privilege
-    : privilegeType (LP_ columnNames RP_)?
-    ;
+//privilegeType
+//    : ALL PRIVILEGES?
+//    | ALTER ROUTINE?
+//    | CREATE
+//    | CREATE ROUTINE
+//    | CREATE TABLESPACE
+//    | CREATE TEMPORARY TABLES
+//    | CREATE USER
+//    | CREATE VIEW
+//    | DELETE
+//    | DROP
+//    | DROP ROLE
+//    | EVENT
+//    | EXECUTE
+//    | FILE
+//    | GRANT OPTION
+//    | INDEX
+//    | INSERT
+//    | LOCK TABLES
+//    | PROCESS
+//    | PROXY
+//    | REFERENCES
+//    | RELOAD
+//    | REPLICATION CLIENT
+//    | REPLICATION SLAVE
+//    | SELECT
+//    | SHOW DATABASES
+//    | SHOW VIEW
+//    | SHUTDOWN
+//    | SUPER
+//    | TRIGGER
+//    | UPDATE
+//    | USAGE
+//    | identifier
+//    ;
 
-privilegeType
-    : ALL PRIVILEGES?
-    | ALTER ROUTINE?
-    | CREATE
-    | CREATE ROUTINE
-    | CREATE TABLESPACE
-    | CREATE TEMPORARY TABLES
-    | CREATE USER
-    | CREATE VIEW
-    | DELETE
-    | DROP
-    | DROP ROLE
-    | EVENT
-    | EXECUTE
-    | FILE
-    | GRANT OPTION
-    | INDEX
-    | INSERT
-    | LOCK TABLES
-    | PROCESS
-    | PROXY
-    | REFERENCES
-    | RELOAD
-    | REPLICATION CLIENT
-    | REPLICATION SLAVE
-    | SELECT
-    | SHOW DATABASES
-    | SHOW VIEW
-    | SHUTDOWN
-    | SUPER
-    | TRIGGER
-    | UPDATE
-    | USAGE
-    | identifier
-    ;
+//onObjectClause
+//    : objectType? privilegeLevel
+//    ;
 
-onObjectClause
-    : objectType? privilegeLevel
-    ;
+//objectType
+//    : TABLE | FUNCTION | PROCEDURE
+//    ;
 
-objectType
+aclType
     : TABLE | FUNCTION | PROCEDURE
     ;
 
-privilegeLevel
-    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | identifier DOT_ASTERISK_ | tableName  | schemaName DOT_ routineName
+//privilegeLevel
+//    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | identifier DOT_ASTERISK_ | tableName  | schemaName DOT_ routineName
+//    ;
+
+grantIdentifier
+    : ASTERISK_ # grantLevelGlobal
+    | ASTERISK_ DOT_ASTERISK_
+    | schemaName DOT_ASTERISK_
+    | tableName
+    | schemaName DOT_ identifier
     ;
 
 createUser
@@ -201,8 +274,16 @@ roles
     : roleName (COMMA_ roleName)*
     ;
 
-grantOption
-    : AS userName (WITH ROLE DEFAULT | NONE | ALL | ALL EXCEPT roles | roles )?
+//grantOption
+//    : AS userName (WITH ROLE DEFAULT | NONE | ALL | ALL EXCEPT roles | roles )?
+//    ;
+
+grantAs
+    : AS userName withRoles?
+    ;
+
+withRoles
+    : WITH ROLE (DEFAULT | NONE | ALL | ALL EXCEPT roles | roles)
     ;
 
 userAuthOption

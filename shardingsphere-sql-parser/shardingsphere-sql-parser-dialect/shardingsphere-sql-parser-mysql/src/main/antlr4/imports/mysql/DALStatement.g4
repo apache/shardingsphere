@@ -47,7 +47,7 @@ showTableStatus
     ;
 
 showColumns
-    : SHOW EXTENDED? FULL? (COLUMNS | FIELDS) fromTable fromSchema? (showColumnLike | showWhereClause)?
+    : SHOW EXTENDED? FULL? COLUMNS fromTable fromSchema? (showColumnLike | showWhereClause)?
     ;
 
 showIndex
@@ -174,8 +174,12 @@ showFunctionStatus
     : SHOW FUNCTION STATUS showFilter?
     ;
 
+//showGrant
+//    : SHOW GRANTS (FOR userOrRole (USING userName (COMMA_ userName)+)?)?
+//    ;
+
 showGrant
-    : SHOW GRANTS (FOR userOrRole (USING userName (COMMA_ userName)+)?)?
+    : SHOW GRANTS (FOR userName (USING userName (COMMA_ userName)+)?)?
     ;
 
 showMasterStatus
