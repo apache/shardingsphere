@@ -35,9 +35,9 @@ import javax.sql.DataSource;
 public final class StandardJDBCDataSourceConfiguration implements ScalingDataSourceConfiguration {
     
     /**
-     * Config type.
+     * Type.
      */
-    public static final String CONFIG_TYPE = "JDBC";
+    public static final String TYPE = "JDBC";
     
     private final String parameter;
     
@@ -67,14 +67,9 @@ public final class StandardJDBCDataSourceConfiguration implements ScalingDataSou
     }
     
     @Override
-    public String getConfigType() {
-        return CONFIG_TYPE;
-    }
-    
-    @Override
     public ScalingDataSourceConfigurationWrap wrap() {
         ScalingDataSourceConfigurationWrap result = new ScalingDataSourceConfigurationWrap();
-        result.setType(CONFIG_TYPE);
+        result.setType(TYPE);
         result.setParameter(parameter);
         return result;
     }

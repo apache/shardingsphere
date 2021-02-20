@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.yaml.engine;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.engine.constructor.ShardingSphereFilterYamlConstructor;
 import org.apache.shardingsphere.infra.yaml.engine.constructor.ShardingSphereYamlConstructor;
 import org.apache.shardingsphere.infra.yaml.engine.representer.ShardingSphereYamlRepresenter;
 import org.yaml.snakeyaml.Yaml;
@@ -31,8 +30,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * YAML engine.
@@ -83,31 +80,6 @@ public final class YamlEngine {
      */
     public static <T> T unmarshal(final String yamlContent, final Class<T> classType) {
         return new Yaml(new ShardingSphereYamlConstructor(classType)).loadAs(yamlContent, classType);
-    }
-    
-    /**
-     * Secure unmarshal YAML.
-     *
-     * @param yamlContent YAML content
-     * @param classType class type
-     * @param acceptedClasses accepted classes
-     * @param <T> type of class
-     * @return object from YAML
-     */
-    public static <T> T secureUnmarshal(final String yamlContent, final Class<T> classType, final Collection<Class<?>> acceptedClasses) {
-        return new Yaml(new ShardingSphereFilterYamlConstructor(classType, acceptedClasses)).loadAs(yamlContent, classType);
-    }
-    
-    /**
-     * Secure unmarshal YAML.
-     *
-     * @param yamlContent YAML content
-     * @param acceptedClass accepted class
-     * @param <T> type of class
-     * @return object from YAML
-     */
-    public static <T> T secureUnmarshal(final String yamlContent, final Class<T> acceptedClass) {
-        return new Yaml(new ShardingSphereFilterYamlConstructor(acceptedClass, Collections.singletonList(acceptedClass))).loadAs(yamlContent, acceptedClass);
     }
     
     /**
