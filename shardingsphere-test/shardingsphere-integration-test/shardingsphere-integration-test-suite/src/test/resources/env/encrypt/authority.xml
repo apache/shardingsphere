@@ -51,8 +51,6 @@
             <sql>CREATE ROLE default_role</sql>
             <sql>CREATE USER user_dev@localhost</sql>
             <sql>GRANT select,update,insert,delete on encrypt.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt.t_order to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on encrypt.t_user to user_dev@localhost</sql>
         </user-create>
         <user-drop>
             <sql>DROP USER IF EXISTS user_dev@localhost</sql>
