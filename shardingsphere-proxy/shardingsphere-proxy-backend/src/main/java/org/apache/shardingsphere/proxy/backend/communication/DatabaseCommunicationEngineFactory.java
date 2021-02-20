@@ -73,8 +73,10 @@ public final class DatabaseCommunicationEngineFactory {
      * @return binary protocol backend handler
      */
     public DatabaseCommunicationEngine newBinaryProtocolInstance(final SQLStatement sqlStatement, final String sql, final List<Object> parameters, final BackendConnection backendConnection) {
+        System.out.println("111111111111111111111111111111111111111111111111111111111111111111111111");
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName());
         LogicSQL logicSQL = createLogicSQL(sqlStatement, sql, new ArrayList<>(parameters), metaData);
+        System.out.println("2222222222222222222222222222222222222222222222222222222222222222222222");
         return new DatabaseCommunicationEngine(JDBCDriverType.PREPARED_STATEMENT, metaData, logicSQL, backendConnection);
     }
     
