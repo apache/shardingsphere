@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -15,26 +16,18 @@
   ~ limitations under the License.
   -->
 
-<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
-    <id>shardingsphere-proxy-bin</id>
-    <formats>
-        <format>tar.gz</format>
-    </formats>
-    <includeBaseDirectory>true</includeBaseDirectory>
+<configuration>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="org.apache.shardingsphere" level="info" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
     
-    <fileSets>
-        <fileSet>
-            <directory>src/test/assembly/bin</directory>
-            <outputDirectory>bin</outputDirectory>
-            <fileMode>0755</fileMode>
-        </fileSet>
-    </fileSets>
-    
-    <dependencySets>
-        <dependencySet>
-            <outputDirectory>lib</outputDirectory>
-            <fileMode>0644</fileMode>
-        </dependencySet>
-    </dependencySets>
-</assembly>
+    <root>
+        <level value="info" />
+        <appender-ref ref="console" />
+    </root>
+</configuration> 

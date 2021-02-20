@@ -15,19 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit.parallel;
+package org.apache.shardingsphere.test.integration.junit.container;
 
-import org.junit.runners.Parameterized;
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 
-/**
- * Parallel parameterized.
- */
-public final class ParallelParameterized extends Parameterized {
+import javax.sql.DataSource;
+
+public class H2Container extends StorageContainer {
     
-    //CHECKSTYLE:OFF
-    public ParallelParameterized(final Class<?> klass) throws Throwable {
-        //CHECKSTYLE:ON
-        super(klass);
-        setScheduler(new ParallelRunnerScheduler());
+    public H2Container() {
+        super("null", new H2DatabaseType());
+    }
+    
+    @Override
+    protected String getUrl(String dataSourceName) {
+        return null;
+    }
+    
+    @Override
+    protected int getPort() {
+        return 0;
+    }
+    
+    @Override
+    protected String getUsername() {
+        return null;
+    }
+    
+    @Override
+    protected String getPassword() {
+        return null;
+    }
+    
+    @Override
+    protected DataSource createDataSource(String dataSourceName) {
+        return null;
     }
 }

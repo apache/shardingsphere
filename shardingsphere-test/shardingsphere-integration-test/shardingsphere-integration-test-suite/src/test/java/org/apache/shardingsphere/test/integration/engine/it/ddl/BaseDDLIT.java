@@ -18,16 +18,13 @@
 package org.apache.shardingsphere.test.integration.engine.it.ddl;
 
 import com.google.common.base.Splitter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
-import org.apache.shardingsphere.test.integration.engine.it.SingleIT;
-import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.junit.After;
@@ -53,25 +50,31 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public abstract class BaseDDLIT extends SingleIT {
+public abstract class BaseDDLIT extends SingleITCase {
     
-    private final DataSetEnvironmentManager dataSetEnvironmentManager;
-    
-    protected BaseDDLIT(final String parentPath, final IntegrationTestCaseAssertion assertion, final String adapter, final String scenario,
-                        final DatabaseType databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(parentPath, assertion, adapter, scenario, databaseType, sqlExecuteType, sql);
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(scenario), getActualDataSources());
-        assertNotNull("Expected affected table is required", assertion.getInitialSQL());
-        assertNotNull("Expected affected table is required", assertion.getInitialSQL().getAffectedTable());
-    }
+    private DataSetEnvironmentManager dataSetEnvironmentManager;
     
     @Before
-    public final void initTables() throws SQLException, ParseException, IOException {
+    public final void initTables() throws SQLException, ParseException, IOException, JAXBException {
+        // TODO make sure whether we need them?
+        assertNotNull("Expected affected table is required", getAssertion().getInitialSQL());
+        assertNotNull("Expected affected table is required", getAssertion().getInitialSQL().getAffectedTable());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(
+                EnvironmentPath.getDataSetFile(getDescription().getScenario()),
+                getStorage().getDataSourceMap()
+        );
         dataSetEnvironmentManager.fillData();
         try (Connection connection = getTargetDataSource().getConnection()) {
             executeInitSQLs(connection);
         }
-        resetTargetDataSource();
+//        resetTargetDataSource(); fixme
+    }
+    
+    @After
+    public final void destroyTables() throws SQLException {
+        try (Connection connection = getTargetDataSource().getConnection()) {
+            dropInitializedTable(connection);
+        }
     }
     
     private void executeInitSQLs(final Connection connection) throws SQLException {
@@ -80,13 +83,6 @@ public abstract class BaseDDLIT extends SingleIT {
         }
         for (String each : Splitter.on(";").trimResults().splitToList(getAssertion().getInitialSQL().getSql())) {
             connection.prepareStatement(each).executeUpdate();
-        }
-    }
-    
-    @After
-    public final void destroyTables() throws SQLException {
-        try (Connection connection = getTargetDataSource().getConnection()) {
-            dropInitializedTable(connection);
         }
     }
     
@@ -115,7 +111,7 @@ public abstract class BaseDDLIT extends SingleIT {
     
     private void assertNotContainsTable(final Collection<DataNode> dataNodes) throws SQLException {
         for (DataNode each : dataNodes) {
-            try (Connection connection = getActualDataSources().get(each.getDataSourceName()).getConnection()) {
+            try (Connection connection = getStorage().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 assertNotContainsTable(connection, each.getTableName());
             }
         }
@@ -128,7 +124,7 @@ public abstract class BaseDDLIT extends SingleIT {
     private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
-            try (Connection connection = getActualDataSources().get(each.getDataSourceName()).getConnection()) {
+            try (Connection connection = getStorage().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 result.addAll(getActualColumns(connection, each.getTableName()));
             }
         }
@@ -152,7 +148,7 @@ public abstract class BaseDDLIT extends SingleIT {
     private List<DataSetIndex> getActualIndexes(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetIndex> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
-            try (Connection connection = getActualDataSources().get(each.getDataSourceName()).getConnection()) {
+            try (Connection connection = getStorage().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 result.addAll(getActualIndexes(connection, each.getTableName()));
             }
         }
@@ -183,9 +179,9 @@ public abstract class BaseDDLIT extends SingleIT {
     
     private void assertColumnMetaData(final DataSetColumn actual, final DataSetColumn expected) {
         assertThat("Mismatched column name.", actual.getName(), is(expected.getName()));
-        if ("MySQL".equals(getDatabaseType().getName()) && "integer".equals(expected.getType())) {
+        if ("MySQL".equals(getDescription().getDatabaseType().getName()) && "integer".equals(expected.getType())) {
             assertThat("Mismatched column type.", actual.getType(), is("int"));
-        } else if ("PostgreSQL".equals(getDatabaseType().getName()) && "integer".equals(expected.getType())) {
+        } else if ("PostgreSQL".equals(getDescription().getDatabaseType().getName()) && "integer".equals(expected.getType())) {
             assertThat("Mismatched column type.", actual.getType(), is("int4"));
         } else {
             assertThat("Mismatched column type.", actual.getType(), is(expected.getType()));

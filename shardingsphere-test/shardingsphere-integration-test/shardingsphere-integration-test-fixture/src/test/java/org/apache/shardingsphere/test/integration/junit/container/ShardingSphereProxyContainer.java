@@ -1,0 +1,104 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.test.integration.junit.container;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.integration.junit.annotation.XmlResource;
+import org.apache.shardingsphere.test.integration.junit.processor.AuthenticationProcessor;
+import org.apache.shardingsphere.test.integration.junit.processor.AuthenticationProcessor.Authentication;
+import org.testcontainers.containers.BindMode;
+import org.testcontainers.utility.MountableFile;
+
+import javax.sql.DataSource;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+
+@Slf4j
+public class ShardingSphereProxyContainer extends ShardingContainer {
+    
+    private static final String AGENT_HOME_IN_CONTAINER = "/usr/local/shardingsphere-agent";
+    
+    private static final String PROPERTY_AGENT_HOME = "AGENT_HOME";
+    
+    private final AtomicReference<DataSource> dataSourceProvider = new AtomicReference<>();
+    
+    @XmlResource(file = "/docker/{it.scenario}/proxy/conf/server.yaml", processor = AuthenticationProcessor.class)
+    private Authentication authentication;
+    
+    public ShardingSphereProxyContainer() {
+        super("apache/shardingsphere-proxy-test");
+    }
+    
+    public ShardingSphereProxyContainer withClassPathResourceMapping(final String classPathResource, final String containerPath) {
+        withCopyFileToContainer(MountableFile.forClasspathResource(classPathResource), containerPath);
+        return this;
+    }
+    
+    public ShardingSphereProxyContainer withConfMapping(final String resourcePath) {
+        return withClassPathResourceMapping(resourcePath, "/opt/shardingsphere-proxy/conf");
+    }
+    
+    public ShardingSphereProxyContainer withAgent(final String agentHome) {
+        withEnv(PROPERTY_AGENT_HOME, AGENT_HOME_IN_CONTAINER);
+        withFileSystemBind(agentHome, AGENT_HOME_IN_CONTAINER, BindMode.READ_ONLY);
+        return this;
+    }
+    
+    @Override
+    protected void configure() {
+        withConfMapping("/docker/" + System.getProperty("it.scenario") + "/proxy/conf");
+        super.configure();
+    }
+    
+    @Override
+    protected void execute() {
+        log.info("Mapped port 3307: {}", getMappedPort(3307));
+        log.info("Mapped port 3308: {}", getMappedPort(3308));
+    }
+    
+    /**
+     * Get DataSource.
+     *
+     * @return DataSource
+     */
+    public DataSource getDataSource() {
+        DataSource dataSource = dataSourceProvider.get();
+        if (Objects.isNull(dataSource)) {
+            dataSourceProvider.lazySet(createDataSource());
+        }
+        return dataSourceProvider.get();
+    }
+    
+    private DataSource createDataSource() {
+        HikariConfig result = new HikariConfig();
+        result.setDriverClassName("com.mysql.jdbc.Driver");
+        result.setJdbcUrl(getURL());
+        result.setUsername(authentication.getUser());
+        result.setPassword(authentication.getPassword());
+        result.setMaximumPoolSize(2);
+        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
+        return new HikariDataSource(result);
+    }
+    
+    protected String getURL() {
+        return String.format("jdbc:mysql://%s:%s/db?useServerPrepStmts=true&serverTimezone=UTC&useSSL=false&useLocalSessionState=true&characterEncoding=utf-8", getHost(), getMappedPort(3307));
+    }
+    
+}

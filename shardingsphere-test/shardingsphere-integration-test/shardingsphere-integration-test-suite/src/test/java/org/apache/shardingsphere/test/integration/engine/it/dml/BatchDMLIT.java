@@ -17,58 +17,34 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.dml;
 
-import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.engine.it.BatchIT;
-import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.engine.param.model.CaseParameterizedArray;
+import org.apache.shardingsphere.test.integration.common.ExecutionMode;
+import org.apache.shardingsphere.test.integration.engine.it.BatchITCase;
+import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
 import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class BatchDMLIT extends BatchIT {
+// case
+@TestCaseSpec(commandType = SQLCommandType.DML, executionMode = ExecutionMode.BATCH)
+public final class BatchDMLIT extends BatchITCase {
     
-    private final IntegrationTestCaseContext testCaseContext;
-    
-    public BatchDMLIT(final CaseParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException {
-        super(parameterizedArray.getTestCaseContext(),
-                parameterizedArray.getAdapter(),
-                parameterizedArray.getScenario(),
-                parameterizedArray.getDatabaseType(),
-                parameterizedArray.getTestCaseContext().getTestCase().getSql());
-        testCaseContext = parameterizedArray.getTestCaseContext();
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> getParameters() {
-        return ParameterizedArrayFactory.getCaseParameterizedArray(SQLCommandType.DML);
-    }
     
     @Test
     public void assertExecuteBatch() throws SQLException, ParseException {
-        // TODO fix replica_query
-        if ("replica_query".equals(getScenario())) {
-            return;
-        }
-        // TODO fix shadow
-        if ("shadow".equals(getScenario())) {
-            return;
-        }
-        // TODO fix encrypt
-        if ("encrypt".equals(getScenario())) {
-            return;
+        switch (getDescription().getScenario()) {
+            case "replica_query":
+            case "shadow":
+            case "encrypt":
+                return;
         }
         int[] actualUpdateCounts;
         try (Connection connection = getTargetDataSource().getConnection()) {
@@ -78,8 +54,8 @@ public final class BatchDMLIT extends BatchIT {
     }
     
     private int[] executeBatchForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
-            for (IntegrationTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getStatement())) {
+            for (IntegrationTestCaseAssertion each : getTestCaseContext().getTestCase().getAssertions()) {
                 addBatch(preparedStatement, each);
             }
             return preparedStatement.executeBatch();
@@ -96,20 +72,15 @@ public final class BatchDMLIT extends BatchIT {
     @Test
     public void assertClearBatch() throws SQLException, ParseException {
         // TODO fix replica_query
-        if ("replica_query".equals(getScenario())) {
-            return;
-        }
-        // TODO fix shadow
-        if ("shadow".equals(getScenario())) {
-            return;
-        }
-        // TODO fix encrypt
-        if ("encrypt".equals(getScenario())) {
-            return;
+        switch (getDescription().getScenario()) {
+            case "replica_query":
+            case "shadow":
+            case "encrypt":
+                return;
         }
         try (Connection connection = getTargetDataSource().getConnection()) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
-                for (IntegrationTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(getStatement())) {
+                for (IntegrationTestCaseAssertion each : getTestCaseContext().getTestCase().getAssertions()) {
                     addBatch(preparedStatement, each);
                 }
                 preparedStatement.clearBatch();

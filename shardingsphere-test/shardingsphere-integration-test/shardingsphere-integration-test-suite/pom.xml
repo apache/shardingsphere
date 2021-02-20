@@ -29,31 +29,11 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-proxy-bootstrap</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-integration-test-fixture</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-bootstrap</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -81,14 +61,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.wix</groupId>
-            <artifactId>wix-embedded-mysql</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ru.yandex.qatools.embed</groupId>
-            <artifactId>postgresql-embedded</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.lmax</groupId>
             <artifactId>disruptor</artifactId>
         </dependency>
@@ -97,28 +69,14 @@
             <artifactId>commons-dbcp2</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+        </dependency>
     </dependencies>
     
     <build>
         <plugins>
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <descriptors>
-                        <descriptor>src/test/assembly/shardingsphere-proxy-assembly.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>

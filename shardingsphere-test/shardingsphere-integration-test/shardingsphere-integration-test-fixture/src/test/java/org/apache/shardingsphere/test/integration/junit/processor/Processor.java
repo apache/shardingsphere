@@ -15,25 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit.parallel;
+package org.apache.shardingsphere.test.integration.junit.processor;
 
-import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
+import java.io.InputStream;
 
-/**
- * Parallel runner executor.
- */
-public interface ParallelRunnerExecutor {
+public interface Processor<T> {
     
-    /**
-     * Execute child statement.
-     *
-     * @param parameterizedArray parameterized array
-     * @param childStatement child statement
-     */
-    void execute(ParameterizedArray parameterizedArray, Runnable childStatement);
+    T process(InputStream stream);
     
-    /**
-     * Override to implement any behavior that must occur after all children have been scheduled (for example, waiting for them all to finish).
-     */
-    void finished();
 }

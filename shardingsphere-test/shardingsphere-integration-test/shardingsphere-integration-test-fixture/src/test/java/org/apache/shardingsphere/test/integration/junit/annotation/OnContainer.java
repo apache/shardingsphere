@@ -15,49 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.param.model;
+package org.apache.shardingsphere.test.integration.junit.annotation;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
-import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/**
- * Parameterized array.
- */
-public interface ParameterizedArray {
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface OnContainer {
     
     /**
-     * Get test case context.
-     * 
-     * @return test case context
-     */
-    IntegrationTestCaseContext getTestCaseContext();
-    
-    /**
-     * Get adapter.
-     * 
-     * @return adapter
-     */
-    String getAdapter();
-    
-    /**
-     * Get scenario.
-     * 
-     * @return scenario
-     */
-    String getScenario();
-    
-    /**
-     * Get database type.
+     * Specify the container name.
      *
-     * @return database type
+     * @return name
      */
-    DatabaseType getDatabaseType();
+    String name();
     
     /**
-     * Get SQL command type.
+     * Container hostname. Default by container name.
      *
-     * @return SQL command type
+     * @return hostname
      */
-    SQLCommandType getSqlCommandType();
+    String hostName() default "";
+    
+    /**
+     * The type of container.
+     *
+     * @return container type.
+     */
+    ContainerType type() default ContainerType.PROXY;
+    
 }

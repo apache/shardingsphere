@@ -52,6 +52,7 @@ public final class DataSetLoader {
         }
     }
     
+    @SneakyThrows
     private static String getFile(final String parentPath, final String scenario, final DatabaseType databaseType, final String dataSetFile) {
         String result = String.join(File.separator, parentPath, DATA_SET_FOLDER_NAME, scenario, databaseType.getName().toLowerCase(), dataSetFile);
         if (new File(result).exists()) {

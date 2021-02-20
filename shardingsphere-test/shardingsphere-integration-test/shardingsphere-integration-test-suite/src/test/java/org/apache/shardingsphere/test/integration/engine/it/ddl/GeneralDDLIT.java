@@ -18,57 +18,37 @@
 package org.apache.shardingsphere.test.integration.engine.it.ddl;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
 import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Collection;
 
+// asserion
+@TestCaseSpec(commandType = SQLCommandType.DDL)
 public final class GeneralDDLIT extends BaseDDLIT {
     
-    public GeneralDDLIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
-        super(parameterizedArray.getTestCaseContext().getParentPath(),
-                parameterizedArray.getAssertion(),
-                parameterizedArray.getAdapter(),
-                parameterizedArray.getScenario(),
-                parameterizedArray.getDatabaseType(),
-                parameterizedArray.getSqlExecuteType(),
-                parameterizedArray.getTestCaseContext().getTestCase().getSql());
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> getParameters() {
-        return ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DDL);
-    }
-    
-    @SuppressWarnings("JUnitTestMethodWithNoAssertions")
     @Test
-    public void assertExecuteUpdate() throws SQLException {
+    public void assertExecuteUpdate() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                connection.createStatement().executeUpdate(getSql());
+                connection.createStatement().executeUpdate(getStatement());
             } else {
-                connection.prepareStatement(getSql()).executeUpdate();
+                connection.prepareStatement(getStatement()).executeUpdate();
             }
             assertTableMetaData();
         }
     }
     
-    @SuppressWarnings("JUnitTestMethodWithNoAssertions")
     @Test
-    public void assertExecute() throws SQLException {
+    public void assertExecute() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                connection.createStatement().execute(getSql());
+                connection.createStatement().execute(getStatement());
             } else {
-                connection.prepareStatement(getSql()).execute();
+                connection.prepareStatement(getStatement()).execute();
             }
             assertTableMetaData();
         }

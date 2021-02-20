@@ -19,11 +19,9 @@ package org.apache.shardingsphere.test.integration.engine.it;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
@@ -31,6 +29,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
+import org.apache.shardingsphere.test.integration.junit.annotation.Inject;
 import org.junit.After;
 import org.junit.Before;
 
@@ -46,36 +45,27 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @Getter(AccessLevel.PROTECTED)
-public abstract class BatchIT extends BaseIT {
+public abstract class BatchITCase extends BaseITCase {
     
-    private final IntegrationTestCaseContext testCaseContext;
+    @Inject
+    @Getter
+    // Would it be better to use IntegrationTestCase?
+    private IntegrationTestCaseContext testCaseContext;
     
-    private final String sql;
+    private DataSet dataSet;
     
-    private final Collection<DataSet> dataSets;
-
-    @Getter(AccessLevel.NONE)
-    private final DataSetEnvironmentManager dataSetEnvironmentManager;
+    private DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    protected BatchIT(final IntegrationTestCaseContext testCaseContext,
-                      final String adapter, final String scenario, final DatabaseType databaseType, final String sql) throws IOException, JAXBException, SQLException {
-        super(adapter, scenario, databaseType);
-        this.testCaseContext = testCaseContext;
-        this.sql = sql;
-        dataSets = new LinkedList<>();
-        for (IntegrationTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
-            dataSets.add(DataSetLoader.load(testCaseContext.getParentPath(), scenario, databaseType, each.getExpectedDataFile()));
-        }
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(scenario), getActualDataSources());
+    @Before
+    public void setup() throws IOException, JAXBException {
+        dataSet = DataSetLoader.load(getParentPath(), getDescription().getScenario(), getDescription().getDatabaseType(), getAssertion().getExpectedDataFile());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getDescription().getScenario()), getStorage().getDataSourceMap());
     }
     
     @Before
@@ -94,7 +84,7 @@ public abstract class BatchIT extends BaseIT {
         DataSetMetadata expectedDataSetMetadata = expected.getMetadataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
-            try (Connection connection = getActualDataSources().get(dataNode.getDataSourceName()).getConnection();
+            try (Connection connection = getStorage().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s ORDER BY 1", dataNode.getTableName()))) {
                 assertDataSet(preparedStatement, expected.findRows(dataNode), expectedDataSetMetadata);
             }
@@ -102,40 +92,9 @@ public abstract class BatchIT extends BaseIT {
     }
     
     private DataSet getDataSet(final int[] actualUpdateCounts) {
-        Collection<DataSet> dataSets = new LinkedList<>();
-        assertThat(actualUpdateCounts.length, is(this.dataSets.size()));
-        int count = 0;
-        for (DataSet each : this.dataSets) {
-            assertThat(actualUpdateCounts[count], is(each.getUpdateCount()));
-            dataSets.add(each);
-            count++;
-        }
-        return mergeDataSets(dataSets);
-    }
-    
-    private DataSet mergeDataSets(final Collection<DataSet> dataSets) {
-        DataSet result = new DataSet();
-        Set<DataSetRow> existedRows = new HashSet<>();
-        for (DataSet each : dataSets) {
-            mergeMetadata(each, result);
-            mergeRow(each, result, existedRows);
-        }
-        sortRow(result);
-        return result;
-    }
-    
-    private void mergeMetadata(final DataSet original, final DataSet dist) {
-        if (dist.getMetadataList().isEmpty()) {
-            dist.getMetadataList().addAll(original.getMetadataList());
-        }
-    }
-    
-    private void mergeRow(final DataSet original, final DataSet dist, final Set<DataSetRow> existedRows) {
-        for (DataSetRow each : original.getRows()) {
-            if (existedRows.add(each)) {
-                dist.getRows().add(each);
-            }
-        }
+        assertThat(actualUpdateCounts[0], is(dataSet));
+        sortRow(dataSet);
+        return dataSet;
     }
     
     private void sortRow(final DataSet dataSet) {

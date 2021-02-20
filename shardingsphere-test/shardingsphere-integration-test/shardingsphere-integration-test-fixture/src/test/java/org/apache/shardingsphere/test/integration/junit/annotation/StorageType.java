@@ -15,12 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.param;
+package org.apache.shardingsphere.test.integration.junit.annotation;
 
-/**
- * SQL execute type.
- */
-public enum SQLExecuteType {
+import lombok.Getter;
+import org.apache.shardingsphere.test.integration.junit.container.H2Container;
+import org.apache.shardingsphere.test.integration.junit.container.MySQLContainer;
+import org.apache.shardingsphere.test.integration.junit.container.StorageContainer;
+
+public enum StorageType {
     
-    Literal, Placeholder
+    MySQL(MySQLContainer.class),
+    
+    H2(H2Container.class);
+    
+    @Getter
+    private final Class<? extends StorageContainer> klass;
+    
+    StorageType(final Class<? extends StorageContainer> klass) {
+        this.klass = klass;
+    }
 }

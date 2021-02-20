@@ -18,58 +18,30 @@
 package org.apache.shardingsphere.test.integration.engine.it.dml;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
 import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.util.Collection;
 
 import static org.junit.Assert.assertFalse;
 
+// assertion
+@TestCaseSpec(name = "General DML", commandType = SQLCommandType.DML)
 public final class GeneralDMLIT extends BaseDMLIT {
-    
-    private final IntegrationTestCaseAssertion assertion;
-    
-    public GeneralDMLIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
-        super(parameterizedArray.getTestCaseContext().getParentPath(),
-                parameterizedArray.getAssertion(),
-                parameterizedArray.getAdapter(),
-                parameterizedArray.getScenario(),
-                parameterizedArray.getDatabaseType(),
-                parameterizedArray.getSqlExecuteType(),
-                parameterizedArray.getTestCaseContext().getTestCase().getSql());
-        assertion = parameterizedArray.getAssertion();
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> getParameters() {
-        return ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DML);
-    }
     
     @Test
     public void assertExecuteUpdate() throws SQLException, ParseException {
-        // TODO fix replica-query
-        if ("replica_query".equals(getScenario())) {
-            return;
-        }
-        // TODO fix shadow
-        if ("shadow".equals(getScenario())) {
-            return;
-        }
-        // TODO fix encrypt
-        if ("encrypt".equals(getScenario())) {
-            return;
+        switch (getDescription().getScenario()) {
+            case "replica_query":
+            case "shadow":
+            case "encrypt":
+                return;
         }
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
@@ -78,15 +50,15 @@ public final class GeneralDMLIT extends BaseDMLIT {
         assertDataSet(actualUpdateCount);
     }
     
-    private int executeUpdateForStatement(final Connection connection) throws SQLException {
+    private int executeUpdateForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            return statement.executeUpdate(getSql());
+            return statement.executeUpdate(getStatement());
         }
     }
     
     private int executeUpdateForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
-            for (SQLValue each : assertion.getSQLValues()) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getStatement())) {
+            for (SQLValue each : getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
             return preparedStatement.executeUpdate();
@@ -95,17 +67,11 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
-        // TODO fix replica_query
-        if ("replica_query".equals(getScenario())) {
-            return;
-        }
-        // TODO fix shadow
-        if ("shadow".equals(getScenario())) {
-            return;
-        }
-        // TODO fix encrypt
-        if ("encrypt".equals(getScenario())) {
-            return;
+        switch (getDescription().getScenario()) {
+            case "replica_query":
+            case "shadow":
+            case "encrypt":
+                return;
         }
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
@@ -114,16 +80,16 @@ public final class GeneralDMLIT extends BaseDMLIT {
         assertDataSet(actualUpdateCount);
     }
     
-    private int executeForStatement(final Connection connection) throws SQLException {
+    private int executeForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            assertFalse("Not a DML statement.", statement.execute(getSql()));
+            assertFalse("Not a DML statement.", statement.execute(getStatement()));
             return statement.getUpdateCount();
         }
     }
     
     private int executeForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
-            for (SQLValue each : assertion.getSQLValues()) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getStatement())) {
+            for (SQLValue each : getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
             assertFalse("Not a DML statement.", preparedStatement.execute());

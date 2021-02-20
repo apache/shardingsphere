@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.env.dataset;
 
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -72,6 +73,7 @@ public final class DataSetEnvironmentManager {
      * @throws SQLException SQL exception
      * @throws ParseException parse exception
      */
+    @SneakyThrows
     public void fillData() throws SQLException, ParseException {
         Map<DataNode, List<DataSetRow>> dataNodeListMap = getDataSetRowMap();
         List<Callable<Void>> fillDataTasks = new LinkedList<>();
@@ -95,6 +97,8 @@ public final class DataSetEnvironmentManager {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
+            ex.printStackTrace();
+            throw ex;
         }
     }
     
