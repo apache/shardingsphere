@@ -473,7 +473,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitSubquery(final SubqueryContext ctx) {
         return visit(ctx.unionClause());
     }
-
+    
     @Override
     public ASTNode visitLockClause(final LockClauseContext ctx) {
         return new LockSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
@@ -482,8 +482,13 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
         OracleMergeStatement result = new OracleMergeStatement();
-        result.getTables().add((SimpleTableSegment) visit(ctx.intoClause().tableName()));
-        result.getTables().add((SimpleTableSegment) visit(ctx.usingClause().tableName()));
+        if (null != ctx.intoClause().tableName()) {
+            result.getTables().add((SimpleTableSegment) visit(ctx.intoClause().tableName()));
+        }
+        if (null != ctx.usingClause().tableName()) {
+            result.getTables().add((SimpleTableSegment) visit(ctx.usingClause().tableName()));
+        }
+        result.setExpr((ExpressionSegment) (visit(ctx.usingClause().expr())));
         return result;
     }
 }

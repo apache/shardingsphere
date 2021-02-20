@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.MergeStatementTestCase;
 
@@ -43,6 +44,7 @@ public final class MergeStatementAssert {
     
     private static void assertTables(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
+        ExpressionAssert.assertExpression(assertContext, actual.getExpr(), expected.getExpr());
     }
     
 }

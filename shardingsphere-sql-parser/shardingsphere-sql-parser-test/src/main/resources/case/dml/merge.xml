@@ -21,5 +21,20 @@
     <merge sql-case-id="merge_into_table_using_table" >
         <table name="people_target" start-index="11" stop-index="23" />
         <table name="people_source" start-index="31" stop-index="43" />
+        <expr>
+            <binary-operation-expression start-index="49" stop-index="97">
+                <left>
+                    <column name="person_id" start-index="49" stop-index="71">
+                        <owner name="people_target" start-index="49" stop-index="61" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="person_id" start-index="75" stop-index="97">
+                        <owner name="people_source" start-index="75" stop-index="87" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
     </merge>
 </sql-parser-test-cases>
