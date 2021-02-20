@@ -50,8 +50,8 @@ public class ScalingDataSourceConfigurationWrap {
         private static final Map<String, Class<?>> INSTANCES = Maps.newHashMap();
         
         static {
-            INSTANCES.put(StandardJDBCDataSourceConfiguration.CONFIG_TYPE.toLowerCase(), StandardJDBCDataSourceConfiguration.class);
-            INSTANCES.put(ShardingSphereJDBCDataSourceConfiguration.CONFIG_TYPE.toLowerCase(), ShardingSphereJDBCDataSourceConfiguration.class);
+            INSTANCES.put(StandardJDBCDataSourceConfiguration.TYPE.toLowerCase(), StandardJDBCDataSourceConfiguration.class);
+            INSTANCES.put(ShardingSphereJDBCDataSourceConfiguration.TYPE.toLowerCase(), ShardingSphereJDBCDataSourceConfiguration.class);
         }
         
         private static Map<String, Class<?>> getInstances() {
