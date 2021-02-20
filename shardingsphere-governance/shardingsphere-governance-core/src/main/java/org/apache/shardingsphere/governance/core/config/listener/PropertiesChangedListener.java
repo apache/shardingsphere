@@ -40,6 +40,6 @@ public final class PropertiesChangedListener extends PostGovernanceRepositoryEve
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        return Optional.of(new PropertiesChangedEvent(YamlEngine.secureUnmarshal(event.getValue(), Properties.class)));
+        return Optional.of(new PropertiesChangedEvent(YamlEngine.unmarshal(event.getValue(), Properties.class)));
     }
 }
