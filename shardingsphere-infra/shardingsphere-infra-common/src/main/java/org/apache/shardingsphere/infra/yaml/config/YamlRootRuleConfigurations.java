@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -34,7 +33,7 @@ import java.util.Properties;
 @Setter
 public class YamlRootRuleConfigurations implements YamlConfiguration {
     
-    private Map<String, DataSource> dataSources = new HashMap<>();
+    private Map<String, YamlDataSourceConfiguration> dataSources = new HashMap<>();
     
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
     

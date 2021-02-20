@@ -39,8 +39,9 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdv
     
     private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     
-    @SneakyThrows
     @Override
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         final Span root = (Span) ((Map<String, Object>) args[2]).get(ZipkinConstants.ROOT_SPAN);
         if ((boolean) args[1]) {

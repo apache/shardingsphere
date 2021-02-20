@@ -28,7 +28,7 @@ import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
-import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
+import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -57,13 +57,13 @@ public final class ScalingAPIImplTest {
     
     @Test
     public void assertStartAndList() {
-        Optional<Long> jobId = scalingAPI.start(JobConfigurationUtil.initJobConfig("/config.json"));
+        Optional<Long> jobId = scalingAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
         JobInfo jobInfo = getNonNullJobInfo(jobId.get());
         assertTrue(jobInfo.isActive());
         assertThat(jobInfo.getStatus(), is(JobStatus.RUNNING.name()));
-        assertThat(jobInfo.getTables(), is(new String[]{"ds_0.t1", "ds_0.t2"}));
-        assertThat(jobInfo.getShardingTotalCount(), is(2));
+        assertThat(jobInfo.getTables(), is(new String[]{"ds_0.t_order"}));
+        assertThat(jobInfo.getShardingTotalCount(), is(1));
         assertThat(jobInfo.getInventoryFinishedPercentage(), is(0));
         assertThat(jobInfo.getIncrementalAverageDelayMilliseconds(), is(-1L));
     }
@@ -80,7 +80,7 @@ public final class ScalingAPIImplTest {
     
     @Test
     public void assertStartOrStopById() {
-        Optional<Long> jobId = scalingAPI.start(JobConfigurationUtil.initJobConfig("/config.json"));
+        Optional<Long> jobId = scalingAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
         assertTrue(getNonNullJobInfo(jobId.get()).isActive());
         scalingAPI.stop(jobId.get());
@@ -91,7 +91,7 @@ public final class ScalingAPIImplTest {
     
     @Test
     public void assertRemove() {
-        Optional<Long> jobId = scalingAPI.start(JobConfigurationUtil.initJobConfig("/config.json"));
+        Optional<Long> jobId = scalingAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
         assertTrue(getJobInfo(jobId.get()).isPresent());
         scalingAPI.remove(jobId.get());
@@ -100,10 +100,10 @@ public final class ScalingAPIImplTest {
     
     @Test
     public void assertGetProgress() {
-        Optional<Long> jobId = scalingAPI.start(JobConfigurationUtil.initJobConfig("/config.json"));
+        Optional<Long> jobId = scalingAPI.start(ResourceUtil.mockJobConfig());
         assertTrue(jobId.isPresent());
         Map<Integer, JobProgress> jobProgressMap = scalingAPI.getProgress(jobId.get());
-        assertThat(jobProgressMap.size(), is(2));
+        assertThat(jobProgressMap.size(), is(1));
     }
     
     @AfterClass

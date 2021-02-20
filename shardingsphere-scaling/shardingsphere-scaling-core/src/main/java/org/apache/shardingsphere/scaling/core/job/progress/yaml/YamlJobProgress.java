@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.job.progress.yaml;
 
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskDelay;
@@ -42,9 +43,9 @@ public final class YamlJobProgress {
     @Setter
     public static final class YamlInventory {
         
-        private String[] finished;
+        private String[] finished = new String[0];
         
-        private Map<String, String> unfinished;
+        private Map<String, String> unfinished = Maps.newHashMap();
     }
     
     @Getter

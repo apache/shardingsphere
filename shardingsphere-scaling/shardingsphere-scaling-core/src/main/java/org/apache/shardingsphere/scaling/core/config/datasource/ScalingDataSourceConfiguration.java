@@ -42,6 +42,13 @@ public interface ScalingDataSourceConfiguration {
     DatabaseType getDatabaseType();
     
     /**
+     * Wrap.
+     *
+     * @return scaling data source configuration wrap
+     */
+    ScalingDataSourceConfigurationWrap wrap();
+    
+    /**
      * To data source.
      *
      * @return data source

@@ -39,7 +39,7 @@ import static org.junit.Assert.assertThat;
 public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdviceTest {
     
     @ClassRule
-    public static ZipkinCollector collector = new ZipkinCollector();
+    public static final ZipkinCollector COLLECTOR = new ZipkinCollector();
     
     private static final String SQL_STMT = "select 1";
     
@@ -60,7 +60,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
         advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
         advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
         parentSpan.finish();
-        zipkin2.Span span = collector.pop();
+        zipkin2.Span span = COLLECTOR.pop();
         assertNotNull(span);
         assertNotNull(span.parentId());
         Map<String, String> tags = span.tags();
@@ -75,7 +75,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
         advice.onThrowing(getTargetObject(), null, new Object[]{SQL_STMT, true}, new IOException());
         advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STMT, true}, new MethodInvocationResult());
         parentSpan.finish();
-        zipkin2.Span span = collector.pop();
+        zipkin2.Span span = COLLECTOR.pop();
         assertNotNull(span);
         assertNotNull(span.parentId());
         Map<String, String> tags = span.tags();

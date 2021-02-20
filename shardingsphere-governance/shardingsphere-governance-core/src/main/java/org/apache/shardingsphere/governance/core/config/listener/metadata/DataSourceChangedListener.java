@@ -24,10 +24,10 @@ import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRe
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
-import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -65,6 +65,6 @@ public final class DataSourceChangedListener extends PostGovernanceRepositoryEve
         YamlDataSourceConfigurationWrap result = YamlEngine.secureUnmarshal(event.getValue(), YamlDataSourceConfigurationWrap.class);
         Preconditions.checkState(null != result && !result.getDataSources().isEmpty(), "No available data sources to load for governance.");
         return new DataSourceChangedEvent(schemaName, result.getDataSources().entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> new DataSourceConfigurationYamlSwapper().swapToObject(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+                .collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper().swapToObject(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
 }

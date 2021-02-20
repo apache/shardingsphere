@@ -45,6 +45,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -80,7 +81,8 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         YamlRootRuleConfigurations yamlRootRuleConfigs = createYamlRootRuleConfigurations();
         String databaseType = null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType();
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                yamlRootRuleConfigs.getRules()), DatabaseTypeRegistry.getTrunkDatabaseType(databaseType), yamlRootRuleConfigs.getDataSources(), "schema_name");
+                yamlRootRuleConfigs.getRules()), DatabaseTypeRegistry.getTrunkDatabaseType(databaseType),
+                new YamlDataSourceConfigurationSwapper().swapToDataSources(yamlRootRuleConfigs.getDataSources()), "schema_name");
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType);
         ShardingSphereSchema schema = mockSchema();
         ConfigurationProperties props = new ConfigurationProperties(yamlRootRuleConfigs.getProps());

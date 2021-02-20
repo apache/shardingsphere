@@ -102,11 +102,11 @@ public final class DatabaseCommunicationEngine {
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
+        proxySQLExecutor.checkExecutePrerequisites(executionContext);
         boolean locked = false;
         Collection<ExecuteResult> executeResults;
         try {
             locked = tryGlobalLock(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
-            proxySQLExecutor.checkExecutePrerequisites(executionContext);
             executeResults = proxySQLExecutor.execute(executionContext);
             refreshMetadata(executionContext);
         } finally {
