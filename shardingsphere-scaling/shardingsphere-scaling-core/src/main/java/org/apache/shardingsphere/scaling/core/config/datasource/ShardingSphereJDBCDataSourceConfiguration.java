@@ -39,9 +39,9 @@ import java.util.Map;
 public final class ShardingSphereJDBCDataSourceConfiguration implements ScalingDataSourceConfiguration {
     
     /**
-     * Config type.
+     * Type.
      */
-    public static final String CONFIG_TYPE = "ShardingSphereJDBC";
+    public static final String TYPE = "ShardingSphereJDBC";
     
     private final String parameter;
     
@@ -61,14 +61,9 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements ScalingD
     }
     
     @Override
-    public String getConfigType() {
-        return CONFIG_TYPE;
-    }
-    
-    @Override
     public ScalingDataSourceConfigurationWrap wrap() {
         ScalingDataSourceConfigurationWrap result = new ScalingDataSourceConfigurationWrap();
-        result.setType(CONFIG_TYPE);
+        result.setType(TYPE);
         result.setParameter(parameter);
         return result;
     }
