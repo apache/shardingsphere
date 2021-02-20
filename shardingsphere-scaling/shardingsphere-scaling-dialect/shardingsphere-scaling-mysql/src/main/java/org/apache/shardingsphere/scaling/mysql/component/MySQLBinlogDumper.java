@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.mysql.component;
 
 import com.google.common.base.Preconditions;
+import com.zaxxer.hikari.HikariConfig;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -83,9 +84,9 @@ public final class MySQLBinlogDumper extends AbstractScalingExecutor implements 
     }
     
     private void dump() {
-        StandardJDBCDataSourceConfiguration jdbcDataSourceConfig = (StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig();
-        JdbcUri uri = new JdbcUri(jdbcDataSourceConfig.getJdbcUrl());
-        MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), uri.getHostname(), uri.getPort(), jdbcDataSourceConfig.getUsername(), jdbcDataSourceConfig.getPassword()));
+        HikariConfig hikariConfig = ((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getHikariConfig();
+        JdbcUri uri = new JdbcUri(hikariConfig.getJdbcUrl());
+        MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), uri.getHostname(), uri.getPort(), hikariConfig.getUsername(), hikariConfig.getPassword()));
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         while (isRunning()) {

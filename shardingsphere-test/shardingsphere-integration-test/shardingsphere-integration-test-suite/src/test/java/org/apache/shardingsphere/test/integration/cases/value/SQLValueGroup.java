@@ -31,14 +31,19 @@ import java.util.List;
 @Getter
 public final class SQLValueGroup {
     
-    private final Collection<SQLValue> sqlValues;
+    private final Collection<SQLValue> values;
     
-    public SQLValueGroup(final DataSetMetadata dataSetMetadata, final List<String> values) throws ParseException {
-        sqlValues = new LinkedList<>();
+    public SQLValueGroup(final DataSetMetadata metadata, final List<String> values) throws ParseException {
+        this.values = createSQLValues(metadata, values);
+    }
+    
+    private Collection<SQLValue> createSQLValues(final DataSetMetadata metadata, final List<String> values) throws ParseException {
+        Collection<SQLValue> result = new LinkedList<>();
         int count = 0;
         for (String each : values) {
-            sqlValues.add(new SQLValue(each, dataSetMetadata.getColumns().get(count).getType(), count + 1));
+            result.add(new SQLValue(each, metadata.getColumns().get(count).getType(), count + 1));
             count++;
         }
+        return result;
     }
 }

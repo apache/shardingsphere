@@ -33,7 +33,7 @@ public final class MockDataSourceMetaData implements DataSourceMetaData {
     
     @Override
     public String getCatalog() {
-        return null;
+        return "";
     }
     
     @Override

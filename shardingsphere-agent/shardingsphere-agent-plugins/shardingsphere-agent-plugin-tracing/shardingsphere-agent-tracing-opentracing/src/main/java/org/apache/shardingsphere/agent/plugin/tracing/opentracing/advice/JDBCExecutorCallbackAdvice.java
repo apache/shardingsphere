@@ -22,15 +22,16 @@ import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.tag.Tags;
 import io.opentracing.util.GlobalTracer;
-import java.lang.reflect.Method;
-import java.util.Map;
-import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.constant.ShardingSphereTags;
 import org.apache.shardingsphere.agent.plugin.tracing.opentracing.span.OpenTracingErrorSpan;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+
+import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * JDBC executor callback advice.
@@ -40,6 +41,7 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdv
     private static final String OPERATION_NAME = "/ShardingSphere/executeSQL/";
     
     @Override
+    @SuppressWarnings("unchecked")
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         Span root = (Span) ((Map<String, Object>) args[2]).get("ot_root_span_");
         Tracer.SpanBuilder builder = GlobalTracer.get().buildSpan(OPERATION_NAME);

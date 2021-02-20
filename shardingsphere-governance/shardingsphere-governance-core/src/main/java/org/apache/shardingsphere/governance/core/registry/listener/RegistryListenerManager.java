@@ -45,6 +45,6 @@ public final class RegistryListenerManager {
     public void initListeners() {
         terminalStateChangedListener.watch(Type.UPDATED);
         dataSourceStateChangedListener.watch(Type.UPDATED, Type.DELETED, Type.ADDED);
-        globalLockChangedListener.watch(Type.ADDED);
+        globalLockChangedListener.watch(Type.ADDED, Type.DELETED);
     }
 }

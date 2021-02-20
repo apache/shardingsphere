@@ -50,6 +50,32 @@ dataSources:
     maintenanceIntervalMilliseconds: 30000
 
 rules:
+- !SHARDING
+  tables:
+    t_order:
+      actualDataNodes: primary-replica-ds.t_order
+      tableStrategy:
+         none:
+      databaseStrategy:
+         none:
+    t_order_item:
+       actualDataNodes: primary-replica-ds.t_order_item
+       tableStrategy:
+         none:
+       databaseStrategy:
+         none:
+    t_order_details:
+       actualDataNodes: primary-replica-ds.t_order_details
+       tableStrategy:
+        none:
+       databaseStrategy:
+        none:
+  bindingTables:
+     - t_order,t_order_item,t_order_details
+  broadcastTables:
+     - t_broadcast_table
+     - t_broadcast_table_for_ddl
+
 - !REPLICA_QUERY
   dataSources:
     primary-replica-ds:

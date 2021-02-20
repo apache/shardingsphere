@@ -85,7 +85,7 @@ public final class IntegrationTestEnvironment {
         try {
             return EnvironmentType.valueOf(engineEnvProps.getProperty("it.env.type"));
         } catch (final IllegalArgumentException ignored) {
-            return EnvironmentType.EMBEDDED;
+            return EnvironmentType.NATIVE;
         }
     }
     

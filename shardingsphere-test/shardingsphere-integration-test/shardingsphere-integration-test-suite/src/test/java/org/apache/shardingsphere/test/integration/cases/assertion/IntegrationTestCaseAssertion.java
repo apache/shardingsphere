@@ -62,12 +62,6 @@ public final class IntegrationTestCaseAssertion {
         Collection<SQLValue> result = new LinkedList<>();
         int count = 0;
         for (String each : Splitter.on(",").trimResults().splitToList(parameters)) {
-            // TODO improve the implement way
-            if (each.startsWith("'")) {
-                String value = each.substring(each.indexOf('\'') + 1, each.lastIndexOf('\''));
-                result.add(new SQLValue(value, "json", ++count));
-                continue;
-            }
             List<String> parameterPair = Splitter.on(":").trimResults().splitToList(each);
             result.add(new SQLValue(parameterPair.get(0), parameterPair.get(1), ++count));
         }

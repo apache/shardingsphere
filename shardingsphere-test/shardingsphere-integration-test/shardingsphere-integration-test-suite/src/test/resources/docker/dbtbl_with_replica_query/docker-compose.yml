@@ -33,7 +33,7 @@ services:
 #    image: "zookeeper:3.6.2"
 #    container_name: dbtbl-with-replica-query-register-center
 #    ports:
-#      - "2181:24810"
+#      - "23810:2181"
   
   shardingsphere-proxy:
     image: apache/shardingsphere-proxy-test

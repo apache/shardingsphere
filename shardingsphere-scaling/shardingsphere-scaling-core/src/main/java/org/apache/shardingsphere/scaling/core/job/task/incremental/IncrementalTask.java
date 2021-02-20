@@ -77,18 +77,7 @@ public final class IncrementalTask extends AbstractScalingExecutor implements Sc
         dumper = DumperFactory.newInstanceLogDumper(dumperConfig, progress.getPosition());
         Collection<Importer> importers = instanceImporters();
         instanceChannel(importers);
-        Future<?> future = ScalingContext.getInstance().getIncrementalDumperExecuteEngine().submitAll(importers, new ExecuteCallback() {
-            
-            @Override
-            public void onSuccess() {
-            }
-            
-            @Override
-            public void onFailure(final Throwable throwable) {
-                log.error("get an error when migrating the increment data", throwable);
-                dumper.stop();
-            }
-        });
+        Future<?> future = ScalingContext.getInstance().getIncrementalDumperExecuteEngine().submitAll(importers, getExecuteCallback());
         dumper.start();
         waitForResult(future);
         dataSourceManager.close();
@@ -114,6 +103,21 @@ public final class IncrementalTask extends AbstractScalingExecutor implements Sc
         for (Importer each : importers) {
             each.setChannel(channel);
         }
+    }
+    
+    private ExecuteCallback getExecuteCallback() {
+        return new ExecuteCallback() {
+            
+            @Override
+            public void onSuccess() {
+            }
+            
+            @Override
+            public void onFailure(final Throwable throwable) {
+                log.error("get an error when migrating the increment data", throwable);
+                dumper.stop();
+            }
+        };
     }
     
     private void waitForResult(final Future<?> future) {

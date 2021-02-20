@@ -37,7 +37,7 @@ import static org.junit.Assert.assertThat;
 public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
     
     @ClassRule
-    public static ZipkinCollector collector = new ZipkinCollector();
+    public static final ZipkinCollector COLLECTOR = new ZipkinCollector();
     
     private JDBCExecutorCallbackAdvice advice;
     
@@ -51,7 +51,7 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     public void assertMethod() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
         advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
-        Span span = collector.pop();
+        Span span = COLLECTOR.pop();
         assertNotNull(span);
         assertThat(span.name(), is("/ShardingSphere/executeSQL/".toLowerCase()));
         Map<String, String> tags = span.tags();
@@ -69,7 +69,7 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
         advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
         advice.onThrowing(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new IOException());
         advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
-        Span span = collector.pop();
+        Span span = COLLECTOR.pop();
         assertNotNull(span);
         assertThat(span.name(), is("/ShardingSphere/executeSQL/".toLowerCase()));
         Map<String, String> tags = span.tags();
