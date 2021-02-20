@@ -88,11 +88,13 @@ public final class ScenarioParallelRunnerExecutor implements ParallelRunnerExecu
     
     @Override
     public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
-        ringBuffer.publishEvent((event, sequence) -> {
-            event.reset();
-            event.setCaseKey(new CaseKey(parameterizedArray.getAdapter(), parameterizedArray.getScenario(), parameterizedArray.getDatabaseType().getName()));
-            event.setChildStatement(childStatement);
-        });
+        // TODO disruptor cannot shutdown gracefully, the test case will not block and will next test cases (for example: DQL). Just use sync run, need to FIXME here.
+        childStatement.run();
+//        ringBuffer.publishEvent((event, sequence) -> {
+//            event.reset();
+//            event.setCaseKey(new CaseKey(parameterizedArray.getAdapter(), parameterizedArray.getScenario(), parameterizedArray.getDatabaseType().getName()));
+//            event.setChildStatement(childStatement);
+//        });
     }
     
     @Override
