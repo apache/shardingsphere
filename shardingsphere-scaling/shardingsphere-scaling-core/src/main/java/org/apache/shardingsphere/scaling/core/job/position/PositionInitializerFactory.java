@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
-import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 
 /**
  * Position initializer factory.
@@ -36,17 +35,7 @@ public final class PositionInitializerFactory {
      * @return position initializer
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static PositionInitializer<?> newInstance(final String databaseType) {
+    public static PositionInitializer newInstance(final String databaseType) {
         return ScalingEntryLoader.getInstance(databaseType).getPositionInitializer().newInstance();
-    }
-    
-    /**
-     * Get position type.
-     *
-     * @param databaseType database type
-     * @return position type
-     */
-    public static Class<?> getPositionClass(final String databaseType) {
-        return ReflectionUtil.getInterfaceGenericClass(ScalingEntryLoader.getInstance(databaseType).getPositionInitializer());
     }
 }

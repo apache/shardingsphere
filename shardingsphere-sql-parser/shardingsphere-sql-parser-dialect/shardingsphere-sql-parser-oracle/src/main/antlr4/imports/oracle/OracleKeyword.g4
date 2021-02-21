@@ -838,3 +838,75 @@ NOWAIT
 BATCH
     : B A T C H
     ;
+
+BLOCK
+    : B L O C K
+    ;
+
+REBUILD
+    : R E B U I L D
+    ;
+
+INVALIDATION
+    : I N V A L I D A T I O N
+    ;
+
+COMPILE
+    : C O M P I L E
+    ;
+
+USABLE
+    : U S A B L E
+    ;
+
+UNUSABLE
+    : U N U S A B L E
+    ;
+
+ONLINE
+    : O N L I N E
+    ;
+
+MONITORING
+    : M O N I T O R I N G
+    ;
+
+NOMONITORING
+    : N O M O N I T O R I N G
+    ;
+
+USAGE
+    : U S A G E
+    ;
+
+COALESCE
+    : C O A L E S C E
+    ;
+
+CLEANUP
+    : C L E A N U P
+    ;
+
+PARALLEL
+    : P A R A L L E L
+    ;
+
+INVALIDATION
+    : I N V A L I D A T I O N
+    ;
+
+LOG
+    : L O G
+    ;
+
+REUSE
+    : R E U S E
+    ;
+
+STORAGE
+    : S T O R A G E
+    ;
+
+ONLINE
+    : O N L I N E
+    ;

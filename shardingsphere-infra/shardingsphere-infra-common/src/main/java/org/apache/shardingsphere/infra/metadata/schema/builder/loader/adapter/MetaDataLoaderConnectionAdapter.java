@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.metadata.schema.builder.loader.adapter;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.DatabaseMetaDataDialectHandlerFactory;
 
 import java.sql.Array;
 import java.sql.Blob;
@@ -36,7 +35,6 @@ import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
-
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
@@ -68,16 +66,7 @@ public final class MetaDataLoaderConnectionAdapter implements Connection {
     
     @Override
     public String getSchema() {
-        return DatabaseMetaDataDialectHandlerFactory.findHandler(databaseType).map(handler -> handler.getSchema(connection)).orElse(getSchema(connection));
-    }
-    
-    @SuppressWarnings("ReturnOfNull")
-    private String getSchema(final Connection connection) {
-        try {
-            return connection.getSchema();
-        } catch (final SQLException ex) {
-            return null;
-        }
+        return databaseType.getSchema(connection);
     }
     
     @Override

@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.agent.metrics.api.advice;
 
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.concurrent.atomic.DoubleAdder;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.metrics.api.constant.MethodNameConstant;
 import org.apache.shardingsphere.agent.metrics.api.util.ReflectiveUtil;
@@ -27,6 +24,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.concurrent.atomic.DoubleAdder;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -36,7 +37,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class TransactionAdviceTest extends MetricsAdviceBaseTest {
     
-    private TransactionAdvice transactionAdvice = new TransactionAdvice();
+    private final TransactionAdvice transactionAdvice = new TransactionAdvice();
     
     @Mock
     private Method commit;

@@ -31,7 +31,8 @@ import static org.junit.Assert.assertTrue;
 
 public final class CalciteStatementTest extends AbstractShardingSphereDataSourceForCalciteTest {
 
-    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES = "select o.*, i.* from t_order_calcite o, t_order_item_calcite i "
+    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES =
+            "select o.*, i.* from t_order_calcite o, t_order_item_calcite i "
             + "where o.order_id = 1000 and i.item_id = 100000";
 
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES =
@@ -52,6 +53,14 @@ public final class CalciteStatementTest extends AbstractShardingSphereDataSource
             "select t_order_calcite.* from t_order_calcite, t_order_item_calcite_sharding "
                     + "where t_order_calcite.order_id = t_order_item_calcite_sharding.item_id "
                     + "ORDER BY t_order_item_calcite_sharding.user_id";
+
+    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES_WITH_ENCRYPT =
+            "select t_user_encrypt_calcite.user_id, t_user_encrypt_calcite.pwd, t_user_info.information from t_user_encrypt_calcite, t_user_info "
+            + "where t_user_encrypt_calcite.user_id = t_user_info.user_id ";
+
+    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_WITH_ENCRYPT =
+            "select t_user_encrypt_calcite_sharding.user_id, t_user_encrypt_calcite_sharding.pwd, t_user_info.information from t_user_encrypt_calcite_sharding, t_user_info "
+                    + "where t_user_encrypt_calcite_sharding.user_id = t_user_info.user_id ";
 
     @Test
     public void assertQueryWithCalciteInSingleTables() throws SQLException {
@@ -80,17 +89,12 @@ public final class CalciteStatementTest extends AbstractShardingSphereDataSource
         assertThat(resultSet.getString(3), is("init"));
         assertThat(resultSet.getInt(4), is(1000));
         assertThat(resultSet.getInt(5), is(10000));
-        assertThat(resultSet.getInt(6), is(10));
-        assertThat(resultSet.getString(7), is("init"));
-        assertThat(resultSet.getString(7), is("init"));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(1001));
         assertThat(resultSet.getInt(2), is(11));
         assertThat(resultSet.getString(3), is("init"));
         assertThat(resultSet.getInt(4), is(1001));
         assertThat(resultSet.getInt(5), is(10001));
-        assertThat(resultSet.getInt(6), is(11));
-        assertThat(resultSet.getString(7), is("init"));
         assertFalse(resultSet.next());
     }
 
@@ -105,18 +109,12 @@ public final class CalciteStatementTest extends AbstractShardingSphereDataSource
         assertThat(resultSet.getString(3), is("init"));
         assertThat(resultSet.getInt(4), is(1000));
         assertThat(resultSet.getInt(5), is(10000));
-        assertThat(resultSet.getInt(6), is(10));
-        assertThat(resultSet.getString(7), is("init"));
-        assertThat(resultSet.getString(8), is("t_order_item_calcite_sharding"));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(1001));
         assertThat(resultSet.getInt(2), is(11));
         assertThat(resultSet.getString(3), is("init"));
         assertThat(resultSet.getInt(4), is(1001));
         assertThat(resultSet.getInt(5), is(10001));
-        assertThat(resultSet.getInt(6), is(11));
-        assertThat(resultSet.getString(7), is("init"));
-        assertThat(resultSet.getString(8), is("t_order_item_calcite_sharding"));
         assertFalse(resultSet.next());
     }
 
@@ -131,18 +129,12 @@ public final class CalciteStatementTest extends AbstractShardingSphereDataSource
         assertThat(resultSet.getString(3), is("init"));
         assertThat(resultSet.getInt(4), is(1000));
         assertThat(resultSet.getInt(5), is(10000));
-        assertThat(resultSet.getInt(6), is(10));
-        assertThat(resultSet.getString(7), is("init"));
-        assertThat(resultSet.getString(8), is("t_order_item_calcite_sharding"));
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(1001));
         assertThat(resultSet.getInt(2), is(11));
         assertThat(resultSet.getString(3), is("init"));
         assertThat(resultSet.getInt(4), is(1001));
         assertThat(resultSet.getInt(5), is(10001));
-        assertThat(resultSet.getInt(6), is(11));
-        assertThat(resultSet.getString(7), is("init"));
-        assertThat(resultSet.getString(8), is("t_order_item_calcite_sharding"));
         assertFalse(resultSet.next());
     }
 
@@ -159,6 +151,54 @@ public final class CalciteStatementTest extends AbstractShardingSphereDataSource
         assertThat(resultSet.getInt(1), is(1001));
         assertThat(resultSet.getInt(2), is(11));
         assertThat(resultSet.getString(3), is("init"));
+        assertFalse(resultSet.next());
+    }
+
+    @Test
+    public void assertQueryWithCalciteInSingleTablesWithEncryptRule() throws SQLException {
+        ShardingSphereStatement preparedStatement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
+        ResultSet resultSet = preparedStatement.executeQuery(SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES_WITH_ENCRYPT);
+        assertNotNull(resultSet);
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(0));
+        assertThat(resultSet.getString(2), is("decryptValue"));
+        assertThat(resultSet.getString(3), is("description0"));
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(1));
+        assertThat(resultSet.getString(2), is("decryptValue"));
+        assertThat(resultSet.getString(3), is("description1"));
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(2));
+        assertThat(resultSet.getString(2), is("decryptValue"));
+        assertThat(resultSet.getString(3), is("description2"));
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(3));
+        assertThat(resultSet.getString(2), is("decryptValue"));
+        assertThat(resultSet.getString(3), is("description3"));
+        assertFalse(resultSet.next());
+    }
+
+    @Test
+    public void assertQueryWithCalciteInSingleAndShardingTablesWithEncryptRule() throws SQLException {
+        ShardingSphereStatement preparedStatement = (ShardingSphereStatement) getShardingSphereDataSource().getConnection().createStatement();
+        ResultSet resultSet = preparedStatement.executeQuery(SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_WITH_ENCRYPT);
+        assertNotNull(resultSet);
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(0));
+        assertThat(resultSet.getString(2), is("decryptValue"));
+        assertThat(resultSet.getString(3), is("description0"));
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(1));
+        assertThat(resultSet.getString(2), is("decryptValue"));
+        assertThat(resultSet.getString(3), is("description1"));
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(2));
+        assertThat(resultSet.getString(2), is("decryptValue"));
+        assertThat(resultSet.getString(3), is("description2"));
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(3));
+        assertThat(resultSet.getString(2), is("decryptValue"));
+        assertThat(resultSet.getString(3), is("description3"));
         assertFalse(resultSet.next());
     }
 }

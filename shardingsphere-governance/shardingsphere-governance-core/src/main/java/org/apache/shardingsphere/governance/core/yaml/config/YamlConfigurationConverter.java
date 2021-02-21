@@ -17,21 +17,30 @@
 
 package org.apache.shardingsphere.governance.core.yaml.config;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
-import org.apache.shardingsphere.infra.auth.builtin.yaml.config.YamlUserRuleConfiguration;
-import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
-import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.yaml.config.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -48,12 +57,46 @@ public final class YamlConfigurationConverter {
      * @return data source configurations
      */
     public static Map<String, DataSourceConfiguration> convertDataSourceConfigurations(final String yamlContent) {
-        YamlDataSourceConfigurationWrap result = YamlEngine.unmarshalWithFilter(yamlContent, YamlDataSourceConfigurationWrap.class);
+        YamlDataSourceConfigurationWrap result = YamlEngine.unmarshal(yamlContent, YamlDataSourceConfigurationWrap.class);
         if (null == result.getDataSources() || result.getDataSources().isEmpty()) {
             return new LinkedHashMap<>();
         }
-        return result.getDataSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> new DataSourceConfigurationYamlSwapper()
+        return result.getDataSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper()
                 .swapToObject(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    }
+    
+    /**
+     * Convert data source configurations from YAML content.
+     *
+     * @param yamlDataSourceConfigs YAML data source configurations
+     * @return data source configurations
+     */
+    public static Map<String, DataSourceConfiguration> convertDataSourceConfigurations(final Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigs) {
+        return Maps.transformValues(yamlDataSourceConfigs, new YamlDataSourceConfigurationSwapper()::swapToObject);
+    }
+    
+    /**
+     * Convert data sources from YAML data source configurations.
+     *
+     * @param yamlDataSources YAML data sources
+     * @return data sources
+     */
+    public static Map<String, DataSource> convertDataSources(final Map<String, YamlDataSourceConfiguration> yamlDataSources) {
+        return new YamlDataSourceConfigurationSwapper().swapToDataSources(yamlDataSources);
+    }
+    
+    /**
+     * Convert sharding rule configuration from YAML .
+     *
+     * @param yamlRuleConfigs yaml rule configurations
+     * @return sharding rule configuration
+     */
+    public static ShardingRuleConfiguration convertShardingRuleConfig(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
+        Optional<YamlRuleConfiguration> ruleConfig = yamlRuleConfigs.stream()
+                .filter(each -> each instanceof YamlShardingRuleConfiguration)
+                .findFirst();
+        Preconditions.checkState(ruleConfig.isPresent(), "No available sharding rule to load for governance.");
+        return new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) ruleConfig.get());
     }
     
     /**
@@ -63,8 +106,7 @@ public final class YamlConfigurationConverter {
      * @return rule configurations
      */
     public static Collection<RuleConfiguration> convertRuleConfigurations(final String yamlContent) {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                YamlEngine.unmarshalWithFilter(yamlContent, YamlRuleConfigurationWrap.class).getRules());
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(yamlContent, YamlRuleConfigurationWrap.class).getRules());
     }
     
     /**
@@ -84,6 +126,6 @@ public final class YamlConfigurationConverter {
      * @return properties
      */
     public static Properties convertProperties(final String yamlContent) {
-        return YamlEngine.unmarshalWithFilter(yamlContent, Properties.class);
+        return YamlEngine.unmarshal(yamlContent, Properties.class);
     }
 }

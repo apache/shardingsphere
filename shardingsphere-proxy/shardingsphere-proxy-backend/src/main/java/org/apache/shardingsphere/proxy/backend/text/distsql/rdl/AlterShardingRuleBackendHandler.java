@@ -64,7 +64,7 @@ public final class AlterShardingRuleBackendHandler extends SchemaRequiredBackend
             throw new ShardingRuleNotExistedException();
         }
         check(shardingRuleConfig.get(), sqlStatement);
-        Optional<YamlShardingRuleConfiguration> yamlShardingRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(Collections.singleton(shardingRuleConfig.get())).stream()
+        Optional<YamlShardingRuleConfiguration> yamlShardingRuleConfig = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(Collections.singleton(shardingRuleConfig.get())).stream()
                 .filter(each -> each instanceof YamlShardingRuleConfiguration).map(each -> (YamlShardingRuleConfiguration) each).findFirst();
         if (!yamlShardingRuleConfig.isPresent()) {
             throw new ShardingRuleNotExistedException();

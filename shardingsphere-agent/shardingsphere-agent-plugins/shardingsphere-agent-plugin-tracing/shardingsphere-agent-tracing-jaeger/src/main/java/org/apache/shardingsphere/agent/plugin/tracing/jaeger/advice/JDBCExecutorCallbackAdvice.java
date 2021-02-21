@@ -45,6 +45,7 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdv
     
     @Override
     @SneakyThrows
+    @SuppressWarnings("unchecked")
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
         Span root = (Span) ((Map<String, Object>) args[2]).get(JaegerConstants.ROOT_SPAN);
         Tracer.SpanBuilder builder = GlobalTracer.get().buildSpan(OPERATION_NAME);

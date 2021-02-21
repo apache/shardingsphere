@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.mysql.component;
 
 import com.google.common.base.Preconditions;
+import com.zaxxer.hikari.HikariConfig;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -83,9 +84,9 @@ public final class MySQLBinlogDumper extends AbstractScalingExecutor implements 
     }
     
     private void dump() {
-        StandardJDBCDataSourceConfiguration jdbcDataSourceConfig = (StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig();
-        JdbcUri uri = new JdbcUri(jdbcDataSourceConfig.getJdbcUrl());
-        MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), uri.getHostname(), uri.getPort(), jdbcDataSourceConfig.getUsername(), jdbcDataSourceConfig.getPassword()));
+        HikariConfig hikariConfig = ((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getHikariConfig();
+        JdbcUri uri = new JdbcUri(hikariConfig.getJdbcUrl());
+        MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), uri.getHostname(), uri.getPort(), hikariConfig.getUsername(), hikariConfig.getPassword()));
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         while (isRunning()) {
@@ -159,16 +160,14 @@ public final class MySQLBinlogDumper extends AbstractScalingExecutor implements 
     }
     
     private DataRecord createDataRecord(final AbstractRowsEvent rowsEvent, final int columnCount) {
-        long delay = System.currentTimeMillis() - rowsEvent.getTimestamp() * 1000;
-        DataRecord result = new DataRecord(new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId(), delay), columnCount);
+        DataRecord result = new DataRecord(new BinlogPosition(rowsEvent.getFileName(), rowsEvent.getPosition(), rowsEvent.getServerId()), columnCount);
         result.setTableName(dumperConfig.getTableNameMap().get(rowsEvent.getTableName()));
         result.setCommitTime(rowsEvent.getTimestamp() * 1000);
         return result;
     }
     
     private void createPlaceholderRecord(final AbstractBinlogEvent event) {
-        long delay = System.currentTimeMillis() - event.getTimestamp() * 1000;
-        PlaceholderRecord record = new PlaceholderRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId(), delay));
+        PlaceholderRecord record = new PlaceholderRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()));
         record.setCommitTime(event.getTimestamp() * 1000);
         pushRecord(record);
     }

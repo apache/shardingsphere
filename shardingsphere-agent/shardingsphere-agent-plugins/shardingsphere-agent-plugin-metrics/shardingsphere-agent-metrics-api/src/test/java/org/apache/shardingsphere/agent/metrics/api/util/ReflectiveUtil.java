@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.agent.metrics.api.util;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 /**
  * Reflective utility.
@@ -46,26 +47,7 @@ public final class ReflectiveUtil {
             }
         }
     }
-    
-    /**
-     * Get field.
-     *
-     * @param clazz clazz
-     * @param fieldName field name
-     * @return field
-     */
-    public static Field getField(final Class<?> clazz, final String fieldName) {
-        Field[] fields = clazz.getDeclaredFields();
-        if (fields.length != 0) {
-            for (Field each : fields) {
-                if (fieldName.equals(each.getName())) {
-                    return each;
-                }
-            }
-        }
-        return null;
-    }
-    
+
     /**
      * Get field value object.
      *
@@ -77,14 +59,7 @@ public final class ReflectiveUtil {
         return getFieldValue(object, getField(object.getClass(), fieldName));
     }
     
-    /**
-     * Get field value.
-     *
-     * @param object  object
-     * @param field field
-     * @return field value
-     */
-    public static Object getFieldValue(final Object object, final Field field) {
+    private static Object getFieldValue(final Object object, final Field field) {
         if (null == object || null == field) {
             return null;
         }
@@ -95,5 +70,17 @@ public final class ReflectiveUtil {
         } catch (IllegalAccessException ignored) {
         }
         return result;
+    }
+
+    private static Field getField(final Class<?> clazz, final String fieldName) {
+        Field[] fields = clazz.getDeclaredFields();
+        if (fields.length != 0) {
+            for (Field each : fields) {
+                if (fieldName.equals(each.getName())) {
+                    return each;
+                }
+            }
+        }
+        return null;
     }
 }

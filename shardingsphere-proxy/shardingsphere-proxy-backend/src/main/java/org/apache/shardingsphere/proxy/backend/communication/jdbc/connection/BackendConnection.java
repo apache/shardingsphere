@@ -23,7 +23,7 @@ import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
-import org.apache.shardingsphere.infra.auth.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;

@@ -18,17 +18,22 @@
 package org.apache.shardingsphere.scaling.core.config;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@NoArgsConstructor
 @Getter
 @Setter
-@RequiredArgsConstructor
 public final class WorkflowConfiguration {
     
     private long allowDelayMilliseconds = 60 * 1000L;
     
-    private final String schemaName;
+    private String schemaName;
     
-    private final String ruleCacheId;
+    private String ruleCacheId;
+    
+    public WorkflowConfiguration(final String schemaName, final String ruleCacheId) {
+        this.schemaName = schemaName;
+        this.ruleCacheId = ruleCacheId;
+    }
 }

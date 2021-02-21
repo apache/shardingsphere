@@ -31,7 +31,7 @@ import java.sql.SQLException;
 /**
  * PostgreSQL wal position initializer.
  */
-public final class PostgreSQLPositionInitializer implements PositionInitializer<WalPosition> {
+public final class PostgreSQLPositionInitializer implements PositionInitializer {
     
     public static final String SLOT_NAME = "sharding_scaling";
     
@@ -45,6 +45,11 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer<
             createIfNotExists(connection);
             return getWalPosition(connection);
         }
+    }
+    
+    @Override
+    public WalPosition init(final String data) {
+        return new WalPosition(LogSequenceNumber.valueOf(Long.parseLong(data)));
     }
     
     private void createIfNotExists(final Connection connection) throws SQLException {

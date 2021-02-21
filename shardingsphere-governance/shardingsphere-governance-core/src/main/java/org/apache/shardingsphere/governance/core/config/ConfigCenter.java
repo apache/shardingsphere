@@ -31,22 +31,22 @@ import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurat
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.event.model.scaling.StartScalingEvent;
-import org.apache.shardingsphere.governance.core.event.model.schema.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceConfigurationWrap;
 import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
-import org.apache.shardingsphere.governance.core.yaml.swapper.DataSourceConfigurationYamlSwapper;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
-import org.apache.shardingsphere.infra.auth.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 
 import java.util.ArrayList;
@@ -233,7 +233,7 @@ public final class ConfigCenter {
     
     private YamlDataSourceConfigurationWrap createYamlDataSourceConfigurationWrap(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
         Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigurations = dataSourceConfigurations.entrySet().stream().collect(Collectors.toMap(Entry::getKey, 
-            entry -> new DataSourceConfigurationYamlSwapper().swapToYamlConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+            entry -> new YamlDataSourceConfigurationSwapper().swapToYamlConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         YamlDataSourceConfigurationWrap result = new YamlDataSourceConfigurationWrap();
         result.setDataSources(yamlDataSourceConfigurations);
         return result;
@@ -274,7 +274,7 @@ public final class ConfigCenter {
             }
         }
         YamlRootRuleConfigurations result = new YamlRootRuleConfigurations();
-        result.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlConfigurations(configs));
+        result.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs));
         return result;
     }
     

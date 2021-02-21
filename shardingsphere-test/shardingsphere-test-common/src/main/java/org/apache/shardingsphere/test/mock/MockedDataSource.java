@@ -33,6 +33,7 @@ import static org.mockito.Mockito.when;
  */
 public final class MockedDataSource implements DataSource {
     
+    @SuppressWarnings("MagicConstant")
     @Override
     public Connection getConnection() throws SQLException {
         Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
@@ -46,6 +47,7 @@ public final class MockedDataSource implements DataSource {
         return getConnection();
     }
     
+    @SuppressWarnings("ReturnOfNull")
     @Override
     public <T> T unwrap(final Class<T> iface) {
         return null;
@@ -56,6 +58,7 @@ public final class MockedDataSource implements DataSource {
         return false;
     }
     
+    @SuppressWarnings("ReturnOfNull")
     @Override
     public PrintWriter getLogWriter() {
         return null;
@@ -63,7 +66,6 @@ public final class MockedDataSource implements DataSource {
     
     @Override
     public void setLogWriter(final PrintWriter out) {
-        
     }
     
     @Override
@@ -75,6 +77,7 @@ public final class MockedDataSource implements DataSource {
         return 0;
     }
     
+    @SuppressWarnings("ReturnOfNull")
     @Override
     public Logger getParentLogger() {
         return null;

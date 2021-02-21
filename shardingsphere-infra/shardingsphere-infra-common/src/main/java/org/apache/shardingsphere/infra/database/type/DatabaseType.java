@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.infra.database.type;
 
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
@@ -32,6 +35,13 @@ public interface DatabaseType {
      * @return database name
      */
     String getName();
+    
+    /**
+     * Get quote character.
+     *
+     * @return quote character
+     */
+    QuoteCharacter getQuoteCharacter();
     
     /**
      * Get alias of JDBC URL prefixes.
@@ -48,4 +58,29 @@ public interface DatabaseType {
      * @return data source meta data
      */
     DataSourceMetaData getDataSourceMetaData(String url, String username);
+    
+    /**
+     * Get schema.
+     *
+     * @param connection connection
+     * @return schema
+     */
+    @SuppressWarnings("ReturnOfNull")
+    default String getSchema(final Connection connection) {
+        try {
+            return connection.getSchema();
+        } catch (final SQLException ignored) {
+            return null;
+        }
+    }
+    
+    /**
+     * Format table name pattern.
+     *
+     * @param tableNamePattern table name pattern
+     * @return formatted table name pattern
+     */
+    default String formatTableNamePattern(final String tableNamePattern) {
+        return tableNamePattern;
+    }
 }

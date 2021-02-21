@@ -29,7 +29,43 @@
     <alter-index sql-case-id="alter_index_with_quota">
         <index name="order_index" start-delimiter="&quot;" end-delimiter="&quot;" start-index="12" stop-index="24" />
     </alter-index>
-
+    
+    <alter-index sql-case-id="alter_index_with_parallel">
+        <index name="order_index" start-index="12" stop-index="22" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_with_compile">
+        <index name="order_index" start-index="12" stop-index="22" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_with_disable">
+        <index name="order_index" start-index="12" stop-index="22" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_with_unusable">
+        <index name="order_index" start-index="12" stop-index="22" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_with_visable">
+        <index name="order_index" start-index="12" stop-index="22" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_with_rename">
+        <index name="order_index" start-index="12" stop-index="22" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_with_coalesce">
+        <index name="order_index" start-index="12" stop-index="22" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_with_usage">
+        <index name="order_index" start-index="12" stop-index="22" />
+    </alter-index>
+    
+    <alter-index sql-case-id="alter_index_with_update">
+        <index name="order_index" start-index="12" stop-index="22" />
+    </alter-index>
+    
     <alter-index sql-case-id="alter_index_rebuild">
         <table name="t_order" start-index="27" stop-index="33" />
     </alter-index>
@@ -37,7 +73,7 @@
     <alter-index sql-case-id="alter_index_with_quota_bracket">
         <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="29" stop-index="37" />
     </alter-index>
-
+    
     <alter-index sql-case-id="alter_index_alter_column" />
     <alter-index sql-case-id="alter_index_set_tablespace" />
 </sql-parser-test-cases>

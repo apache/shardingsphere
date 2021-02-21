@@ -410,6 +410,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitDropTable(final DropTableContext ctx) {
         MySQLDropTableStatement result = new MySQLDropTableStatement();
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
+        result.setContainsIfExistClause(null != ctx.existClause());
         return result;
     }
     

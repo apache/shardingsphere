@@ -52,6 +52,10 @@ public final class StateContext {
         }
     }
     
+    private void recoverState() {
+        currentState.pop();
+    }
+    
     /**
      * Get current state.
      * 
@@ -59,9 +63,5 @@ public final class StateContext {
      */
     public StateType getCurrentState() {
         return Optional.ofNullable(currentState.peek()).orElse(StateType.OK);
-    }
-    
-    private void recoverState() {
-        currentState.pop();
     }
 }

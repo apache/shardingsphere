@@ -17,16 +17,13 @@
 
 package org.apache.shardingsphere.driver.governance.internal.state.impl;
 
-import org.apache.shardingsphere.driver.governance.internal.circuit.datasource.CircuitBreakerDataSource;
 import org.apache.shardingsphere.driver.governance.internal.state.DriverState;
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.driver.governance.internal.state.DriverStateContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -42,12 +39,7 @@ public final class LockDriverState implements DriverState {
     public Connection getConnection(final Map<String, DataSource> dataSourceMap, 
                                     final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
         block(metaDataContexts);
-        if (metaDataContexts.getStateContext().getCurrentState() == StateType.OK) {
-            return new ShardingSphereConnection(dataSourceMap, metaDataContexts, transactionContexts, TransactionTypeHolder.get());
-        } else if (metaDataContexts.getStateContext().getCurrentState() == StateType.CIRCUIT_BREAK) {
-            return new CircuitBreakerDataSource().getConnection();
-        }
-        throw new UnsupportedOperationException(String.format("Unknown driver state type: %s", metaDataContexts.getStateContext().getCurrentState().name()));
+        return DriverStateContext.getConnection(dataSourceMap, metaDataContexts, transactionContexts, transactionType);
     }
     
     private void block(final MetaDataContexts metaDataContexts) {

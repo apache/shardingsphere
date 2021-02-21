@@ -36,7 +36,7 @@ insertSelectClause
     ;
 
 update
-    : UPDATE tableReferences setAssignmentsClause whereClause?
+    : withClause? UPDATE top? tableReferences setAssignmentsClause whereClause? (OPTION queryHint)?
     ;
 
 assignment
@@ -44,7 +44,7 @@ assignment
     ;
 
 setAssignmentsClause
-    : SET assignment (COMMA_ assignment)*
+    : SET assignment (COMMA_ assignment)* fromClause?
     ;
 
 assignmentValues

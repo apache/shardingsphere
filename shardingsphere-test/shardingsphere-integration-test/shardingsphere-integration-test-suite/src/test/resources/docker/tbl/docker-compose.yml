@@ -33,7 +33,7 @@ services:
 #    image: "zookeeper:3.6.2"
 #    container_name: tbl-register-center
 #    ports:
-#      - "2181:22810"
+#      - "21810:2181"
   
   shardingsphere-proxy:
     image: apache/shardingsphere-proxy-test

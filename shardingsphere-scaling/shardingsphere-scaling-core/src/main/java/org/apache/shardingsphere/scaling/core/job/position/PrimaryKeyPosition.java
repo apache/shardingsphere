@@ -17,26 +17,32 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.io.IOException;
 
 /**
  * Use primary key as position.
  */
 @RequiredArgsConstructor
 @Getter
-@JsonAdapter(PrimaryKeyPosition.PositionTypeAdapter.class)
 public final class PrimaryKeyPosition implements Position<PrimaryKeyPosition> {
     
     private final long beginValue;
     
     private final long endValue;
+    
+    /**
+     * Init by string data.
+     *
+     * @param data string data
+     * @return primary key position
+     */
+    public static PrimaryKeyPosition init(final String data) {
+        String[] array = data.split(",");
+        Preconditions.checkArgument(array.length == 2, "Unknown primary key position: " + data);
+        return new PrimaryKeyPosition(Long.parseLong(array[0]), Long.parseLong(array[1]));
+    }
     
     @Override
     public int compareTo(final PrimaryKeyPosition position) {
@@ -46,25 +52,8 @@ public final class PrimaryKeyPosition implements Position<PrimaryKeyPosition> {
         return Long.compare(beginValue, position.beginValue);
     }
     
-    /**
-     * Position type adapter.
-     */
-    public static class PositionTypeAdapter extends TypeAdapter<PrimaryKeyPosition> {
-        
-        @Override
-        public void write(final JsonWriter out, final PrimaryKeyPosition value) throws IOException {
-            out.beginArray();
-            out.value(value.getBeginValue());
-            out.value(value.getEndValue());
-            out.endArray();
-        }
-        
-        @Override
-        public PrimaryKeyPosition read(final JsonReader in) throws IOException {
-            in.beginArray();
-            PrimaryKeyPosition result = new PrimaryKeyPosition(in.nextLong(), in.nextLong());
-            in.endArray();
-            return result;
-        }
+    @Override
+    public String toString() {
+        return String.format("%d,%d", beginValue, endValue);
     }
 }

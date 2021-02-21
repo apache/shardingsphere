@@ -17,63 +17,18 @@
 
 package org.apache.shardingsphere.scaling.core.config;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
-
-import java.util.Map;
+import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfigurationWrap;
 
 /**
  * Rule configuration.
  */
 @Getter
+@Setter
 public final class RuleConfiguration {
     
-    private final DataSourceConfigurationWrapper source;
+    private ScalingDataSourceConfigurationWrap source;
     
-    private final DataSourceConfigurationWrapper target;
-    
-    public RuleConfiguration(final ScalingDataSourceConfiguration source, final ScalingDataSourceConfiguration target) {
-        this.source = new DataSourceConfigurationWrapper(source.getConfigType(), new Gson().toJsonTree(source));
-        this.target = new DataSourceConfigurationWrapper(target.getConfigType(), new Gson().toJsonTree(target));
-    }
-    
-    @RequiredArgsConstructor
-    public static class DataSourceConfigurationWrapper {
-        
-        private final String type;
-        
-        private final JsonElement parameter;
-        
-        /**
-         * Unwrap to {@code DataSourceConfiguration}.
-         *
-         * @return {@code DataSourceConfiguration}
-         */
-        public ScalingDataSourceConfiguration unwrap() {
-            Map<String, Class<?>> instances = DataSourceConfigurationHolder.getInstances();
-            Preconditions.checkArgument(instances.containsKey(type.toLowerCase()), "Unsupported Data Source Type:" + type);
-            return (ScalingDataSourceConfiguration) new Gson().fromJson(parameter, instances.get(type.toLowerCase()));
-        }
-        
-        private static class DataSourceConfigurationHolder {
-            
-            private static final Map<String, Class<?>> INSTANCES = Maps.newHashMap();
-            
-            static {
-                INSTANCES.put(StandardJDBCDataSourceConfiguration.CONFIG_TYPE.toLowerCase(), StandardJDBCDataSourceConfiguration.class);
-                INSTANCES.put(ShardingSphereJDBCDataSourceConfiguration.CONFIG_TYPE.toLowerCase(), ShardingSphereJDBCDataSourceConfiguration.class);
-            }
-            
-            private static Map<String, Class<?>> getInstances() {
-                return INSTANCES;
-            }
-        }
-    }
+    private ScalingDataSourceConfigurationWrap target;
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
-import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -73,7 +73,7 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         when(keyGenerateStrategyConfigurationYamlSwapper.swapToObject(ArgumentMatchers.any())).thenReturn(mock(KeyGenerateStrategyConfiguration.class));
     }
     
-    private void setSwapper(final String swapperFieldName, final YamlSwapper swapperFieldValue) throws ReflectiveOperationException {
+    private void setSwapper(final String swapperFieldName, final YamlConfigurationSwapper swapperFieldValue) throws ReflectiveOperationException {
         Field field = ShardingRuleConfigurationYamlSwapper.class.getDeclaredField(swapperFieldName);
         field.setAccessible(true);
         field.set(shardingRuleConfigurationYamlSwapper, swapperFieldValue);

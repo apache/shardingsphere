@@ -20,7 +20,6 @@ package org.apache.shardingsphere.scaling.core.api;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * Job info.
@@ -28,7 +27,6 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString
 public final class JobInfo {
     
     private final long jobId;

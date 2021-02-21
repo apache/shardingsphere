@@ -35,15 +35,15 @@ import static org.junit.Assert.assertThat;
 public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdviceTest {
     
     @ClassRule
-    public static JaegerCollector collector = new JaegerCollector();
-    
+    public static final JaegerCollector COLLECTOR = new JaegerCollector();
+
     private static final SQLParserEngineAdvice ADVICE = new SQLParserEngineAdvice();
     
     @Test
     public void assertMethod() {
         ADVICE.beforeMethod(getTargetObject(), null, new Object[]{"select 1"}, new MethodInvocationResult());
         ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
-        List<MockSpan> spans = collector.finishedSpans();
+        List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
         assertThat(spans.get(0).logEntries().size(), is(0));
         assertThat(spans.get(0).operationName(), is("/ShardingSphere/parseSQL/"));
@@ -54,7 +54,7 @@ public final class SQLParserEngineAdviceTest extends AbstractSQLParserEngineAdvi
         ADVICE.beforeMethod(getTargetObject(), null, new Object[]{"select 1"}, new MethodInvocationResult());
         ADVICE.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
         ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
-        List<MockSpan> spans = collector.finishedSpans();
+        List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);
         assertThat(span.tags().get("error"), is(true));
