@@ -210,11 +210,11 @@ mergeAssignmentValue
     ;
 
 mergeInsertClause
-    : WHEN NOT MATCHED THEN INSERT mergeColumn mergeColumnValue whereClause?
+    : WHEN NOT MATCHED THEN INSERT mergeInsertColumn? mergeColumnValue whereClause?
     ;
 
-mergeColumn
-    : (LP_ columnName (COMMA_ columnName)* RP_)?
+mergeInsertColumn
+    : LP_ columnName (COMMA_ columnName)* RP_
     ;
 
 mergeColumnValue
