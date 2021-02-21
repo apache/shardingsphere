@@ -19,9 +19,6 @@ package org.apache.shardingsphere.test.integration.junit;
 
 import org.apache.shardingsphere.test.integration.junit.annotation.StorageType;
 
-/**
- *
- */
 public class TestingEnvProps {
     
     public static StorageType getStorageType() {
