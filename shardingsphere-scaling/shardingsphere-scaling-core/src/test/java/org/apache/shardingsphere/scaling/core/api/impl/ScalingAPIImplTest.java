@@ -126,12 +126,6 @@ public final class ScalingAPIImplTest {
         assertThat(checkResultMap.get("t_order").getTargetCount(), is(2L));
     }
     
-    @SneakyThrows(SQLException.class)
-    private void initTableData(final RuleConfiguration ruleConfig) {
-        initTableData(ruleConfig.getSource().unwrap().toDataSource());
-        initTableData(ruleConfig.getTarget().unwrap().toDataSource());
-    }
-    
     @Test
     @SneakyThrows(SQLException.class)
     public void assertResetTargetTable() {
@@ -145,8 +139,7 @@ public final class ScalingAPIImplTest {
     }
     
     @AfterClass
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static void afterClass() {
+    public static void afterClass() throws Exception {
         ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", null);
     }
     
@@ -154,6 +147,12 @@ public final class ScalingAPIImplTest {
         ServerConfiguration result = new ServerConfiguration();
         result.setGovernanceConfig(new GovernanceConfiguration("test", new GovernanceCenterConfiguration("Zookeeper", EmbedTestingServer.getConnectionString(), new Properties()), true));
         return result;
+    }
+    
+    @SneakyThrows(SQLException.class)
+    private void initTableData(final RuleConfiguration ruleConfig) {
+        initTableData(ruleConfig.getSource().unwrap().toDataSource());
+        initTableData(ruleConfig.getTarget().unwrap().toDataSource());
     }
     
     private void initTableData(final DataSource dataSource) throws SQLException {

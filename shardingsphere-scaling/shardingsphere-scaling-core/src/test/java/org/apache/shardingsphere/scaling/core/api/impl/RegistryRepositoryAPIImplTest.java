@@ -126,16 +126,16 @@ public final class RegistryRepositoryAPIImplTest {
     }
     
     private String mockYamlJobProgress() {
-        return "databaseType: H2\n" +
-                "incremental:\n" +
-                "  ds_0:\n" +
-                "    delay:\n" +
-                "      delayMilliseconds: -1\n" +
-                "      lastEventTimestamps: 0\n" +
-                "    position: ''\n" +
-                "inventory:\n" +
-                "  unfinished:\n" +
-                "    ds_0.t_order#0: ''\n" +
-                "status: RUNNING\n";
+        return "databaseType: H2\n"
+                + "incremental:\n"
+                + "  ds_0:\n"
+                + "    delay:\n"
+                + "      delayMilliseconds: -1\n"
+                + "      lastEventTimestamps: 0\n"
+                + "    position: ''\n"
+                + "inventory:\n"
+                + "  unfinished:\n"
+                + "    ds_0.t_order#0: ''\n"
+                + "status: RUNNING\n";
     }
 }
