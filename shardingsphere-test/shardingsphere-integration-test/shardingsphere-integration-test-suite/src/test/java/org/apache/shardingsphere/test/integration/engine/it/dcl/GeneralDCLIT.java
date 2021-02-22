@@ -34,13 +34,7 @@ import java.util.Collection;
 public final class GeneralDCLIT extends BaseDCLIT {
     
     public GeneralDCLIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
-        super(parameterizedArray.getTestCaseContext().getParentPath(),
-                parameterizedArray.getAssertion(),
-                parameterizedArray.getAdapter(),
-                parameterizedArray.getScenario(),
-                parameterizedArray.getDatabaseType(),
-                parameterizedArray.getSqlExecuteType(),
-                parameterizedArray.getTestCaseContext().getTestCase().getSql());
+        super(parameterizedArray);
     }
     
     @Parameters(name = "{0}")

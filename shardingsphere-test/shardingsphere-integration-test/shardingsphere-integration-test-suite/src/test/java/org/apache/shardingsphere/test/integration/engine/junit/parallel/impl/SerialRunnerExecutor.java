@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit.parallel;
+package org.apache.shardingsphere.test.integration.engine.junit.parallel.impl;
 
-import org.junit.runners.Parameterized;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.integration.engine.junit.parallel.ParallelRunnerExecutor;
+import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 
 /**
- * Parallel parameterized.
+ * Serial runner executor with case.
  */
-public final class ParallelParameterized extends Parameterized {
+@RequiredArgsConstructor
+public class SerialRunnerExecutor implements ParallelRunnerExecutor {
     
-    //CHECKSTYLE:OFF
-    public ParallelParameterized(final Class<?> klass) throws Throwable {
-        //CHECKSTYLE:ON
-        super(klass);
-        setScheduler(new ParallelRunnerScheduler(klass));
+    @Override
+    public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
+        childStatement.run();
+    }
+    
+    @Override
+    public void finished() {
     }
 }

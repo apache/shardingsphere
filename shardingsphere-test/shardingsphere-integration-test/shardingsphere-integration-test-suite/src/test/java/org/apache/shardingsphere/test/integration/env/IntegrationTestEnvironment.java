@@ -40,6 +40,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -58,7 +59,7 @@ public final class IntegrationTestEnvironment {
     
     private final boolean runAdditionalTestCases;
     
-    private final Map<DatabaseType, Map<String, DataSourceEnvironment>> dataSourceEnvironments;
+    private Map<DatabaseType, Map<String, DataSourceEnvironment>> dataSourceEnvironments;
     
     private final Map<String, DataSourceEnvironment> proxyEnvironments;
     
@@ -71,7 +72,9 @@ public final class IntegrationTestEnvironment {
         Map<String, DatabaseScenarioProperties> databaseProps = getDatabaseScenarioProperties();
         dataSourceEnvironments = createDataSourceEnvironments(getDatabaseTypes(engineEnvProps), databaseProps);
         if (EnvironmentType.EMBEDDED == envType) {
-            createEmbeddedDatabases(new EmbeddedDatabaseDistributionProperties(EnvironmentProperties.loadProperties("env/embedded-databases.properties")));
+            EmbeddedDatabaseDistributionProperties embeddedDatabaseProps = new EmbeddedDatabaseDistributionProperties(EnvironmentProperties.loadProperties("env/embedded-databases.properties"));
+            dataSourceEnvironments = mergeDataSourceEnvironments(embeddedDatabaseProps);
+            createEmbeddedDatabases(embeddedDatabaseProps);
         }
         proxyEnvironments = createProxyEnvironments(databaseProps);
         if (EnvironmentType.DOCKER == envType) {
@@ -128,6 +131,28 @@ public final class IntegrationTestEnvironment {
         }
         return new DataSourceEnvironment(databaseType, databaseProps.getDatabaseHost(databaseType), 
                 databaseProps.getDatabasePort(databaseType), databaseProps.getDatabaseUsername(databaseType), databaseProps.getDatabasePassword(databaseType));
+    }
+    
+    private Map<DatabaseType, Map<String, DataSourceEnvironment>> mergeDataSourceEnvironments(final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps) {
+        Set<DatabaseType> databaseTypes = dataSourceEnvironments.keySet();
+        Map<DatabaseType, Map<String, DataSourceEnvironment>> result = new LinkedHashMap<>(databaseTypes.size(), 1);
+        for (DatabaseType each : databaseTypes) {
+            Map<String, DataSourceEnvironment> dataSourceEnvs = new LinkedHashMap<>(scenarios.size(), 1);
+            for (String scenario : scenarios) {
+                dataSourceEnvs.put(scenario, mergeDataSourceEnvironment(dataSourceEnvironments.get(each).get(scenario), embeddedDatabaseProps));
+                result.put(each, dataSourceEnvs);
+            }
+        }
+        return result;
+    }
+    
+    private DataSourceEnvironment mergeDataSourceEnvironment(final DataSourceEnvironment dataSourceEnvironment, final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps) {
+        DatabaseType databaseType = dataSourceEnvironment.getDatabaseType();
+        if (databaseType instanceof H2DatabaseType) {
+            return new DataSourceEnvironment(databaseType, "", 0, "sa", "");
+        }
+        return new DataSourceEnvironment(databaseType, dataSourceEnvironment.getHost(),
+                embeddedDatabaseProps.getInstancePort(databaseType), dataSourceEnvironment.getUsername(), dataSourceEnvironment.getPassword());
     }
     
     private void createEmbeddedDatabases(final EmbeddedDatabaseDistributionProperties embeddedDatabaseProps) {
