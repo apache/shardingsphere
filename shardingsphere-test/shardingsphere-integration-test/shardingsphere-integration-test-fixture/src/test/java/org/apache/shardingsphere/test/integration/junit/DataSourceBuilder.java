@@ -40,6 +40,10 @@ public final class DataSourceBuilder {
     /**
      * Build actual data source.
      *
+     * @param name datasource name
+     * @param databaseType database type
+     * @param properties connection properties
+     * @return datasource
      */
     public static DataSource createDataSource(final String name, final DatabaseType databaseType, final Properties properties) {
         switch (DATA_SOURCE_POOL_TYPE) {

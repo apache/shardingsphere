@@ -41,7 +41,7 @@ public @interface TestCaseSpec {
      *
      * @return type
      */
-    SQLCommandType commandType();
+    SQLCommandType sqlCommandType();
     
     /**
      * Case execution mode.

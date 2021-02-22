@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.common.ExecutionMode;
-import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.junit.annotation.StorageType;
 
 @Getter
@@ -43,19 +42,27 @@ public class TestCaseDescription {
     private final String adapter;
     
     @NonNull
-    private final SQLExecuteType executeType;
-    
-    @NonNull
-    private final SQLCommandType commandType;
+    private final SQLCommandType sqlCommandType;
     
     @NonNull
     private final ExecutionMode executionMode;
     
+    /**
+     * Get storage type.
+     *
+     * @return storage type
+     */
     public StorageType getStorageType() {
         return StorageType.valueOf(database);
     }
     
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
     public DatabaseType getDatabaseType() {
         return DatabaseTypeRegistry.getActualDatabaseType(database);
     }
+    
 }

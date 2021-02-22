@@ -26,6 +26,7 @@ import java.util.Properties;
 
 /**
  * Environment properties.
+ * @deprecated deprecated
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Deprecated

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.dml;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
@@ -29,8 +30,6 @@ import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironment
 import org.junit.After;
 import org.junit.Before;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,7 +37,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
@@ -51,7 +49,8 @@ public abstract class BaseDMLIT extends SingleITCase {
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
     @Before
-    public final void fillData() throws SQLException, ParseException, IOException, JAXBException {
+    @SneakyThrows
+    public final void fillData() {
         dataSetEnvironmentManager = new DataSetEnvironmentManager(
                 EnvironmentPath.getDataSetFile(System.getProperty("it.scenario")),
                 getStorage().getDataSourceMap()

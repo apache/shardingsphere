@@ -17,21 +17,29 @@
 
 package org.apache.shardingsphere.test.integration.junit.runner;
 
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.junit.annotation.Inject;
+import org.apache.shardingsphere.test.integration.junit.resolver.ConditionResolver;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
 import java.lang.reflect.Field;
 
+@Slf4j
 public class ShardingSphereITSubCaseRunner extends BlockJUnit4ClassRunner {
     
     private final TestCaseBeanContext context;
     
-    public ShardingSphereITSubCaseRunner(final Class<?> testClass, final TestCaseBeanContext context) throws InitializationError {
+    @NonNull
+    private final ConditionResolver resolver;
+    
+    public ShardingSphereITSubCaseRunner(final Class<?> testClass, final TestCaseBeanContext context, final ConditionResolver resolver) throws InitializationError {
         super(testClass);
         this.context = context;
+        this.resolver = resolver;
     }
     
     @Override
@@ -53,14 +61,27 @@ public class ShardingSphereITSubCaseRunner extends BlockJUnit4ClassRunner {
                 });
         return testInstance;
     }
+
+//    @Override
+//    protected List<FrameworkMethod> computeTestMethods() {
+//        return super.computeTestMethods().stream().filter(e -> {
+//            if (resolver.filter(e)) {
+//                log.warn("{} was ignored.", e.getMethod());
+//                return true;
+//            }
+//            return false;
+//        }).collect(Collectors.toList());
+//    }
     
     @Override
-    protected Statement withBeforeClasses(Statement statement) {
+    protected Statement withBeforeClasses(final Statement statement) {
+        // skip @BeforeClass
         return statement;
     }
     
     @Override
-    protected Statement withAfterClasses(Statement statement) {
+    protected Statement withAfterClasses(final Statement statement) {
+        // skip @AfterClass
         return statement;
     }
     

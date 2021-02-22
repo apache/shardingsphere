@@ -21,6 +21,12 @@ import java.io.InputStream;
 
 public interface Processor<T> {
     
+    /**
+     * Process InputStream.
+     *
+     * @param stream file
+     * @return configuration bean
+     */
     T process(InputStream stream);
     
 }

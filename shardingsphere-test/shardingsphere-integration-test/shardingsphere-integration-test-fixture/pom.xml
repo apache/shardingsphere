@@ -29,7 +29,7 @@
     <name>${project.artifactId}</name>
     
     <properties>
-        <docker.skip.build>false</docker.skip.build>
+        <dockerfile.skip.build>true</dockerfile.skip.build>
     </properties>
     
     <dependencies>
@@ -160,7 +160,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <skip>${docker.skip.build}</skip>
+                    <skip>${dockerfile.skip.build}</skip>
                     <repository>apache/shardingsphere-proxy-test</repository>
                     <tag>latest</tag>
                     <buildArgs>

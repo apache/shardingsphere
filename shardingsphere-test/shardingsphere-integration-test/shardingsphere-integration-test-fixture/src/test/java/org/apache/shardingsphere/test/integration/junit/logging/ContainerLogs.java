@@ -31,6 +31,12 @@ import org.testcontainers.containers.output.Slf4jLogConsumer;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ContainerLogs {
     
+    /**
+     * Create new log consumer.
+     *
+     * @param serviceName service name
+     * @return log consumer
+     */
     public static BaseConsumer<?> newConsumer(final String serviceName) {
         final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         

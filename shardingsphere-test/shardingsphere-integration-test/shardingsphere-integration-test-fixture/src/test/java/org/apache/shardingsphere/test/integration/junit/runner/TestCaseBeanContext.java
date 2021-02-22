@@ -28,10 +28,11 @@ public class TestCaseBeanContext {
     /**
      * Register the bean into context.
      *
+     * @param <T> type
      * @param identity key
      * @param instance value
      */
-    public <T> void registerBean(Class<T> identity, T instance) {
+    public <T> void registerBean(final Class<T> identity, final T instance) {
         classObjectMap.putIfAbsent(identity, instance);
     }
     
@@ -41,27 +42,29 @@ public class TestCaseBeanContext {
      * @param quality key
      * @param value   value
      */
-    public void registerBeanByName(String quality, Object value) {
+    public void registerBeanByName(final String quality, final Object value) {
         classObjectMap.putIfAbsent(quality, value);
     }
     
     /**
      * Get the bean from context.
      *
+     * @param <T> type
      * @param klass class
      * @return value
      */
-    public <T> T getBean(Class<T> klass) {
+    public <T> T getBean(final Class<T> klass) {
         return (T) classObjectMap.get(klass);
     }
     
     /**
      * Get the bean from context by name.
      *
+     * @param <T> type
      * @param name name
      * @return value
      */
-    public <T> T getBeanByName(String name) {
+    public <T> T getBeanByName(final String name) {
         return (T) classObjectMap.get(name);
     }
     

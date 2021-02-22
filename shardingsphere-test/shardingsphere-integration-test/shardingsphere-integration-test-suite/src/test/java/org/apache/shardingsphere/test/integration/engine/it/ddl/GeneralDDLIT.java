@@ -27,7 +27,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 
 // asserion
-@TestCaseSpec(commandType = SQLCommandType.DDL)
+@TestCaseSpec(sqlCommandType = SQLCommandType.DDL)
 public final class GeneralDDLIT extends BaseDDLIT {
     
     @Test

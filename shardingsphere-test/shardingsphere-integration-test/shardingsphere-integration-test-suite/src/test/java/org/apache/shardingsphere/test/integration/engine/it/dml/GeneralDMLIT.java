@@ -32,7 +32,7 @@ import java.text.ParseException;
 import static org.junit.Assert.assertFalse;
 
 // assertion
-@TestCaseSpec(name = "General DML", commandType = SQLCommandType.DML)
+@TestCaseSpec(name = "General DML", sqlCommandType = SQLCommandType.DML)
 public final class GeneralDMLIT extends BaseDMLIT {
     
     @Test
@@ -42,6 +42,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
             case "shadow":
             case "encrypt":
                 return;
+            default:
         }
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
@@ -72,6 +73,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
             case "shadow":
             case "encrypt":
                 return;
+            default:
         }
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {

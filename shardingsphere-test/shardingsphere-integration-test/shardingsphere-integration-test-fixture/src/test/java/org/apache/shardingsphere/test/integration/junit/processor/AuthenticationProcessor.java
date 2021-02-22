@@ -31,7 +31,7 @@ public class AuthenticationProcessor implements Processor<AuthenticationProcesso
     
     @Override
     @SneakyThrows
-    public Authentication process(InputStream stream) {
+    public Authentication process(final InputStream stream) {
         YamlProxyServerConfiguration configuration = YamlEngine.unmarshal(ByteStreams.toByteArray(stream), YamlProxyServerConfiguration.class);
         YamlUserConfiguration user = configuration.getAuthentication().getUsers().get("root");
         return new Authentication("root", user.getPassword());

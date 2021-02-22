@@ -691,9 +691,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <skipSource>true</skipSource>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -707,7 +704,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <skip>true</skip>
                     <aggregate>true</aggregate>
                     <charset>${project.build.sourceEncoding}</charset>
                     <encoding>${project.build.sourceEncoding}</encoding>
@@ -743,7 +739,6 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${maven-checkstyle-plugin.version}</version>
                 <configuration>
-                    <skip>true</skip>
                     <configLocation>src/resources/checkstyle_ci.xml</configLocation>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     <excludes>**/autogen/**/*</excludes>
@@ -762,16 +757,12 @@
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>${coveralls-maven-plugin.version}</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>cobertura-maven-plugin</artifactId>
                 <version>${cobertura-maven-plugin.version}</version>
                 <configuration>
-                    <skip>true</skip>
                     <check>
                         <branchRate>70</branchRate>
                         <lineRate>70</lineRate>
@@ -803,9 +794,6 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco-maven-plugin.version}</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -826,7 +814,6 @@
                 <artifactId>apache-rat-plugin</artifactId>
                 <version>${apache-rat-plugin.version}</version>
                 <configuration>
-                    <skip>true</skip>
                     <excludes>
                         <exclude>**/gen/**</exclude>
                         <exclude>**/target/**</exclude>
@@ -899,7 +886,6 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven-javadoc-plugin.version}</version>
                 <configuration>
-                    <skip>true</skip>
                     <aggregate>true</aggregate>
                     <charset>${project.build.sourceEncoding}</charset>
                     <encoding>${project.build.sourceEncoding}</encoding>
@@ -934,7 +920,6 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${maven-checkstyle-plugin.version}</version>
                 <configuration>
-                    <skip>true</skip>
                     <configLocation>src/resources/checkstyle.xml</configLocation>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     <excludes>**/autogen/**/*</excludes>

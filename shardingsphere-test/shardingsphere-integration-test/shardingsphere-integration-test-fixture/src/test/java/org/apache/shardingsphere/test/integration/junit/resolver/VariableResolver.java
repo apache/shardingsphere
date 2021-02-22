@@ -15,22 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit;
+package org.apache.shardingsphere.test.integration.junit.resolver;
 
-import org.apache.shardingsphere.test.integration.junit.annotation.StorageType;
-
-public class TestingEnvProps {
-    
-    public static StorageType getStorageType() {
-        String type = System.getProperty("it.databases", "MySQL");
-        return StorageType.valueOf(type);
-    }
-    
-    public static String getScenario() {
-        return System.getProperty("it.scenarios");
-    }
-    
-    public static String getAdapter() {
-        return System.getProperty("it.adapters");
-    }
+public class VariableResolver {
 }

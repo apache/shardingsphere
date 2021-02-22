@@ -29,6 +29,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -39,11 +40,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
-public abstract class ShardingContainer extends GenericContainer {
+public abstract class ShardingContainer extends GenericContainer<ShardingContainer> {
     
-    private static final Pattern REGEX = Pattern.compile("\\{([\\w._-]*)\\}");
+    private static final Pattern REGEX = Pattern.compile("\\{([\\w._-]*)}");
     
     @Getter
     @Setter
@@ -55,7 +57,7 @@ public abstract class ShardingContainer extends GenericContainer {
     
     @Override
     public void start() {
-        annotationProcess(this.getClass());
+        resolveXmlResource(this.getClass());
         configure();
         startDependencies();
         super.start();
@@ -63,7 +65,10 @@ public abstract class ShardingContainer extends GenericContainer {
     }
     
     private void startDependencies() {
-        final List<ShardingContainer> dependencies = Lists.newArrayList(getDependencies());
+        final List<ShardingContainer> dependencies = getDependencies().stream()
+                .map(e -> (ShardingContainer) e)
+                .peek(e -> System.out.println(e.dockerName))
+                .collect(Collectors.toList());
         dependencies.stream()
                 .filter(c -> !c.isCreated())
                 .forEach(GenericContainer::start);
@@ -87,28 +92,29 @@ public abstract class ShardingContainer extends GenericContainer {
                 });
     }
     
-    private void annotationProcess(Class<?> klass) {
+    private void resolveXmlResource(final Class<?> klass) {
         ArrayList<Field> fields = Lists.newArrayList(klass.getDeclaredFields());
         fields.stream()
                 .filter(it -> it.isAnnotationPresent(XmlResource.class))
-                .forEach(this::resourceInject);
+                .forEach(this::injectXmlResource);
         Class<?> parent = klass.getSuperclass();
         if (Objects.nonNull(parent)) {
-            annotationProcess(parent);
+            resolveXmlResource(parent);
         }
     }
     
-    private void resourceInject(Field field) {
+    @SuppressWarnings("rawtypes")
+    private void injectXmlResource(final Field field) {
         XmlResource annotation = field.getAnnotation(XmlResource.class);
         String file = parse(annotation.file());
         Class<? extends Processor> processor = annotation.processor();
-        try {
-            String base = getClass().getResource("/").getFile();
-            Object result = processor.newInstance().process(Files.newInputStream(new File(base, file).toPath(), StandardOpenOption.READ));
+        String base = getClass().getResource("/").getFile();
+        try (InputStream stream = Files.newInputStream(new File(base, file).toPath(), StandardOpenOption.READ)) {
+            Object result = processor.newInstance().process(stream);
             field.setAccessible(true);
             field.set(this, result);
-        } catch (InstantiationException | IllegalAccessException | IOException e) {
-            e.printStackTrace(); // fixme
+        } catch (InstantiationException | IllegalAccessException | IOException ex) {
+            throw new RuntimeException(ex.getMessage(), ex);
         }
     }
     

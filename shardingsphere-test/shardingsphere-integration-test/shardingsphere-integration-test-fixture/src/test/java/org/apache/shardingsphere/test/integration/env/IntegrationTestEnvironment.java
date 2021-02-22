@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 
 /**
  * Integration test running environment.
+ * @deprecated deprecated
  */
 @Getter
 @Deprecated

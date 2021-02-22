@@ -34,9 +34,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 // case
-@TestCaseSpec(commandType = SQLCommandType.DML, executionMode = ExecutionMode.BATCH)
+@TestCaseSpec(sqlCommandType = SQLCommandType.DML, executionMode = ExecutionMode.BATCH)
 public final class BatchDMLIT extends BatchITCase {
-    
     
     @Test
     public void assertExecuteBatch() throws SQLException, ParseException {
@@ -45,6 +44,7 @@ public final class BatchDMLIT extends BatchITCase {
             case "shadow":
             case "encrypt":
                 return;
+            default:
         }
         int[] actualUpdateCounts;
         try (Connection connection = getTargetDataSource().getConnection()) {
@@ -77,6 +77,7 @@ public final class BatchDMLIT extends BatchITCase {
             case "shadow":
             case "encrypt":
                 return;
+            default:
         }
         try (Connection connection = getTargetDataSource().getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(getStatement())) {

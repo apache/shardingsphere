@@ -89,7 +89,7 @@ public abstract class BaseITCase {
     }
     
     @ContainerInitializer
-    public static void initialize() {
+    protected static void initialize() {
         if (Objects.nonNull(proxy) && Objects.nonNull(storage)) {
             proxy.dependsOn(storage);
         }

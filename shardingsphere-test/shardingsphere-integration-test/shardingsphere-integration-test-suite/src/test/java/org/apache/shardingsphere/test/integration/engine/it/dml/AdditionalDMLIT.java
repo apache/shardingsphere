@@ -33,7 +33,7 @@ import java.text.ParseException;
 import static org.junit.Assert.assertFalse;
 
 // condition, assertion
-@TestCaseSpec(commandType = SQLCommandType.DML, executionMode = ExecutionMode.ADDITIONAL)
+@TestCaseSpec(sqlCommandType = SQLCommandType.DML, executionMode = ExecutionMode.ADDITIONAL)
 public final class AdditionalDMLIT extends BaseDMLIT {
 
 //    @Parameters(name = "{0}")

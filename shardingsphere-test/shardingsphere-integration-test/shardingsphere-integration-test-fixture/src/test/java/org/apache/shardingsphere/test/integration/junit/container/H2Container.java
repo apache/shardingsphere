@@ -28,7 +28,7 @@ public class H2Container extends StorageContainer {
     }
     
     @Override
-    protected String getUrl(String dataSourceName) {
+    protected String getUrl(final String dataSourceName) {
         return null;
     }
     
@@ -48,7 +48,7 @@ public class H2Container extends StorageContainer {
     }
     
     @Override
-    protected DataSource createDataSource(String dataSourceName) {
+    protected DataSource createDataSource(final String dataSourceName) {
         return null;
     }
 }

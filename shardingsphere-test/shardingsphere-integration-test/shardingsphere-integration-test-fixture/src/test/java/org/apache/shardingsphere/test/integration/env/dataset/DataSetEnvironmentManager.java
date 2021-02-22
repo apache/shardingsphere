@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.env.dataset;
 
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -69,12 +68,12 @@ public final class DataSetEnvironmentManager {
     
     /**
      * Fill data.
-     * 
-     * @throws SQLException SQL exception
+     *
+     * @throws SQLException   SQL exception
      * @throws ParseException parse exception
+     * @throws InterruptedException interrupted exception
      */
-    @SneakyThrows
-    public void fillData() throws SQLException, ParseException {
+    public void fillData() throws SQLException, ParseException, InterruptedException {
         Map<DataNode, List<DataSetRow>> dataNodeListMap = getDataSetRowMap();
         List<Callable<Void>> fillDataTasks = new LinkedList<>();
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {
@@ -92,14 +91,7 @@ public final class DataSetEnvironmentManager {
             }
             fillDataTasks.add(new InsertTask(actualDataSources.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
         }
-        try {
-            EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            ex.printStackTrace();
-            throw ex;
-        }
+        EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);
     }
     
     private Map<DataNode, List<DataSetRow>> getDataSetRowMap() {
@@ -126,7 +118,6 @@ public final class DataSetEnvironmentManager {
     
     /**
      * Clear data.
-     * 
      */
     public void clearData() {
         List<Callable<Void>> deleteTasks = new LinkedList<>();

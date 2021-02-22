@@ -22,15 +22,14 @@ import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.integration.junit.TestingEnvProps;
-import org.apache.shardingsphere.test.integration.junit.annotation.Conditional;
 import org.apache.shardingsphere.test.integration.junit.annotation.ContainerInitializer;
 import org.apache.shardingsphere.test.integration.junit.annotation.OnContainer;
-import org.apache.shardingsphere.test.integration.junit.condition.Condition;
 import org.apache.shardingsphere.test.integration.junit.container.MySQLContainer;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingContainer;
 import org.apache.shardingsphere.test.integration.junit.container.StorageContainer;
 import org.apache.shardingsphere.test.integration.junit.logging.ContainerLogs;
+import org.apache.shardingsphere.test.integration.junit.resolver.ConditionResolver;
+import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
 import org.junit.runners.model.FrameworkField;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.TestClass;
@@ -39,8 +38,6 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.lifecycle.Startable;
 
 import java.io.Closeable;
-import java.lang.annotation.Annotation;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -56,6 +53,10 @@ public class ContainerCompose implements Closeable {
     
     private final TestClass testClass;
     
+    private final TestCaseDescription description;
+    
+    private final ConditionResolver conditionResolver;
+    
     private ImmutableList<ShardingContainer> containers;
     
     /**
@@ -69,95 +70,77 @@ public class ContainerCompose implements Closeable {
     }
     
     private void createContainers() {
-        final Class<?> klass = testClass.getJavaClass();
-        final List<ShardingContainer> containerList = testClass.getAnnotatedFields(OnContainer.class).stream()
-                .map(field -> {
-                    final OnContainer metadata = field.getAnnotation(OnContainer.class);
-                    try {
-                        final ShardingContainer container = createContainer(field, metadata);
-                        if (Objects.isNull(container)) {
-                            log.warn("container {} is not activated.", metadata.name());
-                            return null;
-                        }
-                        log.info("container {} is activated.", metadata.name());
-                        
-                        container.setDockerName(metadata.name());
-                        String hostName = metadata.hostName();
-                        if (Strings.isNullOrEmpty(hostName)) {
-                            hostName = metadata.name();
-                        }
-                        container.withNetworkAliases(hostName);
-                        container.setNetwork(network);
-                        container.withLogConsumer(ContainerLogs.newConsumer(clusterName + "_" + metadata.name()));
-                        
-                        field.getField().setAccessible(true);
-                        field.getField().set(klass, container);
-                        
-                        return container;
-                        // CHECKSTYLE:OFF
-                    } catch (Exception e) {
-                        // CHECKSTYLE:ON
-                        log.error("Failed to instantiate container {}.", metadata.name(), e);
-                    }
-                    return null;
-                })
+        ImmutableList.Builder<ShardingContainer> builder = new ImmutableList.Builder<>();
+        testClass.getAnnotatedFields(OnContainer.class).stream()
+                .map(this::createContainer)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-        containers = new ImmutableList.Builder<ShardingContainer>().addAll(containerList).build();
+                .forEach(builder::add);
+        containers = builder.build();
+    }
+    
+    @SneakyThrows
+    private ShardingContainer createContainer(final FrameworkField field) {
+        final OnContainer metadata = field.getAnnotation(OnContainer.class);
+        try {
+            final ShardingContainer container = createContainer(field, metadata);
+            if (Objects.isNull(container)) {
+                log.warn("container {} is not activated.", metadata.name());
+                return null;
+            }
+            container.setDockerName(metadata.name());
+            String hostName = metadata.hostName();
+            if (Strings.isNullOrEmpty(hostName)) {
+                hostName = metadata.name();
+            }
+            container.withNetworkAliases(hostName);
+            container.setNetwork(network);
+            container.withLogConsumer(ContainerLogs.newConsumer(clusterName + "_" + metadata.name()));
+            field.getField().setAccessible(true);
+            field.getField().set(testClass.getJavaClass(), container);
+            log.info("container {} is activated.", metadata.name());
+            return container;
+            // CHECKSTYLE:OFF
+        } catch (Exception e) {
+            // CHECKSTYLE:ON
+            log.error("Failed to instantiate container {}.", metadata.name(), e);
+        }
+        return null;
     }
     
     @SneakyThrows
     private ShardingContainer createContainer(final FrameworkField field, final OnContainer metadata) {
-        final boolean matches = Arrays.stream(field.getAnnotations())
-                .map(this::matches)
-                .reduce((a, b) -> a && b)
-                .orElse(true);
-        if (matches) {
+        if (conditionResolver.filter(field)) {
             switch (metadata.type()) {
                 case PROXY:
                     return (ShardingContainer) field.getType().newInstance();
                 case STORAGE:
                     return createStorageContainer();
                 case COORDINATOR:
-                    throw new NotSupportedException(); // FIXME
+                    throw new NotSupportedException();
                 default:
                     return null;
             }
+        } else {
+            log.warn("Container[{}] was ignored.", metadata.name());
         }
         return null;
     }
     
-    @SneakyThrows
-    private boolean matches(final Annotation annotation) {
-        if (annotation.annotationType().isAnnotationPresent(Conditional.class)) {
-            Conditional conditional = annotation.annotationType().getAnnotation(Conditional.class);
-            try {
-                Condition condition = conditional.value().newInstance();
-                return condition.matches(annotation);
-                // CHECKSTYLE:OFF
-            } catch (Exception e) {
-                // CHECKSTYLE:ON
-                throw new Exception("Failed to instantiate conditional " + conditional.value() + ".");
-            }
-        }
-        return true;
-    }
-    
     private StorageContainer createStorageContainer() {
-        switch (TestingEnvProps.getStorageType()) {
+        switch (description.getStorageType()) {
             case MySQL:
                 return new MySQLContainer();
             case H2:
-                throw new RuntimeException("Not yet support storage type " + TestingEnvProps.getStorageType());
+                throw new RuntimeException("Not yet support storage type " + description.getStorageType());
             default:
-                throw new RuntimeException("Unknown storage type " + TestingEnvProps.getStorageType());
+                throw new RuntimeException("Unknown storage type " + description.getStorageType());
         }
     }
     
     @SneakyThrows
     private void createInitializerAndExecute() {
         List<FrameworkMethod> methods = testClass.getAnnotatedMethods(ContainerInitializer.class).stream()
-                .filter(e -> Arrays.stream(e.getAnnotations()).map(this::matches).reduce((a, b) -> a && b).orElse(true))
+                .filter(conditionResolver::filter)
                 .collect(Collectors.toList());
         if (methods.size() > 1) {
             throw new RuntimeException("Only support to have one or zero initializer.");
@@ -165,6 +148,7 @@ public class ContainerCompose implements Closeable {
         if (!methods.isEmpty()) {
             FrameworkMethod method = methods.get(0);
             if (method.isStatic()) {
+                method.getMethod().setAccessible(true);
                 method.invokeExplosively(testClass.getJavaClass());
             } else {
                 throw new Exception("Method " + method.getName() + " is not a static method.");

@@ -66,6 +66,6 @@ public final class DataSetLoader {
         if (new File(result).exists()) {
             return result;
         }
-        throw new IllegalArgumentException(String.format("%s not found, path=%s, scenario=%s, databaseType=%s", dataSetFile, parentPath, scenario, databaseType.getName()));
+        throw new IllegalArgumentException(String.format("%s not found, path=%s, scenario=%s, databaseType=%s", dataSetFile, result, scenario, databaseType.getName()));
     }
 }

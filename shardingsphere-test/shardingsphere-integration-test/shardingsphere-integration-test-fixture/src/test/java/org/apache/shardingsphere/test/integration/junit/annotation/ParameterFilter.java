@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.integration.junit.annotation;
 
+import org.apache.shardingsphere.test.integration.junit.runner.TestCaseParameters;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -25,5 +27,23 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ParameterFilter {
-
+    
+    /**
+     * Filter.
+     *
+     * @return filter
+     */
+    Class<? extends Filter> filtered();
+    
+    interface Filter {
+    
+        /**
+         * Filter.
+         *
+         * @param parameters test case parameters
+         * @return false if ignore
+         */
+        boolean filter(TestCaseParameters parameters);
+        
+    }
 }

@@ -46,15 +46,34 @@ public class ShardingSphereProxyContainer extends ShardingContainer {
         super("apache/shardingsphere-proxy-test");
     }
     
+    /**
+     * Mount path into container from classpath.
+     *
+     * @param classPathResource resource path in classpath
+     * @param containerPath path in container
+     * @return self
+     */
     public ShardingSphereProxyContainer withClassPathResourceMapping(final String classPathResource, final String containerPath) {
         withCopyFileToContainer(MountableFile.forClasspathResource(classPathResource), containerPath);
         return this;
     }
     
+    /**
+     * Mount configure path into container from classpath.
+     *
+     * @param resourcePath resource path
+     * @return self
+     */
     public ShardingSphereProxyContainer withConfMapping(final String resourcePath) {
         return withClassPathResourceMapping(resourcePath, "/opt/shardingsphere-proxy/conf");
     }
     
+    /**
+     * Mount the agent into container.
+     *
+     * @param agentHome agent home
+     * @return self
+     */
     public ShardingSphereProxyContainer withAgent(final String agentHome) {
         withEnv(PROPERTY_AGENT_HOME, AGENT_HOME_IN_CONTAINER);
         withFileSystemBind(agentHome, AGENT_HOME_IN_CONTAINER, BindMode.READ_ONLY);

@@ -35,6 +35,12 @@ public class MySQLContainer extends StorageContainer {
         super("mysql/mysql-server:5.7", new MySQLDatabaseType());
     }
     
+    /**
+     * Mount a source path into container.
+     *
+     * @param resourcePath resource path
+     * @return self
+     */
     public MySQLContainer withInitSQLMapping(final String resourcePath) {
         withClasspathResourceMapping(resourcePath, "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
         return this;

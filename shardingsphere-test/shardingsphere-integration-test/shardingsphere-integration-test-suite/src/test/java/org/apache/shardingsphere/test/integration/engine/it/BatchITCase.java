@@ -69,7 +69,7 @@ public abstract class BatchITCase extends BaseITCase {
     }
     
     @Before
-    public void fillData() throws SQLException, ParseException {
+    public void fillData() throws SQLException, ParseException, InterruptedException {
         dataSetEnvironmentManager.fillData();
     }
     

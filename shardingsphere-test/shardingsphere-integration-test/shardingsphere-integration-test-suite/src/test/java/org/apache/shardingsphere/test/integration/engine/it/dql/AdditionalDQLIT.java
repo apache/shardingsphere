@@ -34,7 +34,7 @@ import java.text.ParseException;
 import static org.junit.Assert.assertTrue;
 
 // addition, assertion
-@TestCaseSpec(name = "Additional DQL", commandType = SQLCommandType.DQL, executionMode = ExecutionMode.ADDITIONAL)
+@TestCaseSpec(name = "Additional DQL", sqlCommandType = SQLCommandType.DQL, executionMode = ExecutionMode.ADDITIONAL)
 public final class AdditionalDQLIT extends BaseDQLIT {
     
     @Test

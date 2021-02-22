@@ -27,7 +27,7 @@ jobs:
   mysql-proxy-db:
     name: MySQL with DB
     runs-on: ubuntu-latest
-    timeout-mintues: 60
+    timeout-minutes: 60
     strategy:
       fail-fast: true
       matrix:
@@ -48,6 +48,6 @@ jobs:
         with:
           java-version: 8
       - name: Build Project
-        run: ./mvnw -B clean package -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite
+        run: ./mvnw -B clean package -Dmaven.javadoc.skip=true -Ddockerfile.skip.build=false -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite
       - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Dit.adapter=${{ matrix.adapter }} -Dit.scenario=db -Dit.database=${{ matrix.database }}
+        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.adapter=${{ matrix.adapter }} -Dit.scenario=db -Dit.database=${{ matrix.database }}

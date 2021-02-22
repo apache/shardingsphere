@@ -44,14 +44,10 @@ public abstract class BaseDQLIT extends SingleITCase {
     @BeforeClass
     @SneakyThrows
     public static void fillData() {
-        try {
-            new DataSetEnvironmentManager(
-                    EnvironmentPath.getDataSetFile(System.getProperty("it.scenario")),
-                    getStorage().getDataSourceMap()
-            ).fillData();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        new DataSetEnvironmentManager(
+                EnvironmentPath.getDataSetFile(System.getProperty("it.scenario")),
+                getStorage().getDataSourceMap()
+        ).fillData();
     }
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {

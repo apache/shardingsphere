@@ -34,7 +34,7 @@ public class DatabaseProcessor implements Processor<Collection<String>> {
     
     @SneakyThrows
     @Override
-    public Collection<String> process(InputStream stream) {
+    public Collection<String> process(final InputStream stream) {
         return ((DatabaseProcessor) JAXBContext.newInstance(DatabaseProcessor.class).createUnmarshaller().unmarshal(stream)).databases;
     }
     
