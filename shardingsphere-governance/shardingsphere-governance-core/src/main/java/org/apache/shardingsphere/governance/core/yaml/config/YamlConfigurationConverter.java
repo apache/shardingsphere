@@ -57,7 +57,7 @@ public final class YamlConfigurationConverter {
      * @return data source configurations
      */
     public static Map<String, DataSourceConfiguration> convertDataSourceConfigurations(final String yamlContent) {
-        YamlDataSourceConfigurationWrap result = YamlEngine.secureUnmarshal(yamlContent, YamlDataSourceConfigurationWrap.class);
+        YamlDataSourceConfigurationWrap result = YamlEngine.unmarshal(yamlContent, YamlDataSourceConfigurationWrap.class);
         if (null == result.getDataSources() || result.getDataSources().isEmpty()) {
             return new LinkedHashMap<>();
         }
@@ -106,7 +106,7 @@ public final class YamlConfigurationConverter {
      * @return rule configurations
      */
     public static Collection<RuleConfiguration> convertRuleConfigurations(final String yamlContent) {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.secureUnmarshal(yamlContent, YamlRuleConfigurationWrap.class).getRules());
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(yamlContent, YamlRuleConfigurationWrap.class).getRules());
     }
     
     /**
@@ -126,6 +126,6 @@ public final class YamlConfigurationConverter {
      * @return properties
      */
     public static Properties convertProperties(final String yamlContent) {
-        return YamlEngine.secureUnmarshal(yamlContent, Properties.class);
+        return YamlEngine.unmarshal(yamlContent, Properties.class);
     }
 }

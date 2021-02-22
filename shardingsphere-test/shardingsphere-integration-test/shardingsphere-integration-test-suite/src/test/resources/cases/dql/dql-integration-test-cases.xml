@@ -486,4 +486,13 @@
     <test-case sql="SELECT * FROM t_broadcast_table">
         <assertion expected-data-file="select_for_broadcast_table.xml"/>
     </test-case>
+
+    <test-case sql="SELECT * FROM t_user">
+        <assertion expected-data-file="select_encrypt.xml"/>
+    </test-case>
+
+    <!--TODO fix me! about Column 'user_id' in field list is ambiguous -->
+    <!--    <test-case sql="SELECT * FROM t_user u INNER JOIN t_order_item m ON u.user_id=m.user_id">-->
+    <!--        <assertion expected-data-file="select_join_encrypt.xml"/>-->
+    <!--    </test-case>-->
 </integration-test-cases>

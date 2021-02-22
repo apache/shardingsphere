@@ -51,7 +51,6 @@
             <sql>CREATE ROLE default_role</sql>
             <sql>CREATE USER user_dev@localhost</sql>
             <sql>GRANT select,update,insert,delete on primary_ds.* to user_dev@localhost</sql>
-            <sql>GRANT select,update,insert,delete on primary_ds.t_order to user_dev@localhost</sql>
         </user-create>
         <user-drop>
             <sql>DROP USER IF EXISTS user_dev@localhost</sql>
