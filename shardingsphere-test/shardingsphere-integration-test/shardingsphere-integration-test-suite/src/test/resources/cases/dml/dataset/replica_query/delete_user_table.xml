@@ -20,15 +20,15 @@
         <column name="user_id" type="numeric"/>
         <column name="pwd" type="varchar"/>
     </metadata>
-    <row data-node="primary_ds.t_user" values="11, def"/>
-    <row data-node="primary_ds.t_user" values="12, hig"/>
-    <row data-node="primary_ds.t_user" values="13, kli"/>
-    <row data-node="replica_0.t_user" values="10, abc"/>
-    <row data-node="replica_0.t_user" values="11, def"/>
-    <row data-node="replica_0.t_user" values="12, hig"/>
-    <row data-node="replica_0.t_user" values="13, kli"/>
-    <row data-node="replica_1.t_user" values="10, abc"/>
-    <row data-node="replica_1.t_user" values="11, def"/>
-    <row data-node="replica_1.t_user" values="12, hig"/>
-    <row data-node="replica_1.t_user" values="13, kli"/>
+    <row data-node="primary_ds.t_user" values="11, def" />
+    <row data-node="primary_ds.t_user" values="12, hig" />
+    <row data-node="primary_ds.t_user" values="13, kli" />
+    <row data-node="replica_0.t_user" values="10, abc" />
+    <row data-node="replica_0.t_user" values="11, def" />
+    <row data-node="replica_0.t_user" values="12, hig" />
+    <row data-node="replica_0.t_user" values="13, kli" />
+    <row data-node="replica_1.t_user" values="10, abc" />
+    <row data-node="replica_1.t_user" values="11, def" />
+    <row data-node="replica_1.t_user" values="12, hig" />
+    <row data-node="replica_1.t_user" values="13, kli" />
 </dataset>

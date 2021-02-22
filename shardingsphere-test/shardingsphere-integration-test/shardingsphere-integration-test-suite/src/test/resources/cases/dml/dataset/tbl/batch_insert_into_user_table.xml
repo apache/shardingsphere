@@ -20,10 +20,10 @@
         <column name="user_id" type="numeric"/>
         <column name="pwd" type="varchar"/>
     </metadata>
-    <row data-node="tbl.t_user" values="10, abc"/>
-    <row data-node="tbl.t_user" values="11, def"/>
-    <row data-node="tbl.t_user" values="12, hig"/>
-    <row data-node="tbl.t_user" values="13, kli"/>
-    <row data-node="tbl.t_user" values="14, mno"/>
-    <row data-node="tbl.t_user" values="15, pqr"/>
+    <row data-node="tbl.t_user" values="10, abc" />
+    <row data-node="tbl.t_user" values="11, def" />
+    <row data-node="tbl.t_user" values="12, hig" />
+    <row data-node="tbl.t_user" values="13, kli" />
+    <row data-node="tbl.t_user" values="14, mno" />
+    <row data-node="tbl.t_user" values="15, pqr" />
 </dataset>
