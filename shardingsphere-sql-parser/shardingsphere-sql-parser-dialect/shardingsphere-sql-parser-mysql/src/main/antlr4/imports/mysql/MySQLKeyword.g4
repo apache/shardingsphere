@@ -1263,10 +1263,6 @@ LOW_PRIORITY
     : L O W UL_ P R I O R I T Y
     ;
 
-//MANAGED
-//    : M A N A G E D
-//    ;
-
 MASTER
     : M A S T E R
     ;
@@ -2306,10 +2302,6 @@ SPECIFIC
 SQL
     : S Q L
     ;
-
-//SQL_CACHE
-//    : S Q L UL_ C A C H E
-//    ; 8.0.0 没有此关键字
 
 SQLEXCEPTION
     : S Q L E X C E P T I O N
