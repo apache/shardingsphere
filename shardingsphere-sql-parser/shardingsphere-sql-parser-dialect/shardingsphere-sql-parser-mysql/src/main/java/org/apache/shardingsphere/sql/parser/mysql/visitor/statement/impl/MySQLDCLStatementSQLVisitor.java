@@ -35,14 +35,18 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateU
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateUserEntryNoOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DropUserContext;
-//import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantIdentifierContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantLevelGlobalContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantLevelSchemaGlobalContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantLevelTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantProxyContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantRoleOrPrivilegeOnToContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GrantRoleOrPrivilegeToContext;
-//import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.PrivilegeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RenameUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RequireClauseContext;
-//import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RevokeContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RoleArhostContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RevokeFromContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RevokeOnFromContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RoleAtHostContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RoleNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RoleOrDynamicPrivilegeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RoleOrPrivilegeContext;
@@ -82,12 +86,11 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StaticP
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StaticPrivilegeTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StaticPrivilegeUpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StaticPrivilegeUsageContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TlsOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UserNameContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.ACLTypeEnum;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.GrantLevelSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.PrivilegeTypeEnum;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLAlterUserStatement;
@@ -97,7 +100,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLDropUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLGrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLRenameUserStatement;
-//import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLRevokeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLRevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLSetDefaultRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLSetPasswordStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLSetRoleStatement;
@@ -111,7 +114,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserResourceSpecifiedLimitEnum;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserSegment;
 
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -123,14 +125,6 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public MySQLDCLStatementSQLVisitor(final Properties props) {
         super(props);
     }
-    
-//    @Override
-//    public ASTNode visitGrant(final GrantContext ctx) {
-//        MySQLGrantStatement result = new MySQLGrantStatement();
-//        Optional<SimpleTableSegment> tableSegmentOptional = null == ctx.privilegeClause() ? Optional.empty() : getTableFromPrivilegeClause(ctx.privilegeClause());
-//        tableSegmentOptional.ifPresent(tableSegment -> result.getTables().add(tableSegment));
-//        return result;
-//    }
     
     @Override
     public ASTNode visitGrantRoleOrPrivilegeTo(final GrantRoleOrPrivilegeToContext ctx) {
@@ -145,7 +139,12 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitGrantRoleOrPrivilegeOnTo(final GrantRoleOrPrivilegeOnToContext ctx) {
         MySQLGrantStatement result = new MySQLGrantStatement();
-        fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
+        if (null != ctx.roleOrPrivileges()) {
+            fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
+        } else {
+            result.setAllPrivileges(true);
+        }
+        result.setLevel(generateGrantLevel(ctx.grantIdentifier()));
         for (UserNameContext each : ctx.userList().userName()) {
             result.getUsers().add((UserSegment) visit(each));
         }
@@ -153,13 +152,28 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             switch (ctx.aclType().getText().toLowerCase()) {
                 case "table":
                     result.setAclType(ACLTypeEnum.TABLE);
+                    break;
                 case "function":
-                        result.setAclType(ACLTypeEnum.FUNCTION);
+                    result.setAclType(ACLTypeEnum.FUNCTION);
+                    break;
                 case "procedure":
                     result.setAclType(ACLTypeEnum.PROCEDURE);
+                    break;
                 default:
                     result.setAclType(ACLTypeEnum.TABLE);
+                    break;
             }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitGrantProxy(final GrantProxyContext ctx) {
+        MySQLGrantStatement result = new MySQLGrantStatement();
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.PROXY().getSymbol().getStartIndex(), ctx.PROXY().getSymbol().getStopIndex(), PrivilegeTypeEnum.GRANT_ACL);
+        result.getRoleOrPrivileges().add(new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege));
+        for (UserNameContext each : ctx.userList().userName()) {
+            result.getUsers().add((UserSegment) visit(each));
         }
         return result;
     }
@@ -170,18 +184,29 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         }
     }
     
+    private void fillRoleOrPrivileges(final MySQLRevokeStatement statement, final RoleOrPrivilegesContext ctx) {
+        for (RoleOrPrivilegeContext each : ctx.roleOrPrivilege()) {
+            statement.getRoleOrPrivileges().add((MySQLRoleOrPrivilegeSegment) visit(each));
+        }
+    }
     
+    private GrantLevelSegment generateGrantLevel(final GrantIdentifierContext ctx) {
+        if (ctx instanceof GrantLevelGlobalContext) {
+            return new GrantLevelSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), "*", "*");
     
-//    @Override
-//    public ASTNode visitRoleOrPrivilege(final RoleOrPrivilegeContext ctx) {
-//        MySQLPrivilegeSegment result = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-//
-//        switch (ctx.getClass()) {
-//            case StaticPrivilegeSelectContext.class:
-//
-//        }
-//
-//    }
+        } else if (ctx instanceof GrantLevelSchemaGlobalContext) {
+            String schemaName = new IdentifierValue(((GrantLevelSchemaGlobalContext) ctx).schemaName().getText()).getValue();
+            return new GrantLevelSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), schemaName, "*");
+        } else {
+            String schemaName = null;
+            String tableName;
+            if (null != ((GrantLevelTableContext) ctx).tableName().owner()) {
+                schemaName = new IdentifierValue(((GrantLevelTableContext) ctx).tableName().owner().getText()).getValue();
+            }
+            tableName = new IdentifierValue(((GrantLevelTableContext) ctx).tableName().name().getText()).getValue();
+            return new GrantLevelSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), schemaName, tableName);
+        }
+    }
     
     @Override
     public ASTNode visitRoleOrDynamicPrivilege(final RoleOrDynamicPrivilegeContext ctx) {
@@ -190,7 +215,7 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
     
     @Override
-    public ASTNode visitRoleArhost(final RoleArhostContext ctx) {
+    public ASTNode visitRoleAtHost(final RoleAtHostContext ctx) {
         String role = new IdentifierValue(ctx.roleIdentifierOrText().getText()).getValue();
         String host = new IdentifierValue(ctx.textOrIdentifier().getText()).getValue();
         return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), role, host, null);
@@ -198,205 +223,250 @@ public final class MySQLDCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitStaticPrivilegeSelect(final StaticPrivilegeSelectContext ctx) {
-        MySQLPrivilegeSegment result = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.SELECT_ACL);
-        if (null != ctx.columnNames()){
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.SELECT_ACL);
+        if (null != ctx.columnNames()) {
             for (ColumnNameContext each : ctx.columnNames().columnName()) {
-                result.getColumns().add(new IdentifierValue(each.getText()).getValue());
+                privilege.getColumns().add(new IdentifierValue(each.getText()).getValue());
             }
         }
-        return result;
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeInsert(final StaticPrivilegeInsertContext ctx) {
-        MySQLPrivilegeSegment result = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.INSERT_ACL);
-        if (null != ctx.columnNames()){
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.INSERT_ACL);
+        if (null != ctx.columnNames()) {
             for (ColumnNameContext each : ctx.columnNames().columnName()) {
-                result.getColumns().add(new IdentifierValue(each.getText()).getValue());
+                privilege.getColumns().add(new IdentifierValue(each.getText()).getValue());
             }
         }
-        return result;
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeUpdate(final StaticPrivilegeUpdateContext ctx) {
-        MySQLPrivilegeSegment result = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.UPDATE_ACL);
-        if (null != ctx.columnNames()){
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.UPDATE_ACL);
+        if (null != ctx.columnNames()) {
             for (ColumnNameContext each : ctx.columnNames().columnName()) {
-                result.getColumns().add(new IdentifierValue(each.getText()).getValue());
+                privilege.getColumns().add(new IdentifierValue(each.getText()).getValue());
             }
         }
-        return result;
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
     }
     
     @Override
     public ASTNode visitStaticPrivilegeReferences(final StaticPrivilegeReferencesContext ctx) {
-        MySQLPrivilegeSegment result = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.REFERENCES_ACL);
-        if (null != ctx.columnNames()){
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.REFERENCES_ACL);
+        if (null != ctx.columnNames()) {
             for (ColumnNameContext each : ctx.columnNames().columnName()) {
-                result.getColumns().add(new IdentifierValue(each.getText()).getValue());
+                privilege.getColumns().add(new IdentifierValue(each.getText()).getValue());
             }
+        }
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeDelete(final StaticPrivilegeDeleteContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.DELETE_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeUsage(final StaticPrivilegeUsageContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.USAGE_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeIndex(final StaticPrivilegeIndexContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.INDEX_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeAlter(final StaticPrivilegeAlterContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.ALTER_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeCreate(final StaticPrivilegeCreateContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.CREATE_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeDrop(final StaticPrivilegeDropContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.DROP_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeExecute(final StaticPrivilegeExecuteContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.EXECUTE_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeReload(final StaticPrivilegeReloadContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.RELOAD_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeShutdown(final StaticPrivilegeShutdownContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.SHUTDOWN_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeProcess(final StaticPrivilegeProcessContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.PROCESS_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeFile(final StaticPrivilegeFileContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.FILE_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeGrant(final StaticPrivilegeGrantContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.GRANT_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeShowDatabases(final StaticPrivilegeShowDatabasesContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.SHOW_DB_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeSuper(final StaticPrivilegeSuperContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.SUPER_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeCreateTemporaryTables(final StaticPrivilegeCreateTemporaryTablesContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.CREATE_TMP_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeLockTables(final StaticPrivilegeLockTablesContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.LOCK_TABLES_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeReplicationSlave(final StaticPrivilegeReplicationSlaveContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.REPL_SLAVE_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeReplicationClient(final StaticPrivilegeReplicationClientContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.REPL_CLIENT_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeCreateView(final StaticPrivilegeCreateViewContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.CREATE_VIEW_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeShowView(final StaticPrivilegeShowViewContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.SHOW_VIEW_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeCreateRoutine(final StaticPrivilegeCreateRoutineContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.CREATE_PROC_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeAlterRoutine(final StaticPrivilegeAlterRoutineContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.ALTER_PROC_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeCreateUser(final StaticPrivilegeCreateUserContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.CREATE_USER_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeEvent(final StaticPrivilegeEventContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.EVENT_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeTrigger(final StaticPrivilegeTriggerContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.TRIGGER_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeCreateTablespace(final StaticPrivilegeCreateTablespaceContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.CREATE_TABLESPACE_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeCreateRole(final StaticPrivilegeCreateRoleContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.CREATE_ROLE_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitStaticPrivilegeDropRole(final StaticPrivilegeDropRoleContext ctx) {
+        MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.DROP_ROLE_ACL);
+        return new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege);
+    }
+    
+    @Override
+    public ASTNode visitRevokeFrom(final RevokeFromContext ctx) {
+        MySQLRevokeStatement result = new MySQLRevokeStatement();
+        if (null != ctx.roleOrPrivileges()) {
+            fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
+        } else if (null != ctx.ALL()) {
+            result.setAllPrivileges(true);
+        }
+        for (UserNameContext each : ctx.userList().userName()) {
+            result.getFromUsers().add((UserSegment) visit(each));
         }
         return result;
     }
     
     @Override
-    public ASTNode visitStaticPrivilegeDelete(final StaticPrivilegeDeleteContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.DELETE_ACL);
+    public ASTNode visitRevokeOnFrom(final RevokeOnFromContext ctx) {
+        MySQLRevokeStatement result = new MySQLRevokeStatement();
+        if (null != ctx.roleOrPrivileges()) {
+            fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
+        } else if (null != ctx.ALL()) {
+            result.setAllPrivileges(true);
+        } else if (null != ctx.PROXY()) {
+            MySQLPrivilegeSegment privilege = new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.DROP_ROLE_ACL);
+            result.getRoleOrPrivileges().add(new MySQLRoleOrPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), null, null, privilege));
+            result.setOnUser((UserSegment) visit(ctx.userName()));
+        }
+        if (null != ctx.grantIdentifier()) {
+            result.setLevel(generateGrantLevel(ctx.grantIdentifier()));
+        }
+        for (UserNameContext each : ctx.userList().userName()) {
+            result.getFromUsers().add((UserSegment) visit(each));
+        }
+        return result;
     }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeUsage(final StaticPrivilegeUsageContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.USAGE_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeIndex(final StaticPrivilegeIndexContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.INDEX_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeAlter(final StaticPrivilegeAlterContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.ALTER_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeCreate(final StaticPrivilegeCreateContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.CREATE_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeDrop(final StaticPrivilegeDropContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.DROP_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeExecute(final StaticPrivilegeExecuteContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.EXECUTE_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeReload(final StaticPrivilegeReloadContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.RELOAD_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeShutdown(final StaticPrivilegeShutdownContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.SHUTDOWN_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeProcess(final StaticPrivilegeProcessContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.PROCESS_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeFile(final StaticPrivilegeFileContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.FILE_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeGrant(final StaticPrivilegeGrantContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.GRANT_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeShowDatabases(final StaticPrivilegeShowDatabasesContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.SHOW_DB_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeSuper(final StaticPrivilegeSuperContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.SUPER_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeCreateTemporaryTables(final StaticPrivilegeCreateTemporaryTablesContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.CREATE_TMP_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeLockTables(final StaticPrivilegeLockTablesContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.LOCK_TABLES_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeReplicationSlave(final StaticPrivilegeReplicationSlaveContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.REPL_SLAVE_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeReplicationClient(final StaticPrivilegeReplicationClientContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.REPL_CLIENT_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeCreateView(final StaticPrivilegeCreateViewContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.CREATE_VIEW_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeShowView(final StaticPrivilegeShowViewContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.SHOW_VIEW_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeCreateRoutine(final StaticPrivilegeCreateRoutineContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.CREATE_PROC_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeAlterRoutine(final StaticPrivilegeAlterRoutineContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.ALTER_PROC_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeCreateUser(final StaticPrivilegeCreateUserContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.CREATE_USER_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeEvent(final StaticPrivilegeEventContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.EVENT_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeTrigger(final StaticPrivilegeTriggerContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.TRIGGER_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeCreateTablespace(final StaticPrivilegeCreateTablespaceContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.CREATE_TABLESPACE_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeCreateRole(final StaticPrivilegeCreateRoleContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.CREATE_ROLE_ACL);
-    }
-    
-    @Override
-    public ASTNode visitStaticPrivilegeDropRole(final StaticPrivilegeDropRoleContext ctx) {
-        return new MySQLPrivilegeSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PrivilegeTypeEnum.DROP_ROLE_ACL);
-    }
-    
-    //    @Override
-//    public ASTNode visitRevoke(final RevokeContext ctx) {
-//        MySQLRevokeStatement result = new MySQLRevokeStatement();
-//        Optional<SimpleTableSegment> tableSegmentOptional = null == ctx.privilegeClause() ? Optional.empty() : getTableFromPrivilegeClause(ctx.privilegeClause());
-//        tableSegmentOptional.ifPresent(tableSegment -> result.getTables().add(tableSegment));
-//        return result;
-//    }
-    
-//    private Optional<SimpleTableSegment> getTableFromPrivilegeClause(final PrivilegeClauseContext ctx) {
-//        if (null != ctx.onObjectClause()) {
-//            TableNameContext tableName = ctx.onObjectClause().privilegeLevel().tableName();
-//            if (null != tableName) {
-//                return Optional.of((SimpleTableSegment) visitTableName(tableName));
-//            }
-//        }
-//        return Optional.empty();
-//    }
     
     @Override
     public ASTNode visitCreateUser(final CreateUserContext ctx) {

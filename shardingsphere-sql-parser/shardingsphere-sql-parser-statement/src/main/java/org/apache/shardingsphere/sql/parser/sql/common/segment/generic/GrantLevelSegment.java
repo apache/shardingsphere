@@ -32,8 +32,6 @@ public final class GrantLevelSegment implements SQLSegment {
     
     private final int stopIndex;
     
-    private final GrantLevelTypeEnum type;
-    
     private final String dbName;
     
     private final String tableName;

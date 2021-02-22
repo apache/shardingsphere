@@ -40,6 +40,8 @@ public final class MySQLGrantStatement extends GrantStatement implements MySQLSt
     
     private final Collection<MySQLRoleOrPrivilegeSegment> roleOrPrivileges = new LinkedList<>();
     
+    private boolean allPrivileges;
+    
     private final Collection<UserSegment> users = new LinkedList<>();
     
     private ACLTypeEnum aclType;

@@ -174,10 +174,6 @@ showFunctionStatus
     : SHOW FUNCTION STATUS showFilter?
     ;
 
-//showGrant
-//    : SHOW GRANTS (FOR userOrRole (USING userName (COMMA_ userName)+)?)?
-//    ;
-
 showGrant
     : SHOW GRANTS (FOR userName (USING userName (COMMA_ userName)+)?)?
     ;

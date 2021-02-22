@@ -19,49 +19,24 @@ grammar DCLStatement;
 
 import Symbol, Keyword, MySQLKeyword, Literals, BaseRule;
 
-//grant
-//    : GRANT (proxyClause | privilegeClause | roleClause)
-//    ;
-
 grant
     : GRANT roleOrPrivileges TO userList withGrantOption? # grantRoleOrPrivilegeTo
-    | GRANT roleOrPrivileges ON aclType grantIdentifier TO userList withGrantOption? grantAs? # grantRoleOrPrivilegeOnTo
+    | GRANT roleOrPrivileges ON aclType? grantIdentifier TO userList withGrantOption? grantAs? # grantRoleOrPrivilegeOnTo
     | GRANT ALL PRIVILEGES? ON aclType? grantIdentifier TO userList withGrantOption? grantAs? # grantRoleOrPrivilegeOnTo
     | GRANT PROXY ON userName TO userList withGrantOption? # grantProxy
-//    | GRANT PROXY ON userOrRole TO userOrRoles withGrantOption?
     ;
 
-//revoke
-//    : REVOKE (proxyClause | privilegeClause | allClause | roleClause)
-//    ;
-
 revoke
-    : REVOKE roleOrPrivileges FROM userList
-    | REVOKE roleOrPrivileges ON aclType? grantIdentifier FROM userList
-    | REVOKE ALL PRIVILEGES? ON aclType? grantIdentifier FROM userList
-    | REVOKE ALL PRIVILEGES? COMMA_ GRANT OPTION FROM userList
-    | REVOKE PROXY ON userName FROM userList
+    : REVOKE roleOrPrivileges FROM userList # revokeFrom
+    | REVOKE roleOrPrivileges ON aclType? grantIdentifier FROM userList # revokeOnFrom
+    | REVOKE ALL PRIVILEGES? ON aclType? grantIdentifier FROM userList # revokeOnFrom
+    | REVOKE ALL PRIVILEGES? COMMA_ GRANT OPTION FROM userList # revokeFrom
+    | REVOKE PROXY ON userName FROM userList # revokeOnFrom
     ;
 
 userList
     : userName (COMMA_ userName)*
     ;
-
-//proxyClause
-//    : PROXY ON userOrRole TO userOrRoles withGrantOption?
-//    ;
-
-//privilegeClause
-//    : privileges ON onObjectClause (TO | FROM) userOrRoles withGrantOption? grantOption?
-//    ;
-
-//roleClause
-//    : roles ( TO| FROM) userOrRoles withGrantOption?
-//    ;
-
-//allClause
-//    : ALL PRIVILEGES? COMMA_ GRANT OPTION FROM userOrRoles
-//    ;
 
 roleOrPrivileges
     : roleOrPrivilege (COMMA_ roleOrPrivilege)*
@@ -69,7 +44,7 @@ roleOrPrivileges
 
 roleOrPrivilege
     : roleIdentifierOrText (LP_ columnNames RP_)? # roleOrDynamicPrivilege
-    | roleIdentifierOrText AT_ textOrIdentifier  # roleArhost
+    | roleIdentifierOrText AT_ textOrIdentifier  # roleAtHost
     | SELECT (LP_ columnNames RP_)?  # staticPrivilegeSelect
     | INSERT (LP_ columnNames RP_)?  # staticPrivilegeInsert
     | UPDATE (LP_ columnNames RP_)?  # staticPrivilegeUpdate
@@ -104,72 +79,15 @@ roleOrPrivilege
     | DROP ROLE  # staticPrivilegeDropRole
     ;
 
-//privileges
-//    : privilege (COMMA_ privilege)*
-//    ;
-
-//privilege
-//    : privilegeType (LP_ columnNames RP_)?
-//    ;
-
-//privilegeType
-//    : ALL PRIVILEGES?
-//    | ALTER ROUTINE?
-//    | CREATE
-//    | CREATE ROUTINE
-//    | CREATE TABLESPACE
-//    | CREATE TEMPORARY TABLES
-//    | CREATE USER
-//    | CREATE VIEW
-//    | DELETE
-//    | DROP
-//    | DROP ROLE
-//    | EVENT
-//    | EXECUTE
-//    | FILE
-//    | GRANT OPTION
-//    | INDEX
-//    | INSERT
-//    | LOCK TABLES
-//    | PROCESS
-//    | PROXY
-//    | REFERENCES
-//    | RELOAD
-//    | REPLICATION CLIENT
-//    | REPLICATION SLAVE
-//    | SELECT
-//    | SHOW DATABASES
-//    | SHOW VIEW
-//    | SHUTDOWN
-//    | SUPER
-//    | TRIGGER
-//    | UPDATE
-//    | USAGE
-//    | identifier
-//    ;
-
-//onObjectClause
-//    : objectType? privilegeLevel
-//    ;
-
-//objectType
-//    : TABLE | FUNCTION | PROCEDURE
-//    ;
-
 aclType
     : TABLE | FUNCTION | PROCEDURE
     ;
 
-//privilegeLevel
-//    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | identifier DOT_ASTERISK_ | tableName  | schemaName DOT_ routineName
-//    ;
-
 grantIdentifier
     : ASTERISK_ # grantLevelGlobal
-    | ASTERISK_ DOT_ASTERISK_
-    | schemaName DOT_ASTERISK_
-    | tableName
-    | schemaName DOT_ identifier
+    | ASTERISK_ DOT_ASTERISK_ # grantLevelGlobal
+    | schemaName DOT_ASTERISK_ # grantLevelSchemaGlobal
+    | tableName # grantLevelTable
     ;
 
 createUser
@@ -273,10 +191,6 @@ userOrRoles
 roles
     : roleName (COMMA_ roleName)*
     ;
-
-//grantOption
-//    : AS userName (WITH ROLE DEFAULT | NONE | ALL | ALL EXCEPT roles | roles )?
-//    ;
 
 grantAs
     : AS userName withRoles?
