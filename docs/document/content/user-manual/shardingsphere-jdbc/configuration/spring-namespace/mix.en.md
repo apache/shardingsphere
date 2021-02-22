@@ -3,11 +3,6 @@ title = "Mixed Rules"
 weight = 6
 +++
 
-The superposition between rules in mixed configuration is associated by data source name and table name.
-
-If the previous rule is data source oriented aggregation, the next rule needs to use the aggregated logical data source name configured by the previous rule when configuring the data source;
-Similarly, if the previous rule is table oriented aggregation, the next rule needs to use the aggregated logical table name configured by the previous rule when configuring the table.
-
 ## Configuration Item Explanation
 ```xml
 <beans xmlns="http://www.springframework.org/schema/beans"
