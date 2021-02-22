@@ -22,7 +22,7 @@ import Symbol, Keyword, MySQLKeyword, Literals;
 parameterMarker
     : QUESTION_
     ;
-
+    
 customKeyword
     : MAX
     | MIN
@@ -47,7 +47,7 @@ customKeyword
     | INNODB
     | REDO_LOG
     ;
-
+    
 literals
     : stringLiterals
     | numberLiterals
@@ -57,43 +57,43 @@ literals
     | booleanLiterals
     | nullValueLiterals
     ;
-
+    
 string_
     : DOUBLE_QUOTED_TEXT | SINGLE_QUOTED_TEXT
     ;
-
+    
 stringLiterals
     : UNDERSCORE_CHARSET? string_ | NCHAR_TEXT
     ;
-
+    
 numberLiterals
-   : NUMBER_
-   ;
-
+    : NUMBER_
+    ;
+    
 temporalLiterals
     : (DATE | TIME | TIMESTAMP) SINGLE_QUOTED_TEXT
     ;
-
+    
 hexadecimalLiterals
     : UNDERSCORE_CHARSET? HEX_DIGIT_ collateClause?
     ;
-
+    
 bitValueLiterals
     : UNDERSCORE_CHARSET? BIT_NUM_ collateClause?
     ;
-
+    
 booleanLiterals
     : TRUE | FALSE
     ;
-
+    
 nullValueLiterals
     : NULL
     ;
-
+    
 collationName
-   : textOrIdentifier | BINARY
-   ;
-
+    : textOrIdentifier | BINARY
+    ;
+    
 identifier
     : IDENTIFIER_
     | identifierKeywordsUnambiguous
@@ -104,7 +104,7 @@ identifier
     | customKeyword
     | DOUBLE_QUOTED_TEXT
     ;
-
+    
 identifierKeywordsUnambiguous
     : ACTION
     | ACCOUNT
@@ -489,13 +489,13 @@ identifierKeywordsUnambiguous
     | XML
     | YEAR
     ;
-
+    
 identifierKeywordsAmbiguous1RolesAndLabels
     : EXECUTE
     | RESTART
     | SHUTDOWN
     ;
-
+    
 identifierKeywordsAmbiguous2Labels
     : ASCII
     | BEGIN
@@ -533,7 +533,7 @@ identifierKeywordsAmbiguous2Labels
     | UNINSTALL
     | XA
     ;
-
+    
 identifierKeywordsAmbiguous3Roles
     : EVENT
     | FILE
@@ -545,7 +545,7 @@ identifierKeywordsAmbiguous3Roles
     | RESOURCE
     | SUPER
     ;
-
+    
 identifierKeywordsAmbiguous4SystemVariables
     : GLOBAL
     | LOCAL
@@ -553,132 +553,132 @@ identifierKeywordsAmbiguous4SystemVariables
     | PERSIST_ONLY
     | SESSION
     ;
-
+    
 textOrIdentifier
     : identifier | string_
     ;
-
+    
 variable
     : userVariable | systemVariable
     ;
-
+    
 userVariable
     : AT_ textOrIdentifier
     ;
-
+    
 systemVariable
     : AT_ AT_ systemVariableScope=(GLOBAL | SESSION | LOCAL)? textOrIdentifier (DOT_ identifier)?
     ;
-
+    
 setSystemVariable
     : AT_ AT_ (optionType DOT_)? internalVariableName
     ;
-
+    
 optionType
     : GLOBAL | PERSIST | PERSIST_ONLY | SESSION | LOCAL
     ;
-
+    
 internalVariableName
     : identifier
     | DEFAULT DOT_ identifier
     | identifier DOT_ identifier
     ;
-
+    
 setExprOrDefault
     : expr | DEFAULT | ALL | ON | BINARY | ROW | SYSTEM
     ;
-
+    
 transactionCharacteristics
     : transactionAccessMode (COMMA_ isolationLevel)?
     | isolationLevel (COMMA_ transactionAccessMode)?
     ;
-
+    
 isolationLevel
     : ISOLATION LEVEL isolationTypes
     ;
-
+    
 isolationTypes
     : REPEATABLE READ | READ COMMITTED | READ UNCOMMITTED | SERIALIZABLE
     ;
-
+    
 transactionAccessMode
     : READ (WRITE | ONLY)
     ;
-
+    
 schemaName
     : identifier
     ;
-
+    
 schemaNames
     : schemaName (COMMA_ schemaName)*
     ;
-
+    
 charsetName
     : textOrIdentifier | BINARY
     ;
-
+    
 schemaPairs
     : schemaPair (COMMA_ schemaPair)*
     ;
-
+    
 schemaPair
     : LP_ schemaName COMMA_ schemaName RP_
     ;
-
+    
 tableName
     : (owner DOT_)? name
     ;
-
+    
 columnName
     : identifier
     ;
-
+    
 indexName
     : identifier
     ;
-
+    
 userIdentifierOrText
     : textOrIdentifier (AT_ textOrIdentifier)?
     ;
-
+    
 userName
     : userIdentifierOrText | CURRENT_USER (LP_ RP_)?
     ;
-
+    
 eventName
     : identifier (DOT_ identifier)?
     ;
-
+    
 serverName
     : textOrIdentifier
     ; 
-
+    
 wrapperName
     : textOrIdentifier
     ;
-
+    
 functionName
     : identifier
     | (owner DOT_)? identifier
     ;
-
+    
 viewName
     : identifier
     | (owner DOT_)? identifier
     ;
-
+    
 owner
     : identifier
     ;
-
+    
 alias
     : textOrIdentifier
     ;
-
+    
 name
     : identifier
     ;
-
+    
 tableList
     : tableName (COMMA_ tableName)*
     ;
@@ -686,118 +686,118 @@ tableList
 viewNames
     : viewName (COMMA_ viewName)*
     ;
-
+    
 columnNames
     : columnName (COMMA_ columnName)*
     ;
-
+    
 groupName
     : identifier
     ;
-
+    
 routineName
     : identifier
     ;
-
+    
 shardLibraryName
     : stringLiterals
     ;
-
+    
 componentName
     : string_
     ;
-
+    
 pluginName
     : identifier
     ;
-
+    
 hostName
     : string_
     ;
-
+    
 port
     : NUMBER_
     ;
-
+    
 cloneInstance
     : userName AT_ hostName COLON_ port
     ;
-
+    
 cloneDir
     : string_
     ;
-
+    
 channelName
     : identifier (DOT_ identifier)?
     ;
-
+    
 logName
     : stringLiterals
     ;
-
+    
 roleName
     : roleIdentifierOrText (AT_ textOrIdentifier)?
     ;
-
+    
 roleIdentifierOrText
     : identifier | string_
     ;
-
+    
 engineRef
     : textOrIdentifier
     ;
-
+    
 triggerName
     : identifier (DOT_ identifier)?
     ;
-
+    
 triggerTime
     : BEFORE | AFTER
     ;
-
+    
 tableOrTables
     : TABLE | TABLES
     ;
-
+    
 userOrRole
     : userName | roleName
     ;
-
+    
 partitionName
     : identifier
     ;
-
+    
 identifierList
     : identifier (COMMA_ identifier)*
     ;
-
+    
 allOrPartitionNameList
     : ALL | identifierList
     ;
-
+    
 triggerEvent
     : INSERT | UPDATE | DELETE
     ;
-
+    
 triggerOrder
     : (FOLLOWS | PRECEDES) triggerName
     ;
-
+    
 expr
     : booleanPrimary
     | expr logicalOperator expr
     | expr XOR expr
     | notOperator expr
     ;
-
+    
 logicalOperator
     : OR | OR_ | AND | AND_
     ;
-
+    
 notOperator
     : NOT | NOT_
     ;
-
+    
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
     | booleanPrimary SAFE_EQ_ predicate
@@ -805,11 +805,11 @@ booleanPrimary
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
     | predicate
     ;
-
+    
 comparisonOperator
     : EQ_ | GTE_ | GT_ | LTE_ | LT_ | NEQ_
     ;
-
+    
 predicate
     : bitExpr NOT? IN subquery
     | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_
@@ -819,7 +819,7 @@ predicate
     | bitExpr NOT? REGEXP bitExpr
     | bitExpr
     ;
-
+    
 bitExpr
     : bitExpr VERTICAL_BAR_ bitExpr
     | bitExpr AMPERSAND_ bitExpr
@@ -837,7 +837,7 @@ bitExpr
     | bitExpr MINUS_ intervalExpression
     | simpleExpr
     ;
-
+    
 simpleExpr
     : functionCall
     | parameterMarker
@@ -855,68 +855,68 @@ simpleExpr
     | caseExpression
     | intervalExpression
     ;
-
+    
 columnRef
     : identifier (DOT_ identifier)? (DOT_ identifier)?
     ;
-
+    
 columnRefList
     : columnRef (COMMA_ columnRef)*
     ;
-
+    
 functionCall
     : aggregationFunction | specialFunction | regularFunction 
     ;
-
+    
 aggregationFunction
     : aggregationFunctionName LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? RP_ overClause?
     ;
-
+    
 aggregationFunctionName
     : MAX | MIN | SUM | COUNT | AVG
     ;
-
+    
 distinct
     : DISTINCT
     ;
-
+    
 overClause
     : OVER (LP_ windowSpecification RP_ | identifier)
     ;
-
+    
 windowSpecification
     : LP_ identifier? (PARTITION BY expr (COMMA_ expr)*)? orderByClause? frameClause? RP_
     ;
-
+    
 frameClause
     : (ROWS | RANGE) (frameStart | frameBetween)
     ;
-
+    
 frameStart
     : CURRENT ROW | UNBOUNDED PRECEDING | UNBOUNDED FOLLOWING | expr PRECEDING | expr FOLLOWING
     ;
-
+    
 frameEnd
     : frameStart
     ;
-
+    
 frameBetween
     : BETWEEN frameStart AND frameEnd
     ;
-
+    
 specialFunction
     : groupConcatFunction | windowFunction | castFunction | convertFunction | positionFunction | substringFunction | extractFunction 
     | charFunction | trimFunction | weightStringFunction | valuesFunction | currentUserFunction
     ;
-
+    
 currentUserFunction
     : CURRENT_USER (LP_ RP_)?
     ;
-
+    
 groupConcatFunction
     : GROUP_CONCAT LP_ distinct? (expr (COMMA_ expr)* | ASTERISK_)? (orderByClause)? (SEPARATOR expr)? RP_
     ;
-
+    
 windowFunction
     : funcName = (ROW_NUMBER | RANK | DENSE_RANK | CUME_DIST | PERCENT_RANK) LP_ RP_ windowingClause
     | funcName = NTILE (simpleExpr) windowingClause
@@ -924,31 +924,31 @@ windowFunction
     | funcName = (FIRST_VALUE | LAST_VALUE) LP_ expr RP_ nullTreatment? windowingClause
     | funcName = NTH_VALUE LP_ expr COMMA_ simpleExpr RP_ (FROM (FIRST | LAST))? nullTreatment? windowingClause
     ;
-
+    
 windowingClause
     : OVER (windowName=identifier | windowSpecification)
     ;
-
+    
 leadLagInfo
     : COMMA_ (NUMBER_ | QUESTION_) (COMMA_ expr)?
     ;
-
+    
 nullTreatment
     : (RESPECT | IGNORE) NULLS
     ;
-
+    
 checkType
     : FOR UPGRADE | QUICK | FAST | MEDIUM | EXTENDED | CHANGED
     ;
-
+    
 repairType
     : QUICK | EXTENDED | USE_FRM
     ;
-
+    
 castFunction
     : CAST LP_ expr AS dataType RP_
     ;
-
+    
 convertFunction
     : CONVERT LP_ expr COMMA_ castType RP_
     | CONVERT LP_ expr USING charsetName RP_
@@ -969,48 +969,48 @@ castType
     | DOUBLE PRECISION
     | FLOAT precision?
     ;
-
+    
 nchar
     : NCHAR | NATIONAL CHAR
     ;
-
+    
 positionFunction
     : POSITION LP_ expr IN expr RP_
     ;
-
+    
 substringFunction
     : (SUBSTRING | SUBSTR) LP_ expr FROM NUMBER_ (FOR NUMBER_)? RP_
     | (SUBSTRING | SUBSTR) LP_ expr COMMA_ NUMBER_ (COMMA_ NUMBER_)? RP_
     ;
-
+    
 extractFunction
     : EXTRACT LP_ identifier FROM expr RP_
     ;
-
+    
 charFunction
     : CHAR LP_ expr (COMMA_ expr)* (USING charsetName)? RP_
     ;
-
+    
 trimFunction
     : TRIM LP_ (LEADING | BOTH | TRAILING) string_ FROM string_ RP_
     ;
-
+    
 valuesFunction
     : VALUES LP_ columnRefList RP_
     ;
-
+    
 weightStringFunction
     : WEIGHT_STRING LP_ expr (AS dataType)? levelClause? RP_
     ;
-
+    
 levelClause
     : LEVEL (levelInWeightListElement (COMMA_ levelInWeightListElement)* | NUMBER_ MINUS_ NUMBER_)
     ;
-
+    
 levelInWeightListElement
     : NUMBER_ direction? REVERSE?
     ;
-
+    
 regularFunction
     : completeRegularFunction
     | shorthandRegularFunction
@@ -1019,7 +1019,7 @@ regularFunction
 shorthandRegularFunction
     : CURRENT_DATE | CURRENT_TIME (LP_ NUMBER_? RP_)? | CURRENT_TIMESTAMP | LAST_DAY | LOCALTIME | LOCALTIMESTAMP
     ;
-
+    
 completeRegularFunction
     : regularFunctionName (LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_)
     ;
@@ -1030,61 +1030,61 @@ regularFunctionName
     | LINESTRING | MULTILINESTRING | MULTIPOINT | MULTIPOLYGON | POINT | POLYGON
     | TIME | TIMESTAMP | TIMESTAMP_ADD | TIMESTAMP_DIFF | DATE | CURRENT_TIMESTAMP | identifier
     ;
-
+    
 matchExpression
     : MATCH (columnRefList | LP_ columnRefList RP_ ) AGAINST LP_ expr matchSearchModifier? RP_
     ;
-
+    
 matchSearchModifier
     : IN NATURAL LANGUAGE MODE | IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION | IN BOOLEAN MODE | WITH QUERY EXPANSION
     ;
-
+    
 caseExpression
     : CASE simpleExpr? caseWhen+ caseElse? END
     ;
-
+    
 datetimeExpr
     : expr
     ;
-
+    
 binaryLogFileIndexNumber
     : NUMBER_
     ;
-
+    
 caseWhen
     : WHEN expr THEN expr
     ;
-
+    
 caseElse
     : ELSE expr
     ;
-
+    
 intervalExpression
     : INTERVAL intervalValue
     ;
-
+    
 intervalValue
     : expr intervalUnit
     ;
-
+    
 intervalUnit
     : MICROSECOND | SECOND | MINUTE | HOUR | DAY | WEEK | MONTH
     | QUARTER | YEAR | SECOND_MICROSECOND | MINUTE_MICROSECOND | MINUTE_SECOND | HOUR_MICROSECOND | HOUR_SECOND
     | HOUR_MINUTE | DAY_MICROSECOND | DAY_SECOND | DAY_MINUTE | DAY_HOUR | YEAR_MONTH
     ;
-
+    
 subquery
     : 'refer subquery in DMStement.g4'
     ;
-
+    
 orderByClause
     : ORDER BY orderByItem (COMMA_ orderByItem)*
     ;
-
+    
 orderByItem
     : (numberLiterals | expr) direction?
     ;
-
+    
 dataType
     : dataTypeName = (INTEGER | INT | TINYINT | SMALLINT | MIDDLEINT | MEDIUMINT | BIGINT) fieldLength? fieldOptions?
     | (dataTypeName = REAL | dataTypeName = DOUBLE PRECISION?) precision? fieldOptions?
@@ -1115,21 +1115,21 @@ dataType
     | dataTypeName = SET stringList charsetWithOptBinary?
     | dataTypeName = (SERIAL | JSON | GEOMETRY | GEOMETRYCOLLECTION | POINT | MULTIPOINT | LINESTRING | MULTILINESTRING | POLYGON | MULTIPOLYGON)
     ;
-
+    
 stringList
     : LP_ textString (COMMA_ textString)* RP_
     ;
-
+    
 textString
     : string_
     | HEX_DIGIT_
     | BIT_NUM_
     ;
-
+    
 textStringHash
     : string_ | HEX_DIGIT_
     ;
-
+    
 fieldOptions
     : (UNSIGNED | SIGNED | ZEROFILL)+
     ;
@@ -1137,7 +1137,7 @@ fieldOptions
 precision
     : LP_ NUMBER_ COMMA_ NUMBER_ RP_
     ;
-
+    
 typeDatetimePrecision
     : LP_ NUMBER_ RP_
     ;
@@ -1154,7 +1154,7 @@ ascii
     : ASCII BINARY?
     | BINARY ASCII
     ;
-
+    
 unicode
     : UNICODE BINARY?
     | BINARY UNICODE
@@ -1164,72 +1164,72 @@ charset
     : (CHAR | CHARACTER) SET
     | CHARSET
     ;
-
+    
 defaultCollation
     : DEFAULT? COLLATE EQ_? collationName
     ;
-
+    
 defaultEncryption
     : DEFAULT? ENCRYPTION EQ_? string_
     ;
-
+    
 defaultCharset
     : DEFAULT? charset EQ_? charsetName
     ;
-
+    
 signedLiteral
     : literals
     | (PLUS_ | MINUS_) numberLiterals
     ;
-
+    
 now
     : (CURRENT_TIMESTAMP | LOCALTIME | LOCALTIMESTAMP) (LP_ NUMBER_? RP_)?
     ;
-
+    
 columnFormat
     : FIXED
     | DYNAMIC
     | DEFAULT
     ;
-
+    
 storageMedia
     : DISK
     | MEMORY
     | DEFAULT
     ;
-
+    
 direction
     : ASC | DESC
     ;
-
+    
 keyOrIndex
     : KEY | INDEX
     ;
-
+    
 fieldLength
     : LP_ length=NUMBER_ RP_
     ;
-
+    
 characterSet
     : charset charsetName
     ;
-
+    
 collateClause
     : COLLATE collationName
     ;
-
+    
 fieldOrVarSpec
     : LP_ (identifier (COMMA_ identifier)*)? RP_
     ;
-
+    
 notExistClause
     : IF NOT EXISTS
     ;
-
+    
 existClause
     : IF EXISTS
     ;
-
+    
 connectionId
     : NUMBER_
     ;
@@ -1245,30 +1245,30 @@ cursorName
 conditionName
     : identifier
     ;
-
+    
 unionOption
     : ALL | DISTINCT
     ;
-
+    
 noWriteToBinLog
     : LOCAL
     | NO_WRITE_TO_BINLOG
     ;
-
+    
 channelOption
     : FOR CHANNEL string_
     ;
-
+    
 preparedStatement
     : PREPARE identifier FROM (stringLiterals | userVariable)
     | executeStatement
     | (DEALLOCATE | DROP) PREPARE identifier
     ;
-
+    
 executeStatement
     : EXECUTE identifier (USING executeVarList)?
     ;
-
+    
 executeVarList
     : userVariable (COMMA_ userVariable)*
     ;
