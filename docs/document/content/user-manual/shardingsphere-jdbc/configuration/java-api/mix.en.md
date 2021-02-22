@@ -47,9 +47,17 @@ datasourceMaps.put("primary_ds1_replica1", replica1OfPrimaryDataSource1);
 // The enumeration value of `ds_$->{0..1}` is the name of the logical data source configured with replica-query
 ShardingTableRuleConfiguration tOrderRuleConfiguration = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${[0, 1]}");
 tOrderRuleConfiguration.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
+tOrderRuleConfiguration.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "tOrderInlineShardingAlgorithm"));
+Properties tOrderShardingInlineProps = new Properties();
+tOrderShardingInlineProps.setProperty("algorithm-expression", "t_order_${order_id % 2}");
+ruleConfiguration.getShardingAlgorithms().putIfAbsent("tOrderInlineShardingAlgorithm", new ShardingSphereAlgorithmConfiguration("INLINE",tOrderShardingInlineProps));
 
 ShardingTableRuleConfiguration tOrderItemRuleConfiguration = new ShardingTableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
 tOrderItemRuleConfiguration.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_item_id", "snowflake"));
+tOrderRuleConfiguration.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_item_id", "tOrderItemInlineShardingAlgorithm"));
+Properties tOrderItemShardingInlineProps = new Properties();
+tOrderItemShardingInlineProps.setProperty("algorithm-expression", "t_order_item_${order_item_id % 2}");
+ruleConfiguration.getShardingAlgorithms().putIfAbsent("tOrderItemInlineShardingAlgorithm", new ShardingSphereAlgorithmConfiguration("INLINE",tOrderItemShardingInlineProps));
         
 ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
 shardingRuleConfiguration.getTables().add(tOrderRuleConfiguration);
@@ -80,8 +88,8 @@ encryptAlgorithmConfigs.put("pwd_encryptor", new ShardingSphereAlgorithmConfigur
 EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
 
 /* Replica query rule configuration */
-ReplicaQueryDataSourceRuleConfiguration dataSourceConfiguration1 = new ReplicaQueryDataSourceRuleConfiguration("ds_0", "primary_ds0", Arrays.asList("primary_ds0_replica0", "primary_ds0_replica1"), null);
-ReplicaQueryDataSourceRuleConfiguration dataSourceConfiguration2 = new ReplicaQueryDataSourceRuleConfiguration("ds_1", "primary_ds0", Arrays.asList("primary_ds1_replica0", "primary_ds1_replica0"), null);
+ReplicaQueryDataSourceRuleConfiguration dataSourceConfiguration1 = new ReplicaQueryDataSourceRuleConfiguration("ds_0", "primary_ds0", Arrays.asList("primary_ds0_replica0", "primary_ds0_replica1"), "roundRobin");
+ReplicaQueryDataSourceRuleConfiguration dataSourceConfiguration2 = new ReplicaQueryDataSourceRuleConfiguration("ds_1", "primary_ds0", Arrays.asList("primary_ds1_replica0", "primary_ds1_replica0"), "roundRobin");
 
 // Load balance algorithm configuration
 Map<String, ShardingSphereAlgorithmConfiguration> loadBalanceMaps = new HashMap<>(1);

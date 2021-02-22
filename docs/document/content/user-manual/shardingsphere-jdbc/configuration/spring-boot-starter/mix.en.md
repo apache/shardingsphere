@@ -3,8 +3,6 @@ title = "Mixed Rules"
 weight = 6
 +++
 
-The superposition between rules in mixed configuration is associated by data source name and table name.
-
 If the previous rule is data source oriented aggregation, the next rule needs to use the aggregated logical data source name configured by the previous rule when configuring the data source;
 Similarly, if the previous rule is table oriented aggregation, the next rule needs to use the aggregated logical table name configured by the previous rule when configuring the table.
 
@@ -33,7 +31,11 @@ spring.shardingsphere.datasource.primary-ds1-replica0.url= # Database URL connec
 # Databases sharding strategy
 spring.shardingsphere.rules.sharding.default-database-strategy.standard.sharding-column=user_id
 spring.shardingsphere.rules.sharding.default-database-strategy.standard.sharding-algorithm-name=default-database-strategy-inline
-spring.shardingsphere.rules.sharding.binding-tables= # Binding table names,multiple table name are separated by commas
+# Binding table rules configuration ,and multiple groups of binding-tables configured with arrays
+spring.shardingsphere.rules.sharding.binding-tables[0]=t_user,t_user_detail
+spring.shardingsphere.rules.sharding.binding-tables[1]= # Binding table names,multiple table name are separated by commas
+spring.shardingsphere.rules.sharding.binding-tables[x]= # Binding table names,multiple table name are separated by commas
+# Broadcast table rules configuration
 spring.shardingsphere.rules.sharding.broadcast-tables= # Broadcast table names,multiple table name are separated by commas
 
 # Table sharding strategy

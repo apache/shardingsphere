@@ -34,7 +34,11 @@ spring.shardingsphere.datasource.primary-ds1-replica0.url= # 数据库 URL 连�
 # 分库策略
 spring.shardingsphere.rules.sharding.default-database-strategy.standard.sharding-column=user_id
 spring.shardingsphere.rules.sharding.default-database-strategy.standard.sharding-algorithm-name=default-database-strategy-inline
-spring.shardingsphere.rules.sharding.binding-tables= # 绑定表名称，多个表之间以逗号分隔
+# 绑定表规则，多组绑定规则使用数组形式配置
+spring.shardingsphere.rules.sharding.binding-tables[0]=t_user,t_user_detail # 绑定表名称，多个表之间以逗号分隔
+spring.shardingsphere.rules.sharding.binding-tables[1]= # 绑定表名称，多个表之间以逗号分隔
+spring.shardingsphere.rules.sharding.binding-tables[x]= # 绑定表名称，多个表之间以逗号分隔
+# 广播表规则配置
 spring.shardingsphere.rules.sharding.broadcast-tables= # 广播表名称，多个表之间以逗号分隔
 
 # 分表策略
@@ -42,6 +46,10 @@ spring.shardingsphere.rules.sharding.broadcast-tables= # 广播表名称，多�
 spring.shardingsphere.rules.sharding.tables.t_user.actual-data-nodes=ds_$->{0..1}.t_user_$->{0..1}
 spring.shardingsphere.rules.sharding.tables.t_user.table-strategy.standard.sharding-column=user_id
 spring.shardingsphere.rules.sharding.tables.t_user.table-strategy.standard.sharding-algorithm-name=user-table-strategy-inline
+
+spring.shardingsphere.rules.sharding.tables.t_user_detail.actual-data-nodes=ds_$->{0..1}.t_user_detail_$->{0..1}
+spring.shardingsphere.rules.sharding.tables.t_user_detail.table-strategy.standard.sharding-column=user_id
+spring.shardingsphere.rules.sharding.tables.t_user_detail.table-strategy.standard.sharding-algorithm-name=user-detail-table-strategy-inline
 
 # 数据加密配置
 # `t_user` 使用分片规则配置的逻辑表名称
@@ -66,6 +74,9 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strate
 spring.shardingsphere.rules.sharding.sharding-algorithms.default-database-strategy-inline.algorithm-expression=ds_$->{user_id % 2}
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.type=INLINE
 spring.shardingsphere.rules.sharding.sharding-algorithms.user-table-strategy-inline.algorithm-expression=t_user_$->{user_id % 2}
+
+spring.shardingsphere.rules.sharding.sharding-algorithms.user-detail-table-strategy-inline.type=INLINE
+spring.shardingsphere.rules.sharding.sharding-algorithms.user-detail-table-strategy-inline.algorithm-expression=t_user_detail_$->{user_id % 2}
 
 # 分布式序列算法配置
 spring.shardingsphere.rules.sharding.key-generators.snowflake.type=SNOWFLAKE
