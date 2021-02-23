@@ -96,7 +96,7 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     }
     
     private ParallelRunnerExecutor getRunnerExecutor() {
-        switch (runtimeStrategy.parallelLevel()) {
+        switch (runtimeStrategy.value()) {
             case CASE:
                 return new CaseParallelRunnerExecutor();
             case SCENARIO:

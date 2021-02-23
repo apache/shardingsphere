@@ -40,7 +40,7 @@ import java.util.Collection;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@ParallelRuntimeStrategy(parallelLevel = ParallelLevel.SCENARIO)
+@ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class BatchDMLIT extends BatchIT {
     
     private final IntegrationTestCaseContext testCaseContext;

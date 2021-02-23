@@ -40,7 +40,7 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertTrue;
 
-@ParallelRuntimeStrategy(parallelLevel = ParallelLevel.CASE)
+@ParallelRuntimeStrategy(ParallelLevel.CASE)
 public final class GeneralDQLIT extends BaseDQLIT {
     
     private final IntegrationTestCaseAssertion assertion;

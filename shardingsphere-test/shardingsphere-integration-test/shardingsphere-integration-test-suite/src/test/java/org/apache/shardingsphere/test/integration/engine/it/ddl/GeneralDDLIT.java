@@ -33,7 +33,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
 
-@ParallelRuntimeStrategy(parallelLevel = ParallelLevel.SCENARIO)
+@ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDDLIT extends BaseDDLIT {
     
     public GeneralDDLIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {

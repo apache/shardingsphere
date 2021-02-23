@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@ParallelRuntimeStrategy(parallelLevel = ParallelLevel.SCENARIO)
+@ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDALIT extends BaseDALIT {
     
     public GeneralDALIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {

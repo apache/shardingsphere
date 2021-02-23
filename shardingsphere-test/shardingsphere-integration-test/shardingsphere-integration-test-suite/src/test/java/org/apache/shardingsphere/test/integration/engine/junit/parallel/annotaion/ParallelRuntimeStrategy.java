@@ -36,7 +36,7 @@ public @interface ParallelRuntimeStrategy {
     /**
      * Get parallel level.
      * 
-     * @return ParallelLevel parallel level
+     * @return value parallel level
      */
-    ParallelLevel parallelLevel();
+    ParallelLevel value();
 }

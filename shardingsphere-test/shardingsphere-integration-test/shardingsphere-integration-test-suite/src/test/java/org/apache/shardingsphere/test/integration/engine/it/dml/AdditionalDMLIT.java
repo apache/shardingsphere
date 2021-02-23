@@ -41,7 +41,7 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
 
-@ParallelRuntimeStrategy(parallelLevel = ParallelLevel.SCENARIO)
+@ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class AdditionalDMLIT extends BaseDMLIT {
     
     private final IntegrationTestCaseAssertion assertion;
