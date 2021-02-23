@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.integration.engine.it.dml;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
+import org.apache.shardingsphere.test.integration.engine.it.ParallelLevel;
+import org.apache.shardingsphere.test.integration.engine.it.RuntimeStrategy;
 import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
@@ -39,18 +41,13 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
 
+@RuntimeStrategy(parallelLevel = ParallelLevel.SCENARIO)
 public final class AdditionalDMLIT extends BaseDMLIT {
     
     private final IntegrationTestCaseAssertion assertion;
     
     public AdditionalDMLIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
-        super(parameterizedArray.getTestCaseContext().getParentPath(),
-                parameterizedArray.getAssertion(),
-                parameterizedArray.getAdapter(),
-                parameterizedArray.getScenario(),
-                parameterizedArray.getDatabaseType(),
-                parameterizedArray.getSqlExecuteType(),
-                parameterizedArray.getTestCaseContext().getTestCase().getSql());
+        super(parameterizedArray);
         assertion = parameterizedArray.getAssertion();
     }
     

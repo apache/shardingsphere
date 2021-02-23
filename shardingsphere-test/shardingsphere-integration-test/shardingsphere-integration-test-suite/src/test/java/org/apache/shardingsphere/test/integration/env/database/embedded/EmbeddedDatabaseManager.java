@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
@@ -59,13 +58,7 @@ public final class EmbeddedDatabaseManager {
         if (databaseTypeImpl instanceof H2DatabaseType) {
             return;
         }
-        // TODO This can be a single instance if the GitHub Action port has been adjusted
-        String embeddedDatabaseKey;
-        if (databaseTypeImpl instanceof PostgreSQLDatabaseType) {
-            embeddedDatabaseKey = databaseType;
-        } else {
-            embeddedDatabaseKey = String.join("_", databaseType, scenario);
-        }
+        String embeddedDatabaseKey = databaseType;
         if (EMBEDDED_DATABASES_CACHE.containsKey(embeddedDatabaseKey)) {
             return;
         }
