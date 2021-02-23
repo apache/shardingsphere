@@ -31,6 +31,11 @@ public final class RunnerParameters {
     
     private final Runnable childStatement;
     
+    /**
+     * Get runner parameters.
+     * 
+     * @return runner parameters
+     */
     @SneakyThrows(ReflectiveOperationException.class)
     public Object[] getRunnerParameters() {
         Field parametersField = BlockJUnit4ClassRunnerWithParameters.class.getDeclaredField("parameters");
