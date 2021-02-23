@@ -77,18 +77,18 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     }
     
     private ParallelRunnerExecutor getRunnerExecutor(final RunnerExecutorKey runnerExecutorKey) {
-        ParallelRunnerExecutor runnerExecutor = this.runnerExecutors.get(runnerExecutorKey);
+        ParallelRunnerExecutor runnerExecutor = runnerExecutors.get(runnerExecutorKey);
         if (null != runnerExecutor) {
             return runnerExecutor;
         }
         try {
             lock.lock();
-            runnerExecutor = this.runnerExecutors.get(runnerExecutorKey);
+            runnerExecutor = runnerExecutors.get(runnerExecutorKey);
             if (null != runnerExecutor) {
                 return runnerExecutor;
             }
             runnerExecutor = getRunnerExecutor();
-            this.runnerExecutors.put(runnerExecutorKey, runnerExecutor);
+            runnerExecutors.put(runnerExecutorKey, runnerExecutor);
             return runnerExecutor;
         } finally {
             lock.unlock();
@@ -108,9 +108,7 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     
     @Override
     public void finished() {
-        if (null != runnerExecutors) {
-            runnerExecutors.values().forEach(ParallelRunnerExecutor::finished);
-        }
+        runnerExecutors.values().forEach(ParallelRunnerExecutor::finished);
     }
     
     /**
@@ -120,7 +118,7 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     private static final class RunnerExecutorKey {
         
         private final DatabaseType databaseType;
-    
+        
         @Override
         public boolean equals(final Object o) {
             if (this == o) {
@@ -132,7 +130,7 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
             RunnerExecutorKey that = (RunnerExecutorKey) o;
             return databaseType.getName().equals(that.databaseType.getName());
         }
-    
+        
         @Override
         public int hashCode() {
             return databaseType.hashCode();
