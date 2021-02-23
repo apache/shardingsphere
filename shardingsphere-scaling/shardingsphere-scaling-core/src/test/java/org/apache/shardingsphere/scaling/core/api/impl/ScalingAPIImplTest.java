@@ -23,10 +23,13 @@ import org.apache.shardingsphere.governance.repository.api.config.GovernanceConf
 import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
+import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.fixture.EmbedTestingServer;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
+import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
@@ -34,6 +37,10 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -106,9 +113,33 @@ public final class ScalingAPIImplTest {
         assertThat(jobProgressMap.size(), is(1));
     }
     
+    @Test
+    public void assertDataConsistencyCheck() {
+        Optional<Long> jobId = scalingAPI.start(ResourceUtil.mockJobConfig());
+        assertTrue(jobId.isPresent());
+        JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId.get());
+        initTableData(jobConfig.getRuleConfig());
+        Map<String, DataConsistencyCheckResult> checkResultMap = scalingAPI.dataConsistencyCheck(jobId.get());
+        assertThat(checkResultMap.size(), is(1));
+        assertTrue(checkResultMap.get("t_order").isCountValid());
+        assertFalse(checkResultMap.get("t_order").isDataValid());
+        assertThat(checkResultMap.get("t_order").getTargetCount(), is(2L));
+    }
+    
+    @Test
+    @SneakyThrows(SQLException.class)
+    public void assertResetTargetTable() {
+        Optional<Long> jobId = scalingAPI.start(ResourceUtil.mockJobConfig());
+        assertTrue(jobId.isPresent());
+        JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId.get());
+        initTableData(jobConfig.getRuleConfig());
+        scalingAPI.resetTargetTable(jobId.get());
+        Map<String, DataConsistencyCheckResult> checkResultMap = scalingAPI.dataConsistencyCheck(jobId.get());
+        assertThat(checkResultMap.get("t_order").getTargetCount(), is(0L));
+    }
+    
     @AfterClass
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static void afterClass() {
+    public static void afterClass() throws Exception {
         ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", null);
     }
     
@@ -116,5 +147,20 @@ public final class ScalingAPIImplTest {
         ServerConfiguration result = new ServerConfiguration();
         result.setGovernanceConfig(new GovernanceConfiguration("test", new GovernanceCenterConfiguration("Zookeeper", EmbedTestingServer.getConnectionString(), new Properties()), true));
         return result;
+    }
+    
+    @SneakyThrows(SQLException.class)
+    private void initTableData(final RuleConfiguration ruleConfig) {
+        initTableData(ruleConfig.getSource().unwrap().toDataSource());
+        initTableData(ruleConfig.getTarget().unwrap().toDataSource());
+    }
+    
+    private void initTableData(final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("DROP TABLE IF EXISTS t_order");
+            statement.execute("CREATE TABLE t_order (id INT PRIMARY KEY, user_id VARCHAR(12))");
+            statement.execute("INSERT INTO t_order (id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
+        }
     }
 }

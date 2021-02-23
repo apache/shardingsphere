@@ -72,6 +72,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.MergeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.UpdateStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CallStatementTestCase;
@@ -285,6 +286,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "xa")
     private final List<XATestCase> xaTestCase = new LinkedList<>();
     
+    @XmlElement(name = "merge")
+    private final List<MergeStatementTestCase> mergeTestCase = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      * 
@@ -354,6 +358,7 @@ public final class SQLParserTestCases {
         putAll(dropDatabaseTestCase, result);
         putAll(callProcedureTestCase, result);
         putAll(xaTestCase, result);
+        putAll(mergeTestCase, result);
         return result;
     }
     
