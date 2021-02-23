@@ -15,35 +15,24 @@
  * limitations under the License.
  */
 
-grammar OracleStatement;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, StoreProcedure;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | createIndex
-    | dropIndex
-    | alterIndex
-    | commit
-    | rollback
-    | setTransaction
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    | call
-    | merge
-    ) SEMI_?
-    ;
+/**
+ * Grant level segment.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class GrantLevelSegment implements SQLSegment {
+    
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final String dbName;
+    
+    private final String tableName;
+}

@@ -15,35 +15,12 @@
  * limitations under the License.
  */
 
-grammar OracleStatement;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, StoreProcedure;
-
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | createIndex
-    | dropIndex
-    | alterIndex
-    | commit
-    | rollback
-    | setTransaction
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    | call
-    | merge
-    ) SEMI_?
-    ;
+/**
+ * ACL type enum.
+ */
+public enum ACLTypeEnum {
+    
+    TABLE, FUNCTION, PROCEDURE
+}

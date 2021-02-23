@@ -15,10 +15,12 @@
   ~ limitations under the License.
   -->
 
-<dataset update-count="40">
-    <metadata data-nodes="encrypt.t_order">
-        <column name="order_id" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
+<dataset update-count="1" broadcast="true">
+    <metadata data-nodes="tbl.t_user">
+        <column name="user_id" type="numeric"/>
+        <column name="pwd" type="varchar"/>
     </metadata>
+    <row data-node="tbl.t_user" values="11, def" />
+    <row data-node="tbl.t_user" values="12, hig" />
+    <row data-node="tbl.t_user" values="13, kli" />
 </dataset>

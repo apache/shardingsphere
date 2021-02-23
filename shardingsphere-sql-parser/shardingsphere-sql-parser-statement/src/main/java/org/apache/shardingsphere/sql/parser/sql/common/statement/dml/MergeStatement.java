@@ -15,35 +15,28 @@
  * limitations under the License.
  */
 
-grammar OracleStatement;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, StoreProcedure;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | createIndex
-    | dropIndex
-    | alterIndex
-    | commit
-    | rollback
-    | setTransaction
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    | call
-    | merge
-    ) SEMI_?
-    ;
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ * Merge statement.
+ */
+@Getter
+@Setter
+@ToString
+public abstract class MergeStatement extends AbstractSQLStatement implements DMLStatement {
+    
+    private final List<SimpleTableSegment> tables = new LinkedList<>();
+    
+    private ExpressionSegment expr;
+    
+}
