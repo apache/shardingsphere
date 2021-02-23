@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<dataset update-count="1">
+<dataset update-count="0">
     <metadata data-nodes="encrypt.t_order_item">
         <column name="item_id" type="numeric" />
         <column name="order_id" type="numeric" />
@@ -23,7 +23,6 @@
         <column name="status" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
-    <row data-node="encrypt.t_order_item" values="0, 1, 1, insert, 2017-08-08" />
     <row data-node="encrypt.t_order_item" values="100001, 1000, 10, init, 2017-08-08" />
     <row data-node="encrypt.t_order_item" values="100002, 1000, 10, init, 2017-08-08" />
     <row data-node="encrypt.t_order_item" values="100101, 1001, 10, init, 2017-08-08" />

@@ -16,14 +16,14 @@
   -->
 
 <dataset update-count="1">
-    <metadata data-nodes="primary_ds.t_order_item,replica_${0..1}.t_order_item">
+    <metadata data-nodes="encrypt.t_order_item">
         <column name="item_id" type="numeric" />
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />
         <column name="status" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
-    <row data-node="primary_ds.t_order_item" values="1, 1, 1, insert, NOT_VERIFY" />
+    <row data-node="encrypt.t_order_item" values="1, 1, 1, insert, NOT_VERIFY" />
     <row data-node="encrypt.t_order_item" values="100001, 1000, 10, init, NOT_VERIFY" />
     <row data-node="encrypt.t_order_item" values="100002, 1000, 10, init, NOT_VERIFY" />
     <row data-node="encrypt.t_order_item" values="100101, 1001, 10, init, NOT_VERIFY" />

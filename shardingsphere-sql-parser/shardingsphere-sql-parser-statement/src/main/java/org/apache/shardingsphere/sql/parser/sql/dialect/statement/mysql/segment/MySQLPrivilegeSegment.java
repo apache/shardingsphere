@@ -15,35 +15,28 @@
  * limitations under the License.
  */
 
-grammar OracleStatement;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
 
-import Symbol, Comments, DMLStatement, DDLStatement, TCLStatement, DCLStatement, StoreProcedure;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.PrivilegeTypeEnum;
 
-execute
-    : (select
-    | insert
-    | update
-    | delete
-    | createTable
-    | alterTable
-    | dropTable
-    | truncateTable
-    | createIndex
-    | dropIndex
-    | alterIndex
-    | commit
-    | rollback
-    | setTransaction
-    | savepoint
-    | grant
-    | revoke
-    | createUser
-    | dropUser
-    | alterUser
-    | createRole
-    | dropRole
-    | alterRole
-    | call
-    | merge
-    ) SEMI_?
-    ;
+import java.util.Collection;
+import java.util.LinkedList;
+
+/**
+ * MySQL privilege segment.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class MySQLPrivilegeSegment implements SQLSegment {
+    
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final PrivilegeTypeEnum type;
+    
+    private final Collection<String> columns = new LinkedList<>();
+}
