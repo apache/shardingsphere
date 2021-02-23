@@ -20,8 +20,6 @@ package org.apache.shardingsphere.test.integration.engine.junit.parallel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.CaseParallelRunnerExecutor;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.ScenarioParallelRunnerExecutor;
 import org.apache.shardingsphere.test.integration.engine.param.RunnerParameters;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 import org.junit.runners.model.RunnerScheduler;
@@ -49,19 +47,8 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
         if (runnerExecutors.containsKey(databaseType)) {
             return runnerExecutors.get(databaseType);
         }
-        runnerExecutors.putIfAbsent(databaseType, getRunnerExecutor());
+        runnerExecutors.putIfAbsent(databaseType, ParallelRunnerExecutorFactory.newInstance(parallelLevel));
         return runnerExecutors.get(databaseType);
-    }
-    
-    private ParallelRunnerExecutor getRunnerExecutor() {
-        switch (parallelLevel) {
-            case CASE:
-                return new CaseParallelRunnerExecutor();
-            case SCENARIO:
-                return new ScenarioParallelRunnerExecutor();
-            default:
-                throw new UnsupportedOperationException("Unsupported runtime strategy.");
-        }
     }
     
     @Override
