@@ -62,7 +62,7 @@ public final class YamlConfigurationConverter {
             return new LinkedHashMap<>();
         }
         return result.getDataSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper()
-                .swapToObject(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .swapToObjectFromMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     /**
@@ -82,7 +82,7 @@ public final class YamlConfigurationConverter {
      * @return data sources
      */
     public static Map<String, DataSource> convertDataSources(final Map<String, YamlDataSourceConfiguration> yamlDataSources) {
-        return new YamlDataSourceConfigurationSwapper().swapToDataSources(yamlDataSources);
+        return new YamlDataSourceConfigurationSwapper().swapToDataSourcesFromYaml(yamlDataSources);
     }
     
     /**

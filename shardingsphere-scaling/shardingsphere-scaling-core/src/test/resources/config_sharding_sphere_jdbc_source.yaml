@@ -14,10 +14,9 @@
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    props:
-      jdbcUrl: jdbc:h2:mem:test_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
-      username: root
-      password: root
+    jdbcUrl: jdbc:h2:mem:test_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
+    username: root
+    password: root
 rules:
 - !SHARDING
   defaultDatabaseStrategy:

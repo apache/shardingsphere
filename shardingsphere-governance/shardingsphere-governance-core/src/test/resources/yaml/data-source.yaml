@@ -17,7 +17,6 @@
 dataSources:
    primary_ds:
      dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-     props:
-       url: jdbc:mysql://localhost:3306/demo_primary_ds
-       username: root
-       password: null
+     url: jdbc:mysql://localhost:3306/demo_primary_ds
+     username: root
+     password: null

@@ -18,25 +18,22 @@
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    props:
-      driverClassName: org.h2.Driver
-      jdbcUrl: jdbc:h2:mem:primary_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-      username: sa
-      password: 
+    driverClassName: org.h2.Driver
+    jdbcUrl: jdbc:h2:mem:primary_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    props:
-      driverClassName: org.h2.Driver
-      jdbcUrl: jdbc:h2:mem:primary_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-      username: sa
-      password: 
+    driverClassName: org.h2.Driver
+    jdbcUrl: jdbc:h2:mem:primary_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
   default_ds:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    props:
-      driverClassName: org.h2.Driver
-      jdbcUrl: jdbc:h2:mem:default_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-      username: sa
-      password: 
+    driverClassName: org.h2.Driver
+    jdbcUrl: jdbc:h2:mem:default_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
 
 rules:
 - !SHARDING
