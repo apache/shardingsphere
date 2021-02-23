@@ -25,7 +25,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
 
-public class GranteeTest {
+public final class GranteeTest {
 
     @Test
     public void assertEquals() {
