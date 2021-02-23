@@ -32,7 +32,7 @@ public final class ITParameterized extends Parameterized {
         super(klass);
         ParallelRuntimeStrategy parallelRuntimeStrategy = klass.getAnnotation(ParallelRuntimeStrategy.class);
         if (null != parallelRuntimeStrategy) {
-            setScheduler(new ParallelRunnerScheduler(parallelRuntimeStrategy));
+            setScheduler(new ParallelRunnerScheduler(parallelRuntimeStrategy.value()));
         }
     }
 }
