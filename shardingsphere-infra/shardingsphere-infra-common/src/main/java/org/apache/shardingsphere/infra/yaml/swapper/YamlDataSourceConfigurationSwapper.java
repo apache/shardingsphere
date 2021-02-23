@@ -99,8 +99,8 @@ public final class YamlDataSourceConfigurationSwapper implements YamlConfigurati
      */
     public Map<String, Object> swapToMap(final DataSourceConfiguration config) {
         Map<String, Object> result = new HashMap<>();
-        result.put(YAML_DATA_SOURCE_CLASS_NAME, config.getDataSourceClassName());
         result.putAll(config.getProps());
+        result.put(YAML_DATA_SOURCE_CLASS_NAME, config.getDataSourceClassName());
         return result;
     }
 }
