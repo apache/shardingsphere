@@ -28,8 +28,6 @@ import org.junit.runners.model.RunnerScheduler;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Parallel runner scheduler.
@@ -39,34 +37,20 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     
     private final ParallelLevel parallelLevel;
     
-    private final ConcurrentMap<RunnerExecutorKey, ParallelRunnerExecutor> runnerExecutors = new ConcurrentHashMap<>();
-    
-    private final Lock lock = new ReentrantLock();
+    private final ConcurrentMap<DatabaseType, ParallelRunnerExecutor> runnerExecutors = new ConcurrentHashMap<>();
     
     @Override
     public void schedule(final Runnable childStatement) {
-        Object[] parameters = new RunnerParameters(childStatement).getRunnerParameters();
-        ParameterizedArray parameterizedArray = (ParameterizedArray) parameters[0];
-        getRunnerExecutor(new RunnerExecutorKey(parameterizedArray.getDatabaseType())).execute(parameterizedArray, childStatement);
+        ParameterizedArray parameterizedArray = new RunnerParameters(childStatement).getParameterizedArray();
+        getRunnerExecutor(parameterizedArray.getDatabaseType()).execute(parameterizedArray, childStatement);
     }
     
-    private ParallelRunnerExecutor getRunnerExecutor(final RunnerExecutorKey runnerExecutorKey) {
-        ParallelRunnerExecutor runnerExecutor = runnerExecutors.get(runnerExecutorKey);
-        if (null != runnerExecutor) {
-            return runnerExecutor;
+    private ParallelRunnerExecutor getRunnerExecutor(final DatabaseType databaseType) {
+        if (runnerExecutors.containsKey(databaseType)) {
+            return runnerExecutors.get(databaseType);
         }
-        try {
-            lock.lock();
-            runnerExecutor = runnerExecutors.get(runnerExecutorKey);
-            if (null != runnerExecutor) {
-                return runnerExecutor;
-            }
-            runnerExecutor = getRunnerExecutor();
-            runnerExecutors.put(runnerExecutorKey, runnerExecutor);
-            return runnerExecutor;
-        } finally {
-            lock.unlock();
-        }
+        runnerExecutors.putIfAbsent(databaseType, getRunnerExecutor());
+        return runnerExecutors.get(databaseType);
     }
     
     private ParallelRunnerExecutor getRunnerExecutor() {
@@ -83,31 +67,5 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     @Override
     public void finished() {
         runnerExecutors.values().forEach(ParallelRunnerExecutor::finished);
-    }
-    
-    /**
-     * Runner executor key.
-     */
-    @RequiredArgsConstructor
-    private static final class RunnerExecutorKey {
-        
-        private final DatabaseType databaseType;
-        
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            RunnerExecutorKey that = (RunnerExecutorKey) o;
-            return databaseType.getName().equals(that.databaseType.getName());
-        }
-        
-        @Override
-        public int hashCode() {
-            return databaseType.hashCode();
-        }
     }
 }
