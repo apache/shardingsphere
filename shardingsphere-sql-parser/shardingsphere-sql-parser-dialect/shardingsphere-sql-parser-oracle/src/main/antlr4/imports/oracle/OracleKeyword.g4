@@ -910,3 +910,15 @@ STORAGE
 ONLINE
     : O N L I N E
     ;
+
+MATCHED
+    : M A T C H E D
+    ;
+
+ERRORS
+    : E R R O R S
+    ;
+
+REJECT
+    : R E J E C T
+    ;
