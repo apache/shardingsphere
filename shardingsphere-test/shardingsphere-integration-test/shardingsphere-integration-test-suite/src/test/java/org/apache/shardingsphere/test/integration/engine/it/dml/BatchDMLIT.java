@@ -22,7 +22,6 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.it.BatchIT;
-import org.apache.shardingsphere.test.integration.engine.it.DataIsolationLevel;
 import org.apache.shardingsphere.test.integration.engine.it.ParallelLevel;
 import org.apache.shardingsphere.test.integration.engine.it.RuntimeStrategy;
 import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
@@ -41,7 +40,7 @@ import java.util.Collection;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@RuntimeStrategy(parallel = true, parallelLevel = ParallelLevel.SCENARIO, dataIsolationLevel = DataIsolationLevel.SCENARIO)
+@RuntimeStrategy(parallelLevel = ParallelLevel.SCENARIO)
 public final class BatchDMLIT extends BatchIT {
     
     private final IntegrationTestCaseContext testCaseContext;

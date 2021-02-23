@@ -22,5 +22,5 @@ package org.apache.shardingsphere.test.integration.engine.it;
  */
 public enum ParallelLevel {
     
-    ALL, SCENARIO
+    CASE, SCENARIO
 }

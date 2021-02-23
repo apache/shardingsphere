@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit.parallel.impl;
+package org.apache.shardingsphere.test.integration.engine.junit;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.ParallelRunnerExecutor;
-import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.engine.it.RuntimeStrategy;
+import org.apache.shardingsphere.test.integration.engine.junit.parallel.ParallelRunnerScheduler;
+import org.junit.runners.Parameterized;
 
 /**
- * Serial runner executor with case.
+ * IT parameterized.
  */
-@RequiredArgsConstructor
-public class SerialRunnerExecutor implements ParallelRunnerExecutor {
+public final class ITParameterized extends Parameterized {
     
-    @Override
-    public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
-        childStatement.run();
-    }
-    
-    @Override
-    public void finished() {
+    //CHECKSTYLE:OFF
+    public ITParameterized(final Class<?> klass) throws Throwable {
+        //CHECKSTYLE:ON
+        super(klass);
+        RuntimeStrategy runtimeStrategy = klass.getAnnotation(RuntimeStrategy.class);
+        if (null != runtimeStrategy) {
+            setScheduler(new ParallelRunnerScheduler(runtimeStrategy));
+        }
     }
 }

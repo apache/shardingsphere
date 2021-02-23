@@ -20,12 +20,9 @@ package org.apache.shardingsphere.test.integration.engine.junit.parallel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.engine.it.DataIsolationLevel;
-import org.apache.shardingsphere.test.integration.engine.it.ParallelLevel;
 import org.apache.shardingsphere.test.integration.engine.it.RuntimeStrategy;
 import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.CaseParallelRunnerExecutor;
 import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.ScenarioParallelRunnerExecutor;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.SerialRunnerExecutor;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 import org.junit.runners.model.RunnerScheduler;
 import org.junit.runners.parameterized.BlockJUnit4ClassRunnerWithParameters;
@@ -51,8 +48,8 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     
     private final Lock lock = new ReentrantLock();
     
-    public ParallelRunnerScheduler(final Class<?> testClass) {
-        runtimeStrategy = testClass.getAnnotation(RuntimeStrategy.class);
+    public ParallelRunnerScheduler(final RuntimeStrategy runtimeStrategy) {
+        this.runtimeStrategy = runtimeStrategy;
         parametersField = getParametersField();
     }
     
@@ -99,16 +96,14 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     }
     
     private ParallelRunnerExecutor getRunnerExecutor() {
-        if (null == runtimeStrategy || !runtimeStrategy.parallel()) {
-            return new SerialRunnerExecutor();
+        switch (runtimeStrategy.parallelLevel()) {
+            case CASE:
+                return new CaseParallelRunnerExecutor();
+            case SCENARIO:
+                return new ScenarioParallelRunnerExecutor();
+            default:
+                throw new UnsupportedOperationException("Unsupported runtime strategy.");
         }
-        if (runtimeStrategy.parallel() && runtimeStrategy.parallelLevel() == ParallelLevel.ALL) {
-            return new CaseParallelRunnerExecutor();
-        }
-        if (runtimeStrategy.parallel() && runtimeStrategy.parallelLevel() == ParallelLevel.SCENARIO && runtimeStrategy.dataIsolationLevel() == DataIsolationLevel.SCENARIO) {
-            return new ScenarioParallelRunnerExecutor();
-        }
-        return new SerialRunnerExecutor();
     }
     
     @Override

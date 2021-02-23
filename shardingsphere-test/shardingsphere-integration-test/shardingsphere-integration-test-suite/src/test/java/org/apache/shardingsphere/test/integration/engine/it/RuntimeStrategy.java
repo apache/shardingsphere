@@ -34,20 +34,8 @@ import java.lang.annotation.Target;
 public @interface RuntimeStrategy {
     
     /**
-     * Set/Get parallel or not.
-     * @return boolean parallel or not
-     */
-    boolean parallel() default false;
-    
-    /**
      * Set/Get parallel level.
      * @return ParallelLevel parallel level
      */
-    ParallelLevel parallelLevel() default ParallelLevel.SCENARIO;
-    
-    /**
-     * Set/Get data isolation level.
-     * @return DataIsolationLevel data isolation level
-     */
-    DataIsolationLevel dataIsolationLevel() default DataIsolationLevel.NON;
+    ParallelLevel parallelLevel();
 }

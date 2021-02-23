@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.engine.it.ddl;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.engine.it.DataIsolationLevel;
 import org.apache.shardingsphere.test.integration.engine.it.ParallelLevel;
 import org.apache.shardingsphere.test.integration.engine.it.RuntimeStrategy;
 import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
@@ -34,7 +33,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
 
-@RuntimeStrategy(parallel = true, parallelLevel = ParallelLevel.SCENARIO, dataIsolationLevel = DataIsolationLevel.SCENARIO)
+@RuntimeStrategy(parallelLevel = ParallelLevel.SCENARIO)
 public final class GeneralDDLIT extends BaseDDLIT {
     
     public GeneralDDLIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
