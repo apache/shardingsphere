@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.it;
+package org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion;
 
 /**
- * Case runtime parallel level.
+ * Parallel level.
  */
 public enum ParallelLevel {
     
