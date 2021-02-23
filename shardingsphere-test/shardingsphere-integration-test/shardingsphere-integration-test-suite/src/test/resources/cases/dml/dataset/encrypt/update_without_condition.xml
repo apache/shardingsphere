@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<dataset update-count="100">
+<dataset update-count="40">
     <metadata data-nodes="encrypt.t_order">
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />
