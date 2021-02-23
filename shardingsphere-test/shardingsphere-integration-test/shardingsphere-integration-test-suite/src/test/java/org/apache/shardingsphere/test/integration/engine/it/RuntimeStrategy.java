@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit.parallel;
+package org.apache.shardingsphere.test.integration.engine.it;
 
-import org.junit.runners.Parameterized;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Parallel parameterized.
+ * Case runtime strategy.
  */
-public final class ParallelParameterized extends Parameterized {
+@Documented
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+public @interface RuntimeStrategy {
     
-    //CHECKSTYLE:OFF
-    public ParallelParameterized(final Class<?> klass) throws Throwable {
-        //CHECKSTYLE:ON
-        super(klass);
-        setScheduler(new ParallelRunnerScheduler());
-    }
+    /**
+     * Set/Get parallel level.
+     * @return ParallelLevel parallel level
+     */
+    ParallelLevel parallelLevel();
 }

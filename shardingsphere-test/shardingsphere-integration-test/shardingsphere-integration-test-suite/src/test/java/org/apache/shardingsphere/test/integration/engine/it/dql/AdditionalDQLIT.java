@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.integration.engine.it.dql;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
+import org.apache.shardingsphere.test.integration.engine.it.ParallelLevel;
+import org.apache.shardingsphere.test.integration.engine.it.RuntimeStrategy;
 import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
@@ -40,18 +42,13 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
 
+@RuntimeStrategy(parallelLevel = ParallelLevel.CASE)
 public final class AdditionalDQLIT extends BaseDQLIT {
     
     private final IntegrationTestCaseAssertion assertion;
     
     public AdditionalDQLIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
-        super(parameterizedArray.getTestCaseContext().getParentPath(),
-                parameterizedArray.getAssertion(),
-                parameterizedArray.getAdapter(),
-                parameterizedArray.getScenario(),
-                parameterizedArray.getDatabaseType(),
-                parameterizedArray.getSqlExecuteType(),
-                parameterizedArray.getTestCaseContext().getTestCase().getSql());
+        super(parameterizedArray);
         assertion = parameterizedArray.getAssertion();
     }
     
@@ -72,9 +69,8 @@ public final class AdditionalDQLIT extends BaseDQLIT {
     }
     
     private void assertExecuteQueryForStatementWithResultSetTypeAndResultSetConcurrency(final Connection connection) throws SQLException, ParseException {
-        try (
-                Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-                ResultSet resultSet = statement.executeQuery(String.format(getSql(), assertion.getSQLValues().toArray()))) {
+        try (Statement statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+             ResultSet resultSet = statement.executeQuery(String.format(getSql(), assertion.getSQLValues().toArray()))) {
             assertResultSet(resultSet);
         }
     }

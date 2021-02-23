@@ -19,13 +19,13 @@ package org.apache.shardingsphere.test.integration.engine.it;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.integration.engine.junit.ITWatcher;
+import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
 import org.junit.Rule;
 
 import javax.xml.bind.JAXBException;
@@ -52,14 +52,15 @@ public abstract class SingleIT extends BaseIT {
     
     private final String sql;
     
-    protected SingleIT(final String parentPath, final IntegrationTestCaseAssertion assertion, final String adapter, final String scenario,
-                       final DatabaseType databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(adapter, scenario, databaseType);
+    protected SingleIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
+        super(parameterizedArray.getAdapter(), parameterizedArray.getScenario(), parameterizedArray.getDatabaseType());
+        String sql = parameterizedArray.getTestCaseContext().getTestCase().getSql();
         caseIdentifier = sql;
-        this.assertion = assertion;
-        this.sqlExecuteType = sqlExecuteType;
+        this.assertion = parameterizedArray.getAssertion();
+        this.sqlExecuteType = parameterizedArray.getSqlExecuteType();
         this.sql = sqlExecuteType == SQLExecuteType.Literal ? getLiteralSQL(sql) : sql;
-        dataSet = null == assertion ? null : DataSetLoader.load(parentPath, scenario, databaseType, assertion.getExpectedDataFile());
+        dataSet = null == assertion ? null : DataSetLoader.load(parameterizedArray.getTestCaseContext().getParentPath(), parameterizedArray.getScenario(),
+                parameterizedArray.getDatabaseType(), assertion.getExpectedDataFile());
     }
     
     private String getLiteralSQL(final String sql) throws ParseException {
