@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.engine.junit;
 
-import org.apache.shardingsphere.test.integration.engine.it.RuntimeStrategy;
+import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelRuntimeStrategy;
 import org.apache.shardingsphere.test.integration.engine.junit.parallel.ParallelRunnerScheduler;
 import org.junit.runners.Parameterized;
 
@@ -30,9 +30,9 @@ public final class ITParameterized extends Parameterized {
     public ITParameterized(final Class<?> klass) throws Throwable {
         //CHECKSTYLE:ON
         super(klass);
-        RuntimeStrategy runtimeStrategy = klass.getAnnotation(RuntimeStrategy.class);
-        if (null != runtimeStrategy) {
-            setScheduler(new ParallelRunnerScheduler(runtimeStrategy));
+        ParallelRuntimeStrategy parallelRuntimeStrategy = klass.getAnnotation(ParallelRuntimeStrategy.class);
+        if (null != parallelRuntimeStrategy) {
+            setScheduler(new ParallelRunnerScheduler(parallelRuntimeStrategy));
         }
     }
 }

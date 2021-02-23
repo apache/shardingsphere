@@ -15,27 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.it;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion;
 
 /**
- * Case runtime strategy.
+ * Parallel level.
  */
-@Documented
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-public @interface RuntimeStrategy {
+public enum ParallelLevel {
     
-    /**
-     * Set/Get parallel level.
-     * @return ParallelLevel parallel level
-     */
-    ParallelLevel parallelLevel();
+    CASE, SCENARIO
 }

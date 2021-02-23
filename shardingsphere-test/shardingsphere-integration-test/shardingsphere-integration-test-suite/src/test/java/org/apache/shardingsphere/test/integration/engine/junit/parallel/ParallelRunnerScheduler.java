@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.engine.junit.parallel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.engine.it.RuntimeStrategy;
+import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelRuntimeStrategy;
 import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.CaseParallelRunnerExecutor;
 import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.ScenarioParallelRunnerExecutor;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
@@ -42,13 +42,13 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     
     private final ConcurrentMap<RunnerExecutorKey, ParallelRunnerExecutor> runnerExecutors = new ConcurrentHashMap<>();
     
-    private final RuntimeStrategy runtimeStrategy;
+    private final ParallelRuntimeStrategy runtimeStrategy;
     
     private volatile Field runnerField;
     
     private final Lock lock = new ReentrantLock();
     
-    public ParallelRunnerScheduler(final RuntimeStrategy runtimeStrategy) {
+    public ParallelRunnerScheduler(final ParallelRuntimeStrategy runtimeStrategy) {
         this.runtimeStrategy = runtimeStrategy;
         parametersField = getParametersField();
     }
@@ -96,7 +96,7 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     }
     
     private ParallelRunnerExecutor getRunnerExecutor() {
-        switch (runtimeStrategy.parallelLevel()) {
+        switch (runtimeStrategy.value()) {
             case CASE:
                 return new CaseParallelRunnerExecutor();
             case SCENARIO:
