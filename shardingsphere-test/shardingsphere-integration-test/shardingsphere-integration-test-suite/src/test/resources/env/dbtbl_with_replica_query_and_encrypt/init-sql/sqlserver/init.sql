@@ -1099,4 +1099,3 @@ CREATE INDEX user_index_t_user_6 ON encrypt_replica_ds_9.t_user_6 (user_id);
 CREATE INDEX user_index_t_user_7 ON encrypt_replica_ds_9.t_user_7 (user_id);
 CREATE INDEX user_index_t_user_8 ON encrypt_replica_ds_9.t_user_8 (user_id);
 CREATE INDEX user_index_t_user_9 ON encrypt_replica_ds_9.t_user_9 (user_id);
-
