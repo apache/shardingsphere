@@ -23,15 +23,15 @@ import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.Cas
 import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.ScenarioParallelRunnerExecutor;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * Parallel runner executor factory.
  */
 public final class ParallelRunnerExecutorFactory {
     
-    private final ConcurrentMap<DatabaseType, ParallelRunnerExecutor> executors = new ConcurrentHashMap<>();
+    private final Map<DatabaseType, ParallelRunnerExecutor> executors = new ConcurrentHashMap<>();
     
     /**
      * Get parallel runner executor.
@@ -44,7 +44,10 @@ public final class ParallelRunnerExecutorFactory {
         if (executors.containsKey(databaseType)) {
             return executors.get(databaseType);
         }
-        executors.putIfAbsent(databaseType, newInstance(parallelLevel));
+        ParallelRunnerExecutor newExecutor = newInstance(parallelLevel);
+        if (null != executors.putIfAbsent(databaseType, newExecutor)) {
+            newExecutor.finished();
+        }
         return executors.get(databaseType);
     }
     
