@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Scaling command execute exception.
+ * Scaling operate execute exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ScalingCommandExecuteException extends BackendException {
+public final class ScalingOperateExecuteException extends BackendException {
     
     private static final long serialVersionUID = 7598088400647370901L;
     

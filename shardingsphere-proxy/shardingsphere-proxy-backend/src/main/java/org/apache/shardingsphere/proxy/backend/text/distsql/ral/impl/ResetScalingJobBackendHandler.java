@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ResetScalingJobStatement;
+import org.apache.shardingsphere.proxy.backend.exception.ScalingOperateExecuteException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
@@ -42,7 +43,7 @@ public final class ResetScalingJobBackendHandler implements TextProtocolBackendH
         try {
             scalingAPI.resetTargetTable(sqlStatement.getJobId());
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            throw new ScalingOperateExecuteException(ex.getMessage());
         }
         return new UpdateResponseHeader(sqlStatement);
     }
