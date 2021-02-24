@@ -33,16 +33,16 @@ public final class CaseParallelRunnerExecutor implements ParallelRunnerExecutor 
     
     private final ExecutorServiceManager executorServiceManager = new ExecutorServiceManager(Runtime.getRuntime().availableProcessors() * 2 - 1);
     
-    private final Collection<Future<?>> caseTaskResults = new LinkedList<>();
+    private final Collection<Future<?>> taskFeatures = new LinkedList<>();
     
     @Override
     public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
-        caseTaskResults.add(executorServiceManager.getExecutorService().submit(childStatement));
+        taskFeatures.add(executorServiceManager.getExecutorService().submit(childStatement));
     }
     
     @Override
     public void finished() {
-        caseTaskResults.forEach(each -> {
+        taskFeatures.forEach(each -> {
             try {
                 each.get();
             } catch (final InterruptedException | ExecutionException ignored) {
