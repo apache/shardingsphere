@@ -31,14 +31,16 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     
     private final ParallelLevel parallelLevel;
     
+    private final ParallelRunnerExecutorFactory executorFactory = new ParallelRunnerExecutorFactory();
+    
     @Override
     public void schedule(final Runnable childStatement) {
         ParameterizedArray parameterizedArray = new RunnerParameters(childStatement).getParameterizedArray();
-        ParallelRunnerExecutorFactory.getExecutor(parameterizedArray.getDatabaseType(), parallelLevel).execute(parameterizedArray, childStatement);
+        executorFactory.getExecutor(parameterizedArray.getDatabaseType(), parallelLevel).execute(parameterizedArray, childStatement);
     }
     
     @Override
     public void finished() {
-        ParallelRunnerExecutorFactory.getAllExecutors().forEach(ParallelRunnerExecutor::finished);
+        executorFactory.getAllExecutors().forEach(ParallelRunnerExecutor::finished);
     }
 }
