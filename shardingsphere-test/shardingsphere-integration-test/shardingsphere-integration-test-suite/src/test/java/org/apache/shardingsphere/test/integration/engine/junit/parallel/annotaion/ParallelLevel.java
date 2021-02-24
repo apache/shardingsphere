@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.model.privilege;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
+package org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion;
 
 /**
- * Privilege Type.
+ * Parallel level.
  */
-@RequiredArgsConstructor
-@Getter
-public enum PrivilegeType {
+public enum ParallelLevel {
     
-    ALL("*"), SELECT("SELECT"), DELETE("DELETE"), UPDATE("UPDATE"), INSERT("INSERT"), ALL_HOST_NAME("%");
-    
-    private final String name;
+    CASE, SCENARIO
 }

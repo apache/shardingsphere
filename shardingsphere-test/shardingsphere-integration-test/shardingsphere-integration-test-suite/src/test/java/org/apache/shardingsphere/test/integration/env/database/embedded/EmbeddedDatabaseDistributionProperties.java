@@ -49,4 +49,14 @@ public final class EmbeddedDatabaseDistributionProperties {
     public String getVersion(final DatabaseType databaseType) {
         return props.getProperty(String.format("it.%s.distribution.version", databaseType.getName().toLowerCase()));
     }
+    
+    /**
+     * Get database port.
+     *
+     * @param databaseType database type
+     * @return database port
+     */
+    public int getInstancePort(final DatabaseType databaseType) {
+        return Integer.parseInt(props.getProperty(String.format("it.%s.instance.port", databaseType.getName().toLowerCase())));
+    }
 }

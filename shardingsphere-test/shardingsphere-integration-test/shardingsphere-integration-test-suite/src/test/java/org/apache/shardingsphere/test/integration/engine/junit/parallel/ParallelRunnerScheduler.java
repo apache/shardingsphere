@@ -17,82 +17,42 @@
 
 package org.apache.shardingsphere.test.integration.engine.junit.parallel;
 
-import lombok.SneakyThrows;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.CaseParallelRunnerExecutor;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.ScenarioParallelRunnerExecutor;
+import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.integration.engine.param.RunnerParameters;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
-import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.junit.runners.model.RunnerScheduler;
-import org.junit.runners.parameterized.BlockJUnit4ClassRunnerWithParameters;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Parallel runner scheduler.
  */
+@RequiredArgsConstructor
 public final class ParallelRunnerScheduler implements RunnerScheduler {
     
-    private final Field parametersField;
+    private final ParallelLevel parallelLevel;
     
-    private final Map<String, ParallelRunnerExecutor> runnerExecutors;
-    
-    private volatile Field runnerField;
-    
-    public ParallelRunnerScheduler() {
-        parametersField = getParametersField();
-        runnerExecutors = getRunnerExecutors();
-    }
-    
-    @SneakyThrows(NoSuchFieldException.class)
-    private Field getParametersField() {
-        Field result = BlockJUnit4ClassRunnerWithParameters.class.getDeclaredField("parameters");
-        result.setAccessible(true);
-        return result;
-    }
-    
-    private Map<String, ParallelRunnerExecutor> getRunnerExecutors() {
-        Map<String, ParallelRunnerExecutor> result = new HashMap<>(IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().size() * 2, 1);
-        for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()) {
-            result.put(getRunnerExecutorKey(each.getName(), SQLCommandType.DQL.name()), new CaseParallelRunnerExecutor());
-            result.put(getRunnerExecutorKey(each.getName(), ""), new ScenarioParallelRunnerExecutor());
-        }
-        return result;
-    }
-    
-    private String getRunnerExecutorKey(final String databaseType, final String sqlCommandType) {
-        return String.join("_", databaseType, sqlCommandType);
-    }
+    private final ConcurrentMap<DatabaseType, ParallelRunnerExecutor> runnerExecutors = new ConcurrentHashMap<>();
     
     @Override
     public void schedule(final Runnable childStatement) {
-        Object[] parameters = getParameters(childStatement);
-        ParameterizedArray parameterizedArray = (ParameterizedArray) parameters[0];
-        getRunnerExecutor(parameterizedArray).execute(parameterizedArray, childStatement);
+        ParameterizedArray parameterizedArray = new RunnerParameters(childStatement).getParameterizedArray();
+        getRunnerExecutor(parameterizedArray.getDatabaseType()).execute(parameterizedArray, childStatement);
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Object[] getParameters(final Runnable childStatement) {
-        if (null == runnerField) {
-            runnerField = childStatement.getClass().getDeclaredField("val$each");
-            runnerField.setAccessible(true);
+    private ParallelRunnerExecutor getRunnerExecutor(final DatabaseType databaseType) {
+        if (runnerExecutors.containsKey(databaseType)) {
+            return runnerExecutors.get(databaseType);
         }
-        return (Object[]) parametersField.get(runnerField.get(childStatement));
-    }
-    
-    private ParallelRunnerExecutor getRunnerExecutor(final ParameterizedArray parameterizedArray) {
-        return SQLCommandType.DQL == parameterizedArray.getSqlCommandType() 
-                ? runnerExecutors.get(getRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), SQLCommandType.DQL.name()))
-                : runnerExecutors.get(getRunnerExecutorKey(parameterizedArray.getDatabaseType().getName(), ""));
+        runnerExecutors.putIfAbsent(databaseType, ParallelRunnerExecutorFactory.newInstance(parallelLevel));
+        return runnerExecutors.get(databaseType);
     }
     
     @Override
     public void finished() {
-        if (null != runnerExecutors) {
-            runnerExecutors.values().forEach(ParallelRunnerExecutor::finished);
-        }
+        runnerExecutors.values().forEach(ParallelRunnerExecutor::finished);
     }
 }

@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.model.privilege;
+package org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Privilege Type.
+ * Parallel runtime strategy.
  */
-@RequiredArgsConstructor
-@Getter
-public enum PrivilegeType {
+@Documented
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+public @interface ParallelRuntimeStrategy {
     
-    ALL("*"), SELECT("SELECT"), DELETE("DELETE"), UPDATE("UPDATE"), INSERT("INSERT"), ALL_HOST_NAME("%");
-    
-    private final String name;
+    /**
+     * Get parallel level.
+     * 
+     * @return value parallel level
+     */
+    ParallelLevel value();
 }
