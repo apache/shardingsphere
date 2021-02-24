@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.engine.junit.parallel;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.CaseParallelRunnerExecutor;
@@ -31,10 +29,9 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * Parallel runner executor factory.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ParallelRunnerExecutorFactory {
     
-    private static final ConcurrentMap<DatabaseType, ParallelRunnerExecutor> EXECUTORS = new ConcurrentHashMap<>();
+    private final ConcurrentMap<DatabaseType, ParallelRunnerExecutor> executors = new ConcurrentHashMap<>();
     
     /**
      * Get parallel runner executor.
@@ -43,15 +40,15 @@ public final class ParallelRunnerExecutorFactory {
      * @param parallelLevel parallel level
      * @return parallel runner executor
      */
-    public static ParallelRunnerExecutor getExecutor(final DatabaseType databaseType, final ParallelLevel parallelLevel) {
-        if (EXECUTORS.containsKey(databaseType)) {
-            return EXECUTORS.get(databaseType);
+    public ParallelRunnerExecutor getExecutor(final DatabaseType databaseType, final ParallelLevel parallelLevel) {
+        if (executors.containsKey(databaseType)) {
+            return executors.get(databaseType);
         }
-        EXECUTORS.putIfAbsent(databaseType, newInstance(parallelLevel));
-        return EXECUTORS.get(databaseType);
+        executors.putIfAbsent(databaseType, newInstance(parallelLevel));
+        return executors.get(databaseType);
     }
     
-    private static ParallelRunnerExecutor newInstance(final ParallelLevel parallelLevel) {
+    private ParallelRunnerExecutor newInstance(final ParallelLevel parallelLevel) {
         switch (parallelLevel) {
             case CASE:
                 return new CaseParallelRunnerExecutor();
@@ -67,7 +64,7 @@ public final class ParallelRunnerExecutorFactory {
      * 
      * @return all executors
      */
-    public static Collection<ParallelRunnerExecutor> getAllExecutors() {
-        return EXECUTORS.values();
+    public Collection<ParallelRunnerExecutor> getAllExecutors() {
+        return executors.values();
     }
 }
