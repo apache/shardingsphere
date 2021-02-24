@@ -26,16 +26,14 @@ import org.apache.shardingsphere.test.integration.engine.param.model.Parameteriz
 import java.io.Closeable;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Parallel runner executor with scenario.
@@ -43,45 +41,35 @@ import java.util.concurrent.locks.ReentrantLock;
 @Slf4j
 public final class ScenarioParallelRunnerExecutor implements ParallelRunnerExecutor {
     
-    private final ConcurrentMap<ScenarioKey, ScenarioExecutorService> scenarioExecutorServices = new ConcurrentHashMap<>();
+    private final Map<ScenarioKey, ScenarioExecutorService> executorServices = new ConcurrentHashMap<>();
     
-    private final Lock lock = new ReentrantLock();
-    
-    private final Collection<Future<?>> scenarioTaskResults = new LinkedList<>();
+    private final Collection<Future<?>> taskFeatures = new LinkedList<>();
     
     @Override
     public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
-        scenarioTaskResults.add(getScenarioExecutorQueue(new ScenarioKey(parameterizedArray)).submit(childStatement));
+        taskFeatures.add(getExecutorService(new ScenarioKey(parameterizedArray)).submit(childStatement));
     }
     
-    private ScenarioExecutorService getScenarioExecutorQueue(final ScenarioKey scenarioKey) {
-        ScenarioExecutorService scenarioExecutorQueue = scenarioExecutorServices.get(scenarioKey);
-        if (null != scenarioExecutorQueue) {
-            return scenarioExecutorQueue;
+    private ScenarioExecutorService getExecutorService(final ScenarioKey scenarioKey) {
+        if (executorServices.containsKey(scenarioKey)) {
+            return executorServices.get(scenarioKey);
         }
-        try {
-            lock.lock();
-            scenarioExecutorQueue = scenarioExecutorServices.get(scenarioKey);
-            if (null != scenarioExecutorQueue) {
-                return scenarioExecutorQueue;
-            }
-            scenarioExecutorQueue = new ScenarioExecutorService(scenarioKey);
-            scenarioExecutorServices.put(scenarioKey, scenarioExecutorQueue);
-            return scenarioExecutorQueue;
-        } finally {
-            lock.unlock();
+        ScenarioExecutorService newExecutorService = new ScenarioExecutorService(scenarioKey);
+        if (null != executorServices.putIfAbsent(scenarioKey, newExecutorService)) {
+            newExecutorService.close();
         }
+        return executorServices.get(scenarioKey);
     }
     
     @Override
     public void finished() {
-        scenarioTaskResults.forEach(future -> {
+        taskFeatures.forEach(future -> {
             try {
                 future.get();
             } catch (final InterruptedException | ExecutionException ignored) {
             }
         });
-        scenarioExecutorServices.values().forEach(ScenarioExecutorService::close);
+        executorServices.values().forEach(ScenarioExecutorService::close);
     }
     
     /**
