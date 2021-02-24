@@ -57,9 +57,9 @@ public final class ScenarioParallelRunnerExecutor implements ParallelRunnerExecu
     
     @Override
     public void finished() {
-        taskFeatures.forEach(future -> {
+        taskFeatures.forEach(each -> {
             try {
-                future.get();
+                each.get();
             } catch (final InterruptedException | ExecutionException ignored) {
             }
         });
