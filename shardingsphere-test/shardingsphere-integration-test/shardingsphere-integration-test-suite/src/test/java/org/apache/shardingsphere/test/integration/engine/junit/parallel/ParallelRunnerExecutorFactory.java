@@ -19,9 +19,14 @@ package org.apache.shardingsphere.test.integration.engine.junit.parallel;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.CaseParallelRunnerExecutor;
 import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.ScenarioParallelRunnerExecutor;
+
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Parallel runner executor factory.
@@ -29,13 +34,24 @@ import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.Sce
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ParallelRunnerExecutorFactory {
     
+    private static final ConcurrentMap<DatabaseType, ParallelRunnerExecutor> EXECUTORS = new ConcurrentHashMap<>();
+    
     /**
-     * Create new instance of parallel runner executor.
-     *
+     * Get parallel runner executor.
+     * 
+     * @param databaseType database type
      * @param parallelLevel parallel level
-     * @return new instance of parallel runner executor
+     * @return parallel runner executor
      */
-    public static ParallelRunnerExecutor newInstance(final ParallelLevel parallelLevel) {
+    public static ParallelRunnerExecutor getExecutor(final DatabaseType databaseType, final ParallelLevel parallelLevel) {
+        if (EXECUTORS.containsKey(databaseType)) {
+            return EXECUTORS.get(databaseType);
+        }
+        EXECUTORS.putIfAbsent(databaseType, newInstance(parallelLevel));
+        return EXECUTORS.get(databaseType);
+    }
+    
+    private static ParallelRunnerExecutor newInstance(final ParallelLevel parallelLevel) {
         switch (parallelLevel) {
             case CASE:
                 return new CaseParallelRunnerExecutor();
@@ -44,5 +60,14 @@ public final class ParallelRunnerExecutorFactory {
             default:
                 throw new UnsupportedOperationException("Unsupported runtime strategy.");
         }
+    }
+    
+    /**
+     * Get all executors.
+     * 
+     * @return all executors
+     */
+    public static Collection<ParallelRunnerExecutor> getAllExecutors() {
+        return EXECUTORS.values();
     }
 }

@@ -18,14 +18,10 @@
 package org.apache.shardingsphere.test.integration.engine.junit.parallel;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.engine.param.RunnerParameters;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 import org.junit.runners.model.RunnerScheduler;
-
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * Parallel runner scheduler.
@@ -35,24 +31,14 @@ public final class ParallelRunnerScheduler implements RunnerScheduler {
     
     private final ParallelLevel parallelLevel;
     
-    private final ConcurrentMap<DatabaseType, ParallelRunnerExecutor> runnerExecutors = new ConcurrentHashMap<>();
-    
     @Override
     public void schedule(final Runnable childStatement) {
         ParameterizedArray parameterizedArray = new RunnerParameters(childStatement).getParameterizedArray();
-        getRunnerExecutor(parameterizedArray.getDatabaseType()).execute(parameterizedArray, childStatement);
-    }
-    
-    private ParallelRunnerExecutor getRunnerExecutor(final DatabaseType databaseType) {
-        if (runnerExecutors.containsKey(databaseType)) {
-            return runnerExecutors.get(databaseType);
-        }
-        runnerExecutors.putIfAbsent(databaseType, ParallelRunnerExecutorFactory.newInstance(parallelLevel));
-        return runnerExecutors.get(databaseType);
+        ParallelRunnerExecutorFactory.getExecutor(parameterizedArray.getDatabaseType(), parallelLevel).execute(parameterizedArray, childStatement);
     }
     
     @Override
     public void finished() {
-        runnerExecutors.values().forEach(ParallelRunnerExecutor::finished);
+        ParallelRunnerExecutorFactory.getAllExecutors().forEach(ParallelRunnerExecutor::finished);
     }
 }
