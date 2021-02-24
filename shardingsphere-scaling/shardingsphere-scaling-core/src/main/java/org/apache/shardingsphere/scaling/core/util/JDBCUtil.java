@@ -53,8 +53,8 @@ public final class JDBCUtil {
     private static void append(final ShardingSphereJDBCDataSourceConfiguration dataSourceConfig, final Map<String, String> parameters) {
         dataSourceConfig.getDataSourceRuleConfig().getDataSources()
                 .forEach((key, value) -> {
-                    String jdbcUrlKey = value.getProps().containsKey("url") ? "url" : "jdbcUrl";
-                    value.getProps().replace(jdbcUrlKey, append(value.getProps().get(jdbcUrlKey).toString(), parameters));
+                    String jdbcUrlKey = value.containsKey("url") ? "url" : "jdbcUrl";
+                    value.replace(jdbcUrlKey, append(value.get(jdbcUrlKey).toString(), parameters));
                 });
     }
     
