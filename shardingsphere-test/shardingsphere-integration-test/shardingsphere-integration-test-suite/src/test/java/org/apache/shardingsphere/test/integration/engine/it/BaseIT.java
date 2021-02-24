@@ -22,7 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.ParallelParameterized;
+import org.apache.shardingsphere.test.integration.engine.junit.ITParameterized;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.EnvironmentType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
@@ -41,7 +41,7 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.TimeZone;
 
-@RunWith(ParallelParameterized.class)
+@RunWith(ITParameterized.class)
 @Getter(AccessLevel.PROTECTED)
 public abstract class BaseIT {
     

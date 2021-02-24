@@ -24,7 +24,7 @@ setTransaction
     ;
 
 commit
-    : COMMIT WORK? ((commentClause? writeClause?) | forceClause)? 
+    : COMMIT WORK? (commentClause | writeClause | forceClause)?
     ;
 
 commentClause

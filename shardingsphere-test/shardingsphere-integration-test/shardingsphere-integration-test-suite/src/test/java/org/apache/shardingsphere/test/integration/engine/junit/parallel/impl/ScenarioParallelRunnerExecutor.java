@@ -17,30 +17,27 @@
 
 package org.apache.shardingsphere.test.integration.engine.junit.parallel.impl;
 
-import com.google.common.base.Charsets;
-import com.google.common.hash.Hasher;
-import com.google.common.hash.Hashing;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.lmax.disruptor.BlockingWaitStrategy;
-import com.lmax.disruptor.EventFactory;
-import com.lmax.disruptor.EventHandler;
-import com.lmax.disruptor.RingBuffer;
-import com.lmax.disruptor.Sequence;
-import com.lmax.disruptor.SequenceReportingEventHandler;
-import com.lmax.disruptor.dsl.Disruptor;
-import com.lmax.disruptor.dsl.ProducerType;
-import lombok.RequiredArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.engine.junit.parallel.ParallelRunnerExecutor;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
-import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 
+import java.io.Closeable;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.concurrent.ThreadFactory;
-import java.util.stream.Collectors;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Parallel runner executor with scenario.
@@ -48,64 +45,52 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class ScenarioParallelRunnerExecutor implements ParallelRunnerExecutor {
     
-    private final Disruptor<CaseEntryEvent> disruptor;
+    private final ConcurrentMap<ScenarioKey, ScenarioExecutorQueue> scenarioExecutorQueues = new ConcurrentHashMap<>();
     
-    private final RingBuffer<CaseEntryEvent> ringBuffer;
+    private final Lock lock = new ReentrantLock();
     
-    public ScenarioParallelRunnerExecutor() {
-        disruptor = createDisruptor();
-        disruptor.handleEventsWith(createEventHandlers()).then(new CleanupEventHandler());
-        disruptor.start();
-        ringBuffer = disruptor.getRingBuffer();
-    }
-    
-    private Disruptor<CaseEntryEvent> createDisruptor() {
-        EventFactory<CaseEntryEvent> eventFactory = CaseEntryEvent::new;
-        ThreadFactory threadFactory = new ThreadFactoryBuilder()
-                .setDaemon(false).setNameFormat("disruptor-processors-%d").setUncaughtExceptionHandler((thread, ex) -> log.error("Disruptor handler thread exception", ex)).build();
-        return new Disruptor<>(eventFactory, 16384, threadFactory, ProducerType.SINGLE, new BlockingWaitStrategy());
-    }
-    
-    private CaseEventHandler[] createEventHandlers() {
-        Collection<CaseEventHandler> result = new LinkedList<>();
-        for (String each : IntegrationTestEnvironment.getInstance().getAdapters()) {
-            result.addAll(createEventHandlers(each, IntegrationTestEnvironment.getInstance().getScenarios(), IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()));
-        }
-        return result.toArray(new CaseEventHandler[0]);
-    }
-    
-    private Collection<CaseEventHandler> createEventHandlers(final String adapter, final Collection<String> scenarios, final Collection<DatabaseType> databaseTypes) {
-        Collection<CaseEventHandler> result = new LinkedList<>();
-        for (String each : scenarios) {
-            result.addAll(createEventHandlers(adapter, each, databaseTypes));
-        }
-        return result;
-    }
-    
-    private Collection<CaseEventHandler> createEventHandlers(final String adapter, final String scenario, final Collection<DatabaseType> databaseTypes) {
-        return databaseTypes.stream().map(each -> new CaseEventHandler(new CaseKey(adapter, scenario, each.getName()).hashCode())).collect(Collectors.toList());
-    }
+    private final Collection<Future<?>> scenarioTaskResults = new LinkedList<>();
     
     @Override
     public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
-        // TODO disruptor cannot shutdown gracefully, the test case will not block and will next test cases (for example: DQL). Just use sync run, need to FIXME here.
-        childStatement.run();
-//        ringBuffer.publishEvent((event, sequence) -> {
-//            event.reset();
-//            event.setCaseKey(new CaseKey(parameterizedArray.getAdapter(), parameterizedArray.getScenario(), parameterizedArray.getDatabaseType().getName()));
-//            event.setChildStatement(childStatement);
-//        });
+        scenarioTaskResults.add(getScenarioExecutorQueue(new ScenarioKey(parameterizedArray)).submit(childStatement));
+    }
+    
+    private ScenarioExecutorQueue getScenarioExecutorQueue(final ScenarioKey scenarioKey) {
+        ScenarioExecutorQueue scenarioExecutorQueue = scenarioExecutorQueues.get(scenarioKey);
+        if (null != scenarioExecutorQueue) {
+            return scenarioExecutorQueue;
+        }
+        try {
+            lock.lock();
+            scenarioExecutorQueue = scenarioExecutorQueues.get(scenarioKey);
+            if (null != scenarioExecutorQueue) {
+                return scenarioExecutorQueue;
+            }
+            scenarioExecutorQueue = new ScenarioExecutorQueue(scenarioKey);
+            scenarioExecutorQueues.put(scenarioKey, scenarioExecutorQueue);
+            return scenarioExecutorQueue;
+        } finally {
+            lock.unlock();
+        }
     }
     
     @Override
     public void finished() {
-        if (null != disruptor) {
-            disruptor.shutdown();
-        }
+        scenarioTaskResults.forEach(future -> {
+            try {
+                future.get();
+            } catch (final InterruptedException | ExecutionException ignored) {
+            }
+        });
+        scenarioExecutorQueues.values().forEach(ScenarioExecutorQueue::close);
     }
     
-    @RequiredArgsConstructor
-    private static final class CaseKey {
+    /**
+     * Scenario key.
+     */
+    @EqualsAndHashCode
+    private static final class ScenarioKey {
         
         private final String adapter;
         
@@ -113,66 +98,40 @@ public final class ScenarioParallelRunnerExecutor implements ParallelRunnerExecu
         
         private final String databaseTypeName;
         
+        private ScenarioKey(final ParameterizedArray parameterizedArray) {
+            adapter = parameterizedArray.getAdapter();
+            scenario = parameterizedArray.getScenario();
+            databaseTypeName = parameterizedArray.getDatabaseType().getName();
+        }
+        
         @Override
-        public int hashCode() {
-            Hasher hasher = Hashing.murmur3_32().newHasher();
-            hasher.putString(adapter, Charsets.UTF_8);
-            hasher.putString(scenario, Charsets.UTF_8);
-            hasher.putString(databaseTypeName, Charsets.UTF_8);
-            return hasher.hash().asInt();
+        public String toString() {
+            return String.join("-", adapter, scenario, databaseTypeName);
         }
     }
     
     /**
-     * Case entry event.
+     * Scenario executor queue.
      */
     @Setter
-    private static final class CaseEntryEvent {
+    private static final class ScenarioExecutorQueue implements Closeable {
         
-        private CaseKey caseKey;
+        private final BlockingQueue<Runnable> executorQueue;
         
-        private Runnable childStatement;
+        private final ExecutorService executorService;
         
-        @Override
-        public int hashCode() {
-            return caseKey.hashCode();
+        ScenarioExecutorQueue(final ScenarioKey scenarioKey) {
+            executorQueue = new LinkedBlockingQueue<>();
+            executorService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, executorQueue, new ThreadFactoryBuilder().setNameFormat("ScenarioExecutor-" + scenarioKey + "-pool-%d").build());
         }
         
-        public void reset() {
-            caseKey = null;
-            childStatement = null;
-        }
-    }
-    
-    @RequiredArgsConstructor
-    private static final class CaseEventHandler implements SequenceReportingEventHandler<CaseEntryEvent> {
-        
-        private final int hashCode;
-        
-        private Sequence reportingSequence;
-        
-        @Override
-        public void onEvent(final CaseEntryEvent event, final long sequence, final boolean endOfBatch) {
-            if (null == event.caseKey || event.hashCode() != hashCode) {
-                return;
-            }
-            event.childStatement.run();
-            if (null != reportingSequence) {
-                reportingSequence.set(sequence);
-            }
+        public Future<?> submit(final Runnable childStatement) {
+            return executorService.submit(childStatement);
         }
         
         @Override
-        public void setSequenceCallback(final Sequence sequenceCallback) {
-            reportingSequence = sequenceCallback;
-        }
-    }
-    
-    private static final class CleanupEventHandler implements EventHandler<CaseEntryEvent> {
-        
-        @Override
-        public void onEvent(final CaseEntryEvent event, final long sequence, final boolean endOfBatch) {
-            event.reset();
+        public void close() {
+            executorService.shutdownNow();
         }
     }
 }
