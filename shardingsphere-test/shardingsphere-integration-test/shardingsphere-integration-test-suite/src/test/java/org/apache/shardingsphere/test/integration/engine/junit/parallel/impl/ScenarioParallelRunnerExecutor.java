@@ -18,16 +18,15 @@
 package org.apache.shardingsphere.test.integration.engine.junit.parallel.impl;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import lombok.RequiredArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.engine.junit.parallel.ParallelRunnerExecutor;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 
 import java.io.Closeable;
-import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -50,27 +49,26 @@ public final class ScenarioParallelRunnerExecutor implements ParallelRunnerExecu
     
     private final Lock lock = new ReentrantLock();
     
-    private final List<Future<?>> scenarioTaskResults = new LinkedList<>();
+    private final Collection<Future<?>> scenarioTaskResults = new LinkedList<>();
     
     @Override
     public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
-        scenarioTaskResults.add(getScenarioExecutorQueue(new ScenarioKey(parameterizedArray.getAdapter(), parameterizedArray.getScenario(), parameterizedArray.getDatabaseType().getName()))
-                .submit(childStatement));
+        scenarioTaskResults.add(getScenarioExecutorQueue(new ScenarioKey(parameterizedArray)).submit(childStatement));
     }
     
     private ScenarioExecutorQueue getScenarioExecutorQueue(final ScenarioKey scenarioKey) {
-        ScenarioExecutorQueue scenarioExecutorQueue = this.scenarioExecutorQueues.get(scenarioKey);
+        ScenarioExecutorQueue scenarioExecutorQueue = scenarioExecutorQueues.get(scenarioKey);
         if (null != scenarioExecutorQueue) {
             return scenarioExecutorQueue;
         }
         try {
             lock.lock();
-            scenarioExecutorQueue = this.scenarioExecutorQueues.get(scenarioKey);
+            scenarioExecutorQueue = scenarioExecutorQueues.get(scenarioKey);
             if (null != scenarioExecutorQueue) {
                 return scenarioExecutorQueue;
             }
             scenarioExecutorQueue = new ScenarioExecutorQueue(scenarioKey);
-            this.scenarioExecutorQueues.put(scenarioKey, scenarioExecutorQueue);
+            scenarioExecutorQueues.put(scenarioKey, scenarioExecutorQueue);
             return scenarioExecutorQueue;
         } finally {
             lock.unlock();
@@ -82,22 +80,16 @@ public final class ScenarioParallelRunnerExecutor implements ParallelRunnerExecu
         scenarioTaskResults.forEach(future -> {
             try {
                 future.get();
-            } catch (InterruptedException ignore) {
-            } catch (ExecutionException ignore) {
+            } catch (final InterruptedException | ExecutionException ignored) {
             }
         });
-        scenarioExecutorQueues.values().forEach(scenarioExecutorQueue -> {
-            try {
-                scenarioExecutorQueue.close();
-            } catch (IOException ignore) {
-            }
-        });
+        scenarioExecutorQueues.values().forEach(ScenarioExecutorQueue::close);
     }
     
     /**
      * Scenario key.
      */
-    @RequiredArgsConstructor
+    @EqualsAndHashCode
     private static final class ScenarioKey {
         
         private final String adapter;
@@ -105,33 +97,13 @@ public final class ScenarioParallelRunnerExecutor implements ParallelRunnerExecu
         private final String scenario;
         
         private final String databaseTypeName;
-    
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            ScenarioKey that = (ScenarioKey) o;
-            if (!adapter.equals(that.adapter)) {
-                return false;
-            }
-            if (!scenario.equals(that.scenario)) {
-                return false;
-            }
-            return databaseTypeName.equals(that.databaseTypeName);
+        
+        private ScenarioKey(final ParameterizedArray parameterizedArray) {
+            adapter = parameterizedArray.getAdapter();
+            scenario = parameterizedArray.getScenario();
+            databaseTypeName = parameterizedArray.getDatabaseType().getName();
         }
-    
-        @Override
-        public int hashCode() {
-            int result = adapter.hashCode();
-            result = 31 * result + scenario.hashCode();
-            result = 31 * result + databaseTypeName.hashCode();
-            return result;
-        }
-    
+        
         @Override
         public String toString() {
             return String.join("-", adapter, scenario, databaseTypeName);
@@ -145,22 +117,21 @@ public final class ScenarioParallelRunnerExecutor implements ParallelRunnerExecu
     private static final class ScenarioExecutorQueue implements Closeable {
         
         private final BlockingQueue<Runnable> executorQueue;
-    
+        
         private final ExecutorService executorService;
-    
+        
         ScenarioExecutorQueue(final ScenarioKey scenarioKey) {
-            this.executorQueue = new LinkedBlockingQueue<>();
-            this.executorService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
-                    this.executorQueue, new ThreadFactoryBuilder().setNameFormat("ScenarioExecutor-" + scenarioKey + "-pool-%d").build());
+            executorQueue = new LinkedBlockingQueue<>();
+            executorService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, executorQueue, new ThreadFactoryBuilder().setNameFormat("ScenarioExecutor-" + scenarioKey + "-pool-%d").build());
         }
-    
+        
         public Future<?> submit(final Runnable childStatement) {
-            return this.executorService.submit(childStatement);
+            return executorService.submit(childStatement);
         }
-    
+        
         @Override
-        public void close() throws IOException {
-            this.executorService.shutdownNow();
+        public void close() {
+            executorService.shutdownNow();
         }
     }
 }
