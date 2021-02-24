@@ -21,7 +21,7 @@
         <column name="user_id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <row data-node="encrypt.t_order" values="1000, 10, init" />
+    <row data-node="encrypt.t_order" values="1000, 10, update" />
     <row data-node="encrypt.t_order" values="1001, 10, init" />
     <row data-node="encrypt.t_order" values="1100, 11, init" />
     <row data-node="encrypt.t_order" values="1101, 11, init" />

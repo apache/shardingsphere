@@ -37,6 +37,7 @@
 #  users:
 #    root:
 #      password: root
+#      hostname: %
 #    sharding:
 #      password: sharding
 #

@@ -27,7 +27,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
-import org.apache.shardingsphere.infra.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceRuleConfigurationWrap;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -142,10 +141,10 @@ public final class JobConfigurationUtil {
         return result;
     }
     
-    private static Map<String, String> getDataSourceUrlMap(final Map<String, YamlDataSourceConfiguration> dataSources) {
+    private static Map<String, String> getDataSourceUrlMap(final Map<String, Map<String, Object>> dataSources) {
         return dataSources.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> {
-                    JdbcUri uri = new JdbcUri(entry.getValue().getProps().getOrDefault("url", entry.getValue().getProps().get("jdbcUrl")).toString());
+                    JdbcUri uri = new JdbcUri(entry.getValue().getOrDefault("url", entry.getValue().get("jdbcUrl")).toString());
                     return String.format("%s/%s", uri.getHost(), uri.getDatabase());
                 }));
     }

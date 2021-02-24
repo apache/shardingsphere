@@ -33,7 +33,7 @@ import java.util.Properties;
 @Setter
 public class YamlRootRuleConfigurations implements YamlConfiguration {
     
-    private Map<String, YamlDataSourceConfiguration> dataSources = new HashMap<>();
+    private Map<String, Map<String, Object>> dataSources = new HashMap<>();
     
     private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
     

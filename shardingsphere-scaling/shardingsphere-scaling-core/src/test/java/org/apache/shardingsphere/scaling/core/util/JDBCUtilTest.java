@@ -51,11 +51,9 @@ public final class JDBCUtilTest {
         return "dataSources:\n"
                 + "  ds_1:\n"
                 + "    dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n"
-                + "    props:\n"
-                + "      url: jdbc:mysql://192.168.0.2:3306/scaling?serverTimezone=UTC&useSSL=false\n"
+                + "    url: jdbc:mysql://192.168.0.2:3306/scaling?serverTimezone=UTC&useSSL=false\n"
                 + "  ds_0:\n"
                 + "    dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n"
-                + "    props:\n"
-                + "      url: jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false\n";
+                + "    url: jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false\n";
     }
 }

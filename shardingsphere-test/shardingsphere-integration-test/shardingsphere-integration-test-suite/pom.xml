@@ -61,10 +61,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.lmax</groupId>
-            <artifactId>disruptor</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
             <scope>test</scope>
@@ -74,7 +70,7 @@
             <artifactId>testcontainers</artifactId>
         </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
             <plugin>
@@ -101,3 +97,5 @@
         </plugins>
     </build>
 </project>
+
+

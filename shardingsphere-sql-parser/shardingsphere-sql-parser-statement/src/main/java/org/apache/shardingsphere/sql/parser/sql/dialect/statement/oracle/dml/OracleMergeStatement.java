@@ -15,22 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.HashMap;
-import java.util.Map;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Data source configuration for YAML.
+ * Oracle merge statement.
  */
-@Getter
-@Setter
-public final class YamlDataSourceConfiguration implements YamlConfiguration {
-    
-    private String dataSourceClassName;
-    
-    private Map<String, Object> props = new HashMap<>();
+@ToString
+public final class OracleMergeStatement extends MergeStatement implements OracleStatement {
 }

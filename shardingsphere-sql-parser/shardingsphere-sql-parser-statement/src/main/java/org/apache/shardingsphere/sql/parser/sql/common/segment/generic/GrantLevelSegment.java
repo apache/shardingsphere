@@ -15,35 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.hook;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 /**
- * Routing hook.
+ * Grant level segment.
  */
-public interface RoutingHook {
+@RequiredArgsConstructor
+@Getter
+public final class GrantLevelSegment implements SQLSegment {
     
-    /**
-     * Handle when routing started.
-     *
-     * @param sql SQL to be routing
-     */
-    void start(String sql);
+    private final int startIndex;
     
-    /**
-     * Handle when routing finished success.
-     *
-     * @param routeContext route context
-     * @param schema ShardingSphere schema
-     */
-    void finishSuccess(RouteContext routeContext, ShardingSphereSchema schema);
+    private final int stopIndex;
     
-    /**
-     * Handle when routing finished failure.
-     * 
-     * @param cause failure cause
-     */
-    void finishFailure(Exception cause);
+    private final String dbName;
+    
+    private final String tableName;
 }

@@ -21,6 +21,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 
 /**
  * Grantee.
@@ -37,14 +38,15 @@ public final class Grantee {
     public boolean equals(final Object obj) {
         if (obj instanceof Grantee) {
             Grantee grantee = (Grantee) obj;
-            return grantee.getUsername().equalsIgnoreCase(username) && (grantee.getHostname().equalsIgnoreCase(hostname) || Strings.isNullOrEmpty(hostname));
+            return grantee.getUsername().equalsIgnoreCase(username) && (grantee.getHostname().equalsIgnoreCase(hostname) || Strings.isNullOrEmpty(hostname)
+                    || hostname.equals(PrivilegeType.ALL_HOST_NAME.getName()));
         }
         return false;
     }
     
     @Override
     public int hashCode() {
-        return Strings.isNullOrEmpty(hostname)
+        return (Strings.isNullOrEmpty(hostname) || hostname.equals(PrivilegeType.ALL_HOST_NAME.getName()))
                 ? Objects.hashCode(username.toUpperCase()) : Objects.hashCode(username.toUpperCase(), hostname.toUpperCase());
     }
 }

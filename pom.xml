@@ -107,7 +107,6 @@
         <calcite.version>1.26.0</calcite.version>
         <embedded-mysql.version>4.6.1</embedded-mysql.version>
         <embedded-postgresql.version>2.10</embedded-postgresql.version>
-        <disruptor.version>3.4.2</disruptor.version>
         
         <!-- Plugin versions -->
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
@@ -468,12 +467,6 @@
                 <groupId>ru.yandex.qatools.embed</groupId>
                 <artifactId>postgresql-embedded</artifactId>
                 <version>${embedded-postgresql.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.lmax</groupId>
-                <artifactId>disruptor</artifactId>
-                <version>${disruptor.version}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

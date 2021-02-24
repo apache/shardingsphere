@@ -26,17 +26,23 @@ CREATE DATABASE primary_ds;
 CREATE DATABASE replica_0;
 CREATE DATABASE replica_1;
 
+CREATE TABLE primary_ds.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE primary_ds.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE primary_ds.t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE primary_ds.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE INDEX user_index_t_user ON primary_ds.t_user (user_id);
 CREATE INDEX order_index_t_order ON primary_ds.t_order (order_id);
 
+CREATE TABLE replica_0.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE replica_0.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE replica_0.t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE replica_0.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE INDEX user_index_t_user ON replica_0.t_user (user_id);
 CREATE INDEX order_index_t_order ON replica_0.t_order (order_id);
 
+CREATE TABLE replica_1.t_user (user_id INT NOT NULL, pwd VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE replica_1.t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
 CREATE TABLE replica_1.t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE replica_1.t_broadcast_table (id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE INDEX user_index_t_user ON replica_1.t_user (user_id);
 CREATE INDEX order_index_t_order ON replica_1.t_order (order_id);

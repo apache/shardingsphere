@@ -15,37 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.route.hook.fixture;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.hook.RoutingHook;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
+/**
+ * Role or privilege segment.
+ */
+@RequiredArgsConstructor
 @Getter
-public final class RoutingHookFixture implements RoutingHook {
+public final class MySQLRoleOrPrivilegeSegment implements SQLSegment {
     
-    private String sql;
+    private final int startIndex;
     
-    private RouteContext routeContext;
+    private final int stopIndex;
     
-    private ShardingSphereSchema schema;
+    private final String role;
     
-    private Exception cause;
+    private final String host;
     
-    @Override
-    public void start(final String sql) {
-        this.sql = sql;
-    }
-    
-    @Override
-    public void finishSuccess(final RouteContext routeContext, final ShardingSphereSchema schema) {
-        this.routeContext = routeContext;
-        this.schema = schema;
-    }
-    
-    @Override
-    public void finishFailure(final Exception cause) {
-        this.cause = cause;
-    }
+    private final MySQLPrivilegeSegment privilege;
 }

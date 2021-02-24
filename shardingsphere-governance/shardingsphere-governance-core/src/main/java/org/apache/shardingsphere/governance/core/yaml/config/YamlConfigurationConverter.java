@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.yaml.config.YamlDataSourceConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
@@ -62,7 +61,7 @@ public final class YamlConfigurationConverter {
             return new LinkedHashMap<>();
         }
         return result.getDataSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper()
-                .swapToObject(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                .swapToObjectFromMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     /**
@@ -71,8 +70,8 @@ public final class YamlConfigurationConverter {
      * @param yamlDataSourceConfigs YAML data source configurations
      * @return data source configurations
      */
-    public static Map<String, DataSourceConfiguration> convertDataSourceConfigurations(final Map<String, YamlDataSourceConfiguration> yamlDataSourceConfigs) {
-        return Maps.transformValues(yamlDataSourceConfigs, new YamlDataSourceConfigurationSwapper()::swapToObject);
+    public static Map<String, DataSourceConfiguration> convertDataSourceConfigurations(final Map<String, Map<String, Object>> yamlDataSourceConfigs) {
+        return Maps.transformValues(yamlDataSourceConfigs, new YamlDataSourceConfigurationSwapper()::swapToObjectFromMap);
     }
     
     /**
@@ -81,7 +80,7 @@ public final class YamlConfigurationConverter {
      * @param yamlDataSources YAML data sources
      * @return data sources
      */
-    public static Map<String, DataSource> convertDataSources(final Map<String, YamlDataSourceConfiguration> yamlDataSources) {
+    public static Map<String, DataSource> convertDataSources(final Map<String, Map<String, Object>> yamlDataSources) {
         return new YamlDataSourceConfigurationSwapper().swapToDataSources(yamlDataSources);
     }
     

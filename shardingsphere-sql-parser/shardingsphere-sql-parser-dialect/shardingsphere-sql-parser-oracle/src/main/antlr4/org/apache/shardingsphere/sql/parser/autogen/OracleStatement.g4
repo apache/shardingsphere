@@ -44,5 +44,6 @@ execute
     | dropRole
     | alterRole
     | call
+    | merge
     ) SEMI_?
     ;
