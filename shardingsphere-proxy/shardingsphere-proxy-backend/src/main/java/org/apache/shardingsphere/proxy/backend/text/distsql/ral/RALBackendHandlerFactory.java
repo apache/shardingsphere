@@ -22,16 +22,16 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.CheckScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.DropScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ResetScalingJobStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingListStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingProgressStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingJobListStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingJobStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.StartScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.StopScalingJobStatement;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.CheckScalingJobBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.DropScalingJobBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.ResetScalingJobBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.ShowScalingListBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.ShowScalingProgressBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.ShowScalingJobListBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.ShowScalingJobStatusBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.StartScalingJobBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl.StopScalingJobBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -51,11 +51,11 @@ public final class RALBackendHandlerFactory {
      * @return RAL backend handler
      */
     public static Optional<TextProtocolBackendHandler> newInstance(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof ShowScalingListStatement) {
-            return Optional.of(new ShowScalingListBackendHandler());
+        if (sqlStatement instanceof ShowScalingJobListStatement) {
+            return Optional.of(new ShowScalingJobListBackendHandler());
         }
-        if (sqlStatement instanceof ShowScalingProgressStatement) {
-            return Optional.of(new ShowScalingProgressBackendHandler((ShowScalingProgressStatement) sqlStatement));
+        if (sqlStatement instanceof ShowScalingJobStatusStatement) {
+            return Optional.of(new ShowScalingJobStatusBackendHandler((ShowScalingJobStatusStatement) sqlStatement));
         }
         if (sqlStatement instanceof StartScalingJobStatement) {
             return Optional.of(new StartScalingJobBackendHandler((StartScalingJobStatement) sqlStatement));

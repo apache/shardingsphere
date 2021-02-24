@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingProgressStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingJobStatusStatement;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
@@ -35,11 +35,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Show scaling progress backend handler.
+ * Show scaling job status backend handler.
  */
-public final class ShowScalingProgressBackendHandler implements TextProtocolBackendHandler {
+public final class ShowScalingJobStatusBackendHandler implements TextProtocolBackendHandler {
     
-    private final ShowScalingProgressStatement sqlStatement;
+    private final ShowScalingJobStatusStatement sqlStatement;
     
     private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
     
@@ -47,7 +47,7 @@ public final class ShowScalingProgressBackendHandler implements TextProtocolBack
     
     private Iterator<Map<String, Object>> data;
     
-    public ShowScalingProgressBackendHandler(ShowScalingProgressStatement sqlStatement) {
+    public ShowScalingJobStatusBackendHandler(ShowScalingJobStatusStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
         queryHeaders = getQueryHeader();
     }

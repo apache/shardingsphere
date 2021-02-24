@@ -34,9 +34,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Show scaling list backend handler.
+ * Show scaling job list backend handler.
  */
-public final class ShowScalingListBackendHandler implements TextProtocolBackendHandler {
+public final class ShowScalingJobListBackendHandler implements TextProtocolBackendHandler {
     
     private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
     
@@ -44,7 +44,7 @@ public final class ShowScalingListBackendHandler implements TextProtocolBackendH
     
     private Iterator<Map<String, Object>> data;
     
-    public ShowScalingListBackendHandler() {
+    public ShowScalingJobListBackendHandler() {
         queryHeaders = getQueryHeader();
     }
     
