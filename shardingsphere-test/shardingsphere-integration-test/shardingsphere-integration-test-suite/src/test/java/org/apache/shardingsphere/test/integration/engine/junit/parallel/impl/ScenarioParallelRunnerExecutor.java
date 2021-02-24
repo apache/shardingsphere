@@ -17,59 +17,53 @@
 
 package org.apache.shardingsphere.test.integration.engine.junit.parallel.impl;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.EqualsAndHashCode;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
 import org.apache.shardingsphere.test.integration.engine.junit.parallel.ParallelRunnerExecutor;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 
-import java.io.Closeable;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Parallel runner executor with scenario.
  */
-@Slf4j
 public final class ScenarioParallelRunnerExecutor implements ParallelRunnerExecutor {
     
-    private final Map<ScenarioKey, ScenarioExecutorService> executorServices = new ConcurrentHashMap<>();
+    private final Map<ScenarioKey, ExecutorServiceManager> executorServiceManagers = new ConcurrentHashMap<>();
     
     private final Collection<Future<?>> taskFeatures = new LinkedList<>();
     
     @Override
     public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
-        taskFeatures.add(getExecutorService(new ScenarioKey(parameterizedArray)).submit(childStatement));
+        taskFeatures.add(getExecutorService(new ScenarioKey(parameterizedArray)).getExecutorService().submit(childStatement));
     }
     
-    private ScenarioExecutorService getExecutorService(final ScenarioKey scenarioKey) {
-        if (executorServices.containsKey(scenarioKey)) {
-            return executorServices.get(scenarioKey);
+    private ExecutorServiceManager getExecutorService(final ScenarioKey scenarioKey) {
+        if (executorServiceManagers.containsKey(scenarioKey)) {
+            return executorServiceManagers.get(scenarioKey);
         }
-        ScenarioExecutorService newExecutorService = new ScenarioExecutorService(scenarioKey);
-        if (null != executorServices.putIfAbsent(scenarioKey, newExecutorService)) {
-            newExecutorService.close();
+        String threadPoolNameFormat = String.join("-", "ScenarioExecutorPool", scenarioKey.toString(), "%d");
+        ExecutorServiceManager newExecutorServiceManager = new ExecutorServiceManager(1, threadPoolNameFormat);
+        if (null != executorServiceManagers.putIfAbsent(scenarioKey, newExecutorServiceManager)) {
+            newExecutorServiceManager.close();
         }
-        return executorServices.get(scenarioKey);
+        return executorServiceManagers.get(scenarioKey);
     }
     
     @Override
     public void finished() {
-        taskFeatures.forEach(future -> {
+        taskFeatures.forEach(each -> {
             try {
-                future.get();
+                each.get();
             } catch (final InterruptedException | ExecutionException ignored) {
             }
         });
-        executorServices.values().forEach(ScenarioExecutorService::close);
+        executorServiceManagers.values().forEach(each -> each.getExecutorService().shutdownNow());
     }
     
     /**
@@ -93,34 +87,6 @@ public final class ScenarioParallelRunnerExecutor implements ParallelRunnerExecu
         @Override
         public String toString() {
             return String.join("-", adapter, scenario, databaseTypeName);
-        }
-    }
-    
-    /**
-     * Scenario executor service.
-     */
-    private static final class ScenarioExecutorService implements Closeable {
-        
-        private final ExecutorService executorService;
-        
-        ScenarioExecutorService(final ScenarioKey scenarioKey) {
-            String threadPoolNameFormat = String.join("-", "ScenarioExecutorPool", scenarioKey.toString(), "%d");
-            executorService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setNameFormat(threadPoolNameFormat).build());
-        }
-        
-        /**
-         * Submit task.
-         * 
-         * @param childStatement child statement
-         * @return task future
-         */
-        public Future<?> submit(final Runnable childStatement) {
-            return executorService.submit(childStatement);
-        }
-        
-        @Override
-        public void close() {
-            executorService.shutdownNow();
         }
     }
 }
