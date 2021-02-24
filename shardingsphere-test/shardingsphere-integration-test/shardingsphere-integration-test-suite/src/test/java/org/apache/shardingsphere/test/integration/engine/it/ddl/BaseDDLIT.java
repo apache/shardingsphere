@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.integration.engine.it.ddl;
 
 import com.google.common.base.Splitter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
@@ -30,14 +31,11 @@ import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironment
 import org.junit.After;
 import org.junit.Before;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -55,7 +53,8 @@ public abstract class BaseDDLIT extends SingleITCase {
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
     @Before
-    public final void initTables() throws SQLException, ParseException, IOException, JAXBException {
+    @SneakyThrows
+    public final void initTables() {
         // TODO make sure whether we need them?
         assertNotNull("Expected affected table is required", getAssertion().getInitialSQL());
         assertNotNull("Expected affected table is required", getAssertion().getInitialSQL().getAffectedTable());
