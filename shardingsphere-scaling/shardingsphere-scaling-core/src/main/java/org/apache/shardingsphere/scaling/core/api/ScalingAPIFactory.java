@@ -50,8 +50,8 @@ public final class ScalingAPIFactory {
     
     static {
         ServerConfiguration serverConfig = ScalingContext.getInstance().getServerConfig();
-        Preconditions.checkArgument(null != serverConfig, "Scaling server configuration is required.");
-        Preconditions.checkArgument(null != serverConfig.getGovernanceConfig(), "Governance configuration is required.");
+        Preconditions.checkNotNull(serverConfig, "Scaling server configuration is required.");
+        Preconditions.checkNotNull(serverConfig.getGovernanceConfig(), "Governance configuration is required.");
     }
     
     /**
