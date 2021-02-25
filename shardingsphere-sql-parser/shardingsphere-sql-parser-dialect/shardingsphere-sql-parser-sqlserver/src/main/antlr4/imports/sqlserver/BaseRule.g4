@@ -277,7 +277,7 @@ orderByClause
     ;
 
 orderByItem
-    : (columnName | numberLiterals | expr) (ASC | DESC)?
+    : (columnName | numberLiterals | expr) (COLLATE identifier)? (ASC | DESC)?
     ;
 
 dataType
