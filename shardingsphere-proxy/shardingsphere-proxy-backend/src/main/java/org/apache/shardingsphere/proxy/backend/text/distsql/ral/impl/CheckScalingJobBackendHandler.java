@@ -47,7 +47,7 @@ public final class CheckScalingJobBackendHandler implements TextProtocolBackendH
     
     private Iterator<Map<String, Object>> data;
     
-    public CheckScalingJobBackendHandler(CheckScalingJobStatement sqlStatement) {
+    public CheckScalingJobBackendHandler(final CheckScalingJobStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
         queryHeaders = getQueryHeader();
     }

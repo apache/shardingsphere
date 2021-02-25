@@ -47,7 +47,7 @@ public final class ShowScalingJobStatusBackendHandler implements TextProtocolBac
     
     private Iterator<Map<String, Object>> data;
     
-    public ShowScalingJobStatusBackendHandler(ShowScalingJobStatusStatement sqlStatement) {
+    public ShowScalingJobStatusBackendHandler(final ShowScalingJobStatusStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
         queryHeaders = getQueryHeader();
     }
