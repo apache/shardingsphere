@@ -18,22 +18,32 @@
 package org.apache.shardingsphere.agent.plugin.logging.base.advice;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
+import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
+import org.apache.shardingsphere.agent.plugin.logging.base.threadlocal.ElapsedTimeThreadLocal;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
 
 /**
  * Schema meta data loader advice.
  */
 @Slf4j
-public final class SchemaMetaDataLoaderAdvice implements ClassStaticMethodAroundAdvice {
+public final class SchemaMetaDataLoaderAdvice implements InstanceMethodAroundAdvice {
     
     @Override
-    @SuppressWarnings("unchecked")
-    public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        Collection<String> results = (Collection<String>) result.getResult();
-        log.info("Loading {} tables.", results.size());
+    public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+        ElapsedTimeThreadLocal.INSTANCE.set(System.currentTimeMillis());
+    }
+
+    @Override
+    public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
+        try {
+            String schemaName = (String) args[0];
+            long elapsedTime = System.currentTimeMillis() - ElapsedTimeThreadLocal.INSTANCE.get();
+            log.info("Load meta data for schema {} finished, cost {} milliseconds.", schemaName, elapsedTime);
+        } finally {
+            ElapsedTimeThreadLocal.INSTANCE.remove();
+        }
     }
 }

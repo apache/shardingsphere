@@ -15,27 +15,38 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+grammar RALStatement;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
+import Keyword, Literals, Symbol;
 
-execute
-    : (addResource
-    | dropResource
-    | createShardingRule
-    | alterShardingRule
-    | dropShardingRule
-    | createReplicaQueryRule
-    | alterReplicaQueryRule
-    | dropReplicaQueryRule
-    | showResources
-    | showRule
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
+showScalingJobList
+    : SHOW SCALING JOB LIST
+    ;
+
+showScalingJobStatus
+    : SHOW SCALING JOB STATUS jobId
+    ;
+
+startScalingJob
+    : START SCALING JOB jobId
+    ;
+
+stopScalingJob
+    : STOP SCALING JOB jobId
+    ;
+
+dropScalingJob
+    : DROP SCALING JOB jobId
+    ;
+
+resetScalingJob
+    : RESET SCALING JOB jobId
+    ;
+
+checkScalingJob
+    : CHECK SCALING JOB jobId
+    ;
+
+jobId
+    : INT
     ;

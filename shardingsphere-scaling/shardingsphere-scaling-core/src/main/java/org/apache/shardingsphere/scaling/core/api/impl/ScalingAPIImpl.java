@@ -104,7 +104,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
                 .flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
                 .map(each -> each.getIncrementalTaskDelay().getDelayMilliseconds())
                 .collect(Collectors.toList());
-        return delays.isEmpty() ? -1 : delays.stream().reduce(Long::sum).orElse(0L) / delays.size();
+        return delays.isEmpty() || delays.contains(-1L) ? -1 : delays.stream().reduce(Long::sum).orElse(0L) / delays.size();
     }
     
     @Override

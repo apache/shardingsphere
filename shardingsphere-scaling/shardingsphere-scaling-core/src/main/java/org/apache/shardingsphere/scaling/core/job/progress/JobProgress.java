@@ -21,12 +21,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
+import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.progress.yaml.JobProgressYamlSwapper;
 import org.apache.shardingsphere.scaling.core.job.progress.yaml.YamlJobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
@@ -86,5 +88,29 @@ public final class JobProgress {
     @Override
     public String toString() {
         return YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(this));
+    }
+    
+    /**
+     * Get inventory finished percentage.
+     *
+     * @return finished percentage
+     */
+    public int getInventoryFinishedPercentage() {
+        long finished = inventoryTaskProgressMap.values().stream()
+                .filter(each -> each.getPosition() instanceof FinishedPosition)
+                .count();
+        return inventoryTaskProgressMap.isEmpty() ? 0 : (int) (finished * 100 / inventoryTaskProgressMap.size());
+    }
+    
+    /**
+     * Get incremental average delay milliseconds.
+     *
+     * @return average delay
+     */
+    public long getIncrementalAverageDelayMilliseconds() {
+        List<Long> delays = incrementalTaskProgressMap.values().stream()
+                .map(each -> each.getIncrementalTaskDelay().getDelayMilliseconds())
+                .collect(Collectors.toList());
+        return delays.isEmpty() || delays.contains(-1L) ? -1L : delays.stream().reduce(Long::sum).orElse(0L) / delays.size();
     }
 }

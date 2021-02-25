@@ -19,9 +19,11 @@ applicationName: shardingsphere-agent
 ignoredPluginNames:
   - Jaeger
   - Opentracing
+  - Zipkin
+  - Prometheus
 
 plugins:
-  prometheus:
+  Prometheus:
     host:  "localhost"
     port: 9090
     props:
