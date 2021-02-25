@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.agent.plugin.tracing.zipkin.service;
 
 import brave.Tracing;
-import java.util.Optional;
-import java.util.Properties;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.exception.PluginConfigurationException;
 import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.okhttp3.OkHttpSender;
+
+import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Zipkin tracing plugin boot service.
@@ -52,9 +53,15 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
     
     @Override
     public void close() {
-        tracing.close();
-        zipkinSpanHandler.close();
-        sender.close();
+        if (null != tracing) {
+            tracing.close();
+        }
+        if (null != zipkinSpanHandler) {
+            zipkinSpanHandler.close();
+        }
+        if (null != sender) {
+            sender.close(); 
+        }
     }
     
     @Override
