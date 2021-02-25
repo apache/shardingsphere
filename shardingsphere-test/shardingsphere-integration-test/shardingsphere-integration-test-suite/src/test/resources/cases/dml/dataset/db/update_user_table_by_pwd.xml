@@ -15,69 +15,49 @@
   ~ limitations under the License.
   -->
 
-<dataset update-count="2">
+<dataset update-count="1">
     <metadata data-nodes="db_${0..9}.t_user">
         <column name="user_id" type="numeric"/>
         <column name="pwd" type="varchar"/>
     </metadata>
-    <row data-node="db_0.t_user" values="10, abc" />
     <row data-node="db_0.t_user" values="11, def" />
     <row data-node="db_0.t_user" values="12, hig" />
     <row data-node="db_0.t_user" values="13, kli" />
-    <row data-node="db_0.t_user" values="14, mno" />
-    <row data-node="db_0.t_user" values="15, pqr" />
-    <row data-node="db_1.t_user" values="10, abc" />
+    <row data-node="db_0.t_user" values="15, abc" />
     <row data-node="db_1.t_user" values="11, def" />
     <row data-node="db_1.t_user" values="12, hig" />
     <row data-node="db_1.t_user" values="13, kli" />
-    <row data-node="db_1.t_user" values="14, mno" />
-    <row data-node="db_1.t_user" values="15, pqr" />
-    <row data-node="db_2.t_user" values="10, abc" />
+    <row data-node="db_1.t_user" values="15, abc" />
     <row data-node="db_2.t_user" values="11, def" />
     <row data-node="db_2.t_user" values="12, hig" />
     <row data-node="db_2.t_user" values="13, kli" />
-    <row data-node="db_2.t_user" values="14, mno" />
-    <row data-node="db_2.t_user" values="15, pqr" />
-    <row data-node="db_3.t_user" values="10, abc" />
+    <row data-node="db_2.t_user" values="15, abc" />
     <row data-node="db_3.t_user" values="11, def" />
     <row data-node="db_3.t_user" values="12, hig" />
     <row data-node="db_3.t_user" values="13, kli" />
-    <row data-node="db_3.t_user" values="14, mno" />
-    <row data-node="db_3.t_user" values="15, pqr" />
-    <row data-node="db_4.t_user" values="10, abc" />
+    <row data-node="db_3.t_user" values="15, abc" />
     <row data-node="db_4.t_user" values="11, def" />
     <row data-node="db_4.t_user" values="12, hig" />
     <row data-node="db_4.t_user" values="13, kli" />
-    <row data-node="db_4.t_user" values="14, mno" />
-    <row data-node="db_4.t_user" values="15, pqr" />
-    <row data-node="db_5.t_user" values="10, abc" />
+    <row data-node="db_4.t_user" values="15, abc" />
     <row data-node="db_5.t_user" values="11, def" />
     <row data-node="db_5.t_user" values="12, hig" />
     <row data-node="db_5.t_user" values="13, kli" />
-    <row data-node="db_5.t_user" values="14, mno" />
-    <row data-node="db_5.t_user" values="15, pqr" />
-    <row data-node="db_6.t_user" values="10, abc" />
+    <row data-node="db_5.t_user" values="15, abc" />
     <row data-node="db_6.t_user" values="11, def" />
     <row data-node="db_6.t_user" values="12, hig" />
     <row data-node="db_6.t_user" values="13, kli" />
-    <row data-node="db_6.t_user" values="14, mno" />
-    <row data-node="db_6.t_user" values="15, pqr" />
-    <row data-node="db_7.t_user" values="10, abc" />
+    <row data-node="db_6.t_user" values="15, abc" />
     <row data-node="db_7.t_user" values="11, def" />
     <row data-node="db_7.t_user" values="12, hig" />
     <row data-node="db_7.t_user" values="13, kli" />
-    <row data-node="db_7.t_user" values="14, mno" />
-    <row data-node="db_7.t_user" values="15, pqr" />
-    <row data-node="db_8.t_user" values="10, abc" />
+    <row data-node="db_7.t_user" values="15, abc" />
     <row data-node="db_8.t_user" values="11, def" />
     <row data-node="db_8.t_user" values="12, hig" />
     <row data-node="db_8.t_user" values="13, kli" />
-    <row data-node="db_8.t_user" values="14, mno" />
-    <row data-node="db_8.t_user" values="15, pqr" />
-    <row data-node="db_9.t_user" values="10, abc" />
+    <row data-node="db_8.t_user" values="15, abc" />
     <row data-node="db_9.t_user" values="11, def" />
     <row data-node="db_9.t_user" values="12, hig" />
     <row data-node="db_9.t_user" values="13, kli" />
-    <row data-node="db_9.t_user" values="14, mno" />
-    <row data-node="db_9.t_user" values="15, pqr" />
+    <row data-node="db_9.t_user" values="15, abc" />
 </dataset>
