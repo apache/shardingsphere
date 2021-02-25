@@ -48,5 +48,5 @@ checkScalingJob
     ;
 
 jobId
-    : NUMBER
+    : INT
     ;

@@ -54,11 +54,11 @@ public final class CheckScalingJobBackendHandler implements TextProtocolBackendH
     
     private List<QueryHeader> getQueryHeader() {
         List<QueryHeader> result = Lists.newArrayList();
-        result.add(new QueryHeader("", "", "", "table_name", Types.CHAR, "CHAR", 1024, 0, false, false, false, false));
-        result.add(new QueryHeader("", "", "", "source_count", Types.BIGINT, "BIGINT", 255, 0, false, false, false, false));
-        result.add(new QueryHeader("", "", "", "target_count", Types.BIGINT, "BIGINT", 255, 0, false, false, false, false));
-        result.add(new QueryHeader("", "", "", "count_valid", Types.BOOLEAN, "BOOLEAN", 255, 0, false, false, false, false));
-        result.add(new QueryHeader("", "", "", "data_valid", Types.BOOLEAN, "BOOLEAN", 255, 0, false, false, false, false));
+        result.add(new QueryHeader("", "", "table_name", "", Types.CHAR, "CHAR", 1024, 0, false, false, false, false));
+        result.add(new QueryHeader("", "", "source_count", "", Types.BIGINT, "BIGINT", 255, 0, false, false, false, false));
+        result.add(new QueryHeader("", "", "target_count", "", Types.BIGINT, "BIGINT", 255, 0, false, false, false, false));
+        result.add(new QueryHeader("", "", "count_valid", "", Types.TINYINT, "TINYINT", 255, 0, false, false, false, false));
+        result.add(new QueryHeader("", "", "data_valid", "", Types.TINYINT, "TINYINT", 255, 0, false, false, false, false));
         return result;
     }
     
@@ -75,8 +75,8 @@ public final class CheckScalingJobBackendHandler implements TextProtocolBackendH
                     map.put("table_name", entry.getKey());
                     map.put("source_count", entry.getValue().getSourceCount());
                     map.put("target_count", entry.getValue().getTargetCount());
-                    map.put("count_valid", entry.getValue().isCountValid());
-                    map.put("data_valid", entry.getValue().isDataValid());
+                    map.put("count_valid", entry.getValue().isCountValid() ? 1 : 0);
+                    map.put("data_valid", entry.getValue().isDataValid() ? 1 : 0);
                     return map;
                 })
                 .collect(Collectors.toList())
@@ -92,7 +92,7 @@ public final class CheckScalingJobBackendHandler implements TextProtocolBackendH
     public Collection<Object> getRowData() {
         Map<String, Object> next = data.next();
         return queryHeaders.stream()
-                .map(each -> next.get(each.getColumnName()))
+                .map(each -> next.get(each.getColumnLabel()))
                 .collect(Collectors.toList());
     }
 }

@@ -90,6 +90,11 @@ public final class JobProgress {
         return YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(this));
     }
     
+    /**
+     * Get inventory finished percentage.
+     *
+     * @return finished percentage
+     */
     public int getInventoryFinishedPercentage() {
         long finished = inventoryTaskProgressMap.values().stream()
                 .filter(each -> each.getPosition() instanceof FinishedPosition)
@@ -97,10 +102,15 @@ public final class JobProgress {
         return inventoryTaskProgressMap.isEmpty() ? 0 : (int) (finished * 100 / inventoryTaskProgressMap.size());
     }
     
+    /**
+     * Get incremental average delay milliseconds.
+     *
+     * @return average delay
+     */
     public long getIncrementalAverageDelayMilliseconds() {
         List<Long> delays = incrementalTaskProgressMap.values().stream()
                 .map(each -> each.getIncrementalTaskDelay().getDelayMilliseconds())
                 .collect(Collectors.toList());
-        return delays.isEmpty() || delays.contains(-1L) ? -1 : delays.stream().reduce(Long::sum).orElse(0L) / delays.size();
+        return delays.isEmpty() || delays.contains(-1L) ? -1L : delays.stream().reduce(Long::sum).orElse(0L) / delays.size();
     }
 }

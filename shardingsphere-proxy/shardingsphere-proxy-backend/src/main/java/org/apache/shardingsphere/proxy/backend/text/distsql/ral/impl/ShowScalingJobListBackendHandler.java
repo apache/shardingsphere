@@ -27,6 +27,7 @@ import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -50,13 +51,10 @@ public final class ShowScalingJobListBackendHandler implements TextProtocolBacke
     
     private List<QueryHeader> getQueryHeader() {
         List<QueryHeader> result = Lists.newArrayList();
-        result.add(new QueryHeader("", "", "", "id", Types.BIGINT, "BIGINT", 255, 0, false, false, false, false));
-        result.add(new QueryHeader("", "", "", "active", Types.BOOLEAN, "BOOLEAN", 255, 0, false, false, false, false));
-        result.add(new QueryHeader("", "", "", "status", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader("", "", "", "tables", Types.CHAR, "CHAR", 1024, 0, false, false, false, false));
-        result.add(new QueryHeader("", "", "", "sharding_total_count", Types.SMALLINT, "SMALLINT", 255, 0, false, false, false, false));
-        result.add(new QueryHeader("", "", "", "inventory_finished_percentage", Types.TINYINT, "TINYINT", 255, 0, false, false, false, false));
-        result.add(new QueryHeader("", "", "", "incremental_average_delay_milliseconds", Types.BIGINT, "BIGINT", 255, 0, false, false, false, false));
+        result.add(new QueryHeader("", "", "id", "", Types.BIGINT, "BIGINT", 255, 0, false, false, false, false));
+        result.add(new QueryHeader("", "", "tables", "", Types.CHAR, "CHAR", 1024, 0, false, false, false, false));
+        result.add(new QueryHeader("", "", "sharding_total_count", "", Types.SMALLINT, "SMALLINT", 255, 0, false, false, false, false));
+        result.add(new QueryHeader("", "", "active", "", Types.TINYINT, "TINYINT", 255, 0, false, false, false, false));
         return result;
     }
     
@@ -71,12 +69,9 @@ public final class ShowScalingJobListBackendHandler implements TextProtocolBacke
                 .map(each -> {
                     Map<String, Object> map = Maps.newHashMap();
                     map.put("id", each.getJobId());
-                    map.put("active", each.isActive());
-                    map.put("status", each.getStatus());
-                    map.put("tables", each.getTables());
+                    map.put("tables", Arrays.stream(each.getTables()).reduce((a, b) -> String.format("%s, %s", a, b)).orElse(""));
                     map.put("sharding_total_count", each.getShardingTotalCount());
-                    map.put("inventory_finished_percentage", each.getInventoryFinishedPercentage());
-                    map.put("incremental_average_delay_milliseconds", each.getIncrementalAverageDelayMilliseconds());
+                    map.put("active", each.isActive() ? 1 : 0);
                     return map;
                 })
                 .collect(Collectors.toList())
@@ -92,7 +87,7 @@ public final class ShowScalingJobListBackendHandler implements TextProtocolBacke
     public Collection<Object> getRowData() {
         Map<String, Object> next = data.next();
         return queryHeaders.stream()
-                .map(each -> next.get(each.getColumnName()))
+                .map(each -> next.get(each.getColumnLabel()))
                 .collect(Collectors.toList());
     }
 }
