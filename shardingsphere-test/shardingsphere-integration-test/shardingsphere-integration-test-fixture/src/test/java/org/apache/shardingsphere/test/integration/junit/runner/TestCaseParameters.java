@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
 
@@ -39,7 +40,7 @@ public class TestCaseParameters {
     
     private final Class<?> testClass;
     
-    private final IntegrationTestCaseContext testCaseContext;
+    private final IntegrationTestCase testCase;
     
     private final IntegrationTestCaseAssertion assertion;
     

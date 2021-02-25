@@ -105,7 +105,7 @@ public class ShardingSphereITRunner extends Suite {
                         context.registerBeanByName("statement", e.getStatement());
                         context.registerBeanByName("parentPath", e.getParentPath());
                         context.registerBean(SQLExecuteType.class, e.getExecuteType());
-                        context.registerBean(IntegrationTestCase.class, e.getTestCaseContext().getTestCase());
+                        context.registerBean(IntegrationTestCase.class, e.getTestCase());
                         context.registerBean(IntegrationTestCaseAssertion.class, e.getAssertion());
                         return new ShardingSphereITSubCaseRunner(klass, context, resolver);
                     } catch (InitializationError ex) {
@@ -134,7 +134,7 @@ public class ShardingSphereITRunner extends Suite {
         return testCasesLoader.getTestCaseContexts(description.getSqlCommandType()).stream()
                 .filter(e -> e.getTestCase().getDbTypes().contains(description.getDatabase()))
                 .flatMap(e -> Arrays.stream(SQLExecuteType.values()).flatMap(type -> e.getTestCase().getAssertions().stream()
-                        .map(a -> new TestCaseParameters(getCaseName(), e.getParentPath(), e.getTestCase().getSql(), type, klass, null, a)))
+                        .map(a -> new TestCaseParameters(getCaseName(), e.getParentPath(), e.getTestCase().getSql(), type, klass, e.getTestCase(), a)))
                 ).collect(Collectors.toList());
     }
     
@@ -143,7 +143,7 @@ public class ShardingSphereITRunner extends Suite {
         return testCasesLoader.getTestCaseContexts(description.getSqlCommandType()).stream()
                 .filter(e -> e.getTestCase().getDbTypes().contains(description.getDatabase()))
                 .flatMap(e -> Arrays.stream(SQLExecuteType.values())
-                        .map(type -> new TestCaseParameters(getCaseName(), e.getParentPath(), e.getTestCase().getSql(), type, klass, e, null)))
+                        .map(type -> new TestCaseParameters(getCaseName(), e.getParentPath(), e.getTestCase().getSql(), type, klass, e.getTestCase(), null)))
                 .collect(Collectors.toList());
     }
     
