@@ -57,7 +57,7 @@ rules:
     t_user:
       columns:
         pwd:
-          plainColumn: pwd
+          plainColumn: pwd_plain
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
 props:
