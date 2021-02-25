@@ -58,7 +58,7 @@ import java.util.Optional;
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
-public class GovernanceSpringBootConfiguration implements EnvironmentAware {
+public class ShardingSphereGovernanceAutoConfiguration implements EnvironmentAware {
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
