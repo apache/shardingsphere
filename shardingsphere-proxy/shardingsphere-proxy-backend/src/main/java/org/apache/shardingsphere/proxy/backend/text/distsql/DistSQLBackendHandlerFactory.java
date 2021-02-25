@@ -19,9 +19,11 @@ package org.apache.shardingsphere.proxy.backend.text.distsql;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.RDLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLBackendHandlerFactory;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -48,6 +50,9 @@ public final class DistSQLBackendHandlerFactory {
         Optional<TextProtocolBackendHandler> rqlBackendHandler = RQLBackendHandlerFactory.newInstance(sqlStatement, backendConnection);
         if (rqlBackendHandler.isPresent()) {
             return rqlBackendHandler;
+        }
+        if (sqlStatement instanceof RALStatement) {
+            return RALBackendHandlerFactory.newInstance(sqlStatement);
         }
         return RDLBackendHandlerFactory.newInstance(databaseType, sqlStatement, backendConnection);
     }

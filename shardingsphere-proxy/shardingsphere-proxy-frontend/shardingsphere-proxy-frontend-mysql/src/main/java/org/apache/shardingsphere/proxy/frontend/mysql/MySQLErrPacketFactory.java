@@ -29,12 +29,13 @@ import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.LockWaitTimeoutException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleDataSourcesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.ScalingOperateExecuteException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
@@ -45,8 +46,8 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLErrorCode;
 import org.apache.shardingsphere.proxy.backend.text.sctl.exception.ShardingCTLException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
-import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
+import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
 import java.sql.SQLException;
@@ -59,7 +60,7 @@ public final class MySQLErrPacketFactory {
     
     /**
      * New instance of MySQL ERR packet.
-     * 
+     *
      * @param cause cause
      * @return instance of MySQL ERR packet
      */
@@ -67,7 +68,7 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof SQLException) {
             SQLException sqlException = (SQLException) cause;
             return null != sqlException.getSQLState() ? new MySQLErrPacket(1, sqlException.getErrorCode(), sqlException.getSQLState(), sqlException.getMessage())
-                : new MySQLErrPacket(1, MySQLServerErrorCode.ER_INTERNAL_ERROR, cause.getMessage());
+                    : new MySQLErrPacket(1, MySQLServerErrorCode.ER_INTERNAL_ERROR, cause.getMessage());
         }
         if (cause instanceof ShardingCTLException) {
             ShardingCTLException shardingCTLException = (ShardingCTLException) cause;
@@ -141,6 +142,9 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof ReplicaQueryRuleCreateExistsException) {
             return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_EXIST);
+        }
+        if (cause instanceof ScalingOperateExecuteException) {
+            return new MySQLErrPacket(1, CommonErrorCode.SCALING_OPERATE_FAILED, cause.getMessage());
         }
         return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
     }

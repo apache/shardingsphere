@@ -27,25 +27,39 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.A
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.AlterShardingTableRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.BindingTableContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CheckScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.CreateShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DataSourceDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropReplicaQueryRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropResourceContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.DropShardingRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.FunctionDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ReplicaQueryRuleDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ResetScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShardingTableRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowScalingJobListContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowScalingJobStatusContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.ShowShardingRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.StartScalingJobContext;
+import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.StopScalingJobContext;
 import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.rdl.ReplicaQueryRuleSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.impl.CheckScalingJobStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.impl.DropScalingJobStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ResetScalingJobStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingJobListStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingJobStatusStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.impl.StartScalingJobStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.impl.StopScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
@@ -176,7 +190,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         }
         return new CreateReplicaQueryRuleStatement(replicaQueryRules);
     }
-
+    
     @Override
     public ASTNode visitReplicaQueryRuleDefinition(final ReplicaQueryRuleDefinitionContext ctx) {
         ReplicaQueryRuleSegment result = new ReplicaQueryRuleSegment();
@@ -197,7 +211,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         result.setProps(props);
         return result;
     }
-
+    
     @Override
     public ASTNode visitAlterReplicaQueryRule(final AlterReplicaQueryRuleContext ctx) {
         Collection<ReplicaQueryRuleSegment> modifyReplicaQueryRules = new LinkedList<>();
@@ -211,7 +225,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         }
         return new AlterReplicaQueryRuleStatement(modifyReplicaQueryRules, addReplicaQueryRules);
     }
-
+    
     @Override
     public ASTNode visitDropReplicaQueryRule(final DropReplicaQueryRuleContext ctx) {
         DropReplicaQueryRuleStatement result = new DropReplicaQueryRuleStatement();
@@ -220,7 +234,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitAlterReplicaQueryRuleDefinition(final AlterReplicaQueryRuleDefinitionContext ctx) {
         ReplicaQueryRuleSegment result = new ReplicaQueryRuleSegment();
@@ -243,7 +257,7 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
         }
         return result;
     }
-
+    
     @Override
     public ASTNode visitShardingTableRuleDefinition(final ShardingTableRuleDefinitionContext ctx) {
         TableRuleSegment result = new TableRuleSegment();
@@ -315,5 +329,40 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     @Override
     public ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return new SchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
+    }
+    
+    @Override
+    public ASTNode visitShowScalingJobList(final ShowScalingJobListContext ctx) {
+        return new ShowScalingJobListStatement();
+    }
+    
+    @Override
+    public ASTNode visitShowScalingJobStatus(final ShowScalingJobStatusContext ctx) {
+        return new ShowScalingJobStatusStatement(Long.parseLong(ctx.jobId().getText()));
+    }
+    
+    @Override
+    public ASTNode visitStartScalingJob(final StartScalingJobContext ctx) {
+        return new StartScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
+    }
+    
+    @Override
+    public ASTNode visitStopScalingJob(final StopScalingJobContext ctx) {
+        return new StopScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
+    }
+    
+    @Override
+    public ASTNode visitDropScalingJob(final DropScalingJobContext ctx) {
+        return new DropScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
+    }
+    
+    @Override
+    public ASTNode visitResetScalingJob(final ResetScalingJobContext ctx) {
+        return new ResetScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
+    }
+    
+    @Override
+    public ASTNode visitCheckScalingJob(final CheckScalingJobContext ctx) {
+        return new CheckScalingJobStatement(Long.parseLong(ctx.jobId().getText()));
     }
 }
