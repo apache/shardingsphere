@@ -132,7 +132,13 @@ public class ShardingSphereITRunner extends Suite {
     private Collection<TestCaseParameters> getAssertionParameters(final Class<?> klass, final TestCaseDescription description) {
         IntegrationTestCasesLoader testCasesLoader = IntegrationTestCasesLoader.getInstance();
         return testCasesLoader.getTestCaseContexts(description.getSqlCommandType()).stream()
-                .filter(e -> e.getTestCase().getDbTypes().contains(description.getDatabase()))
+                .filter(e -> {
+                    String dbTypes = e.getTestCase().getDbTypes();
+                    if (Strings.isNullOrEmpty(dbTypes)) {
+                        return true;
+                    }
+                    return dbTypes.contains(description.getDatabase());
+                })
                 .flatMap(e -> Arrays.stream(SQLExecuteType.values()).flatMap(type -> e.getTestCase().getAssertions().stream()
                         .map(a -> new TestCaseParameters(getCaseName(), e.getParentPath(), e.getTestCase().getSql(), type, klass, e.getTestCase(), a)))
                 ).collect(Collectors.toList());
