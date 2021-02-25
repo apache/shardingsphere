@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.test.integration.engine.it.dal;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
+import org.apache.shardingsphere.test.integration.engine.filter.LiteralOnlyParamFilter;
+import org.apache.shardingsphere.test.integration.junit.annotation.ParameterFilter;
 import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
 import org.apache.shardingsphere.test.integration.junit.condition.ConditionalOnProperty;
 import org.junit.Test;
@@ -31,7 +33,7 @@ import java.text.ParseException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-// assertion, filter: proxy, literal
+@ParameterFilter(filter = LiteralOnlyParamFilter.class)
 @ConditionalOnProperty(key = "it.adapter", expected = "proxy")
 @TestCaseSpec(sqlCommandType = SQLCommandType.DAL)
 public final class GeneralDALIT extends BaseDALIT {

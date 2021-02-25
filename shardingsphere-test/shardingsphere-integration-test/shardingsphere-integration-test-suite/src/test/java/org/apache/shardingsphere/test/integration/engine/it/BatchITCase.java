@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.test.integration.engine.it;
 
+import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
@@ -45,7 +47,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -56,15 +61,21 @@ public abstract class BatchITCase extends BaseITCase {
     @Inject
     @Getter
     // Would it be better to use IntegrationTestCase?
-    private IntegrationTestCaseContext testCaseContext;
+    private IntegrationTestCase testCase;
     
-    private DataSet dataSet;
+    private Collection<DataSet> dataSets;
+    
+    private Collection<DataSet> dataSet = Lists.newArrayList();
     
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
     @Before
     public void setup() throws IOException, JAXBException {
-        dataSet = DataSetLoader.load(getParentPath(), getDescription().getScenario(), getDescription().getDatabaseType(), getAssertion().getExpectedDataFile());
+        System.out.println(testCase);
+        dataSets = new LinkedList<>();
+        for (IntegrationTestCaseAssertion each : testCase.getAssertions()) {
+            dataSets.add(DataSetLoader.load(getParentPath(), getDescription().getScenario(), getDescription().getDatabaseType(), each.getExpectedDataFile()));
+        }
         dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getDescription().getScenario()), getStorage().getDataSourceMap());
     }
     
@@ -92,9 +103,40 @@ public abstract class BatchITCase extends BaseITCase {
     }
     
     private DataSet getDataSet(final int[] actualUpdateCounts) {
-        assertThat(actualUpdateCounts[0], is(dataSet));
-        sortRow(dataSet);
-        return dataSet;
+        Collection<DataSet> dataSets = new LinkedList<>();
+        assertThat(actualUpdateCounts.length, is(this.dataSets.size()));
+        int count = 0;
+        for (DataSet each : this.dataSets) {
+            assertThat(actualUpdateCounts[count], is(each.getUpdateCount()));
+            dataSets.add(each);
+            count++;
+        }
+        return mergeDataSets(dataSets);
+    }
+    
+    private DataSet mergeDataSets(final Collection<DataSet> dataSets) {
+        DataSet result = new DataSet();
+        Set<DataSetRow> existedRows = new HashSet<>();
+        for (DataSet each : dataSets) {
+            mergeMetadata(each, result);
+            mergeRow(each, result, existedRows);
+        }
+        sortRow(result);
+        return result;
+    }
+    
+    private void mergeMetadata(final DataSet original, final DataSet dist) {
+        if (dist.getMetadataList().isEmpty()) {
+            dist.getMetadataList().addAll(original.getMetadataList());
+        }
+    }
+    
+    private void mergeRow(final DataSet original, final DataSet dist, final Set<DataSetRow> existedRows) {
+        for (DataSetRow each : original.getRows()) {
+            if (existedRows.add(each)) {
+                dist.getRows().add(each);
+            }
+        }
     }
     
     private void sortRow(final DataSet dataSet) {

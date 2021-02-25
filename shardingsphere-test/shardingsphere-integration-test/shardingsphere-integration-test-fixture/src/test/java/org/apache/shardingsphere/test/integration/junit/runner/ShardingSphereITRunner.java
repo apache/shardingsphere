@@ -87,7 +87,7 @@ public class ShardingSphereITRunner extends Suite {
         ParameterFilter filter = getTestClass().getAnnotation(ParameterFilter.class);
         final Predicate<TestCaseParameters> predicate;
         if (Objects.nonNull(filter)) {
-            Class<? extends ParameterFilter.Filter> filtered = filter.filtered();
+            Class<? extends ParameterFilter.Filter> filtered = filter.filter();
             try {
                 final ParameterFilter.Filter instance = filtered.newInstance();
                 predicate = instance::filter;
@@ -130,7 +130,7 @@ public class ShardingSphereITRunner extends Suite {
     }
     
     private Collection<TestCaseParameters> getAssertionParameters(final Class<?> klass, final TestCaseDescription description) {
-        IntegrationTestCasesLoader testCasesLoader = IntegrationTestCasesLoader.getInstance();
+        final IntegrationTestCasesLoader testCasesLoader = IntegrationTestCasesLoader.getInstance();
         return testCasesLoader.getTestCaseContexts(description.getSqlCommandType()).stream()
                 .filter(e -> {
                     String dbTypes = e.getTestCase().getDbTypes();
@@ -147,7 +147,13 @@ public class ShardingSphereITRunner extends Suite {
     private Collection<TestCaseParameters> getCaseParameters(final Class<?> klass, final TestCaseDescription description) {
         IntegrationTestCasesLoader testCasesLoader = IntegrationTestCasesLoader.getInstance();
         return testCasesLoader.getTestCaseContexts(description.getSqlCommandType()).stream()
-                .filter(e -> e.getTestCase().getDbTypes().contains(description.getDatabase()))
+                .filter(e -> {
+                    String dbTypes = e.getTestCase().getDbTypes();
+                    if (Strings.isNullOrEmpty(dbTypes)) {
+                        return true;
+                    }
+                    return dbTypes.contains(description.getDatabase());
+                })
                 .flatMap(e -> Arrays.stream(SQLExecuteType.values())
                         .map(type -> new TestCaseParameters(getCaseName(), e.getParentPath(), e.getTestCase().getSql(), type, klass, e.getTestCase(), null)))
                 .collect(Collectors.toList());

@@ -33,7 +33,6 @@ import java.text.ParseException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-// case
 @TestCaseSpec(sqlCommandType = SQLCommandType.DML, executionMode = ExecutionMode.BATCH)
 public final class BatchDMLIT extends BatchITCase {
     
@@ -55,7 +54,7 @@ public final class BatchDMLIT extends BatchITCase {
     
     private int[] executeBatchForPreparedStatement(final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getStatement())) {
-            for (IntegrationTestCaseAssertion each : getTestCaseContext().getTestCase().getAssertions()) {
+            for (IntegrationTestCaseAssertion each : getTestCase().getAssertions()) {
                 addBatch(preparedStatement, each);
             }
             return preparedStatement.executeBatch();
@@ -81,7 +80,7 @@ public final class BatchDMLIT extends BatchITCase {
         }
         try (Connection connection = getTargetDataSource().getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(getStatement())) {
-                for (IntegrationTestCaseAssertion each : getTestCaseContext().getTestCase().getAssertions()) {
+                for (IntegrationTestCaseAssertion each : getTestCase().getAssertions()) {
                     addBatch(preparedStatement, each);
                 }
                 preparedStatement.clearBatch();

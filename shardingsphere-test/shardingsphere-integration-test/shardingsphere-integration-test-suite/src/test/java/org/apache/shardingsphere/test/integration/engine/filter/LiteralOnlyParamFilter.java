@@ -15,35 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.annotation;
+package org.apache.shardingsphere.test.integration.engine.filter;
 
+import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.junit.annotation.ParameterFilter.Filter;
 import org.apache.shardingsphere.test.integration.junit.runner.TestCaseParameters;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ParameterFilter {
+public class LiteralOnlyParamFilter implements Filter {
     
-    /**
-     * Filter.
-     *
-     * @return filter
-     */
-    Class<? extends Filter> filter();
-    
-    interface Filter {
-    
-        /**
-         * Filter.
-         *
-         * @param parameters test case parameters
-         * @return false if ignore
-         */
-        boolean filter(TestCaseParameters parameters);
-        
+    @Override
+    public boolean filter(final TestCaseParameters parameters) {
+        return parameters.getExecuteType() == SQLExecuteType.Literal;
     }
+    
 }

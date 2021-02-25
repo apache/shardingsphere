@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.junit.runner;
 import org.apache.curator.shaded.com.google.common.collect.Maps;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class TestCaseBeanContext {
     
@@ -33,7 +34,9 @@ public class TestCaseBeanContext {
      * @param instance value
      */
     public <T> void registerBean(final Class<T> identity, final T instance) {
-        classObjectMap.putIfAbsent(identity, instance);
+        if (Objects.nonNull(instance)) {
+            classObjectMap.putIfAbsent(identity, instance);
+        }
     }
     
     /**
