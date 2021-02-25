@@ -101,11 +101,11 @@ public final class ScalingAPIFactory {
     
     private static final class ScalingAPIHolder {
         
-        private static ScalingAPI instance;
+        private volatile static ScalingAPI instance;
         
         public static ScalingAPI getInstance() {
             if (null == instance) {
-                synchronized (ScalingAPIHolder.class) {
+                synchronized (ScalingAPIFactory.class) {
                     if (null == instance) {
                         checkServerConfig();
                         instance = new ScalingAPIImpl();
@@ -118,7 +118,7 @@ public final class ScalingAPIFactory {
     
     private static final class RegistryRepositoryAPIHolder {
         
-        private static RegistryRepositoryAPI instance;
+        private volatile static RegistryRepositoryAPI instance;
         
         static {
             ShardingSphereServiceLoader.register(RegistryRepository.class);
@@ -127,7 +127,7 @@ public final class ScalingAPIFactory {
         
         public static RegistryRepositoryAPI getInstance() {
             if (null == instance) {
-                synchronized (RegistryRepositoryAPIHolder.class) {
+                synchronized (ScalingAPIFactory.class) {
                     if (null == instance) {
                         instance = createRegistryRepositoryAPI();
                     }
@@ -149,12 +149,12 @@ public final class ScalingAPIFactory {
     @Getter
     private static final class ElasticJobAPIHolder {
         
-        private static ElasticJobAPIHolder instance;
+        private volatile static ElasticJobAPIHolder instance;
         
         private final JobStatisticsAPI jobStatisticsAPI;
         
         private final JobConfigurationAPI jobConfigurationAPI;
-    
+        
         private ElasticJobAPIHolder() {
             checkServerConfig();
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
@@ -162,10 +162,10 @@ public final class ScalingAPIFactory {
             jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
             jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
         }
-    
+        
         public static ElasticJobAPIHolder getInstance() {
             if (null == instance) {
-                synchronized (ElasticJobAPIHolder.class) {
+                synchronized (ScalingAPIFactory.class) {
                     if (null == instance) {
                         instance = new ElasticJobAPIHolder();
                     }
@@ -177,11 +177,11 @@ public final class ScalingAPIFactory {
     
     private static final class RegistryCenterHolder {
         
-        private static CoordinatorRegistryCenter instance;
+        private volatile static CoordinatorRegistryCenter instance;
         
         public static CoordinatorRegistryCenter getInstance() {
             if (null == instance) {
-                synchronized (RegistryCenterHolder.class) {
+                synchronized (ScalingAPIFactory.class) {
                     if (null == instance) {
                         instance = createRegistryCenter();
                     }
