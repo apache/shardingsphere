@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.integration.junit.runner;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
