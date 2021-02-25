@@ -123,8 +123,9 @@ public final class ProjectionEngine {
     private Collection<ColumnProjection> getUnqualifiedShorthandColumns(final Collection<SimpleTableSegment> tables) {
         Collection<ColumnProjection> result = new LinkedList<>();
         for (SimpleTableSegment each : tables) {
+            String owner = each.getAlias().orElse(each.getTableName().getIdentifier().getValue());
             result.addAll(schema.getAllColumnNames(
-                    each.getTableName().getIdentifier().getValue()).stream().map(columnName -> new ColumnProjection(null, columnName, null)).collect(Collectors.toList()));
+                    each.getTableName().getIdentifier().getValue()).stream().map(columnName -> new ColumnProjection(owner, columnName, null)).collect(Collectors.toList()));
         }
         return result;
     }
