@@ -22,10 +22,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
-import org.apache.shardingsphere.governance.core.yaml.config.YamlDataSourceRuleConfigurationWrap;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.scaling.core.util.JDBCUtil;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -45,15 +46,15 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements ScalingD
     
     private final String parameter;
     
-    private final YamlDataSourceRuleConfigurationWrap dataSourceRuleConfig;
+    private final YamlRootRuleConfigurations rootRuleConfigs;
     
     private final DatabaseType databaseType;
     
     public ShardingSphereJDBCDataSourceConfiguration(final String parameter) {
         this.parameter = parameter;
-        dataSourceRuleConfig = YamlEngine.unmarshal(parameter, YamlDataSourceRuleConfigurationWrap.class);
-        Map<String, Object> props = dataSourceRuleConfig.getDataSources().values().iterator().next();
-        databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(props.getOrDefault("url", props.get("jdbcUrl")).toString());
+        rootRuleConfigs = YamlEngine.unmarshal(parameter, YamlRootRuleConfigurations.class);
+        Map<String, Object> props = rootRuleConfigs.getDataSources().values().iterator().next();
+        databaseType = DatabaseTypeRegistry.getDatabaseTypeByURL(JDBCUtil.getJdbcUrl(props));
     }
     
     public ShardingSphereJDBCDataSourceConfiguration(final String dataSources, final String rules) {
@@ -70,7 +71,7 @@ public final class ShardingSphereJDBCDataSourceConfiguration implements ScalingD
     
     @Override
     public DataSource toDataSource() throws SQLException {
-        return ShardingSphereDataSourceFactory.createDataSource(YamlConfigurationConverter.convertDataSources(dataSourceRuleConfig.getDataSources()),
-                Lists.newArrayList(YamlConfigurationConverter.convertShardingRuleConfig(dataSourceRuleConfig.getRules())), null);
+        return ShardingSphereDataSourceFactory.createDataSource(YamlConfigurationConverter.convertDataSources(rootRuleConfigs.getDataSources()),
+                Lists.newArrayList(YamlConfigurationConverter.convertShardingRuleConfig(rootRuleConfigs.getRules())), null);
     }
 }

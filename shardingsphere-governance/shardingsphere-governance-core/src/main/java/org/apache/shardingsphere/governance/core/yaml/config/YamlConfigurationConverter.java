@@ -38,10 +38,8 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Configuration converter for YAML content.
@@ -60,8 +58,7 @@ public final class YamlConfigurationConverter {
         if (null == result.getDataSources() || result.getDataSources().isEmpty()) {
             return new LinkedHashMap<>();
         }
-        return result.getDataSources().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper()
-                .swapToObjectFromMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return convertDataSourceConfigurations(result.getDataSources());
     }
     
     /**
