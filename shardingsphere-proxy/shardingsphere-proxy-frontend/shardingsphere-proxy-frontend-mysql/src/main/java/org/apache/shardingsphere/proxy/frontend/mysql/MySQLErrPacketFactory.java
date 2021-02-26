@@ -35,7 +35,7 @@ import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleNotExis
 import org.apache.shardingsphere.proxy.backend.exception.ResourceInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.ScalingOperateExecuteException;
+import org.apache.shardingsphere.proxy.backend.exception.ScalingJobOperateException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
@@ -143,7 +143,7 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof ReplicaQueryRuleCreateExistsException) {
             return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_EXIST);
         }
-        if (cause instanceof ScalingOperateExecuteException) {
+        if (cause instanceof ScalingJobOperateException) {
             return new MySQLErrPacket(1, CommonErrorCode.SCALING_OPERATE_FAILED, cause.getMessage());
         }
         return new MySQLErrPacket(1, CommonErrorCode.UNKNOWN_EXCEPTION, cause.getMessage());
