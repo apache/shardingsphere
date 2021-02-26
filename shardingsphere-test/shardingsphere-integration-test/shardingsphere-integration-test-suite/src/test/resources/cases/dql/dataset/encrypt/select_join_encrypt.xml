@@ -37,8 +37,8 @@
     <row values="12, hig, 120002, 1200, 12, init, 2017-08-08" />
     <row values="12, hig, 120101, 1201, 12, init, 2017-08-08" />
     <row values="12, hig, 120102, 1201, 12, init, 2017-08-08" />
-    <row values="13, hig, 130001, 1300, 13, init, 2017-08-08" />
-    <row values="13, hig, 130002, 1300, 13, init, 2017-08-08" />
-    <row values="13, hig, 130101, 1301, 13, init, 2017-08-08" />
-    <row values="13, hig, 130102, 1301, 13, init, 2017-08-08" />
+    <row values="13, kli, 130001, 1300, 13, init, 2017-08-08" />
+    <row values="13, kli, 130002, 1300, 13, init, 2017-08-08" />
+    <row values="13, kli, 130101, 1301, 13, init, 2017-08-08" />
+    <row values="13, kli, 130102, 1301, 13, init, 2017-08-08" />
 </dataset>
