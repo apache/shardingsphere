@@ -144,8 +144,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
         try {
             return ScalingAPIFactory.getJobConfigurationAPI().getJobConfiguration(String.valueOf(jobId));
         } catch (final NullPointerException ex) {
-            log.warn("Get job {} config failed.", jobId);
-            throw new ScalingJobNotFoundException(String.format("Can not find job by id %s", jobId));
+            throw new ScalingJobNotFoundException(String.format("Can not find scaling job %s", jobId));
         }
     }
 }
