@@ -28,7 +28,6 @@ import org.apache.shardingsphere.scaling.core.config.RuleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.fixture.EmbedTestingServer;
-import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
@@ -68,11 +67,8 @@ public final class ScalingAPIImplTest {
         assertTrue(jobId.isPresent());
         JobInfo jobInfo = getNonNullJobInfo(jobId.get());
         assertTrue(jobInfo.isActive());
-        assertThat(jobInfo.getStatus(), is(JobStatus.RUNNING.name()));
-        assertThat(jobInfo.getTables(), is(new String[]{"ds_0.t_order"}));
+        assertThat(jobInfo.getTables(), is("t_order"));
         assertThat(jobInfo.getShardingTotalCount(), is(1));
-        assertThat(jobInfo.getInventoryFinishedPercentage(), is(0));
-        assertThat(jobInfo.getIncrementalAverageDelayMilliseconds(), is(-1L));
     }
     
     private Optional<JobInfo> getJobInfo(final long jobId) {

@@ -27,13 +27,11 @@ import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
-import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
-import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 
@@ -41,9 +39,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -62,49 +58,10 @@ public final class ScalingAPIImpl implements ScalingAPI {
         JobInfo result = new JobInfo(Long.parseLong(jobName));
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(result.getJobId());
         JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
-        Map<Integer, JobProgress> jobProgressMap = getProgress(result.getJobId());
         result.setActive(!jobConfigPOJO.isDisabled());
         result.setShardingTotalCount(jobConfig.getHandleConfig().getShardingTotalCount());
-        result.setTables(jobConfig.getHandleConfig().getShardingTables());
-        result.setStatus(getStatus(jobProgressMap));
-        result.setInventoryFinishedPercentage(getInventoryFinishedPercentage(jobProgressMap));
-        result.setIncrementalAverageDelayMilliseconds(getIncrementalAverageDelayMilliseconds(jobProgressMap));
+        result.setTables(jobConfig.getHandleConfig().getLogicTables());
         return result;
-    }
-    
-    private String getStatus(final Map<Integer, JobProgress> jobProgressMap) {
-        String result = null;
-        Set<JobProgress> jobProgressSet = jobProgressMap.values().stream()
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-        for (JobProgress each : jobProgressSet) {
-            if (null == result || !each.getStatus().isRunning()) {
-                result = each.getStatus().name();
-            }
-        }
-        return null == result ? JobStatus.RUNNING.name() : result;
-    }
-    
-    private int getInventoryFinishedPercentage(final Map<Integer, JobProgress> jobProgressMap) {
-        long isNull = jobProgressMap.values().stream()
-                .filter(Objects::isNull).count();
-        long total = jobProgressMap.values().stream()
-                .filter(Objects::nonNull).count();
-        long finished = jobProgressMap.values().stream()
-                .filter(Objects::nonNull)
-                .flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
-                .filter(each -> each.getPosition() instanceof FinishedPosition)
-                .count();
-        return total == 0 ? 0 : (int) ((finished * 100 / total) * (jobProgressMap.size() - isNull) / jobProgressMap.size());
-    }
-    
-    private long getIncrementalAverageDelayMilliseconds(final Map<Integer, JobProgress> jobProgressMap) {
-        List<Long> delays = jobProgressMap.values().stream()
-                .filter(Objects::nonNull)
-                .flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
-                .map(each -> each.getIncrementalTaskDelay().getDelayMilliseconds())
-                .collect(Collectors.toList());
-        return delays.isEmpty() || delays.contains(-1L) ? -1 : delays.stream().reduce(Long::sum).orElse(0L) / delays.size();
     }
     
     @Override
