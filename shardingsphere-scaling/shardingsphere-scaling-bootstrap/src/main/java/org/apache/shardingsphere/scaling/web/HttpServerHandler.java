@@ -37,8 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.scaling.core.api.JobInfo;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
-import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoundException;
+import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.util.ResponseContentUtil;
 
 import java.sql.SQLException;
@@ -125,7 +125,7 @@ public final class HttpServerHandler extends SimpleChannelInboundHandler<FullHtt
     
     private void resetJob(final ChannelHandlerContext context, final String requestPath) {
         try {
-            scalingAPI.resetTargetTable(getJobId(requestPath));
+            scalingAPI.reset(getJobId(requestPath));
             response(ResponseContentUtil.success(), context, HttpResponseStatus.OK);
         } catch (final ScalingJobNotFoundException | SQLException ex) {
             response(ResponseContentUtil.handleBadRequest(ex.getMessage()), context, HttpResponseStatus.BAD_REQUEST);
