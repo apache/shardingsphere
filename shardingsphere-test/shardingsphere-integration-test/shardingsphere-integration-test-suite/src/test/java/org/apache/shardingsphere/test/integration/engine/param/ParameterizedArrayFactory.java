@@ -35,6 +35,7 @@ import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -105,18 +106,9 @@ public final class ParameterizedArrayFactory {
     private static Collection<ParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext, final IntegrationTestCaseAssertion assertion,
                                                                                  final String adapter, final DatabaseType databaseType,
                                                                                  final SQLExecuteType sqlExecuteType, final SQLCommandType sqlCommandType) {
-        Collection<ParameterizedArray> result = new LinkedList<>();
-        String scenarioTypes = testCaseContext.getTestCase().getScenarioTypes();
-        if (scenarioTypes == null) {
-            return ENV.getScenarios().stream().map(each ->
-                    new AssertionParameterizedArray(testCaseContext, assertion, adapter, each, databaseType, sqlExecuteType, sqlCommandType)).collect(Collectors.toList());
-        }
-        Collection<String> scenarios = Arrays.asList(scenarioTypes.split(","));
-        Collection<String> scenariosMajor = scenarios.stream().filter(scenario -> ENV.getScenarios().contains(scenario)).collect(Collectors.toList());
-        for (String scenario : scenariosMajor) {
-            result.add(new AssertionParameterizedArray(testCaseContext, assertion, adapter, scenario, databaseType, sqlExecuteType, sqlCommandType));
-        }
-        return result;
+        Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
+        return ENV.getScenarios().stream().filter(each -> scenarios.isEmpty() || scenarios.contains(each))
+                .map(each -> new AssertionParameterizedArray(testCaseContext, assertion, adapter, each, databaseType, sqlExecuteType, sqlCommandType)).collect(Collectors.toList());
     }
     
     /**
