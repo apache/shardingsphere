@@ -60,13 +60,18 @@ public final class PrivilegeBuilder {
      */
     public static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final Collection<ShardingSphereMetaData> metaDatas,
                                                                          final Collection<ShardingSphereUser> users, final ConfigurationProperties props) {
-        Optional<PrivilegeLoader> loader = PrivilegeLoaderEngine.getPrivilegeLoader();
-        if (!loader.isPresent()) {
+        if (metaDatas.isEmpty()) {
             return getDefaultShardingSpherePrivileges(users);
         }
+        Optional<PrivilegeLoader> loader = PrivilegeLoaderEngine.getPrivilegeLoader(metaDatas.iterator().next().getResource().getDatabaseType());
+        return loader.map(privilegeLoader -> build(metaDatas, users, props, privilegeLoader)).orElseGet(() -> getDefaultShardingSpherePrivileges(users));
+    }
+    
+    private static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final Collection<ShardingSphereMetaData> metaDatas,
+                                                                          final Collection<ShardingSphereUser> users, final ConfigurationProperties props, final PrivilegeLoader loader) {
         Map<ShardingSphereUser, ShardingSpherePrivilege> result = new LinkedHashMap<>();
         for (ShardingSphereMetaData each : metaDatas) {
-            result.putAll(build0(each, users, loader.get(), props));
+            result.putAll(build0(each, users, loader, props));
         }
         return result;
     }
