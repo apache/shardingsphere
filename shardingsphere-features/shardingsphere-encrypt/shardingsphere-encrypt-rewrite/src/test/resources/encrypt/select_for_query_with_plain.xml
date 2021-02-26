@@ -29,7 +29,7 @@
     
     <rewrite-assertion id="select_with_unqualified_shorthand">
         <input sql="SELECT * FROM t_account_bak" />
-        <output sql="SELECT `account_id`, `cipher_certificate_number` AS certificate_number, `plain_password` AS password, `plain_amount` AS amount, `status` FROM t_account_bak" />
+        <output sql="SELECT `t_account_bak`.`account_id`, `t_account_bak`.`cipher_certificate_number` AS certificate_number, `t_account_bak`.`plain_password` AS password, `t_account_bak`.`plain_amount` AS amount, `t_account_bak`.`status` FROM t_account_bak" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_qualified_shorthand">

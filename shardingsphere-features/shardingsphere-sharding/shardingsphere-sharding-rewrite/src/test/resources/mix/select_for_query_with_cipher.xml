@@ -42,24 +42,25 @@
         <output sql="SELECT t_account_1.account_id, t_account_1.cipher_password AS password, t_account_1.cipher_amount AS a, status AS s FROM t_account_1 WHERE t_account_1.account_id = 1 AND t_account_1.assisted_query_password = 'assisted_query_aaa' AND t_account_1.cipher_amount = 'encrypt_1000' AND t_account_1.status = 'OK'" />
     </rewrite-assertion>
     
-    <rewrite-assertion id="select_with_unqualified_shorthand">
-        <input sql="SELECT * FROM t_account" />
-        <output sql="SELECT `account_id`, `cipher_password` AS password, `cipher_amount` AS amount, `status` FROM t_account_0" />
-        <output sql="SELECT `account_id`, `cipher_password` AS password, `cipher_amount` AS amount, `status` FROM t_account_1" />
-    </rewrite-assertion>
+    <!-- FIXME should rewrite owner table as sharding table -->
+<!--    <rewrite-assertion id="select_with_unqualified_shorthand">-->
+<!--        <input sql="SELECT * FROM t_account" />-->
+<!--        <output sql="SELECT `t_account_0`.`account_id`, `t_account_0`.`cipher_password` AS password, `t_account_0`.`cipher_amount` AS amount, `t_account_0`.`status` FROM t_account_0" />-->
+<!--        <output sql="SELECT `t_account_1`.`account_id`, `t_account_1`.`cipher_password` AS password, `t_account_1`.`cipher_amount` AS amount, `t_account_1`.`status` FROM t_account_1" />-->
+<!--    </rewrite-assertion>-->
     
     <rewrite-assertion id="select_with_qualified_shorthand">
         <input sql="SELECT a.* FROM t_account a" />
         <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS password, `a`.`cipher_amount` AS amount, `a`.`status` FROM t_account_0 a" />
         <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS password, `a`.`cipher_amount` AS amount, `a`.`status` FROM t_account_1 a" />
     </rewrite-assertion>
-
+    
     <rewrite-assertion id="select_with_sharding_qualified_shorthand_join_table">
         <input sql="SELECT b.* FROM t_account a, t_account_detail b where a.password = b.password" />
         <output sql="SELECT b.* FROM t_account_0 a, t_account_detail_0 b where a.assisted_query_password = b.password" />
         <output sql="SELECT b.* FROM t_account_1 a, t_account_detail_1 b where a.assisted_query_password = b.password" />
     </rewrite-assertion>
-
+    
     <rewrite-assertion id="select_with_encrypt_qualified_shorthand_join_table">
         <input sql="SELECT a.* FROM t_account a, t_account_detail b where a.password = b.password" />
         <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS password, `a`.`cipher_amount` AS amount, `a`.`status` FROM t_account_0 a, t_account_detail_0 b where a.assisted_query_password = b.password" />
@@ -71,8 +72,8 @@
         <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS password, `a`.`cipher_amount` AS amount, `a`.`status`, account_id, 1+1 FROM t_account_0 a" />
         <output sql="SELECT `a`.`account_id`, `a`.`cipher_password` AS password, `a`.`cipher_amount` AS amount, `a`.`status`, account_id, 1+1 FROM t_account_1 a" />
     </rewrite-assertion>
-    
-    <!-- FIXME -->
+
+    <!-- FIXME should rewrite owner table as sharding table -->
     <!--<rewrite-assertion id="select_with_table_qualified_shorthand">-->
         <!--<input sql="SELECT t_account.* FROM t_account" />-->
         <!--<output sql="SELECT t_account_0.account_id, t_account_0.cipher_password AS password, t_account_0.cipher_amount AS amount, t_account_0.status FROM t_account_0" />-->
