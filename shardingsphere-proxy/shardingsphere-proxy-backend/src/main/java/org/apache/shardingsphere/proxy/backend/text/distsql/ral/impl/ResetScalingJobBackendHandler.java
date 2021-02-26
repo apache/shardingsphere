@@ -41,7 +41,7 @@ public final class ResetScalingJobBackendHandler implements TextProtocolBackendH
     @Override
     public ResponseHeader execute() {
         try {
-            scalingAPI.resetTargetTable(sqlStatement.getJobId());
+            scalingAPI.reset(sqlStatement.getJobId());
         } catch (final SQLException ex) {
             throw new ScalingJobOperateException(ex.getMessage());
         }
