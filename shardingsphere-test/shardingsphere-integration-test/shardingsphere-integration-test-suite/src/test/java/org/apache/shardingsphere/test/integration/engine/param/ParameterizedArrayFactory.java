@@ -108,8 +108,8 @@ public final class ParameterizedArrayFactory {
         Collection<ParameterizedArray> result = new LinkedList<>();
         String scenarioTypes = testCaseContext.getTestCase().getScenarioTypes();
         if (scenarioTypes == null) {
-            return ENV.getScenarios().stream().map(
-                    each -> new AssertionParameterizedArray(testCaseContext, assertion, adapter, each, databaseType, sqlExecuteType, sqlCommandType)).collect(Collectors.toList());
+            return ENV.getScenarios().stream().map(each ->
+                    new AssertionParameterizedArray(testCaseContext, assertion, adapter, each, databaseType, sqlExecuteType, sqlCommandType)).collect(Collectors.toList());
         }
         Collection<String> scenarios = Arrays.asList(scenarioTypes.split(","));
         Collection<String> scenariosMajor = scenarios.stream().filter(scenario -> ENV.getScenarios().contains(scenario)).collect(Collectors.toList());
