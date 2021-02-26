@@ -128,6 +128,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     @Override
     public void reset(final long jobId) throws SQLException {
         log.info("Scaling job {} reset target table", jobId);
+        ScalingAPIFactory.getRegistryRepositoryAPI().deleteJobProgress(jobId);
         new ScalingEnvironmentManager().resetTargetTable(new JobContext(getJobConfig(jobId)));
     }
     

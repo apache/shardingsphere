@@ -77,6 +77,12 @@ public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
     }
     
     @Override
+    public void deleteJobProgress(final long jobId) {
+        log.info("delete job progress {}", jobId);
+        registryRepository.delete(String.format("%s/%d/offset", ScalingConstant.SCALING_ROOT, jobId));
+    }
+    
+    @Override
     public void deleteJob(final long jobId) {
         log.info("delete job {}", jobId);
         registryRepository.delete(String.format("%s/%d", ScalingConstant.SCALING_ROOT, jobId));
