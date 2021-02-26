@@ -155,20 +155,27 @@ public final class ShardingRouteEngineFactory {
         if (shardingRule.tableRuleExists(tableNames) && shardingRule.singleTableRuleExists(tableNames)) {
             return new ShardingFederatedRoutingEngine(tableNames);
         }
-        return getShardingRoutingEngine(shardingRule, shardingConditions, (SelectStatementContext) sqlStatementContext, tableNames, props);
+        return getShardingRoutingEngine(shardingRule, shardingConditions, sqlStatementContext, tableNames, props);
     }
     
     private static ShardingRouteEngine getShardingRoutingEngine(final ShardingRule shardingRule, final ShardingConditions shardingConditions,
-                                                                final SelectStatementContext sqlStatementContext,
+                                                                final SQLStatementContext<?> sqlStatementContext,
                                                                 final Collection<String> tableNames, final ConfigurationProperties props) {
         Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
         if (1 == shardingTableNames.size() || shardingRule.isAllBindingTables(shardingTableNames)) {
             return new ShardingStandardRoutingEngine(shardingTableNames.iterator().next(), shardingConditions, props);
         }
-        if (tableNames.size() == shardingTableNames.size() && (sqlStatementContext.containsJoinQuery() || sqlStatementContext.isContainsSubquery())) {
+        if (isFederatedQuery(sqlStatementContext, tableNames, shardingTableNames))
             return new ShardingFederatedRoutingEngine(tableNames);
-        }
         // TODO config for cartesian set
         return new ShardingComplexRoutingEngine(tableNames, shardingConditions, props);
+    }
+    
+    private static boolean isFederatedQuery(final SQLStatementContext<?> sqlStatementContext, final Collection<String> tableNames, final Collection<String> shardingTableNames) {
+        if (!(sqlStatementContext instanceof SelectStatementContext)) {
+            return false;
+        }
+        SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
+        return tableNames.size() == shardingTableNames.size() && (select.containsJoinQuery() || select.isContainsSubquery());
     }
 }
