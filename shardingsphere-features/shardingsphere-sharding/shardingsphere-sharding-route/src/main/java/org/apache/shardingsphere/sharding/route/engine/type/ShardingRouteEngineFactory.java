@@ -165,8 +165,9 @@ public final class ShardingRouteEngineFactory {
         if (1 == shardingTableNames.size() || shardingRule.isAllBindingTables(shardingTableNames)) {
             return new ShardingStandardRoutingEngine(shardingTableNames.iterator().next(), shardingConditions, props);
         }
-        if (isFederatedQuery(sqlStatementContext, tableNames, shardingTableNames))
+        if (isFederatedQuery(sqlStatementContext, tableNames, shardingTableNames)) {
             return new ShardingFederatedRoutingEngine(tableNames);
+        }
         // TODO config for cartesian set
         return new ShardingComplexRoutingEngine(tableNames, shardingConditions, props);
     }
