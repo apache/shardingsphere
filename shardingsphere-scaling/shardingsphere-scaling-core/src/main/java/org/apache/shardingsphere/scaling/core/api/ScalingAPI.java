@@ -54,14 +54,14 @@ public interface ScalingAPI {
     Optional<Long> start(JobConfiguration jobConfig);
     
     /**
-     * Stop a job.
+     * Stop a scaling job.
      *
      * @param jobId job id
      */
     void stop(long jobId);
     
     /**
-     * Remove a job.
+     * Remove a scaling job.
      *
      * @param jobId job id
      */
@@ -84,12 +84,12 @@ public interface ScalingAPI {
     Map<String, DataConsistencyCheckResult> dataConsistencyCheck(long jobId);
     
     /**
-     * Reset target table.
+     * Reset a scaling job.
      *
      * @param jobId job id
      * @throws SQLException SQL exception
      */
-    void resetTargetTable(long jobId) throws SQLException;
+    void reset(long jobId) throws SQLException;
     
     /**
      * Get job configuration.

@@ -126,7 +126,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
     }
     
     @Override
-    public void resetTargetTable(final long jobId) throws SQLException {
+    public void reset(final long jobId) throws SQLException {
         log.info("Scaling job {} reset target table", jobId);
         new ScalingEnvironmentManager().resetTargetTable(new JobContext(getJobConfig(jobId)));
     }
