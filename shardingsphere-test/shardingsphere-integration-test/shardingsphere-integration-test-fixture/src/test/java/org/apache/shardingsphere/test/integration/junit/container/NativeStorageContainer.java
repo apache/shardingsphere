@@ -15,13 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.annotation;
+package org.apache.shardingsphere.test.integration.junit.container;
 
-public enum ContainerType {
+public class NativeStorageContainer extends StorageContainer {
     
-    ADAPTER,
+    public NativeStorageContainer() {
+        super("native-storage", null);
+    }
     
-    STORAGE,
+    @Override
+    protected String getUrl(String dataSourceName) {
+        return null;
+    }
     
-    COORDINATOR
+    @Override
+    protected int getPort() {
+        return 0;
+    }
+    
+    @Override
+    protected String getUsername() {
+        return null;
+    }
+    
+    @Override
+    protected String getPassword() {
+        return null;
+    }
 }

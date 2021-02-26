@@ -31,8 +31,7 @@ import org.apache.shardingsphere.test.integration.junit.annotation.ContainerInit
 import org.apache.shardingsphere.test.integration.junit.annotation.ContainerType;
 import org.apache.shardingsphere.test.integration.junit.annotation.Inject;
 import org.apache.shardingsphere.test.integration.junit.annotation.OnContainer;
-import org.apache.shardingsphere.test.integration.junit.condition.ConditionalOnProperty;
-import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereProxyContainer;
+import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.junit.container.StorageContainer;
 import org.apache.shardingsphere.test.integration.junit.runner.ShardingSphereITRunner;
 import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
@@ -58,9 +57,8 @@ public abstract class BaseITCase {
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
     @Getter
-    @OnContainer(name = "proxy")
-    @ConditionalOnProperty(key = "it.adapter", expected = "proxy")
-    private static ShardingSphereProxyContainer proxy;
+    @OnContainer(name = "adapter")
+    private static ShardingSphereAdapterContainer proxy;
     
     @Getter
     @OnContainer(name = "storage", type = ContainerType.STORAGE, hostName = "mysql.db.host")

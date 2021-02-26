@@ -32,7 +32,7 @@ jobs:
       fail-fast: true
       matrix:
         env: [ docker ]
-        adapter: [ proxy ]
+        adapter: [ proxy, jdbc ]
         database: [ MySQL ]
     steps:
       - name: Cache Maven Repos
@@ -50,4 +50,4 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -DskipTests -Dmaven.javadoc.skip=true -Ddockerfile.skip.build=false -Drat.skip=true -Djacoco.skip=true -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite
       - name: Run Integration Test
-        run: ./mvnw -B -DskipITs=false -Dmaven.javadoc.skip=true -Ddockerfile.skip.build=false -Drat.skip=true -Djacoco.skip=true -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.adapter=${{ matrix.adapter }} -Dit.scenario=db -Dit.database=${{ matrix.database }} verify
+        run: ./mvnw -B -DskipITs=false -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.adapter=${{ matrix.adapter }} -Dit.scenario=db -Dit.database=${{ matrix.database }} verify

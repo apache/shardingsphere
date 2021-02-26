@@ -20,11 +20,8 @@ package org.apache.shardingsphere.test.integration.junit.container;
 import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.testcontainers.containers.BindMode;
 
-import javax.sql.DataSource;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * MySQL Server Container.
@@ -35,20 +32,9 @@ public class MySQLContainer extends StorageContainer {
         super("mysql/mysql-server:5.7", new MySQLDatabaseType());
     }
     
-    /**
-     * Mount a source path into container.
-     *
-     * @param resourcePath resource path
-     * @return self
-     */
-    public MySQLContainer withInitSQLMapping(final String resourcePath) {
-        withClasspathResourceMapping(resourcePath, "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
-        return this;
-    }
-    
     @Override
     protected void configure() {
-        withInitSQLMapping("/env/db/init-sql/mysql");
+        withInitSQLMapping("/env/" + getDescription().getScenario() + "/init-sql/mysql");
         setEnv(Lists.newArrayList("LANG=C.UTF-8"));
     }
     
@@ -56,15 +42,6 @@ public class MySQLContainer extends StorageContainer {
     @SneakyThrows
     protected void execute() {
         execInContainer("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
-    }
-    
-    @Override
-    protected DataSource createDataSource(final String dataSourceName) {
-        Properties properties = new Properties();
-        properties.setProperty("jdbcUrl", getUrl(dataSourceName));
-        properties.setProperty("dataSource.user", getUsername());
-        properties.setProperty("dataSource.password", getPassword());
-        return createHikariCP(properties);
     }
     
     @Override

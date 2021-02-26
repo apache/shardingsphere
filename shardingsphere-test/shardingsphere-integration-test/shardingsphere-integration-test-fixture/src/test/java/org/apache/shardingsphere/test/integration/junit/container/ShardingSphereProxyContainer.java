@@ -31,7 +31,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
-public class ShardingSphereProxyContainer extends ShardingContainer {
+public class ShardingSphereProxyContainer extends ShardingSphereAdapterContainer {
     
     private static final String AGENT_HOME_IN_CONTAINER = "/usr/local/shardingsphere-agent";
     
@@ -82,7 +82,7 @@ public class ShardingSphereProxyContainer extends ShardingContainer {
     
     @Override
     protected void configure() {
-        withConfMapping("/docker/" + System.getProperty("it.scenario") + "/proxy/conf");
+        withConfMapping("/docker/" + getDescription().getScenario()+ "/proxy/conf");
         super.configure();
     }
     
@@ -113,6 +113,8 @@ public class ShardingSphereProxyContainer extends ShardingContainer {
         result.setPassword(authentication.getPassword());
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
+        // FIXME
+        result.setConnectionInitSql("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
         return new HikariDataSource(result);
     }
     

@@ -77,7 +77,7 @@ public class ShardingSphereITRunner extends Suite {
             compose = null;
         } else {
             runners = createRunners(klass, description);
-            compose = new ContainerCompose(caseName, getTestClass(), description, resolver);
+            compose = new ContainerCompose(caseName, getTestClass(), description, resolver, beanContext);
             compose.startup();
             compose.waitUntilReady();
         }

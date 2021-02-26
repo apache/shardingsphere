@@ -21,8 +21,10 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.integration.junit.annotation.Inject;
 import org.apache.shardingsphere.test.integration.junit.annotation.XmlResource;
 import org.apache.shardingsphere.test.integration.junit.processor.Processor;
+import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.DockerHealthcheckWaitStrategy;
 import org.testcontainers.utility.DockerImageName;
@@ -43,15 +45,21 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
-public abstract class ShardingContainer extends GenericContainer<ShardingContainer> {
+public abstract class ShardingSphereContainer extends GenericContainer<ShardingSphereContainer> {
     
     private static final Pattern REGEX = Pattern.compile("\\{([\\w._-]*)}");
+    
+    @Inject
+    @Getter
+    private TestCaseDescription description;
     
     @Getter
     @Setter
     private String dockerName;
     
-    public ShardingContainer(final String dockerImageName) {
+    protected boolean fake = false;
+    
+    public ShardingSphereContainer(final String dockerImageName) {
         super(DockerImageName.parse(dockerImageName));
     }
     
@@ -60,14 +68,15 @@ public abstract class ShardingContainer extends GenericContainer<ShardingContain
         resolveXmlResource(this.getClass());
         configure();
         startDependencies();
-        super.start();
+        if (!fake) {
+            super.start();
+        }
         execute();
     }
     
     private void startDependencies() {
-        final List<ShardingContainer> dependencies = getDependencies().stream()
-                .map(e -> (ShardingContainer) e)
-                .peek(e -> System.out.println(e.dockerName))
+        final List<ShardingSphereContainer> dependencies = getDependencies().stream()
+                .map(e -> (ShardingSphereContainer) e)
                 .collect(Collectors.toList());
         dependencies.stream()
                 .filter(c -> !c.isCreated())

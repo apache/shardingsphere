@@ -32,7 +32,6 @@ import java.text.ParseException;
 
 import static org.junit.Assert.assertTrue;
 
-// assertion
 @TestCaseSpec(name = "GeneralDQLIT", sqlCommandType = SQLCommandType.DQL)
 public final class GeneralDQLIT extends BaseDQLIT {
     

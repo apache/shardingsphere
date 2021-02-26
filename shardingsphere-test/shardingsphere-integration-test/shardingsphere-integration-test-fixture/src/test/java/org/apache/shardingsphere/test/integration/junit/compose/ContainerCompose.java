@@ -19,16 +19,22 @@ package org.apache.shardingsphere.test.integration.junit.compose;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.junit.annotation.ContainerInitializer;
+import org.apache.shardingsphere.test.integration.junit.annotation.Inject;
 import org.apache.shardingsphere.test.integration.junit.annotation.OnContainer;
 import org.apache.shardingsphere.test.integration.junit.container.MySQLContainer;
-import org.apache.shardingsphere.test.integration.junit.container.ShardingContainer;
+import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereAdapterContainer;
+import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
+import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereJDBCContainer;
+import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereProxyContainer;
 import org.apache.shardingsphere.test.integration.junit.container.StorageContainer;
 import org.apache.shardingsphere.test.integration.junit.logging.ContainerLogs;
 import org.apache.shardingsphere.test.integration.junit.resolver.ConditionResolver;
+import org.apache.shardingsphere.test.integration.junit.runner.TestCaseBeanContext;
 import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
 import org.junit.runners.model.FrameworkField;
 import org.junit.runners.model.FrameworkMethod;
@@ -38,6 +44,8 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.lifecycle.Startable;
 
 import java.io.Closeable;
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -57,7 +65,9 @@ public class ContainerCompose implements Closeable {
     
     private final ConditionResolver conditionResolver;
     
-    private ImmutableList<ShardingContainer> containers;
+    private final TestCaseBeanContext beanContext;
+    
+    private ImmutableList<ShardingSphereContainer> containers;
     
     /**
      * Startup all containers.
@@ -70,19 +80,20 @@ public class ContainerCompose implements Closeable {
     }
     
     private void createContainers() {
-        ImmutableList.Builder<ShardingContainer> builder = new ImmutableList.Builder<>();
+        ImmutableList.Builder<ShardingSphereContainer> builder = new ImmutableList.Builder<>();
         testClass.getAnnotatedFields(OnContainer.class).stream()
                 .map(this::createContainer)
                 .filter(Objects::nonNull)
+                .peek(this::inject)
                 .forEach(builder::add);
         containers = builder.build();
     }
     
     @SneakyThrows
-    private ShardingContainer createContainer(final FrameworkField field) {
+    private ShardingSphereContainer createContainer(final FrameworkField field) {
         final OnContainer metadata = field.getAnnotation(OnContainer.class);
         try {
-            final ShardingContainer container = createContainer(field, metadata);
+            final ShardingSphereContainer container = createContainer(field, metadata);
             if (Objects.isNull(container)) {
                 log.warn("container {} is not activated.", metadata.name());
                 return null;
@@ -108,11 +119,11 @@ public class ContainerCompose implements Closeable {
     }
     
     @SneakyThrows
-    private ShardingContainer createContainer(final FrameworkField field, final OnContainer metadata) {
+    private ShardingSphereContainer createContainer(final FrameworkField field, final OnContainer metadata) {
         if (conditionResolver.filter(field)) {
             switch (metadata.type()) {
-                case PROXY:
-                    return (ShardingContainer) field.getType().newInstance();
+                case ADAPTER:
+                    return createAdapterContainer();
                 case STORAGE:
                     return createStorageContainer();
                 case COORDINATOR:
@@ -126,6 +137,17 @@ public class ContainerCompose implements Closeable {
         return null;
     }
     
+    private ShardingSphereAdapterContainer createAdapterContainer() {
+        switch (description.getAdapter()) {
+            case "proxy":
+                return new ShardingSphereProxyContainer();
+            case "jdbc":
+                return new ShardingSphereJDBCContainer();
+            default:
+                throw new RuntimeException("Adapter[" + description.getAdapter() + "] is unknown.");
+        }
+    }
+    
     private StorageContainer createStorageContainer() {
         switch (description.getStorageType()) {
             case MySQL:
@@ -135,6 +157,28 @@ public class ContainerCompose implements Closeable {
             default:
                 throw new RuntimeException("Unknown storage type " + description.getStorageType());
         }
+    }
+    
+    private void inject(final ShardingSphereContainer container) {
+        final List<Field> fields = Lists.newArrayList();
+        for (Class<?> klass = container.getClass(); Objects.nonNull(klass); klass = klass.getSuperclass()) {
+            fields.addAll(Arrays.asList(klass.getDeclaredFields()));
+        }
+        fields.stream()
+                .filter(e -> e.isAnnotationPresent(Inject.class))
+                .forEach(e -> {
+                    Class<?> type = e.getType();
+                    e.setAccessible(true);
+                    try {
+                        if (type.isPrimitive() || String.class == type) {
+                            e.set(container, beanContext.getBeanByName(e.getName()));
+                        } else {
+                            e.set(container, beanContext.getBean(type));
+                        }
+                    } catch (IllegalAccessException illegalAccessException) {
+                        log.error("Failed to auto inject {}.{}.", container.getContainerName(), e.getName());
+                    }
+                });
     }
     
     @SneakyThrows

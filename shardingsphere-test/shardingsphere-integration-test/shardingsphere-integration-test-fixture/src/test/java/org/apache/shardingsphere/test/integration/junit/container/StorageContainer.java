@@ -23,6 +23,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.junit.annotation.XmlResource;
 import org.apache.shardingsphere.test.integration.junit.processor.DatabaseProcessor;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap.Builder;
 
@@ -31,12 +32,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * The storage container was binding to the single scenario and database type.
  */
-public abstract class StorageContainer extends ShardingContainer {
+public abstract class StorageContainer extends ShardingSphereContainer {
     
     @Getter
     @XmlResource(file = "/env/{it.scenario}/databases.xml", processor = DatabaseProcessor.class)
@@ -52,15 +52,28 @@ public abstract class StorageContainer extends ShardingContainer {
         this.databaseType = databaseType;
     }
     
-    protected abstract String getUrl(String dataSourceName);
+    /**
+     * Mount a source path into container.
+     *
+     * @param resourcePath resource path
+     * @return self
+     */
+    public StorageContainer withInitSQLMapping(final String resourcePath) {
+        withClasspathResourceMapping(resourcePath, "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+        return this;
+    }
     
-    protected abstract int getPort();
-    
-    protected abstract String getUsername();
-    
-    protected abstract String getPassword();
-    
-    protected abstract DataSource createDataSource(String dataSourceName);
+    protected DataSource createDataSource(final String dataSourceName) {
+        HikariConfig config = new HikariConfig();
+        config.setUsername(getUsername());
+        config.setPassword(getPassword());
+        config.setDriverClassName(getDriverClassName());
+        config.setJdbcUrl(getUrl(dataSourceName));
+        config.setMaximumPoolSize(2);
+        config.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
+        getConnectionInitSQL().ifPresent(config::setConnectionInitSql);
+        return new HikariDataSource(config);
+    }
     
     /**
      * Get DataSource Map.
@@ -76,16 +89,32 @@ public abstract class StorageContainer extends ShardingContainer {
         return dataSourceMap;
     }
     
-    protected DataSource createHikariCP(final Properties properties) {
-        HikariConfig result = new HikariConfig(properties);
-        result.setMaximumPoolSize(2);
-        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        getConnectionInitSQL().ifPresent(result::setConnectionInitSql);
-        return new HikariDataSource(result);
-    }
-    
     protected Optional<String> getConnectionInitSQL() {
         return Optional.empty();
     }
     
+    protected String getDriverClassName() {
+        switch (databaseType.getName()) {
+            case "H2":
+                return "org.h2.Driver";
+            case "MySQL":
+                return "com.mysql.jdbc.Driver";
+            case "PostgreSQL":
+                return "org.postgresql.Driver";
+            case "SQLServer":
+                return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+            case "Oracle":
+                return "oracle.jdbc.driver.OracleDriver";
+            default:
+                throw new UnsupportedOperationException(databaseType.getName());
+        }
+    }
+    
+    protected abstract String getUrl(String dataSourceName);
+    
+    protected abstract int getPort();
+    
+    protected abstract String getUsername();
+    
+    protected abstract String getPassword();
 }

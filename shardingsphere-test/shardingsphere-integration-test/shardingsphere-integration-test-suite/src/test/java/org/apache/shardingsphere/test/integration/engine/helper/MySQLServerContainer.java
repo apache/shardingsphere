@@ -15,13 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.annotation;
+package org.apache.shardingsphere.test.integration.engine.helper;
 
-public enum ContainerType {
+import org.apache.shardingsphere.test.integration.junit.container.MySQLContainer;
+import org.junit.Test;
+
+public class MySQLServerContainer {
     
-    ADAPTER,
-    
-    STORAGE,
-    
-    COORDINATOR
+    @Test
+    public void test() {
+        System.setProperty("it.scenario", "db");
+        MySQLContainer container = new MySQLContainer();
+        container.start();
+    }
 }
