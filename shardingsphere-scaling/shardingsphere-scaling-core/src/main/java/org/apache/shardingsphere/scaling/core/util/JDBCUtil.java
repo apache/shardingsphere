@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.util;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.scaling.core.common.datasource.JdbcUri;
@@ -51,7 +52,7 @@ public final class JDBCUtil {
     }
     
     private static void append(final ShardingSphereJDBCDataSourceConfiguration dataSourceConfig, final Map<String, String> parameters) {
-        dataSourceConfig.getDataSourceRuleConfig().getDataSources()
+        dataSourceConfig.getRootRuleConfigs().getDataSources()
                 .forEach((key, value) -> {
                     String jdbcUrlKey = value.containsKey("url") ? "url" : "jdbcUrl";
                     value.replace(jdbcUrlKey, append(value.get(jdbcUrlKey).toString(), parameters));
@@ -78,6 +79,18 @@ public final class JDBCUtil {
             result.append("&");
         }
         result.deleteCharAt(result.length() - 1);
+        return result.toString();
+    }
+    
+    /**
+     * Get jdbc url from parameters, the key can be url or jdbcUrl.
+     *
+     * @param parameters parameters
+     * @return jdbc url
+     */
+    public static String getJdbcUrl(final Map<String, Object> parameters) {
+        Object result = parameters.getOrDefault("url", parameters.get("jdbcUrl"));
+        Preconditions.checkNotNull(result, "url or jdbcUrl is required.");
         return result.toString();
     }
 }

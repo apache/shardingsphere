@@ -15,33 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.builder.loader;
+package org.apache.shardingsphere.infra.metadata.auth.builder.loader.dialect;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.auth.builder.loader.dialect.MySQLPrivilegeLoader;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.metadata.auth.builder.loader.PrivilegeLoader;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 
+import javax.sql.DataSource;
 import java.util.Optional;
 
 /**
- * Privilege loader engine.
+ * MySQL privilege loader.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PrivilegeLoaderEngine {
+public final class MySQLPrivilegeLoader implements PrivilegeLoader {
     
-    /**
-     * Get privilege loader.
-     *
-     * @param databaseType database type
-     * @return privilege loader
-     */
-    public static Optional<PrivilegeLoader> getPrivilegeLoader(final DatabaseType databaseType) {
-        switch (databaseType.getName()) {
-            case "MySQL":
-                return Optional.of(new MySQLPrivilegeLoader());
-            default:
-                return Optional.empty();
-        }
+    @Override
+    public DatabaseType getDatabaseType() {
+        return new MySQLDatabaseType();
+    }
+    
+    @Override
+    public Optional<ShardingSpherePrivilege> load(final ShardingSphereUser user, final DataSource dataSource) {
+        return Optional.empty();
     }
 }
