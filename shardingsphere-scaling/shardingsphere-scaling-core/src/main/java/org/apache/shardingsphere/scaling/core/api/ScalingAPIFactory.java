@@ -101,7 +101,7 @@ public final class ScalingAPIFactory {
     
     private static final class ScalingAPIHolder {
         
-        private volatile static ScalingAPI instance;
+        private static volatile ScalingAPI instance;
         
         public static ScalingAPI getInstance() {
             if (null == instance) {
@@ -118,7 +118,7 @@ public final class ScalingAPIFactory {
     
     private static final class RegistryRepositoryAPIHolder {
         
-        private volatile static RegistryRepositoryAPI instance;
+        private static volatile RegistryRepositoryAPI instance;
         
         static {
             ShardingSphereServiceLoader.register(RegistryRepository.class);
@@ -149,7 +149,7 @@ public final class ScalingAPIFactory {
     @Getter
     private static final class ElasticJobAPIHolder {
         
-        private volatile static ElasticJobAPIHolder instance;
+        private static volatile ElasticJobAPIHolder instance;
         
         private final JobStatisticsAPI jobStatisticsAPI;
         
@@ -177,7 +177,7 @@ public final class ScalingAPIFactory {
     
     private static final class RegistryCenterHolder {
         
-        private volatile static CoordinatorRegistryCenter instance;
+        private static volatile CoordinatorRegistryCenter instance;
         
         public static CoordinatorRegistryCenter getInstance() {
             if (null == instance) {
