@@ -95,27 +95,30 @@ public final class JobConfigurationUtil {
             handleConfig.setDatabaseType(jobConfig.getRuleConfig().getSource().unwrap().getDatabaseType().getName());
         }
         if (null == jobConfig.getHandleConfig().getShardingTables()) {
-            handleConfig.setShardingTables(groupByDataSource(getShouldScalingActualDataNodes(jobConfig)));
+            Map<String, String> shouldScalingActualDataNodes = getShouldScalingActualDataNodes(jobConfig);
+            handleConfig.setShardingTables(groupByDataSource(shouldScalingActualDataNodes.values()));
+            handleConfig.setLogicTables(getLogicTables(shouldScalingActualDataNodes.keySet()));
         }
     }
     
-    private static List<String> getShouldScalingActualDataNodes(final JobConfiguration jobConfig) {
+    private static Map<String, String> getShouldScalingActualDataNodes(final JobConfiguration jobConfig) {
         ScalingDataSourceConfiguration sourceConfig = jobConfig.getRuleConfig().getSource().unwrap();
         Preconditions.checkState(sourceConfig instanceof ShardingSphereJDBCDataSourceConfiguration,
                 "Only ShardingSphereJdbc type of source ScalingDataSourceConfiguration is supported.");
         ShardingSphereJDBCDataSourceConfiguration source = (ShardingSphereJDBCDataSourceConfiguration) sourceConfig;
         if (!(jobConfig.getRuleConfig().getTarget().unwrap() instanceof ShardingSphereJDBCDataSourceConfiguration)) {
-            return getShardingRuleConfigMap(source.getDataSourceRuleConfig()).values().stream().map(ShardingTableRuleConfiguration::getActualDataNodes).collect(Collectors.toList());
+            return getShardingRuleConfigMap(source.getDataSourceRuleConfig()).entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, each -> each.getValue().getActualDataNodes()));
         }
         ShardingSphereJDBCDataSourceConfiguration target = (ShardingSphereJDBCDataSourceConfiguration) jobConfig.getRuleConfig().getTarget().unwrap();
         return getShouldScalingActualDataNodes(getModifiedDataSources(source.getDataSourceRuleConfig(), target.getDataSourceRuleConfig()),
                 getShardingRuleConfigMap(source.getDataSourceRuleConfig()), getShardingRuleConfigMap(target.getDataSourceRuleConfig()));
     }
     
-    private static List<String> getShouldScalingActualDataNodes(final Set<String> modifiedDataSources,
-                                                                final Map<String, ShardingTableRuleConfiguration> oldShardingRuleConfigMap,
-                                                                final Map<String, ShardingTableRuleConfiguration> newShardingRuleConfigMap) {
-        List<String> result = new ArrayList<>();
+    private static Map<String, String> getShouldScalingActualDataNodes(final Set<String> modifiedDataSources,
+                                                                       final Map<String, ShardingTableRuleConfiguration> oldShardingRuleConfigMap,
+                                                                       final Map<String, ShardingTableRuleConfiguration> newShardingRuleConfigMap) {
+        Map<String, String> result = Maps.newHashMap();
         newShardingRuleConfigMap.keySet().forEach(each -> {
             if (!oldShardingRuleConfigMap.containsKey(each)) {
                 return;
@@ -123,7 +126,7 @@ public final class JobConfigurationUtil {
             List<String> oldActualDataNodes = new InlineExpressionParser(oldShardingRuleConfigMap.get(each).getActualDataNodes()).splitAndEvaluate();
             List<String> newActualDataNodes = new InlineExpressionParser(newShardingRuleConfigMap.get(each).getActualDataNodes()).splitAndEvaluate();
             if (!CollectionUtils.isEqualCollection(oldActualDataNodes, newActualDataNodes) || includeModifiedDataSources(newActualDataNodes, modifiedDataSources)) {
-                result.add(oldShardingRuleConfigMap.get(each).getActualDataNodes());
+                result.put(each, oldShardingRuleConfigMap.get(each).getActualDataNodes());
             }
         });
         return result;
@@ -158,7 +161,7 @@ public final class JobConfigurationUtil {
         return ruleConfig.getTables().stream().collect(Collectors.toMap(ShardingTableRuleConfiguration::getLogicTable, Function.identity()));
     }
     
-    private static String[] groupByDataSource(final List<String> actualDataNodeList) {
+    private static String[] groupByDataSource(final Collection<String> actualDataNodeList) {
         List<String> result = new ArrayList<>();
         Multimap<String, String> multiMap = getNodeMultiMap(actualDataNodeList);
         for (String key : multiMap.keySet()) {
@@ -171,7 +174,7 @@ public final class JobConfigurationUtil {
         return result.toArray(new String[0]);
     }
     
-    private static Multimap<String, String> getNodeMultiMap(final List<String> actualDataNodeList) {
+    private static Multimap<String, String> getNodeMultiMap(final Collection<String> actualDataNodeList) {
         Multimap<String, String> result = HashMultimap.create();
         for (String actualDataNodes : actualDataNodeList) {
             for (String actualDataNode : actualDataNodes.split(",")) {
@@ -198,6 +201,12 @@ public final class JobConfigurationUtil {
             }
         }
         return new String[]{actualDataNode.substring(0, i), actualDataNode.substring(i + 1)};
+    }
+    
+    private static String getLogicTables(final Set<String> logicTables) {
+        return logicTables.stream()
+                .reduce((a, b) -> String.format("%s, %s", a, b))
+                .orElse("");
     }
     
     /**

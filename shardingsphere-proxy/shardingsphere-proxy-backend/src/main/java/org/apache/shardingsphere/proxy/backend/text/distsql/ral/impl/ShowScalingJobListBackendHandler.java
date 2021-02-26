@@ -27,7 +27,6 @@ import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 
 import java.sql.Types;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -69,7 +68,7 @@ public final class ShowScalingJobListBackendHandler implements TextProtocolBacke
                 .map(each -> {
                     Map<String, Object> map = Maps.newHashMap();
                     map.put("id", each.getJobId());
-                    map.put("tables", Arrays.stream(each.getTables()).reduce((a, b) -> String.format("%s, %s", a, b)).orElse(""));
+                    map.put("tables", each.getTables());
                     map.put("sharding_total_count", each.getShardingTotalCount());
                     map.put("active", each.isActive() ? 1 : 0);
                     return map;
