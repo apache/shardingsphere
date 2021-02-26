@@ -47,6 +47,22 @@ SHOW
     : S H O W
     ;
 
+START
+    : S T A R T
+    ;
+
+STOP
+    : S T O P
+    ;
+
+RESET
+    : R E S E T
+    ;
+
+CHECK
+    : C H E C K
+    ;
+
 RESOURCE
     : R E S O U R C E
     ;
@@ -101,4 +117,20 @@ GENERATED_KEY
 
 DEFAULT_TABLE_STRATEGY
     : D E F A U L T UL_ T A B L E UL_ S T R A T E G Y
+    ;
+
+SCALING
+    : S C A L I N G
+    ;
+
+JOB
+    : J O B
+    ;
+
+LIST
+    : L I S T
+    ;
+
+STATUS
+    : S T A T U S
     ;

@@ -15,27 +15,42 @@
  * limitations under the License.
  */
 
-grammar DistSQLStatement;
+package org.apache.shardingsphere.agent.plugin.logging.base.threadlocal;
 
-import Symbol, RDLStatement, RQLStatement, RALStatement;
-
-execute
-    : (addResource
-    | dropResource
-    | createShardingRule
-    | alterShardingRule
-    | dropShardingRule
-    | createReplicaQueryRule
-    | alterReplicaQueryRule
-    | dropReplicaQueryRule
-    | showResources
-    | showRule
-    | showScalingJobList
-    | showScalingJobStatus
-    | startScalingJob
-    | stopScalingJob
-    | dropScalingJob
-    | resetScalingJob
-    | checkScalingJob
-    ) SEMI?
-    ;
+/**
+ * The enum Elapsed time thread local.
+ */
+public enum ElapsedTimeThreadLocal {
+    
+    /**
+     * Instance elapsed time thread local.
+     */
+    INSTANCE;
+    
+    private static final ThreadLocal<Long> CURRENT_LOCAL = new ThreadLocal<>();
+    
+    /**
+     * Set.
+     *
+     * @param time the time
+     */
+    public void set(final long time) {
+        CURRENT_LOCAL.set(time);
+    }
+    
+    /**
+     * Get long.
+     *
+     * @return the long
+     */
+    public Long get() {
+        return CURRENT_LOCAL.get();
+    }
+    
+    /**
+     * Remove.
+     */
+    public void remove() {
+        CURRENT_LOCAL.remove();
+    }
+}

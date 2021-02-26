@@ -53,7 +53,7 @@ import java.util.Optional;
 @ConditionalOnProperty(prefix = "spring.shardingsphere", name = "enabled", havingValue = "true", matchIfMissing = true)
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 @RequiredArgsConstructor
-public class SpringBootConfiguration implements EnvironmentAware {
+public class ShardingSphereAutoConfiguration implements EnvironmentAware {
     
     private final SpringBootPropertiesConfiguration props;
     
