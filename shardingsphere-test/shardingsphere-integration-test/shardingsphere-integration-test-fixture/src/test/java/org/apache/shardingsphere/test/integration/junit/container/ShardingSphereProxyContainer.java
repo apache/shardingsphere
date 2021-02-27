@@ -20,9 +20,6 @@ package org.apache.shardingsphere.test.integration.junit.container;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.integration.junit.annotation.XmlResource;
-import org.apache.shardingsphere.test.integration.junit.processor.AuthenticationProcessor;
-import org.apache.shardingsphere.test.integration.junit.processor.AuthenticationProcessor.Authentication;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.utility.MountableFile;
 
@@ -39,9 +36,6 @@ public class ShardingSphereProxyContainer extends ShardingSphereAdapterContainer
     
     private final AtomicReference<DataSource> dataSourceProvider = new AtomicReference<>();
     
-    @XmlResource(file = "/docker/{it.scenario}/proxy/conf/server.yaml", processor = AuthenticationProcessor.class)
-    private Authentication authentication;
-    
     public ShardingSphereProxyContainer() {
         super("apache/shardingsphere-proxy-test");
     }
@@ -50,7 +44,7 @@ public class ShardingSphereProxyContainer extends ShardingSphereAdapterContainer
      * Mount path into container from classpath.
      *
      * @param classPathResource resource path in classpath
-     * @param containerPath path in container
+     * @param containerPath     path in container
      * @return self
      */
     public ShardingSphereProxyContainer withClassPathResourceMapping(final String classPathResource, final String containerPath) {
@@ -82,7 +76,7 @@ public class ShardingSphereProxyContainer extends ShardingSphereAdapterContainer
     
     @Override
     protected void configure() {
-        withConfMapping("/docker/" + getDescription().getScenario()+ "/proxy/conf");
+        withConfMapping("/docker/" + getDescription().getScenario() + "/proxy/conf");
         super.configure();
     }
     
@@ -109,12 +103,12 @@ public class ShardingSphereProxyContainer extends ShardingSphereAdapterContainer
         HikariConfig result = new HikariConfig();
         result.setDriverClassName("com.mysql.jdbc.Driver");
         result.setJdbcUrl(getURL());
-        result.setUsername(authentication.getUser());
-        result.setPassword(authentication.getPassword());
+        result.setUsername(getAuthentication().getUser());
+        result.setPassword(getAuthentication().getPassword());
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         // FIXME
-        result.setConnectionInitSql("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
+        result.setConnectionInitSql("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
         return new HikariDataSource(result);
     }
     

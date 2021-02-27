@@ -25,15 +25,13 @@ import org.apache.shardingsphere.test.integration.junit.processor.Authentication
 import org.apache.shardingsphere.test.integration.junit.processor.AuthenticationProcessor.Authentication;
 
 import javax.sql.DataSource;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 public abstract class ShardingSphereAdapterContainer extends ShardingSphereContainer {
     
-    protected final AtomicReference<DataSource> dataSourceProvider = new AtomicReference<>();
-    
+    @Getter
     @XmlResource(file = "/docker/{it.scenario}/proxy/conf/server.yaml", processor = AuthenticationProcessor.class)
-    protected Authentication authentication;
+    private Authentication authentication;
     
     @Getter
     @Setter

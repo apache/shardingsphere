@@ -49,6 +49,10 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     
     private static final Pattern REGEX = Pattern.compile("\\{([\\w._-]*)}");
     
+    @Setter
+    @Getter
+    private boolean fake;
+    
     @Inject
     @Getter
     private TestCaseDescription description;
@@ -56,8 +60,6 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     @Getter
     @Setter
     private String dockerName;
-    
-    protected boolean fake = false;
     
     public ShardingSphereContainer(final String dockerImageName) {
         super(DockerImageName.parse(dockerImageName));

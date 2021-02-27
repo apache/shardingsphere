@@ -24,7 +24,7 @@ public class NativeStorageContainer extends StorageContainer {
     }
     
     @Override
-    protected String getUrl(String dataSourceName) {
+    protected String getUrl(final String dataSourceName) {
         return null;
     }
     

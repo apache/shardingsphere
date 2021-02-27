@@ -36,6 +36,7 @@ import org.apache.shardingsphere.test.integration.junit.container.StorageContain
 import org.apache.shardingsphere.test.integration.junit.runner.ShardingSphereITRunner;
 import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 
@@ -82,6 +83,8 @@ public abstract class BaseITCase {
     @Inject
     private String parentPath;
     
+    private DataSource dataSource;
+    
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
@@ -93,8 +96,13 @@ public abstract class BaseITCase {
         }
     }
     
+    @Before
+    public void createDataSource() {
+        dataSource = proxy.getDataSource();
+    }
+    
     protected DataSource getTargetDataSource() {
-        return proxy.getDataSource();
+        return dataSource;
     }
     
     protected String getStatement() throws ParseException {

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.integration.junit.container;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.lifecycle.Startable;
@@ -31,10 +30,15 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class ShardingSphereJDBCContainer extends ShardingSphereAdapterContainer {
+    
+    private final AtomicBoolean isHealthy = new AtomicBoolean();
+    
+    private Map<String, DataSource> dataSourceMap;
     
     public ShardingSphereJDBCContainer() {
         super("ShardingSphere-JDBC");
@@ -42,35 +46,39 @@ public class ShardingSphereJDBCContainer extends ShardingSphereAdapterContainer 
     
     @Override
     public void start() {
-        fake = true;
+        setFake(true);
         super.start();
         // do not start because it is a fake container.
         List<Startable> startables = getDependencies().stream()
                 .filter(e -> e instanceof StorageContainer)
                 .collect(Collectors.toList());
-        StorageContainer storage = (StorageContainer) startables.get(0);
+        dataSourceMap = ((StorageContainer) startables.get(0)).getDataSourceMap();
+        isHealthy.set(true);
+    }
+    
+    /**
+     * Get DataSource.
+     *
+     * @return DataSource
+     */
+    public DataSource getDataSource() {
         try {
-            DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(
-                    storage.getDataSourceMap(),
+            return YamlShardingSphereDataSourceFactory.createDataSource(
+                    dataSourceMap,
                     new File(EnvironmentPath.getRulesConfigurationFile(getDescription().getScenario()))
             );
-            dataSourceProvider.set(dataSource);
         } catch (SQLException | IOException ex) {
             throw new RuntimeException(ex);
         }
     }
     
-    public DataSource getDataSource() {
-        return dataSourceProvider.get();
-    }
-    
     @Override
     public boolean isHealthy() {
-        return true;
+        return isHealthy.get();
     }
     
     @Override
-    public ShardingSphereContainer waitingFor(@NonNull WaitStrategy waitStrategy) {
+    public ShardingSphereContainer waitingFor(final @NonNull WaitStrategy waitStrategy) {
         return super.waitingFor(waitStrategy);
     }
     
