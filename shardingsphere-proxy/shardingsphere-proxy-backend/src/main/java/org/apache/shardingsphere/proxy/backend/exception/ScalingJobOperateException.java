@@ -15,25 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.yaml.config;
+package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Yaml data source and rule configuration wrap.
+ * Scaling job operate exception.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlDataSourceRuleConfigurationWrap implements YamlConfiguration {
+public final class ScalingJobOperateException extends BackendException {
     
-    private Map<String, Map<String, Object>> dataSources;
+    private static final long serialVersionUID = 7598088400647370901L;
     
-    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
+    private final String message;
 }

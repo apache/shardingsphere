@@ -32,6 +32,8 @@
     <modules>
         <module>shardingsphere-integration-agent-test-metrics</module>
         <module>shardingsphere-integration-agent-test-common</module>
+        <module>shardingsphere-integration-agent-test-zipkin</module>
+        <module>shardingsphere-integration-agent-test-jaeger</module>
     </modules>
 
 </project>

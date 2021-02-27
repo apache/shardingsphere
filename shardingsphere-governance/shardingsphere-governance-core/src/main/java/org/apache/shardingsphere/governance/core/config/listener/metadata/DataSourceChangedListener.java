@@ -66,6 +66,6 @@ public final class DataSourceChangedListener extends PostGovernanceRepositoryEve
         Preconditions.checkState(null != result && !result.getDataSources().isEmpty(), "No available data sources to load for governance.");
         return new DataSourceChangedEvent(schemaName, result.getDataSources().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> new YamlDataSourceConfigurationSwapper()
-                        .swapToObjectFromMap(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
+                        .swapToDataSourceConfiguration(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
 }
