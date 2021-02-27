@@ -51,12 +51,7 @@ public class MySQLContainer extends StorageContainer {
     
     @Override
     protected Optional<String> getConnectionInitSQL() {
-        // FIXME: It is very strange why it cannot set SET GLOBAL for both?
-        if (getDescription().getAdapter().equals("jdbc")) {
-            return Optional.of("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
-        } else {
-            return Optional.of("SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
-        }
+        return Optional.of("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
     }
     
     @Override

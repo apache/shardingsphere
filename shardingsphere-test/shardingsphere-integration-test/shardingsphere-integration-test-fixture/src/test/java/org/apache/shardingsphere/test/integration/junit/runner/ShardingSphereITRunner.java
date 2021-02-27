@@ -71,7 +71,7 @@ public class ShardingSphereITRunner extends Suite {
                 .build();
         beanContext.registerBean(TestCaseDescription.class, description);
         resolver = new ConditionResolver(getTestClass());
-        if (isIgnoredCase(description)) {
+        if (isIgnoredCase()) {
             log.warn("The testcase[{}] was ignored.", klass);
             runners = Collections.emptyList();
             compose = null;
@@ -179,7 +179,7 @@ public class ShardingSphereITRunner extends Suite {
         };
     }
     
-    private boolean isIgnoredCase(final TestCaseDescription description) {
+    private boolean isIgnoredCase() {
         return !resolver.filter(getTestClass());
     }
     

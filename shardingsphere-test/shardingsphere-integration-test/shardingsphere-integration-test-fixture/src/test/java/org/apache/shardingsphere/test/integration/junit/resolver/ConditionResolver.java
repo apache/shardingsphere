@@ -24,7 +24,6 @@ import org.junit.runners.model.TestClass;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
-import java.util.Objects;
 
 @RequiredArgsConstructor
 public class ConditionResolver {
@@ -41,19 +40,17 @@ public class ConditionResolver {
         return Arrays.stream(annotatable.getAnnotations())
                 .filter(e -> e.annotationType().isAnnotationPresent(Conditional.class))
                 .map(e -> {
-                    Conditional annotation = annotatable.getAnnotation(Conditional.class);
-                    if (Objects.isNull(annotation)) {
-                        return true;
-                    }
-                    return invokeExplosively(annotation, e);
-                }).reduce((a, b) -> a && b)
+                    Conditional conditional = e.annotationType().getAnnotation(Conditional.class);
+                    return invokeExplosively(conditional, e);
+                })
+                .reduce((a, b) -> a && b)
                 .orElse(true);
     }
     
     @SuppressWarnings("unchecked")
-    private boolean invokeExplosively(final Conditional conditional, final Annotation condition) {
+    private boolean invokeExplosively(final Conditional conditional, final Annotation annotation) {
         try {
-            return conditional.value().newInstance().matches(condition);
+            return conditional.value().newInstance().matches(annotation);
             // CHECKSTYLE:OFF
         } catch (Exception e) {
             // CHECKSTYLE:ON

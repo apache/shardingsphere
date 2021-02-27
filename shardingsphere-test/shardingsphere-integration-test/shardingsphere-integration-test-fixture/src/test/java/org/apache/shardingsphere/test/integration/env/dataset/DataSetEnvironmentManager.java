@@ -69,11 +69,10 @@ public final class DataSetEnvironmentManager {
     /**
      * Fill data.
      *
-     * @throws SQLException   SQL exception
+     * @throws SQLException SQL exception
      * @throws ParseException parse exception
-     * @throws InterruptedException interrupted exception
      */
-    public void fillData() throws SQLException, ParseException, InterruptedException {
+    public void fillData() throws SQLException, ParseException {
         Map<DataNode, List<DataSetRow>> dataNodeListMap = getDataSetRowMap();
         List<Callable<Void>> fillDataTasks = new LinkedList<>();
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {
@@ -91,7 +90,12 @@ public final class DataSetEnvironmentManager {
             }
             fillDataTasks.add(new InsertTask(actualDataSources.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups));
         }
-        EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);
+        try {
+            EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+        }
     }
     
     private Map<DataNode, List<DataSetRow>> getDataSetRowMap() {
@@ -118,6 +122,7 @@ public final class DataSetEnvironmentManager {
     
     /**
      * Clear data.
+     *
      */
     public void clearData() {
         List<Callable<Void>> deleteTasks = new LinkedList<>();
