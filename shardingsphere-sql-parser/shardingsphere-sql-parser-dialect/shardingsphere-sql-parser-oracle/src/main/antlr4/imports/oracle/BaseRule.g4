@@ -139,6 +139,26 @@ name
     : identifier
     ;
 
+tablespaceName
+    : identifier
+    ;
+
+tablespaceSetName
+    : identifier
+    ;
+
+serviceName
+    : identifier
+    ;
+
+ilmPolicyName
+    : identifier
+    ;
+
+functionName
+    : identifier
+    ;
+
 columnNames
     : LP_? columnName (COMMA_ columnName)* RP_?
     ;

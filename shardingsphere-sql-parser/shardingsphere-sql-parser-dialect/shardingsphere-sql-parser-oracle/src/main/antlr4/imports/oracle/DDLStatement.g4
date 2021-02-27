@@ -44,7 +44,7 @@ dropIndex
     ;
 
 truncateTable
-    : TRUNCATE TABLE tableName materializedViewLogClause? storageClause? CASCADE?
+    : TRUNCATE TABLE tableName materializedViewLogClause? dropReuseClause? CASCADE?
     ;
 
 createTableSpecification
@@ -72,7 +72,7 @@ createDefinitionClause
     ;
 
 createRelationalTableClause
-    : (LP_ relationalProperties RP_)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
+    : (LP_ relationalProperties RP_)? collationClause? commitClause? physicalProperties? tableProperties?
     ;
     
 createMemOptimizeClause
@@ -435,6 +435,175 @@ materializedViewLogClause
     : (PRESERVE | PURGE) MATERIALIZED VIEW LOG
     ;
 
-storageClause
+dropReuseClause
     : (DROP (ALL)? | REUSE) STORAGE
     ;
+
+collationClause
+    : DEFAULT COLLATION collationName
+    ;
+
+commitClause
+    : (ON COMMIT (DROP | PRESERVE) ROWS)? (ON COMMIT (DELETE | PRESERVE) ROWS)?
+    ;
+
+physicalProperties
+    : deferredSegmentCreation? segmentAttributesClause tableCompression? inmemoryTableClause? ilmClause?
+    | deferredSegmentCreation? (organizationClause?|externalPartitionClause?)
+    | clusterClause
+    ;
+
+deferredSegmentCreation
+    : SEGMENT CREATION (IMMEDIATE|DEFERRED)
+    ;
+
+segmentAttributesClause
+    : physicalAttributesClause
+    | (TABLESPACE tablespaceName | TABLESPACE SET tablespaceSetName)
+    | loggingClause
+    ;
+
+physicalAttributesClause
+    : (PCTFREE NUMBER_ | PCTUSED NUMBER_ | INITRANS NUMBER_ | storageClause)*
+    ;
+
+loggingClause
+    : LOGGING | NOLOGGING |  FILESYSTEM_LIKE_LOGGING
+    ;
+
+storageClause
+    : STORAGE
+    (INITIAL sizeClause
+    | NEXT sizeClause
+    | MINEXTENTS NUMBER_
+    | MAXEXTENTS (NUMBER_ | UNLIMITED)
+    | maxsizeClause
+    | PCTINCREASE NUMBER_
+    | FREELISTS NUMBER_
+    | FREELIST GROUPS NUMBER_
+    | OPTIMAL (sizeClause | NULL)?
+    | BUFFER_POOL (KEEP | RECYCLE | DEFAULT)
+    | FLASH_CACHE (KEEP | NONE | DEFAULT)
+    | CELL_FLASH_CACHE (KEEP | NONE | DEFAULT)
+    | ENCRYPT
+    )+
+    ;
+
+sizeClause
+    : NUMBER_ (K | M | G | T | P | E)?
+    ;
+
+maxsizeClause
+    : MAXSIZE (UNLIMITED | sizeClause)
+    ;
+
+tableCompression
+    : COMPRESS
+    | ROW STORE COMPRESS (BASIC | ADVANCED)?
+    | COLUMN STORE COMPRESS (FOR (QUERY | ARCHIVE) (LOW | HIGH)?)? (NO? ROW LEVEL LOCKING)?
+    | NOCOMPRESS
+    ;
+
+inmemoryTableClause
+    : ((INMEMORY inmemoryAttributes?) | NO INMEMORY)? (inmemoryColumnClause)?
+    ;
+
+inmemoryAttributes
+    : inmemoryMemcompress? inmemoryPriority? inmemoryDistribute? inmemoryDuplicate?
+    ;
+
+inmemoryColumnClause
+    : (INMEMORY inmemoryMemcompress? | NO INMEMORY) LP_ columnName (DOT columnName)* RP_
+    ;
+
+inmemoryMemcompress
+    : MEMCOMPRESS FOR ( DML | (QUERY | CAPACITY) (LOW | HIGH)? ) | NO MEMCOMPRESS
+    ;
+
+inmemoryPriority
+    : PRIORITY (NONE | LOW | MEDIUM | HIGH | CRITICAL)
+    ;
+
+inmemoryDistribute
+    : DISTRIBUTE (AUTO | BY (ROWID RANGE | PARTITION | SUBPARTITION))? (FOR SERVICE (DEFAULT | ALL | serviceName | NONE))?
+    ;
+
+inmemoryDuplicate
+    : DUPLICATE | DUPLICATE ALL | NO DUPLICATE
+    ;
+
+ilmClause
+    : ILM (ADD POLICY ilmPolicyClause
+    | (DELETE | ENABLE | DISABLE) POLICY ilmPolicyName
+    | (DELETE_ALL | ENABLE_ALL | DISABLE_ALL))
+    ;
+
+ilmPolicyClause
+    : ilmCompressionPolicy | ilmTieringPolicy | ilmInmemoryPolicy
+    ;
+
+ilmCompressionPolicy
+    : tableCompression (SEGMENT | GROUP) ( AFTER ilmTimePeriod OF ( NO ACCESS | NO MODIFICATION | CREATION ) | ON functionName)
+    | (ROW STORE COMPRESS ADVANCED | COLUMN STORE COMPRESS FOR QUERY) ROW AFTER ilmTimePeriod OF NO MODIFICATION
+    ;
+
+ilmTimePeriod
+    : NUMBER ((DAY | DAYS) | (MONTH | MONTHS) | (YEAR | YEARS))
+    ;
+
+ilmTieringPolicy
+    : TIER TO tablespaceName (SEGMENT | GROUP)? (ON functionName)?
+    | TIER TO tablespaceName READ ONLY (SEGMENT | GROUP)? (AFTER ilmTimePeriod OF (NO ACCESS | NO MODIFICATION | CREATION) | ON functionName)
+    ;
+
+ilmInmemoryPolicy
+    : (SET INMEMORY inmemoryAttributes | MODIFY INMEMORY inmemoryMemcompress | NO INMEMORY) SEGMENT (AFTER ilmTimePeriod OF (NO ACCESS | NO MODIFICATION | CREATION) | ON functionName)
+    ;
+
+organizationClause
+    : ORGANIZATION 
+    ( HEAP segmentAttributesClause? heapOrgTableClause 
+    | INDEX segmentAttributesClause? indexOrgTableClause 
+    | EXTERNAL externalTableClause)
+    ;
+
+heapOrgTableClause
+    : tableCompression? inmemoryTableClause? ilmClause?
+    ;
+
+indexOrgTableClause
+    : (mappingTableClause | PCTTHRESHOLD NUMBER | prefixCompression)* indexOrgOverflowClause?
+    ;
+
+externalTableClause
+    : LP_ (TYPE accessDriverType)? (externalTableDataProps)? RP_ (REJECT LIMIT (NUMBER | UNLIMITED))? inmemoryTableClause?
+    ;
+
+externalTableDataProps
+    : 
+    ;
+
+mappingTableClause
+    : MAPPING TABLE | NOMAPPING
+    ;
+
+prefixCompression
+    : COMPRESS NUMBER? | NOCOMPRESS
+    ;
+
+indexOrgOverflowClause
+    :  (INCLUDING columnName)? OVERFLOW segmentAttributesClause?
+    ;
+
+externalPartitionClause
+    : EXTERNAL PARTITION ATTRIBUTES externalTableClause (REJECT LIMIT)?
+    ;
+
+clusterClause
+    : CLUSTER cluster LP_ (column (COMMA_ column)*) RP_
+    ;
+
+tableProperties
+    :
+    ;
+    
