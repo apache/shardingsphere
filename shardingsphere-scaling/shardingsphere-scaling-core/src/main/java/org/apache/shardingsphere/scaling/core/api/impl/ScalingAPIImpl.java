@@ -126,9 +126,8 @@ public final class ScalingAPIImpl implements ScalingAPI {
     }
     
     @Override
-    public void reset(final long jobId) throws SQLException {
+    public void resetTargetTable(final long jobId) throws SQLException {
         log.info("Scaling job {} reset target table", jobId);
-        ScalingAPIFactory.getRegistryRepositoryAPI().deleteJobProgress(jobId);
         new ScalingEnvironmentManager().resetTargetTable(new JobContext(getJobConfig(jobId)));
     }
     
@@ -145,7 +144,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
         try {
             return ScalingAPIFactory.getJobConfigurationAPI().getJobConfiguration(String.valueOf(jobId));
         } catch (final NullPointerException ex) {
-            throw new ScalingJobNotFoundException(String.format("Can not find scaling job %s", jobId), jobId);
+            throw new ScalingJobNotFoundException(String.format("Can not find scaling job %s", jobId));
         }
     }
 }

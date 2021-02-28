@@ -39,14 +39,14 @@ public interface ScalingAPI {
     List<JobInfo> list();
     
     /**
-     * Start scaling job by id.
+     * Start a scaling job by id.
      *
      * @param jobId job id
      */
     void start(long jobId);
     
     /**
-     * Start scaling job by config.
+     * Start a scaling job by config.
      *
      * @param jobConfig job config
      * @return job id
@@ -54,21 +54,21 @@ public interface ScalingAPI {
     Optional<Long> start(JobConfiguration jobConfig);
     
     /**
-     * Stop scaling job.
+     * Stop a job.
      *
      * @param jobId job id
      */
     void stop(long jobId);
     
     /**
-     * Remove scaling job.
+     * Remove a job.
      *
      * @param jobId job id
      */
     void remove(long jobId);
     
     /**
-     * Get job progress.
+     * Get progress.
      *
      * @param jobId job id
      * @return each sharding item progress
@@ -84,12 +84,12 @@ public interface ScalingAPI {
     Map<String, DataConsistencyCheckResult> dataConsistencyCheck(long jobId);
     
     /**
-     * Reset scaling job.
+     * Reset target table.
      *
      * @param jobId job id
      * @throws SQLException SQL exception
      */
-    void reset(long jobId) throws SQLException;
+    void resetTargetTable(long jobId) throws SQLException;
     
     /**
      * Get job configuration.
