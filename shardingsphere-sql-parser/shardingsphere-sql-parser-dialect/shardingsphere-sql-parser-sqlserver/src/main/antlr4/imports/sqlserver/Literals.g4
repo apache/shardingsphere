@@ -54,6 +54,10 @@ BIT_NUM_
     : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
     ;
 
+NCHAR_TEXT
+    : N STRING_
+    ;
+
 fragment DIGIT
     : [0-9]
     ;

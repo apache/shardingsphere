@@ -15,8 +15,8 @@
   ~ limitations under the License.
   -->
 
-<dataset update-count="1" broadcast="true">
-    <metadata data-nodes="primary_ds.t_user,replica_${0..1}.t_user">
+<dataset update-count="1">
+    <metadata data-nodes="primary_ds.t_user">
         <column name="user_id" type="numeric"/>
         <column name="pwd" type="varchar"/>
     </metadata>
@@ -24,12 +24,4 @@
     <row data-node="primary_ds.t_user" values="11, def" />
     <row data-node="primary_ds.t_user" values="12, hig" />
     <row data-node="primary_ds.t_user" values="13, kli" />
-    <row data-node="replica_0.t_user" values="10, abc" />
-    <row data-node="replica_0.t_user" values="11, def" />
-    <row data-node="replica_0.t_user" values="12, hig" />
-    <row data-node="replica_0.t_user" values="13, kli" />
-    <row data-node="replica_1.t_user" values="10, abc" />
-    <row data-node="replica_1.t_user" values="11, def" />
-    <row data-node="replica_1.t_user" values="12, hig" />
-    <row data-node="replica_1.t_user" values="13, kli" />
 </dataset>

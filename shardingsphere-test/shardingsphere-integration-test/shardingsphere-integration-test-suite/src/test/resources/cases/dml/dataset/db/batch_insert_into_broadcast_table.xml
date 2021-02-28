@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<dataset update-count="2" broadcast="true">
+<dataset update-count="2">
     <metadata data-nodes="db_${0..9}.t_broadcast_table">
         <column name="id" type="numeric"/>
         <column name="status" type="varchar"/>

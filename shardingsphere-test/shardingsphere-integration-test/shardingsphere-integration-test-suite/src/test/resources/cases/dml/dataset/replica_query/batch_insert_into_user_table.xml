@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<dataset update-count="2" broadcast="true">
+<dataset update-count="2">
     <metadata data-nodes="primary_ds.t_user">
         <column name="user_id" type="numeric"/>
         <column name="pwd" type="varchar"/>

@@ -209,7 +209,7 @@ queryHint
     | RECOMPILE
     | ROBUST PLAN
     | USE HINT LP_ useHitName* RP_
-    | USE PLAN N STRING_
+    | USE PLAN NCHAR_TEXT
     ;
 
 useHitName

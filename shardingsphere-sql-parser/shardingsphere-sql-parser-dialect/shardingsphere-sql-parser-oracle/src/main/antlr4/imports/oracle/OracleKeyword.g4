@@ -291,6 +291,10 @@ NOMINVALUE
     : N O M I N V A L U E
     ;
 
+NOSORT
+    : N O S O R T
+    ;
+
 MINING
     : M I N I N G
     ;
@@ -357,6 +361,10 @@ REPLACE
 
 RESOURCE
     : R E S O U R C E
+    ;
+
+REVERSE
+    : R E V E R S E
     ;
 
 ROWID
@@ -891,10 +899,6 @@ PARALLEL
     : P A R A L L E L
     ;
 
-INVALIDATION
-    : I N V A L I D A T I O N
-    ;
-
 LOG
     : L O G
     ;
@@ -905,10 +909,6 @@ REUSE
 
 STORAGE
     : S T O R A G E
-    ;
-
-ONLINE
-    : O N L I N E
     ;
 
 MATCHED

@@ -391,6 +391,10 @@ CONTROL
     : C O N T R O L
     ;
 
+CONCAT
+    : C O N C A T
+    ;
+
 TAKE
     : T A K E
     ;

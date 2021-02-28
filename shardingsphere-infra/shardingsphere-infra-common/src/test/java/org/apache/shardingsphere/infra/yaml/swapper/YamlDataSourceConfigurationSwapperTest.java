@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.infra.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.YamlDataSourceConfiguration;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -29,24 +31,23 @@ public final class YamlDataSourceConfigurationSwapperTest {
     private final YamlDataSourceConfigurationSwapper yamlDataSourceConfigurationSwapper = new YamlDataSourceConfigurationSwapper();
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    public void assertSwapToMap() {
         DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration("xxx.jdbc.driver");
         dataSourceConfig.getProps().put("url", "xx:xxx");
         dataSourceConfig.getProps().put("username", "root");
-        YamlDataSourceConfiguration actual = yamlDataSourceConfigurationSwapper.swapToYamlConfiguration(dataSourceConfig);
-        assertThat(actual.getDataSourceClassName(), is("xxx.jdbc.driver"));
-        assertThat(actual.getProps().size(), is(2));
-        assertThat(actual.getProps().get("url").toString(), is("xx:xxx"));
-        assertThat(actual.getProps().get("username").toString(), is("root"));
+        Map<String, Object> actual = yamlDataSourceConfigurationSwapper.swapToMap(dataSourceConfig);
+        assertThat(actual.get("dataSourceClassName"), is("xxx.jdbc.driver"));
+        assertThat(actual.get("url").toString(), is("xx:xxx"));
+        assertThat(actual.get("username").toString(), is("root"));
     }
     
     @Test
     public void assertSwapToConfiguration() {
-        YamlDataSourceConfiguration yamlConfig = new YamlDataSourceConfiguration();
-        yamlConfig.setDataSourceClassName("xxx.jdbc.driver");
-        yamlConfig.getProps().put("url", "xx:xxx");
-        yamlConfig.getProps().put("username", "root");
-        DataSourceConfiguration actual = yamlDataSourceConfigurationSwapper.swapToObject(yamlConfig);
+        Map<String, Object> yamlConfig = new HashMap<>(3, 1);
+        yamlConfig.put("dataSourceClassName", "xxx.jdbc.driver");
+        yamlConfig.put("url", "xx:xxx");
+        yamlConfig.put("username", "root");
+        DataSourceConfiguration actual = yamlDataSourceConfigurationSwapper.swapToObjectFromMap(yamlConfig);
         assertThat(actual.getDataSourceClassName(), is("xxx.jdbc.driver"));
         assertThat(actual.getProps().size(), is(2));
         assertThat(actual.getProps().get("url").toString(), is("xx:xxx"));

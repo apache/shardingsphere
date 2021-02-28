@@ -50,6 +50,23 @@ public final class RouteContext {
     private boolean toCalcite;
     
     /**
+     * Put route unit.
+     *
+     * @param dataSourceMapper database mapper
+     * @param tableMapper table mapper
+     */
+    public void putRouteUnit(final RouteMapper dataSourceMapper, final RouteMapper tableMapper) {
+        Optional<RouteUnit> target = routeUnits.stream().filter(unit -> unit.getDataSourceMapper().equals(dataSourceMapper)).findFirst();
+        RouteUnit unit = new RouteUnit(dataSourceMapper, new LinkedHashSet<>());
+        if (target.isPresent()) {
+            unit.getTableMappers().addAll(target.get().getTableMappers());
+            routeUnits.remove(target.get());
+        }
+        unit.getTableMappers().add(tableMapper);
+        routeUnits.add(unit);
+    }
+    
+    /**
      * Judge is route for single database and table only or not.
      *
      * @return is route for single database and table only or not
