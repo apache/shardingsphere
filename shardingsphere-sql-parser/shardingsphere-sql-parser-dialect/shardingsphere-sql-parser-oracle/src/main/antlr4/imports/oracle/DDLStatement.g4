@@ -580,7 +580,7 @@ externalTableClause
     ;
 
 externalTableDataProps
-    : 
+    : (DEFAULT DIRECTORY directoryName)? (ACCESS PARAMETERS ((opaqueFormatSpec) | USING CLOB subquery))? (LOCATION LP_ (directoryName COLON_)? 'location_specifier' (COMMA_ (directoryName COLON_)? 'location_specifier')+ RP_)?
     ;
 
 mappingTableClause
@@ -599,11 +599,168 @@ externalPartitionClause
     : EXTERNAL PARTITION ATTRIBUTES externalTableClause (REJECT LIMIT)?
     ;
 
-clusterClause
-    : CLUSTER cluster LP_ (column (COMMA_ column)*) RP_
+clusterRelatedClause
+    : CLUSTER clusterName LP_ (columnName (COMMA_ columnName)*) RP_
     ;
 
 tableProperties
+    :columnProperties?
+     readOnlyClause?
+     indexingClause?
+     tablePartitioningClauses?
+     attributeClusteringClause?
+     (CACHE | NOCACHE)?
+     ( RESULT_CACHE ( MODE (DEFAULT | FORCE) ) )?
+     parallelClause?
+     (ROWDEPENDENCIES | NOROWDEPENDENCIES)?
+     enableDisableClause*
+     rowMovementClause?
+     flashbackArchiveClause?
+     (ROW ARCHIVAL)?
+     (AS subquery | FOR EXCHANGE WITH TABLE tableName)?
+    ;
+
+readOnlyClause
+    : READ ONLY | READ WRITE 
+    ;
+
+indexingClause
+    : INDEXING (ON | OFF)
+    ;
+
+tablePartitioningClauses
+    : rangePartitions
+    | listPartitions
+    | hashPartitions
+    | compositeRangePartitions
+    | compositeListPartitions
+    | compositeHashPartitions
+    | referencePartitioning
+    | systemPartitioning
+    | consistentHashPartitions
+    | consistentHashWithSubpartitions
+    | partitionsetClauses
+    ;
+
+rangePartitions
+    : PARTITION BY RANGE LP_ columnName (COMMA columnName)* RP_
+      (INTERVAL LP_ expr RP_ (STORE IN LP_ tablespaceName (COMMA tablespaceName)* RP_)?)?
+      LP_ PARTITION partition? rangeValuesClause tablePartitionDescription (COMMA PARTITION partition? rangeValuesClause tablePartitionDescription externalPartSubpartDataProps?)* RP_
+    ;
+
+rangeValuesClause
+    : VALUES LESS THAN LP_ (numberLiterals | MAXVALUE) (COMMA (numberLiterals | MAXVALUE))*RP_
+    ;
+
+tablePartitionDescription
+    : (INTERNAL | EXTERNAL)?
+      deferredSegmentCreation?
+      readOnlyClause?
+      indexingClause?
+      segmentAttributesClause?
+      (tableCompression | prefixCompression)?
+      inmemoryClause?
+      ilmClause?
+      (OVERFLOW segmentAttributesClause?)?
+      (LOBStorageClause | varrayColProperties | nestedTableColProperties)*
+    ;
+
+inmemoryClause
+    : INMEMORY inmemoryAttributes? | NO INMEMORY
+    ;
+
+varrayColProperties
+    : VARRAY varrayItem (substitutableColumnClause? varrayStorageClause | substitutableColumnClause)
+    ;
+
+nestedTableColProperties
+    : 
+    ;
+
+varrayStorageClause
+    : 
+    ;
+
+externalPartSubpartDataProps
     :
     ;
-    
+
+listPartitions
+    : PARTITION BY LIST LP_ columnName (COMMA columnName)* RP_
+      (AUTOMATIC (STORE IN LP_ tablespaceName (COMMA tablespaceName)* RP_))?
+      LP_ PARTITION partition? listValuesClause tablePartitionDescription (COMMA PARTITION partition? listValuesClause tablePartitionDescription externalPartSubpartDataProps?)* RP_
+    ;
+
+hashPartitions
+    : PARTITION BY HASH LP_ columnName (COMMA columnName)* RP_ (individualHashPartitions | hashPartitionsByQuantity)
+    ;
+
+compositeRangePartitions
+    : PARTITION BY RANGE LP_ columnName (COMMA columnName)* RP_ 
+      (INTERVAL LP_ expr RP_ (STORE IN LP_ tablespaceName (COMMA tablespaceName)* RP_)?)?
+      (subpartitionByRange | subpartitionByList | subpartitionByHash) 
+      LP_ rangePartitionDesc (COMMA rangePartitionDesc)* RP_
+    ;
+
+compositeListPartitions
+    : PARTITION BY LIST LP_ columnName (COMMA columnName)* RP_ 
+      (AUTOMATIC (STORE IN LP_ tablespaceName (COMMA tablespaceName)* RP_)?)?
+      (subpartitionByRange | subpartitionByList | subpartitionByHash) 
+      LP_ listPartitionDesc (COMMA listPartitionDesc)* RP_
+    ;
+
+compositeHashPartitions
+    : PARTITION BY HASH LP_ columnName (COMMA columnName)* RP_ (subpartitionByRange | subpartitionByList | subpartitionByHash) (individualHashPartitions | hashPartitionsByQuantity)
+    ;
+
+referencePartitioning
+    :PARTITION BY REFERENCE LP_ constraint RP_ (LP_ referencePartitionDesc (COMMA referencePartitionDesc)* RP_)?
+    ;
+
+systemPartitioning
+    : PARTITION BY SYSTEM (PARTITIONS NUMBER | referencePartitionDesc (COMMA referencePartitionDesc)*)?
+    ;
+
+consistentHashPartitions
+    : PARTITION BY CONSISTENT HASH LP_ columnName (COMMA columnName)* RP_ (PARTITIONS AUTO)? TABLESPACE SET tablespaceSetName
+    ;
+
+consistentHashWithSubpartitions
+    : PARTITION BY CONSISTENT HASH LP_ columnName (COMMA columnName)* RP_ (subpartitionByRange | subpartitionByList | subpartitionByHash)  (PARTITIONS AUTO)?
+    ;
+
+partitionsetClauses
+    : rangePartitionsetClause | listPartitionsetClause
+    ;
+
+attributeClusteringClause
+    : CLUSTERING clusteringJoin? clusterClause clusteringWhen? zonemapClause?
+    ;
+
+clusteringJoin
+    :
+    ;
+
+clusterClause
+    :
+    ;
+
+clusteringWhen
+    :
+    ;
+
+zonemapClause
+    :
+    ;
+
+rowMovementClause
+    : (ENABLE | DISABLE) ROW MOVEMENT
+    ;
+
+flashbackArchiveClause
+    : FLASHBACK ARCHIVE flashbackArchive? | NO FLASHBACK ARCHIVE
+    ;
+
+flashbackArchive
+    :
+    ;

@@ -159,6 +159,30 @@ functionName
     : identifier
     ;
 
+directoryName
+    : identifier
+    ;
+
+opaqueFormatSpec
+    : identifier
+    ;
+
+accessDriverType
+    : identifier
+    ;
+
+partition
+    : identifier
+    ;
+
+type
+    : identifier
+    ;
+
+varrayItem
+    : identifier
+    ;
+
 columnNames
     : LP_? columnName (COMMA_ columnName)* RP_?
     ;
