@@ -57,13 +57,13 @@ public final class RouteContext {
      */
     public void putRouteUnit(final RouteMapper dataSourceMapper, final RouteMapper tableMapper) {
         Optional<RouteUnit> target = routeUnits.stream().filter(unit -> unit.getDataSourceMapper().equals(dataSourceMapper)).findFirst();
+        RouteUnit unit = new RouteUnit(dataSourceMapper, new LinkedHashSet<>());
         if (target.isPresent()) {
-            target.get().getTableMappers().add(tableMapper);
-        } else {
-            RouteUnit unit = new RouteUnit(dataSourceMapper, new LinkedHashSet<>());
-            unit.getTableMappers().add(tableMapper);
-            routeUnits.add(unit);
+            unit.getTableMappers().addAll(target.get().getTableMappers());
+            routeUnits.remove(target.get());
         }
+        unit.getTableMappers().add(tableMapper);
+        routeUnits.add(unit);
     }
     
     /**
