@@ -490,22 +490,6 @@
     <test-case sql="SELECT * FROM t_user">
         <assertion expected-data-file="select_encrypt.xml"/>
     </test-case>
-
-    <test-case sql="SELECT user_id, pwd FROM t_user WHERE pwd = 'abc'">
-        <assertion expected-data-file="select_by_encrypt.xml"/>
-    </test-case>
-
-    <test-case sql="SELECT user_id FROM t_user WHERE pwd in ('abc', 'def')">
-        <assertion expected-data-file="select_in_encrypt.xml"/>
-    </test-case>
-
-    <test-case sql="SELECT user_id FROM t_user WHERE pwd in ('abc', 'def') and user_id = 10">
-        <assertion expected-data-file="select_in_encrypt_without_pwd.xml"/>
-    </test-case>
-
-    <test-case sql="SELECT * FROM t_user WHERE pwd in ('abc', 'def') OR user_id = 10">
-        <assertion expected-data-file="select_in_or_encrypt.xml"/>
-    </test-case>
     
     <test-case sql="SELECT * FROM t_user u INNER JOIN t_order_item m ON u.user_id=m.user_id">
         <assertion expected-data-file="select_join_encrypt.xml"/>

@@ -68,7 +68,7 @@ public final class YamlConfigurationConverter {
      * @return data source configurations
      */
     public static Map<String, DataSourceConfiguration> convertDataSourceConfigurations(final Map<String, Map<String, Object>> yamlDataSourceConfigs) {
-        return Maps.transformValues(yamlDataSourceConfigs, new YamlDataSourceConfigurationSwapper()::swapToDataSourceConfiguration);
+        return Maps.transformValues(yamlDataSourceConfigs, new YamlDataSourceConfigurationSwapper()::swapToObjectFromMap);
     }
     
     /**

@@ -49,9 +49,7 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     SHARDING_TABLE_RULE_EXIST(11010, "C11010", "Sharding table rules: [%s] already exists."),
     
-    SCALING_JOB_NOT_EXIST(12001, "C12001", "Scaling job %s does not exist."),
-    
-    SCALING_OPERATE_FAILED(12009, "C12009", "Scaling Operate Failed: [%s]"),
+    SCALING_OPERATE_FAILED(12001, "C12001", "Scaling Operate Failed: [%s]"),
     
     UNSUPPORTED_COMMAND(19998, "C19998", "Unsupported command: [%s]"),
     

@@ -18,21 +18,22 @@
 package org.apache.shardingsphere.infra.yaml.swapper;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * YAML data source configuration swapper.
+ * Yaml data source configuration swapper.
  */
 public final class YamlDataSourceConfigurationSwapper {
     
-    private static final String DATA_SOURCE_CLASS_NAME_KEY = "dataSourceClassName";
+    private static final String YAML_DATA_SOURCE_CLASS_NAME = "dataSourceClassName";
     
     /**
      * Swap to data sources from YAML data sources.
@@ -41,20 +42,23 @@ public final class YamlDataSourceConfigurationSwapper {
      * @return data sources
      */
     public Map<String, DataSource> swapToDataSources(final Map<String, Map<String, Object>> yamlDataSources) {
-        return DataSourceConverter.getDataSourceMap(yamlDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> swapToDataSourceConfiguration(entry.getValue()))));
+        Map<String, DataSourceConfiguration> dataSourceConfigMap = yamlDataSources.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> swapToObjectFromMap(entry.getValue())));
+        return DataSourceConverter.getDataSourceMap(dataSourceConfigMap);
     }
     
     /**
-     * Swap to data source configuration.
+     * Swap to data source configuration from map.
      * 
-     * @param yamlConfig YAML configurations
+     * @param yamlConfig yaml config map
      * @return data source configuration
      */
-    public DataSourceConfiguration swapToDataSourceConfiguration(final Map<String, Object> yamlConfig) {
-        Preconditions.checkState(yamlConfig.containsKey(DATA_SOURCE_CLASS_NAME_KEY), "%s can not be null.", DATA_SOURCE_CLASS_NAME_KEY);
+    public DataSourceConfiguration swapToObjectFromMap(final Map<String, Object> yamlConfig) {
+        String dataSourceClassName = Objects.isNull(yamlConfig.get(YAML_DATA_SOURCE_CLASS_NAME)) ? "" : yamlConfig.get(YAML_DATA_SOURCE_CLASS_NAME).toString();
+        Preconditions.checkState(!Strings.isNullOrEmpty(dataSourceClassName), String.format("%s can not be null", YAML_DATA_SOURCE_CLASS_NAME));
         Map<String, Object> newDataSourceMap = new HashMap<>(yamlConfig);
-        newDataSourceMap.remove(DATA_SOURCE_CLASS_NAME_KEY);
-        DataSourceConfiguration result = new DataSourceConfiguration(yamlConfig.get(DATA_SOURCE_CLASS_NAME_KEY).toString());
+        newDataSourceMap.remove(YAML_DATA_SOURCE_CLASS_NAME);
+        DataSourceConfiguration result = new DataSourceConfiguration(dataSourceClassName);
         result.getProps().putAll(newDataSourceMap);
         return result;
     }
@@ -62,12 +66,13 @@ public final class YamlDataSourceConfigurationSwapper {
     /**
      * Swap to map from data source configuration.
      * 
-     * @param dataSourceConfig data source configuration
+     * @param config data source configuration
      * @return data source map
      */
-    public Map<String, Object> swapToMap(final DataSourceConfiguration dataSourceConfig) {
-        Map<String, Object> result = new HashMap<>(dataSourceConfig.getProps());
-        result.put(DATA_SOURCE_CLASS_NAME_KEY, dataSourceConfig.getDataSourceClassName());
+    public Map<String, Object> swapToMap(final DataSourceConfiguration config) {
+        Map<String, Object> result = new HashMap<>();
+        result.putAll(config.getProps());
+        result.put(YAML_DATA_SOURCE_CLASS_NAME, config.getDataSourceClassName());
         return result;
     }
 }
