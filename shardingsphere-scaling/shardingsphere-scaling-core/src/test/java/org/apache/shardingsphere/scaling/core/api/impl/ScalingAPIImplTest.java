@@ -129,7 +129,7 @@ public final class ScalingAPIImplTest {
         assertTrue(jobId.isPresent());
         JobConfiguration jobConfig = scalingAPI.getJobConfig(jobId.get());
         initTableData(jobConfig.getRuleConfig());
-        scalingAPI.resetTargetTable(jobId.get());
+        scalingAPI.reset(jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = scalingAPI.dataConsistencyCheck(jobId.get());
         assertThat(checkResultMap.get("t_order").getTargetCount(), is(0L));
     }
