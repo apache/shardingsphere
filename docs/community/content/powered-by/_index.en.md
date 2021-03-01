@@ -21,7 +21,7 @@ Total: 163 companies.
     <li><a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a></li>
     <li><a href="http://www.cmbc.com.cn/" rel="nofollow">CHINA MINSHENG BANK</a></li>
     <li><a href="https://www.msxf.com/" rel="nofollow">MSXF</a></li>
-    <li>China Mobile Financial Technology
+    <li><a href="https://jf.10086.cn/" rel="nofollow">China Mobile Financial Technology</a></li>
     <li><a href="https://www.9fgroup.com/" rel="nofollow">9fgroup</a></li>
     <li><a href="https://www.haiercash.com/" rel="nofollow">Haier Cash</a></li>
     <li><a href="https://www.xiaoniu88.com/" rel="nofollow">XiaoNiu88</a></li>
