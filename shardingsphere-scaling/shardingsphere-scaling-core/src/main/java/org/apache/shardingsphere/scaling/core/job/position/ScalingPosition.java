@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job.position;
 
 /**
- * Position interface.
+ * Scaling position.
  */
-public interface Position<T> extends Comparable<T> {
+public interface ScalingPosition<T> extends Comparable<T> {
 }

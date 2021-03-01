@@ -37,7 +37,7 @@ import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCData
 import org.apache.shardingsphere.scaling.core.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractRowsEvent;
@@ -70,7 +70,7 @@ public final class MySQLBinlogDumper extends AbstractScalingExecutor implements 
     @Setter
     private Channel channel;
     
-    public MySQLBinlogDumper(final DumperConfiguration dumperConfig, final Position<BinlogPosition> binlogPosition) {
+    public MySQLBinlogDumper(final DumperConfiguration dumperConfig, final ScalingPosition<BinlogPosition> binlogPosition) {
         this.binlogPosition = (BinlogPosition) binlogPosition;
         this.dumperConfig = dumperConfig;
         Preconditions.checkArgument(dumperConfig.getDataSourceConfig() instanceof StandardJDBCDataSourceConfiguration, "MySQLBinlogDumper only support StandardJDBCDataSourceConfiguration");

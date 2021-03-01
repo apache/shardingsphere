@@ -36,8 +36,8 @@ import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCData
 import org.apache.shardingsphere.scaling.core.executor.AbstractScalingExecutor;
 import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
 import org.apache.shardingsphere.scaling.core.job.position.PrimaryKeyPosition;
+import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -106,7 +106,7 @@ public abstract class AbstractInventoryDumper extends AbstractScalingExecutor im
         }
     }
     
-    private String getWhereCondition(final String primaryKey, final Position<?> position) {
+    private String getWhereCondition(final String primaryKey, final ScalingPosition<?> position) {
         if (null == primaryKey || null == position) {
             return "";
         }
@@ -114,7 +114,7 @@ public abstract class AbstractInventoryDumper extends AbstractScalingExecutor im
         return String.format("WHERE %s BETWEEN %d AND %d", primaryKey, primaryKeyPosition.getBeginValue(), primaryKeyPosition.getEndValue());
     }
     
-    private Position<?> newPosition(final ResultSet rs) throws SQLException {
+    private ScalingPosition<?> newPosition(final ResultSet rs) throws SQLException {
         if (null == inventoryDumperConfig.getPrimaryKey()) {
             return new PlaceholderPosition();
         }

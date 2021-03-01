@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 
 /**
  * Binlog Position.
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.scaling.core.job.position.Position;
 @AllArgsConstructor
 @Setter
 @Getter
-public final class BinlogPosition implements Position<BinlogPosition> {
+public final class BinlogPosition implements ScalingPosition<BinlogPosition> {
     
     private final String filename;
     
