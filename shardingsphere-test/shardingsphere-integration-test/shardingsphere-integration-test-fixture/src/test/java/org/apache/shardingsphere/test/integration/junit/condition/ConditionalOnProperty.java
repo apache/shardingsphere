@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.junit.condition;
 
-import org.apache.shardingsphere.test.integration.junit.annotation.Conditional;
+import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITConditional;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Conditional(OnPropertyConditional.class)
+@ShardingSphereITConditional(OnPropertyConditional.class)
 public @interface ConditionalOnProperty {
     
     /**

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.junit.runner;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.junit.annotation.Inject;
+import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.resolver.ConditionResolver;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
@@ -45,7 +45,7 @@ public class ShardingSphereITSubCaseRunner extends BlockJUnit4ClassRunner {
     @Override
     protected Object createTest() throws Exception {
         final Object testInstance = super.createTest();
-        getTestClass().getAnnotatedFields(Inject.class)
+        getTestClass().getAnnotatedFields(ShardingSphereITInject.class)
                 .forEach(e -> {
                     try {
                         Field field = e.getField();
@@ -62,17 +62,6 @@ public class ShardingSphereITSubCaseRunner extends BlockJUnit4ClassRunner {
         return testInstance;
     }
 
-//    @Override
-//    protected List<FrameworkMethod> computeTestMethods() {
-//        return super.computeTestMethods().stream().filter(e -> {
-//            if (resolver.filter(e)) {
-//                log.warn("{} was ignored.", e.getMethod());
-//                return true;
-//            }
-//            return false;
-//        }).collect(Collectors.toList());
-//    }
-    
     @Override
     protected Statement withBeforeClasses(final Statement statement) {
         // skip @BeforeClass

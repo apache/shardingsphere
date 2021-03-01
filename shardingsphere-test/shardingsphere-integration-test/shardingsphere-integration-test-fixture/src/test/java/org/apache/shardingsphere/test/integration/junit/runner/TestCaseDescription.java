@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.common.ExecutionMode;
-import org.apache.shardingsphere.test.integration.junit.annotation.StorageType;
+import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITStorageType;
 
 @Getter
 @Builder
@@ -52,8 +52,8 @@ public class TestCaseDescription {
      *
      * @return storage type
      */
-    public StorageType getStorageType() {
-        return StorageType.valueOf(database);
+    public ShardingSphereITStorageType getStorageType() {
+        return ShardingSphereITStorageType.valueOf(database);
     }
     
     /**

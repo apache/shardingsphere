@@ -15,22 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.annotation;
+package org.apache.shardingsphere.test.integration.junit.compose;
 
-import org.apache.shardingsphere.test.integration.junit.compose.ContainerCompose;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-/**
- * The field will be auto injected by {@link ContainerCompose} when it is marked by the annotation.
- */
-@Documented
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Inject {
-
+public class ContainerNotSupportedException extends Exception {
 }

@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.integration.junit.annotation.Inject;
+import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.annotation.XmlResource;
 import org.apache.shardingsphere.test.integration.junit.processor.Processor;
 import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
@@ -53,7 +53,7 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     @Getter
     private boolean fake;
     
-    @Inject
+    @ShardingSphereITInject
     @Getter
     private TestCaseDescription description;
     

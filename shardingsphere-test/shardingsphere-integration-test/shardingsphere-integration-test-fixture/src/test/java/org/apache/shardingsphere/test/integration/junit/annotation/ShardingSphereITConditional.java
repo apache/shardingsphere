@@ -15,7 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.compose;
+package org.apache.shardingsphere.test.integration.junit.annotation;
 
-public class NotSupportedException extends Exception {
+import org.apache.shardingsphere.test.integration.junit.condition.ShardingSphereITCondition;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target(ElementType.ANNOTATION_TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ShardingSphereITConditional {
+    
+    /**
+     * Container activated conditional.
+     *
+     * @return condition
+     */
+    Class<? extends ShardingSphereITCondition> value();
+    
 }

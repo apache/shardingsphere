@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.junit.annotation.ContainerInitializer;
-import org.apache.shardingsphere.test.integration.junit.annotation.Inject;
+import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.annotation.OnContainer;
 import org.apache.shardingsphere.test.integration.junit.container.MySQLContainer;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereAdapterContainer;
@@ -127,7 +127,7 @@ public class ContainerCompose implements Closeable {
                 case STORAGE:
                     return createStorageContainer();
                 case COORDINATOR:
-                    throw new NotSupportedException();
+                    throw new ContainerNotSupportedException();
                 default:
                     return null;
             }
@@ -165,7 +165,7 @@ public class ContainerCompose implements Closeable {
             fields.addAll(Arrays.asList(klass.getDeclaredFields()));
         }
         fields.stream()
-                .filter(e -> e.isAnnotationPresent(Inject.class))
+                .filter(e -> e.isAnnotationPresent(ShardingSphereITInject.class))
                 .forEach(e -> {
                     Class<?> type = e.getType();
                     e.setAccessible(true);

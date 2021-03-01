@@ -31,7 +31,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.junit.annotation.Inject;
+import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.junit.After;
 import org.junit.Before;
 
@@ -58,7 +58,7 @@ import static org.junit.Assert.assertThat;
 @Getter(AccessLevel.PROTECTED)
 public abstract class BatchITCase extends BaseITCase {
     
-    @Inject
+    @ShardingSphereITInject
     @Getter
     // Would it be better to use IntegrationTestCase?
     private IntegrationTestCase testCase;

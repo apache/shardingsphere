@@ -22,7 +22,7 @@ import org.apache.shardingsphere.test.integration.junit.container.H2Container;
 import org.apache.shardingsphere.test.integration.junit.container.MySQLContainer;
 import org.apache.shardingsphere.test.integration.junit.container.StorageContainer;
 
-public enum StorageType {
+public enum ShardingSphereITStorageType {
     
     MySQL(MySQLContainer.class),
     
@@ -31,7 +31,7 @@ public enum StorageType {
     @Getter
     private final Class<? extends StorageContainer> klass;
     
-    StorageType(final Class<? extends StorageContainer> klass) {
+    ShardingSphereITStorageType(final Class<? extends StorageContainer> klass) {
         this.klass = klass;
     }
 }

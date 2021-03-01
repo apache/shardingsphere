@@ -15,15 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.annotation;
+package org.apache.shardingsphere.test.integration.junit.condition;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.Annotation;
 
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface AfterSuite {
-
+@FunctionalInterface
+public interface ShardingSphereITCondition<T extends Annotation> {
+    
+    /**
+     * Prediction the conditional.
+     *
+     * @param annotation annotation
+     * @return result
+     */
+    boolean matches(T annotation);
+    
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.integration.junit.resolver;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.integration.junit.annotation.Conditional;
+import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITConditional;
 import org.junit.runners.model.Annotatable;
 import org.junit.runners.model.TestClass;
 
@@ -38,9 +38,9 @@ public class ConditionResolver {
      */
     public boolean filter(final Annotatable annotatable) {
         return Arrays.stream(annotatable.getAnnotations())
-                .filter(e -> e.annotationType().isAnnotationPresent(Conditional.class))
+                .filter(e -> e.annotationType().isAnnotationPresent(ShardingSphereITConditional.class))
                 .map(e -> {
-                    Conditional conditional = e.annotationType().getAnnotation(Conditional.class);
+                    ShardingSphereITConditional conditional = e.annotationType().getAnnotation(ShardingSphereITConditional.class);
                     return invokeExplosively(conditional, e);
                 })
                 .reduce((a, b) -> a && b)
@@ -48,7 +48,7 @@ public class ConditionResolver {
     }
     
     @SuppressWarnings("unchecked")
-    private boolean invokeExplosively(final Conditional conditional, final Annotation annotation) {
+    private boolean invokeExplosively(final ShardingSphereITConditional conditional, final Annotation annotation) {
         try {
             return conditional.value().newInstance().matches(annotation);
             // CHECKSTYLE:OFF

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironme
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.annotation.ContainerInitializer;
 import org.apache.shardingsphere.test.integration.junit.annotation.ContainerType;
-import org.apache.shardingsphere.test.integration.junit.annotation.Inject;
+import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.annotation.OnContainer;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.junit.container.StorageContainer;
@@ -65,22 +65,22 @@ public abstract class BaseITCase {
     @OnContainer(name = "storage", type = ContainerType.STORAGE, hostName = "mysql.db.host")
     private static StorageContainer storage;
     
-    @Inject
+    @ShardingSphereITInject
     private IntegrationTestCaseAssertion assertion;
     
-    @Inject
+    @ShardingSphereITInject
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    @Inject
+    @ShardingSphereITInject
     private String statement;
     
-    @Inject
+    @ShardingSphereITInject
     private TestCaseDescription description;
     
-    @Inject
+    @ShardingSphereITInject
     private SQLExecuteType sqlExecuteType;
     
-    @Inject
+    @ShardingSphereITInject
     private String parentPath;
     
     private DataSource dataSource;

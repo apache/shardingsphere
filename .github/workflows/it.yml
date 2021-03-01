@@ -24,8 +24,8 @@ on:
     branches: [ master ]
 
 jobs:
-  mysql-proxy-db:
-    name: MySQL with DB
+  Scenarios:
+    name: DB
     runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:

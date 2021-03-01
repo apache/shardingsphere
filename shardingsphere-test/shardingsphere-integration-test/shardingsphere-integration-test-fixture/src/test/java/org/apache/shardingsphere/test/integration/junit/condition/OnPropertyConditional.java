@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.junit.condition;
 
-public class OnPropertyConditional implements Condition<ConditionalOnProperty> {
+public class OnPropertyConditional implements ShardingSphereITCondition<ConditionalOnProperty> {
     
     @Override
     public boolean matches(final ConditionalOnProperty annotation) {

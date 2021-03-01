@@ -29,7 +29,7 @@ import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment
 import org.apache.shardingsphere.test.integration.junit.annotation.ParameterFilter;
 import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
 import org.apache.shardingsphere.test.integration.junit.compose.ContainerCompose;
-import org.apache.shardingsphere.test.integration.junit.compose.NotSupportedException;
+import org.apache.shardingsphere.test.integration.junit.compose.ContainerNotSupportedException;
 import org.apache.shardingsphere.test.integration.junit.resolver.ConditionResolver;
 import org.junit.runner.Runner;
 import org.junit.runners.Suite;
@@ -125,7 +125,7 @@ public class ShardingSphereITRunner extends Suite {
             case SINGLE:
                 return getAssertionParameters(klass, description);
             default:
-                throw new NotSupportedException();
+                throw new ContainerNotSupportedException();
         }
     }
     
