@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDa
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingInstanceBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingTableBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.complex.ShardingComplexRoutingEngine;
-import org.apache.shardingsphere.sharding.route.engine.type.single.SingleTableRoutingEngine;
+import org.apache.shardingsphere.sharding.route.engine.type.single.SingleTablesRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.unicast.ShardingUnicastRoutingEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -123,7 +123,7 @@ public final class ShardingRouteEngineFactoryTest {
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("tbl"));
         when(shardingRule.tableRuleExists(sqlStatementContext.getTablesContext().getTableNames())).thenReturn(false);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
-        assertThat(actual, instanceOf(SingleTableRoutingEngine.class));
+        assertThat(actual, instanceOf(SingleTablesRoutingEngine.class));
     }
     
     @Test
@@ -228,7 +228,7 @@ public final class ShardingRouteEngineFactoryTest {
         SQLStatement sqlStatement = mock(SQLStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
-        assertThat(actual, instanceOf(SingleTableRoutingEngine.class));
+        assertThat(actual, instanceOf(SingleTablesRoutingEngine.class));
     }
     
     @Test
@@ -238,7 +238,7 @@ public final class ShardingRouteEngineFactoryTest {
         SQLStatement sqlStatement = mock(MySQLSelectStatement.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
-        assertThat(actual, instanceOf(SingleTableRoutingEngine.class));
+        assertThat(actual, instanceOf(SingleTablesRoutingEngine.class));
     }
     
     @Test
@@ -315,7 +315,7 @@ public final class ShardingRouteEngineFactoryTest {
         when(shardingRule.tableRuleExists(tableNames)).thenReturn(false);
         tableNames.add("table_1");
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
-        assertThat(actual, instanceOf(SingleTableRoutingEngine.class));
+        assertThat(actual, instanceOf(SingleTablesRoutingEngine.class));
     }
     
     @Test
@@ -335,7 +335,7 @@ public final class ShardingRouteEngineFactoryTest {
         when(shardingRule.tableRuleExists(tableNames)).thenReturn(false);
         tableNames.add("table_1");
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
-        assertThat(actual, instanceOf(SingleTableRoutingEngine.class));
+        assertThat(actual, instanceOf(SingleTablesRoutingEngine.class));
     }
     
 }

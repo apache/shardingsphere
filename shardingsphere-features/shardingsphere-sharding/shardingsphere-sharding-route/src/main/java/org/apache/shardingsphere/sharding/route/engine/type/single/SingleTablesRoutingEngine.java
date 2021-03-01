@@ -32,17 +32,13 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropTableSta
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 /**
  * Single table engine.
  */
 @RequiredArgsConstructor
-public final class SingleTableRoutingEngine implements ShardingRouteEngine {
+public final class SingleTablesRoutingEngine implements ShardingRouteEngine {
     
     private final Collection<String> logicTables;
     
@@ -50,15 +46,18 @@ public final class SingleTableRoutingEngine implements ShardingRouteEngine {
     
     @Override
     public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
-        if (sqlStatement instanceof CreateTableStatement) {
+        if (sqlStatement instanceof CreateTableStatement || containsDropTableIfExistClause()) {
             routeContext.getRouteUnits().add(getRandomRouteUnit(shardingRule));
         } else {
-            Collection<RouteUnit> routeUnits = getTargetRouteUnits(shardingRule);
-            routeContext.getRouteUnits().addAll(routeUnits);
-            if (1 < routeUnits.size()) {
+            fillRouteContext(shardingRule, routeContext);
+            if (1 < routeContext.getRouteUnits().size()) {
                 routeContext.setToCalcite(true);
             }
         }
+    }
+    
+    private boolean containsDropTableIfExistClause() {
+        return sqlStatement instanceof DropTableStatement && DropTableStatementHandler.containsIfExistClause((DropTableStatement) sqlStatement);
     }
     
     private RouteUnit getRandomRouteUnit(final ShardingRule shardingRule) {
@@ -68,29 +67,14 @@ public final class SingleTableRoutingEngine implements ShardingRouteEngine {
         return new RouteUnit(new RouteMapper(dataSource, dataSource), Collections.singletonList(new RouteMapper(table, table)));
     }
     
-    private Collection<RouteUnit> getTargetRouteUnits(final ShardingRule shardingRule) {
-        Map<RouteMapper, Collection<RouteMapper>> result = new LinkedHashMap<>();
+    private void fillRouteContext(final ShardingRule shardingRule, final RouteContext routeContext) {
         for (String each : logicTables) {
-            if (shardingRule.getSingleTableRules().containsKey(each)) {
-                fillRouteUnits(each, shardingRule.getSingleTableRules().get(each).getDataSourceName(), result);
-            } else if (containsDropTableIfExistClause()) {
-                return Collections.singletonList(getRandomRouteUnit(shardingRule));
-            } else {
+            if (!shardingRule.getSingleTableRules().containsKey(each)) {
                 throw new ShardingSphereException("`%s` single table does not exist.", each);
             }
+            String dataSource = shardingRule.getSingleTableRules().get(each).getDataSourceName();
+            RouteMapper dataSourceMapper = new RouteMapper(dataSource, dataSource);
+            routeContext.putRouteUnit(dataSourceMapper, new RouteMapper(each, each));
         }
-        return result.entrySet().stream().map(entry -> new RouteUnit(entry.getKey(), entry.getValue())).collect(Collectors.toList());
-    }
-    
-    private void fillRouteUnits(final String table, final String dataSource, final Map<RouteMapper, Collection<RouteMapper>> routeMappers) {
-        RouteMapper dataSourceMapper = new RouteMapper(dataSource, dataSource);
-        if (!routeMappers.containsKey(dataSourceMapper)) {
-            routeMappers.put(dataSourceMapper, new LinkedHashSet<>());
-        }
-        routeMappers.get(dataSourceMapper).add(new RouteMapper(table, table));
-    }
-    
-    private boolean containsDropTableIfExistClause() {
-        return sqlStatement instanceof DropTableStatement && DropTableStatementHandler.containsIfExistClause((DropTableStatement) sqlStatement);
     }
 }
