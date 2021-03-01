@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
 
 ## Who are using ShardingSphere?
 
-Total: 160 companies.
+Total: 161 companies.
 
 ### Financial Industry
 <ul>
@@ -119,6 +119,7 @@ Total: 160 companies.
     <li><a href="https://www.tujia.com/" rel="nofollow">TuJia</a></li>
     <li><a href="https://www.mafengwo.cn/" rel="nofollow">MaFengWo</a></li>
     <li><a href="https://www.fotoplace.cc/" rel="nofollow">Fotoplace</a></li>
+    <li><a href="https://travelingpin.com" rel="nofollow">travelingpin</a></li>
 </ul>
 
 ### E-education
