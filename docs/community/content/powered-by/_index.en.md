@@ -66,17 +66,17 @@ Total: 163 companies.
     <li><a href="https://www.jddglobal.com/" rel="nofollow">JD Digits</a></li>
     <li>JD’s Big Data and Intelligent Supply Chain Department
     <li><a href="https://www.jdcloud.com/cn/" rel="nofollow">JDCloud</a></li>
+    <li><a href="https://aifanfan.baidu.com/" rel="nofollow">Baidu aifanfan</a></li>
+    <li><a href="https://www.itrus.com.cn/" rel="nofollow">ITrusChina</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">ZhenXin Safe</a></li>
     <li><a href="http://www.cloudansys.com/" rel="nofollow">CloudANSYS</a></li>
     <li><a href="http://www.compasshz.com/" rel="nofollow">Compasshz</a></li>
     <li><a href="http://www.cyberplus.com.cn/" rel="nofollow">CyberPlus</a></li>
     <li><a href="http://caas.com.cn/" rel="nofollow">CAAS</a></li>
     <li><a href="https://www.shebaotong.com/" rel="nofollow">SheBaoTong</a></li>
-    <li><a href="https://www.itrus.com.cn/" rel="nofollow">ITrusChina</a></li>
     <li><a href="http://www.dtchuxing.com/" rel="nofollow">Bus Cloud</a></li>
     <li><a href="http://www.ushareit.com/" rel="nofollow">Shareit</a></li>
     <li><a href="https://www.xforceplus.com/" rel="nofollow">Xforceplus</a></li>
-    <li><a href="https://aifanfan.baidu.com/" rel="nofollow">Baidu aifanfan</a></li>
     <li><a href="http://www.meicloud.com/" rel="nofollow">Midea Cloud</a></li>
     <li><a href="http://www.shangquanquan.com/" rel="nofollow">shangquanquan</a></li>
     <li><a href="https://www.glodon.com/" rel="nofollow">Glodon</a></li>
@@ -86,12 +86,12 @@ Total: 163 companies.
 <ul>
     <li><a href="https://www.didiglobal.com/" rel="nofollow">DiDi Global</a></li>
     <li><a href="https://www.helloglobal.com/" rel="nofollow">HelloGlobal</a></li>
+    <li><a href="https://www.01zhuanche.com/" rel="nofollow">ShouQi</a></li>
+    <li><a href="https://www.trawe.cn/" rel="nofollow">Trawe</a></li>
+    <li><a href="https://www.souche.com/" rel="nofollow">SouChe</a></li>
     <li><a href="http://www.f6car.com/" rel="nofollow">F6 Car</a></li>
     <li><a href="http://www.juneyao.com/" rel="nofollow">JuneYao</a></li>
-    <li><a href="https://www.trawe.cn/" rel="nofollow">Trawe</a></li>
     <li><a href="https://4pyun.com/" rel="nofollow">4pyun</a></li>
-    <li><a href="https://www.01zhuanche.com/" rel="nofollow">ShouQi</a></li>
-    <li><a href="https://www.souche.com/" rel="nofollow">SouChe</a></li>
     <li><a href="https://www.supersoco.com/" rel="nofollow">Super SOCO</a></li>
     <li><a href="http://www.jtkjbike.com/" rel="nofollow">JTKJBike</a></li>
 </ul>
@@ -136,17 +136,17 @@ Total: 163 companies.
 
 ### E-entertainment
 <ul>
+    <li><a href="https://y.tencentmusic.com" rel="nofollow">Tencent Music</a></li>
     <li><a href="https://www.bilibili.com/" rel="nofollow">Bilibili</a></li>
-    <li><a href="https://www.douyu.com/" rel="nofollow">DOUYU.COM</a></li>
     <li><a href="https://www.iqiyi.com/" rel="nofollow">Iqiyi</a></li>
+    <li><a href="https://www.yy.com/" rel="nofollow">YY</a></li>
+    <li><a href="https://www.douyu.com/" rel="nofollow">DOUYU.COM</a></li>
     <li><a href="https://www.soulapp.cn/" rel="nofollow">App Soul</a></li>
     <li><a href="https://www.lrlz.com/" rel="nofollow">Lily&Beauty</a></li>
     <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
     <li><a href="http://www.yaduo.com/" rel="nofollow">YaDuo</a></li>
     <li><a href="https://www.elelive.net/" rel="nofollow">elelive.tv</a></li>
     <li><a href="http://read.zhulang.com/" rel="nofollow">LianShang Literature</a></li>
-    <li><a href="https://www.yy.com/" rel="nofollow">YY</a></li>
-    <li><a href="https://y.tencentmusic.com" rel="nofollow">Tencent Music</a></li>
 </ul>
 
 ### News
@@ -156,8 +156,8 @@ Total: 163 companies.
     <li><a href="https://www.autohome.com.cn/" rel="nofollow">AutoHome</a></li>
     <li><a href="https://auto.ifeng.com/" rel="nofollow">Auto Ifeng</a></li>
     <li><a href="https://500px.me/" rel="nofollow">500px</a></li>
-    <li><a href="https://www.xiachufang.com/" rel="nofollow">XiaChuFang</a></li>
     <li><a href="https://www.yidianzixun.com/" rel="nofollow">YiDianZiXun</a></li>
+    <li><a href="https://www.xiachufang.com/" rel="nofollow">XiaChuFang</a></li>
 </ul>
 
 ### O2O
@@ -181,10 +181,10 @@ Total: 163 companies.
 
 ### Communication
 <ul>
-    <li><a href="https://www.tcl.com/" rel="nofollow">TCL</a></li>
-    <li><a href="https://www.oppo.com/" rel="nofollow">OPPO</a></li>
     <li><a href="https://www.iflytek.com/" rel="nofollow">Iflytek</a></li>
+    <li><a href="https://www.oppo.com/" rel="nofollow">OPPO</a></li>
     <li><a href="https://www.vivo.com/" rel="nofollow">VIVO</a></li>
+    <li><a href="https://www.tcl.com/" rel="nofollow">TCL</a></li>
 </ul>
 
 ### Internet of Things
@@ -198,11 +198,11 @@ Total: 163 companies.
 ### Software Development Services
 <ul>
     <li><a href="http://www.hydee.cn/" rel="nofollow">HYDEE</a></li>
-    <li><a href="http://www.sdbaichang.com/" rel="nofollow">BaiChang</a></li>
     <li><a href="http://www.hiveview.com/" rel="nofollow">Hiveview</a></li>
-    <li><a href="https://www.keruyun.com/" rel="nofollow">KeRuYun</a></li>
-    <li><a href="http://www.certusnet.com.cn/" rel="nofollow">CertusNet</a></li>
     <li><a href="http://www.cibnvst.com/" rel="nofollow">CIBN</a></li>
+    <li><a href="https://www.keruyun.com/" rel="nofollow">KeRuYun</a></li>
+    <li><a href="http://www.sdbaichang.com/" rel="nofollow">BaiChang</a></li>
+    <li><a href="http://www.certusnet.com.cn/" rel="nofollow">CertusNet</a></li>
     <li><a href="https://ruff.io/" rel="nofollow">Ruff</a></li>
     <li><a href="http://www.19pay.com.cn/" rel="nofollow">19pay</a></li>
     <li><a href="https://www.youx.mobi/" rel="nofollow">YouXuan</a></li>
@@ -230,12 +230,12 @@ Total: 163 companies.
 
 ### Health Care
 <ul>
+    <li><a href="https://www.keep.com/">Keep</a></li>
+    <li><a href="http://www.dxy.cn/">DXY</a></li>
+    <li><a href="https://www.ddky.com/" rel="nofollow">DDKY</a></li>
     <li><a href="https://www.myweimai.com/" rel="nofollow">MyWeiMai</a></li>
     <li><a href="http://www.gaojihealth.com/" rel="nofollow">GaoJiHealth</a></li>
     <li><a href="https://www.zyhealth.com/" rel="nofollow">ZYHealth</a></li>
-    <li><a href="https://www.ddky.com/" rel="nofollow">DDKY</a></li>
-    <li><a href="https://www.keep.com/">Keep</a></li>
-    <li><a href="http://www.dxy.cn/">DXY</a></li>
     <li><a href="https://www.mytijian.com">Mytijian</a></li>
     <li><a href="https://cloud.guahao.cn/">WeDoctor Cloud</a></li>
     <li><a href="http://www.huxleymedical.tech/">Hualian Medical</a></li>
