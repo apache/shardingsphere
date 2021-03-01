@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import com.google.common.base.Preconditions;
+import java.sql.Array;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
@@ -268,5 +269,12 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
         } else {
             shardingTransactionManager.rollback();
         }
+    }
+    
+    @Override
+    public Array createArrayOf(final String typeName, final Object[] elements) throws SQLException {
+        String dataSourceName = getDataSourceMap().entrySet().iterator().next().getKey();
+        Connection connection = getConnection(dataSourceName);
+        return connection.createArrayOf(typeName, elements);
     }
 }

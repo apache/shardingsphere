@@ -79,11 +79,6 @@ public final class UnsupportedOperationPreparedStatementTest {
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertSetArray() throws SQLException {
-        shardingSpherePreparedStatement.setArray(1, null);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertSetRowId() throws SQLException {
         shardingSpherePreparedStatement.setRowId(1, null);
     }
