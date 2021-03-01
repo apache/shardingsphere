@@ -127,7 +127,7 @@ public class ContainerCompose implements Closeable {
                 case STORAGE:
                     return createStorageContainer();
                 case COORDINATOR:
-                    throw new ContainerNotSupportedException();
+                    throw new NotSupportedException();
                 default:
                     return null;
             }

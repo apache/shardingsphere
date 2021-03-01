@@ -17,5 +17,5 @@
 
 package org.apache.shardingsphere.test.integration.junit.compose;
 
-public class ContainerNotSupportedException extends Exception {
+public class NotSupportedException extends Exception {
 }
