@@ -32,10 +32,10 @@ public final class StandardLock extends AbstractShardingSphereLock {
     private final ReentrantLock lock = new ReentrantLock();
     
     @Override
-    public boolean tryGlobalLock(final long timeout, final TimeUnit timeUnit) {
+    public boolean tryGlobalLock(final long timeoutMilliseconds) {
         boolean result = false;
         try {
-            result = lock.tryLock(timeout, timeUnit);
+            result = lock.tryLock(timeoutMilliseconds, TimeUnit.MILLISECONDS);
         } catch (final InterruptedException ignored) {
         }
         if (result) {

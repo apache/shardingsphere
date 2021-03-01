@@ -30,7 +30,6 @@ import org.apache.shardingsphere.proxy.frontend.state.ProxyState;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyStateContext;
 
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Lock proxy state.
@@ -46,7 +45,7 @@ public final class LockProxyState implements ProxyState {
     
     private void block(final ChannelHandlerContext context, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine) {
         Long lockTimeoutMilliseconds = ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS);
-        if (!ProxyContext.getInstance().getLock().await(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
+        if (!ProxyContext.getInstance().getLock().await(lockTimeoutMilliseconds)) {
             doError(context, databaseProtocolFrontendEngine, new LockWaitTimeoutException(lockTimeoutMilliseconds));
         }
     }

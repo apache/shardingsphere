@@ -50,7 +50,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -136,7 +135,7 @@ public final class DriverJDBCExecutor {
     
     private boolean tryGlobalLock(final SQLStatement sqlStatement, final long lockTimeoutMilliseconds) {
         if (needLock(sqlStatement)) {
-            if (!metaDataContexts.getLock().tryGlobalLock(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
+            if (!metaDataContexts.getLock().tryGlobalLock(lockTimeoutMilliseconds)) {
                 throw new ShardingSphereException("Service lock wait timeout of %s ms exceeded", lockTimeoutMilliseconds);
             }
             return true;

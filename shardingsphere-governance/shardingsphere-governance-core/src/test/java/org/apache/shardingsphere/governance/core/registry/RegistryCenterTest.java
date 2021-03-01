@@ -86,7 +86,7 @@ public final class RegistryCenterTest {
     
     @Test
     public void assertTryGlobalLock() {
-        registryCenter.tryGlobalLock(50L, TimeUnit.MILLISECONDS);
+        registryCenter.tryGlobalLock(50L);
         verify(registryRepository).tryLock(eq(new LockNode().getGlobalLockNodePath()), eq(50L), eq(TimeUnit.MILLISECONDS));
     }
     

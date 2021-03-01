@@ -28,7 +28,6 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Lock driver state.
@@ -44,7 +43,7 @@ public final class LockDriverState implements DriverState {
     
     private void block(final MetaDataContexts metaDataContexts) {
         long lockTimeoutMilliseconds = metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS);
-        if (!metaDataContexts.getLock().await(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
+        if (!metaDataContexts.getLock().await(lockTimeoutMilliseconds)) {
             throw new ShardingSphereException("Service lock wait timeout of %s ms exceeded", lockTimeoutMilliseconds); 
         }
     }
