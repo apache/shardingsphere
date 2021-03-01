@@ -29,13 +29,13 @@ public abstract class AbstractShardingSphereLock implements ShardingSphereLock {
     
     private final Lock lock = new ReentrantLock();
     
-    private final Condition innerCondition = lock.newCondition();
+    private final Condition condition = lock.newCondition();
     
     @Override
     public final boolean await(final Long timeoutMilliseconds) {
         lock.lock();
         try {
-            return innerCondition.await(timeoutMilliseconds, TimeUnit.MILLISECONDS);
+            return condition.await(timeoutMilliseconds, TimeUnit.MILLISECONDS);
         } catch (final InterruptedException ignored) {
         } finally {
             lock.unlock();
@@ -47,7 +47,7 @@ public abstract class AbstractShardingSphereLock implements ShardingSphereLock {
     public final void signalAll() {
         lock.lock();
         try {
-            innerCondition.signalAll();
+            condition.signalAll();
         } finally {
             lock.unlock();
         }
