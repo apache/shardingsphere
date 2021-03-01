@@ -282,6 +282,7 @@ public final class ShardingRouteEngineFactoryTest {
         tableNames.add("");
         when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
         when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
+        when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, metaData, sqlStatementContext, shardingConditions, props);
         assertThat(actual, instanceOf(ShardingStandardRoutingEngine.class));
     }
