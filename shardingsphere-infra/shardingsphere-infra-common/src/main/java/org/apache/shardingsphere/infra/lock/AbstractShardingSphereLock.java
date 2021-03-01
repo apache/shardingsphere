@@ -27,29 +27,29 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public abstract class AbstractShardingSphereLock implements ShardingSphereLock {
     
-    private final Lock innerLock = new ReentrantLock();
+    private final Lock lock = new ReentrantLock();
     
-    private final Condition innerCondition = innerLock.newCondition();
+    private final Condition condition = lock.newCondition();
     
     @Override
     public final boolean await(final Long timeoutMilliseconds) {
-        innerLock.lock();
+        lock.lock();
         try {
-            return innerCondition.await(timeoutMilliseconds, TimeUnit.MILLISECONDS);
+            return condition.await(timeoutMilliseconds, TimeUnit.MILLISECONDS);
         } catch (final InterruptedException ignored) {
         } finally {
-            innerLock.unlock();
+            lock.unlock();
         }
         return false;
     }
     
     @Override
     public final void signalAll() {
-        innerLock.lock();
+        lock.lock();
         try {
-            innerCondition.signalAll();
+            condition.signalAll();
         } finally {
-            innerLock.unlock();
+            lock.unlock();
         }
     }
 }
