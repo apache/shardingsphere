@@ -19,8 +19,8 @@ package org.apache.shardingsphere.scaling.core.spi;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.executor.dumper.JDBCDumper;
-import org.apache.shardingsphere.scaling.core.executor.dumper.LogDumper;
+import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
+import org.apache.shardingsphere.scaling.core.executor.dumper.InventoryDumper;
 import org.apache.shardingsphere.scaling.core.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
@@ -32,18 +32,18 @@ import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChe
 public interface ScalingEntry extends DatabaseTypeAwareSPI {
     
     /**
-     * Get JDBC dumper type.
+     * Get inventory dumper type.
      *
-     * @return JDBC dumper type
+     * @return inventory dumper type
      */
-    Class<? extends JDBCDumper> getJdbcDumperClass();
+    Class<? extends InventoryDumper> getInventoryDumperClass();
     
     /**
-     * Get log dumper type.
+     * Get incremental dumper type.
      *
-     * @return log dumper type
+     * @return incremental dumper type
      */
-    Class<? extends LogDumper> getLogDumperClass();
+    Class<? extends IncrementalDumper> getIncrementalDumperClass();
     
     /**
      * Get position initializer type.

@@ -49,7 +49,7 @@ import java.sql.SQLException;
  * Abstract JDBC dumper implement.
  */
 @Slf4j
-public abstract class AbstractJDBCDumper extends AbstractScalingExecutor implements JDBCDumper {
+public abstract class AbstractInventoryDumper extends AbstractScalingExecutor implements InventoryDumper {
     
     @Getter(AccessLevel.PROTECTED)
     private final InventoryDumperConfiguration inventoryDumperConfig;
@@ -61,9 +61,9 @@ public abstract class AbstractJDBCDumper extends AbstractScalingExecutor impleme
     @Setter
     private Channel channel;
     
-    protected AbstractJDBCDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
+    protected AbstractInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
         if (!StandardJDBCDataSourceConfiguration.class.equals(inventoryDumperConfig.getDataSourceConfig().getClass())) {
-            throw new UnsupportedOperationException("AbstractJDBCDumper only support JDBCDataSourceConfiguration");
+            throw new UnsupportedOperationException("AbstractInventoryDumper only support StandardJDBCDataSourceConfiguration");
         }
         this.inventoryDumperConfig = inventoryDumperConfig;
         this.dataSourceManager = dataSourceManager;

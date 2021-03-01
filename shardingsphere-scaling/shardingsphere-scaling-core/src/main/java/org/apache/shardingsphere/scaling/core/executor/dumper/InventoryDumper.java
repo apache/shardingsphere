@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.executor.dumper;
 
 /**
- * JDBC dumper.
+ * Inventory dumper.
  */
-public interface JDBCDumper extends Dumper {
+public interface InventoryDumper extends Dumper {
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.scaling.core.executor.dumper;
 
 /**
- * Log dumper.
+ * Incremental dumper.
  */
-public interface LogDumper extends Dumper {
+public interface IncrementalDumper extends Dumper {
 }
