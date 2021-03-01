@@ -17,25 +17,25 @@ chapter = true
 
 ### 金融行业
 <ul>
+    <li><a href="https://www.ccbft.com/" rel="nofollow">建信金融科技</a></li>
+    <li><a href="http://www.cmbc.com.cn/" rel="nofollow">中国民生银行股份有限公司</a></li>
     <li><a href="https://www.jdfcloud.com/" rel="nofollow">京东金融云</a></li>
     <li><a href="https://www.bestpay.com.cn/" rel="nofollow">中国电信翼支付（甜橙金融）</a></li>
-    <li><a href="http://www.cmbc.com.cn/" rel="nofollow">中国民生银行股份有限公司</a></li>
-    <li><a href="https://www.msxf.com/" rel="nofollow">马上金融</a></li>
     <li><a href="https://jf.10086.cn/" rel="nofollow">中移动金融科技</a></li>
+    <li><a href="https://www.360jinrong.net/" rel="nofollow">360数科</a></li>
+    <li><a href="https://www.msxf.com/" rel="nofollow">马上金融</a></li>
     <li><a href="https://www.9fgroup.com/" rel="nofollow">玖富数科</a></li>
-    <li><a href="https://www.haiercash.com/" rel="nofollow">海尔消费金融</a></li>        
+    <li><a href="https://www.haiercash.com/" rel="nofollow">海尔消费金融</a></li>
+    <li><a href="https://www.kjtpay.com/" rel="nofollow">快捷通支付服务有限公司</a></li>
+    <li><a href="https://www.ppdai.com/" rel="nofollow">拍拍贷</a></li>
     <li><a href="https://www.xiaoniu88.com/" rel="nofollow">小牛在线</a></li>
     <li><a href="https://www.huaxiafinance.com/" rel="nofollow">华夏信财</a></li>
     <li><a href="https://www.niiwoo.com/" rel="nofollow">你我金融</a></li>
     <li><a href="https://www.51credit.com/" rel="nofollow">我爱卡</a></li>
     <li><a href="https://www.tuandai.com/" rel="nofollow">团贷网</a></li>
     <li><a href="https://www.cypfintech.com/" rel="nofollow">策赢平台</a></li>
-    <li><a href="https://www.ppdai.com/" rel="nofollow">拍拍贷</a></li>
-    <li><a href="https://www.kjtpay.com/" rel="nofollow">快捷通支付服务有限公司</a></li>
     <li><a href="https://www.ktjr.com/" rel="nofollow">开通金融</a></li>
     <li><a href="https://www.tansun.com/" rel="nofollow">天阳宏业</a></li>
-    <li><a href="https://www.360jinrong.net/" rel="nofollow">360数科</a></li>
-    <li><a href="https://www.ccbft.com/" rel="nofollow">建信金融科技</a></li>
     <li><a href="https://credigo.io/" rel="nofollow">诺景网络</a></li>
 </ul>
 

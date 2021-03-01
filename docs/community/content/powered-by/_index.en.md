@@ -17,25 +17,25 @@ Total: 163 companies.
 
 ### Financial Industry
 <ul>
-    <li><a href="https://www.jdfcloud.com/" rel="nofollow">JDFCloud</a></li>
-    <li><a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a></li>
+    <li><a href="https://www.ccbft.com/" rel="nofollow">CCB Fintech</a></li>
     <li><a href="http://www.cmbc.com.cn/" rel="nofollow">CHINA MINSHENG BANK</a></li>
-    <li><a href="https://www.msxf.com/" rel="nofollow">MSXF</a></li>
+    <li><a href="https://www.jdfcloud.com/" rel="nofollow">JD Financial Cloud</a></li>
+    <li><a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a></li>
     <li><a href="https://jf.10086.cn/" rel="nofollow">China Mobile Financial Technology</a></li>
+    <li><a href="https://www.360jinrong.net/" rel="nofollow">360jinrong</a></li>
+    <li><a href="https://www.msxf.com/" rel="nofollow">MSXF</a></li>
     <li><a href="https://www.9fgroup.com/" rel="nofollow">9fgroup</a></li>
     <li><a href="https://www.haiercash.com/" rel="nofollow">Haier Cash</a></li>
+    <li><a href="https://www.kjtpay.com/" rel="nofollow">KJT pay</a></li>
+    <li><a href="https://www.ppdai.com/" rel="nofollow">PPDai</a></li>
     <li><a href="https://www.xiaoniu88.com/" rel="nofollow">XiaoNiu88</a></li>
     <li><a href="https://www.huaxiafinance.com/" rel="nofollow">HuaXia Finance</a></li>
     <li><a href="https://www.niiwoo.com/" rel="nofollow">Niiwoo</a></li>
     <li><a href="https://www.51credit.com/" rel="nofollow">51credit</a></li>
     <li><a href="https://www.tuandai.com/" rel="nofollow">TuanDai</a></li>
     <li><a href="https://www.cypfintech.com/" rel="nofollow">Cypfintech</a></li>
-    <li><a href="https://www.ppdai.com/" rel="nofollow">PPDai</a></li>
-    <li><a href="https://www.kjtpay.com/" rel="nofollow">KJT pay</a></li>
     <li><a href="https://www.ktjr.com/" rel="nofollow">KTJR</a></li>
     <li><a href="https://www.tansun.com/" rel="nofollow">TANSUN</a></li>
-    <li><a href="https://www.360jinrong.net/" rel="nofollow">360jinrong</a></li>
-    <li><a href="https://www.ccbft.com/" rel="nofollow">CCB Fintech</a></li>
     <li><a href="https://credigo.io/" rel="nofollow">CrediGO</a></li>
 </ul>
 
