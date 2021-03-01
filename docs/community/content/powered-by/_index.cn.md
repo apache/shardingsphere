@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 156 家公司。
+共计 160 家公司。
 
 ### 金融行业
 <ul>
@@ -219,6 +219,10 @@ chapter = true
     <li><a href="http://www.aicmonitor.com/" rel="nofollow">航天智控</a></li>
     <li><a href="http://www.dzzd.com" rel="nofollow">玺信阳光</a></li>
     <li><a href="https://www.garfiel-tech.com/" rel="nofollow">北京加菲猫科技有限公司</a></li>
+    <li><a href="https://wuyuan.io" rel="nofollow">无远开发平台</a></li>
+    <li><a href="https://www.sunyur.com/" rel="nofollow">商越科技</a></li>
+    <li><a href="https://www.yunyuecloud.com/">数字云悦</a></li>
+    
 </ul>
 
 ### 医疗与健康
@@ -230,6 +234,7 @@ chapter = true
     <li><a href="https://www.keep.com/">Keep</a></li>
     <li><a href="http://www.dxy.cn/">丁香园</a></li>
     <li><a href="https://www.mytijian.com">杭州每天健康科技有限公司</a></li>
+    <li><a href="https://cloud.guahao.cn/">微医云</a></li>
 </ul>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
