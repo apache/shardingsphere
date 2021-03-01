@@ -87,16 +87,6 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     }
     
     @Override
-    public ShardingSphereLock getLock() {
-        return lock;
-    }
-    
-    @Override
-    public StateContext getStateContext() {
-        return stateContext;
-    }
-    
-    @Override
     public void close() {
         executorEngine.close();
     }
