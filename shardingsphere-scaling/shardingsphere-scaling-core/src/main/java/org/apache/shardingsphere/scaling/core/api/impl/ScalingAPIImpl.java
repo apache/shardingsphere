@@ -36,6 +36,8 @@ import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +47,8 @@ import java.util.stream.IntStream;
 
 @Slf4j
 public final class ScalingAPIImpl implements ScalingAPI {
+    
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
     @Override
     public List<JobInfo> list() {
@@ -61,6 +65,8 @@ public final class ScalingAPIImpl implements ScalingAPI {
         result.setActive(!jobConfigPOJO.isDisabled());
         result.setShardingTotalCount(jobConfig.getHandleConfig().getShardingTotalCount());
         result.setTables(jobConfig.getHandleConfig().getLogicTables());
+        result.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
+        result.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
         return result;
     }
     
@@ -69,6 +75,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
         log.info("Start scaling job {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         jobConfigPOJO.setDisabled(false);
+        jobConfigPOJO.getProps().remove("stop_time");
         ScalingAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
     }
     
@@ -81,15 +88,16 @@ public final class ScalingAPIImpl implements ScalingAPI {
         }
         log.info("Start scaling job by {}", YamlEngine.marshal(jobConfig));
         ScalingAPIFactory.getRegistryRepositoryAPI().persist(String.format("%s/%d", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), ScalingJob.class.getCanonicalName());
-        ScalingAPIFactory.getRegistryRepositoryAPI().persist(String.format("%s/%d/config", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), createElasticJobConfig(jobConfig));
+        ScalingAPIFactory.getRegistryRepositoryAPI().persist(String.format("%s/%d/config", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), createJobConfig(jobConfig));
         return Optional.of(jobConfig.getHandleConfig().getJobId());
     }
     
-    private String createElasticJobConfig(final JobConfiguration jobConfig) {
+    private String createJobConfig(final JobConfiguration jobConfig) {
         JobConfigurationPOJO jobConfigPOJO = new JobConfigurationPOJO();
         jobConfigPOJO.setJobName(String.valueOf(jobConfig.getHandleConfig().getJobId()));
         jobConfigPOJO.setShardingTotalCount(jobConfig.getHandleConfig().getShardingTotalCount());
         jobConfigPOJO.setJobParameter(YamlEngine.marshal(jobConfig));
+        jobConfigPOJO.getProps().setProperty("create_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
         return YamlEngine.marshal(jobConfigPOJO);
     }
     
@@ -98,6 +106,7 @@ public final class ScalingAPIImpl implements ScalingAPI {
         log.info("Stop scaling job {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         jobConfigPOJO.setDisabled(true);
+        jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
         ScalingAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
     }
     
