@@ -1,0 +1,52 @@
+baseURL = "https://shardingsphere.apache.org/blog/"
+canonifyurls = true
+languageCode = "en-us"
+theme = "tale4zh"
+defaultContentLanguage = "en"
+defaultContentLanguageInSubdir= true
+
+
+[Languages]
+[Languages.en]
+title = "ShardingSphere - Blog"
+weight = 1
+languageName = "English"
+
+[Languages.cn]
+title = "ShardingSphere - 博客"
+weight = 2
+languageName = "中文"
+
+# Change default color scheme with a variant one. Can be "red", "blue", "green".
+themeVariant = "black"
+# Disable search function. It will hide search bar
+disableSearch = true
+editURL = "https://github.com/apache/shardingsphere/tree/master/docs/blog/content/"
+
+[markup]
+[markup.tableOfContents]
+endLevel = 3
+ordered = false
+startLevel = 2
+
+[markup.goldmark]
+[markup.goldmark.renderer]
+unsafe = true
+
+[menu]
+[[Languages.en.menu.main]]
+  name = "Articles"
+  url = "/en/material/"
+
+[[Languages.en.menu.main]]
+  name = "Videos"
+  url = "/en/videos/"
+
+[[Languages.cn.menu.main]]
+  name = "文章"
+  url = "/cn/material/"
+
+[[Languages.cn.menu.main]]
+  name = "视频"
+  url = "/cn/videos/"
+  

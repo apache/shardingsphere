@@ -1,0 +1,35 @@
+		<nav class="nav">
+			<div class="nav-container">
+				<a href="https://shardingsphere.apache.org/blog/">
+					<h1 class="nav-title">{{ .Site.Title }}</h1>
+				</a>
+
+				<span style="padding-left: 65px;">
+					{{ $currentPage := . }}
+					{{ range .Site.Menus.main }}
+					<li>
+						<a href="{{ .URL }}">
+							<h3>{{ .Name }}</h3>
+						</a>
+					</li>
+					{{ end }}
+				</span>
+
+				<span style="position: relative; left: 75px; 
+				background: rgba(0, 0, 0, 0.664);
+				font-weight: bold;
+				padding:0.1rem; 
+				padding-left:15px; 
+				padding-right:15px; 
+				padding-top: 2px; 
+				padding-bottom: 5px; 
+				border-radius:10px;">
+					{{ range .Translations }}
+					{{ if ne $.Site.Language .Language }}
+					<a style="color: white;" href="{{ .Permalink }}">{{ .Language.LanguageName }}</a>
+					{{ end }}
+					{{ end }}
+				</span>
+			</div>
+			</div>
+		</nav>

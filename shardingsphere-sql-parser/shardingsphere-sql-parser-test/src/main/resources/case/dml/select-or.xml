@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <select sql-case-id="select_or_with_same_sharding_columns" parameters="1, 2">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="55">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="55">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="39">
+                            <left>
+                                <column name="order_id" start-index="28" stop-index="35" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="39" stop-index="39" />
+                                <parameter-marker-expression value="0" start-index="39" stop-index="39" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>OR</operator>
+                    <right>
+                        <binary-operation-expression start-index="44" stop-index="55">
+                            <left>
+                                <column name="order_id" start-index="44" stop-index="51" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="2" start-index="55" stop-index="55" />
+                                <parameter-marker-expression value="1" start-index="55" stop-index="55" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_or_with_different_sharding_columns" parameters="1, 2">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="54">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="54">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="39">
+                            <left>
+                                <column name="order_id" start-index="28" stop-index="35" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="39" stop-index="39" />
+                                <parameter-marker-expression value="0" start-index="39" stop-index="39" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>OR</operator>
+                    <right>
+                        <binary-operation-expression start-index="44" stop-index="54">
+                            <left>
+                                <column name="user_id" start-index="44" stop-index="50" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="2" start-index="54" stop-index="54" />
+                                <parameter-marker-expression value="1" start-index="54" stop-index="54" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_or_with_none_sharding_columns" parameters="1, 'init'">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="53" literal-stop-index="58">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="53" literal-stop-index="58">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="39">
+                            <left>
+                                <column name="order_id" start-index="28" stop-index="35" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="39" stop-index="39" />
+                                <parameter-marker-expression value="0" start-index="39" stop-index="39" />
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>OR</operator>
+                    <right>
+                        <binary-operation-expression start-index="44" stop-index="53" literal-stop-index="58">
+                            <left>
+                                <column name="status" start-index="44" stop-index="49" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="init" start-index="53" stop-index="58" />
+                                <parameter-marker-expression value="1" start-index="53" stop-index="53" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_or_mix_and_for_simple_pattern" parameters="1, 'init', 3">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="71" literal-stop-index="76">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="71" literal-stop-index="76">
+                    <left>
+                        <binary-operation-expression start-index="29" stop-index="54" literal-stop-index="59">
+                            <left>
+                                <binary-operation-expression start-index="29" stop-index="40">
+                                    <left>
+                                        <column name="order_id" start-index="29" stop-index="36" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="1" start-index="40" stop-index="40" />
+                                        <parameter-marker-expression value="0" start-index="40" stop-index="40" />
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>OR</operator>
+                            <right>
+                                <binary-operation-expression start-index="45" stop-index="54" literal-stop-index="59">
+                                    <left>
+                                        <column name="status" start-index="45" stop-index="50" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="init" start-index="54" stop-index="59" />
+                                        <parameter-marker-expression value="1" start-index="54" stop-index="54" />
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="61" stop-index="71" literal-start-index="66" literal-stop-index="76">
+                            <left>
+                                <column name="user_id" start-index="61" stop-index="67" literal-start-index="66" literal-stop-index="72" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="3" start-index="76" stop-index="76" />
+                                <parameter-marker-expression value="2" start-index="71" stop-index="71" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_or_mix_and_for_complex_pattern" parameters="'init', 1, 2, 3, 4">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="113" literal-stop-index="118">
+            <expr>
+                <binary-operation-expression start-index="30" stop-index="111" literal-stop-index="116">
+                    <left>
+                        <binary-operation-expression start-index="30" stop-index="76" literal-stop-index="81">
+                            <left>
+                                <binary-operation-expression start-index="30" stop-index="39" literal-stop-index="44">
+                                    <left>
+                                        <column name="status" start-index="30" stop-index="35" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="init" start-index="39" stop-index="44" />
+                                        <parameter-marker-expression value="0" start-index="39" stop-index="39" />
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>AND</operator>
+                            <right>
+                                <binary-operation-expression start-index="46" stop-index="75" literal-start-index="51" literal-stop-index="80">
+                                    <left>
+                                        <binary-operation-expression start-index="46" stop-index="57" literal-start-index="51" literal-stop-index="62">
+                                            <left>
+                                                <column name="order_id" start-index="46" stop-index="53" literal-start-index="51" literal-stop-index="58" />
+                                            </left>
+                                            <operator>=</operator>
+                                            <right>
+                                                <literal-expression value="1" start-index="62" stop-index="62" />
+                                                <parameter-marker-expression value="1" start-index="57" stop-index="57" />
+                                            </right>
+                                        </binary-operation-expression>
+                                    </left>
+                                    <operator>OR</operator>
+                                    <right>
+                                        <binary-operation-expression start-index="63" stop-index="74" literal-start-index="68" literal-stop-index="79">
+                                            <left>
+                                                <column name="order_id" start-index="63" stop-index="70" literal-start-index="68" literal-stop-index="75" />
+                                            </left>
+                                            <operator>=</operator>
+                                            <right>
+                                                <literal-expression value="2" start-index="79" stop-index="79" />
+                                                <parameter-marker-expression value="2" start-index="74" stop-index="74" />
+                                            </right>
+                                        </binary-operation-expression>
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="83" stop-index="110" literal-start-index="88" literal-stop-index="115">
+                            <left>
+                                <binary-operation-expression start-index="83" stop-index="93" literal-start-index="88" literal-stop-index="98">
+                                    <left>
+                                        <column name="user_id" start-index="83" stop-index="89" literal-start-index="88" literal-stop-index="94" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="3" start-index="98" stop-index="98" />
+                                        <parameter-marker-expression value="3" start-index="93" stop-index="93" />
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>OR</operator>
+                            <right>
+                                <binary-operation-expression start-index="99" stop-index="109" literal-start-index="104" literal-stop-index="114">
+                                    <left>
+                                        <column name="user_id" start-index="99" stop-index="105" literal-start-index="104" literal-stop-index="110" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="4" start-index="114" stop-index="114" />
+                                        <parameter-marker-expression value="4" start-index="109" stop-index="109" />
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_or_mix_and_with_binding_tables" parameters="1, 2, 3">
+        <from>
+            <join-table>
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
+                </left>
+                <right>
+                    <simple-table name="t_order_item" alias="i" start-index="31" stop-index="44" />
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="49" stop-index="97">
+                        <left>
+                            <binary-operation-expression start-index="49" stop-index="69">
+                                <left>
+                                    <column name="user_id" start-index="49" stop-index="57">
+                                        <owner name="o" start-index="49" stop-index="49" />
+                                    </column>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <column name="user_id" start-index="61" stop-index="69">
+                                        <owner name="i" start-index="61" stop-index="61" />
+                                    </column>
+                                </right>
+                            </binary-operation-expression>
+                        </left>
+                        <operator>AND</operator>
+                        <right>
+                            <binary-operation-expression start-index="75" stop-index="97">
+                                <left>
+                                    <column name="order_id" start-index="75" stop-index="84">
+                                        <owner name="o" start-index="75" stop-index="75" />
+                                    </column>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <column name="order_id" start-index="88" stop-index="97">
+                                        <owner name="i" start-index="88" stop-index="88" />
+                                    </column>
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where start-index="99" stop-index="156">
+            <expr>
+                <binary-operation-expression start-index="105" stop-index="156">
+                    <left>
+                        <binary-operation-expression start-index="106" stop-index="137">
+                            <left>
+                                <binary-operation-expression start-index="106" stop-index="119">
+                                    <left>
+                                        <column name="order_id" start-index="106" stop-index="115">
+                                            <owner name="o" start-index="106" stop-index="106" />
+                                        </column>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="1" start-index="119" stop-index="119" />
+                                        <parameter-marker-expression value="0" start-index="119" stop-index="119" />
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>OR</operator>
+                            <right>
+                                <binary-operation-expression start-index="124" stop-index="137">
+                                    <left>
+                                        <column name="order_id" start-index="124" stop-index="133">
+                                            <owner name="o" start-index="124" stop-index="124" />
+                                        </column>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="2" start-index="137" stop-index="137" />
+                                        <parameter-marker-expression value="1" start-index="137" stop-index="137" />
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="144" stop-index="156">
+                            <left>
+                                <column name="user_id" start-index="144" stop-index="152">
+                                    <owner name="o" start-index="144" stop-index="144" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="3" start-index="156" stop-index="156" />
+                                <parameter-marker-expression value="2" start-index="156" stop-index="156" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_or_mix_and_with_binding_and_broadcast_tables" parameters="1, 2, 3, 'init'">
+        <from>
+            <join-table>
+                <left>
+                    <join-table>
+                        <left>
+                            <simple-table name="t_order" alias="o" start-index="16" stop-index="24" />
+                        </left>
+                        <right>
+                            <simple-table name="t_order_item" alias="i" start-index="31" stop-index="44" />
+                        </right>
+                        <on-condition>
+                            <binary-operation-expression start-index="49" stop-index="97">
+                                <left>
+                                    <binary-operation-expression start-index="49" stop-index="69">
+                                        <left>
+                                            <column name="user_id" start-index="49" stop-index="57">
+                                                <owner name="o" start-index="49" stop-index="49" />
+                                            </column>
+                                        </left>
+                                        <operator>=</operator>
+                                        <right>
+                                            <column name="user_id" start-index="61" stop-index="69">
+                                                <owner name="i" start-index="61" stop-index="61" />
+                                            </column>
+                                        </right>
+                                    </binary-operation-expression>
+                                </left>
+                                <operator>AND</operator>
+                                <right>
+                                    <binary-operation-expression start-index="75" stop-index="97">
+                                        <left>
+                                            <column name="order_id" start-index="75" stop-index="84">
+                                                <owner name="o" start-index="75" stop-index="75" />
+                                            </column>
+                                        </left>
+                                        <operator>=</operator>
+                                        <right>
+                                            <column name="order_id" start-index="88" stop-index="97">
+                                                <owner name="i" start-index="88" stop-index="88" />
+                                            </column>
+                                        </right>
+                                    </binary-operation-expression>
+                                </right>
+                            </binary-operation-expression>
+                        </on-condition>
+                    </join-table>
+                </left>
+                <right>
+                    <simple-table name="t_broadcast_table" alias="c" start-index="104" stop-index="122" />
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="127" stop-index="145">
+                        <left>
+                            <column name="status" start-index="127" stop-index="134">
+                                <owner name="o" start-index="127" stop-index="127" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="status" start-index="138" stop-index="145">
+                                <owner name="c" start-index="138" stop-index="138" />
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <projections start-index="7" stop-index="9">
+            <shorthand-projection start-index="7" stop-index="9">
+                <owner name="i" start-index="7" stop-index="7" />
+            </shorthand-projection>
+        </projections>
+        <where start-index="147" stop-index="221" literal-stop-index="226">
+            <expr>
+                <binary-operation-expression start-index="153" stop-index="221" literal-stop-index="226">
+                    <left>
+                        <binary-operation-expression start-index="153" stop-index="204">
+                            <left>
+                                <binary-operation-expression start-index="154" stop-index="185">
+                                    <left>
+                                        <binary-operation-expression start-index="154" stop-index="167">
+                                            <left>
+                                                <column name="order_id" start-index="154" stop-index="163">
+                                                    <owner name="o" start-index="154" stop-index="154" />
+                                                </column>
+                                            </left>
+                                            <operator>=</operator>
+                                            <right>
+                                                <literal-expression value="1" start-index="167" stop-index="167" />
+                                                <parameter-marker-expression value="0" start-index="167" stop-index="167" />
+                                            </right>
+                                        </binary-operation-expression>
+                                    </left>
+                                    <operator>OR</operator>
+                                    <right>
+                                        <binary-operation-expression start-index="172" stop-index="185">
+                                            <left>
+                                                <column name="order_id" start-index="172" stop-index="181">
+                                                    <owner name="o" start-index="172" stop-index="172" />
+                                                </column>
+                                            </left>
+                                            <operator>=</operator>
+                                            <right>
+                                                <literal-expression value="2" start-index="185" stop-index="185" />
+                                                <parameter-marker-expression value="1" start-index="185" stop-index="185" />
+                                            </right>
+                                        </binary-operation-expression>
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>AND</operator>
+                            <right>
+                                <binary-operation-expression start-index="192" stop-index="204">
+                                    <left>
+                                        <column name="user_id" start-index="192" stop-index="200">
+                                            <owner name="o" start-index="192" stop-index="192" />
+                                        </column>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="3" start-index="204" stop-index="204" />
+                                        <parameter-marker-expression value="2" start-index="204" stop-index="204" />
+                                    </right>
+                                </binary-operation-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="210" stop-index="221" literal-stop-index="226">
+                            <left>
+                                <column name="status" start-index="210" stop-index="217">
+                                    <owner name="o" start-index="210" stop-index="210" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="init" start-index="221" stop-index="226" />
+                                <parameter-marker-expression value="3" start-index="221" stop-index="221" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+</sql-parser-test-cases>
