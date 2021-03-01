@@ -72,13 +72,14 @@ public final class RegistryRepositoryAPIImpl implements RegistryRepositoryAPI {
     
     @Override
     public JobProgress getJobProgress(final long jobId, final int shardingItem) {
-        String data = null;
-        try {
-            data = registryRepository.get(getOffsetPath(jobId, shardingItem));
-        } catch (final NullPointerException ex) {
-            log.info("job {}-{} without break point.", jobId, shardingItem);
-        }
+        String data = registryRepository.get(getOffsetPath(jobId, shardingItem));
         return Strings.isNullOrEmpty(data) ? null : JobProgress.init(data);
+    }
+    
+    @Override
+    public void deleteJobProgress(final long jobId) {
+        log.info("delete job progress {}", jobId);
+        registryRepository.delete(String.format("%s/%d/offset", ScalingConstant.SCALING_ROOT, jobId));
     }
     
     @Override

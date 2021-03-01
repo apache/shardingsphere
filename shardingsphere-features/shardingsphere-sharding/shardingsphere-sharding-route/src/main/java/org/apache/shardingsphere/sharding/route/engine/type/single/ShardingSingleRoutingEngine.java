@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.type.federated;
+package org.apache.shardingsphere.sharding.route.engine.type.single;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 /**
- * Sharding federated routing engine.
+ * Sharding single routing engine.
  */
 @RequiredArgsConstructor
-public final class ShardingFederatedRoutingEngine implements ShardingRouteEngine {
+public final class ShardingSingleRoutingEngine implements ShardingRouteEngine {
     
     private final Collection<String> logicTables;
     
@@ -39,23 +42,23 @@ public final class ShardingFederatedRoutingEngine implements ShardingRouteEngine
     public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
         for (String each : logicTables) {
             if (shardingRule.getSingleTableRules().containsKey(each)) {
-                String dataSourceName = shardingRule.getSingleTableRules().get(each).getDataSourceName();
-                RouteMapper dataSource = new RouteMapper(dataSourceName, dataSourceName);
-                RouteMapper table = new RouteMapper(each, each);
-                routeContext.putRouteUnit(dataSource, table);
+                String datasource = shardingRule.getSingleTableRules().get(each).getDataSourceName();
+                RouteUnit unit = new RouteUnit(new RouteMapper(datasource, datasource), Collections.singletonList(new RouteMapper(each, each)));
+                routeContext.getRouteUnits().add(unit);
             } else {
-                fillRouteContext(routeContext, shardingRule, each);
+                routeContext.getRouteUnits().addAll(getAllRouteUnits(shardingRule, each));
             }
         }
         routeContext.setToCalcite(true);
     }
     
-    private void fillRouteContext(final RouteContext routeContext, final ShardingRule shardingRule, final String logicTableName) {
+    private Collection<RouteUnit> getAllRouteUnits(final ShardingRule shardingRule, final String logicTableName) {
+        Collection<RouteUnit> result = new LinkedList<>();
         TableRule tableRule = shardingRule.getTableRule(logicTableName);
         for (DataNode each : tableRule.getActualDataNodes()) {
-            RouteMapper dataSource = new RouteMapper(each.getDataSourceName(), each.getDataSourceName());
-            RouteMapper table = new RouteMapper(logicTableName, each.getTableName());
-            routeContext.putRouteUnit(dataSource, table);
+            RouteUnit routeUnit = new RouteUnit(new RouteMapper(each.getDataSourceName(), each.getDataSourceName()), Collections.singletonList(new RouteMapper(logicTableName, each.getTableName())));
+            result.add(routeUnit);
         }
+        return result;
     }
 }
