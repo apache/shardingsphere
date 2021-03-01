@@ -28,7 +28,6 @@ Total: 161 companies.
     <li><a href="https://www.huaxiafinance.com/" rel="nofollow">HuaXia Finance</a></li>
     <li><a href="https://www.niiwoo.com/" rel="nofollow">Niiwoo</a></li>
     <li><a href="https://www.51credit.com/" rel="nofollow">51credit</a></li>
-    <li><a href="https://www.mljr.com/" rel="nofollow">MLJR</a></li>
     <li><a href="https://www.tuandai.com/" rel="nofollow">TuanDai</a></li>
     <li><a href="https://www.cypfintech.com/" rel="nofollow">Cypfintech</a></li>
     <li><a href="https://www.ppdai.com/" rel="nofollow">PPDai</a></li>
@@ -37,6 +36,7 @@ Total: 161 companies.
     <li><a href="https://www.tansun.com/" rel="nofollow">TANSUN</a></li>
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360jinrong</a></li>
     <li><a href="https://www.ccbft.com/" rel="nofollow">CCB Fintech</a></li>
+    <li><a href="https://credigo.io/" rel="nofollow">CrediGO</a></li>
 </ul>
 
 ### E-commerce
@@ -52,15 +52,13 @@ Total: 161 companies.
     <li><a href="https://www.dayi35.com/" rel="nofollow">Dayi35</a></li>
     <li><a href="https://www.xiaohongchun.com/" rel="nofollow">XiaoHongChun</a></li>
     <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">ZhuanZhuan</a></li>
-    <li><a href="https://www.nanyiku.com/" rel="nofollow">NanYiKu</a></li>
     <li><a href="https://www.yiwugou.com/" rel="nofollow">YiWuGou</a></li>
     <li><a href="http://www.eeka.cn/" rel="nofollow">Eeka Fashion</a></li>
-    <li><a href="https://www.chuchujie.com/" rel="nofollow">ChuChuJie</a></li>
-    <li><a href="https://www.zmn.cn/" rel="nofollow">ZMN</a></li>
-    <li><a href="https://www.miaomaifang.com/" rel="nofollow">MiaoMaiFang</a></li>
+    <li><a href="http://cs.maifang.com/" rel="nofollow">MiaoMaiFang</a></li>
     <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
     <li><a href="https://zowiesunglasses.com/" rel="nofollow">Zowie</a></li>
      <li><a href="https://m.51tiangou.com/">51tiangou</a></li>
+     <li><a href="http://www.dusto.cn/">DUSTO</a></li>
 </ul>
 
 ### Digitalization and Cloud Services
@@ -69,7 +67,7 @@ Total: 161 companies.
     <li>JD’s Big Data and Intelligent Supply Chain Department
     <li><a href="https://www.jdcloud.com/cn/" rel="nofollow">JDCloud</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">ZhenXin Safe</a></li>
-    <li><a href="http://www.cloudansys.com/" rel="nofollow">Cloudansys</a></li>
+    <li><a href="http://www.cloudansys.com/" rel="nofollow">CloudANSYS</a></li>
     <li><a href="http://www.compasshz.com/" rel="nofollow">Compasshz</a></li>
     <li><a href="http://www.cyberplus.com.cn/" rel="nofollow">CyberPlus</a></li>
     <li><a href="http://caas.com.cn/" rel="nofollow">CAAS</a></li>
@@ -80,36 +78,36 @@ Total: 161 companies.
     <li><a href="https://www.xforceplus.com/" rel="nofollow">Xforceplus</a></li>
     <li><a href="https://aifanfan.baidu.com/" rel="nofollow">Baidu aifanfan</a></li>
     <li><a href="http://www.meicloud.com/" rel="nofollow">Midea Cloud</a></li>
+    <li><a href="http://www.shangquanquan.com/" rel="nofollow">shangquanquan</a></li>
+    <li><a href="https://www.glodon.com/" rel="nofollow">Glodon</a></li>
 </ul>
 
 ### Transportation
 <ul>
     <li><a href="https://www.didiglobal.com/" rel="nofollow">DiDi Global</a></li>
     <li><a href="https://www.helloglobal.com/" rel="nofollow">HelloGlobal</a></li>
-    <li><a href="https://www.guazi.com/" rel="nofollow">GuaZi</a></li>
-    <li><a href="https://www.yiche.com/" rel="nofollow">YiChe</a></li>
     <li><a href="http://www.f6car.com/" rel="nofollow">F6 Car</a></li>
-    <li><a href="http://www.zcckj.com/" rel="nofollow">Zhong Ce Auto Space</a></li>
     <li><a href="http://www.juneyao.com/" rel="nofollow">JuneYao</a></li>
-    <li><a href="http://www.dongfang789.com/" rel="nofollow">DongFang789</a></li>
     <li><a href="https://www.trawe.cn/" rel="nofollow">Trawe</a></li>
-    <li><a href="https://auto.ifeng.com/" rel="nofollow">Auto Ifeng</a></li>
     <li><a href="https://4pyun.com/" rel="nofollow">4pyun</a></li>
-    <li><a href="http://www.huochebang.com/" rel="nofollow">HuoCheBang</a></li>
     <li><a href="https://www.01zhuanche.com/" rel="nofollow">ShouQi</a></li>
     <li><a href="https://www.souche.com/" rel="nofollow">SouChe</a></li>
     <li><a href="https://www.supersoco.com/" rel="nofollow">Super SOCO</a></li>
+    <li><a href="http://www.jtkjbike.com/" rel="nofollow">JTKJBike</a></li>
 </ul>
 
 ### Logistics
 <ul>
+    <li><a href="https://www.jdl.cn/" rel="nofollow">JDL</a></li>
     <li><a href="https://www.zto.com/" rel="nofollow">ZTO Express</a></li>
+    <li><a href="https://www.ishansong.com/" rel="nofollow">ishansong</a></li>
     <li><a href="http://www.yundaex.com/cn/index.php" rel="nofollow">YUNDA Express</a></li>
+    <li><a href="http://www.huochebang.com/" rel="nofollow">HuoCheBang</a></li>
     <li><a href="http://www.yl-scm.com/" rel="nofollow">YL-Scm</a></li>
     <li><a href="https://www.newbeescm.com/" rel="nofollow">NewBeeScm</a></li>
     <li><a href="https://www.dianwoda.com/" rel="nofollow">DianWoDa</a></li>
     <li><a href="https://www.keking.com" rel="nofollow">KeKing</a></li>
-    <li><a href="https://www.jdl.cn/" rel="nofollow">JDL</a></li>
+    <li><a href="http://www.c-wms.net/" rel="nofollow">C-WMS</a></li>
     <li><a href="http://www.xbnwl.com/" rel="nofollow">Xbnwl</a></li>
 </ul>
 
@@ -139,12 +137,13 @@ Total: 161 companies.
 ### E-entertainment
 <ul>
     <li><a href="https://www.bilibili.com/" rel="nofollow">Bilibili</a></li>
-    <li><a href="https://www.douyu.com/" rel="nofollow">DouYuTV</a></li>
+    <li><a href="https://www.douyu.com/" rel="nofollow">DOUYU.COM</a></li>
     <li><a href="https://www.iqiyi.com/" rel="nofollow">Iqiyi</a></li>
     <li><a href="https://www.soulapp.cn/" rel="nofollow">App Soul</a></li>
     <li><a href="https://www.lrlz.com/" rel="nofollow">Lily&Beauty</a></li>
     <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
     <li><a href="http://www.yaduo.com/" rel="nofollow">YaDuo</a></li>
+    <li><a href="https://www.elelive.net/" rel="nofollow">elelive.tv</a></li>
     <li><a href="http://read.zhulang.com/" rel="nofollow">LianShang Literature</a></li>
     <li><a href="https://www.yy.com/" rel="nofollow">YY</a></li>
     <li><a href="https://y.tencentmusic.com" rel="nofollow">Tencent Music</a></li>
@@ -155,16 +154,21 @@ Total: 161 companies.
     <li><a href="https://ss.sohu.com/" rel="nofollow">Sohu News</a></li>
     <li><a href="https://www.tianya.cn/" rel="nofollow">TianYa</a></li>
     <li><a href="https://www.autohome.com.cn/" rel="nofollow">AutoHome</a></li>
+    <li><a href="https://auto.ifeng.com/" rel="nofollow">Auto Ifeng</a></li>
     <li><a href="https://500px.me/" rel="nofollow">500px</a></li>
     <li><a href="https://www.xiachufang.com/" rel="nofollow">XiaChuFang</a></li>
     <li><a href="https://www.yidianzixun.com/" rel="nofollow">YiDianZiXun</a></li>
-    <li><a href="https://www.huobiinfo.com/" rel="nofollow">HuoBi Info</a></li>
 </ul>
 
 ### O2O
 <ul>
     <li><a href="https://bj.58.com/" rel="nofollow">58</a></li>
+    <li><a href="https://www.guazi.com/" rel="nofollow">GuaZi</a></li>
+    <li><a href="https://www.yiche.com/" rel="nofollow">YiChe</a></li>
+    <li><a href="http://www.dongfang789.com/" rel="nofollow">DongFang789</a></li>
+    <li><a href="http://www.zcckj.com/" rel="nofollow">Zhong Ce Auto Space</a></li>
     <li><a href="https://www.baixing.com/" rel="nofollow">BaiXing</a></li>
+    <li><a href="https://www.zmn.cn/" rel="nofollow">ZMN</a></li>
 </ul>
 
 ### Public Utilities
@@ -186,7 +190,6 @@ Total: 161 companies.
 ### Internet of Things
 <ul>
     <li><a href="https://www.hikvision.com/" rel="nofollow">Hikvision</a></li>
-    <li><a href="http://www.jtkjbike.com/" rel="nofollow">JTKJBike</a></li>
     <li><a href="http://www.iotlead.com/" rel="nofollow">Century Lead</a></li>
     <li><a href=" http://tcslwxwl.cn.b2b168.com/" rel="nofollow">Shenzhou Shanglong Technology Co.,Ltd </a></li>
 </ul>
@@ -210,7 +213,6 @@ Total: 161 companies.
     <li><a href="http://jszcrj.com/" rel="nofollow">ZhongChen</a></li>
     <li><a href="http://www.izxcs.com/" rel="nofollow">IZXCS</a></li>
     <li><a href="https://www.raycloud.com/" rel="nofollow">RayCloud</a></li>
-    <li><a href="http://www.mamagao.cn/" rel="nofollow">MaMaGao</a></li>
     <li><a href="https://innoways.com/" rel="nofollow">Innoways</a></li>
     <li><a href="http://www.itaojin.cn/" rel="nofollow">ITaoJin</a></li>
     <li><a href="https://www.elelive.net/" rel="nofollow">Elelive</a></li>
@@ -219,11 +221,11 @@ Total: 161 companies.
     <li><a href="https://www.can-dao.com/" rel="nofollow">can-dao</a></li>
     <li><a href="https://www.idengyun.com/" rel="nofollow">DengYun</a></li>
     <li><a href="http://www.aicmonitor.com/" rel="nofollow">AIC Monitor</a></li>
-    <li><a href="http://www.dzzd.com" rel="nofollow">dzzd</a></li>
     <li><a href="https://www.garfiel-tech.com/" rel="nofollow">Garfiel-tech</a></li>
     <li><a href="https://wuyuan.io" rel="nofollow">Enhancer</a></li>
     <li><a href="https://www.sunyur.com/" rel="nofollow">Sunyur</a></li>
     <li><a href="https://www.yunyuecloud.com/">Digital Yunyue</a></li>
+    <li><a href="https://t.itaojin.cn">itaojin</a></li>
 </ul>
 
 ### Health Care
@@ -236,6 +238,7 @@ Total: 161 companies.
     <li><a href="http://www.dxy.cn/">DXY</a></li>
     <li><a href="https://www.mytijian.com">Mytijian</a></li>
     <li><a href="https://cloud.guahao.cn/">WeDoctor Cloud</a></li>
+    <li><a href="http://www.huxleymedical.tech/">Hualian Medical</a></li>
 </ul>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />

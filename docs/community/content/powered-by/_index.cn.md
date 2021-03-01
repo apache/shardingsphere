@@ -28,7 +28,6 @@ chapter = true
     <li><a href="https://www.huaxiafinance.com/" rel="nofollow">华夏信财</a></li>
     <li><a href="https://www.niiwoo.com/" rel="nofollow">你我金融</a></li>
     <li><a href="https://www.51credit.com/" rel="nofollow">我爱卡</a></li>
-    <li><a href="https://www.mljr.com/" rel="nofollow">美利车金融</a></li>
     <li><a href="https://www.tuandai.com/" rel="nofollow">团贷网</a></li>
     <li><a href="https://www.cypfintech.com/" rel="nofollow">策赢平台</a></li>
     <li><a href="https://www.ppdai.com/" rel="nofollow">拍拍贷</a></li>
@@ -37,6 +36,7 @@ chapter = true
     <li><a href="https://www.tansun.com/" rel="nofollow">天阳宏业</a></li>
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360数科</a></li>
     <li><a href="https://www.ccbft.com/" rel="nofollow">建信金融科技</a></li>
+    <li><a href="https://credigo.io/" rel="nofollow">诺景网络</a></li>
 </ul>
 
 ### 电子商务
@@ -52,15 +52,13 @@ chapter = true
     <li><a href="https://www.dayi35.com/" rel="nofollow">大易有塑</a></li>
     <li><a href="https://www.xiaohongchun.com/" rel="nofollow">小红唇</a></li>
     <li><a href="https://www.zhuanzhuan.com/" rel="nofollow">转转</a></li>
-    <li><a href="https://www.nanyiku.com/" rel="nofollow">男衣库</a></li>
     <li><a href="https://www.yiwugou.com/" rel="nofollow">义乌购</a></li>
     <li><a href="http://www.eeka.cn/" rel="nofollow">赢家服饰</a></li>
-    <li><a href="https://www.chuchujie.com/" rel="nofollow">楚楚街</a></li>
-    <li><a href="https://www.zmn.cn/" rel="nofollow">啄木鸟网络科技</a></li>
-    <li><a href="https://www.miaomaifang.com/" rel="nofollow">秒卖房</a></li>
+    <li><a href="http://cs.maifang.com/" rel="nofollow">秒卖房</a></li>
     <li><a href="https://TonySourcing.com/" rel="nofollow">TonySourcing</a></li>
     <li><a href="https://zowiesunglasses.com/" rel="nofollow">卓唯眼镜</a></li>
     <li><a href="https://m.51tiangou.com/">大商天狗电子商务有限责任公司</a></li>
+    <li><a href="http://www.dusto.cn/">浙江大东鞋业有限公司</a></li>
 </ul>
 
 ### 数字化与云服务
@@ -80,36 +78,36 @@ chapter = true
     <li><a href="https://www.xforceplus.com/" rel="nofollow">上海云砺信息科技有限公司</a></li>
     <li><a href="https://aifanfan.baidu.com/" rel="nofollow">百度爱番番</a></li>
     <li><a href="http://www.meicloud.com/" rel="nofollow">美云智数</a></li>
+    <li><a href="http://www.shangquanquan.com/" rel="nofollow">万江龙智慧商圈</a></li>
+    <li><a href="https://www.glodon.com/" rel="nofollow">广联达科技股份有限公司</a></li>
 </ul>
 
 ### 出行
 <ul>
     <li><a href="https://www.didiglobal.com/" rel="nofollow">滴滴小桔车服</a></li>
     <li><a href="https://www.helloglobal.com/" rel="nofollow">哈啰出行</a></li>
-    <li><a href="https://www.guazi.com/" rel="nofollow">瓜子二手车</a></li>
-    <li><a href="https://www.yiche.com/" rel="nofollow">易车网</a></li>
     <li><a href="http://www.f6car.com/" rel="nofollow">南京爱福路汽车科技</a></li>
-    <li><a href="http://www.zcckj.com/" rel="nofollow">中策车空间</a></li>
     <li><a href="http://www.juneyao.com/" rel="nofollow">均瑶集团</a></li>
-    <li><a href="http://www.dongfang789.com/" rel="nofollow">东方车联</a></li>
     <li><a href="https://www.trawe.cn/" rel="nofollow">特微智能</a></li>
-    <li><a href="https://auto.ifeng.com/" rel="nofollow">凤凰汽车</a></li>
-    <li><a href="https://4pyun.com/" rel="nofollow">P云+ | 行业知名的互联网停车开放平台</a></li>
-    <li><a href="http://www.huochebang.com/" rel="nofollow">货车帮</a></li>
+    <li><a href="https://4pyun.com/" rel="nofollow">P云+</a></li>
     <li><a href="https://www.01zhuanche.com/" rel="nofollow">首汽约车</a></li>
     <li><a href="https://www.souche.com/" rel="nofollow">大搜车</a></li>
     <li><a href="https://www.supersoco.com/" rel="nofollow">速珂智能</a></li>
+    <li><a href="http://www.jtkjbike.com/" rel="nofollow">金通科技</a></li>
 </ul>
 
 ### 物流
 <ul>
+    <li><a href="https://www.jdl.cn/" rel="nofollow">京东物流</a></li>
     <li><a href="https://www.zto.com/" rel="nofollow">中通快递</a></li>
+    <li><a href="https://www.ishansong.com/" rel="nofollow">闪送</a></li>
     <li><a href="http://www.yundaex.com/cn/index.php" rel="nofollow">韵达科技</a></li>
+    <li><a href="http://www.huochebang.com/" rel="nofollow">货车帮</a></li>
     <li><a href="http://www.yl-scm.com/" rel="nofollow">云路供应链</a></li>
     <li><a href="https://www.newbeescm.com/" rel="nofollow">蜂网</a></li>
     <li><a href="https://www.dianwoda.com/" rel="nofollow">点我达</a></li>   
     <li><a href="https://www.keking.com" rel="nofollow">凯京科技</a></li>
-    <li><a href="https://www.jdl.cn/" rel="nofollow">京东物流</a></li>
+    <li><a href="http://www.c-wms.net/" rel="nofollow">弘人网络科技</a></li>
     <li><a href="http://www.xbnwl.com/" rel="nofollow">广东喜百年供应链科技有限公司</a></li>
 </ul>
 
@@ -139,12 +137,13 @@ chapter = true
 ### 互联网文娱
 <ul>
     <li><a href="https://www.bilibili.com/" rel="nofollow">哔哩哔哩弹幕网</a></li>
-    <li><a href="https://www.douyu.com/" rel="nofollow">斗鱼TV</a></li>
+    <li><a href="https://www.douyu.com/" rel="nofollow">斗鱼</a></li>
     <li><a href="https://www.iqiyi.com/" rel="nofollow">爱奇艺</a></li>
     <li><a href="https://www.soulapp.cn/" rel="nofollow">上海 soul app</a></li>
     <li><a href="https://www.lrlz.com/" rel="nofollow">丽人丽妆</a></li>
     <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
     <li><a href="http://www.yaduo.com/" rel="nofollow">亚朵</a></li>
+    <li><a href="https://www.elelive.net/" rel="nofollow">小象直播</a></li>
     <li><a href="http://read.zhulang.com/" rel="nofollow">连尚文学</a></li>
     <li><a href="https://www.yy.com/" rel="nofollow">欢聚时代(YY)</a></li>
     <li><a href="https://y.tencentmusic.com" rel="nofollow">腾讯音乐娱乐科技有限公司</a></li>
@@ -155,16 +154,21 @@ chapter = true
     <li><a href="https://ss.sohu.com/" rel="nofollow">搜狐资讯</a></li>
     <li><a href="https://www.tianya.cn/" rel="nofollow">天涯社区</a></li>
     <li><a href="https://www.autohome.com.cn/" rel="nofollow">汽车之家</a></li>
+    <li><a href="https://auto.ifeng.com/" rel="nofollow">凤凰汽车</a></li>
     <li><a href="https://500px.me/" rel="nofollow">视觉中国</a></li>
     <li><a href="https://www.xiachufang.com/" rel="nofollow">下厨房</a></li>
     <li><a href="https://www.yidianzixun.com/" rel="nofollow">一点资讯</a></li>
-    <li><a href="https://www.huobiinfo.com/" rel="nofollow">火币资讯</a></li>
 </ul>
 
 ### O2O
 <ul>
-    <li><a href="https://bj.58.com/" rel="nofollow">58同城</a></li> 
+    <li><a href="https://bj.58.com/" rel="nofollow">58同城</a></li>
+    <li><a href="https://www.guazi.com/" rel="nofollow">瓜子二手车</a></li>
+    <li><a href="https://www.yiche.com/" rel="nofollow">易车网</a></li>
+    <li><a href="http://www.dongfang789.com/" rel="nofollow">东方车联</a></li>
+    <li><a href="http://www.zcckj.com/" rel="nofollow">中策车空间</a></li> 
     <li><a href="https://www.baixing.com/" rel="nofollow">百姓网</a></li>
+    <li><a href="https://www.zmn.cn/" rel="nofollow">啄木鸟网络科技</a></li>
 </ul>
 
 ### 公共事业
@@ -186,9 +190,8 @@ chapter = true
 ### 物联网
 <ul>
     <li><a href="https://www.hikvision.com/" rel="nofollow">海康威视</a></li>
-    <li><a href="http://www.jtkjbike.com/" rel="nofollow">金通科技集团</a></li>
-    <li><a href="http://www.iotlead.com/" rel="nofollow">广州理德物联网科技有限公司</a></li>
-     <li><a href=" http://tcslwxwl.cn.b2b168.com/" rel="nofollow">神州商龙科技股份有限公司 </a></li>
+    <li><a href="http://www.iotlead.com/" rel="nofollow">思创理德</a></li>
+    <li><a href=" http://tcslwxwl.cn.b2b168.com/" rel="nofollow">神州商龙科技股份有限公司</a></li>
 </ul>
 
 ### 软件开发及服务
@@ -209,20 +212,18 @@ chapter = true
     <li><a href="http://jszcrj.com/" rel="nofollow">中辰软件</a></li>
     <li><a href="http://www.izxcs.com/" rel="nofollow">智创工场</a></li>
     <li><a href="https://www.raycloud.com/" rel="nofollow">光云科技</a></li>
-    <li><a href="http://www.mamagao.cn/" rel="nofollow">广州码码高信息科技有限公司</a></li>
     <li><a href="https://innoways.com/" rel="nofollow">佰裕行科技（深圳）有限公司</a></li>
     <li><a href="http://www.itaojin.cn/" rel="nofollow">四川淘金你我信息技术有限公司</a></li>
-    <li><a href="https://www.elelive.net/" rel="nofollow">广州锐森科技</a></li>
     <li><a href="https://www.cloudm.com/" rel="nofollow">聚励云机械</a></li>
     <li><a href="http://tigosoft.com/" rel="nofollow">泰古信息</a></li>
     <li><a href="https://www.can-dao.com/" rel="nofollow">餐道</a></li>
     <li><a href="https://www.idengyun.com/" rel="nofollow">登云</a></li>
     <li><a href="http://www.aicmonitor.com/" rel="nofollow">航天智控</a></li>
-    <li><a href="http://www.dzzd.com" rel="nofollow">玺信阳光</a></li>
     <li><a href="https://www.garfiel-tech.com/" rel="nofollow">北京加菲猫科技有限公司</a></li>
     <li><a href="https://wuyuan.io" rel="nofollow">无远开发平台</a></li>
     <li><a href="https://www.sunyur.com/" rel="nofollow">商越科技</a></li>
     <li><a href="https://www.yunyuecloud.com/">数字云悦</a></li>
+    <li><a href="https://t.itaojin.cn">淘金云客服</a></li>
     
 </ul>
 
@@ -236,6 +237,7 @@ chapter = true
     <li><a href="http://www.dxy.cn/">丁香园</a></li>
     <li><a href="https://www.mytijian.com">杭州每天健康科技有限公司</a></li>
     <li><a href="https://cloud.guahao.cn/">微医云</a></li>
+    <li><a href="http://www.huxleymedical.tech/">山东华链医疗科技有限公司</a></li>
 </ul>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />
