@@ -37,8 +37,9 @@
 #  users:
 #    root:
 #      password: root
+#      hostname: '%'
 #    sharding:
-#      password: sharding 
+#      password: sharding
 
 #scaling:
 #  blockQueueSize: 10000

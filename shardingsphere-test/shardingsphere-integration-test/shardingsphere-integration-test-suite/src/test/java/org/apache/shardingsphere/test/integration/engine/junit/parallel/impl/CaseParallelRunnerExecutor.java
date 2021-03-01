@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.test.integration.engine.junit.parallel.impl;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
 import org.apache.shardingsphere.test.integration.engine.junit.parallel.ParallelRunnerExecutor;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Parallel runner executor with case.
@@ -32,16 +33,21 @@ public final class CaseParallelRunnerExecutor implements ParallelRunnerExecutor 
     
     private final ExecutorServiceManager executorServiceManager = new ExecutorServiceManager(Runtime.getRuntime().availableProcessors() * 2 - 1);
     
+    private final Collection<Future<?>> taskFeatures = new LinkedList<>();
+    
     @Override
     public void execute(final ParameterizedArray parameterizedArray, final Runnable childStatement) {
-        executorServiceManager.getExecutorService().submit(childStatement);
+        taskFeatures.add(executorServiceManager.getExecutorService().submit(childStatement));
     }
     
-    @SneakyThrows(InterruptedException.class)
     @Override
     public void finished() {
-        ExecutorService executorService = executorServiceManager.getExecutorService();
-        executorService.shutdown();
-        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        taskFeatures.forEach(each -> {
+            try {
+                each.get();
+            } catch (final InterruptedException | ExecutionException ignored) {
+            }
+        });
+        executorServiceManager.getExecutorService().shutdownNow();
     }
 }

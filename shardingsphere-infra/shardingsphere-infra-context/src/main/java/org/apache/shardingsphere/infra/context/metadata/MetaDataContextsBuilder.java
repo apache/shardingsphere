@@ -105,7 +105,7 @@ public final class MetaDataContextsBuilder {
         DatabaseType databaseType = getDatabaseType(dataSourceMap);
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(ruleConfigs, databaseType, dataSourceMap, schemaName);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
-        return new ShardingSphereMetaData(schemaName, buildResource(databaseType, dataSourceMap), ruleMetaData, buildSchema(schemaName, databaseType, dataSourceMap, rules));
+        return new ShardingSphereMetaData(schemaName, buildResource(databaseType, dataSourceMap), ruleMetaData, buildSchema(databaseType, dataSourceMap, rules));
     }
     
     private DatabaseType getDatabaseType(final Map<String, DataSource> dataSourceMap) {
@@ -153,12 +153,9 @@ public final class MetaDataContextsBuilder {
         }
     }
     
-    private ShardingSphereSchema buildSchema(final String schemaName, 
-                                             final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
-        long start = System.currentTimeMillis();
-        ShardingSphereSchema result = SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
-        log.info("Load meta data for schema {} finished, cost {} milliseconds.", schemaName, System.currentTimeMillis() - start);
-        return result;
+    private ShardingSphereSchema buildSchema(final DatabaseType databaseType,
+                                             final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
+        return SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
     }
     
     private Authentication buildAuthentication(final Collection<ShardingSphereUser> users, final Map<String, ShardingSphereMetaData> metaDataMap) {

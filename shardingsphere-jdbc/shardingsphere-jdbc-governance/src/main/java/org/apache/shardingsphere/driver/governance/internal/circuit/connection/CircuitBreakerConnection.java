@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.governance.internal.circuit.connection;
 
+import java.sql.Array;
 import org.apache.shardingsphere.driver.governance.internal.circuit.metadata.CircuitBreakerDatabaseMetaData;
 import org.apache.shardingsphere.driver.governance.internal.circuit.statement.CircuitBreakerPreparedStatement;
 import org.apache.shardingsphere.driver.governance.internal.circuit.statement.CircuitBreakerStatement;
@@ -133,6 +134,11 @@ public final class CircuitBreakerConnection extends AbstractUnsupportedOperation
     @Override
     public boolean isValid(final int timeout) {
         return true;
+    }
+    
+    @Override
+    public Array createArrayOf(final String typeName, final Object[] elements) {
+        return null;
     }
     
     @Override

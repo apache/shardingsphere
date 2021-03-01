@@ -18,8 +18,6 @@
 rules:
 - !SHARDING
   tables:
-    config:
-      actualDataNodes: pr_ds_${0..9}.t_config
     t_order:
       actualDataNodes: pr_ds_${0..9}.t_order_${0..9}
       databaseStrategy:
