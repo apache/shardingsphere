@@ -25,8 +25,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.concurrent.TimeUnit;
-
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -45,8 +43,8 @@ public final class GovernanceLockTest {
     
     @Test
     public void assertTryLock() {
-        lock.tryGlobalLock(50L, TimeUnit.MILLISECONDS);
-        verify(registryCenter).tryGlobalLock(eq(50L), eq(TimeUnit.MILLISECONDS));
+        lock.tryGlobalLock(50L);
+        verify(registryCenter).tryGlobalLock(eq(50L));
     }
     
     @Test

@@ -32,10 +32,10 @@ public abstract class AbstractShardingSphereLock implements ShardingSphereLock {
     private final Condition innerCondition = innerLock.newCondition();
     
     @Override
-    public final boolean await(final Long timeout, final TimeUnit timeUnit) {
+    public final boolean await(final Long timeoutMilliseconds) {
         innerLock.lock();
         try {
-            return innerCondition.await(timeout, TimeUnit.MILLISECONDS);
+            return innerCondition.await(timeoutMilliseconds, TimeUnit.MILLISECONDS);
         } catch (final InterruptedException ignored) {
         } finally {
             innerLock.unlock();

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.infra.lock;
 
 import org.junit.Test;
 
-import java.util.concurrent.TimeUnit;
-
 import static org.junit.Assert.assertTrue;
 
 public final class StandardLockTest {
@@ -29,13 +27,13 @@ public final class StandardLockTest {
     
     @Test
     public void assertTryLock() {
-        assertTrue(lock.tryGlobalLock(50L, TimeUnit.MILLISECONDS));
+        assertTrue(lock.tryGlobalLock(50L));
         lock.releaseGlobalLock();
     }
     
     @Test
     public void assertReleaseLock() {
-        assertTrue(lock.tryGlobalLock(50L, TimeUnit.MILLISECONDS));
+        assertTrue(lock.tryGlobalLock(50L));
         lock.releaseGlobalLock();
     }
 }

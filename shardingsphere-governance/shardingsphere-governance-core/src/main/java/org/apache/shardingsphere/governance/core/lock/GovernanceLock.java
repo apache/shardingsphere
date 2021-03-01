@@ -27,8 +27,6 @@ import org.apache.shardingsphere.infra.lock.AbstractShardingSphereLock;
 import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.infra.state.StateType;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * Governance lock.
  */
@@ -42,8 +40,8 @@ public final class GovernanceLock extends AbstractShardingSphereLock {
     }
     
     @Override
-    public boolean tryGlobalLock(final long timeout, final TimeUnit timeUnit) {
-        return registryCenter.tryGlobalLock(timeout, timeUnit);
+    public boolean tryGlobalLock(final long timeoutMilliseconds) {
+        return registryCenter.tryGlobalLock(timeoutMilliseconds);
     }
     
     @Override

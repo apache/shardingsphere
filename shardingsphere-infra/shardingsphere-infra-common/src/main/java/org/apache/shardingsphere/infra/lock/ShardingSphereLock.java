@@ -17,21 +17,18 @@
 
 package org.apache.shardingsphere.infra.lock;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * ShardingSphere lock.
  */
 public interface ShardingSphereLock {
     
     /**
-     * Try to get lock.
+     * Try to lock.
      *
-     * @param timeout time out to acquire lock
-     * @param timeUnit time unit
+     * @param timeoutMilliseconds time out milliseconds to acquire lock
      * @return true if get the lock, false if not
      */
-    boolean tryGlobalLock(long timeout, TimeUnit timeUnit);
+    boolean tryGlobalLock(long timeoutMilliseconds);
     
     /**
      * Release lock.
@@ -39,16 +36,15 @@ public interface ShardingSphereLock {
     void releaseGlobalLock();
     
     /**
-     * Await.
+     * Await lock.
      * 
-     * @param timeout time out to await lock
-     * @param timeUnit  time unit
+     * @param timeoutMilliseconds time out milliseconds to await lock
      * @return true if no exception
      */
-    boolean await(Long timeout, TimeUnit timeUnit);
+    boolean await(Long timeoutMilliseconds);
     
     /**
-     * signal all.
+     * Signal all.
      */
     void signalAll();
 }
