@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.state.impl;
 
 import io.netty.channel.ChannelHandlerContext;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -34,7 +33,6 @@ import java.util.Optional;
 /**
  * Lock proxy state.
  */
-@Slf4j
 public final class LockProxyState implements ProxyState {
     
     @Override
