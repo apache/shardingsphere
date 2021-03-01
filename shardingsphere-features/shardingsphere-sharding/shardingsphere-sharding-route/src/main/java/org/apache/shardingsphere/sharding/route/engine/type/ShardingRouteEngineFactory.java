@@ -64,7 +64,7 @@ public final class ShardingRouteEngineFactory {
     
     /**
      * Create new instance of routing engine.
-     * 
+     *
      * @param shardingRule sharding rule
      * @param metaData ShardingSphere metaData
      * @param sqlStatementContext SQL statement context
@@ -72,7 +72,7 @@ public final class ShardingRouteEngineFactory {
      * @param props ShardingSphere properties
      * @return new instance of routing engine
      */
-    public static ShardingRouteEngine newInstance(final ShardingRule shardingRule, final ShardingSphereMetaData metaData, 
+    public static ShardingRouteEngine newInstance(final ShardingRule shardingRule, final ShardingSphereMetaData metaData,
                                                   final SQLStatementContext<?> sqlStatementContext, final ShardingConditions shardingConditions, final ConfigurationProperties props) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
@@ -177,6 +177,6 @@ public final class ShardingRouteEngineFactory {
             return false;
         }
         SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
-        return tableNames.size() == shardingTableNames.size() && (select.containsJoinQuery() || select.isContainsSubquery());
+        return tableNames.size() == shardingTableNames.size() && (select.isContainsJoinQuery() || select.isContainsSubquery());
     }
 }
