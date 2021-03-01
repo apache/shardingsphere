@@ -23,20 +23,20 @@ import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockRele
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.lock.AbstractLockContext;
+import org.apache.shardingsphere.infra.lock.AbstractShardingSphereLock;
 import org.apache.shardingsphere.infra.state.StateEvent;
 import org.apache.shardingsphere.infra.state.StateType;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * Governance lock context.
+ * Governance lock.
  */
-public final class GovernanceLockContext extends AbstractLockContext {
+public final class GovernanceLock extends AbstractShardingSphereLock {
     
     private final RegistryCenter registryCenter;
     
-    public GovernanceLockContext(final RegistryCenter registryCenter) {
+    public GovernanceLock(final RegistryCenter registryCenter) {
         this.registryCenter = registryCenter;
         ShardingSphereEventBus.getInstance().register(this);
     }

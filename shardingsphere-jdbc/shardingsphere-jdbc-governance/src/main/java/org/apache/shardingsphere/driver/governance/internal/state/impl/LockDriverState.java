@@ -44,7 +44,7 @@ public final class LockDriverState implements DriverState {
     
     private void block(final MetaDataContexts metaDataContexts) {
         long lockTimeoutMilliseconds = metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS);
-        if (!metaDataContexts.getLockContext().await(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
+        if (!metaDataContexts.getLock().await(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
             throw new ShardingSphereException("Service lock wait timeout of %s ms exceeded", lockTimeoutMilliseconds); 
         }
     }

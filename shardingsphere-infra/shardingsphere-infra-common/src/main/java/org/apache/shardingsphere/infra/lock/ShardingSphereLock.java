@@ -18,38 +18,37 @@
 package org.apache.shardingsphere.infra.lock;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Abstract lock context.
+ * ShardingSphere lock.
  */
-public abstract class AbstractLockContext implements LockContext {
+public interface ShardingSphereLock {
     
-    private final Lock innerLock = new ReentrantLock();
+    /**
+     * Try to get lock.
+     *
+     * @param timeout time out to acquire lock
+     * @param timeUnit time unit
+     * @return true if get the lock, false if not
+     */
+    boolean tryGlobalLock(long timeout, TimeUnit timeUnit);
     
-    private final Condition innerCondition = innerLock.newCondition();
+    /**
+     * Release lock.
+     */
+    void releaseGlobalLock();
     
-    @Override
-    public final boolean await(final Long timeout, final TimeUnit timeUnit) {
-        innerLock.lock();
-        try {
-            return innerCondition.await(timeout, TimeUnit.MILLISECONDS);
-        } catch (final InterruptedException ignored) {
-        } finally {
-            innerLock.unlock();
-        }
-        return false;
-    }
+    /**
+     * Await.
+     * 
+     * @param timeout time out to await lock
+     * @param timeUnit  time unit
+     * @return true if no exception
+     */
+    boolean await(Long timeout, TimeUnit timeUnit);
     
-    @Override
-    public final void signalAll() {
-        innerLock.lock();
-        try {
-            innerCondition.signalAll();
-        } finally {
-            innerLock.unlock();
-        }
-    }
+    /**
+     * signal all.
+     */
+    void signalAll();
 }

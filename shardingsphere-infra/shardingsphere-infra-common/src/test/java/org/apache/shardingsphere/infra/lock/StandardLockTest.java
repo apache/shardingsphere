@@ -23,19 +23,19 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertTrue;
 
-public final class StandardLockContextTest {
+public final class StandardLockTest {
     
-    private final StandardLockContext lockContext = new StandardLockContext();
+    private final StandardLock lock = new StandardLock();
     
     @Test
     public void assertTryLock() {
-        assertTrue(lockContext.tryGlobalLock(50L, TimeUnit.MILLISECONDS));
-        lockContext.releaseGlobalLock();
+        assertTrue(lock.tryGlobalLock(50L, TimeUnit.MILLISECONDS));
+        lock.releaseGlobalLock();
     }
     
     @Test
     public void assertReleaseLock() {
-        assertTrue(lockContext.tryGlobalLock(50L, TimeUnit.MILLISECONDS));
-        lockContext.releaseGlobalLock();
+        assertTrue(lock.tryGlobalLock(50L, TimeUnit.MILLISECONDS));
+        lock.releaseGlobalLock();
     }
 }

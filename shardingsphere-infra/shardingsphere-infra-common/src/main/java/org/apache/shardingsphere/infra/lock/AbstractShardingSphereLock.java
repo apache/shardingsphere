@@ -17,37 +17,39 @@
 
 package org.apache.shardingsphere.infra.lock;
 
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.state.StateEvent;
-import org.apache.shardingsphere.infra.state.StateType;
-
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Standard lock context.
+ * Abstract ShardingSphere lock.
  */
-public final class StandardLockContext extends AbstractLockContext {
+public abstract class AbstractShardingSphereLock implements ShardingSphereLock {
     
-    private final ReentrantLock lock = new ReentrantLock();
+    private final Lock innerLock = new ReentrantLock();
+    
+    private final Condition innerCondition = innerLock.newCondition();
     
     @Override
-    public boolean tryGlobalLock(final long timeout, final TimeUnit timeUnit) {
-        boolean result = false;
+    public final boolean await(final Long timeout, final TimeUnit timeUnit) {
+        innerLock.lock();
         try {
-            result = lock.tryLock(timeout, timeUnit);
+            return innerCondition.await(timeout, TimeUnit.MILLISECONDS);
         } catch (final InterruptedException ignored) {
+        } finally {
+            innerLock.unlock();
         }
-        if (result) {
-            ShardingSphereEventBus.getInstance().post(new StateEvent(StateType.LOCK, true));
-        }
-        return result;
+        return false;
     }
     
     @Override
-    public void releaseGlobalLock() {
-        lock.unlock();
-        ShardingSphereEventBus.getInstance().post(new StateEvent(StateType.LOCK, false));
-        signalAll();
+    public final void signalAll() {
+        innerLock.lock();
+        try {
+            innerCondition.signalAll();
+        } finally {
+            innerLock.unlock();
+        }
     }
 }
