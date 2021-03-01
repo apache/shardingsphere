@@ -177,6 +177,6 @@ public final class ShardingRouteEngineFactory {
             return false;
         }
         SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
-        return tableNames.size() == shardingTableNames.size() && (select.containsJoinQuery() || select.isContainsSubquery());
+        return((tableNames.size())==(shardingTableNames.size()));
     }
 }
