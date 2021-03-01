@@ -46,7 +46,7 @@ public final class LockProxyState implements ProxyState {
     
     private void block(final ChannelHandlerContext context, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine) {
         Long lockTimeoutMilliseconds = ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS);
-        if (!ProxyContext.getInstance().getLockContext().await(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
+        if (!ProxyContext.getInstance().getLock().await(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
             doError(context, databaseProtocolFrontendEngine, new LockWaitTimeoutException(lockTimeoutMilliseconds));
         }
     }

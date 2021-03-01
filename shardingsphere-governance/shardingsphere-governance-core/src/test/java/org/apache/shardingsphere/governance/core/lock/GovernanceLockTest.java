@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.governance.core.lock;
 
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,27 +31,27 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class GovernanceLockContextTest {
+public final class GovernanceLockTest {
     
     @Mock
     private RegistryCenter registryCenter;
     
-    private LockContext lockContext;
+    private ShardingSphereLock lock;
     
     @Before
     public void setUp() {
-        lockContext = new GovernanceLockContext(registryCenter);
+        lock = new GovernanceLock(registryCenter);
     }
     
     @Test
     public void assertTryLock() {
-        lockContext.tryGlobalLock(50L, TimeUnit.MILLISECONDS);
+        lock.tryGlobalLock(50L, TimeUnit.MILLISECONDS);
         verify(registryCenter).tryGlobalLock(eq(50L), eq(TimeUnit.MILLISECONDS));
     }
     
     @Test
     public void assertReleaseLock() {
-        lockContext.releaseGlobalLock();
+        lock.releaseGlobalLock();
         verify(registryCenter).releaseGlobalLock();
     }
 }
