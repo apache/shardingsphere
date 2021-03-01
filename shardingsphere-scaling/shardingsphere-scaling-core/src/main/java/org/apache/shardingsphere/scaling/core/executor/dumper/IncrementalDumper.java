@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.scaling.core.executor.dumper;
 
 /**
- * Position interface.
+ * Incremental dumper.
  */
-public interface Position<T> extends Comparable<T> {
+public interface IncrementalDumper extends Dumper {
 }

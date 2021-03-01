@@ -15,24 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.fixture;
+package org.apache.shardingsphere.scaling.postgresql.component;
 
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
-import org.apache.shardingsphere.scaling.core.executor.dumper.AbstractJDBCDumper;
+import org.apache.shardingsphere.scaling.core.executor.dumper.AbstractInventoryDumper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public final class FixtureH2JDBCDumper extends AbstractJDBCDumper {
+/**
+ * PostgreSQL JDBC dumper.
+ */
+public final class PostgreSQLInventoryDumper extends AbstractInventoryDumper {
     
-    public FixtureH2JDBCDumper(final InventoryDumperConfiguration dumperConfig, final DataSourceManager dataSourceManager) {
-        super(dumperConfig, dataSourceManager);
+    public PostgreSQLInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
+        super(inventoryDumperConfig, dataSourceManager);
     }
     
     @Override
-    protected PreparedStatement createPreparedStatement(final Connection conn, final String sql) throws SQLException {
-        return conn.prepareStatement(sql);
+    protected PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
+        PreparedStatement result = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        result.setFetchSize(1);
+        return result;
     }
 }

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.executor.dumper;
+package org.apache.shardingsphere.scaling.core.job.position;
 
 /**
- * Log dumper.
+ * Scaling position.
  */
-public interface LogDumper extends Dumper {
+public interface ScalingPosition<T> extends Comparable<T> {
 }

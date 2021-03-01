@@ -15,31 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.fixture;
+package org.apache.shardingsphere.scaling.core.executor.dumper;
 
-import org.apache.shardingsphere.scaling.core.common.channel.Channel;
-import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.executor.dumper.LogDumper;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
-
-public final class FixtureH2LogDumper implements LogDumper {
-    
-    public FixtureH2LogDumper(final DumperConfiguration dumperConfig, final Position<?> position) {
-    }
-    
-    @Override
-    public void setChannel(final Channel channel) {
-    }
-    
-    @Override
-    public void start() {
-    }
-    
-    @Override
-    public void stop() {
-    }
-    
-    @Override
-    public void run() {
-    }
+/**
+ * Inventory dumper.
+ */
+public interface InventoryDumper extends Dumper {
 }

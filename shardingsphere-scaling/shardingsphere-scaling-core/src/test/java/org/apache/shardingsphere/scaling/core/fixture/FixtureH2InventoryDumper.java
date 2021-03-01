@@ -15,30 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.scaling.core.fixture;
 
-import javax.sql.DataSource;
+import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
+import org.apache.shardingsphere.scaling.core.executor.dumper.AbstractInventoryDumper;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-/**
- * Position initializer.
- */
-public interface PositionInitializer {
+public final class FixtureH2InventoryDumper extends AbstractInventoryDumper {
     
-    /**
-     * Init position by data source.
-     *
-     * @param dataSource data source
-     * @return position
-     * @throws SQLException SQL exception
-     */
-    ScalingPosition<?> init(DataSource dataSource) throws SQLException;
+    public FixtureH2InventoryDumper(final InventoryDumperConfiguration dumperConfig, final DataSourceManager dataSourceManager) {
+        super(dumperConfig, dataSourceManager);
+    }
     
-    /**
-     * Init position by string data.
-     *
-     * @param data string data
-     * @return position
-     */
-    ScalingPosition<?> init(String data);
+    @Override
+    protected PreparedStatement createPreparedStatement(final Connection conn, final String sql) throws SQLException {
+        return conn.prepareStatement(sql);
+    }
 }

@@ -15,10 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.executor.dumper;
+package org.apache.shardingsphere.scaling.core.fixture;
 
-/**
- * JDBC dumper.
- */
-public interface JDBCDumper extends Dumper {
+import org.apache.shardingsphere.scaling.core.common.channel.Channel;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
+import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
+
+public final class FixtureH2IncrementalDumper implements IncrementalDumper {
+    
+    public FixtureH2IncrementalDumper(final DumperConfiguration dumperConfig, final ScalingPosition<?> position) {
+    }
+    
+    @Override
+    public void setChannel(final Channel channel) {
+    }
+    
+    @Override
+    public void start() {
+    }
+    
+    @Override
+    public void stop() {
+    }
+    
+    @Override
+    public void run() {
+    }
 }

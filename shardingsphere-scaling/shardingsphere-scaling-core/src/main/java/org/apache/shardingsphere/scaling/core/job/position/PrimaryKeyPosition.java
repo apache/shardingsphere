@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class PrimaryKeyPosition implements Position<PrimaryKeyPosition> {
+public final class PrimaryKeyPosition implements ScalingPosition<PrimaryKeyPosition> {
     
     private final long beginValue;
     

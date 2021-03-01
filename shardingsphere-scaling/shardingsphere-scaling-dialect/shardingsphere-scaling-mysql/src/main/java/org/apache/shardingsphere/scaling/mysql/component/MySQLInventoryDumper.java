@@ -15,30 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.component;
+package org.apache.shardingsphere.scaling.mysql.component;
 
-import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
+import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.executor.dumper.AbstractJDBCDumper;
+import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
+import org.apache.shardingsphere.scaling.core.executor.dumper.AbstractInventoryDumper;
+import org.apache.shardingsphere.scaling.core.util.JDBCUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 /**
- * PostgreSQL JDBC dumper.
+ * MySQL JDBC Dumper.
  */
-public final class PostgreSQLJdbcDumper extends AbstractJDBCDumper {
+public final class MySQLInventoryDumper extends AbstractInventoryDumper {
     
-    public PostgreSQLJdbcDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
+    public MySQLInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final DataSourceManager dataSourceManager) {
         super(inventoryDumperConfig, dataSourceManager);
+        JDBCUtil.appendJDBCParameter(inventoryDumperConfig.getDataSourceConfig(), ImmutableMap.<String, String>builder().put("yearIsDateType", "false").build());
+    }
+    
+    @Override
+    public Object readValue(final ResultSet resultSet, final int index) throws SQLException {
+        if (isDateTimeValue(resultSet.getMetaData().getColumnType(index))) {
+            return resultSet.getString(index);
+        } else {
+            return resultSet.getObject(index);
+        }
+    }
+    
+    private boolean isDateTimeValue(final int columnType) {
+        return Types.TIME == columnType || Types.DATE == columnType || Types.TIMESTAMP == columnType;
     }
     
     @Override
     protected PreparedStatement createPreparedStatement(final Connection connection, final String sql) throws SQLException {
         PreparedStatement result = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        result.setFetchSize(1);
+        result.setFetchSize(Integer.MIN_VALUE);
         return result;
     }
 }

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.scaling.core.fixture;
 
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.executor.dumper.JDBCDumper;
-import org.apache.shardingsphere.scaling.core.executor.dumper.LogDumper;
+import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
+import org.apache.shardingsphere.scaling.core.executor.dumper.InventoryDumper;
 import org.apache.shardingsphere.scaling.core.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
@@ -29,13 +29,13 @@ import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 public final class FixtureH2ScalingEntry implements ScalingEntry {
     
     @Override
-    public Class<? extends JDBCDumper> getJdbcDumperClass() {
-        return FixtureH2JDBCDumper.class;
+    public Class<? extends InventoryDumper> getInventoryDumperClass() {
+        return FixtureH2InventoryDumper.class;
     }
     
     @Override
-    public Class<? extends LogDumper> getLogDumperClass() {
-        return FixtureH2LogDumper.class;
+    public Class<? extends IncrementalDumper> getIncrementalDumperClass() {
+        return FixtureH2IncrementalDumper.class;
     }
     
     @Override

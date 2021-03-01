@@ -22,22 +22,22 @@ import com.zaxxer.hikari.HikariConfig;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.common.channel.Channel;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
-import org.apache.shardingsphere.scaling.core.executor.AbstractScalingExecutor;
-import org.apache.shardingsphere.scaling.core.common.channel.Channel;
-import org.apache.shardingsphere.scaling.core.executor.dumper.LogDumper;
+import org.apache.shardingsphere.scaling.core.common.datasource.JdbcUri;
+import org.apache.shardingsphere.scaling.core.common.datasource.MetaDataManager;
 import org.apache.shardingsphere.scaling.core.common.record.Column;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.common.record.FinishedRecord;
 import org.apache.shardingsphere.scaling.core.common.record.PlaceholderRecord;
 import org.apache.shardingsphere.scaling.core.common.record.Record;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
+import org.apache.shardingsphere.scaling.core.executor.AbstractScalingExecutor;
+import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
-import org.apache.shardingsphere.scaling.core.common.datasource.JdbcUri;
-import org.apache.shardingsphere.scaling.core.common.datasource.MetaDataManager;
+import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractRowsEvent;
@@ -57,7 +57,7 @@ import java.util.Random;
  * MySQL binlog dumper.
  */
 @Slf4j
-public final class MySQLBinlogDumper extends AbstractScalingExecutor implements LogDumper {
+public final class MySQLBinlogDumper extends AbstractScalingExecutor implements IncrementalDumper {
     
     private final BinlogPosition binlogPosition;
     
@@ -70,7 +70,7 @@ public final class MySQLBinlogDumper extends AbstractScalingExecutor implements 
     @Setter
     private Channel channel;
     
-    public MySQLBinlogDumper(final DumperConfiguration dumperConfig, final Position<BinlogPosition> binlogPosition) {
+    public MySQLBinlogDumper(final DumperConfiguration dumperConfig, final ScalingPosition<BinlogPosition> binlogPosition) {
         this.binlogPosition = (BinlogPosition) binlogPosition;
         this.dumperConfig = dumperConfig;
         Preconditions.checkArgument(dumperConfig.getDataSourceConfig() instanceof StandardJDBCDataSourceConfiguration, "MySQLBinlogDumper only support StandardJDBCDataSourceConfiguration");

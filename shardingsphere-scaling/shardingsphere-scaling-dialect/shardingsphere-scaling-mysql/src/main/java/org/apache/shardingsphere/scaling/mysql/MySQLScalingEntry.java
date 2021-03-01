@@ -17,19 +17,12 @@
 
 package org.apache.shardingsphere.scaling.mysql;
 
-import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.executor.dumper.JDBCDumper;
-import org.apache.shardingsphere.scaling.core.executor.dumper.LogDumper;
-import org.apache.shardingsphere.scaling.core.executor.importer.Importer;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
-import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLBinlogDumper;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLDataConsistencyChecker;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLDataSourceChecker;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLImporter;
-import org.apache.shardingsphere.scaling.mysql.component.MySQLJdbcDumper;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLInventoryDumper;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLPositionInitializer;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLScalingSQLBuilder;
 
@@ -39,37 +32,37 @@ import org.apache.shardingsphere.scaling.mysql.component.MySQLScalingSQLBuilder;
 public final class MySQLScalingEntry implements ScalingEntry {
     
     @Override
-    public Class<? extends JDBCDumper> getJdbcDumperClass() {
-        return MySQLJdbcDumper.class;
+    public Class<MySQLInventoryDumper> getInventoryDumperClass() {
+        return MySQLInventoryDumper.class;
     }
     
     @Override
-    public Class<? extends LogDumper> getLogDumperClass() {
+    public Class<MySQLBinlogDumper> getIncrementalDumperClass() {
         return MySQLBinlogDumper.class;
     }
     
     @Override
-    public Class<? extends PositionInitializer> getPositionInitializer() {
+    public Class<MySQLPositionInitializer> getPositionInitializer() {
         return MySQLPositionInitializer.class;
     }
     
     @Override
-    public Class<? extends Importer> getImporterClass() {
+    public Class<MySQLImporter> getImporterClass() {
         return MySQLImporter.class;
     }
     
     @Override
-    public Class<? extends DataSourceChecker> getDataSourceCheckerClass() {
+    public Class<MySQLDataSourceChecker> getDataSourceCheckerClass() {
         return MySQLDataSourceChecker.class;
     }
     
     @Override
-    public Class<? extends DataConsistencyChecker> getDataConsistencyCheckerClass() {
+    public Class<MySQLDataConsistencyChecker> getDataConsistencyCheckerClass() {
         return MySQLDataConsistencyChecker.class;
     }
     
     @Override
-    public Class<? extends ScalingSQLBuilder> getSQLBuilderClass() {
+    public Class<MySQLScalingSQLBuilder> getSQLBuilderClass() {
         return MySQLScalingSQLBuilder.class;
     }
     
