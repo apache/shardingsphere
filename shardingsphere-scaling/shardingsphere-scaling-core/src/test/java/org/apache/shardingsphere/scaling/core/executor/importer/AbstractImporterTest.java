@@ -53,7 +53,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class AbstractJDBCImporterTest {
+public final class AbstractImporterTest {
     
     private static final String TABLE_NAME = "test_table";
     
@@ -84,11 +84,11 @@ public final class AbstractJDBCImporterTest {
     @Mock
     private PreparedStatement preparedStatement;
     
-    private AbstractJDBCImporter jdbcImporter;
+    private AbstractImporter jdbcImporter;
     
     @Before
     public void setUp() throws SQLException {
-        jdbcImporter = new AbstractJDBCImporter(mockImporterConfiguration(), dataSourceManager) {
+        jdbcImporter = new AbstractImporter(mockImporterConfiguration(), dataSourceManager) {
             
             @Override
             protected ScalingSQLBuilder createSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
