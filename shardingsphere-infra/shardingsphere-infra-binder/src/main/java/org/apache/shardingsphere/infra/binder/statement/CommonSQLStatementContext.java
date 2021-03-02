@@ -46,23 +46,26 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
     
     public CommonSQLStatementContext(final T sqlStatement) {
         this.sqlStatement = sqlStatement;
-        databaseType = initDatabaseType(sqlStatement);
         tablesContext = new TablesContext(Collections.emptyList());
+        databaseType = getDatabaseType(sqlStatement);
     }
     
-    private DatabaseType initDatabaseType(final SQLStatement sqlStatement) {
-        DatabaseType databaseType = null;
+    private DatabaseType getDatabaseType(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof MySQLStatement) {
-            databaseType = DatabaseTypeRegistry.getActualDatabaseType("MySQL");
-        } else if (sqlStatement instanceof PostgreSQLStatement) {
-            databaseType = DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL");
-        } else if (sqlStatement instanceof OracleStatement) {
-            databaseType = DatabaseTypeRegistry.getActualDatabaseType("Oracle");
-        } else if (sqlStatement instanceof SQLServerStatement) {
-            databaseType = DatabaseTypeRegistry.getActualDatabaseType("SQLServer");
-        } else if (sqlStatement instanceof SQL92Statement) {
-            databaseType = DatabaseTypeRegistry.getActualDatabaseType("SQL92");
+            return DatabaseTypeRegistry.getActualDatabaseType("MySQL");
         }
-        return databaseType;
+        if (sqlStatement instanceof PostgreSQLStatement) {
+            return DatabaseTypeRegistry.getActualDatabaseType("PostgreSQL");
+        }
+        if (sqlStatement instanceof OracleStatement) {
+            return DatabaseTypeRegistry.getActualDatabaseType("Oracle");
+        }
+        if (sqlStatement instanceof SQLServerStatement) {
+            return DatabaseTypeRegistry.getActualDatabaseType("SQLServer");
+        }
+        if (sqlStatement instanceof SQL92Statement) {
+            return DatabaseTypeRegistry.getActualDatabaseType("SQL92");
+        }
+        throw new UnsupportedOperationException(sqlStatement.getClass().getName());
     }
 }
