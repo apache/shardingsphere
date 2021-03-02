@@ -44,8 +44,15 @@ rules:
         none:
       databaseStrategy:
         none:
+    t_user_details:
+      actualDataNodes: encrypt.t_user_details
+      tableStrategy:
+        none:
+      databaseStrategy:
+        none:
   bindingTables:
-    - t_user,t_order_item
+    - t_user,t_order_item,t_user_details
+
 - !ENCRYPT
   encryptors:
     aes_encryptor:
@@ -54,6 +61,12 @@ rules:
         aes-key-value: 123456abc
   tables:
     t_user:
+      columns:
+        pwd:
+          plainColumn: pwd_plain
+          cipherColumn: pwd_cipher
+          encryptorName: aes_encryptor
+    t_user_details:
       columns:
         pwd:
           plainColumn: pwd_plain

@@ -111,5 +111,29 @@
             <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl" />
         </assertion>
     </test-case>
+
+    <test-case sql="CREATE TABLE t_user_details (user_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL)" scenario-types="encrypt">
+        <assertion expected-data-file="create_user_table.xml">
+            <initial-sql affected-table="t_user_details" />
+        </assertion>
+    </test-case>
+
+    <test-case sql="ALTER TABLE t_user_details CHANGE pwd_plain pwd_new VARCHAR(50) NULL" scenario-types="encrypt">
+        <assertion expected-data-file="change_user_table.xml">
+            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL)" affected-table="t_user_details" />
+        </assertion>
+    </test-case>
+
+    <test-case sql="DROP TABLE t_user_details" scenario-types="encrypt">
+        <assertion expected-data-file="drop_user_table.xml">
+            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL)" affected-table="t_user_details" />
+        </assertion>
+    </test-case>
+
+    <test-case sql="TRUNCATE TABLE t_user_details" scenario-types="encrypt">
+        <assertion expected-data-file="unchanged_user_table.xml">
+            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL)" affected-table="t_user_details" />
+        </assertion>
+    </test-case>
     <!-- TODO add single table DDL test cases -->
 </integration-test-cases>
