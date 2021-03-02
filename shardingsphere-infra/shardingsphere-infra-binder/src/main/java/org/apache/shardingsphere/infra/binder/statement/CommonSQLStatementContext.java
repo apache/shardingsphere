@@ -46,8 +46,8 @@ public class CommonSQLStatementContext<T extends SQLStatement> implements SQLSta
     
     public CommonSQLStatementContext(final T sqlStatement) {
         this.sqlStatement = sqlStatement;
-        databaseType = getDatabaseType(sqlStatement);
         tablesContext = new TablesContext(Collections.emptyList());
+        databaseType = getDatabaseType(sqlStatement);
     }
     
     private DatabaseType getDatabaseType(final SQLStatement sqlStatement) {
