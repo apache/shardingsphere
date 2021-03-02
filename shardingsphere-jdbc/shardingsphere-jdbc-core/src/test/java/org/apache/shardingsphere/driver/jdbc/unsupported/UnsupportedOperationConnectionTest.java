@@ -122,11 +122,6 @@ public final class UnsupportedOperationConnectionTest {
     }
     
     @Test(expected = SQLFeatureNotSupportedException.class)
-    public void assertCreateArrayOf() throws SQLException {
-        shardingSphereConnection.createArrayOf("", null);
-    }
-    
-    @Test(expected = SQLFeatureNotSupportedException.class)
     public void assertCreateStruct() throws SQLException {
         shardingSphereConnection.createStruct("", null);
     }

@@ -54,6 +54,8 @@ public final class ShowScalingJobListBackendHandler implements TextProtocolBacke
         result.add(new QueryHeader("", "", "tables", "", Types.CHAR, "CHAR", 1024, 0, false, false, false, false));
         result.add(new QueryHeader("", "", "sharding_total_count", "", Types.SMALLINT, "SMALLINT", 255, 0, false, false, false, false));
         result.add(new QueryHeader("", "", "active", "", Types.TINYINT, "TINYINT", 255, 0, false, false, false, false));
+        result.add(new QueryHeader("", "", "create_time", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader("", "", "stop_time", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         return result;
     }
     
@@ -71,6 +73,8 @@ public final class ShowScalingJobListBackendHandler implements TextProtocolBacke
                     map.put("tables", each.getTables());
                     map.put("sharding_total_count", each.getShardingTotalCount());
                     map.put("active", each.isActive() ? 1 : 0);
+                    map.put("create_time", each.getCreateTime());
+                    map.put("stop_time", each.getStopTime());
                     return map;
                 })
                 .collect(Collectors.toList())

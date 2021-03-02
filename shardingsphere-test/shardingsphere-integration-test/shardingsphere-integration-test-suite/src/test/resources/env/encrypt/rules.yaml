@@ -18,20 +18,8 @@
 rules:
 - !SHARDING
   tables:
-    t_order:
-      actualDataNodes: encrypt.t_order
-      tableStrategy:
-        none:
-      databaseStrategy:
-        none:
     t_order_item:
       actualDataNodes: encrypt.t_order_item
-      tableStrategy:
-        none:
-      databaseStrategy:
-        none:
-    t_order_details:
-      actualDataNodes: encrypt.t_order_details
       tableStrategy:
         none:
       databaseStrategy:
@@ -43,10 +31,7 @@ rules:
       databaseStrategy:
         none:
   bindingTables:
-    - t_order,t_user,t_order_item,t_order_details
-  broadcastTables:
-    - t_broadcast_table
-    - t_broadcast_table_for_ddl
+    - t_user,t_order_item
 - !ENCRYPT
   encryptors:
     aes_encryptor:

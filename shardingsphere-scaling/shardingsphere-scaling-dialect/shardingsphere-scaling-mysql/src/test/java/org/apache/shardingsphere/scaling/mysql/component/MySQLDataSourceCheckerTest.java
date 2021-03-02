@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.mysql.component;
 
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
+import org.apache.shardingsphere.scaling.mysql.component.checker.MySQLDataSourceChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -56,7 +56,7 @@ public final class CalciteJDBCExecutor implements CalciteExecutor {
             throw new RuntimeException(ex);
         }
     }
-
+    
     public CalciteJDBCExecutor(final CalciteContext context) {
         this.context = context;
         PROPERTIES.setProperty(CalciteConnectionProperty.LEX.camelName(), context.getConnectionProperties().getProperty(CalciteConnectionProperty.LEX.camelName()));

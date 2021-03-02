@@ -53,7 +53,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -122,7 +121,7 @@ public final class DatabaseCommunicationEngine {
     
     private boolean tryGlobalLock(final ExecutionContext executionContext, final Long lockTimeoutMilliseconds) {
         if (needLock(executionContext.getSqlStatementContext().getSqlStatement())) {
-            if (!ProxyContext.getInstance().getLockContext().tryGlobalLock(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
+            if (!ProxyContext.getInstance().getLock().tryGlobalLock(lockTimeoutMilliseconds)) {
                 throw new LockWaitTimeoutException(lockTimeoutMilliseconds);
             }
             return true;
@@ -135,7 +134,7 @@ public final class DatabaseCommunicationEngine {
     }
     
     private void releaseGlobalLock() {
-        ProxyContext.getInstance().getLockContext().releaseGlobalLock();
+        ProxyContext.getInstance().getLock().releaseGlobalLock();
     }
     
     private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {

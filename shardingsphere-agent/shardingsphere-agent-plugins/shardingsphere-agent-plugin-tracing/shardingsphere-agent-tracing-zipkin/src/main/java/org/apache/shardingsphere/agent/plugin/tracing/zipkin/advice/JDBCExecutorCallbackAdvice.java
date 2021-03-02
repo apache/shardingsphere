@@ -43,25 +43,26 @@ public final class JDBCExecutorCallbackAdvice implements InstanceMethodAroundAdv
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        final Span root = (Span) ((Map<String, Object>) args[2]).get(ZipkinConstants.ROOT_SPAN);
-        if ((boolean) args[1]) {
-            target.setAttachment(Tracing.currentTracer().newChild(root.context()).name(OPERATION_NAME).start());
+        Span root = (Span) ((Map<String, Object>) args[2]).get(ZipkinConstants.ROOT_SPAN);
+        Span span;
+        if (null == root) {
+            span = Tracing.currentTracer().nextSpan().name(OPERATION_NAME);
         } else {
-            JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
-            Method getMetadataMethod = JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class);
-            getMetadataMethod.setAccessible(true);
-            DataSourceMetaData metaData = (DataSourceMetaData) getMetadataMethod.invoke(target, new Object[]{executionUnit.getStorageResource().getConnection().getMetaData()});
-            Span span = Tracing.currentTracer().nextSpan().name(OPERATION_NAME);
-            span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
-            span.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
-            span.tag(ZipkinConstants.Tags.DB_INSTANCE, executionUnit.getExecutionUnit().getDataSourceName());
-            span.tag(ZipkinConstants.Tags.PEER_HOSTNAME, metaData.getHostName());
-            span.tag(ZipkinConstants.Tags.PEER_PORT, String.valueOf(metaData.getPort()));
-            span.tag(ZipkinConstants.Tags.DB_STATEMENT, executionUnit.getExecutionUnit().getSqlUnit().getSql());
-            span.tag(ZipkinConstants.Tags.DB_BIND_VARIABLES, executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString());
-            span.start();
-            target.setAttachment(span);
+            span = Tracing.currentTracer().newChild(root.context()).name(OPERATION_NAME);
         }
+        span.tag(ZipkinConstants.Tags.COMPONENT, ZipkinConstants.COMPONENT_NAME);
+        span.tag(ZipkinConstants.Tags.DB_TYPE, ZipkinConstants.DB_TYPE_VALUE);
+        JDBCExecutionUnit executionUnit = (JDBCExecutionUnit) args[0];
+        Method getMetadataMethod = JDBCExecutorCallback.class.getDeclaredMethod("getDataSourceMetaData", DatabaseMetaData.class);
+        getMetadataMethod.setAccessible(true);
+        DataSourceMetaData metaData = (DataSourceMetaData) getMetadataMethod.invoke(target, new Object[]{executionUnit.getStorageResource().getConnection().getMetaData()});
+        span.tag(ZipkinConstants.Tags.DB_INSTANCE, executionUnit.getExecutionUnit().getDataSourceName());
+        span.tag(ZipkinConstants.Tags.PEER_HOSTNAME, metaData.getHostName());
+        span.tag(ZipkinConstants.Tags.PEER_PORT, String.valueOf(metaData.getPort()));
+        span.tag(ZipkinConstants.Tags.DB_STATEMENT, executionUnit.getExecutionUnit().getSqlUnit().getSql());
+        span.tag(ZipkinConstants.Tags.DB_BIND_VARIABLES, executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString());
+        span.start();
+        target.setAttachment(span);
     }
     
     @Override
