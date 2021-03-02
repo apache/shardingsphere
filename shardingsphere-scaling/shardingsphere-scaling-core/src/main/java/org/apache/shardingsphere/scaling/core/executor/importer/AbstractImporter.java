@@ -45,10 +45,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Abstract JDBC importer implementation.
+ * Abstract importer.
  */
 @Slf4j
-public abstract class AbstractJDBCImporter extends AbstractScalingExecutor implements Importer {
+public abstract class AbstractImporter extends AbstractScalingExecutor implements Importer {
     
     private static final DataRecordMerger MERGER = new DataRecordMerger();
     
@@ -61,7 +61,7 @@ public abstract class AbstractJDBCImporter extends AbstractScalingExecutor imple
     @Setter
     private Channel channel;
     
-    protected AbstractJDBCImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
+    protected AbstractImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
         scalingSqlBuilder = createSQLBuilder(importerConfig.getShardingColumnsMap());
