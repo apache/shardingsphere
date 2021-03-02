@@ -17,24 +17,29 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
-import org.apache.shardingsphere.scaling.core.common.sqlbuilder.AbstractScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.common.channel.Channel;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
+import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 
-import java.util.Map;
-import java.util.Set;
-
-public final class FixtureScalingSQLBuilder extends AbstractScalingSQLBuilder {
+public final class FixtureIncrementalDumper implements IncrementalDumper {
     
-    public FixtureScalingSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
-        super(shardingColumnsMap);
+    public FixtureIncrementalDumper(final DumperConfiguration dumperConfig, final ScalingPosition<?> position) {
     }
     
     @Override
-    protected String getLeftIdentifierQuoteString() {
-        return "`";
+    public void setChannel(final Channel channel) {
     }
     
     @Override
-    protected String getRightIdentifierQuoteString() {
-        return "`";
+    public void start() {
+    }
+    
+    @Override
+    public void stop() {
+    }
+    
+    @Override
+    public void run() {
     }
 }

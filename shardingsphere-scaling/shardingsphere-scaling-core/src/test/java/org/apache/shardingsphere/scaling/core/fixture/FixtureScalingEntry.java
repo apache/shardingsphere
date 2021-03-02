@@ -25,16 +25,16 @@ import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 
-public final class FixtureH2ScalingEntry implements ScalingEntry {
+public final class FixtureScalingEntry implements ScalingEntry {
     
     @Override
     public Class<? extends InventoryDumper> getInventoryDumperClass() {
-        return FixtureH2InventoryDumper.class;
+        return FixtureInventoryDumper.class;
     }
     
     @Override
     public Class<? extends IncrementalDumper> getIncrementalDumperClass() {
-        return FixtureH2IncrementalDumper.class;
+        return FixtureIncrementalDumper.class;
     }
     
     @Override
@@ -44,7 +44,7 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     
     @Override
     public Class<? extends Importer> getImporterClass() {
-        return FixtureNopImporter.class;
+        return FixtureImporter.class;
     }
     
     @Override
@@ -54,7 +54,7 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     
     @Override
     public Class<? extends ScalingSQLBuilder> getSQLBuilderClass() {
-        return FixtureScalingSQLBuilder.class;
+        return FixtureSQLBuilder.class;
     }
     
     @Override

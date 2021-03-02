@@ -44,6 +44,6 @@ public final class FixtureDataConsistencyChecker extends AbstractDataConsistency
     
     @Override
     protected ScalingSQLBuilder getSqlBuilder() {
-        return new FixtureScalingSQLBuilder(Maps.newHashMap());
+        return new FixtureSQLBuilder(Maps.newHashMap());
     }
 }

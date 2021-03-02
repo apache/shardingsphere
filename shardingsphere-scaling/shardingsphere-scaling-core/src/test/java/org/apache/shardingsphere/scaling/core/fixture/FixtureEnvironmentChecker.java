@@ -25,7 +25,7 @@ public final class FixtureEnvironmentChecker implements EnvironmentChecker {
     
     @Override
     public Class<? extends DataSourceChecker> getDataSourceCheckerClass() {
-        return FixtureH2DataSourceChecker.class;
+        return FixtureDataSourceChecker.class;
     }
     
     @Override

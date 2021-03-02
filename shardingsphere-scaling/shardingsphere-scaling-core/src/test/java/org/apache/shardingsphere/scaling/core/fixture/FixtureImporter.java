@@ -18,17 +18,21 @@
 package org.apache.shardingsphere.scaling.core.fixture;
 
 import org.apache.shardingsphere.scaling.core.common.channel.Channel;
-import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
+import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
+import org.apache.shardingsphere.scaling.core.executor.importer.Importer;
 
-public final class FixtureH2IncrementalDumper implements IncrementalDumper {
+public final class FixtureImporter implements Importer {
     
-    public FixtureH2IncrementalDumper(final DumperConfiguration dumperConfig, final ScalingPosition<?> position) {
+    public FixtureImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
     }
     
     @Override
     public void setChannel(final Channel channel) {
+    }
+    
+    @Override
+    public void write() {
     }
     
     @Override
@@ -41,5 +45,7 @@ public final class FixtureH2IncrementalDumper implements IncrementalDumper {
     
     @Override
     public void run() {
+        start();
+        write();
     }
 }
