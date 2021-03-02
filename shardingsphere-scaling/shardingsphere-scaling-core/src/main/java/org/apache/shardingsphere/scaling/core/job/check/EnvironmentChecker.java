@@ -17,24 +17,25 @@
 
 package org.apache.shardingsphere.scaling.core.job.check;
 
-import java.util.Map;
+import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.job.check.source.DataSourceChecker;
 
 /**
- * Data consistency checker interface.
+ * Environment checker.
  */
-public interface DataConsistencyChecker {
+public interface EnvironmentChecker {
     
     /**
-     * Check each table count is valid.
+     * Get data source checker type.
      *
-     * @return count check result
+     * @return data source checker type.
      */
-    Map<String, DataConsistencyCheckResult> countCheck();
+    Class<? extends DataSourceChecker> getDataSourceCheckerClass();
     
     /**
-     * Check each table data is valid.
+     * Get data consistency checker type.
      *
-     * @return data is valid or not
+     * @return data consistency checker type.
      */
-    Map<String, Boolean> dataCheck();
+    Class<? extends DataConsistencyChecker> getDataConsistencyCheckerClass();
 }

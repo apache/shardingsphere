@@ -15,31 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.check;
+package org.apache.shardingsphere.scaling.core.job.check.consistency;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import java.util.Map;
 
 /**
- * Data consistency check result.
+ * Data consistency checker interface.
  */
-@Getter
-@Setter
-@ToString
-public final class DataConsistencyCheckResult {
+public interface DataConsistencyChecker {
     
-    private final long sourceCount;
+    /**
+     * Check each table count is valid.
+     *
+     * @return count check result
+     */
+    Map<String, DataConsistencyCheckResult> countCheck();
     
-    private final long targetCount;
-    
-    private final boolean countValid;
-    
-    private boolean dataValid;
-    
-    public DataConsistencyCheckResult(final long sourceCount, final long targetCount) {
-        this.sourceCount = sourceCount;
-        this.targetCount = targetCount;
-        countValid = sourceCount == targetCount;
-    }
+    /**
+     * Check each table data is valid.
+     *
+     * @return data is valid or not
+     */
+    Map<String, Boolean> dataCheck();
 }

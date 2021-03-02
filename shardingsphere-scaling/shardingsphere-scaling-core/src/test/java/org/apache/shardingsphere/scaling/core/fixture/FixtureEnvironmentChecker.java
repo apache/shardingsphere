@@ -15,27 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.scaling.core.fixture;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
+import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
+import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.job.check.source.DataSourceChecker;
 
-/**
- * Position initializer factory.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PositionInitializerFactory {
+public final class FixtureEnvironmentChecker implements EnvironmentChecker {
     
-    /**
-     * New instance of position initializer.
-     *
-     * @param databaseType database type
-     * @return position initializer
-     */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static PositionInitializer newInstance(final String databaseType) {
-        return ScalingEntryLoader.getInstance(databaseType).getPositionInitializerClass().newInstance();
+    @Override
+    public Class<? extends DataSourceChecker> getDataSourceCheckerClass() {
+        return FixtureH2DataSourceChecker.class;
+    }
+    
+    @Override
+    public Class<? extends DataConsistencyChecker> getDataConsistencyCheckerClass() {
+        return FixtureDataConsistencyChecker.class;
     }
 }

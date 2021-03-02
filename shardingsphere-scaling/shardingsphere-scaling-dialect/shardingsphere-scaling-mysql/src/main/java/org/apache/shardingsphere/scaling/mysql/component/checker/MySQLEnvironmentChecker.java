@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.scaling.mysql.component.checker;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
+import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 
 /**
- * Position initializer factory.
+ * MySQL environment checker.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PositionInitializerFactory {
+public final class MySQLEnvironmentChecker implements EnvironmentChecker {
     
-    /**
-     * New instance of position initializer.
-     *
-     * @param databaseType database type
-     * @return position initializer
-     */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static PositionInitializer newInstance(final String databaseType) {
-        return ScalingEntryLoader.getInstance(databaseType).getPositionInitializerClass().newInstance();
+    @Override
+    public Class<MySQLDataSourceChecker> getDataSourceCheckerClass() {
+        return MySQLDataSourceChecker.class;
+    }
+    
+    @Override
+    public Class<MySQLDataConsistencyChecker> getDataConsistencyCheckerClass() {
+        return MySQLDataConsistencyChecker.class;
     }
 }

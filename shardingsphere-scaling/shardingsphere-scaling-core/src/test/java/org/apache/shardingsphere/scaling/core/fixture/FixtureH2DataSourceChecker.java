@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
-import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
+import org.apache.shardingsphere.scaling.core.job.check.source.DataSourceChecker;
 
 import javax.sql.DataSource;
 import java.util.Collection;

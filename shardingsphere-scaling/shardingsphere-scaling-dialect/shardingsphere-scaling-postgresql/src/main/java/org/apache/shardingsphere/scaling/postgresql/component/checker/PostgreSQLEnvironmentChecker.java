@@ -15,27 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.scaling.postgresql.component.checker;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
+import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 
-/**
- * Position initializer factory.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PositionInitializerFactory {
+public final class PostgreSQLEnvironmentChecker implements EnvironmentChecker {
     
-    /**
-     * New instance of position initializer.
-     *
-     * @param databaseType database type
-     * @return position initializer
-     */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static PositionInitializer newInstance(final String databaseType) {
-        return ScalingEntryLoader.getInstance(databaseType).getPositionInitializerClass().newInstance();
+    @Override
+    public Class<PostgreSQLDataSourceChecker> getDataSourceCheckerClass() {
+        return PostgreSQLDataSourceChecker.class;
+    }
+    
+    @Override
+    public Class<PostgreSQLDataConsistencyChecker> getDataConsistencyCheckerClass() {
+        return PostgreSQLDataConsistencyChecker.class;
     }
 }

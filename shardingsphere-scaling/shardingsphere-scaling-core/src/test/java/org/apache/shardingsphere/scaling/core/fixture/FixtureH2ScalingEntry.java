@@ -21,9 +21,8 @@ import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilde
 import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
 import org.apache.shardingsphere.scaling.core.executor.dumper.InventoryDumper;
 import org.apache.shardingsphere.scaling.core.executor.importer.Importer;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
-import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 
 public final class FixtureH2ScalingEntry implements ScalingEntry {
@@ -39,7 +38,7 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends PositionInitializer> getPositionInitializer() {
+    public Class<? extends PositionInitializer> getPositionInitializerClass() {
         return FixturePositionInitializer.class;
     }
     
@@ -49,13 +48,8 @@ public final class FixtureH2ScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<? extends DataSourceChecker> getDataSourceCheckerClass() {
-        return FixtureH2DataSourceChecker.class;
-    }
-    
-    @Override
-    public Class<? extends DataConsistencyChecker> getDataConsistencyCheckerClass() {
-        return FixtureDataConsistencyChecker.class;
+    public Class<? extends EnvironmentChecker> getEnvironmentCheckerClass() {
+        return FixtureEnvironmentChecker.class;
     }
     
     @Override

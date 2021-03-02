@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.scaling.postgresql;
 
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLDataSourceChecker;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLImporter;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLInventoryDumper;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLPositionInitializer;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLWalDumper;
+import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLEnvironmentChecker;
 
 /**
  * PostgreSQL scaling entry.
@@ -42,7 +41,7 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<PostgreSQLPositionInitializer> getPositionInitializer() {
+    public Class<PostgreSQLPositionInitializer> getPositionInitializerClass() {
         return PostgreSQLPositionInitializer.class;
     }
     
@@ -52,13 +51,8 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<PostgreSQLDataSourceChecker> getDataSourceCheckerClass() {
-        return PostgreSQLDataSourceChecker.class;
-    }
-    
-    @Override
-    public Class<PostgreSQLDataConsistencyChecker> getDataConsistencyCheckerClass() {
-        return PostgreSQLDataConsistencyChecker.class;
+    public Class<PostgreSQLEnvironmentChecker> getEnvironmentCheckerClass() {
+        return PostgreSQLEnvironmentChecker.class;
     }
     
     @Override
