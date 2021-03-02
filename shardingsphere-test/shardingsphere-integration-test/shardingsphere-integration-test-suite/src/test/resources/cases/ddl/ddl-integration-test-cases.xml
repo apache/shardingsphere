@@ -111,7 +111,7 @@
             <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl" />
         </assertion>
     </test-case>
-
+    <!--TODO fix me! about issue #9564-->
     <test-case sql="CREATE TABLE t_user_details (user_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL)" scenario-types="encrypt">
         <assertion expected-data-file="create_user_table.xml">
             <initial-sql affected-table="t_user_details" />
