@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.fixture;
-
-import org.apache.shardingsphere.scaling.core.common.sqlbuilder.AbstractScalingSQLBuilder;
+package org.apache.shardingsphere.scaling.core.job.check.consistency;
 
 import java.util.Map;
-import java.util.Set;
 
-public final class FixtureScalingSQLBuilder extends AbstractScalingSQLBuilder {
+/**
+ * Data consistency checker interface.
+ */
+public interface DataConsistencyChecker {
     
-    public FixtureScalingSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
-        super(shardingColumnsMap);
-    }
+    /**
+     * Check each table count is valid.
+     *
+     * @return count check result
+     */
+    Map<String, DataConsistencyCheckResult> countCheck();
     
-    @Override
-    protected String getLeftIdentifierQuoteString() {
-        return "`";
-    }
-    
-    @Override
-    protected String getRightIdentifierQuoteString() {
-        return "`";
-    }
+    /**
+     * Check each table data is valid.
+     *
+     * @return data is valid or not
+     */
+    Map<String, Boolean> dataCheck();
 }

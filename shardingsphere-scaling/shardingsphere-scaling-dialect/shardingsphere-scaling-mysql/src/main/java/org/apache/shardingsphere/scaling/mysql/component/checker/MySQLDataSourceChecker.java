@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.mysql.component;
+package org.apache.shardingsphere.scaling.mysql.component.checker;
 
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
-import org.apache.shardingsphere.scaling.core.job.preparer.checker.AbstractDataSourceChecker;
+import org.apache.shardingsphere.scaling.core.job.check.source.AbstractDataSourceChecker;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLScalingSQLBuilder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

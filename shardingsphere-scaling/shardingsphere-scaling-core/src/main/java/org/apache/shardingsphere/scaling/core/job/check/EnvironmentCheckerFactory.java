@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.scaling.core.job.check;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
+import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.job.check.source.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
 
 /**
- * Data consistency checker factory.
+ * Environment checker factory.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataConsistencyCheckerFactory {
+public final class EnvironmentCheckerFactory {
+    
     
     /**
      * Create data consistency checker instance.
@@ -39,6 +39,18 @@ public final class DataConsistencyCheckerFactory {
     @SneakyThrows(ReflectiveOperationException.class)
     public static DataConsistencyChecker newInstance(final JobContext jobContext) {
         ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(jobContext.getJobConfig().getHandleConfig().getDatabaseType());
-        return scalingEntry.getDataConsistencyCheckerClass().getConstructor(JobContext.class).newInstance(jobContext);
+        return scalingEntry.getEnvironmentCheckerClass().getConstructor().newInstance().getDataConsistencyCheckerClass().getConstructor(JobContext.class).newInstance(jobContext);
+    }
+    
+    /**
+     * Create data source checker instance.
+     *
+     * @param databaseType database type
+     * @return data source checker
+     */
+    @SneakyThrows(ReflectiveOperationException.class)
+    public static DataSourceChecker newInstance(final String databaseType) {
+        ScalingEntry scalingEntry = ScalingEntryLoader.getInstance(databaseType);
+        return scalingEntry.getEnvironmentCheckerClass().getConstructor().newInstance().getDataSourceCheckerClass().getConstructor().newInstance();
     }
 }

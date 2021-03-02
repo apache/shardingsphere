@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.scaling.mysql;
 
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
-import org.apache.shardingsphere.scaling.mysql.component.MySQLBinlogDumper;
-import org.apache.shardingsphere.scaling.mysql.component.MySQLDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.mysql.component.MySQLDataSourceChecker;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLImporter;
+import org.apache.shardingsphere.scaling.mysql.component.MySQLIncrementalDumper;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLInventoryDumper;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLPositionInitializer;
 import org.apache.shardingsphere.scaling.mysql.component.MySQLScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.mysql.component.checker.MySQLEnvironmentChecker;
 
 /**
  * MySQL scaling entry.
@@ -37,12 +36,12 @@ public final class MySQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<MySQLBinlogDumper> getIncrementalDumperClass() {
-        return MySQLBinlogDumper.class;
+    public Class<MySQLIncrementalDumper> getIncrementalDumperClass() {
+        return MySQLIncrementalDumper.class;
     }
     
     @Override
-    public Class<MySQLPositionInitializer> getPositionInitializer() {
+    public Class<MySQLPositionInitializer> getPositionInitializerClass() {
         return MySQLPositionInitializer.class;
     }
     
@@ -52,13 +51,8 @@ public final class MySQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<MySQLDataSourceChecker> getDataSourceCheckerClass() {
-        return MySQLDataSourceChecker.class;
-    }
-    
-    @Override
-    public Class<MySQLDataConsistencyChecker> getDataConsistencyCheckerClass() {
-        return MySQLDataConsistencyChecker.class;
+    public Class<MySQLEnvironmentChecker> getEnvironmentCheckerClass() {
+        return MySQLEnvironmentChecker.class;
     }
     
     @Override

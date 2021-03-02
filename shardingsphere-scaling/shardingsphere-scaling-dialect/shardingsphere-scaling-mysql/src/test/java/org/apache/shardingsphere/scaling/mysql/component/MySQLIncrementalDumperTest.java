@@ -19,17 +19,17 @@ package org.apache.shardingsphere.scaling.mysql.component;
 
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.map.HashedMap;
-import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.ScalingContext;
-import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.scaling.core.common.channel.MemoryChannel;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.common.channel.MemoryChannel;
+import org.apache.shardingsphere.scaling.core.common.datasource.JdbcUri;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.common.record.PlaceholderRecord;
 import org.apache.shardingsphere.scaling.core.common.record.Record;
-import org.apache.shardingsphere.scaling.core.common.datasource.JdbcUri;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
+import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.mysql.binlog.BinlogPosition;
 import org.apache.shardingsphere.scaling.mysql.binlog.event.AbstractBinlogEvent;
@@ -53,11 +53,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class MySQLBinlogDumperTest {
+public final class MySQLIncrementalDumperTest {
     
     private static final String URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
     
-    private MySQLBinlogDumper mysqlBinlogDumper;
+    private MySQLIncrementalDumper incrementalDumper;
     
     private MemoryChannel channel;
     
@@ -68,8 +68,8 @@ public final class MySQLBinlogDumperTest {
         initTableData(dumperConfig);
         channel = new MemoryChannel(records -> {
         });
-        mysqlBinlogDumper = new MySQLBinlogDumper(dumperConfig, new BinlogPosition("binlog-000001", 4L));
-        mysqlBinlogDumper.setChannel(channel);
+        incrementalDumper = new MySQLIncrementalDumper(dumperConfig, new BinlogPosition("binlog-000001", 4L));
+        incrementalDumper.setChannel(channel);
     }
     
     private DumperConfiguration mockDumperConfiguration() {
@@ -160,6 +160,6 @@ public final class MySQLBinlogDumperTest {
     
     @SneakyThrows({NoSuchMethodException.class, ReflectiveOperationException.class})
     private void invokeHandleEvent(final JdbcUri uri, final AbstractBinlogEvent event) {
-        ReflectionUtil.invokeMethod(mysqlBinlogDumper, "handleEvent", new Class[]{JdbcUri.class, AbstractBinlogEvent.class}, new Object[]{uri, event});
+        ReflectionUtil.invokeMethod(incrementalDumper, "handleEvent", new Class[]{JdbcUri.class, AbstractBinlogEvent.class}, new Object[]{uri, event});
     }
 }

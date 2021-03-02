@@ -17,33 +17,35 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
-import com.google.common.collect.Maps;
-import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.job.JobContext;
-import org.apache.shardingsphere.scaling.core.job.check.consistency.AbstractDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.scaling.core.common.channel.Channel;
+import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
+import org.apache.shardingsphere.scaling.core.executor.importer.Importer;
 
-import java.util.Collections;
-import java.util.Map;
-
-public final class FixtureDataConsistencyChecker extends AbstractDataConsistencyChecker {
+public final class FixtureImporter implements Importer {
     
-    public FixtureDataConsistencyChecker(final JobContext jobContext) {
-        super(jobContext);
+    public FixtureImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
     }
     
     @Override
-    public Map<String, DataConsistencyCheckResult> countCheck() {
-        return super.countCheck();
+    public void setChannel(final Channel channel) {
     }
     
     @Override
-    public Map<String, Boolean> dataCheck() {
-        return Collections.emptyMap();
+    public void write() {
     }
     
     @Override
-    protected ScalingSQLBuilder getSqlBuilder() {
-        return new FixtureSQLBuilder(Maps.newHashMap());
+    public void start() {
+    }
+    
+    @Override
+    public void stop() {
+    }
+    
+    @Override
+    public void run() {
+        start();
+        write();
     }
 }

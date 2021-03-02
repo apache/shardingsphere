@@ -15,27 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.position;
+package org.apache.shardingsphere.scaling.core.job.check.consistency;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
- * Position initializer factory.
+ * Data consistency check result.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PositionInitializerFactory {
+@Getter
+@Setter
+@ToString
+public final class DataConsistencyCheckResult {
     
-    /**
-     * New instance of position initializer.
-     *
-     * @param databaseType database type
-     * @return position initializer
-     */
-    @SneakyThrows(ReflectiveOperationException.class)
-    public static PositionInitializer newInstance(final String databaseType) {
-        return ScalingEntryLoader.getInstance(databaseType).getPositionInitializerClass().newInstance();
+    private final long sourceCount;
+    
+    private final long targetCount;
+    
+    private final boolean countValid;
+    
+    private boolean dataValid;
+    
+    public DataConsistencyCheckResult(final long sourceCount, final long targetCount) {
+        this.sourceCount = sourceCount;
+        this.targetCount = targetCount;
+        countValid = sourceCount == targetCount;
     }
 }

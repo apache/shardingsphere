@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.spi;
 
-import org.apache.shardingsphere.scaling.core.fixture.FixtureH2ScalingEntry;
+import org.apache.shardingsphere.scaling.core.fixture.FixtureScalingEntry;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -27,7 +27,7 @@ public final class ScalingEntryLoaderTest {
     @Test
     public void assertGetFixtureInstance() {
         ScalingEntry actual = ScalingEntryLoader.getInstance("H2");
-        assertTrue(actual instanceof FixtureH2ScalingEntry);
+        assertTrue(actual instanceof FixtureScalingEntry);
     }
     
     @Test(expected = UnsupportedOperationException.class)

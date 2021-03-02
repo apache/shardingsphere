@@ -54,10 +54,10 @@ import java.util.Objects;
 import java.util.Random;
 
 /**
- * MySQL binlog dumper.
+ * MySQL incremental dumper.
  */
 @Slf4j
-public final class MySQLBinlogDumper extends AbstractScalingExecutor implements IncrementalDumper {
+public final class MySQLIncrementalDumper extends AbstractScalingExecutor implements IncrementalDumper {
     
     private final BinlogPosition binlogPosition;
     
@@ -70,7 +70,7 @@ public final class MySQLBinlogDumper extends AbstractScalingExecutor implements 
     @Setter
     private Channel channel;
     
-    public MySQLBinlogDumper(final DumperConfiguration dumperConfig, final ScalingPosition<BinlogPosition> binlogPosition) {
+    public MySQLIncrementalDumper(final DumperConfiguration dumperConfig, final ScalingPosition<BinlogPosition> binlogPosition) {
         this.binlogPosition = (BinlogPosition) binlogPosition;
         this.dumperConfig = dumperConfig;
         Preconditions.checkArgument(dumperConfig.getDataSourceConfig() instanceof StandardJDBCDataSourceConfiguration, "MySQLBinlogDumper only support StandardJDBCDataSourceConfiguration");

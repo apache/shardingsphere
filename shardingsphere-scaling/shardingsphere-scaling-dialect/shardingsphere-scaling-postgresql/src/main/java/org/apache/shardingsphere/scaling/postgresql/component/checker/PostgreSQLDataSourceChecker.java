@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.postgresql.component;
+package org.apache.shardingsphere.scaling.postgresql.component.checker;
 
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.job.preparer.checker.AbstractDataSourceChecker;
+import org.apache.shardingsphere.scaling.core.job.check.source.AbstractDataSourceChecker;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLScalingSQLBuilder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

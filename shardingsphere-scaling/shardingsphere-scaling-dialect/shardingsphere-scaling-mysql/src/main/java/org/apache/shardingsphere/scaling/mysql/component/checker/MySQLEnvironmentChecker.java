@@ -15,31 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.fixture;
+package org.apache.shardingsphere.scaling.mysql.component.checker;
 
-import org.apache.shardingsphere.scaling.core.common.channel.Channel;
-import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
-import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
-import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
+import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 
-public final class FixtureH2IncrementalDumper implements IncrementalDumper {
+/**
+ * MySQL environment checker.
+ */
+public final class MySQLEnvironmentChecker implements EnvironmentChecker {
     
-    public FixtureH2IncrementalDumper(final DumperConfiguration dumperConfig, final ScalingPosition<?> position) {
+    @Override
+    public Class<MySQLDataSourceChecker> getDataSourceCheckerClass() {
+        return MySQLDataSourceChecker.class;
     }
     
     @Override
-    public void setChannel(final Channel channel) {
-    }
-    
-    @Override
-    public void start() {
-    }
-    
-    @Override
-    public void stop() {
-    }
-    
-    @Override
-    public void run() {
+    public Class<MySQLDataConsistencyChecker> getDataConsistencyCheckerClass() {
+        return MySQLDataConsistencyChecker.class;
     }
 }

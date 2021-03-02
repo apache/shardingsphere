@@ -17,33 +17,26 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
-import com.google.common.collect.Maps;
-import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.job.JobContext;
-import org.apache.shardingsphere.scaling.core.job.check.consistency.AbstractDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.scaling.core.job.check.source.DataSourceChecker;
 
-import java.util.Collections;
-import java.util.Map;
+import javax.sql.DataSource;
+import java.util.Collection;
 
-public final class FixtureDataConsistencyChecker extends AbstractDataConsistencyChecker {
+public final class FixtureDataSourceChecker implements DataSourceChecker {
     
-    public FixtureDataConsistencyChecker(final JobContext jobContext) {
-        super(jobContext);
+    @Override
+    public void checkConnection(final Collection<? extends DataSource> dataSources) {
     }
     
     @Override
-    public Map<String, DataConsistencyCheckResult> countCheck() {
-        return super.countCheck();
+    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
     }
     
     @Override
-    public Map<String, Boolean> dataCheck() {
-        return Collections.emptyMap();
+    public void checkVariable(final Collection<? extends DataSource> dataSources) {
     }
     
     @Override
-    protected ScalingSQLBuilder getSqlBuilder() {
-        return new FixtureSQLBuilder(Maps.newHashMap());
+    public void checkTargetTable(final Collection<? extends DataSource> dataSources, final Collection<String> tableNames) {
     }
 }

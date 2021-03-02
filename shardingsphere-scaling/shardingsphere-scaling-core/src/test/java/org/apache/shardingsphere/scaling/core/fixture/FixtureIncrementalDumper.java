@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.check;
+package org.apache.shardingsphere.scaling.core.fixture;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import org.apache.shardingsphere.scaling.core.common.channel.Channel;
+import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
+import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
+import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 
-/**
- * Data consistency check result.
- */
-@Getter
-@Setter
-@ToString
-public final class DataConsistencyCheckResult {
+public final class FixtureIncrementalDumper implements IncrementalDumper {
     
-    private final long sourceCount;
+    public FixtureIncrementalDumper(final DumperConfiguration dumperConfig, final ScalingPosition<?> position) {
+    }
     
-    private final long targetCount;
+    @Override
+    public void setChannel(final Channel channel) {
+    }
     
-    private final boolean countValid;
+    @Override
+    public void start() {
+    }
     
-    private boolean dataValid;
+    @Override
+    public void stop() {
+    }
     
-    public DataConsistencyCheckResult(final long sourceCount, final long targetCount) {
-        this.sourceCount = sourceCount;
-        this.targetCount = targetCount;
-        countValid = sourceCount == targetCount;
+    @Override
+    public void run() {
     }
 }
