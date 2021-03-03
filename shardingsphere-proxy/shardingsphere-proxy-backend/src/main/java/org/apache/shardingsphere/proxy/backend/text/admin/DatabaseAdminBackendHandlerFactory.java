@@ -40,17 +40,27 @@ public final class DatabaseAdminBackendHandlerFactory {
     
     static {
         ShardingSphereServiceLoader.register(DatabaseAdminExecutorFactory.class);
+        ShardingSphereServiceLoader.register(DatabaseAdminHandlerFactory.class);
     }
     
     /**
      * Create new instance of database admin backend handler. 
      * 
      * @param databaseType database type
+     * @param sql sql
      * @param sqlStatement SQL statement
      * @param backendConnection backend connection
      * @return new instance of database admin backend handler
      */
-    public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) {
+    public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final String sql, final SQLStatement sqlStatement, final BackendConnection backendConnection) {
+        
+        Optional<DatabaseAdminHandlerFactory> handlerFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminHandlerFactory.class, databaseType.getName(), new Properties());
+        if (handlerFactory.isPresent()) {
+            Optional<TextProtocolBackendHandler> handler = handlerFactory.get().newInstance(backendConnection.getSchemaName(), sql, sqlStatement, backendConnection);
+            if (handler.isPresent()) {
+                return handler;
+            }
+        }
         Optional<DatabaseAdminExecutorFactory> executorFactory = TypedSPIRegistry.findRegisteredService(DatabaseAdminExecutorFactory.class, databaseType.getName(), new Properties());
         if (!executorFactory.isPresent()) {
             return Optional.empty();

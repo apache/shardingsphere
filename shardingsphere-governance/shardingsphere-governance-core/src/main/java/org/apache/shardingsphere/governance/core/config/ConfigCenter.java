@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.governance.core.config.checker.RuleConfigurationCheckerFactory;
+import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAlteredEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataCreatedEvent;
@@ -201,6 +202,16 @@ public final class ConfigCenter {
                 repository.get(node.getRulePath(event.getSchemaName())),
                 configCacheManager.loadCache(node.getRulePath(event.getSchemaName()), event.getCacheId()), event.getCacheId());
         ShardingSphereEventBus.getInstance().post(startScalingEvent);
+    }
+    
+    /**
+     * User configuration cached event.
+     *
+     * @param event user configuration cached event
+     */
+    @Subscribe
+    public synchronized void renew(final UserRuleChangedEvent event) {
+        persistAuthentication(event.getUsers(), true);
     }
     
     private Collection<RuleConfiguration> loadCachedRuleConfigurations(final String schemaName, final String ruleConfigurationCacheId) {
