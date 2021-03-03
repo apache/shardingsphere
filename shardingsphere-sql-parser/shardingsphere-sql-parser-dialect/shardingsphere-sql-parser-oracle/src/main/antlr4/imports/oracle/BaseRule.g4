@@ -183,6 +183,42 @@ varrayItem
     : identifier
     ;
 
+nestedItem
+    : identifier
+    ;
+
+storageTable
+    : identifier
+    ;
+
+lobSegname
+    : identifier
+    ;
+
+locationSpecifier
+    : identifier
+    ;
+
+subpartitionName
+    : identifier
+    ;
+
+partitionName
+    : identifier
+    ;
+
+partitionSetName
+    : identifier
+    ;
+
+zonemapName
+    : identifier
+    ;
+
+flashbackArchiveName
+    : identifier
+    ;
+
 columnNames
     : LP_? columnName (COMMA_ columnName)* RP_?
     ;
@@ -433,4 +469,8 @@ ignoredIdentifiers
 
 matchNone
     : 'Default does not match anything'
+    ;
+
+hashSubpartitionQuantity
+    : NUMBER
     ;

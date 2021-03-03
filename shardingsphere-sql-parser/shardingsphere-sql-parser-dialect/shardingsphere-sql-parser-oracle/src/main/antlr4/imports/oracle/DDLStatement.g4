@@ -135,7 +135,7 @@ encryptionSpecification
     ;
 
 inlineConstraint
-    : (CONSTRAINT ignoredIdentifier)? (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_) constraintState*
+    : (CONSTRAINT ignoredIdentifier)? (NOT? NULL | UNIQUE | primaryKey | referencesClause | CHECK LP_ expr RP_) constraintState?
     ;
 
 referencesClause
@@ -173,7 +173,7 @@ createIndexClause
     ;
 
 inlineRefConstraint
-    : SCOPE IS tableName | WITH ROWID | (CONSTRAINT ignoredIdentifier)? referencesClause constraintState*
+    : SCOPE IS tableName | WITH ROWID | (CONSTRAINT ignoredIdentifier)? referencesClause constraintState?
     ;
 
 virtualColumnDefinition
@@ -186,13 +186,13 @@ outOfLineConstraint
     | primaryKey columnNames 
     | FOREIGN KEY columnNames referencesClause
     | CHECK LP_ expr RP_
-    ) constraintState*
+    ) constraintState?
     ;
 
 outOfLineRefConstraint
     : SCOPE FOR LP_ lobItem RP_ IS tableName
     | REF LP_ lobItem RP_ WITH ROWID
-    | (CONSTRAINT ignoredIdentifier)? FOREIGN KEY lobItemList referencesClause constraintState*
+    | (CONSTRAINT ignoredIdentifier)? FOREIGN KEY lobItemList referencesClause constraintState?
     ;
 
 createIndexSpecification
@@ -212,7 +212,7 @@ tableIndexClause
     ;
 
 indexExpressions
-    : LP_ indexExpression (COMMA_ indexExpression)* RP_
+    : LP_? indexExpression (COMMA_ indexExpression)* RP_?
     ;
 
 indexExpression
@@ -224,7 +224,7 @@ bitmapJoinIndexClause
     ;
 
 columnSortsClause_
-    : LP_ columnSortClause_ (COMMA_ columnSortClause_)* RP_
+    : LP_? columnSortClause_ (COMMA_ columnSortClause_)* RP_?
     ;
     
 columnSortClause_
@@ -264,7 +264,7 @@ addColumnSpecification
     ;
 
 columnOrVirtualDefinitions
-    : LP_ columnOrVirtualDefinition (COMMA_ columnOrVirtualDefinition)* RP_ | columnOrVirtualDefinition
+    : LP_? columnOrVirtualDefinition (COMMA_ columnOrVirtualDefinition)* RP_? | columnOrVirtualDefinition
     ;
 
 columnOrVirtualDefinition
@@ -308,7 +308,7 @@ dropColumnSpecification
     ;
 
 columnOrColumnList
-    : COLUMN columnName | LP_ columnName (COMMA_ columnName)* RP_
+    : (COLUMN columnName) | columnNames
     ;
 
 cascadeOrInvalidate
@@ -472,7 +472,7 @@ loggingClause
     ;
 
 storageClause
-    : STORAGE
+    : STORAGE LP_
     (INITIAL sizeClause
     | NEXT sizeClause
     | MINEXTENTS NUMBER_
@@ -486,11 +486,11 @@ storageClause
     | FLASH_CACHE (KEEP | NONE | DEFAULT)
     | CELL_FLASH_CACHE (KEEP | NONE | DEFAULT)
     | ENCRYPT
-    )+
+    )+ RP_
     ;
 
 sizeClause
-    : NUMBER_ (K | M | G | T | P | E)?
+    : NUMBER_ (K_ | M_ | G_ | T_ | P_ | E_)?
     ;
 
 maxsizeClause
@@ -513,7 +513,7 @@ inmemoryAttributes
     ;
 
 inmemoryColumnClause
-    : (INMEMORY inmemoryMemcompress? | NO INMEMORY) LP_ columnName (DOT columnName)* RP_
+    : (INMEMORY inmemoryMemcompress? | NO INMEMORY) columnNames
     ;
 
 inmemoryMemcompress
@@ -580,7 +580,7 @@ externalTableClause
     ;
 
 externalTableDataProps
-    : (DEFAULT DIRECTORY directoryName)? (ACCESS PARAMETERS ((opaqueFormatSpec) | USING CLOB subquery))? (LOCATION LP_ (directoryName COLON_)? 'location_specifier' (COMMA_ (directoryName COLON_)? 'location_specifier')+ RP_)?
+    : (DEFAULT DIRECTORY directoryName)? (ACCESS PARAMETERS ((opaqueFormatSpec) | USING CLOB subquery))? (LOCATION LP_ (directoryName COLON_)? locationSpecifier (COMMA_ (directoryName COLON_)? locationSpecifier)+ RP_)?
     ;
 
 mappingTableClause
@@ -600,7 +600,7 @@ externalPartitionClause
     ;
 
 clusterRelatedClause
-    : CLUSTER clusterName LP_ (columnName (COMMA_ columnName)*) RP_
+    : CLUSTER clusterName columnNames
     ;
 
 tableProperties
@@ -643,13 +643,13 @@ tablePartitioningClauses
     ;
 
 rangePartitions
-    : PARTITION BY RANGE LP_ columnName (COMMA columnName)* RP_
-      (INTERVAL LP_ expr RP_ (STORE IN LP_ tablespaceName (COMMA tablespaceName)* RP_)?)?
-      LP_ PARTITION partition? rangeValuesClause tablePartitionDescription (COMMA PARTITION partition? rangeValuesClause tablePartitionDescription externalPartSubpartDataProps?)* RP_
+    : PARTITION BY RANGE columnNames
+      (INTERVAL LP_ expr RP_ (STORE IN LP_ tablespaceName (COMMA_ tablespaceName)* RP_)?)?
+      LP_ PARTITION partition? rangeValuesClause tablePartitionDescription (COMMA_ PARTITION partition? rangeValuesClause tablePartitionDescription externalPartSubpartDataProps?)* RP_
     ;
 
 rangeValuesClause
-    : VALUES LESS THAN LP_ (numberLiterals | MAXVALUE) (COMMA (numberLiterals | MAXVALUE))*RP_
+    : VALUES LESS THAN LP_? (numberLiterals | MAXVALUE) (COMMA_ (numberLiterals | MAXVALUE))* RP_?
     ;
 
 tablePartitionDescription
@@ -662,7 +662,7 @@ tablePartitionDescription
       inmemoryClause?
       ilmClause?
       (OVERFLOW segmentAttributesClause?)?
-      (LOBStorageClause | varrayColProperties | nestedTableColProperties)*
+      (lobStorageClause | varrayColProperties | nestedTableColProperties)*
     ;
 
 inmemoryClause
@@ -674,63 +674,210 @@ varrayColProperties
     ;
 
 nestedTableColProperties
-    : 
+    : NESTED TABLE 
+    (nestedItem | COLUMN_VALUE) substitutableColumnClause? (LOCAL | GLOBAL)? STORE AS storageTable 
+    LP_ (LP_ objectProperties RP_ | physicalProperties | columnProperties) RP_ 
+    (RETURN AS? (LOCATOR | VALUE))?
+    ;
+
+lobStorageClause
+    : LOB
+    ( LP_ lobItem (COMMA_ lobItem)* RP_ STORE AS ((SECUREFILE | BASICFILE) | LP_ lobStorageParameters RP_)+
+    | LP_ lobItem RP_ STORE AS ((SECUREFILE | BASICFILE) | lobSegname | LP_ lobStorageParameters RP_)+
+    )
     ;
 
 varrayStorageClause
-    : 
+    : STORE AS (SECUREFILE | BASICFILE)? LOB (lobSegname? LP_ lobStorageParameters RP_ | lobSegname)
+    ;
+
+lobStorageParameters
+    : ((TABLESPACE tablespaceName | TABLESPACE SET tablespaceSetName) | lobParameters storageClause?)+ | storageClause
+    ;
+
+lobParameters
+    : ( (ENABLE | DISABLE) STORAGE IN ROW
+        | CHUNK NUMBER
+        | PCTVERSION NUMBER
+        | FREEPOOLS NUMBER
+        | lobRetentionClause
+        | lobDeduplicateClause
+        | lobCompressionClause
+        | (ENCRYPT encryptionSpecification | DECRYPT)
+        | (CACHE | NOCACHE | CACHE READS) loggingClause? 
+      )+
+    ;
+
+lobRetentionClause
+    : RETENTION (MAX | MIN NUMBER | AUTO | NONE)?
+    ;
+
+lobDeduplicateClause
+    : DEDUPLICATE | KEEP_DUPLICATES
+    ;
+
+lobCompressionClause
+    : (COMPRESS (HIGH | MEDIUM | LOW)? | NOCOMPRESS)
     ;
 
 externalPartSubpartDataProps
-    :
+    : (DEFAULT DIRECTORY directoryName) (LOCATION LP_ (directoryName COLON_)? locationSpecifier (COMMA_ (directoryName COLON_)? locationSpecifier)* RP_)?
     ;
 
 listPartitions
-    : PARTITION BY LIST LP_ columnName (COMMA columnName)* RP_
-      (AUTOMATIC (STORE IN LP_ tablespaceName (COMMA tablespaceName)* RP_))?
-      LP_ PARTITION partition? listValuesClause tablePartitionDescription (COMMA PARTITION partition? listValuesClause tablePartitionDescription externalPartSubpartDataProps?)* RP_
+    : PARTITION BY LIST columnNames
+      (AUTOMATIC (STORE IN LP_? tablespaceName (COMMA_ tablespaceName)* RP_?))?
+      LP_ PARTITION partition? listValuesClause tablePartitionDescription (COMMA_ PARTITION partition? listValuesClause tablePartitionDescription externalPartSubpartDataProps?)* RP_
+    ;
+
+listValuesClause
+    : VALUES ( listValues | DEFAULT )
+    ;
+
+listValues
+    : (literals | NULL) (COMMA_ (literals | NULL))*
+    | (LP_? ( (literals | NULL) (COMMA_ (literals | NULL))* ) RP_?) (COMMA_ LP_? ( (literals | NULL) (COMMA_ (literals | NULL))* ) RP_?)*
     ;
 
 hashPartitions
-    : PARTITION BY HASH LP_ columnName (COMMA columnName)* RP_ (individualHashPartitions | hashPartitionsByQuantity)
+    : PARTITION BY HASH columnNames (individualHashPartitions | hashPartitionsByQuantity)
+    ;
+
+hashPartitionsByQuantity
+    : PARTITIONS NUMBER (STORE IN (tablespaceName (COMMA_ tablespaceName)*))? (tableCompression | indexCompression)? (OVERFLOW STORE IN (tablespaceName (COMMA_ tablespaceName)*))?
+    ;
+
+indexCompression
+    : prefixCompression | advancedIndexCompression
+    ;
+
+advancedIndexCompression
+    : COMPRESS ADVANCED (LOW | HIGH)? | NOCOMPRESS
+    ;
+
+individualHashPartitions
+    : LP_? (PARTITION partition? readOnlyClause? indexingClause? partitioningStorageClause?) (COMMA_ PARTITION partition? readOnlyClause? indexingClause? partitioningStorageClause?)* RP_?
+    ;
+
+partitioningStorageClause
+    : ((TABLESPACE tablespaceName | TABLESPACE SET tablespaceSetName)
+    | OVERFLOW (TABLESPACE tablespaceName | TABLESPACE SET tablespaceSetName)?
+    | tableCompression
+    | indexCompression
+    | inmemoryClause
+    | ilmClause
+    | lobPartitioningStorage
+    | VARRAY varrayItem STORE AS (SECUREFILE | BASICFILE)? LOB lobSegname
+    )*
+    ;
+
+lobPartitioningStorage
+    :LOB LP_ lobItem RP_ STORE AS (BASICFILE | SECUREFILE)?
+    (lobSegname (LP_ TABLESPACE tablespaceName | TABLESPACE SET tablespaceSetName RP_)?
+    | LP_ TABLESPACE tablespaceName | TABLESPACE SET tablespaceSetName RP_
+    )?
     ;
 
 compositeRangePartitions
-    : PARTITION BY RANGE LP_ columnName (COMMA columnName)* RP_ 
-      (INTERVAL LP_ expr RP_ (STORE IN LP_ tablespaceName (COMMA tablespaceName)* RP_)?)?
+    : PARTITION BY RANGE columnNames 
+      (INTERVAL LP_ expr RP_ (STORE IN LP_? tablespaceName (COMMA_ tablespaceName)* RP_?)?)?
       (subpartitionByRange | subpartitionByList | subpartitionByHash) 
-      LP_ rangePartitionDesc (COMMA rangePartitionDesc)* RP_
+      LP_? rangePartitionDesc (COMMA_ rangePartitionDesc)* RP_?
+    ;
+
+subpartitionByRange
+    : SUBPARTITION BY RANGE columnNames subpartitionTemplate?
+    ;
+
+subpartitionByList
+    : SUBPARTITION BY LIST columnNames subpartitionTemplate?
+    ;
+
+subpartitionByHash
+    : SUBPARTITION BY HASH columnNames (SUBPARTITIONS NUMBER (STORE IN LP_ tablespaceName (COMMA_ tablespaceName)? RP_)? | subpartitionTemplate)?
+    ;
+
+subpartitionTemplate
+    : SUBPARTITION TEMPLATE
+    (LP_? rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)* | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)* RP_?)
+    | hashSubpartitionQuantity
+    ;
+
+rangeSubpartitionDesc
+    : SUBPARTITION subpartitionName? rangeValuesClause readOnlyClause? indexingClause? partitioningStorageClause? externalPartSubpartDataProps?
+    ;
+
+listSubpartitionDesc
+    : SUBPARTITION subpartitionName? listValuesClause readOnlyClause? indexingClause? partitioningStorageClause? externalPartSubpartDataProps?
+    ;
+
+individualHashSubparts
+    : SUBPARTITION subpartitionName? readOnlyClause? indexingClause? partitioningStorageClause?
+    ;
+
+rangePartitionDesc
+    : PARTITION partitionName? rangeValuesClause tablePartitionDescription
+    ((LP_? rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)* | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)* RP_?)
+    | hashSubpartitionQuantity)?
     ;
 
 compositeListPartitions
-    : PARTITION BY LIST LP_ columnName (COMMA columnName)* RP_ 
-      (AUTOMATIC (STORE IN LP_ tablespaceName (COMMA tablespaceName)* RP_)?)?
+    : PARTITION BY LIST columnNames 
+      (AUTOMATIC (STORE IN LP_? tablespaceName (COMMA_ tablespaceName)* RP_?)?)?
       (subpartitionByRange | subpartitionByList | subpartitionByHash) 
-      LP_ listPartitionDesc (COMMA listPartitionDesc)* RP_
+      LP_? listPartitionDesc (COMMA_ listPartitionDesc)* RP_?
+    ;
+
+listPartitionDesc
+    : PARTITIONSET partitionSetName listValuesClause (TABLESPACE SET tablespaceSetName)? lobStorageClause? (SUBPARTITIONS STORE IN LP_? tablespaceSetName (COMMA_ tablespaceSetName)* RP_?)?
     ;
 
 compositeHashPartitions
-    : PARTITION BY HASH LP_ columnName (COMMA columnName)* RP_ (subpartitionByRange | subpartitionByList | subpartitionByHash) (individualHashPartitions | hashPartitionsByQuantity)
+    : PARTITION BY HASH columnNames (subpartitionByRange | subpartitionByList | subpartitionByHash) (individualHashPartitions | hashPartitionsByQuantity)
     ;
 
 referencePartitioning
-    :PARTITION BY REFERENCE LP_ constraint RP_ (LP_ referencePartitionDesc (COMMA referencePartitionDesc)* RP_)?
+    :PARTITION BY REFERENCE LP_ constraint RP_ (LP_? referencePartitionDesc (COMMA_ referencePartitionDesc)* RP_?)?
+    ;
+
+referencePartitionDesc
+    : PARTITION partition? tablePartitionDescription?
+    ;
+
+constraint
+    : inlineConstraint | outOfLineConstraint | inlineRefConstraint | outOfLineRefConstraint
     ;
 
 systemPartitioning
-    : PARTITION BY SYSTEM (PARTITIONS NUMBER | referencePartitionDesc (COMMA referencePartitionDesc)*)?
+    : PARTITION BY SYSTEM (PARTITIONS NUMBER | referencePartitionDesc (COMMA_ referencePartitionDesc)*)?
     ;
 
 consistentHashPartitions
-    : PARTITION BY CONSISTENT HASH LP_ columnName (COMMA columnName)* RP_ (PARTITIONS AUTO)? TABLESPACE SET tablespaceSetName
+    : PARTITION BY CONSISTENT HASH columnNames (PARTITIONS AUTO)? TABLESPACE SET tablespaceSetName
     ;
 
 consistentHashWithSubpartitions
-    : PARTITION BY CONSISTENT HASH LP_ columnName (COMMA columnName)* RP_ (subpartitionByRange | subpartitionByList | subpartitionByHash)  (PARTITIONS AUTO)?
+    : PARTITION BY CONSISTENT HASH columnNames (subpartitionByRange | subpartitionByList | subpartitionByHash)  (PARTITIONS AUTO)?
     ;
 
 partitionsetClauses
     : rangePartitionsetClause | listPartitionsetClause
+    ;
+
+rangePartitionsetClause
+    : PARTITIONSET BY RANGE columnNames PARTITION BY CONSISTENT HASH columnNames
+      (SUBPARTITION BY ((RANGE | HASH) columnNames | LIST LP_ columnName LP_) subpartitionTemplate?)?
+      PARTITIONS AUTO LP_ rangePartitionsetDesc (COMMA_ rangePartitionsetDesc)* RP_
+    ;
+
+rangePartitionsetDesc
+    : PARTITIONSET partitionSetName rangeValuesClause (TABLESPACE SET tablespaceSetName)? (lobStorageClause)? (SUBPARTITIONS STORE IN tablespaceSetName?)?
+    ;
+
+listPartitionsetClause
+    : PARTITIONSET BY RANGE LP_ columnName RP_ PARTITION BY CONSISTENT HASH columnNames
+      (SUBPARTITION BY ((RANGE | HASH) columnNames | LIST LP_ columnName LP_) subpartitionTemplate?)?
+      PARTITIONS AUTO LP_ rangePartitionsetDesc (COMMA_ rangePartitionsetDesc)* RP_
     ;
 
 attributeClusteringClause
@@ -738,19 +885,27 @@ attributeClusteringClause
     ;
 
 clusteringJoin
-    :
+    : tableName (JOIN tableName ON LP_ expr RP_)+
     ;
 
 clusterClause
-    :
+    : BY (LINEAR | INTERLEAVED)? ORDER clusteringColumns
+    ;
+
+clusteringColumns
+    : LP_? clusteringColumnGroup (COMMA_ clusteringColumnGroup)* RP_?
+    ;
+
+clusteringColumnGroup
+    : columnNames
     ;
 
 clusteringWhen
-    :
+    : ((YES | NO) ON LOAD)? ((YES | NO) ON DATA MOVEMENT)?
     ;
 
 zonemapClause
-    :
+    : (WITH MATERIALIZED ZONEMAP (LP_ zonemapName RP_)?) | (WITHOUT MATERIALIZED ZONEMAP)
     ;
 
 rowMovementClause
@@ -758,9 +913,5 @@ rowMovementClause
     ;
 
 flashbackArchiveClause
-    : FLASHBACK ARCHIVE flashbackArchive? | NO FLASHBACK ARCHIVE
-    ;
-
-flashbackArchive
-    :
+    : FLASHBACK ARCHIVE flashbackArchiveName? | NO FLASHBACK ARCHIVE
     ;
