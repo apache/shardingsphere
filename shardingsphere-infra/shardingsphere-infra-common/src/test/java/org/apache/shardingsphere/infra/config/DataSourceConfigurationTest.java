@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.config;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -35,6 +36,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public final class DataSourceConfigurationTest {
     
@@ -71,6 +73,24 @@ public final class DataSourceConfigurationTest {
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
+    }
+    
+    @Test
+    public void assertCreateDataSourceExceptionMessage() {
+        Map<String, Object> props = new HashMap<>(16, 1);
+        props.put("driverClassName", "org.h2.Driver");
+        props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
+        props.put("username", "root");
+        props.put("password", 123);
+        props.put("loginTimeout", "5000");
+        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
+        dataSourceConfig.getProps().putAll(props);
+        try {
+            HikariDataSource actual = (HikariDataSource) dataSourceConfig.createDataSource();
+            fail("Expect Exception");
+        } catch (ShardingSphereConfigurationException ex) {
+            assertThat(ex.getMessage(), is("datasource property password configure error"));    
+        }
     }
     
     @Test

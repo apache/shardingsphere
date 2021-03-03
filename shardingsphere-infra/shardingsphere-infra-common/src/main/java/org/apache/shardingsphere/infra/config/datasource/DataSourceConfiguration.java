@@ -24,6 +24,7 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
@@ -111,9 +112,13 @@ public final class DataSourceConfiguration {
             if (SKIPPED_PROPERTY_NAMES.contains(entry.getKey())) {
                 continue;
             }
-            Optional<Method> setterMethod = findSetterMethod(methods, entry.getKey());
-            if (setterMethod.isPresent()) {
-                setterMethod.get().invoke(result, entry.getValue());
+            try {
+                Optional<Method> setterMethod = findSetterMethod(methods, entry.getKey());
+                if (setterMethod.isPresent()) {
+                    setterMethod.get().invoke(result, entry.getValue());
+                }
+            } catch (Exception ex) {
+                throw new ShardingSphereConfigurationException(ex, String.format("datasource property %s configure error", entry.getKey()));
             }
         }
         Optional<JDBCParameterDecorator> decorator = findJDBCParameterDecorator(result);
