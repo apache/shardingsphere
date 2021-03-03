@@ -26,8 +26,6 @@ INSERT INTO t_user_info VALUES(1, 'description1');
 INSERT INTO t_user_info VALUES(2, 'description2');
 INSERT INTO t_user_info VALUES(3, 'description3');
 
-INSERT INTO t_order_calcite_sharding_0 VALUES(1000, 10, 'init');
-INSERT INTO t_order_calcite_sharding_1 VALUES(1001, 11, 'init');
 INSERT INTO t_order_calcite_sharding_0 VALUES(1010, 10, 'init');
 INSERT INTO t_order_calcite_sharding_1 VALUES(1011, 11, 'init');
 INSERT INTO t_order_calcite_sharding_0 VALUES(1100, 10, 'init');

@@ -34,7 +34,7 @@ rules:
         actualDataNodes: calcite_jdbc_0.t_order_calcite_sharding_${0..1}
         tableStrategy:
           standard:
-            shardingColumn: order_id
+            shardingColumn: order_id_sharding
             shardingAlgorithmName: table_inline_order_id
     shardingAlgorithms:
       table_inline_item_id:
@@ -48,7 +48,7 @@ rules:
       table_inline_order_id:
         type: INLINE
         props:
-          algorithm-expression: t_order_calcite_sharding_${order_id % 2}
+          algorithm-expression: t_order_calcite_sharding_${order_id_sharding % 2}
 
   - !ENCRYPT
     encryptors:
