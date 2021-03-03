@@ -90,7 +90,7 @@
         <assertion expected-data-file="select_full_route_with_binding_tables.xml" />
     </test-case>
     
-    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_broadcast_table c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND o.status = ? ORDER BY i.item_id" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_broadcast_table c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND o.status = ? ORDER BY i.item_id" scenario-types="db,dbtbl_with_replica_query">
         <assertion parameters="10:int, 11:int, 1001:int, 1100:int, init:String" expected-data-file="select_sharding_route_with_broadcast_table.xml" />
         <assertion parameters="10:int, 11:int, 1009:int, 1108:int, none:String" expected-data-file="empty_order_item.xml" />
     </test-case>
@@ -240,7 +240,7 @@
         <assertion parameters="1000:int, 1100:int, 11:int" expected-data-file="select_or_mix_and_with_binding_tables.xml" />
     </test-case>
     
-    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_broadcast_table c ON o.status = c.status WHERE (o.order_id = ? OR o.order_id = ?) AND o.user_id = ? AND o.status = ?" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_broadcast_table c ON o.status = c.status WHERE (o.order_id = ? OR o.order_id = ?) AND o.user_id = ? AND o.status = ?" scenario-types="db,dbtbl_with_replica_query">
         <assertion parameters="1000:int, 1100:int, 11:int, init:String" expected-data-file="select_or_mix_and_with_binding_and_broadcast_tables.xml" />
     </test-case>
     
@@ -483,7 +483,7 @@
         <assertion expected-data-file="select_for_left_join.xml"/>
     </test-case>
     
-    <test-case sql="SELECT * FROM t_broadcast_table" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
+    <test-case sql="SELECT * FROM t_broadcast_table" scenario-types="db,dbtbl_with_replica_query">
         <assertion expected-data-file="select_for_broadcast_table.xml"/>
     </test-case>
     
