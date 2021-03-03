@@ -76,7 +76,7 @@ public final class DataSourceConfigurationTest {
     }
     
     @Test
-    public void assertCreateDataSourceExceptionMessage() {
+    public void assertCreateDataSourcePasswordTypeMismatch() {
         Map<String, Object> props = new HashMap<>(16, 1);
         props.put("driverClassName", "org.h2.Driver");
         props.put("jdbcUrl", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
