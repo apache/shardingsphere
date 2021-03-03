@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobAPIFactory;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobOperateAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
@@ -82,6 +83,15 @@ public final class ScalingAPIFactory {
      */
     public static JobConfigurationAPI getJobConfigurationAPI() {
         return ElasticJobAPIHolder.getInstance().getJobConfigurationAPI();
+    }
+    
+    /**
+     * Get job operate API.
+     *
+     * @return job operate API
+     */
+    public static JobOperateAPI getJobOperateAPI() {
+        return ElasticJobAPIHolder.getInstance().getJobOperateAPI();
     }
     
     /**
@@ -155,12 +165,15 @@ public final class ScalingAPIFactory {
         
         private final JobConfigurationAPI jobConfigurationAPI;
         
+        private final JobOperateAPI jobOperateAPI;
+        
         private ElasticJobAPIHolder() {
             checkServerConfig();
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
             String namespace = governanceConfig.getName() + ScalingConstant.SCALING_ROOT;
             jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
             jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
+            jobOperateAPI = JobAPIFactory.createJobOperateAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
         }
         
         public static ElasticJobAPIHolder getInstance() {
