@@ -16,29 +16,6 @@
 #
 
 rules:
-- !SHARDING
-  tables:
-    t_order_item:
-      actualDataNodes: encrypt.t_order_item
-      tableStrategy:
-        none:
-      databaseStrategy:
-        none:
-    t_user:
-      actualDataNodes: encrypt.t_user
-      tableStrategy:
-        none:
-      databaseStrategy:
-        none:
-    t_user_details:
-      actualDataNodes: encrypt.t_user_details
-      tableStrategy:
-        none:
-      databaseStrategy:
-        none:
-  bindingTables:
-    - t_user,t_order_item,t_user_details
-
 - !ENCRYPT
   encryptors:
     aes_encryptor:
