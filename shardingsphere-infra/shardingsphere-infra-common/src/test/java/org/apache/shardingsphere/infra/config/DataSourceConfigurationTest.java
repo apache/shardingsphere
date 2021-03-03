@@ -21,7 +21,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -36,9 +38,11 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 public final class DataSourceConfigurationTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
     
     @Test
     public void assertGetDataSourceConfiguration() throws SQLException {
@@ -85,12 +89,9 @@ public final class DataSourceConfigurationTest {
         props.put("loginTimeout", "5000");
         DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
         dataSourceConfig.getProps().putAll(props);
-        try {
-            HikariDataSource actual = (HikariDataSource) dataSourceConfig.createDataSource();
-            fail("Expect Exception");
-        } catch (ShardingSphereConfigurationException ex) {
-            assertThat(ex.getMessage(), is("datasource property password configure error"));    
-        }
+        thrown.expect(ShardingSphereConfigurationException.class);
+        thrown.expectMessage("datasource property password configure error");
+        HikariDataSource actual = (HikariDataSource) dataSourceConfig.createDataSource();
     }
     
     @Test
