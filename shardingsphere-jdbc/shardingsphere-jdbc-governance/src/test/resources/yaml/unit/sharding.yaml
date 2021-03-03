@@ -20,9 +20,6 @@ governance:
   registryCenter:
     type: REG_TEST
     serverLists: localhost:3181
-  additionalConfigCenter:
-    type: CONFIG_TEST
-    serverLists: localhost:3181
   overwrite: true
 
 dataSources:
@@ -103,6 +100,5 @@ rules:
       primaryDataSourceName: primary_ds
       replicaDataSourceNames:
         - replica_ds
-
 props:
   sql-show: false
