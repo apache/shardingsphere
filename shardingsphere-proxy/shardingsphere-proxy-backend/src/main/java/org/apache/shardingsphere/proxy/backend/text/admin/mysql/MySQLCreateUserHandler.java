@@ -51,9 +51,6 @@ public final class MySQLCreateUserHandler implements TextProtocolBackendHandler 
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        if (ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(backendConnection.getGrantee()).isPresent()) {
-            return new UpdateResponseHeader(sqlStatement);
-        }
         DatabaseCommunicationEngine databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatement, sql, backendConnection);
         databaseCommunicationEngine.execute();
         Collection<ShardingSphereUser> users = generateUsers();
