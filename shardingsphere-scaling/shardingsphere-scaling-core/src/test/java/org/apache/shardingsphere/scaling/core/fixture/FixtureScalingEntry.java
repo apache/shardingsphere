@@ -21,46 +21,40 @@ import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilde
 import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
 import org.apache.shardingsphere.scaling.core.executor.dumper.InventoryDumper;
 import org.apache.shardingsphere.scaling.core.executor.importer.Importer;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
-import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 
-public final class FixtureH2ScalingEntry implements ScalingEntry {
+public final class FixtureScalingEntry implements ScalingEntry {
     
     @Override
     public Class<? extends InventoryDumper> getInventoryDumperClass() {
-        return FixtureH2InventoryDumper.class;
+        return FixtureInventoryDumper.class;
     }
     
     @Override
     public Class<? extends IncrementalDumper> getIncrementalDumperClass() {
-        return FixtureH2IncrementalDumper.class;
+        return FixtureIncrementalDumper.class;
     }
     
     @Override
-    public Class<? extends PositionInitializer> getPositionInitializer() {
+    public Class<? extends PositionInitializer> getPositionInitializerClass() {
         return FixturePositionInitializer.class;
     }
     
     @Override
     public Class<? extends Importer> getImporterClass() {
-        return FixtureNopImporter.class;
+        return FixtureImporter.class;
     }
     
     @Override
-    public Class<? extends DataSourceChecker> getDataSourceCheckerClass() {
-        return FixtureH2DataSourceChecker.class;
-    }
-    
-    @Override
-    public Class<? extends DataConsistencyChecker> getDataConsistencyCheckerClass() {
-        return FixtureDataConsistencyChecker.class;
+    public Class<? extends EnvironmentChecker> getEnvironmentCheckerClass() {
+        return FixtureEnvironmentChecker.class;
     }
     
     @Override
     public Class<? extends ScalingSQLBuilder> getSQLBuilderClass() {
-        return FixtureScalingSQLBuilder.class;
+        return FixtureSQLBuilder.class;
     }
     
     @Override

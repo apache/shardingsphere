@@ -17,35 +17,24 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
-import org.apache.shardingsphere.scaling.core.common.channel.Channel;
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
-import org.apache.shardingsphere.scaling.core.executor.importer.Importer;
+import org.apache.shardingsphere.scaling.core.common.sqlbuilder.AbstractScalingSQLBuilder;
 
-public final class FixtureNopImporter implements Importer {
+import java.util.Map;
+import java.util.Set;
+
+public final class FixtureSQLBuilder extends AbstractScalingSQLBuilder {
     
-    public FixtureNopImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
+    public FixtureSQLBuilder(final Map<String, Set<String>> shardingColumnsMap) {
+        super(shardingColumnsMap);
     }
     
     @Override
-    public void setChannel(final Channel channel) {
+    protected String getLeftIdentifierQuoteString() {
+        return "`";
     }
     
     @Override
-    public void write() {
-    }
-    
-    @Override
-    public void start() {
-    }
-    
-    @Override
-    public void stop() {
-    }
-    
-    @Override
-    public void run() {
-        start();
-        write();
+    protected String getRightIdentifierQuoteString() {
+        return "`";
     }
 }

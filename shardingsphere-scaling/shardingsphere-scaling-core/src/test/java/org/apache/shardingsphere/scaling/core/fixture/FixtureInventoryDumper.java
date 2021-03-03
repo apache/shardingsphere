@@ -17,26 +17,22 @@
 
 package org.apache.shardingsphere.scaling.core.fixture;
 
-import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
+import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
+import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
+import org.apache.shardingsphere.scaling.core.executor.dumper.AbstractInventoryDumper;
 
-import javax.sql.DataSource;
-import java.util.Collection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-public final class FixtureH2DataSourceChecker implements DataSourceChecker {
+public final class FixtureInventoryDumper extends AbstractInventoryDumper {
     
-    @Override
-    public void checkConnection(final Collection<? extends DataSource> dataSources) {
+    public FixtureInventoryDumper(final InventoryDumperConfiguration dumperConfig, final DataSourceManager dataSourceManager) {
+        super(dumperConfig, dataSourceManager);
     }
     
     @Override
-    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
-    }
-    
-    @Override
-    public void checkVariable(final Collection<? extends DataSource> dataSources) {
-    }
-    
-    @Override
-    public void checkTargetTable(final Collection<? extends DataSource> dataSources, final Collection<String> tableNames) {
+    protected PreparedStatement createPreparedStatement(final Connection conn, final String sql) throws SQLException {
+        return conn.prepareStatement(sql);
     }
 }

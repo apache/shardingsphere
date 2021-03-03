@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.preparer.checker;
+package org.apache.shardingsphere.scaling.core.job.check;
 
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.job.check.source.AbstractDataSourceChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

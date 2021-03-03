@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.fixture;
+package org.apache.shardingsphere.scaling.postgresql.component.checker;
 
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
-import org.apache.shardingsphere.scaling.core.executor.dumper.AbstractInventoryDumper;
+import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-public final class FixtureH2InventoryDumper extends AbstractInventoryDumper {
+public final class PostgreSQLEnvironmentChecker implements EnvironmentChecker {
     
-    public FixtureH2InventoryDumper(final InventoryDumperConfiguration dumperConfig, final DataSourceManager dataSourceManager) {
-        super(dumperConfig, dataSourceManager);
+    @Override
+    public Class<PostgreSQLDataSourceChecker> getDataSourceCheckerClass() {
+        return PostgreSQLDataSourceChecker.class;
     }
     
     @Override
-    protected PreparedStatement createPreparedStatement(final Connection conn, final String sql) throws SQLException {
-        return conn.prepareStatement(sql);
+    public Class<PostgreSQLDataConsistencyChecker> getDataConsistencyCheckerClass() {
+        return PostgreSQLDataConsistencyChecker.class;
     }
 }

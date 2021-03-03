@@ -23,10 +23,10 @@ import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedExce
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
+import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
+import org.apache.shardingsphere.scaling.core.job.check.source.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.job.position.PositionInitializerFactory;
 import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
-import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
-import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceCheckerFactory;
 import org.apache.shardingsphere.scaling.core.job.preparer.splitter.InventoryTaskSplitter;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTaskFactory;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTask;
@@ -67,14 +67,14 @@ public final class ScalingJobPreparer {
     }
     
     private void checkSourceDataSources(final JobContext jobContext, final DataSourceManager dataSourceManager) {
-        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getDatabaseType());
+        DataSourceChecker dataSourceChecker = EnvironmentCheckerFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getDatabaseType());
         dataSourceChecker.checkConnection(dataSourceManager.getCachedDataSources().values());
         dataSourceChecker.checkPrivilege(dataSourceManager.getSourceDataSources().values());
         dataSourceChecker.checkVariable(dataSourceManager.getSourceDataSources().values());
     }
     
     private void checkTargetDataSources(final JobContext jobContext, final DataSourceManager dataSourceManager) {
-        DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getDatabaseType());
+        DataSourceChecker dataSourceChecker = EnvironmentCheckerFactory.newInstance(jobContext.getJobConfig().getHandleConfig().getDatabaseType());
         dataSourceChecker.checkTargetTable(dataSourceManager.getTargetDataSources().values(), jobContext.getTaskConfigs().iterator().next().getImporterConfig().getShardingColumnsMap().keySet());
     }
     

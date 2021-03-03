@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.check;
+package org.apache.shardingsphere.scaling.core.job.check.consistency;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.preparer.checker;
+package org.apache.shardingsphere.scaling.core.job.check.source;
 
 import javax.sql.DataSource;
 import java.util.Collection;

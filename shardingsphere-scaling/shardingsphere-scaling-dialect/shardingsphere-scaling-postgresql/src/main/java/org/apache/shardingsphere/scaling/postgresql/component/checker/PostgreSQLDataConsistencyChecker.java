@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.fixture;
+package org.apache.shardingsphere.scaling.postgresql.component.checker;
 
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.check.consistency.AbstractDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLScalingSQLBuilder;
 
 import java.util.Collections;
 import java.util.Map;
 
-public final class FixtureDataConsistencyChecker extends AbstractDataConsistencyChecker {
+/**
+ * PostgreSQL data consistency checker.
+ */
+public final class PostgreSQLDataConsistencyChecker extends AbstractDataConsistencyChecker {
     
-    public FixtureDataConsistencyChecker(final JobContext jobContext) {
+    public PostgreSQLDataConsistencyChecker(final JobContext jobContext) {
         super(jobContext);
-    }
-    
-    @Override
-    public Map<String, DataConsistencyCheckResult> countCheck() {
-        return super.countCheck();
     }
     
     @Override
@@ -44,6 +42,6 @@ public final class FixtureDataConsistencyChecker extends AbstractDataConsistency
     
     @Override
     protected ScalingSQLBuilder getSqlBuilder() {
-        return new FixtureSQLBuilder(Maps.newHashMap());
+        return new PostgreSQLScalingSQLBuilder(Maps.newHashMap());
     }
 }
