@@ -38,7 +38,7 @@ import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -113,13 +113,14 @@ public final class ScalingAPIImpl implements ScalingAPI {
     @Override
     public void remove(final long jobId) {
         log.info("Remove scaling job {}", jobId);
+        ScalingAPIFactory.getJobOperateAPI().remove(String.valueOf(jobId), null);
         ScalingAPIFactory.getRegistryRepositoryAPI().deleteJob(jobId);
     }
     
     @Override
     public Map<Integer, JobProgress> getProgress(final long jobId) {
         return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getShardingTotalCount()).boxed()
-                .collect(HashMap::new, (map, each) -> map.put(each, ScalingAPIFactory.getRegistryRepositoryAPI().getJobProgress(jobId, each)), HashMap::putAll);
+                .collect(LinkedHashMap::new, (map, each) -> map.put(each, ScalingAPIFactory.getRegistryRepositoryAPI().getJobProgress(jobId, each)), LinkedHashMap::putAll);
     }
     
     @Override
