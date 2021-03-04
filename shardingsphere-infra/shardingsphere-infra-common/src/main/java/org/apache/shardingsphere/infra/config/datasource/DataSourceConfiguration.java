@@ -117,8 +117,8 @@ public final class DataSourceConfiguration {
                 if (setterMethod.isPresent()) {
                     setterMethod.get().invoke(result, entry.getValue());
                 }
-            } catch (Exception ex) {
-                throw new ShardingSphereConfigurationException(ex, String.format("datasource property %s configure error", entry.getKey()));
+            } catch (final Exception ex) {
+                throw new ShardingSphereConfigurationException("Incorrect configuration item: the property %s of the dataSource. the reason is %s", entry.getKey(), ex.getMessage());
             }
         }
         Optional<JDBCParameterDecorator> decorator = findJDBCParameterDecorator(result);
