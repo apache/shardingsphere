@@ -117,7 +117,7 @@ public final class DataSourceConfiguration {
                 if (setterMethod.isPresent()) {
                     setterMethod.get().invoke(result, entry.getValue());
                 }
-            } catch (final RuntimeException ex) {
+            } catch (final IllegalArgumentException ex) {
                 throw new ShardingSphereConfigurationException("Incorrect configuration item: the property %s of the dataSource. the reason is %s", entry.getKey(), ex.getMessage());
             }
         }
