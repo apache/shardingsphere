@@ -36,4 +36,8 @@ public final class JobInfo {
     private String tables;
     
     private int shardingTotalCount;
+    
+    private String createTime;
+    
+    private String stopTime;
 }

@@ -26,7 +26,7 @@ import java.util.List;
  * Calcite execution sql generator.
  */
 public final class CalciteExecutionSQLGenerator {
-
+    
     public CalciteExecutionSQLGenerator(final DataContext root, final List<RexNode> filters, final int[] projects) {
         // TODO
     }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.common.record;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 
 /**
  * Record interface.
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.scaling.core.job.position.Position;
 @Setter
 public abstract class Record {
     
-    private final Position<?> position;
+    private final ScalingPosition<?> position;
         
     private long commitTime;
 }

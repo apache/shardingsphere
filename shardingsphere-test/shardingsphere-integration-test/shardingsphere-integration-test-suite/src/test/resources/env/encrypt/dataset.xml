@@ -21,11 +21,6 @@
         <column name="pwd_plain" type="varchar" />
         <column name="pwd_cipher" type="varchar" />
     </metadata>
-    <metadata data-nodes="encrypt.t_order">
-        <column name="order_id" type="numeric" />
-        <column name="user_id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
     <metadata data-nodes="encrypt.t_order_item">
         <column name="item_id" type="numeric" />
         <column name="order_id" type="numeric" />
@@ -33,54 +28,10 @@
         <column name="status" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
-    <metadata data-nodes="encrypt.t_broadcast_table">
-        <column name="id" type="numeric" />
-        <column name="status" type="varchar" />
-    </metadata>
     <row data-node="encrypt.t_user" values="10, null, xdpUjIyP5dJQfX+2tOVbYg==" />
     <row data-node="encrypt.t_user" values="11, null, ad3U0KgdvmyMjHGHM1TnQA==" />
     <row data-node="encrypt.t_user" values="12, null, yiGGBrwHiDXsZPtZUhPd9A==" />
     <row data-node="encrypt.t_user" values="13, null, UizTwGQDouZaeZA+NYZrKA==" />
-    <row data-node="encrypt.t_order" values="1000, 10, init" />
-    <row data-node="encrypt.t_order" values="1001, 10, init" />
-    <row data-node="encrypt.t_order" values="1100, 11, init" />
-    <row data-node="encrypt.t_order" values="1101, 11, init" />
-    <row data-node="encrypt.t_order" values="1200, 12, init" />
-    <row data-node="encrypt.t_order" values="1201, 12, init" />
-    <row data-node="encrypt.t_order" values="1300, 13, init" />
-    <row data-node="encrypt.t_order" values="1301, 13, init" />
-    <row data-node="encrypt.t_order" values="1400, 14, init" />
-    <row data-node="encrypt.t_order" values="1401, 14, init" />
-    <row data-node="encrypt.t_order" values="1500, 15, init" />
-    <row data-node="encrypt.t_order" values="1501, 15, init" />
-    <row data-node="encrypt.t_order" values="1600, 16, init" />
-    <row data-node="encrypt.t_order" values="1601, 16, init" />
-    <row data-node="encrypt.t_order" values="1700, 17, init" />
-    <row data-node="encrypt.t_order" values="1701, 17, init" />
-    <row data-node="encrypt.t_order" values="1800, 18, init" />
-    <row data-node="encrypt.t_order" values="1801, 18, init" />
-    <row data-node="encrypt.t_order" values="1900, 19, init" />
-    <row data-node="encrypt.t_order" values="1901, 19, init" />
-    <row data-node="encrypt.t_order" values="2000, 20, init" />
-    <row data-node="encrypt.t_order" values="2001, 20, init" />
-    <row data-node="encrypt.t_order" values="2100, 21, init" />
-    <row data-node="encrypt.t_order" values="2101, 21, init" />
-    <row data-node="encrypt.t_order" values="2200, 22, init" />
-    <row data-node="encrypt.t_order" values="2201, 22, init" />
-    <row data-node="encrypt.t_order" values="2300, 23, init" />
-    <row data-node="encrypt.t_order" values="2301, 23, init" />
-    <row data-node="encrypt.t_order" values="2400, 24, init" />
-    <row data-node="encrypt.t_order" values="2401, 24, init" />
-    <row data-node="encrypt.t_order" values="2500, 25, init" />
-    <row data-node="encrypt.t_order" values="2501, 25, init" />
-    <row data-node="encrypt.t_order" values="2600, 26, init" />
-    <row data-node="encrypt.t_order" values="2601, 26, init" />
-    <row data-node="encrypt.t_order" values="2700, 27, init" />
-    <row data-node="encrypt.t_order" values="2701, 27, init" />
-    <row data-node="encrypt.t_order" values="2800, 28, init" />
-    <row data-node="encrypt.t_order" values="2801, 28, init" />
-    <row data-node="encrypt.t_order" values="2900, 29, init" />
-    <row data-node="encrypt.t_order" values="2901, 29, init" />
     <row data-node="encrypt.t_order_item" values="100001, 1000, 10, init, 2017-08-08" />
     <row data-node="encrypt.t_order_item" values="100002, 1000, 10, init, 2017-08-08" />
     <row data-node="encrypt.t_order_item" values="100101, 1001, 10, init, 2017-08-08" />
@@ -161,5 +112,4 @@
     <row data-node="encrypt.t_order_item" values="290002, 2900, 29, init, 2017-08-08" />
     <row data-node="encrypt.t_order_item" values="290101, 2901, 29, init, 2017-08-08" />
     <row data-node="encrypt.t_order_item" values="290102, 2901, 29, init, 2017-08-08" />
-    <row data-node="encrypt.t_broadcast_table" values="1, init" />
 </dataset>

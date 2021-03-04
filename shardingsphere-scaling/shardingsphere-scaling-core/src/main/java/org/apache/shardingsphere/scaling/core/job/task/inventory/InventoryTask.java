@@ -33,7 +33,7 @@ import org.apache.shardingsphere.scaling.core.executor.engine.ExecuteCallback;
 import org.apache.shardingsphere.scaling.core.executor.importer.Importer;
 import org.apache.shardingsphere.scaling.core.executor.importer.ImporterFactory;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 import org.apache.shardingsphere.scaling.core.job.task.ScalingTask;
 
 import java.util.Optional;
@@ -57,7 +57,7 @@ public final class InventoryTask extends AbstractScalingExecutor implements Scal
     
     private Dumper dumper;
     
-    private Position<?> position;
+    private ScalingPosition<?> position;
     
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig) {
         this(inventoryDumperConfig, importerConfig, new DataSourceManager());

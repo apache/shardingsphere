@@ -32,14 +32,6 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <metadata data-nodes="tbl.t_user">
-        <column name="user_id" type="numeric" />
-        <column name="pwd" type="varchar" />
-    </metadata>
-    <row data-node="tbl.t_user" values="10, abc" />
-    <row data-node="tbl.t_user" values="11, def" />
-    <row data-node="tbl.t_user" values="12, hig" />
-    <row data-node="tbl.t_user" values="13, kli" />
     <row data-node="tbl.t_order_0" values="1000, 10, init" />
     <row data-node="tbl.t_order_1" values="1001, 10, init" />
     <row data-node="tbl.t_order_2" values="1002, 10, init" />
