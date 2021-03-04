@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.context.metadata;
 
-import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
@@ -29,13 +28,13 @@ import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
@@ -81,9 +80,6 @@ public final class GovernanceMetaDataContextsTest {
     @Mock
     private RegistryCenter registryCenter;
     
-    @Mock
-    private ConfigCenter configCenter;
-    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData metaData;
     
@@ -95,7 +91,6 @@ public final class GovernanceMetaDataContextsTest {
     @Before
     public void setUp() {
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
-        when(governanceFacade.getConfigCenter()).thenReturn(configCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
         governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), authentication, props), governanceFacade);
     }
@@ -131,7 +126,7 @@ public final class GovernanceMetaDataContextsTest {
     @Test
     public void assertSchemaAdd() throws SQLException {
         MetaDataPersistedEvent event = new MetaDataPersistedEvent("schema_add");
-        when(configCenter.loadDataSourceConfigurations("schema_add")).thenReturn(getDataSourceConfigurations());
+        when(registryCenter.loadDataSourceConfigurations("schema_add")).thenReturn(getDataSourceConfigurations());
         governanceMetaDataContexts.renew(event);
         assertNotNull(governanceMetaDataContexts.getMetaData("schema_add"));
         assertNotNull(governanceMetaDataContexts.getMetaData("schema_add").getResource().getDataSources());

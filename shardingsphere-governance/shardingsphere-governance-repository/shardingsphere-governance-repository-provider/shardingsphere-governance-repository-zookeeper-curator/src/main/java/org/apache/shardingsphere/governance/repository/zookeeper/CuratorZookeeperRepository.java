@@ -30,7 +30,6 @@ import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
-import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
@@ -58,7 +57,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Governance repository of ZooKeeper.
  */
-public final class CuratorZookeeperRepository implements ConfigurationRepository, RegistryRepository {
+public final class CuratorZookeeperRepository implements RegistryRepository {
     
     private final Map<String, CuratorCache> caches = new HashMap<>();
     

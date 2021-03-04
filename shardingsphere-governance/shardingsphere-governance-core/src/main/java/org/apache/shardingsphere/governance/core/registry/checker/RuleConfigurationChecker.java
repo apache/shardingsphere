@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.facade.listener;
+package org.apache.shardingsphere.governance.core.registry.checker;
 
-import org.apache.shardingsphere.governance.core.registry.listener.RegistryListenerManager;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
-
-import java.util.Collection;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 /**
- * Governance listener manager.
+ * Rule configuration checker.
+ * 
+ * @param <T> type of rule configuration
  */
-public final class GovernanceListenerManager {
-    
-    private final RegistryListenerManager registryListenerManager;
-    
-    public GovernanceListenerManager(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
-        registryListenerManager = new RegistryListenerManager(registryRepository, schemaNames);
-    }
+public interface RuleConfigurationChecker<T extends RuleConfiguration> {
     
     /**
-     * Initialize all governance listeners.
+     * Check rule configuration.
+     * 
+     * @param schemaName schema name
+     * @param ruleConfiguration rule configuration
      */
-    public void init() {
-        registryListenerManager.initListeners();
-    }
+    void check(String schemaName, T ruleConfiguration);
 }
