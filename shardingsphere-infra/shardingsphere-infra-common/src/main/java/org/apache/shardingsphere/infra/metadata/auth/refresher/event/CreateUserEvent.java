@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
+package org.apache.shardingsphere.infra.metadata.auth.refresher.event;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserSegment;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * Create user statement.
+ * Create user event.
  */
+@RequiredArgsConstructor
 @Getter
-public abstract class CreateUserStatement extends AbstractSQLStatement implements DCLStatement {
+public final class CreateUserEvent {
     
-    private final Collection<UserSegment> users = new LinkedList<>();
+    private final Collection<ShardingSphereUser> users;
 }
