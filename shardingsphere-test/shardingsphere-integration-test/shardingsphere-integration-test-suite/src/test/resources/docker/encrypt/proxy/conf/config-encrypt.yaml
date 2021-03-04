@@ -30,22 +30,6 @@ dataSources:
     maintenanceIntervalMilliseconds: 30000
 
 rules:
-- !SHARDING
-  tables:
-    t_order_item:
-      actualDataNodes: encrypt.t_order_item
-      tableStrategy:
-        none:
-      databaseStrategy:
-        none:
-    t_user:
-      actualDataNodes: encrypt.t_user
-      tableStrategy:
-        none:
-      databaseStrategy:
-        none:
-  bindingTables:
-    - t_user,t_order_item
 - !ENCRYPT
   encryptors:
     aes_encryptor:
@@ -54,6 +38,12 @@ rules:
         aes-key-value: 123456abc
   tables:
     t_user:
+      columns:
+        pwd:
+          plainColumn: pwd_plain
+          cipherColumn: pwd_cipher
+          encryptorName: aes_encryptor
+    t_user_details:
       columns:
         pwd:
           plainColumn: pwd_plain
