@@ -119,7 +119,7 @@
 <!--    </test-case>-->
 
 <!--    <test-case sql="ALTER TABLE t_user_details CHANGE pwd pwd_new VARCHAR(50)" scenario-types="encrypt">-->
-<!--        <assertion expected-data-file="change_user_table.xml">-->
+<!--        <assertion expected-data-file="change_column_user_table.xml">-->
 <!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL)" affected-table="t_user_details" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
