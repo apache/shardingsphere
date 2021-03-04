@@ -19,7 +19,7 @@ rules:
 - !SHARDING
   tables:
     t_user_item:
-      actualDataNodes: pr_ds_${0..9}.t_user_item_{0..9}
+      actualDataNodes: pr_ds_${0..9}.t_user_item_${0..9}
       databaseStrategy:
         standard:
           shardingColumn: user_id
@@ -42,7 +42,7 @@ rules:
           shardingColumn: user_id
           shardingAlgorithmName: standard_test
     t_user_details:
-      actualDataNodes: pr_ds_${0..9}.t_user_details_{0..9}
+      actualDataNodes: pr_ds_${0..9}.t_user_details_${0..9}
       databaseStrategy:
         standard:
           shardingColumn: user_id
