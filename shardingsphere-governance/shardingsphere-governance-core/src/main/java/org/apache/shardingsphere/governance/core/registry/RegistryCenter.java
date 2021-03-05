@@ -171,15 +171,6 @@ public final class RegistryCenter {
     public void persistRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
         repository.persist(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRootRuleConfigurations(schemaName, ruleConfigurations)));
     }
-    
-    private void cacheRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
-        String cacheId = registryCacheManager.cache(node.getRulePath(schemaName), YamlEngine.marshal(createYamlRootRuleConfigurations(schemaName, ruleConfigurations)));
-        StartScalingEvent event = new StartScalingEvent(schemaName,
-                repository.get(node.getMetadataDataSourcePath(schemaName)),
-                repository.get(node.getRulePath(schemaName)),
-                registryCacheManager.loadCache(node.getRulePath(schemaName), cacheId), cacheId);
-        ShardingSphereEventBus.getInstance().post(event);
-    }
 
     private YamlRootRuleConfigurations createYamlRootRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {
         Collection<RuleConfiguration> configs = new LinkedList<>();
@@ -361,7 +352,7 @@ public final class RegistryCenter {
     /**
      * persist data source configurations.
      *
-     * @param event Data source added event.
+     * @param event Data source added event
      */
     @Subscribe
     public synchronized void renew(final DataSourceAddedEvent event) {
@@ -371,7 +362,7 @@ public final class RegistryCenter {
     /**
      * Change data source configurations.
      *
-     * @param event Data source altered event.
+     * @param event Data source altered event
      */
     @Subscribe
     public synchronized void renew(final DataSourceAlteredEvent event) {
@@ -381,7 +372,7 @@ public final class RegistryCenter {
     /**
      * Persist rule configurations.
      *
-     * @param event rule configurations altered event.
+     * @param event rule configurations altered event
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationsAlteredEvent event) {
@@ -392,7 +383,7 @@ public final class RegistryCenter {
     /**
      * Persist meta data.
      *
-     * @param event meta data created event.
+     * @param event meta data created event
      */
     @Subscribe
     public synchronized void renew(final MetaDataCreatedEvent event) {
@@ -422,7 +413,7 @@ public final class RegistryCenter {
     /**
      * Persist schema.
      *
-     * @param event schema altered event.
+     * @param event schema altered event
      */
     @Subscribe
     public synchronized void renew(final SchemaAlteredEvent event) {
