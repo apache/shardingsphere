@@ -548,7 +548,7 @@ ilmCompressionPolicy
     ;
 
 ilmTimePeriod
-    : NUMBER ((DAY | DAYS) | (MONTH | MONTHS) | (YEAR | YEARS))
+    : NUMBER_ ((DAY | DAYS) | (MONTH | MONTHS) | (YEAR | YEARS))
     ;
 
 ilmTieringPolicy
@@ -572,11 +572,11 @@ heapOrgTableClause
     ;
 
 indexOrgTableClause
-    : (mappingTableClause | PCTTHRESHOLD NUMBER | prefixCompression)* indexOrgOverflowClause?
+    : (mappingTableClause | PCTTHRESHOLD NUMBER_ | prefixCompression)* indexOrgOverflowClause?
     ;
 
 externalTableClause
-    : LP_ (TYPE accessDriverType)? (externalTableDataProps)? RP_ (REJECT LIMIT (NUMBER | UNLIMITED))? inmemoryTableClause?
+    : LP_ (TYPE accessDriverType)? (externalTableDataProps)? RP_ (REJECT LIMIT (NUMBER_ | UNLIMITED))? inmemoryTableClause?
     ;
 
 externalTableDataProps
@@ -588,7 +588,7 @@ mappingTableClause
     ;
 
 prefixCompression
-    : COMPRESS NUMBER? | NOCOMPRESS
+    : COMPRESS NUMBER_? | NOCOMPRESS
     ;
 
 indexOrgOverflowClause
@@ -697,9 +697,9 @@ lobStorageParameters
 
 lobParameters
     : ( (ENABLE | DISABLE) STORAGE IN ROW
-        | CHUNK NUMBER
-        | PCTVERSION NUMBER
-        | FREEPOOLS NUMBER
+        | CHUNK NUMBER_
+        | PCTVERSION NUMBER_
+        | FREEPOOLS NUMBER_
         | lobRetentionClause
         | lobDeduplicateClause
         | lobCompressionClause
@@ -709,7 +709,7 @@ lobParameters
     ;
 
 lobRetentionClause
-    : RETENTION (MAX | MIN NUMBER | AUTO | NONE)?
+    : RETENTION (MAX | MIN NUMBER_ | AUTO | NONE)?
     ;
 
 lobDeduplicateClause
@@ -744,7 +744,7 @@ hashPartitions
     ;
 
 hashPartitionsByQuantity
-    : PARTITIONS NUMBER (STORE IN (tablespaceName (COMMA_ tablespaceName)*))? (tableCompression | indexCompression)? (OVERFLOW STORE IN (tablespaceName (COMMA_ tablespaceName)*))?
+    : PARTITIONS NUMBER_ (STORE IN (tablespaceName (COMMA_ tablespaceName)*))? (tableCompression | indexCompression)? (OVERFLOW STORE IN (tablespaceName (COMMA_ tablespaceName)*))?
     ;
 
 indexCompression
@@ -794,7 +794,7 @@ subpartitionByList
     ;
 
 subpartitionByHash
-    : SUBPARTITION BY HASH columnNames (SUBPARTITIONS NUMBER (STORE IN LP_ tablespaceName (COMMA_ tablespaceName)? RP_)? | subpartitionTemplate)?
+    : SUBPARTITION BY HASH columnNames (SUBPARTITIONS NUMBER_ (STORE IN LP_ tablespaceName (COMMA_ tablespaceName)? RP_)? | subpartitionTemplate)?
     ;
 
 subpartitionTemplate
@@ -849,7 +849,7 @@ constraint
     ;
 
 systemPartitioning
-    : PARTITION BY SYSTEM (PARTITIONS NUMBER | referencePartitionDesc (COMMA_ referencePartitionDesc)*)?
+    : PARTITION BY SYSTEM (PARTITIONS NUMBER_ | referencePartitionDesc (COMMA_ referencePartitionDesc)*)?
     ;
 
 consistentHashPartitions
