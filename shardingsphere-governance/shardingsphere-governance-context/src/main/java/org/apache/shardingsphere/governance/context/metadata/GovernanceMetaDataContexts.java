@@ -143,8 +143,8 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     @Override
-    public ShardingSphereLock getLock() {
-        return lock;
+    public Optional<ShardingSphereLock> getLock() {
+        return Optional.of(lock);
     }
     
     @Override
