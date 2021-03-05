@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.PasswordOrLockOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.TLSOptionSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserResourceSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -37,8 +36,6 @@ import java.util.LinkedList;
 @Getter
 @Setter
 public final class MySQLCreateUserStatement extends CreateUserStatement implements MySQLStatement {
-    
-    private final Collection<UserSegment> users = new LinkedList<>();
     
     private Collection<String> defaultRoles = new LinkedList<>();
     
