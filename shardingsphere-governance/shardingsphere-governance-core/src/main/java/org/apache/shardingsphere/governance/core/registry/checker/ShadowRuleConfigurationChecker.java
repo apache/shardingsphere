@@ -15,28 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.facade.listener;
+package org.apache.shardingsphere.governance.core.registry.checker;
 
-import org.apache.shardingsphere.governance.core.registry.listener.RegistryListenerManager;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
-
-import java.util.Collection;
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 
 /**
- * Governance listener manager.
+ * Shadow rule configuration checker.
  */
-public final class GovernanceListenerManager {
+public final class ShadowRuleConfigurationChecker implements RuleConfigurationChecker<ShadowRuleConfiguration> {
     
-    private final RegistryListenerManager registryListenerManager;
-    
-    public GovernanceListenerManager(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
-        registryListenerManager = new RegistryListenerManager(registryRepository, schemaNames);
-    }
-    
-    /**
-     * Initialize all governance listeners.
-     */
-    public void init() {
-        registryListenerManager.initListeners();
+    @Override
+    public void check(final String schemaName, final ShadowRuleConfiguration ruleConfiguration) {
+        boolean isShadow = !ruleConfiguration.getColumn().isEmpty() && null != ruleConfiguration.getSourceDataSourceNames() && null != ruleConfiguration.getShadowDataSourceNames();
+        Preconditions.checkState(isShadow, "No available shadow rule configuration in `%s` for governance.", schemaName);
     }
 }

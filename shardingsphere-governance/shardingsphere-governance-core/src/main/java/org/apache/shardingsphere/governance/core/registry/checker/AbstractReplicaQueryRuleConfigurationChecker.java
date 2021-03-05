@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.facade.listener;
+package org.apache.shardingsphere.governance.core.registry.checker;
 
-import org.apache.shardingsphere.governance.core.registry.listener.RegistryListenerManager;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.replicaquery.api.config.rule.ReplicaQueryDataSourceRuleConfiguration;
 
 import java.util.Collection;
 
 /**
- * Governance listener manager.
+ * Abstract replica query rule configuration checker.
+ * 
+ * @param <T> rule configuration
  */
-public final class GovernanceListenerManager {
+public abstract class AbstractReplicaQueryRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
     
-    private final RegistryListenerManager registryListenerManager;
-    
-    public GovernanceListenerManager(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
-        registryListenerManager = new RegistryListenerManager(registryRepository, schemaNames);
-    }
-    
-    /**
-     * Initialize all governance listeners.
-     */
-    public void init() {
-        registryListenerManager.initListeners();
+    protected void checkDataSources(final String schemaName, final Collection<ReplicaQueryDataSourceRuleConfiguration> dataSources) {
+        dataSources.forEach(each -> Preconditions.checkState(
+                !each.getPrimaryDataSourceName().isEmpty(), "No available replica-query rule configuration in `%s` for governance.", schemaName));
     }
 }

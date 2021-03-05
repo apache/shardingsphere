@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.driver.governance.fixture;
 
-import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
+import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
 
@@ -26,7 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class TestConfigurationRepository implements ConfigurationRepository {
+public final class TestConfigurationRepository implements GovernanceRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     

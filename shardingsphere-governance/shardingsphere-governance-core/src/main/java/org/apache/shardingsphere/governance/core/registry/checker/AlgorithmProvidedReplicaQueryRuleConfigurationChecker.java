@@ -15,28 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.facade.listener;
+package org.apache.shardingsphere.governance.core.registry.checker;
 
-import org.apache.shardingsphere.governance.core.registry.listener.RegistryListenerManager;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
-
-import java.util.Collection;
+import org.apache.shardingsphere.replicaquery.algorithm.config.AlgorithmProvidedReplicaQueryRuleConfiguration;
 
 /**
- * Governance listener manager.
+ * Algorithm provided replica query ruleConfiguration checker.
  */
-public final class GovernanceListenerManager {
+public final class AlgorithmProvidedReplicaQueryRuleConfigurationChecker extends AbstractReplicaQueryRuleConfigurationChecker<AlgorithmProvidedReplicaQueryRuleConfiguration> { 
     
-    private final RegistryListenerManager registryListenerManager;
-    
-    public GovernanceListenerManager(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
-        registryListenerManager = new RegistryListenerManager(registryRepository, schemaNames);
-    }
-    
-    /**
-     * Initialize all governance listeners.
-     */
-    public void init() {
-        registryListenerManager.initListeners();
+    @Override
+    public void check(final String schemaName, final AlgorithmProvidedReplicaQueryRuleConfiguration ruleConfiguration) {
+        checkDataSources(schemaName, ruleConfiguration.getDataSources());
     }
 }

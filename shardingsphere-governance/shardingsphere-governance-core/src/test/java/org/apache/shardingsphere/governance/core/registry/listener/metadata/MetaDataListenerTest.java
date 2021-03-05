@@ -15,28 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.facade.listener;
+package org.apache.shardingsphere.governance.core.registry.listener.metadata;
 
-import org.apache.shardingsphere.governance.core.registry.listener.RegistryListenerManager;
+import lombok.Getter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.mockito.Mock;
 
-import java.util.Collection;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Collectors;
 
-/**
- * Governance listener manager.
- */
-public final class GovernanceListenerManager {
+@Getter
+public class MetaDataListenerTest {
     
-    private final RegistryListenerManager registryListenerManager;
+    @Mock
+    private RegistryRepository registryRepository;
     
-    public GovernanceListenerManager(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
-        registryListenerManager = new RegistryListenerManager(registryRepository, schemaNames);
-    }
-    
-    /**
-     * Initialize all governance listeners.
-     */
-    public void init() {
-        registryListenerManager.initListeners();
+    @SneakyThrows({IOException.class, URISyntaxException.class})
+    protected String readYAML(final String yamlFile) {
+        return Files.readAllLines(Paths.get(ClassLoader.getSystemResource(yamlFile).toURI())).stream().map(each -> each + System.lineSeparator()).collect(Collectors.joining());
     }
 }
