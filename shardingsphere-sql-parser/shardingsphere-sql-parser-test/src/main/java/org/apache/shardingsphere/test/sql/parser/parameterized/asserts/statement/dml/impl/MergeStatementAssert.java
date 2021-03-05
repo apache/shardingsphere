@@ -39,11 +39,20 @@ public final class MergeStatementAssert {
      * @param expected expected parser result
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
-        assertTables(assertContext, actual, expected);
+        assertTable(assertContext, actual, expected);
+        assertExpression(assertContext, actual, expected);
     }
     
-    private static void assertTables(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
-        TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
+    private static void assertTable(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
+        if (null != expected.getTables()) {
+            TableAssert.assertIs(assertContext, actual.getTables(), expected.getTables());
+        }
+        if (null != expected.getSubqueryTable()) {
+            TableAssert.assertIs(assertContext, actual.getSubqueryTableSegment(), expected.getSubqueryTable());
+        }
+    }
+    
+    private static void assertExpression(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
         ExpressionAssert.assertExpression(assertContext, actual.getExpr(), expected.getExpr());
     }
     

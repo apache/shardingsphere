@@ -37,4 +37,49 @@
             </binary-operation-expression>
         </expr>
     </merge>
+    <merge sql-case-id="merge_into_table_using_subquery_alias" >
+        <table name="bonuses" alias="D" start-index="11" stop-index="19" />
+        <subquery-table alias="S">
+            <subquery>
+                <select>
+                    <from>
+                        <simple-table name="employees" start-index="75" stop-index="83" />
+                    </from>
+                    <projections start-index="35" stop-index="68">
+                        <column-projection name="employee_id" start-index="35" stop-index="45" />
+                        <column-projection name="salary" start-index="48" stop-index="53" />
+                        <column-projection name="department_id" start-index="56" stop-index="68" />
+                    </projections>
+                    <where start-index="85" stop-index="108">
+                        <expr>
+                            <binary-operation-expression start-index="91" stop-index="108">
+                                <left>
+                                    <column name="department_id" start-index="91" stop-index="103"/>
+                                </left>
+                                <operator>=</operator>
+                                <right>
+                                    <literal-expression value="80" start-index="107" stop-index="108" />
+                                </right>
+                            </binary-operation-expression>
+                        </expr>
+                    </where>
+                </select>
+            </subquery>
+        </subquery-table>
+        <expr>
+            <binary-operation-expression start-index="117" stop-index="145">
+                <left>
+                    <column name="employee_id" start-index="117" stop-index="129">
+                        <owner name="D" start-index="117" stop-index="117" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="employee_id" start-index="133" stop-index="145">
+                        <owner name="S" start-index="133" stop-index="133" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+    </merge>
 </sql-parser-test-cases>

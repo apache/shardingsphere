@@ -483,10 +483,27 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitMerge(final MergeContext ctx) {
         OracleMergeStatement result = new OracleMergeStatement();
         if (null != ctx.intoClause().tableName()) {
-            result.getTables().add((SimpleTableSegment) visit(ctx.intoClause().tableName()));
+            SimpleTableSegment table = (SimpleTableSegment) visit(ctx.intoClause().tableName());
+            if (null != ctx.intoClause().alias()) {
+                table.setAlias((AliasSegment) visit(ctx.intoClause().alias()));
+            }
+            result.getTables().add(table);
         }
         if (null != ctx.usingClause().tableName()) {
-            result.getTables().add((SimpleTableSegment) visit(ctx.usingClause().tableName()));
+            SimpleTableSegment table = (SimpleTableSegment) visit(ctx.usingClause().tableName());
+            if (null != ctx.usingClause().alias()) {
+                table.setAlias((AliasSegment) visit(ctx.usingClause().alias()));
+            }
+            result.getTables().add(table);
+        }
+        if (null != ctx.usingClause().subquery()) {
+            OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.usingClause().subquery());
+            SubquerySegment subquerySegment = new SubquerySegment(ctx.usingClause().subquery().start.getStartIndex(), ctx.usingClause().subquery().stop.getStopIndex(), subquery);
+            SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(subquerySegment);
+            if (null != ctx.usingClause().alias()) {
+                subqueryTableSegment.setAlias((AliasSegment) visit(ctx.usingClause().alias()));
+            }
+            result.setSubqueryTableSegment(subqueryTableSegment);
         }
         result.setExpr((ExpressionSegment) (visit(ctx.usingClause().expr())));
         return result;

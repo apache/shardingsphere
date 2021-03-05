@@ -22,6 +22,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 import java.util.LinkedList;
@@ -38,5 +39,7 @@ public abstract class MergeStatement extends AbstractSQLStatement implements DML
     private final List<SimpleTableSegment> tables = new LinkedList<>();
     
     private ExpressionSegment expr;
+    
+    private SubqueryTableSegment subqueryTableSegment;
     
 }
