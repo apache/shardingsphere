@@ -33,13 +33,11 @@ public final class JobInfo {
     
     private boolean active;
     
-    private String status;
-    
-    private String[] tables;
+    private String tables;
     
     private int shardingTotalCount;
     
-    private int inventoryFinishedPercentage;
+    private String createTime;
     
-    private long incrementalAverageDelayMilliseconds = -1;
+    private String stopTime;
 }

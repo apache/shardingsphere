@@ -29,10 +29,10 @@ import java.util.Properties;
 /**
  * Calcite context.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class CalciteContext {
-
+    
     private final Properties connectionProperties;
     
     private final CalciteLogicSchema calciteLogicSchema;

@@ -31,7 +31,6 @@ public final class GovernanceNamespaceHandler extends NamespaceHandlerSupport {
     @Override
     public void init() {
         registerBeanDefinitionParser(GovernanceCenterConfigurationBeanDefinitionTag.REG_CENTER_ROOT_TAG, new GovernanceCenterConfigurationBeanDefinitionParser());
-        registerBeanDefinitionParser(GovernanceCenterConfigurationBeanDefinitionTag.CONFIG_CENTER_ROOT_TAG, new GovernanceCenterConfigurationBeanDefinitionParser());
         registerBeanDefinitionParser(DataSourceBeanDefinitionTag.ROOT_TAG, new DataSourceBeanDefinitionParser());
     }
 }

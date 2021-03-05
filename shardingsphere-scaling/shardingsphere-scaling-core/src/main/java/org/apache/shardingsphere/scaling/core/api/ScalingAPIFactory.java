@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobAPIFactory;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobOperateAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
@@ -48,19 +49,13 @@ import java.util.Properties;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ScalingAPIFactory {
     
-    static {
-        ServerConfiguration serverConfig = ScalingContext.getInstance().getServerConfig();
-        Preconditions.checkArgument(null != serverConfig, "Scaling server configuration is required.");
-        Preconditions.checkArgument(null != serverConfig.getGovernanceConfig(), "Governance configuration is required.");
-    }
-    
     /**
      * Get scaling API.
      *
      * @return scaling API
      */
     public static ScalingAPI getScalingAPI() {
-        return ScalingAPIHolder.INSTANCE;
+        return ScalingAPIHolder.getInstance();
     }
     
     /**
@@ -69,7 +64,7 @@ public final class ScalingAPIFactory {
      * @return registry repository API
      */
     public static RegistryRepositoryAPI getRegistryRepositoryAPI() {
-        return RegistryRepositoryAPIHolder.INSTANCE;
+        return RegistryRepositoryAPIHolder.getInstance();
     }
     
     /**
@@ -78,7 +73,7 @@ public final class ScalingAPIFactory {
      * @return job statistics API
      */
     public static JobStatisticsAPI getJobStatisticsAPI() {
-        return ElasticJobAPIHolder.INSTANCE.getJobStatisticsAPI();
+        return ElasticJobAPIHolder.getInstance().getJobStatisticsAPI();
     }
     
     /**
@@ -87,7 +82,16 @@ public final class ScalingAPIFactory {
      * @return job configuration API
      */
     public static JobConfigurationAPI getJobConfigurationAPI() {
-        return ElasticJobAPIHolder.INSTANCE.getJobConfigurationAPI();
+        return ElasticJobAPIHolder.getInstance().getJobConfigurationAPI();
+    }
+    
+    /**
+     * Get job operate API.
+     *
+     * @return job operate API
+     */
+    public static JobOperateAPI getJobOperateAPI() {
+        return ElasticJobAPIHolder.getInstance().getJobOperateAPI();
     }
     
     /**
@@ -96,49 +100,108 @@ public final class ScalingAPIFactory {
      * @return Coordinator registry center
      */
     public static CoordinatorRegistryCenter getRegistryCenter() {
-        return RegistryCenterHolder.INSTANCE;
+        return RegistryCenterHolder.getInstance();
+    }
+    
+    private static void checkServerConfig() {
+        ServerConfiguration serverConfig = ScalingContext.getInstance().getServerConfig();
+        Preconditions.checkNotNull(serverConfig, "Scaling server configuration is required.");
+        Preconditions.checkNotNull(serverConfig.getGovernanceConfig(), "Governance configuration is required.");
     }
     
     private static final class ScalingAPIHolder {
         
-        private static final ScalingAPI INSTANCE = new ScalingAPIImpl();
+        private static volatile ScalingAPI instance;
+        
+        public static ScalingAPI getInstance() {
+            if (null == instance) {
+                synchronized (ScalingAPIFactory.class) {
+                    if (null == instance) {
+                        checkServerConfig();
+                        instance = new ScalingAPIImpl();
+                    }
+                }
+            }
+            return instance;
+        }
     }
     
     private static final class RegistryRepositoryAPIHolder {
         
-        private static final RegistryRepositoryAPI INSTANCE;
+        private static volatile RegistryRepositoryAPI instance;
         
         static {
             ShardingSphereServiceLoader.register(RegistryRepository.class);
             ShardingSphereServiceLoader.register(ConfigurationRepository.class);
+        }
+        
+        public static RegistryRepositoryAPI getInstance() {
+            if (null == instance) {
+                synchronized (ScalingAPIFactory.class) {
+                    if (null == instance) {
+                        instance = createRegistryRepositoryAPI();
+                    }
+                }
+            }
+            return instance;
+        }
+        
+        private static RegistryRepositoryAPI createRegistryRepositoryAPI() {
+            checkServerConfig();
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
             GovernanceCenterConfiguration registryCenterConfig = governanceConfig.getRegistryCenterConfiguration();
             RegistryRepository registryRepository = TypedSPIRegistry.getRegisteredService(RegistryRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
             registryRepository.init(governanceConfig.getName(), registryCenterConfig);
-            INSTANCE = new RegistryRepositoryAPIImpl(registryRepository);
+            return new RegistryRepositoryAPIImpl(registryRepository);
         }
     }
     
     @Getter
     private static final class ElasticJobAPIHolder {
         
-        private static final ElasticJobAPIHolder INSTANCE = new ElasticJobAPIHolder();
+        private static volatile ElasticJobAPIHolder instance;
         
         private final JobStatisticsAPI jobStatisticsAPI;
         
         private final JobConfigurationAPI jobConfigurationAPI;
         
+        private final JobOperateAPI jobOperateAPI;
+        
         private ElasticJobAPIHolder() {
+            checkServerConfig();
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
             String namespace = governanceConfig.getName() + ScalingConstant.SCALING_ROOT;
             jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
             jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
+            jobOperateAPI = JobAPIFactory.createJobOperateAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
+        }
+        
+        public static ElasticJobAPIHolder getInstance() {
+            if (null == instance) {
+                synchronized (ScalingAPIFactory.class) {
+                    if (null == instance) {
+                        instance = new ElasticJobAPIHolder();
+                    }
+                }
+            }
+            return instance;
         }
     }
     
     private static final class RegistryCenterHolder {
         
-        private static final CoordinatorRegistryCenter INSTANCE = createRegistryCenter();
+        private static volatile CoordinatorRegistryCenter instance;
+        
+        public static CoordinatorRegistryCenter getInstance() {
+            if (null == instance) {
+                synchronized (ScalingAPIFactory.class) {
+                    if (null == instance) {
+                        instance = createRegistryCenter();
+                    }
+                }
+            }
+            return instance;
+        }
         
         private static CoordinatorRegistryCenter createRegistryCenter() {
             CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(getZookeeperConfig());
@@ -147,6 +210,7 @@ public final class ScalingAPIFactory {
         }
         
         private static ZookeeperConfiguration getZookeeperConfig() {
+            checkServerConfig();
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
             ZookeeperConfiguration result = new ZookeeperConfiguration(governanceConfig.getRegistryCenterConfiguration().getServerLists(),
                     governanceConfig.getName() + ScalingConstant.SCALING_ROOT);

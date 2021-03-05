@@ -30,7 +30,7 @@ public abstract class AbstractScalingExecutor implements ScalingExecutor {
     
     @Setter(AccessLevel.PROTECTED)
     @Getter(AccessLevel.PROTECTED)
-    private boolean running;
+    private volatile boolean running;
     
     @Override
     public void start() {

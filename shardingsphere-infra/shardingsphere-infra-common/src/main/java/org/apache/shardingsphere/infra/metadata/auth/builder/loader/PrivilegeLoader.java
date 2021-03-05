@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.infra.metadata.auth.builder.loader;
 
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 
 import javax.sql.DataSource;
 import java.util.Optional;
@@ -27,6 +28,13 @@ import java.util.Optional;
  * Privilege loader.
  */
 public interface PrivilegeLoader {
+    
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    DatabaseType getDatabaseType();
     
     /**
      * Load.

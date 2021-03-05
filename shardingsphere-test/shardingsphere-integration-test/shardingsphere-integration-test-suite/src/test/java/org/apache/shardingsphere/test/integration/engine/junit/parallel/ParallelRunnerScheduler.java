@@ -18,124 +18,29 @@
 package org.apache.shardingsphere.test.integration.engine.junit.parallel;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.engine.it.RuntimeStrategy;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.CaseParallelRunnerExecutor;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.ScenarioParallelRunnerExecutor;
+import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.integration.engine.param.RunnerParameters;
 import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
 import org.junit.runners.model.RunnerScheduler;
-import org.junit.runners.parameterized.BlockJUnit4ClassRunnerWithParameters;
-
-import java.lang.reflect.Field;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Parallel runner scheduler.
  */
+@RequiredArgsConstructor
 public final class ParallelRunnerScheduler implements RunnerScheduler {
     
-    private final Field parametersField;
+    private final ParallelLevel parallelLevel;
     
-    private final ConcurrentMap<RunnerExecutorKey, ParallelRunnerExecutor> runnerExecutors = new ConcurrentHashMap<>();
-    
-    private final RuntimeStrategy runtimeStrategy;
-    
-    private volatile Field runnerField;
-    
-    private final Lock lock = new ReentrantLock();
-    
-    public ParallelRunnerScheduler(final RuntimeStrategy runtimeStrategy) {
-        this.runtimeStrategy = runtimeStrategy;
-        parametersField = getParametersField();
-    }
-    
-    @SneakyThrows(NoSuchFieldException.class)
-    private Field getParametersField() {
-        Field result = BlockJUnit4ClassRunnerWithParameters.class.getDeclaredField("parameters");
-        result.setAccessible(true);
-        return result;
-    }
+    private final ParallelRunnerExecutorFactory executorFactory = new ParallelRunnerExecutorFactory();
     
     @Override
     public void schedule(final Runnable childStatement) {
-        Object[] parameters = getParameters(childStatement);
-        ParameterizedArray parameterizedArray = (ParameterizedArray) parameters[0];
-        getRunnerExecutor(new RunnerExecutorKey(parameterizedArray.getDatabaseType())).execute(parameterizedArray, childStatement);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Object[] getParameters(final Runnable childStatement) {
-        if (null == runnerField) {
-            runnerField = childStatement.getClass().getDeclaredField("val$each");
-            runnerField.setAccessible(true);
-        }
-        return (Object[]) parametersField.get(runnerField.get(childStatement));
-    }
-    
-    private ParallelRunnerExecutor getRunnerExecutor(final RunnerExecutorKey runnerExecutorKey) {
-        ParallelRunnerExecutor runnerExecutor = this.runnerExecutors.get(runnerExecutorKey);
-        if (null != runnerExecutor) {
-            return runnerExecutor;
-        }
-        try {
-            lock.lock();
-            runnerExecutor = this.runnerExecutors.get(runnerExecutorKey);
-            if (null != runnerExecutor) {
-                return runnerExecutor;
-            }
-            runnerExecutor = getRunnerExecutor();
-            this.runnerExecutors.put(runnerExecutorKey, runnerExecutor);
-            return runnerExecutor;
-        } finally {
-            lock.unlock();
-        }
-    }
-    
-    private ParallelRunnerExecutor getRunnerExecutor() {
-        switch (runtimeStrategy.parallelLevel()) {
-            case CASE:
-                return new CaseParallelRunnerExecutor();
-            case SCENARIO:
-                return new ScenarioParallelRunnerExecutor();
-            default:
-                throw new UnsupportedOperationException("Unsupported runtime strategy.");
-        }
+        ParameterizedArray parameterizedArray = new RunnerParameters(childStatement).getParameterizedArray();
+        executorFactory.getExecutor(parameterizedArray.getDatabaseType(), parallelLevel).execute(parameterizedArray, childStatement);
     }
     
     @Override
     public void finished() {
-        if (null != runnerExecutors) {
-            runnerExecutors.values().forEach(ParallelRunnerExecutor::finished);
-        }
-    }
-    
-    /**
-     * Runner executor key.
-     */
-    @RequiredArgsConstructor
-    private static final class RunnerExecutorKey {
-        
-        private final DatabaseType databaseType;
-    
-        @Override
-        public boolean equals(final Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            RunnerExecutorKey that = (RunnerExecutorKey) o;
-            return databaseType.getName().equals(that.databaseType.getName());
-        }
-    
-        @Override
-        public int hashCode() {
-            return databaseType.hashCode();
-        }
+        executorFactory.getAllExecutors().forEach(ParallelRunnerExecutor::finished);
     }
 }

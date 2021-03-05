@@ -56,7 +56,11 @@ public final class DistSQLStatementParserEngine {
         } catch (final ParseCancellationException ex) {
             ((Parser) sqlParser).reset();
             setPredictionMode((Parser) sqlParser, PredictionMode.LL);
-            return (ParseASTNode) sqlParser.parse();
+            try {
+                return (ParseASTNode) sqlParser.parse();
+            } catch (final ParseCancellationException e) {
+                throw new SQLParsingException("You have an error in your SQL syntax");
+            }
         }
     }
     

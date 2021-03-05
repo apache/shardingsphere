@@ -117,7 +117,6 @@ public final class YamlProxyConfigurationSwapperTest {
         prepareAuthentication(yamlProxyServerConfig);
         YamlGovernanceConfiguration yamlGovernanceConfig = prepareGovernance(yamlProxyServerConfig);
         prepareRegistryCenter(yamlGovernanceConfig);
-        prepareAdditionalConfigCenter(yamlGovernanceConfig);
         prepareProps(yamlProxyServerConfig);
         YamlProxyRuleConfiguration yamlProxyRuleConfig = prepareRuleConfigurations(result);
         when(yamlProxyRuleConfig.getSchemaName()).thenReturn("ruleConfigSchema1");
@@ -179,17 +178,6 @@ public final class YamlProxyConfigurationSwapperTest {
         Properties props = new Properties();
         props.setProperty("key4", "value4");
         when(yamlProxyServerConfig.getProps()).thenReturn(props);
-    }
-    
-    private void prepareAdditionalConfigCenter(final YamlGovernanceConfiguration yamlGovernanceConfig) {
-        YamlGovernanceCenterConfiguration additionalConfigCenterConfig = mock(YamlGovernanceCenterConfiguration.class);
-        when(yamlGovernanceConfig.getAdditionalConfigCenter()).thenReturn(additionalConfigCenterConfig);
-        when(additionalConfigCenterConfig.getType()).thenReturn("typeTwo");
-        when(additionalConfigCenterConfig.getServerLists()).thenReturn("serverLists2");
-        Properties props = new Properties();
-        props.setProperty("key2", "value2");
-        when(additionalConfigCenterConfig.getProps()).thenReturn(props);
-        when(yamlGovernanceConfig.isOverwrite()).thenReturn(true);
     }
     
     private void prepareRegistryCenter(final YamlGovernanceConfiguration yamlGovernanceConfig) {

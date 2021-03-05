@@ -45,6 +45,7 @@ public final class ScalingJob implements SimpleJob {
         JobContext jobContext = new JobContext(jobConfig);
         jobContext.setInitProgress(registryRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem()));
         jobPreparer.prepare(jobContext);
+        registryRepositoryAPI.persistJobProgress(jobContext);
         JobSchedulerCenter.start(jobContext);
     }
 }

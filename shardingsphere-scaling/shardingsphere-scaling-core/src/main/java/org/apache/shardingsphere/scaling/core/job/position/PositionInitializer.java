@@ -32,7 +32,7 @@ public interface PositionInitializer {
      * @return position
      * @throws SQLException SQL exception
      */
-    Position<?> init(DataSource dataSource) throws SQLException;
+    ScalingPosition<?> init(DataSource dataSource) throws SQLException;
     
     /**
      * Init position by string data.
@@ -40,5 +40,5 @@ public interface PositionInitializer {
      * @param data string data
      * @return position
      */
-    Position<?> init(String data);
+    ScalingPosition<?> init(String data);
 }

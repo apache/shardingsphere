@@ -35,7 +35,7 @@ public final class CalciteLogicSchema extends AbstractSchema {
     private final String name;
     
     private final Map<String, Table> tables = new LinkedMap<>();
-
+    
     public CalciteLogicSchema(final String name, final Map<String, Table> tables) {
         this.name = name;
         this.tables.putAll(tables);

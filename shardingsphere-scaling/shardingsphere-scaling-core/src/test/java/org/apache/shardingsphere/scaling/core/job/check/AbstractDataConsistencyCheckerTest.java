@@ -21,6 +21,8 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
+import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.util.ResourceUtil;
 import org.junit.Test;
 
@@ -39,7 +41,7 @@ public final class AbstractDataConsistencyCheckerTest {
     @Test
     public void assertCountCheck() {
         JobContext jobContext = new JobContext(ResourceUtil.mockJobConfig());
-        DataConsistencyChecker dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance(jobContext);
+        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(jobContext);
         initTableData(jobContext.getTaskConfigs().get(0).getDumperConfig().getDataSourceConfig());
         initTableData(jobContext.getTaskConfigs().get(0).getImporterConfig().getDataSourceConfig());
         Map<String, DataConsistencyCheckResult> resultMap = dataConsistencyChecker.countCheck();

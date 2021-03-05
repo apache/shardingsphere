@@ -20,26 +20,21 @@ governance:
   registryCenter:
     type: REG_TEST
     serverLists: localhost:3181
-  additionalConfigCenter:
-    type: CONFIG_TEST
-    serverLists: localhost:3181
   overwrite: true
 
 dataSources:
   primary_ds:
     dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
-    props:
-      driverClassName: org.h2.Driver
-      url: jdbc:h2:mem:primary_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-      username: sa
-      password:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:primary_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password:
   replica_ds:
     dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
-    props:
-      driverClassName: org.h2.Driver
-      url: jdbc:h2:mem:replica_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-      username: sa
-      password:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:replica_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password:
 
 rules:
 - !SHARDING
@@ -105,6 +100,5 @@ rules:
       primaryDataSourceName: primary_ds
       replicaDataSourceNames:
         - replica_ds
-
 props:
   sql-show: false

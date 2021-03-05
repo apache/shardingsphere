@@ -43,7 +43,7 @@ public final class GovernanceRepositoryFacade implements AutoCloseable {
     
     public GovernanceRepositoryFacade(final GovernanceConfiguration config) {
         registryRepository = createRegistryRepository(config);
-        configurationRepository = createConfigurationRepository(config);
+        configurationRepository = (ConfigurationRepository) registryRepository;
     }
     
     private RegistryRepository createRegistryRepository(final GovernanceConfiguration config) {
@@ -52,19 +52,6 @@ public final class GovernanceRepositoryFacade implements AutoCloseable {
         RegistryRepository result = TypedSPIRegistry.getRegisteredService(RegistryRepository.class, registryCenterConfig.getType(), registryCenterConfig.getProps());
         result.init(config.getName(), registryCenterConfig);
         return result;
-    }
-    
-    private ConfigurationRepository createConfigurationRepository(final GovernanceConfiguration config) {
-        if (config.getAdditionalConfigCenterConfiguration().isPresent()) {
-            GovernanceCenterConfiguration additionalConfigCenterConfig = config.getAdditionalConfigCenterConfiguration().get();
-            ConfigurationRepository result = TypedSPIRegistry.getRegisteredService(ConfigurationRepository.class, additionalConfigCenterConfig.getType(), additionalConfigCenterConfig.getProps());
-            result.init(config.getName(), additionalConfigCenterConfig);
-            return result;
-        }
-        if (registryRepository instanceof ConfigurationRepository) {
-            return (ConfigurationRepository) registryRepository;
-        }
-        throw new IllegalArgumentException("Registry repository is not suitable for config center and no additional config center configuration provided.");
     }
     
     @Override

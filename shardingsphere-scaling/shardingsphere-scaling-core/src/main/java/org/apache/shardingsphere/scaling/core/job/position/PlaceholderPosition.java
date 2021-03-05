@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.core.job.position;
 /**
  * Placeholder position.
  */
-public final class PlaceholderPosition implements Position<PlaceholderPosition> {
+public final class PlaceholderPosition implements ScalingPosition<PlaceholderPosition> {
     
     @Override
     public int compareTo(final PlaceholderPosition position) {

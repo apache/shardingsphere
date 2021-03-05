@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 import org.apache.shardingsphere.scaling.core.job.progress.Progress;
 
 /**
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.scaling.core.job.progress.Progress;
 @Setter
 public final class IncrementalTaskProgress implements Progress {
     
-    private final Position<?> position;
+    private final ScalingPosition<?> position;
     
     private IncrementalTaskDelay incrementalTaskDelay = new IncrementalTaskDelay();
 }

@@ -1,0 +1,28 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset update-count="1">
+    <metadata data-nodes="encrypt.t_user">
+        <column name="user_id" type="numeric"/>
+        <column name="pwd_plain" type="varchar"/>
+        <column name="pwd_cipher" type="varchar"/>
+    </metadata>
+    <row data-node="encrypt.t_user" values="11, null, ad3U0KgdvmyMjHGHM1TnQA==" />
+    <row data-node="encrypt.t_user" values="12, null, yiGGBrwHiDXsZPtZUhPd9A==" />
+    <row data-node="encrypt.t_user" values="13, null, UizTwGQDouZaeZA+NYZrKA==" />
+    <row data-node="encrypt.t_user" values="15, null, xdpUjIyP5dJQfX+2tOVbYg==" />
+</dataset>

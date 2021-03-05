@@ -157,11 +157,10 @@ public final class RegistryCenter {
      * Try to get global lock.
      *
      * @param timeout the maximum time in milliseconds to acquire lock
-     * @param timeUnit time unit
      * @return true if get the lock, false if not
      */
-    public boolean tryGlobalLock(final long timeout, final TimeUnit timeUnit) {
-        return repository.tryLock(lockNode.getGlobalLockNodePath(), timeout, timeUnit) && checkLock();
+    public boolean tryGlobalLock(final long timeout) {
+        return repository.tryLock(lockNode.getGlobalLockNodePath(), timeout, TimeUnit.MILLISECONDS) && checkLock();
     }
     
     /**
