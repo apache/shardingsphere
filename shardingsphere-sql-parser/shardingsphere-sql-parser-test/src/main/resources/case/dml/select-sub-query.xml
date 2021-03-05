@@ -38,11 +38,11 @@
     <select sql-case-id="select_sub_query_with_table" parameters="3, 4">
         <projections start-index="7" stop-index="9">
             <shorthand-projection start-index="7" stop-index="9">
-                <owner start-index="7" stop-index="7" name="t"/>
+                <owner start-index="7" stop-index="7" name="a"/>
             </shorthand-projection>
         </projections>
         <from>
-            <subquery-table alias="t">
+            <subquery-table alias="a">
                 <subquery>
                     <select>
                         <projections start-index="24" stop-index="24">
