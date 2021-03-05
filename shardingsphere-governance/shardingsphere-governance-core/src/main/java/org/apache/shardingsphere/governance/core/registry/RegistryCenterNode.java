@@ -294,8 +294,8 @@ public final class RegistryCenterNode {
     /**
      * Get all schema config paths.
      *
-     * @param schemaNames schema names.
-     * @return config paths list.
+     * @param schemaNames schema names
+     * @return config paths list
      */
     public Collection<String> getAllSchemaConfigPaths(final Collection<String> schemaNames) {
         Collection<String> result = new ArrayList<>(Collections.singleton(getMetadataNodePath()));
@@ -320,8 +320,8 @@ public final class RegistryCenterNode {
     /**
      * Get all metadata schema paths.
      *
-     * @param schemaNames schema names.
-     * @return list of schema path.
+     * @param schemaNames schema names
+     * @return list of schema path
      */
     public Collection<String> getAllMetadataSchemaPaths(final Collection<String> schemaNames) {
         return schemaNames.stream().map(this::getMetadataSchemaPath).collect(Collectors.toList());
@@ -330,8 +330,8 @@ public final class RegistryCenterNode {
     /**
      * Get all rule paths.
      *
-     * @param schemaNames schema names.
-     * @return list of rule path.
+     * @param schemaNames schema names
+     * @return list of rule path
      */
     public Collection<String> getAllRulePaths(final Collection<String> schemaNames) {
         return schemaNames.stream().map(this::getRulePath).collect(Collectors.toList());
@@ -340,8 +340,8 @@ public final class RegistryCenterNode {
     /**
      * Get all data source paths.
      *
-     * @param schemaNames schema names.
-     * @return list of data source path.
+     * @param schemaNames schema names
+     * @return list of data source path
      */
     public Collection<String> getAllDataSourcePaths(final Collection<String> schemaNames) {
         return schemaNames.stream().map(this::getMetadataDataSourcePath).collect(Collectors.toList());
