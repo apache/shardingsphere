@@ -90,7 +90,7 @@ public final class DataSourceConfigurationTest {
         DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(HikariDataSource.class.getName());
         dataSourceConfig.getProps().putAll(props);
         thrown.expect(ShardingSphereConfigurationException.class);
-        thrown.expectMessage("Incorrect configuration item: the property password of the dataSource. the reason is argument type mismatch");
+        thrown.expectMessage("Incorrect configuration item: the property password of the dataSource, because argument type mismatch");
         HikariDataSource actual = (HikariDataSource) dataSourceConfig.createDataSource();
     }
     

@@ -118,7 +118,7 @@ public final class DataSourceConfiguration {
                     setterMethod.get().invoke(result, entry.getValue());
                 }
             } catch (final IllegalArgumentException ex) {
-                throw new ShardingSphereConfigurationException("Incorrect configuration item: the property %s of the dataSource. the reason is %s", entry.getKey(), ex.getMessage());
+                throw new ShardingSphereConfigurationException("Incorrect configuration item: the property %s of the dataSource, because %s", entry.getKey(), ex.getMessage());
             }
         }
         Optional<JDBCParameterDecorator> decorator = findJDBCParameterDecorator(result);
