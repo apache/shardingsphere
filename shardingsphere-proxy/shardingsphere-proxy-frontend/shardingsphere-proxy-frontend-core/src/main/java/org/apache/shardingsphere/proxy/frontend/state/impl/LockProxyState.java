@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.state.impl;
 
 import io.netty.channel.ChannelHandlerContext;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -30,12 +29,10 @@ import org.apache.shardingsphere.proxy.frontend.state.ProxyState;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyStateContext;
 
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Lock proxy state.
  */
-@Slf4j
 public final class LockProxyState implements ProxyState {
     
     @Override
@@ -46,7 +43,7 @@ public final class LockProxyState implements ProxyState {
     
     private void block(final ChannelHandlerContext context, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine) {
         Long lockTimeoutMilliseconds = ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS);
-        if (!ProxyContext.getInstance().getLockContext().await(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
+        if (!ProxyContext.getInstance().getLock().await(lockTimeoutMilliseconds)) {
             doError(context, databaseProtocolFrontendEngine, new LockWaitTimeoutException(lockTimeoutMilliseconds));
         }
     }

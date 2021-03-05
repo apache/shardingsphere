@@ -16,81 +16,81 @@
   -->
 
 <integration-test-cases>
-   <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)">
+   <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
        <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
        <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order_item (item_id, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', now())" db-types="MySQL">
+    <test-case sql="INSERT INTO t_order_item (item_id, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', now())" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_now_function.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert'), (2, 2, 'insert2')" db-types="MySQL">
+    <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert'), (2, 2, 'insert2')" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion expected-data-file="insert_multiple_values_for_order_1_2.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL">
+    <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion parameters="1000:int, 10:int, update:String" expected-data-file="insert_on_duplicate_key_update.xml" />
     </test-case>
     
     <!-- TODO fixme -->
-    <!--<test-case sql="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (?, ?, ?)">-->
+    <!--<test-case sql="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (?, ?, ?)" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">-->
         <!--<assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />-->
         <!--<assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />-->
     <!--</test-case>-->
     
-    <test-case sql="INSERT INTO t_order VALUES (?, ?, ?)">
+    <test-case sql="INSERT INTO t_order VALUES (?, ?, ?)" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
         <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order SET order_id = ?, user_id = ?, status = ?" db-types="MySQL">
+    <test-case sql="INSERT INTO t_order SET order_id = ?, user_id = ?, status = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />
         <assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />
     </test-case>
     
     <!-- TODO fixme -->
-    <!--<test-case sql="INSERT INTO t_order SET t_order.order_id = ?, t_order.user_id = ?, t_order.status = ?" db-types="MySQL">-->
+    <!--<test-case sql="INSERT INTO t_order SET t_order.order_id = ?, t_order.user_id = ?, t_order.status = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">-->
         <!--<assertion parameters="1:int, 1:int, insert:String" expected-data-file="insert_for_order_1.xml" />-->
         <!--<assertion parameters="2:int, 2:int, insert:String" expected-data-file="insert_for_order_2.xml" />-->
     <!--</test-case>-->
     
-    <test-case sql="INSERT INTO t_order SET order_id = ?, user_id = ?, status = 'insert'" db-types="MySQL">
+    <test-case sql="INSERT INTO t_order SET order_id = ?, user_id = ?, status = 'insert'" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion parameters="1:int, 1:int" expected-data-file="insert_for_order_1.xml" />
         <assertion parameters="2:int, 2:int" expected-data-file="insert_for_order_2.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) values (?, ?, ?, 'insert', '2017-08-08')">
+    <test-case sql="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) values (?, ?, ?, 'insert', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order_item values(?, ?, ?, 'insert', '2017-08-08')">
+    <test-case sql="INSERT INTO t_order_item values(?, ?, ?, 'insert', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order_item SET item_id = ?, order_id = ?, user_id = ?, status = 'insert', creation_date='2017-08-08'" db-types="MySQL">
+    <test-case sql="INSERT INTO t_order_item SET item_id = ?, order_id = ?, user_id = ?, status = 'insert', creation_date='2017-08-08'" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion parameters="1:int, 1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order_item values(?, ?, 'insert', '2017-08-08')">
+    <test-case sql="INSERT INTO t_order_item values(?, ?, 'insert', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_replica_query">
         <assertion sharding-rule-type="dbtbl_with_replica_query" parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
         <!-- TODO add gen column on create table -->
         <!--<assertion parameters="1:int, 1:int" expected-data-file="insert_with_generate_key_column.xml" />-->
     </test-case>
     
-    <test-case sql="INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (?, ?, 'insert', '2017-08-08')">
+    <test-case sql="INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (?, ?, 'insert', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_replica_query">
         <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
     </test-case>
 
-    <test-case sql="INSERT INTO t_order_item SET order_id = ?, user_id = ?, status = 'insert', creation_date='2017-08-08'" db-types="MySQL">
+    <test-case sql="INSERT INTO t_order_item SET order_id = ?, user_id = ?, status = 'insert', creation_date='2017-08-08'" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_replica_query">
         <assertion parameters="1:int, 1:int" expected-data-file="insert_without_generate_key_column.xml" />
     </test-case>
     
-    <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?), (?, ?, ?)">
+    <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?), (?, ?, ?)" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion parameters="1:int, 1:int, insert:String, 2:int, 2:int, insert:String" expected-data-file="batch_insert_for_order.xml" />
     </test-case>
 
-    <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, 1, 'insert'), (?, ?, ?)">
+    <test-case sql="INSERT INTO t_order (order_id, user_id, status) VALUES (?, 1, 'insert'), (?, ?, ?)" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion parameters="1:int, 2:int, 2:int, insert:String" expected-data-file="batch_insert_for_order.xml" />
     </test-case>
 
@@ -98,95 +98,95 @@
         <!--<assertion parameters="1:int, 1:int, insert:String, 2:int, 2:int, insert:String" expected-data-file="batch_insert_for_order.xml" />-->
     <!--</test-case>-->
     
-    <test-case sql="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) values (?, ?, ?, 'insert', '2017-08-08'), (?, ?, ?, 'insert', '2017-08-08')">
+    <test-case sql="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) values (?, ?, ?, 'insert', '2017-08-08'), (?, ?, ?, 'insert', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion parameters="1:int, 1:int, 1:int, 2:int, 2:int, 2:int" expected-data-file="batch_insert_with_generate_key_column.xml" />
     </test-case>
     
-    <!--<test-case sql="INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (?, ?, 'insert', '2017-08-08'), (?, ?, 'insert', '2017-08-08')">-->
+    <!--<test-case sql="INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (?, ?, 'insert', '2017-08-08'), (?, ?, 'insert', '2017-08-08')" scenario-types="db,tbl,dbtbl_with_replica_query">-->
         <!--<assertion sharding-rule-type="dbtbl_with_replica_query" parameters="1:int, 1:int, 2:int, 2:int" expected-data-file="batch_insert_without_generate_key_column.xml" />-->
         <!--&lt;!&ndash; TODO add gen column on create table &ndash;&gt;-->
         <!--&lt;!&ndash;<assertion parameters="1:int, 1:int, 2:int, 2:int" expected-data-file="batch_insert_without_generate_key_column.xml" />&ndash;&gt;-->
     <!--</test-case>-->
     
-    <test-case sql="INSERT INTO t_broadcast_table(id, status) values (?, 'insert'),(?, 'insert')">
+    <test-case sql="INSERT INTO t_broadcast_table(id, status) values (?, 'insert'),(?, 'insert')" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion parameters="2:int, 3:int" expected-data-file="batch_insert_into_broadcast_table.xml" />
     </test-case>
 
-    <test-case sql="INSERT INTO t_user(user_id, pwd) values (?, 'mno'),(?, 'pqr')">
+    <test-case sql="INSERT INTO t_user(user_id, pwd) values (?, 'mno'),(?, 'pqr')" scenario-types="encrypt">
         <assertion parameters="14:int, 15:int" expected-data-file="batch_insert_into_user_table.xml" />
     </test-case>
 
-    <test-case sql="INSERT INTO t_user(user_id, pwd) values (14, 'mno'),(15, 'pqr')">
+    <test-case sql="INSERT INTO t_user(user_id, pwd) values (14, 'mno'),(15, 'pqr')" scenario-types="encrypt">
         <assertion expected-data-file="batch_insert_into_user_table.xml" />
     </test-case>
     
-    <test-case sql="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ?">
+    <test-case sql="UPDATE t_order SET status = ? WHERE order_id = ? AND user_id = ?" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
     </test-case>
     
-    <test-case sql="UPDATE t_order AS o SET o.status = ? WHERE o.order_id = ? AND o.user_id = ?" db-types="MySQL,H2">
+    <test-case sql="UPDATE t_order AS o SET o.status = ? WHERE o.order_id = ? AND o.user_id = ?" db-types="MySQL,H2" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
     </test-case>
     
-    <test-case sql="UPDATE t_order o SET o.status = 'finished'" db-types="MySQL,H2">
+    <test-case sql="UPDATE t_order o SET o.status = 'finished'" db-types="MySQL,H2" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion expected-data-file="update_without_condition.xml" />
     </test-case>
     
-    <test-case sql="UPDATE /*+ index(field1) */ ONLY t_order SET status=? WHERE order_id = ? AND user_id = ? RETURN * LOG ERRORS INTO TABLE_LOG" db-types="Oracle">
+    <test-case sql="UPDATE /*+ index(field1) */ ONLY t_order SET status=? WHERE order_id = ? AND user_id = ? RETURN * LOG ERRORS INTO TABLE_LOG" db-types="Oracle" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion parameters="update:String, 1000:int, 10:int" expected-data-file="update.xml" />
     </test-case>
     
-    <test-case sql="UPDATE t_order SET status = 'update' WHERE order_id = 1000 AND user_id = 10">
+    <test-case sql="UPDATE t_order SET status = 'update' WHERE order_id = 1000 AND user_id = 10" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion expected-data-file="update.xml" />
     </test-case>
     
-    <test-case sql="UPDATE t_order SET status = 'update' WHERE (order_id = ? OR order_id = ?) AND user_id = ?">
+    <test-case sql="UPDATE t_order SET status = 'update' WHERE (order_id = ? OR order_id = ?) AND user_id = ?" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion parameters="1000:int, 0:int, 10:int" expected-data-file="update.xml" />
     </test-case>
     
-    <test-case sql="UPDATE t_order SET status = status where user_id = user_id AND order_id = 1000">
+    <test-case sql="UPDATE t_order SET status = status where user_id = user_id AND order_id = 1000" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion expected-data-file="update_with_column_equal_column.xml" />
     </test-case>
     
     <!-- TODO FIXED ME PostgreSQL return 0 -->
-    <test-case sql="UPDATE t_broadcast_table b SET b.status = 'finished'" db-types="H2,MySQL">
+    <test-case sql="UPDATE t_broadcast_table b SET b.status = 'finished'" db-types="H2,MySQL" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion expected-data-file="update_broadcast_table.xml" />
     </test-case>
 
-    <test-case sql="UPDATE t_user u SET u.pwd = 'stu' WHERE user_id = 10">
+    <test-case sql="UPDATE t_user u SET u.pwd = 'stu' WHERE user_id = 10" scenario-types="encrypt">
         <assertion expected-data-file="update_user_table.xml" />
     </test-case>
 
-    <test-case sql="UPDATE t_user u SET u.user_id = 15 WHERE u.pwd = 'abc'">
+    <test-case sql="UPDATE t_user u SET u.user_id = 15 WHERE u.pwd = 'abc'" scenario-types="encrypt">
         <assertion expected-data-file="update_user_table_by_pwd.xml" />
     </test-case>
     
-    <test-case sql="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status= ?">
+    <test-case sql="DELETE FROM t_order WHERE order_id = ? AND user_id = ? AND status= ?" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion parameters="1000:int, 10:int, init:String" expected-data-file="delete_with_sharding_value.xml" />
     </test-case>
     
-    <test-case sql="DELETE FROM t_order WHERE status= ?">
+    <test-case sql="DELETE FROM t_order WHERE status= ?" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion parameters="init:String" expected-data-file="delete_without_sharding_value.xml" />
     </test-case>
 
-    <test-case sql="DELETE FROM t_user WHERE user_id = 10">
+    <test-case sql="DELETE FROM t_user WHERE user_id = 10" scenario-types="encrypt">
         <assertion expected-data-file="delete_user_table.xml" />
     </test-case>
 
-    <test-case sql="DELETE FROM t_user WHERE pwd = 'abc'">
+    <test-case sql="DELETE FROM t_user WHERE pwd = 'abc'" scenario-types="encrypt">
         <assertion expected-data-file="delete_user_table.xml" />
     </test-case>
     
-    <test-case sql="DELETE /*+ index(status) */ ONLY t_order WHERE status=1 RETURN * LOG ERRORS INTO TABLE_LOG" db-types="Oracle">
+    <test-case sql="DELETE /*+ index(status) */ ONLY t_order WHERE status=1 RETURN * LOG ERRORS INTO TABLE_LOG" db-types="Oracle" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion expected-data-file="delete_with_special_comments_return_without_sharding_value.xml" />
     </test-case>
     
-    <test-case sql="DELETE /*+ index(status) */ ONLY (t_order) WHERE status=1 RETURNING *" db-types="Oracle">
+    <test-case sql="DELETE /*+ index(status) */ ONLY (t_order) WHERE status=1 RETURNING *" db-types="Oracle" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">
         <assertion expected-data-file="delete_with_special_comments_returning_without_sharding_value.xml" />
     </test-case>
     
     <!-- Can't support delete multiple tables-->
-    <!--<test-case sql="DELETE o FROM t_order AS o WHERE status=?" db-types="MySQL,Oracle,SQLServer">-->
+    <!--<test-case sql="DELETE o FROM t_order AS o WHERE status=?" db-types="MySQL,Oracle,SQLServer" scenario-types="db,tbl,dbtbl_with_replica_query,replica_query">-->
         <!--<assertion parameters="init:String" expected-data-file="delete_with_alias.xml" />-->
     <!--</test-case>-->
 </integration-test-cases>

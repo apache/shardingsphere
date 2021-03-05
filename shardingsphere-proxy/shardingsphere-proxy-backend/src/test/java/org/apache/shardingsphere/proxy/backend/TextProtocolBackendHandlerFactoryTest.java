@@ -36,6 +36,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.set.ShardingCTLSetBacke
 import org.apache.shardingsphere.proxy.backend.text.sctl.show.ShardingCTLShowBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -203,6 +204,20 @@ public final class TextProtocolBackendHandlerFactoryTest {
     @Test
     public void assertNewInstanceWithEmptyString() throws SQLException {
         String sql = "";
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
+        assertThat(actual, instanceOf(SkipBackendHandler.class));
+    }
+    
+    @Test(expected = SQLParsingException.class)
+    public void assertNewInstanceWithErrorSQL() throws SQLException {
+        String sql = "SELECT";
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
+        assertThat(actual, instanceOf(SkipBackendHandler.class));
+    }
+    
+    @Test(expected = SQLParsingException.class)
+    public void assertNewInstanceWithErrorRDL() throws SQLException {
+        String sql = "CREATE SHARDING";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(SkipBackendHandler.class));
     }

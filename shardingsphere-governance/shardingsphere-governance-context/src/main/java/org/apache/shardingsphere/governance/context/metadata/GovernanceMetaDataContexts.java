@@ -30,7 +30,7 @@ import org.apache.shardingsphere.governance.core.event.model.props.PropertiesCha
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
-import org.apache.shardingsphere.governance.core.lock.GovernanceLockContext;
+import org.apache.shardingsphere.governance.core.lock.GovernanceLock;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
@@ -43,7 +43,7 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
@@ -78,7 +78,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private volatile StandardMetaDataContexts metaDataContexts;
     
-    private final LockContext lockContext;
+    private final ShardingSphereLock lock;
     
     public GovernanceMetaDataContexts(final StandardMetaDataContexts metaDataContexts, final GovernanceFacade governanceFacade) {
         this.governanceFacade = governanceFacade;
@@ -86,7 +86,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         ShardingSphereEventBus.getInstance().register(this);
         disableDataSources();
         persistMetaData();
-        lockContext = new GovernanceLockContext(governanceFacade.getRegistryCenter());
+        lock = new GovernanceLock(governanceFacade.getRegistryCenter());
     }
     
     private void disableDataSources() {
@@ -143,8 +143,8 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     @Override
-    public LockContext getLockContext() {
-        return lockContext;
+    public ShardingSphereLock getLock() {
+        return lock;
     }
     
     @Override

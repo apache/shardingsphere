@@ -31,7 +31,6 @@ import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalE
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalReplicaQueryConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalShadowConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalShardingDatabasesAndTablesConfiguration;
-import org.apache.shardingsphere.example.type.RegistryCenterType;
 import org.apache.shardingsphere.example.type.ShardingType;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 
@@ -41,7 +40,6 @@ import java.sql.SQLException;
 /*
  * 1. Please make sure primary replica data replication sync on MySQL is running correctly. Otherwise this example will query empty data from replica.
  * 2. Please make sure sharding-governance-center-zookeeper-curator in your pom if registryCenterType = RegistryCenterType.ZOOKEEPER.
- * 3. Please make sure sharding-governance-center-nacos in your pom if registryCenterType = RegistryCenterType.NACOS.
  */
 public final class JavaConfigurationExampleMain {
     
@@ -53,9 +51,6 @@ public final class JavaConfigurationExampleMain {
     private static boolean loadConfigFromRegCenter = false;
 //    private static boolean loadConfigFromRegCenter = true;
     
-    private static RegistryCenterType registryCenterType = RegistryCenterType.ZOOKEEPER;
-//    private static RegistryCenterType registryCenterType = RegistryCenterType.NACOS;
-    
     public static void main(final String[] args) throws Exception {
         DataSource dataSource = getDataSource(shardingType, loadConfigFromRegCenter);
         try {
@@ -66,7 +61,7 @@ public final class JavaConfigurationExampleMain {
     }
     
     private static DataSource getDataSource(final ShardingType shardingType, final boolean loadConfigFromRegCenter) throws SQLException {
-        GovernanceConfiguration governanceConfig = getGovernanceConfiguration(registryCenterType, shardingType);
+        GovernanceConfiguration governanceConfig = getGovernanceConfiguration(shardingType);
         ExampleConfiguration config;
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
@@ -88,10 +83,8 @@ public final class JavaConfigurationExampleMain {
         return config.getDataSource();
     }
     
-    private static GovernanceConfiguration getGovernanceConfiguration(final RegistryCenterType registryCenterType, final ShardingType shardingType) {
-        return RegistryCenterType.ZOOKEEPER == registryCenterType
-                ? GovernanceRepositoryConfigurationUtil.getZooKeeperConfiguration(!loadConfigFromRegCenter, shardingType)
-                : GovernanceRepositoryConfigurationUtil.getNacosConfiguration(!loadConfigFromRegCenter, shardingType);
+    private static GovernanceConfiguration getGovernanceConfiguration(final ShardingType shardingType) {
+        return GovernanceRepositoryConfigurationUtil.getZooKeeperConfiguration(!loadConfigFromRegCenter, shardingType);
     }
     
     private static ExampleService getExampleService(final DataSource dataSource) {

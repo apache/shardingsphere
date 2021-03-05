@@ -27,8 +27,6 @@ public final class GovernanceRepositoryConfigurationUtil {
     
     private static final String ZOOKEEPER_CONNECTION_STRING = "localhost:2181";
     
-    private static final String NACOS_CONNECTION_STRING = "localhost:8848";
-    
     public static GovernanceConfiguration getZooKeeperConfiguration(final boolean overwrite, final ShardingType shardingType) {
         GovernanceCenterConfiguration governanceCenterConfig = new GovernanceCenterConfiguration("ZooKeeper", ZOOKEEPER_CONNECTION_STRING, new Properties());
         switch (shardingType) {
@@ -46,21 +44,17 @@ public final class GovernanceRepositoryConfigurationUtil {
     }
     
     public static GovernanceConfiguration getNacosConfiguration(final boolean overwrite, final ShardingType shardingType) {
-        Properties nacosProperties = new Properties();
-        nacosProperties.setProperty("group", "SHARDING_SPHERE_DEFAULT_GROUP");
-        nacosProperties.setProperty("timeout", "3000");
-        GovernanceCenterConfiguration nacosConfig = new GovernanceCenterConfiguration("Nacos", NACOS_CONNECTION_STRING, nacosProperties);
         Properties zookeeperProperties = new Properties();
         GovernanceCenterConfiguration zookeeperConfig = new GovernanceCenterConfiguration("ZooKeeper", ZOOKEEPER_CONNECTION_STRING, zookeeperProperties);
         switch (shardingType) {
             case SHARDING_DATABASES_AND_TABLES:
-                return new GovernanceConfiguration("governance-zookeeper-sharding-data-source", zookeeperConfig, nacosConfig, overwrite);
+                return new GovernanceConfiguration("governance-zookeeper-sharding-data-source", zookeeperConfig, overwrite);
             case REPLICA_QUERY:
-                return new GovernanceConfiguration("governance-zookeeper-replica-query-data-source", zookeeperConfig, nacosConfig, overwrite);
+                return new GovernanceConfiguration("governance-zookeeper-replica-query-data-source", zookeeperConfig, overwrite);
             case ENCRYPT:
-                return new GovernanceConfiguration("governance-zookeeper-encrypt-data-source", zookeeperConfig, nacosConfig, overwrite);
+                return new GovernanceConfiguration("governance-zookeeper-encrypt-data-source", zookeeperConfig, overwrite);
             case SHADOW:
-                return new GovernanceConfiguration("governance-zookeeper-shadow-data-source", zookeeperConfig, nacosConfig, overwrite);
+                return new GovernanceConfiguration("governance-zookeeper-shadow-data-source", zookeeperConfig, overwrite);
             default:
                 throw new UnsupportedOperationException(shardingType.toString());
         }

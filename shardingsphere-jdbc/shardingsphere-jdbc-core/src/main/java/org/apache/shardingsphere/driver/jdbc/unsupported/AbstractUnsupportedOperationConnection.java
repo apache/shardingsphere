@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.jdbc.unsupported;
 
 import org.apache.shardingsphere.driver.jdbc.adapter.WrapperAdapter;
 
-import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Clob;
@@ -122,11 +121,6 @@ public abstract class AbstractUnsupportedOperationConnection extends WrapperAdap
     @Override
     public final SQLXML createSQLXML() throws SQLException {
         throw new SQLFeatureNotSupportedException("createSQLXML");
-    }
-    
-    @Override
-    public final Array createArrayOf(final String typeName, final Object[] elements) throws SQLException {
-        throw new SQLFeatureNotSupportedException("createArrayOf");
     }
     
     @Override

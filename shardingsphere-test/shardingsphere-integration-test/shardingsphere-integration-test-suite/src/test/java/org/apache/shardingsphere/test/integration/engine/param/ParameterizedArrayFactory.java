@@ -146,7 +146,9 @@ public final class ParameterizedArrayFactory {
     
     private static Collection<ParameterizedArray> getCaseParameterizedArray(final IntegrationTestCaseContext testCaseContext, final String adapter,
                                                                             final DatabaseType databaseType, final SQLCommandType sqlCommandType) {
-        return ENV.getScenarios().stream().map(each -> new CaseParameterizedArray(testCaseContext, adapter, each, databaseType, sqlCommandType)).collect(Collectors.toList());
+        Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
+        return ENV.getScenarios().stream().filter(each -> scenarios.isEmpty() || scenarios.contains(each))
+                .map(each -> new CaseParameterizedArray(testCaseContext, adapter, each, databaseType, sqlCommandType)).collect(Collectors.toList());
     }
     
     private static Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {
