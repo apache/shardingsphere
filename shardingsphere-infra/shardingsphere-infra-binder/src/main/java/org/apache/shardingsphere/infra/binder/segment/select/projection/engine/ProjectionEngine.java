@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.segment.select.projection.engine;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
@@ -26,6 +25,8 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Agg
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.UnexpandShorthandProjection;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
@@ -82,8 +83,9 @@ public final class ProjectionEngine {
     
     private ShorthandProjection createProjection(final Collection<SimpleTableSegment> tableSegments, final ShorthandProjectionSegment projectionSegment) {
         String owner = projectionSegment.getOwner().map(ownerSegment -> ownerSegment.getIdentifier().getValue()).orElse(null);
-        Collection<ColumnProjection> columns = getShorthandColumns(tableSegments, owner);
-        return new ShorthandProjection(owner, columns);
+        Collection<ColumnProjection> shorthandColumns = getShorthandColumns(tableSegments, owner);
+        Collection<UnexpandShorthandProjection> unexpandShorthandProjections = getUnexpandShorthandColumns(projectionSegment, tableSegments);
+        return new ShorthandProjection(owner, shorthandColumns, unexpandShorthandProjections);
     }
     
     private ColumnProjection createProjection(final ColumnProjectionSegment projectionSegment) {
@@ -138,6 +140,16 @@ public final class ProjectionEngine {
             }
         }
         return Collections.emptyList();
+    }
+    
+    private Collection<UnexpandShorthandProjection> getUnexpandShorthandColumns(final ShorthandProjectionSegment projectionSegment, final Collection<SimpleTableSegment> tables) {
+        return tables.stream().filter(each -> isMatch(projectionSegment, each) && schema.getAllColumnNames(each.getTableName().getIdentifier().getValue()).isEmpty())
+            .map(each -> new UnexpandShorthandProjection(each.getAlias().orElse(each.getTableName().getIdentifier().getValue()))).collect(Collectors.toList());
+    }
+    
+    private boolean isMatch(final ShorthandProjectionSegment projectionSegment, final SimpleTableSegment tableSegment) {
+        return !projectionSegment.getOwner().isPresent()
+                || tableSegment.getAlias().orElse(tableSegment.getTableName().getIdentifier().getValue()).equals(projectionSegment.getOwner().get().getIdentifier().getValue());
     }
     
     private void appendAverageDistinctDerivedProjection(final AggregationDistinctProjection averageDistinctProjection) {

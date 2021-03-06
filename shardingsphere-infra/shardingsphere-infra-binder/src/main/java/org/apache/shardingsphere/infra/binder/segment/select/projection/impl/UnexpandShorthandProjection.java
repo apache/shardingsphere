@@ -17,34 +17,28 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
-import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 
-import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Shorthand projection.
+ * Unexpand shorthand projection.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
-public final class ShorthandProjection implements Projection {
+public final class UnexpandShorthandProjection implements Projection {
     
     private final String owner;
     
-    private final Collection<ColumnProjection> actualColumns;
-    
-    private final Collection<UnexpandShorthandProjection> unexpandShorthandProjections;
-    
     @Override
     public String getExpression() {
-        return Strings.isNullOrEmpty(owner) ? "*" : owner + ".*";
+        return owner + ".*";
     }
     
     @Override
@@ -54,15 +48,6 @@ public final class ShorthandProjection implements Projection {
     
     @Override
     public String getColumnLabel() {
-        return "*";
-    }
-    
-    /**
-     * Get owner.
-     * 
-     * @return owner
-     */
-    public Optional<String> getOwner() {
-        return Optional.ofNullable(owner);
+        return getExpression();
     }
 }
