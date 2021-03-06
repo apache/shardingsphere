@@ -490,7 +490,7 @@ storageClause
     ;
 
 sizeClause
-    : NUMBER_ (K_ | M_ | G_ | T_ | P_ | E_)?
+    : NUMBER_ ('K' | 'M' | 'G' | 'T' | 'P' | 'E')?
     ;
 
 maxsizeClause

@@ -1275,30 +1275,6 @@ BASICFILE
     : B A S I C F I L E
     ;
 
-K_
-    : K
-    ;
-
-M_
-    : M
-    ;
-
-G_
-    : G
-    ;
-
-T_
-    : T
-    ;
-
-P_
-    : P
-    ;
-
-E_
-    : E
-    ;
-
 THAN
     : T H A N
     ;

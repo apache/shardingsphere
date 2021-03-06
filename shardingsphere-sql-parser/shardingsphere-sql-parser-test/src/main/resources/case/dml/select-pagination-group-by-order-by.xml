@@ -1914,7 +1914,7 @@
             <shorthand-projection start-index="7" stop-index="7"/>
         </projections>
         <from>
-            <subquery-table start-index="14" stop-index="382" alias="tt">
+            <subquery-table start-index="14" stop-index="382" alias="t">
                 <subquery>
                     <select>
                         <projections start-index="22" stop-index="43">
@@ -2062,18 +2062,18 @@
                 </subquery>
             </subquery-table>
         </from>
-        <where start-index="387" stop-index="406">
+        <where start-index="386" stop-index="404">
             <expr>
-                <binary-operation-expression start-index="393" stop-index="406">
+                <binary-operation-expression start-index="392" stop-index="404">
                     <left>
-                        <column name="rownum_" start-index="393" stop-index="402">
-                            <owner name="tt" start-index="393" stop-index="394" />
+                        <column name="rownum_" start-index="392" stop-index="400">
+                            <owner name="t" start-index="392" stop-index="392" />
                         </column>
                     </left>
                     <operator>&gt;</operator>
                     <right>
-                        <literal-expression value="3" start-index="406" stop-index="406" />
-                        <parameter-marker-expression value="5" start-index="406" stop-index="406" />
+                        <literal-expression value="3" start-index="404" stop-index="404" />
+                        <parameter-marker-expression value="5" start-index="404" stop-index="404" />
                     </right>
                 </binary-operation-expression>
             </expr>
