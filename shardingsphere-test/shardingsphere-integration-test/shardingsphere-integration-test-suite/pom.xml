@@ -241,6 +241,29 @@
                                     <removeVolumes>true</removeVolumes>
                                 </configuration>
                             </execution>
+
+                            <execution>
+                                <id>dbtbl-with-replica-query-and-encrypt-up</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>up</goal>
+                                </goals>
+                                <configuration>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/dbtbl_with_replica_query_and_encrypt/docker-compose.yml</composeFile>
+                                    <detachedMode>true</detachedMode>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>dbtbl-with-replica-query-and-encrypt-down</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>down</goal>
+                                </goals>
+                                <configuration>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/dbtbl_with_replica_query_and_encrypt/docker-compose.yml</composeFile>
+                                    <removeVolumes>true</removeVolumes>
+                                </configuration>
+                            </execution>
                         </executions>
                     </plugin>
                 </plugins>

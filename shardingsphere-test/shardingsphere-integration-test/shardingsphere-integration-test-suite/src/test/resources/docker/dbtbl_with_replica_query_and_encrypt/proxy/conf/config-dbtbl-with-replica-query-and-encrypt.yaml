@@ -1,0 +1,343 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+schemaName: dbtbl_with_replica_query_and_encrypt
+
+dataSources:
+  encrypt_primary_ds_0:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_primary_ds_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_primary_ds_1:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_primary_ds_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_primary_ds_2:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_primary_ds_2?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_primary_ds_3:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_primary_ds_3?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_primary_ds_4:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_primary_ds_4?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_primary_ds_5:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_primary_ds_5?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_primary_ds_6:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_primary_ds_6?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_primary_ds_7:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_primary_ds_7?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_primary_ds_8:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_primary_ds_8?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_primary_ds_9:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_primary_ds_9?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_replica_ds_0:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_replica_ds_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_replica_ds_1:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_replica_ds_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_replica_ds_2:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_replica_ds_2?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_replica_ds_3:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_replica_ds_3?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_replica_ds_4:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_replica_ds_4?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_replica_ds_5:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_replica_ds_5?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_replica_ds_6:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_replica_ds_6?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_replica_ds_7:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_replica_ds_7?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_replica_ds_8:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_replica_ds_8?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+  encrypt_replica_ds_9:
+    url: jdbc:mysql://mysql.dbtbl-with-replica-query-and-encrypt.host:3306/encrypt_replica_ds_9?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
+
+rules:
+- !SHARDING
+  tables:
+    t_user_item:
+      actualDataNodes: pr_ds_${0..9}.t_user_item_${0..9}
+      databaseStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: standard_test
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: standard_test
+      keyGenerateStrategy:
+        column: item_id
+        keyGeneratorName: constant
+    t_user:
+      actualDataNodes: pr_ds_${0..9}.t_user_${0..9}
+      databaseStrategy:
+        standard:
+          shardingColumn: item_id
+          shardingAlgorithmName: standard_test
+      tableStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: standard_test
+    t_user_details:
+      actualDataNodes: pr_ds_${0..9}.t_user_details_${0..9}
+      databaseStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: standard_test
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: standard_test
+  bindingTables:
+    - t_user,t_user_item,t_user_details
+
+  shardingAlgorithms:
+    standard_test:
+      type: STANDARD_TEST
+
+  keyGenerators:
+    constant:
+      type: Constant
+
+- !REPLICA_QUERY
+  dataSources:
+    pr_ds_0:
+      primaryDataSourceName: encrypt_primary_ds_0
+      replicaDataSourceNames:
+        - encrypt_replica_ds_0
+      loadBalancerName: roundRobin
+    pr_ds_1:
+      primaryDataSourceName: encrypt_primary_ds_1
+      replicaDataSourceNames:
+        - encrypt_replica_ds_1
+      loadBalancerName: roundRobin
+    pr_ds_2:
+      primaryDataSourceName: encrypt_primary_ds_2
+      replicaDataSourceNames:
+        - encrypt_replica_ds_2
+      loadBalancerName: roundRobin
+    pr_ds_3:
+      primaryDataSourceName: encrypt_primary_ds_3
+      replicaDataSourceNames:
+        - encrypt_replica_ds_3
+      loadBalancerName: roundRobin
+    pr_ds_4:
+      primaryDataSourceName: encrypt_primary_ds_4
+      replicaDataSourceNames:
+        - encrypt_replica_ds_4
+      loadBalancerName: roundRobin
+    pr_ds_5:
+      primaryDataSourceName: encrypt_primary_ds_5
+      replicaDataSourceNames:
+        - encrypt_replica_ds_5
+      loadBalancerName: roundRobin
+    pr_ds_6:
+      primaryDataSourceName: encrypt_primary_ds_6
+      replicaDataSourceNames:
+        - encrypt_replica_ds_6
+      loadBalancerName: roundRobin
+    pr_ds_7:
+      primaryDataSourceName: encrypt_primary_ds_7
+      replicaDataSourceNames:
+        - encrypt_replica_ds_7
+      loadBalancerName: roundRobin
+    pr_ds_8:
+      primaryDataSourceName: encrypt_primary_ds_8
+      replicaDataSourceNames:
+        - encrypt_replica_ds_8
+      loadBalancerName: roundRobin
+    pr_ds_9:
+      primaryDataSourceName: encrypt_primary_ds_9
+      replicaDataSourceNames:
+        - encrypt_replica_ds_9
+      loadBalancerName: roundRobin
+  loadBalancers:
+    roundRobin:
+      type: ROUND_ROBIN
+
+- !ENCRYPT
+  encryptors:
+    aes_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+  tables:
+    t_user:
+      columns:
+        pwd:
+          plainColumn: pwd_plain
+          cipherColumn: pwd_cipher
+          encryptorName: aes_encryptor
+    t_user_details:
+      columns:
+        pwd:
+          plainColumn: pwd_plain
+          cipherColumn: pwd_cipher
+          encryptorName: aes_encryptor
