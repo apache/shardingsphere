@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -49,22 +48,24 @@ public final class ShardingTableBroadcastRoutingEngineTest {
     private ShardingTableBroadcastRoutingEngine shardingTableBroadcastRoutingEngine;
     
     private ShardingRule shardingRule;
-    
-    @Before
-    public void setUp() {
-        shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(mock(ShardingSphereSchema.class), mockSQLStatementContext());
-        shardingRule = new ShardingRule(createShardingRuleConfiguration(), mock(DatabaseType.class), createDataSourceMap());
+
+    private void setUp(final String sqlStateTableName, final boolean bContainBroadCastTable) {
+        shardingTableBroadcastRoutingEngine = new ShardingTableBroadcastRoutingEngine(mock(ShardingSphereSchema.class), mockSQLStatementContext(sqlStateTableName));
+        shardingRule = new ShardingRule(createShardingRuleConfiguration(bContainBroadCastTable), mock(DatabaseType.class), createDataSourceMap());
     }
-    
-    private SQLStatementContext<?> mockSQLStatementContext() {
+
+    private SQLStatementContext<?> mockSQLStatementContext(final String sqlStateTableName) {
         SQLStatementContext<?> result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getTablesContext().getTableNames()).thenReturn(Lists.newArrayList("t_order"));
+        when(result.getTablesContext().getTableNames()).thenReturn(sqlStateTableName.isEmpty() ? Lists.newArrayList() : Lists.newArrayList(sqlStateTableName));
         return result;
     }
     
-    private ShardingRuleConfiguration createShardingRuleConfiguration() {
+    private ShardingRuleConfiguration createShardingRuleConfiguration(final boolean bContainBroadCastTable) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds${0..1}.t_order_${0..2}"));
+        if (!bContainBroadCastTable) {
+            result.getBroadcastTables().add("t_order");
+        }
         return result;
     }
     
@@ -76,25 +77,65 @@ public final class ShardingTableBroadcastRoutingEngineTest {
     }
     
     @Test
+    public void assertRouteForNormalDDLOfEmptyList() {
+        setUp("", true);
+        RouteContext routeContext = new RouteContext();
+        shardingTableBroadcastRoutingEngine.route(routeContext, shardingRule);
+        assertRouteContextOfEmptyList(routeContext);
+    }
+    
+    @Test
+    public void assertRouteForNonExistDropIndexOfEmptyList() {
+        setUp("", true);
+        RouteContext routeContext = new RouteContext();
+        shardingTableBroadcastRoutingEngine.route(routeContext, shardingRule);
+    }
+    
+    @Test
+    public void assertRouteForDropIndexOfEmptyList() {
+        setUp("", true);
+        RouteContext routeContext = new RouteContext();
+        shardingTableBroadcastRoutingEngine.route(routeContext, shardingRule);
+        assertRouteContextOfEmptyList(routeContext);
+    }
+
+    private void assertRouteUnitOfEmptyList(final RouteUnit routeUnit, final String dataSourceName, final String actualTableName) {
+        assertThat(routeUnit.getDataSourceMapper().getActualName(), is(dataSourceName));
+        assertThat(routeUnit.getTableMappers().size(), is(1));
+        assertThat(routeUnit.getTableMappers().iterator().next(), is(new RouteMapper("", actualTableName)));
+    }
+
+    private void assertRouteContextOfEmptyList(final RouteContext actual) {
+        assertThat(actual.getActualDataSourceNames().size(), is(2));
+        assertThat(actual.getRouteUnits().size(), is(2));
+        Iterator<RouteUnit> routeUnits = actual.getRouteUnits().iterator();
+        assertRouteUnitOfEmptyList(routeUnits.next(), "ds0", "");
+        assertRouteUnitOfEmptyList(routeUnits.next(), "ds1", "");
+    }
+
+    @Test
     public void assertRouteForNormalDDL() {
+        setUp("t_order", true);
         RouteContext routeContext = new RouteContext();
         shardingTableBroadcastRoutingEngine.route(routeContext, shardingRule);
         assertRouteContext(routeContext);
     }
-    
+
     @Test
     public void assertRouteForNonExistDropIndex() {
+        setUp("t_order", true);
         RouteContext routeContext = new RouteContext();
         shardingTableBroadcastRoutingEngine.route(routeContext, shardingRule);
     }
-    
+
     @Test
     public void assertRouteForDropIndex() {
+        setUp("t_order", true);
         RouteContext routeContext = new RouteContext();
         shardingTableBroadcastRoutingEngine.route(routeContext, shardingRule);
         assertRouteContext(routeContext);
     }
-    
+
     private void assertRouteContext(final RouteContext actual) {
         assertThat(actual.getActualDataSourceNames().size(), is(2));
         assertThat(actual.getRouteUnits().size(), is(6));
@@ -106,10 +147,47 @@ public final class ShardingTableBroadcastRoutingEngineTest {
         assertRouteUnit(routeUnits.next(), "ds1", "t_order_1");
         assertRouteUnit(routeUnits.next(), "ds1", "t_order_2");
     }
-    
+
     private void assertRouteUnit(final RouteUnit routeUnit, final String dataSourceName, final String actualTableName) {
         assertThat(routeUnit.getDataSourceMapper().getActualName(), is(dataSourceName));
         assertThat(routeUnit.getTableMappers().size(), is(1));
         assertThat(routeUnit.getTableMappers().iterator().next(), is(new RouteMapper("t_order", actualTableName)));
+    }
+
+    @Test
+    public void assertRouteForNormalDDLNoContain() {
+        setUp("t_order", false);
+        RouteContext routeContext = new RouteContext();
+        shardingTableBroadcastRoutingEngine.route(routeContext, shardingRule);
+        assertRouteContextOfEmptyListNoContain(routeContext);
+    }
+
+    @Test
+    public void assertRouteForNonExistDropIndexNoContain() {
+        setUp("t_order", false);
+        RouteContext routeContext = new RouteContext();
+        shardingTableBroadcastRoutingEngine.route(routeContext, shardingRule);
+    }
+
+    @Test
+    public void assertRouteForDropIndexNoContain() {
+        setUp("t_order", false);
+        RouteContext routeContext = new RouteContext();
+        shardingTableBroadcastRoutingEngine.route(routeContext, shardingRule);
+        assertRouteContextOfEmptyListNoContain(routeContext);
+    }
+
+    private void assertRouteUnitOfEmptyListNoContain(final RouteUnit routeUnit, final String dataSourceName, final String actualTableName) {
+        assertThat(routeUnit.getDataSourceMapper().getActualName(), is(dataSourceName));
+        assertThat(routeUnit.getTableMappers().size(), is(1));
+        assertThat(routeUnit.getTableMappers().iterator().next(), is(new RouteMapper("t_order", actualTableName)));
+    }
+
+    private void assertRouteContextOfEmptyListNoContain(final RouteContext actual) {
+        assertThat(actual.getActualDataSourceNames().size(), is(2));
+        assertThat(actual.getRouteUnits().size(), is(2));
+        Iterator<RouteUnit> routeUnits = actual.getRouteUnits().iterator();
+        assertRouteUnitOfEmptyListNoContain(routeUnits.next(), "ds0", "t_order");
+        assertRouteUnitOfEmptyListNoContain(routeUnits.next(), "ds1", "t_order");
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.facade.fixture;
 
-import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
@@ -26,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public final class TestAllRepository implements RegistryRepository, ConfigurationRepository {
+public final class TestAllRepository implements RegistryRepository {
     
     @Override
     public void init(final String name, final GovernanceCenterConfiguration config) {

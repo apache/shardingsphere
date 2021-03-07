@@ -55,9 +55,10 @@ public final class ShowScalingJobStatusBackendHandler implements TextProtocolBac
     private List<QueryHeader> getQueryHeader() {
         List<QueryHeader> result = Lists.newArrayList();
         result.add(new QueryHeader("", "", "item", "", Types.BIGINT, "BIGINT", 255, 0, false, false, false, false));
+        result.add(new QueryHeader("", "", "data_source", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         result.add(new QueryHeader("", "", "status", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         result.add(new QueryHeader("", "", "inventory_finished_percentage", "", Types.TINYINT, "TINYINT", 255, 0, false, false, false, false));
-        result.add(new QueryHeader("", "", "incremental_average_delay_milliseconds", "", Types.BIGINT, "BIGINT", 255, 0, false, false, false, false));
+        result.add(new QueryHeader("", "", "incremental_delay_milliseconds", "", Types.BIGINT, "BIGINT", 255, 0, false, false, false, false));
         return result;
     }
     
@@ -74,8 +75,9 @@ public final class ShowScalingJobStatusBackendHandler implements TextProtocolBac
                     map.put("item", entry.getKey());
                     if (null != entry.getValue()) {
                         map.put("status", entry.getValue().getStatus());
+                        map.put("data_source", entry.getValue().getDataSource());
                         map.put("inventory_finished_percentage", entry.getValue().getInventoryFinishedPercentage());
-                        map.put("incremental_average_delay_milliseconds", entry.getValue().getIncrementalAverageDelayMilliseconds());
+                        map.put("incremental_delay_milliseconds", entry.getValue().getIncrementalDelayMilliseconds());
                     }
                     return map;
                 })

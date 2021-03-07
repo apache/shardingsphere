@@ -32,7 +32,5 @@ public final class YamlGovernanceConfiguration implements YamlConfiguration {
     
     private YamlGovernanceCenterConfiguration registryCenter;
     
-    private YamlGovernanceCenterConfiguration additionalConfigCenter;
-    
     private boolean overwrite;
 }
