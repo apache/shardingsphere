@@ -19,15 +19,18 @@ package org.apache.shardingsphere.infra.route.engine.impl;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteExecutor;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -60,6 +63,10 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
             } else {
                 entry.getValue().decorateRouteContext(result, logicSQL, metaData, entry.getKey(), props);
             }
+        }
+        if (result.getRouteUnits().isEmpty() && 1 == metaData.getResource().getDataSources().size()) {
+            String singleDataSourceName = metaData.getResource().getDataSources().keySet().iterator().next();
+            result.getRouteUnits().add(new RouteUnit(new RouteMapper(singleDataSourceName, singleDataSourceName), Collections.emptyList()));
         }
         return result;
     }

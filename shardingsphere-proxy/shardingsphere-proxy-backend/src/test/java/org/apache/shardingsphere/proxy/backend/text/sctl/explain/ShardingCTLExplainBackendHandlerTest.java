@@ -1,11 +1,11 @@
 package org.apache.shardingsphere.proxy.backend.text.sctl.explain;
 
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -78,7 +77,7 @@ public final class ShardingCTLExplainBackendHandlerTest {
         handler.execute();
         assertTrue(handler.next());
         Iterator<Object> iterator = handler.getRowData().iterator();
-        assertNull(iterator.next());
+        assertThat(iterator.next(), is("ds0"));
         assertThat(iterator.next(), is("select 1"));
     }
 }
