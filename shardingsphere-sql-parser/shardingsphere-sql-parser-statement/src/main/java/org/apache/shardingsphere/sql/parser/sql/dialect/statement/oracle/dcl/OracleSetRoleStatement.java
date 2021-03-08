@@ -15,27 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetRoleStatement;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetRoleStatementTestCase;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Set role statement assert.
+ * Oracle set role statement.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SetRoleStatementAssert {
-    
-    /**
-     * Assert set role statement is correct with expected parser result.
-     * 
-     * @param assertContext assert context
-     * @param actual actual set role statement
-     * @param expected expected set role statement test case
-     */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final SetRoleStatement actual, final SetRoleStatementTestCase expected) {
-    }
+@ToString
+public final class OracleSetRoleStatement extends SetRoleStatement implements OracleStatement {
 }
