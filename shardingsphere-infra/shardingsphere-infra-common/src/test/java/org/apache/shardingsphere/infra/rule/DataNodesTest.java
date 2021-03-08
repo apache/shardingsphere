@@ -68,7 +68,7 @@ public final class DataNodesTest {
         assertTrue(dataNodes.getDataNodes(logicTableName1).containsAll(getExpectedDataNodes(dataSourceNames1, logicTableName1)));
         assertTrue(dataNodes.getDataNodes(logicTableName2).containsAll(getExpectedDataNodes(dataSourceNames2, logicTableName2)));
     }
-
+    
     @Test
     public void assertGetDataNodeGroups() {
         DataNodes dataNodes = getRoutedRuleDataNodes();

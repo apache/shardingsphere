@@ -56,7 +56,7 @@ public final class DataNodeTest {
         assertThat(dataNodeWithNoTableName.getTableName(), is(""));
         DataNode dataNodeWithNoDbName = new DataNode(".table");
         assertThat(dataNodeWithNoDbName.getDataSourceName(), is(""));
-        assertThat(dataNodeWithNoDbName.getTableName(), is("table"));
+        assertThat(dataNodeWithNoDbName.getTableName(), is("table_1"));
     }
 
     @Test
