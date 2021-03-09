@@ -24,13 +24,31 @@ IDENTIFIER_
     |  DQ_ ~'"'+ DQ_
     ;
 
+CHARACTER_
+    : LETTER_+
+    ;
+
 STRING_ 
     : (DQ_ ( '\\'. | '""' | ~('"'| '\\') )* DQ_)
     | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
     ;
 
 NUMBER_
-    : INT_? DOT_? INT_ (E (PLUS_ | MINUS_)? INT_)?
+    : INT_NUM_
+    | FLOAT_NUM_
+    | DECIMAL_NUM_
+    ;
+
+INT_NUM_
+    : DIGIT_+
+    ;
+
+FLOAT_NUM_
+    : INT_NUM_? DOT_? INT_NUM_ E (PLUS_ | MINUS_)? INT_NUM_
+    ;
+
+DECIMAL_NUM_
+    : INT_NUM_? DOT_ INT_NUM_
     ;
 
 HEX_DIGIT_
@@ -41,10 +59,14 @@ BIT_NUM_
     : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
     ;
 
-fragment INT_
-    : [0-9]+
+fragment DIGIT_
+    : [0-9]
     ;
 
 fragment HEX_
     : [0-9a-fA-F]
+    ;
+
+fragment LETTER_
+    : [A-Za-z]
     ;

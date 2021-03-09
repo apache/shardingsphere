@@ -57,3 +57,5 @@ BQ_:                 '`';
 QUESTION_:           '?';
 AT_:                 '@';
 SEMI_:               ';';
+UNDERSCORE_:         '_';
+DOLLAR_:             '$';
