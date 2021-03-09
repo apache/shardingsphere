@@ -21,22 +21,29 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.SchemaMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Schema builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SchemaBuilder {
+    
+    static {
+        ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
+    }
     
     /**
      * Build ShardingSphere schema.
@@ -61,8 +68,26 @@ public final class SchemaBuilder {
     }
     
     private static void appendRemainTables(final SchemaBuilderMaterials materials, final ShardingSphereSchema schema) throws SQLException {
+        Optional<DialectTableMetaDataLoader> dialectTableMetaDataLoader = findDialectTableMetaDataLoader(materials);
+        if (dialectTableMetaDataLoader.isPresent()) {
+            dialectTableMetaDataLoader.get().load(materials, getExistedTables(materials.getRules(), schema)).forEach(schema::put);
+            return;
+        }
+        appendDefaultRemainTables(materials, schema);
+    }
+    
+    private static Optional<DialectTableMetaDataLoader> findDialectTableMetaDataLoader(final SchemaBuilderMaterials materials) {
+        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.newServiceInstances(DialectTableMetaDataLoader.class)) {
+            if (each.getDatabaseType().equals(materials.getDatabaseType().getName())) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private static void appendDefaultRemainTables(final SchemaBuilderMaterials materials, final ShardingSphereSchema schema) throws SQLException {
         Collection<String> tableNames = new LinkedHashSet<>();
-        for (Entry<String, DataSource> entry: materials.getDataSourceMap().entrySet()) {
+        for (Entry<String, DataSource> entry : materials.getDataSourceMap().entrySet()) {
             tableNames.addAll(SchemaMetaDataLoader.loadAllTableNames(entry.getValue(), materials.getDatabaseType()));
         }
         tableNames.removeAll(getExistedTables(materials.getRules(), schema));
