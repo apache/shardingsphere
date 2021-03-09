@@ -15,25 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
-import org.junit.Test;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 
-import static org.junit.Assert.assertTrue;
+import java.util.Optional;
 
-public final class StandardLockTest {
+/**
+ * Unexpand shorthand projection.
+ */
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode
+@ToString
+public final class UnexpandShorthandProjection implements Projection {
     
-    private final StandardLock lock = new StandardLock();
+    private final String owner;
     
-    @Test
-    public void assertTryLock() {
-        assertTrue(lock.tryGlobalLock(50L));
-        lock.releaseGlobalLock();
+    @Override
+    public String getExpression() {
+        return owner + ".*";
     }
     
-    @Test
-    public void assertReleaseLock() {
-        assertTrue(lock.tryGlobalLock(50L));
-        lock.releaseGlobalLock();
+    @Override
+    public Optional<String> getAlias() {
+        return Optional.empty();
+    }
+    
+    @Override
+    public String getColumnLabel() {
+        return getExpression();
     }
 }

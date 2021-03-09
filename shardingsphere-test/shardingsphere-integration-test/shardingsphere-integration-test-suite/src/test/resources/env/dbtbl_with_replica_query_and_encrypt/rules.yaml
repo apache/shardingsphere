@@ -18,18 +18,8 @@
 rules:
 - !SHARDING
   tables:
-    t_order:
-      actualDataNodes: pr_ds_${0..9}.t_order_${0..9}
-      databaseStrategy:
-        standard:
-          shardingColumn: user_id
-          shardingAlgorithmName: standard_test
-      tableStrategy:
-        standard:
-          shardingColumn: order_id
-          shardingAlgorithmName: standard_test
-    t_order_item:
-      actualDataNodes: pr_ds_${0..9}.t_order_item_${0..9}
+    t_user_item:
+      actualDataNodes: pr_ds_${0..9}.t_user_item_${0..9}
       databaseStrategy:
         standard:
           shardingColumn: user_id
@@ -41,16 +31,6 @@ rules:
       keyGenerateStrategy:
         column: item_id
         keyGeneratorName: constant
-    t_order_details:
-      actualDataNodes: pr_ds_${0..9}.t_order_details_${0..9}
-      databaseStrategy:
-        standard:
-          shardingColumn: user_id
-          shardingAlgorithmName: standard_test
-      tableStrategy:
-        standard:
-          shardingColumn: order_id
-          shardingAlgorithmName: standard_test
     t_user:
       actualDataNodes: pr_ds_${0..9}.t_user_${0..9}
       databaseStrategy:
@@ -61,12 +41,19 @@ rules:
         standard:
           shardingColumn: user_id
           shardingAlgorithmName: standard_test
+    t_user_details:
+      actualDataNodes: pr_ds_${0..9}.t_user_details_${0..9}
+      databaseStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: standard_test
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: standard_test
   bindingTables:
-    - t_order,t_order_item,t_order_details
-  broadcastTables:
-    - t_broadcast_table
-    - t_broadcast_table_for_ddl
-  
+    - t_user,t_user_item,t_user_details
+
   shardingAlgorithms:
     standard_test:
       type: STANDARD_TEST
@@ -141,7 +128,13 @@ rules:
     t_user:
       columns:
         pwd:
-          plainColumn: pwd
+          plainColumn: pwd_plain
+          cipherColumn: pwd_cipher
+          encryptorName: aes_encryptor
+    t_user_details:
+      columns:
+        pwd:
+          plainColumn: pwd_plain
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
 props:
