@@ -144,28 +144,7 @@ roleName
     ;
 
 password
-    : identifier
-    | DQ_ passwordWithDQ DQ_ | passwordWithoutDQ
-    ;
-
-passwordWithDQ
-    : (INT_NUM_ | specialCharacter)+ CHARACTER_ (CHARACTER_ | INT_NUM_ | specialCharacter)*
-    | (CHARACTER_ | INT_NUM_ | specialCharacter)* otherSpecialCharacter (CHARACTER_ | INT_NUM_ | specialCharacter | otherSpecialCharacter)*
-    ;
-
-passwordWithoutDQ
-    : CHARACTER_ (INT_NUM_ | specialCharacter) (CHARACTER_ | INT_NUM_ | specialCharacter)*
-    | INT_NUM_
-    | CHARACTER_
-    ;
-
-specialCharacter
-    : POUND_ | UNDERSCORE_ | DOLLAR_
-    ;
-
-otherSpecialCharacter
-    : NOT_ | TILDE_ | VERTICAL_BAR_ | AMPERSAND_ | CARET_ | MOD_ | COLON_ | PLUS_ | MINUS_ | ASTERISK_ | SLASH_ | DOT_
-    | EQ_ | GT_ | LT_ | LP_ | RP_ | LBE_ | RBE_ | LBT_ | RBT_ | COMMA_ | SQ_ | BQ_ | QUESTION_ | AT_ | SEMI_
+    : IDENTIFIER_ | PASSWORDTEXT_
     ;
 
 columnNames
