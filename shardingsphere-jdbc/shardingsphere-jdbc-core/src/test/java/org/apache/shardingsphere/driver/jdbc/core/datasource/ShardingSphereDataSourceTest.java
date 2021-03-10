@@ -49,6 +49,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -110,7 +111,7 @@ public final class ShardingSphereDataSourceTest {
     
     private DataSource mockDataSource(final DatabaseType databaseType) throws SQLException {
         DataSource result = mock(DataSource.class);
-        Connection connection = mock(Connection.class);
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         DatabaseMetaData databaseMetaData = mockDatabaseMetaData();
         Statement statement = mock(Statement.class);
         ResultSet resultSet = mock(ResultSet.class);
@@ -131,7 +132,7 @@ public final class ShardingSphereDataSourceTest {
     }
     
     private DatabaseMetaData mockDatabaseMetaData() throws SQLException {
-        DatabaseMetaData result = mock(DatabaseMetaData.class);
+        DatabaseMetaData result = mock(DatabaseMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getColumns(null, null, "table_0", "%")).thenReturn(mock(ResultSet.class));
         when(result.getPrimaryKeys(null, null, "table_0")).thenReturn(mock(ResultSet.class));
         when(result.getIndexInfo(null, null, "table_0", false, false)).thenReturn(mock(ResultSet.class));

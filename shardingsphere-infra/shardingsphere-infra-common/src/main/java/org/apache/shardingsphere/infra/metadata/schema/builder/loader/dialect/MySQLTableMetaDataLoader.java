@@ -52,7 +52,7 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(String.format(TABLE_META_DATA_SQL, String.join(",", existedTables)))
         ) {
-            Map<String, Integer> dataTypeMap = getDataTypeMap(dataSource);
+            Map<String, Integer> dataTypeMap = getDataTypeMap(connection);
             preparedStatement.setString(1, dataSource.getConnection().getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -76,9 +76,9 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), dataType, primaryKey, generated, caseSensitive);
     }
     
-    private Map<String, Integer> getDataTypeMap(final DataSource dataSource) throws SQLException {
+    private Map<String, Integer> getDataTypeMap(final Connection connection) throws SQLException {
         Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        try (ResultSet resultSet = dataSource.getConnection().getMetaData().getTypeInfo()) {
+        try (ResultSet resultSet = connection.getMetaData().getTypeInfo()) {
             while (resultSet.next()) {
                 result.put(resultSet.getString("TYPE_NAME"), resultSet.getInt("DATA_TYPE"));
             }
