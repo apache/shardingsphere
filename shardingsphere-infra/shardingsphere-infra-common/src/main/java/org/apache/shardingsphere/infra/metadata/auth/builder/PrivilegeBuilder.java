@@ -60,9 +60,6 @@ public final class PrivilegeBuilder {
      */
     public static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final Collection<ShardingSphereMetaData> metaDatas,
                                                                          final Collection<ShardingSphereUser> users, final ConfigurationProperties props) {
-        if (metaDatas.isEmpty()) {
-            return getDefaultShardingSpherePrivileges(users);
-        }
         Optional<PrivilegeLoader> loader = PrivilegeLoaderEngine.getPrivilegeLoader(metaDatas.iterator().next().getResource().getDatabaseType());
         return loader.map(privilegeLoader -> build(metaDatas, users, props, privilegeLoader)).orElseGet(() -> getDefaultShardingSpherePrivileges(users));
     }

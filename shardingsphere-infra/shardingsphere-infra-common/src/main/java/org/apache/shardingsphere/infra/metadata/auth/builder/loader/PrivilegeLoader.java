@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSph
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Optional;
 
 /**
@@ -42,6 +43,7 @@ public interface PrivilegeLoader {
      * @param user user
      * @param dataSource data source
      * @return sharding sphere privilege
+     * @throws SQLException sql exception
      */
-    Optional<ShardingSpherePrivilege> load(ShardingSphereUser user, DataSource dataSource);
+    Optional<ShardingSpherePrivilege> load(ShardingSphereUser user, DataSource dataSource) throws SQLException;
 }

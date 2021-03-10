@@ -37,7 +37,7 @@ public final class AdministrationPrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return this.privileges.contains(PrivilegeType.ALL) || this.privileges.containsAll(privileges);
+        return this.privileges.contains(PrivilegeType.SUPER) || this.privileges.containsAll(privileges);
     }
     
     /**
@@ -45,6 +45,10 @@ public final class AdministrationPrivilege {
      *
      */
     public void setSuper() {
-        privileges.add(PrivilegeType.ALL);
+        for (PrivilegeType each : PrivilegeType.values()) {
+            if (!each.equals(PrivilegeType.GRANT)) {
+                privileges.add(each);
+            }
+        }
     }
 }
