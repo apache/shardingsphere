@@ -144,7 +144,7 @@ roleName
     ;
 
 password
-    : IDENTIFIER_ | PASSWORDTEXT_
+    : identifier
     ;
 
 columnNames

@@ -20,7 +20,7 @@ lexer grammar Literals;
 import Alphabet, Symbol;
 
 IDENTIFIER_
-    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
+    : [A-Za-z]+[A-Za-z_$#0-9]*
     |  DQ_ ~'"'+ DQ_
     ;
 
@@ -39,10 +39,6 @@ HEX_DIGIT_
 
 BIT_NUM_
     : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
-    ;
-
-PASSWORDTEXT_
-    : [A-Za-z0-9]+ [A-Za-z_$#0-9]*
     ;
 
 fragment INT_
