@@ -28,8 +28,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum PrivilegeType {
     
-//    ALL("*"), SELECT("SELECT"), DELETE("DELETE"), UPDATE("UPDATE"), INSERT("INSERT"), ALL_HOST_NAME("%");
-    
     SELECT("SELECT"),
     INSERT("INSERT"),
     UPDATE("UPDATE"),
