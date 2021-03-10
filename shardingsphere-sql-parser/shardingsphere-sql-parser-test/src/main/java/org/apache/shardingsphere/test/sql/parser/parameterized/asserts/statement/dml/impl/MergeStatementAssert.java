@@ -25,6 +25,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.e
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.MergeStatementTestCase;
 
+import static org.junit.Assert.assertNull;
+
 /**
  * Merge statement assert.
  */
@@ -46,16 +48,21 @@ public final class MergeStatementAssert {
     private static void assertTable(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
         if (null != expected.getSource()) {
             TableAssert.assertIs(assertContext, actual.getSource(), expected.getSource());
+        } else {
+            assertNull(assertContext.getText("Actual source should not exist."), actual.getSource());
         }
         if (null != expected.getTarget()) {
             TableAssert.assertIs(assertContext, actual.getTarget(), expected.getTarget());
+        } else {
+            assertNull(assertContext.getText("Actual target should not exist."), actual.getTarget());
         }
     }
     
     private static void assertExpression(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
         if (null != expected.getExpr()) {
             ExpressionAssert.assertExpression(assertContext, actual.getExpr(), expected.getExpr());
+        } else {
+            assertNull(assertContext.getText("Actual expression should not exist."), actual.getExpr());
         }
     }
-    
 }

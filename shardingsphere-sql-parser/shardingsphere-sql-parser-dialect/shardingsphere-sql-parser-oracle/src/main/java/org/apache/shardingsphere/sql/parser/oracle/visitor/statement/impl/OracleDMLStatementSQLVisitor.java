@@ -530,5 +530,4 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         }
         return result;
     }
-    
 }

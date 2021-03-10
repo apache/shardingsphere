@@ -37,5 +37,4 @@ public abstract class MergeStatement extends AbstractSQLStatement implements DML
     private TableSegment source;
     
     private ExpressionSegment expr;
-    
 }
