@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.metadata.schema.builder.spi;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeAwareSPI;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
@@ -33,10 +33,10 @@ public interface DialectTableMetaDataLoader extends DatabaseTypeAwareSPI {
     /**
      * Load table meta data.
      *
-     * @param materials schema builder materials
+     * @param dataSource data source
      * @param existedTables existed tables
      * @return table meta data map
      * @throws SQLException SQL exception
      */
-    Map<String, TableMetaData> load(SchemaBuilderMaterials materials, Collection<String> existedTables) throws SQLException;
+    Map<String, TableMetaData> load(DataSource dataSource, Collection<String> existedTables) throws SQLException;
 }
