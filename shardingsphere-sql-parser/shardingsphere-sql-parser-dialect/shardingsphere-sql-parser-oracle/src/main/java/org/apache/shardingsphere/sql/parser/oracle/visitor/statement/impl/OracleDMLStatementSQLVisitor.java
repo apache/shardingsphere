@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FromCl
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertValuesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IntoClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.JoinSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LockClauseContext;
@@ -55,6 +56,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableR
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableReferencesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UpdateContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UsingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
@@ -482,30 +484,51 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
         OracleMergeStatement result = new OracleMergeStatement();
-        if (null != ctx.intoClause().tableName()) {
-            SimpleTableSegment table = (SimpleTableSegment) visit(ctx.intoClause().tableName());
-            if (null != ctx.intoClause().alias()) {
-                table.setAlias((AliasSegment) visit(ctx.intoClause().alias()));
-            }
-            result.getTables().add(table);
-        }
-        if (null != ctx.usingClause().tableName()) {
-            SimpleTableSegment table = (SimpleTableSegment) visit(ctx.usingClause().tableName());
-            if (null != ctx.usingClause().alias()) {
-                table.setAlias((AliasSegment) visit(ctx.usingClause().alias()));
-            }
-            result.getTables().add(table);
-        }
-        if (null != ctx.usingClause().subquery()) {
-            OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.usingClause().subquery());
-            SubquerySegment subquerySegment = new SubquerySegment(ctx.usingClause().subquery().start.getStartIndex(), ctx.usingClause().subquery().stop.getStopIndex(), subquery);
-            SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(subquerySegment);
-            if (null != ctx.usingClause().alias()) {
-                subqueryTableSegment.setAlias((AliasSegment) visit(ctx.usingClause().alias()));
-            }
-            result.setSubqueryTableSegment(subqueryTableSegment);
-        }
+        result.setTarget((SimpleTableSegment) visit(ctx.intoClause()));
+        result.setSource((TableSegment) visit(ctx.usingClause()));
         result.setExpr((ExpressionSegment) (visit(ctx.usingClause().expr())));
         return result;
     }
+    
+    @Override
+    public ASTNode visitIntoClause(final IntoClauseContext ctx) {
+        if (null != ctx.tableName()) {
+            SimpleTableSegment result = (SimpleTableSegment) visit(ctx.tableName());
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            return result;
+        }
+        SimpleTableSegment result = (SimpleTableSegment) visit(ctx.viewName());
+        if (null != ctx.alias()) {
+            result.setAlias((AliasSegment) visit(ctx.alias()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitUsingClause(final UsingClauseContext ctx) {
+        if (null != ctx.tableName()) {
+            SimpleTableSegment result = (SimpleTableSegment) visit(ctx.tableName());
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            return result;
+        }
+        if (null != ctx.viewName()) {
+            SimpleTableSegment result = (SimpleTableSegment) visit(ctx.viewName());
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            return result;
+        }
+        OracleSelectStatement subquery = (OracleSelectStatement) visit(ctx.subquery());
+        SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery);
+        SubqueryTableSegment result = new SubqueryTableSegment(subquerySegment);
+        if (null != ctx.alias()) {
+            result.setAlias((AliasSegment) visit(ctx.alias()));
+        }
+        return result;
+    }
+    
 }

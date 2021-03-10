@@ -21,12 +21,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Merge statement.
@@ -36,10 +32,10 @@ import java.util.List;
 @ToString
 public abstract class MergeStatement extends AbstractSQLStatement implements DMLStatement {
     
-    private final List<SimpleTableSegment> tables = new LinkedList<>();
+    private TableSegment target;
+    
+    private TableSegment source;
     
     private ExpressionSegment expr;
-    
-    private SubqueryTableSegment subqueryTableSegment;
     
 }
