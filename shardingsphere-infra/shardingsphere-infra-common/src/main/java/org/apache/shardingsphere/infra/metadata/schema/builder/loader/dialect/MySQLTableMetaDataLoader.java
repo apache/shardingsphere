@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Table meta data loader for MySQL.
@@ -48,12 +49,13 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
     }
     
     private void loadColumnMetaData(final DataSource dataSource, final Collection<String> existedTables, final Map<String, TableMetaData> tableMetaDataMap) throws SQLException {
+        String sql = String.format(TABLE_META_DATA_SQL, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
         try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(String.format(TABLE_META_DATA_SQL, String.join(",", existedTables)))
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)
         ) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
-            preparedStatement.setString(1, dataSource.getConnection().getSchema());
+            preparedStatement.setString(1, dataSource.getConnection().getCatalog());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String tableName = resultSet.getString("TABLE_NAME");
