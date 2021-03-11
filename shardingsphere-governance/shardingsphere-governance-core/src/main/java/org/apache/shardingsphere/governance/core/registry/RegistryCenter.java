@@ -445,7 +445,7 @@ public final class RegistryCenter {
                 repository.get(node.getMetadataDataSourcePath(event.getSchemaName())),
                 repository.get(node.getRulePath(event.getSchemaName())),
                 registryCacheManager.loadCache(node.getRulePath(event.getSchemaName()), event.getCacheId()), event.getCacheId());
-        ShardingSphereEventBus.getInstance().post(startScalingEvent);
+        ShardingSphereEventBus.postEvent(startScalingEvent);
     }
 
     /**

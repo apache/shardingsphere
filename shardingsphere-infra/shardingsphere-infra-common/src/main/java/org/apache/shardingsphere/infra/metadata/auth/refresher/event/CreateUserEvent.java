@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.auth.refresher.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 
 import java.util.Collection;
@@ -28,7 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateUserEvent {
+public final class CreateUserEvent extends CompletableEvent {
     
     private final Collection<ShardingSphereUser> users;
 }
