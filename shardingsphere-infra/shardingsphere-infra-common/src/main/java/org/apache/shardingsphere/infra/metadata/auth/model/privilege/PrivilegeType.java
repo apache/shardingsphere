@@ -28,7 +28,38 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum PrivilegeType {
     
-    ALL("*"), SELECT("SELECT"), DELETE("DELETE"), UPDATE("UPDATE"), INSERT("INSERT"), ALL_HOST_NAME("%");
+    SELECT("SELECT"),
+    INSERT("INSERT"),
+    UPDATE("UPDATE"),
+    DELETE("DELETE"),
+    USAGE("USAGE"),
+    CREATE("CREATE"),
+    DROP("DROP"),
+    RELOAD("RELOAD"),
+    SHUTDOWN("SHUTDOWN"),
+    PROCESS("PROCESS"),
+    FILE("FILE"),
+    GRANT("GRANT"),
+    REFERENCES("REFERENCES"),
+    INDEX("INDEX"),
+    ALTER("ALTER"),
+    SHOW_DB("SHOW_DB"),
+    SUPER("SUPER"),
+    CREATE_TMP("CREATE_TMP"),
+    LOCK_TABLES("LOCK_TABLES"),
+    EXECUTE("EXECUTE"),
+    REPL_SLAVE("REPL_SLAVE"),
+    REPL_CLIENT("REPL_CLIENT"),
+    CREATE_VIEW("CREATE_VIEW"),
+    SHOW_VIEW("SHOW_VIEW"),
+    CREATE_PROC("CREATE_PROC"),
+    ALTER_PROC("ALTER_PROC"),
+    CREATE_USER("CREATE_USER"),
+    EVENT("EVENT"),
+    TRIGGER("TRIGGER"),
+    CREATE_TABLESPACE("CREATE_TABLESPACE"),
+    CREATE_ROLE("CREATE_ROLE"),
+    DROP_ROLE("DROP_ROLE");
     
     private final String name;
 }

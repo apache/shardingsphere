@@ -135,8 +135,8 @@ public final class DriverJDBCExecutor {
     }
     
     private boolean tryGlobalLock(final SQLStatement sqlStatement, final long lockTimeoutMilliseconds) {
-        if (needLock(sqlStatement)) {
-            if (!metaDataContexts.getLock().tryGlobalLock(lockTimeoutMilliseconds)) {
+        if (metaDataContexts.getLock().isPresent() && needLock(sqlStatement)) {
+            if (!metaDataContexts.getLock().get().tryGlobalLock(lockTimeoutMilliseconds)) {
                 throw new ShardingSphereException(CommonErrorCode.SHARDING_SERVICE_LOCK_WAIT_TIMEOUT_ERROR, lockTimeoutMilliseconds);
             }
             return true;
@@ -165,6 +165,8 @@ public final class DriverJDBCExecutor {
     }
     
     private void releaseGlobalLock() {
-        metaDataContexts.getLock().releaseGlobalLock();
+        if (metaDataContexts.getLock().isPresent()) {
+            metaDataContexts.getLock().get().releaseGlobalLock();
+        }
     }
 }

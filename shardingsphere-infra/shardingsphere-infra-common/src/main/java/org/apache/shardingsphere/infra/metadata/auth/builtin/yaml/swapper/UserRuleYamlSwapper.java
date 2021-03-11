@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper;
 
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
 
@@ -66,6 +65,6 @@ public final class UserRuleYamlSwapper implements YamlConfigurationSwapper<YamlU
     
     private ShardingSphereUser swapToObject(final String username, final YamlUserConfiguration yamlConfig) {
         return new ShardingSphereUser(username, yamlConfig.getPassword(), (null == yamlConfig.getHostname()
-                || PrivilegeType.ALL_HOST_NAME.getName().equals(yamlConfig.getHostname())) ? "" : yamlConfig.getHostname());
+                || "%".equals(yamlConfig.getHostname())) ? "%" : yamlConfig.getHostname());
     }
 }

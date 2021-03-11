@@ -21,6 +21,16 @@ chapter = true
 | SQLServerDatabaseType  | SQLServer 数据库          |
 | H2DatabaseType         | H2 数据库                 |
 
+## DialectTableMetaDataLoader
+
+| *SPI 名称*                   | *详细说明*                    |
+| ---------------------------- | ---------------------------- |
+| DialectTableMetaDataLoader   | 用于使用数据库方言快速加载元数据 |
+
+| *已知实现类*                   | *详细说明*                   |
+| ----------------------------- | --------------------------- |
+
+
 ## SQLRouter
 
 | *SPI 名称*                   | *详细说明*                 |

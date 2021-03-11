@@ -44,7 +44,7 @@ public final class LockDriverState implements DriverState {
     
     private void block(final MetaDataContexts metaDataContexts) {
         long lockTimeoutMilliseconds = metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS);
-        if (!metaDataContexts.getLock().await(lockTimeoutMilliseconds)) {
+        if (metaDataContexts.getLock().isPresent() && !metaDataContexts.getLock().get().await(lockTimeoutMilliseconds)) {
             throw new ShardingSphereException(CommonErrorCode.SHARDING_SERVICE_LOCK_WAIT_TIMEOUT_ERROR, lockTimeoutMilliseconds);
         }
     }

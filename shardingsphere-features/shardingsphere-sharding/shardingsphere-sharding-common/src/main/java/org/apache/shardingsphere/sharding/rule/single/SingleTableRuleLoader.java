@@ -62,7 +62,7 @@ public final class SingleTableRuleLoader {
         try {
             tables = SchemaMetaDataLoader.loadAllTableNames(dataSource, databaseType);
         } catch (final SQLException ex) {
-            throw new ShardingSphereConfigurationException("Can not load table: ", ex.getMessage());
+            throw new ShardingSphereConfigurationException("Can not load table: %s", ex.getMessage());
         }
         Map<String, SingleTableRule> result = new HashMap<>(tables.size(), 1);
         for (String each : tables) {

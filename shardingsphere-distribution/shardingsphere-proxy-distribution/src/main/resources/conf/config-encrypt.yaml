@@ -26,8 +26,8 @@
 #
 #dataSource:
 #  url: jdbc:postgresql://127.0.0.1:5432/demo_ds?serverTimezone=UTC&useSSL=false
-#  username: postgresql
-#  password: postgresql
+#  username: postgres
+#  password: postgres
 #  connectionTimeoutMilliseconds: 30000
 #  idleTimeoutMilliseconds: 60000
 #  maxLifetimeMilliseconds: 1800000

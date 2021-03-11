@@ -42,7 +42,7 @@ public final class HikariJDBCParameterDecoratorTest {
         Properties props = actual.getDataSourceProperties();
         assertThat(props.getProperty("useServerPrepStmts"), is(Boolean.TRUE.toString()));
         assertThat(props.getProperty("cachePrepStmts"), is(Boolean.TRUE.toString()));
-        assertThat(props.getProperty("prepStmtCacheSize"), is("250"));
+        assertThat(props.getProperty("prepStmtCacheSize"), is("200000"));
         assertThat(props.getProperty("prepStmtCacheSqlLimit"), is("2048"));
         assertThat(props.getProperty("useLocalSessionState"), is(Boolean.TRUE.toString()));
         assertThat(props.getProperty("rewriteBatchedStatements"), is(Boolean.TRUE.toString()));

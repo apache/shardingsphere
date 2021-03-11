@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener;
 
+import org.apache.shardingsphere.governance.core.registry.listener.metadata.MetaDataListener;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
 
@@ -32,11 +33,20 @@ public final class RegistryListenerManager {
     private final DataSourceStateChangedListener dataSourceStateChangedListener;
     
     private final GlobalLockChangedListener globalLockChangedListener;
+
+    private final MetaDataListener metaDataListener;
+
+    private final PropertiesChangedListener propertiesChangedListener;
+
+    private final AuthenticationChangedListener authenticationChangedListener;
     
     public RegistryListenerManager(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
         terminalStateChangedListener = new TerminalStateChangedListener(registryRepository);
         dataSourceStateChangedListener = new DataSourceStateChangedListener(registryRepository, schemaNames);
         globalLockChangedListener = new GlobalLockChangedListener(registryRepository);
+        metaDataListener = new MetaDataListener(registryRepository, schemaNames);
+        propertiesChangedListener = new PropertiesChangedListener(registryRepository);
+        authenticationChangedListener = new AuthenticationChangedListener(registryRepository);
     }
     
     /**
@@ -46,5 +56,8 @@ public final class RegistryListenerManager {
         terminalStateChangedListener.watch(Type.UPDATED);
         dataSourceStateChangedListener.watch(Type.UPDATED, Type.DELETED, Type.ADDED);
         globalLockChangedListener.watch(Type.ADDED, Type.DELETED);
+        metaDataListener.watch();
+        propertiesChangedListener.watch(Type.UPDATED);
+        authenticationChangedListener.watch(Type.UPDATED);
     }
 }
