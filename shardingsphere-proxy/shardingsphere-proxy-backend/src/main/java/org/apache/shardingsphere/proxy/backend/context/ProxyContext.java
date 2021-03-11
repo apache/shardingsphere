@@ -31,6 +31,7 @@ import org.apache.shardingsphere.transaction.context.impl.StandardTransactionCon
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Proxy context.
@@ -109,7 +110,7 @@ public final class ProxyContext {
      * 
      * @return lock
      */
-    public ShardingSphereLock getLock() {
+    public Optional<ShardingSphereLock> getLock() {
         return metaDataContexts.getLock();
     }
     

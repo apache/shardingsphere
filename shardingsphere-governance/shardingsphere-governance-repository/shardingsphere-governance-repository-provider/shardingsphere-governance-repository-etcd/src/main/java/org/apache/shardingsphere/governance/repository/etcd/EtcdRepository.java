@@ -30,7 +30,6 @@ import io.etcd.jetcd.watch.WatchEvent;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
@@ -47,7 +46,7 @@ import java.util.stream.Collectors;
 /**
  * Registry repository of ETCD.
  */
-public final class EtcdRepository implements ConfigurationRepository, RegistryRepository {
+public final class EtcdRepository implements RegistryRepository {
     
     private Client client;
     

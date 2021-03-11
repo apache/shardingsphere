@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.infra.context.metadata;
 
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
 import org.apache.shardingsphere.infra.state.StateContext;
 
 import java.io.Closeable;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Meta data contexts.
@@ -88,7 +89,7 @@ public interface MetaDataContexts extends Closeable {
      * 
      * @return lock
      */
-    ShardingSphereLock getLock();
+    Optional<ShardingSphereLock> getLock();
     
     /**
      * Get state context.
