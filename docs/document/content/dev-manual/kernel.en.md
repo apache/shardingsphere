@@ -21,6 +21,15 @@ chapter = true
 | SQLServerDatabaseType  | SQLServer database      |
 | H2DatabaseType         | H2 database             |
 
+## DialectTableMetaDataLoader
+
+| *SPI Name*                   | *Description*                     |
+| ---------------------------- | --------------------------------- |
+| DialectTableMetaDataLoader   | Use SQL dialect to load meta data |
+
+| *Implementation Class*       | *Description*                     |
+| ---------------------------- | --------------------------------- |
+
 ## SQLRouter
 
 | *SPI Name*                    | *Description*                                         |

@@ -19,7 +19,9 @@
 <sql-parser-test-cases>
     <set-role sql-case-id="set_role_default" />
     <set-role sql-case-id="set_role" />
+    <set-role sql-case-id="set_role_identified_by_password" />
     <set-role sql-case-id="set_roles" />
+    <set-role sql-case-id="set_roles_identified_by_passwords" />
     <set-role sql-case-id="set_none_role" />
     <set-role sql-case-id="set_all_role" />
     <set-role sql-case-id="set_all_expect_role" />

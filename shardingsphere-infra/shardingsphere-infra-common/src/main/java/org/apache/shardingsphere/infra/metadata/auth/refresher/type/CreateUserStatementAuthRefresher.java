@@ -47,7 +47,7 @@ public final class CreateUserStatementAuthRefresher implements AuthenticationRef
     private Collection<ShardingSphereUser> generateUsers(final CreateUserStatement statement) {
         Collection<ShardingSphereUser> result = new LinkedList<>();
         for (UserSegment each : statement.getUsers()) {
-            result.add(new ShardingSphereUser(each.getUser(), each.getAuth(), each.getHost()));
+            result.add(new ShardingSphereUser(each.getUser(), each.getAuth(), null != each.getHost() ? each.getHost() : "%"));
         }
         return result;
     }

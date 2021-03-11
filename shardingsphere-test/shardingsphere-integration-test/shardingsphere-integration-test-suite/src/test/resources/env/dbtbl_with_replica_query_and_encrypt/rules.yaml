@@ -26,7 +26,7 @@ rules:
           shardingAlgorithmName: standard_test
       tableStrategy:
         standard:
-          shardingColumn: order_id
+          shardingColumn: item_id
           shardingAlgorithmName: standard_test
       keyGenerateStrategy:
         column: item_id
@@ -45,11 +45,11 @@ rules:
       actualDataNodes: pr_ds_${0..9}.t_user_details_${0..9}
       databaseStrategy:
         standard:
-          shardingColumn: user_id
+          shardingColumn: item_id
           shardingAlgorithmName: standard_test
       tableStrategy:
         standard:
-          shardingColumn: order_id
+          shardingColumn: user_id
           shardingAlgorithmName: standard_test
   bindingTables:
     - t_user,t_user_item,t_user_details
