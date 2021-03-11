@@ -48,6 +48,8 @@ import java.util.concurrent.Future;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SchemaBuilder {
     
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+    
     static {
         ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
     }
@@ -97,11 +99,10 @@ public final class SchemaBuilder {
     }
     
     private static void appendDialectRemainTables(final DialectTableMetaDataLoader dialectLoader, final SchemaBuilderMaterials materials, final ShardingSphereSchema schema) throws SQLException {
-        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
         Collection<Future<Map<String, TableMetaData>>> futures = new LinkedList<>();
         Collection<String> existedTables = getExistedTables(materials.getRules(), schema);
         for (DataSource each : materials.getDataSourceMap().values()) {
-            futures.add(executorService.submit(() -> dialectLoader.load(each, existedTables)));
+            futures.add(EXECUTOR_SERVICE.submit(() -> dialectLoader.load(each, existedTables)));
         }
         for (Future<Map<String, TableMetaData>> each : futures) {
             try {
