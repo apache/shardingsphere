@@ -78,7 +78,7 @@ public final class SchemaYamlSwapper implements YamlConfigurationSwapper<YamlSch
     }
     
     private ColumnMetaData convertColumn(final YamlColumnMetaData column) {
-        return new ColumnMetaData(column.getName(), column.getDataType(), column.getDataTypeName(), column.isPrimaryKey(), column.isGenerated(), column.isCaseSensitive());
+        return new ColumnMetaData(column.getName(), column.getDataType(), column.isPrimaryKey(), column.isGenerated(), column.isCaseSensitive());
     }
     
     private YamlTableMetaData convertYamlTable(final TableMetaData table) {
