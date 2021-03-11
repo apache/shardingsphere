@@ -17,35 +17,31 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder.loader;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.junit.Test;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.TreeMap;
 
-/**
- * Data type loader.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataTypeLoader {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public final class DataTypeLoaderTest {
     
-    /**
-     * Load data type.
-     * 
-     * @param databaseMetaData database meta data
-     * @return data type map
-     * @throws SQLException SQL exception
-     */
-    public static Map<String, Integer> load(final DatabaseMetaData databaseMetaData) throws SQLException {
-        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        try (ResultSet resultSet = databaseMetaData.getTypeInfo()) {
-            while (resultSet.next()) {
-                result.put(resultSet.getString("TYPE_NAME"), resultSet.getInt("DATA_TYPE"));
-            }
-        }
-        return result;
+    @Test
+    public void assertLoad() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getString("TYPE_NAME")).thenReturn("int", "varchar");
+        when(resultSet.getInt("DATA_TYPE")).thenReturn(4, 12);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getTypeInfo()).thenReturn(resultSet);
+        Map<String, Integer> actual = DataTypeLoader.load(databaseMetaData);
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get("INT"), is(4));
+        assertThat(actual.get("VARCHAR"), is(12));
     }
 }

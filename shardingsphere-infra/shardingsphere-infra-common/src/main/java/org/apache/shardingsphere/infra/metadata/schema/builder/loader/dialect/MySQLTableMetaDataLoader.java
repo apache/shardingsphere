@@ -52,7 +52,7 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(String.format(TABLE_META_DATA_SQL, String.join(",", existedTables)))
         ) {
-            Map<String, Integer> dataTypes = DataTypeLoader.load(connection);
+            Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
             preparedStatement.setString(1, dataSource.getConnection().getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
