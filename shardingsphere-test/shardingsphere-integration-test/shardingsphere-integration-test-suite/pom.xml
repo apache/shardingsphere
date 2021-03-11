@@ -203,7 +203,7 @@
                                     <goal>up</goal>
                                 </goals>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/dbtbl_read_write_splitting/docker-compose.yml</composeFile>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/dbtbl_with_read_write_splitting/docker-compose.yml</composeFile>
                                     <detachedMode>true</detachedMode>
                                 </configuration>
                             </execution>
