@@ -22,7 +22,6 @@ import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurat
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleDataSourcesNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleNotExistedException;
@@ -43,8 +42,8 @@ import java.util.stream.Collectors;
  */
 public final class DropReplicaQueryRuleBackendHandler extends SchemaRequiredBackendHandler<DropReplicaQueryRuleStatement> {
 
-    public DropReplicaQueryRuleBackendHandler(final DropReplicaQueryRuleStatement sqlStatement, final BackendConnection backendConnection) {
-        super(sqlStatement, backendConnection);
+    public DropReplicaQueryRuleBackendHandler(final DropReplicaQueryRuleStatement sqlStatement, final String schemaName) {
+        super(sqlStatement, schemaName);
     }
     
     @Override
@@ -86,6 +85,6 @@ public final class DropReplicaQueryRuleBackendHandler extends SchemaRequiredBack
     }
     
     private void post(final String schemaName, final Collection<RuleConfiguration> rules) {
-        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredEvent(schemaName, rules));
+        ShardingSphereEventBus.postEvent(new RuleConfigurationsAlteredEvent(schemaName, rules));
     }
 }

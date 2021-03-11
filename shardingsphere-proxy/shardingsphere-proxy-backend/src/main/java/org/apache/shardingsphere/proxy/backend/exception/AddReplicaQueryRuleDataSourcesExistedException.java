@@ -18,18 +18,22 @@
 package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 
 import java.util.Collection;
 
 /**
  * Add replica query rule data source existed exception.
  */
-@RequiredArgsConstructor
 @Getter
 public final class AddReplicaQueryRuleDataSourcesExistedException extends BackendException {
     
     private static final long serialVersionUID = -4169758880611482863L;
     
     private final Collection<String> ruleNames;
+
+    public AddReplicaQueryRuleDataSourcesExistedException(final Collection<String> ruleNames) {
+        super(CommonErrorCode.ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST, ruleNames);
+        this.ruleNames = ruleNames;
+    }
 }

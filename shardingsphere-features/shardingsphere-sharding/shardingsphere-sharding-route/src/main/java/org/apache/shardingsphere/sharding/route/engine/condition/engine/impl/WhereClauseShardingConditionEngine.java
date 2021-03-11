@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine.impl;
 
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.AlwaysFalseShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.AlwaysFalseShardingCondition;
@@ -130,7 +131,7 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
                 }
                 result.getValues().add(shardingConditionValue);
             } catch (final ClassCastException ex) {
-                throw new ShardingSphereException("Found different types for sharding value `%s`.", entry.getKey());
+                throw new ShardingSphereException(CommonErrorCode.SHARDING_DIFFERENT_TYPES_FOR_SHARDING_VALUE_FOUND_ERROR, entry.getKey());
             }
         }
         return result;

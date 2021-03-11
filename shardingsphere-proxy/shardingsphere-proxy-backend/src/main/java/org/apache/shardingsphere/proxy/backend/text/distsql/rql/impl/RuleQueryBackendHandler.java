@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -46,8 +45,8 @@ public final class RuleQueryBackendHandler extends SchemaRequiredBackendHandler<
     
     private Iterator<RuleConfiguration> data;
     
-    public RuleQueryBackendHandler(final ShowRuleStatement sqlStatement, final BackendConnection backendConnection) {
-        super(sqlStatement, backendConnection);
+    public RuleQueryBackendHandler(final ShowRuleStatement sqlStatement, final String schemaName) {
+        super(sqlStatement, schemaName);
     }
     
     @Override

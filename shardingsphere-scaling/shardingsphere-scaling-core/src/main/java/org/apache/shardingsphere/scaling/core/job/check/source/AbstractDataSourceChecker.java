@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.scaling.core.job.check.source;
 
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 
@@ -38,7 +39,7 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
                 each.getConnection().close();
             }
         } catch (final SQLException ex) {
-            throw new PrepareFailedException("Data sources can't connected!", ex);
+            throw new PrepareFailedException(ex, CommonErrorCode.SCALING_PREPARE_DATA_SOURCES_FAIL);
         }
     }
     
@@ -49,7 +50,7 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
                 checkEmpty(each, tableNames);
             }
         } catch (final SQLException ex) {
-            throw new PrepareFailedException("Check target table failed!", ex);
+            throw new PrepareFailedException(ex, CommonErrorCode.SCALING_PREPARE_CHECK_TARGET_TABLE_FAIL);
         }
     }
     
@@ -58,7 +59,7 @@ public abstract class AbstractDataSourceChecker implements DataSourceChecker {
             try (PreparedStatement preparedStatement = dataSource.getConnection().prepareStatement(getSqlBuilder().buildCheckEmptySQL(each));
                  ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    throw new PrepareFailedException(String.format("Target table [%s] is not empty!", each));
+                    throw new PrepareFailedException(CommonErrorCode.SCALING_PREPARE_CHECK_TARGET_TABLE_EMPTY, each);
                 }
             }
         }

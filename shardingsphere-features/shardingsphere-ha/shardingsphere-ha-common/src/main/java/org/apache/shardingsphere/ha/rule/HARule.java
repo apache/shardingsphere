@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.ha.spi.HAType;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
 import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
@@ -88,7 +89,7 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
                 haType.checkHAConfig(dataSourceMap, schemaName);
                 haType.startPeriodicalUpdate(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
             } catch (final SQLException ex) {
-                throw new ShardingSphereException(ex);
+                throw new ShardingSphereException(ex, CommonErrorCode.SHARDING_HA_TYPE_CHECK_START_ERROR);
             }
         }
     }
@@ -120,7 +121,7 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
                 haType.checkHAConfig(dataSourceMap, schemaName);
                 haType.startPeriodicalUpdate(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
             } catch (final SQLException ex) {
-                throw new ShardingSphereException(ex);
+                throw new ShardingSphereException(ex, CommonErrorCode.SHARDING_HA_TYPE_CHECK_START_ERROR);
             }
         }
     }

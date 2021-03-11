@@ -20,6 +20,7 @@ package org.apache.shardingsphere.spring.boot.datasource;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.spring.boot.datasource.prop.impl.DataSourcePropertiesSetterHolder;
@@ -64,9 +65,9 @@ public final class DataSourceMapSetter {
             try {
                 result.put(each, getDataSource(environment, each));
             } catch (final ReflectiveOperationException ex) {
-                throw new ShardingSphereException("Can't find data source type.", ex);
+                throw new ShardingSphereException(ex, CommonErrorCode.SHARDING_DATA_SOURCE_TYPE_ERROR);
             } catch (final NamingException ex) {
-                throw new ShardingSphereException("Can't find JNDI data source.", ex);
+                throw new ShardingSphereException(ex, CommonErrorCode.SHARDING_JNDI_DATA_SOURCE_TYPE_ERROR);
             }
         }
         return result;

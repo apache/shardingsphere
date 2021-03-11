@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.exception;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.proxy.backend.exception.fixture.TestSQLStatementContextInstanceOfTableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
@@ -36,14 +37,14 @@ public class TableModifyInTransactionExceptionTest {
     @Test
     public void assertTableNameWhenSQLStatementContextInstanceOfSQLStatementContextUnImplementsTableAvailable() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        TableModifyInTransactionException tableModifyInTransactionException = new TableModifyInTransactionException(sqlStatementContext);
+        TableModifyInTransactionException tableModifyInTransactionException = new TableModifyInTransactionException(getTableName(sqlStatementContext));
         assertThat(tableModifyInTransactionException.getTableName(), is("unknown_table"));
     }
 
     @Test
     public void assertTableNameWhenSQLStatementContextInstanceOfSQLStatementContextImplementsTableAvailable() {
         SQLStatementContext sqlStatementContext = mock(TestSQLStatementContextInstanceOfTableAvailable.class);
-        TableModifyInTransactionException tableModifyInTransactionException = new TableModifyInTransactionException(sqlStatementContext);
+        TableModifyInTransactionException tableModifyInTransactionException = new TableModifyInTransactionException(getTableName(sqlStatementContext));
         assertThat(tableModifyInTransactionException.getTableName(), is("unknown_table"));
     }
 
@@ -51,7 +52,7 @@ public class TableModifyInTransactionExceptionTest {
     public void assertTableNameWhenSQLStatementContextInstanceOfSQLStatementContextImplementsTableAvailableOnEmptyTableList() {
         TestSQLStatementContextInstanceOfTableAvailable sqlStatementContext = mock(TestSQLStatementContextInstanceOfTableAvailable.class);
         when(sqlStatementContext.getAllTables()).thenReturn(Collections.emptyList());
-        TableModifyInTransactionException tableModifyInTransactionException = new TableModifyInTransactionException(sqlStatementContext);
+        TableModifyInTransactionException tableModifyInTransactionException = new TableModifyInTransactionException(getTableName(sqlStatementContext));
         assertThat(tableModifyInTransactionException.getTableName(), is("unknown_table"));
     }
 
@@ -64,7 +65,17 @@ public class TableModifyInTransactionExceptionTest {
         TableNameSegment tableNameSegment = new TableNameSegment(0, 1, identifierValue);
         when(simpleTableSegment.getTableName()).thenReturn(tableNameSegment);
         when(sqlStatementContext.getAllTables()).thenReturn(Collections.singleton(simpleTableSegment));
-        TableModifyInTransactionException tableModifyInTransactionException = new TableModifyInTransactionException(sqlStatementContext);
+        TableModifyInTransactionException tableModifyInTransactionException = new TableModifyInTransactionException(getTableName(sqlStatementContext));
         assertThat(tableModifyInTransactionException.getTableName(), is("identifierValue"));
+    }
+
+    private String getTableName(final SQLStatementContext<?> sqlStatementContext) {
+        String tableName;
+        if (sqlStatementContext instanceof TableAvailable && !((TableAvailable) sqlStatementContext).getAllTables().isEmpty()) {
+            tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
+        } else {
+            tableName = "unknown_table";
+        }
+        return tableName;
     }
 }

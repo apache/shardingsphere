@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.state;
 
 import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.infra.eventbus.CompletableEventService;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 
 import java.util.Collections;
@@ -33,7 +34,8 @@ public final class StateContext {
     private final Deque<StateType> currentState = new ConcurrentLinkedDeque<>(Collections.singleton(StateType.OK));
     
     public StateContext() {
-        ShardingSphereEventBus.getInstance().register(this);
+        ShardingSphereEventBus.getInstance().register(new CompletableEventService<StateContext>(this) {
+        });
     }
     
     /**

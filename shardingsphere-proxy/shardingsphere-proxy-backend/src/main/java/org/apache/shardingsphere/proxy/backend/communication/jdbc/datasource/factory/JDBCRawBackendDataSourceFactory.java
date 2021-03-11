@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.datasource.JDBCParameterDecorator;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
@@ -86,7 +87,7 @@ public final class JDBCRawBackendDataSourceFactory implements JDBCBackendDataSou
         try {
             Class.forName(driverClassName);
         } catch (final ClassNotFoundException ex) {
-            throw new ShardingSphereException("Cannot load JDBC driver class `%s`, make sure it in ShardingSphere-Proxy's classpath.", driverClassName);
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_LOAD_JDBC_DRIVER_CLASS_ERROR, driverClassName);
         }
     }
     

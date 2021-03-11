@@ -19,13 +19,14 @@ package org.apache.shardingsphere.infra.state;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 
 /**
  * State event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StateEvent {
+public final class StateEvent extends CompletableEvent {
     
     private final StateType type;
     

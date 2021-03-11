@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.condition;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -110,10 +111,10 @@ public final class ShadowConditionEngine {
             }
         }
         if (expression instanceof InExpression) {
-            throw new ShardingSphereException("The SQL clause 'IN...' is unsupported in shadow rule.");
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_SQL_CLAUSE_IN_UNSUPPORTED_IN_SHADOW_ERROR);
         }
         if (expression instanceof BetweenExpression) {
-            throw new ShardingSphereException("The SQL clause 'BETWEEN...AND...' is unsupported in shadow rule.");
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_SQL_CLAUSE_BETWEEN_AND_UNSUPPORTED_IN_SHADOW_ERROR);
         }
         return Optional.empty();
     }

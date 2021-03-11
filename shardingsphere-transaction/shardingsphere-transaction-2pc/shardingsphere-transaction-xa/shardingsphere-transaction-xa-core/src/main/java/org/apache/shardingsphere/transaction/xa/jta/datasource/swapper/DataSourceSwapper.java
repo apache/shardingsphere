@@ -21,6 +21,7 @@ import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 
@@ -70,7 +71,7 @@ public final class DataSourceSwapper {
         }
         if (null == result && !exceptions.isEmpty()) {
             if (exceptions.size() > 1) {
-                throw new ShardingSphereException("Failed to create [%s] XA DataSource", xaDataSourceDefinition);
+                throw new ShardingSphereException(CommonErrorCode.SHARDING_CREATE_XA_DATASOURCE_ERROR, xaDataSourceDefinition);
             } else {
                 throw exceptions.iterator().next();
             }
@@ -86,13 +87,13 @@ public final class DataSourceSwapper {
             try {
                 xaDataSourceClass = Class.forName(xaDataSourceClassName);
             } catch (final ClassNotFoundException ex) {
-                throw new ShardingSphereException("Failed to load [%s]", xaDataSourceClassName);
+                throw new ShardingSphereException(CommonErrorCode.SHARDING_LOAD_XA_DATASOURCE_ERROR, xaDataSourceClassName);
             }
         }
         try {
             return (XADataSource) xaDataSourceClass.newInstance();
         } catch (final InstantiationException | IllegalAccessException ex) {
-            throw new ShardingSphereException("Failed to instance [%s]", xaDataSourceClassName);
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_INSTANCE_XA_DATASOURCE_ERROR, xaDataSourceClassName);
         }
     }
     
@@ -105,8 +106,7 @@ public final class DataSourceSwapper {
             result.put("password", findGetterMethod(dataSource, provider.getPasswordPropertyName()).invoke(dataSource));
             return result;
         } catch (final ReflectiveOperationException ex) {
-            throw new ShardingSphereException("Cannot swap data source type: `%s`, please provide an implementation from SPI `%s`",
-                dataSource.getClass().getName(), DataSourcePropertyProvider.class.getName());
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_SWAP_DATASOURCE_TYPE_ERROR, dataSource.getClass().getName(), DataSourcePropertyProvider.class.getName());
         }
     }
     

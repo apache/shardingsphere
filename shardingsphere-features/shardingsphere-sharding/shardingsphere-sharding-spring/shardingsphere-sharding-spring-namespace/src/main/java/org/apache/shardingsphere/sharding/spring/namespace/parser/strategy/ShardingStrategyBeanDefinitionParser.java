@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.spring.namespace.parser.strategy;
 
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
@@ -47,7 +48,7 @@ public final class ShardingStrategyBeanDefinitionParser extends AbstractBeanDefi
             case ShardingStrategyBeanDefinitionTag.NONE_STRATEGY_ROOT_TAG:
                 return getNoneShardingStrategyConfigBeanDefinition();
             default:
-                throw new ShardingSphereException("Cannot support type: %s", type);
+                throw new ShardingSphereException(CommonErrorCode.SHARDING_SHARDING_STRATEGY_TYPE_TAG_ERROR, type);
         }
     }
     

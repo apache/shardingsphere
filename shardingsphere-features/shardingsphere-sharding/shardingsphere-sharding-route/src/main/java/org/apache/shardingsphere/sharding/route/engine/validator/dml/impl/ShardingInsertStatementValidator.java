@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -55,16 +56,16 @@ public final class ShardingInsertStatementValidator extends ShardingDMLStatement
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(sqlStatement);
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (onDuplicateKeyColumnsSegment.isPresent() && isUpdateShardingKey(shardingRule, onDuplicateKeyColumnsSegment.get(), tableName)) {
-            throw new ShardingSphereException("INSERT INTO ... ON DUPLICATE KEY UPDATE can not support update for sharding column.");
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_NOT_SUPPORT_INSERT_INTO_ON_DUPLICATE_KEY_UPDATE_UPDATE_FOR_SHARDING_COLUMN_ERROR);
         }
         Optional<SubquerySegment> insertSelectSegment = sqlStatement.getInsertSelect();
         if (insertSelectSegment.isPresent() && isContainsKeyGenerateStrategy(shardingRule, tableName)
                 && !isContainsKeyGenerateColumn(shardingRule, sqlStatement.getColumns(), tableName)) {
-            throw new ShardingSphereException("INSERT INTO ... SELECT can not support applying keyGenerator to absent generateKeyColumn.");
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_NOT_SUPPORT_INSERT_INTO_SELECT_APPLYING_KEY_GENERATOR_ERROR);
         }
         TablesContext tablesContext = sqlStatementContext.getTablesContext();
         if (insertSelectSegment.isPresent() && !isAllSameTables(tablesContext.getTableNames()) && !shardingRule.isAllBindingTables(tablesContext.getTableNames())) {
-            throw new ShardingSphereException("The table inserted and the table selected must be the same or bind tables.");
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_TABLE_INSERTED_AND_SELECTED_MUST_BE_THE_SAME_OR_BIND_TABLES_ERROR);
         }
         if (insertSelectSegment.isPresent() && isNeedMergeShardingValues(sqlStatementContext, shardingRule)) {
             needCheckDatabaseInstance = checkSubqueryShardingValues(shardingRule, sqlStatementContext, parameters, schema);

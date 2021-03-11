@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.sctl.set;
 
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -50,7 +51,7 @@ public final class ShardingCTLSetBackendHandler implements TextProtocolBackendHa
         }
         if ("TRANSACTION_TYPE".equals(shardingTCLStatement.get().getKey())) {
             if (null == backendConnection.getSchemaName()) {
-                throw new ShardingSphereException("Please select database, then switch transaction type.");
+                throw new ShardingSphereException(CommonErrorCode.SHARDING_SWITCH_TRANSACTION_TYPE_NOT_SELECT_DATABASE_ERROR);
             }
             try {
                 backendConnection.getTransactionStatus().setTransactionType(TransactionType.valueOf(shardingTCLStatement.get().getValue()));

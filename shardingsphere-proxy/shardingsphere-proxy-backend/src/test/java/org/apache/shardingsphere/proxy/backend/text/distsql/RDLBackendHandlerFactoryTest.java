@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.DistSQLExecuteException;
 import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -195,7 +196,7 @@ public final class RDLBackendHandlerFactoryTest {
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
 
-    @Test(expected = ClassCastException.class)
+    @Test
     public void assertExecuteDropResourceContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
@@ -207,11 +208,15 @@ public final class RDLBackendHandlerFactoryTest {
         setGovernanceMetaDataContexts(true);
         Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropResourceStatement.class), connection);
         assertTrue(rdlBackendHandler.isPresent());
-        ResponseHeader response = rdlBackendHandler.get().execute();
-        assertThat(response, instanceOf(UpdateResponseHeader.class));
+        try {
+            ResponseHeader response = rdlBackendHandler.get().execute();
+            assertThat(response, instanceOf(UpdateResponseHeader.class));
+        } catch (final DistSQLExecuteException e) {
+            assertThat(e.getCause(), instanceOf(ClassCastException.class));
+        }
     }
 
-    @Test(expected = ReplicaQueryRuleNotExistedException.class)
+    @Test
     public void assertExecuteDropReplicaQueryRuleContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
@@ -223,8 +228,12 @@ public final class RDLBackendHandlerFactoryTest {
         setGovernanceMetaDataContexts(true);
         Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(DropReplicaQueryRuleStatement.class), connection);
         assertTrue(rdlBackendHandler.isPresent());
-        ResponseHeader response = rdlBackendHandler.get().execute();
-        assertThat(response, instanceOf(UpdateResponseHeader.class));
+        try {
+            ResponseHeader response = rdlBackendHandler.get().execute();
+            assertThat(response, instanceOf(UpdateResponseHeader.class));
+        } catch (final DistSQLExecuteException e) {
+            assertThat(e.getCause(), instanceOf(ReplicaQueryRuleNotExistedException.class));
+        }
     }
 
     @Test
@@ -243,7 +252,7 @@ public final class RDLBackendHandlerFactoryTest {
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
 
-    @Test(expected = ReplicaQueryRuleNotExistedException.class)
+    @Test
     public void assertExecuteAlterReplicaQueryRuleContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
@@ -255,11 +264,15 @@ public final class RDLBackendHandlerFactoryTest {
         setGovernanceMetaDataContexts(true);
         Optional<TextProtocolBackendHandler> rdlBackendHandler = RDLBackendHandlerFactory.newInstance(new MySQLDatabaseType(), mock(AlterReplicaQueryRuleStatement.class), connection);
         assertTrue(rdlBackendHandler.isPresent());
-        ResponseHeader response = rdlBackendHandler.get().execute();
-        assertThat(response, instanceOf(UpdateResponseHeader.class));
+        try {
+            ResponseHeader response = rdlBackendHandler.get().execute();
+            assertThat(response, instanceOf(UpdateResponseHeader.class));
+        } catch (final DistSQLExecuteException e) {
+            assertThat(e.getCause(), instanceOf(ReplicaQueryRuleNotExistedException.class));
+        }
     }
     
-    @Test(expected = ClassCastException.class)
+    @Test
     public void assertExecuteShowResourceContext() throws SQLException {
         BackendConnection connection = mock(BackendConnection.class);
         when(connection.getSchemaName()).thenReturn("schema");
@@ -271,8 +284,12 @@ public final class RDLBackendHandlerFactoryTest {
         setGovernanceMetaDataContexts(true);
         Optional<TextProtocolBackendHandler> rdlBackendHandler = RQLBackendHandlerFactory.newInstance(mock(ShowResourcesStatement.class), connection);
         assertTrue(rdlBackendHandler.isPresent());
-        ResponseHeader response = rdlBackendHandler.get().execute();
-        assertThat(response, instanceOf(QueryResponseHeader.class));
+        try {
+            ResponseHeader response = rdlBackendHandler.get().execute();
+            assertThat(response, instanceOf(QueryResponseHeader.class));
+        } catch (final DistSQLExecuteException e) {
+            assertThat(e.getCause(), instanceOf(ClassCastException.class));
+        }
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

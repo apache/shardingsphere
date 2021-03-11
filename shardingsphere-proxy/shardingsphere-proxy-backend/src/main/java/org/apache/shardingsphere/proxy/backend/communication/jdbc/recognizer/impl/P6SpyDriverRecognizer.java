@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.impl;
 
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.JDBCDriverURLRecognizerEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.recognizer.spi.JDBCDriverComposeURLRecognizer;
@@ -67,7 +68,7 @@ public final class P6SpyDriverRecognizer implements JDBCDriverComposeURLRecogniz
     
     @Override
     public String getDatabaseType() {
-        throw new ShardingSphereException("Unsupported getDatabaseType method!");
+        throw new ShardingSphereException(CommonErrorCode.SHARDING_GET_DATABASE_TYPE_METHOD_UNSUPPORTED_ERROR);
     }
     
     @Override

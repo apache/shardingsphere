@@ -18,19 +18,20 @@
 package org.apache.shardingsphere.scaling.core.common.exception;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 
 /**
  * Scaling job not found exception.
  */
 @Getter
-public final class ScalingJobNotFoundException extends RuntimeException {
+public final class ScalingJobNotFoundException extends ScalingException {
     
     private static final long serialVersionUID = -903289953649758722L;
     
     private final long jobId;
     
-    public ScalingJobNotFoundException(final String message, final long jobId) {
-        super(message);
+    public ScalingJobNotFoundException(final long jobId) {
+        super(CommonErrorCode.SCALING_JOB_NOT_EXIST, jobId);
         this.jobId = jobId;
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.postgresql.component.checker;
 
 import com.google.common.collect.Maps;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.check.source.AbstractDataSourceChecker;
@@ -44,13 +45,13 @@ public final class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker
                     if (tables.next()) {
                         tableName = tables.getString(3);
                     } else {
-                        throw new PrepareFailedException("No tables find in the source data source");
+                        throw new PrepareFailedException(CommonErrorCode.SCALING_SOURCE_DATA_SOURCE_NO_TABLES_FIND);
                     }
                     connection.prepareStatement(String.format("SELECT * FROM %s LIMIT 1", tableName)).executeQuery();
                 }
             }
         } catch (final SQLException ex) {
-            throw new PrepareFailedException("Data sources privilege check failed!", ex);
+            throw new PrepareFailedException(ex, CommonErrorCode.SCALING_SOURCE_DATA_SOURCE_CHECK_PRIVILEGES_FAIL);
         }
     }
     

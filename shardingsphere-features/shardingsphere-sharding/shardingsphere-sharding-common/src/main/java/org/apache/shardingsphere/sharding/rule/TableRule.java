@@ -24,6 +24,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -168,7 +169,7 @@ public final class TableRule {
         for (String each : actualDataNodes) {
             DataNode dataNode = new DataNode(each);
             if (!dataSourceNames.contains(dataNode.getDataSourceName())) {
-                throw new ShardingSphereException("Cannot find data source in sharding rule, invalid actual data node is: '%s'", each);
+                throw new ShardingSphereException(CommonErrorCode.SHARDING_DATA_SOURCE_IN_SHARDING_RULE_NOT_FOUND_ERROR, each);
             }
             result.add(dataNode);
             dataNodeIndexMap.put(dataNode, index);

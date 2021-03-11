@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAlgorithmException;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -123,7 +124,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         return availableTargetNames.stream()
                 .filter(each -> each.endsWith(parseDateTime(shardingValue.getValue().toString()).format(tableSuffixPattern)))
-                .findFirst().orElseThrow(() -> new ShardingAlgorithmException(String.format("failed to shard value %s, and availableTables %s", shardingValue, availableTargetNames)));
+                .findFirst().orElseThrow(() -> new ShardingAlgorithmException(CommonErrorCode.SHARDING_SHARDING_VALUE_ERROR, shardingValue, availableTargetNames));
     }
     
     @Override

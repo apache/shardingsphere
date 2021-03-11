@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.adapter.invocation.SetParameterMethodInvocation;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.io.IOException;
@@ -217,7 +218,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         try {
             setParameter(parameterIndex, CharStreams.toString(x));
         } catch (final IOException ex) {
-            throw new ShardingSphereException(ex);
+            throw new ShardingSphereException(ex, CommonErrorCode.SHARDING_SET_CHARACTER_STREAM_PARAMETER_ERROR);
         }
     }
     
@@ -226,7 +227,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         try {
             setParameter(parameterIndex, CharStreams.toString(x));
         } catch (final IOException ex) {
-            throw new ShardingSphereException(ex);
+            throw new ShardingSphereException(ex, CommonErrorCode.SHARDING_SET_CHARACTER_STREAM_PARAMETER_ERROR);
         }
     }
     
@@ -235,7 +236,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         try {
             setParameter(parameterIndex, CharStreams.toString(x));
         } catch (final IOException ex) {
-            throw new ShardingSphereException(ex);
+            throw new ShardingSphereException(ex, CommonErrorCode.SHARDING_SET_CHARACTER_STREAM_PARAMETER_ERROR);
         }
     }
     

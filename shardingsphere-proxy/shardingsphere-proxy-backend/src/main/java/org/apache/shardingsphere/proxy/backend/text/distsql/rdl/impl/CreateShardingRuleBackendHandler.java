@@ -23,7 +23,6 @@ import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurat
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -41,8 +40,8 @@ import java.util.stream.Collectors;
  */
 public final class CreateShardingRuleBackendHandler extends SchemaRequiredBackendHandler<CreateShardingRuleStatement> {
     
-    public CreateShardingRuleBackendHandler(final CreateShardingRuleStatement sqlStatement, final BackendConnection backendConnection) {
-        super(sqlStatement, backendConnection);
+    public CreateShardingRuleBackendHandler(final CreateShardingRuleStatement sqlStatement, final String schemaName) {
+        super(sqlStatement, schemaName);
     }
     
     @Override
@@ -70,7 +69,6 @@ public final class CreateShardingRuleBackendHandler extends SchemaRequiredBacken
     }
     
     private void post(final String schemaName, final Collection<RuleConfiguration> rules) {
-        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredEvent(schemaName, rules));
-        // TODO Need to get the executed feedback from registry center for returning.
+        ShardingSphereEventBus.postEvent(new RuleConfigurationsAlteredEvent(schemaName, rules));
     }
 }

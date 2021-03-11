@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
@@ -42,7 +43,7 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
             if (schema.getAllTableNames().contains(tableName)) {
-                throw new ShardingSphereException("Can not support sharding table '%s'.", tableName);
+                throw new ShardingSphereException(CommonErrorCode.SHARDING_NOT_SUPPORT_SHARDING_TABLE_ERROR, tableName);
             }
         }
     }

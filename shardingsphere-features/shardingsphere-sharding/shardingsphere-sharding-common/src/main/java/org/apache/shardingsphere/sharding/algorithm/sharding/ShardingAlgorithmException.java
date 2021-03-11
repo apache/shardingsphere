@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding;
 
+import org.apache.shardingsphere.infra.exception.SQLErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 /**
@@ -25,8 +26,8 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 public final class ShardingAlgorithmException extends ShardingSphereException {
     
     private static final long serialVersionUID = -8513765890834900694L;
-    
-    public ShardingAlgorithmException(final String errorMessage, final Object... args) {
-        super(errorMessage, args);
+
+    public ShardingAlgorithmException(final SQLErrorCode sqlErrorCode, final Object... errorMessageArguments) {
+        super(sqlErrorCode, errorMessageArguments);
     }
 }

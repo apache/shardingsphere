@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.rule;
 import com.google.common.collect.Maps;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.util.Collection;
@@ -74,7 +75,7 @@ public final class EncryptTable {
                 return entry.getKey();
             }
         }
-        throw new ShardingSphereException("Can not find logic column by %s.", cipherColumn);
+        throw new ShardingSphereException(CommonErrorCode.SHARDING_LOGIC_COLUMN_NOT_EXIST, cipherColumn);
     }
     
     /**

@@ -17,10 +17,20 @@
 
 package org.apache.shardingsphere.proxy.frontend.exception;
 
+import org.apache.shardingsphere.infra.exception.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.exception.SQLErrorCode;
+
 /**
  * Frontend exception.
  */
-public abstract class FrontendException extends RuntimeException {
+public abstract class FrontendException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = 1127309123050216974L;
+
+    public FrontendException() {
+    }
+
+    public FrontendException(final SQLErrorCode sqlErrorCode, final Object... errorMessageArguments) {
+        super(sqlErrorCode.getErrorCode(), sqlErrorCode.getSqlState(), String.format(sqlErrorCode.getErrorMessage(), errorMessageArguments));
+    }
 }

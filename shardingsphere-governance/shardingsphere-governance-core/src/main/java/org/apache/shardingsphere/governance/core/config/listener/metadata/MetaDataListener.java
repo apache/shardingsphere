@@ -21,6 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.infra.eventbus.CompletableEventService;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 
 import java.util.Collection;
@@ -46,7 +47,8 @@ public final class MetaDataListener {
         ruleChangedListener = new RuleChangedListener(configurationRepository, schemaNames);
         dataSourceChangedListener = new DataSourceChangedListener(configurationRepository, schemaNames);
         schemaChangedListener = new SchemaChangedListener(configurationRepository, schemaNames);
-        ShardingSphereEventBus.getInstance().register(this);
+        ShardingSphereEventBus.getInstance().register(new CompletableEventService<MetaDataListener>(this) {
+        });
     }
     
     /**

@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.nio.charset.StandardCharsets;
@@ -139,7 +140,7 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm {
      */
     private void setKey(final byte[] key) throws ShardingSphereException {
         if (!(key.length >= KEY_MIN_LENGTH && key.length < SBOX_LENGTH)) {
-            throw new ShardingSphereException("Key length has to be between " + KEY_MIN_LENGTH + " and " + (SBOX_LENGTH - 1));
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_KEY_SCHEDULING_ALGORITHM_LENGTH_ERROR, KEY_MIN_LENGTH, SBOX_LENGTH - 1);
         }
         this.key = key;
     }

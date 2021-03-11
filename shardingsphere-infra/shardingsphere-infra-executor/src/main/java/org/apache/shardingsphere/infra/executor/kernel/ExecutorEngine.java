@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.executor.kernel;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
@@ -128,7 +129,7 @@ public final class ExecutorEngine implements AutoCloseable {
         if (exception.getCause() instanceof SQLException) {
             throw (SQLException) exception.getCause();
         }
-        throw new ShardingSphereException(exception);
+        throw new ShardingSphereException(exception, CommonErrorCode.SHARDING_GET_EXECUTOR_GROUP_RESULTS_ERROR);
     }
     
     @Override

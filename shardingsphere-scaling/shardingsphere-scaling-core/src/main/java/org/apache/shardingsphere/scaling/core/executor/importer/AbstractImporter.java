@@ -20,6 +20,7 @@ package org.apache.shardingsphere.scaling.core.executor.importer;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.scaling.core.common.channel.Channel;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
@@ -117,7 +118,7 @@ public abstract class AbstractImporter extends AbstractScalingExecutor implement
     private void flushInternal(final DataSource dataSource, final List<DataRecord> buffer) {
         boolean success = tryFlush(dataSource, buffer);
         if (isRunning() && !success) {
-            throw new ScalingTaskExecuteException("write failed.");
+            throw new ScalingTaskExecuteException(CommonErrorCode.SCALING_TASK_EXECUTE_WRITE_FAIL);
         }
     }
     

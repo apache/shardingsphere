@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.core.job.task.inventory;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.scaling.core.common.channel.MemoryChannel;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
@@ -116,7 +117,7 @@ public final class InventoryTask extends AbstractScalingExecutor implements Scal
             future.get();
         } catch (final InterruptedException ignored) {
         } catch (final ExecutionException ex) {
-            throw new ScalingTaskExecuteException(String.format("Task %s execute failed ", taskId), ex.getCause());
+            throw new ScalingTaskExecuteException(ex.getCause(), CommonErrorCode.SCALING_TASK_EXECUTE_WAIT_FOR_RESULT_FAIL, taskId);
         }
     }
     

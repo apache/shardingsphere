@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleStatement;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -52,14 +51,14 @@ public final class ShardingRuleQueryBackendHandler extends SchemaRequiredBackend
     
     private Iterator<Map<String, Object>> data;
     
-    private final String schema;
+    private final String schemaName;
     
-    public ShardingRuleQueryBackendHandler(final ShowRuleStatement sqlStatement, final BackendConnection backendConnection) {
-        super(sqlStatement, backendConnection);
+    public ShardingRuleQueryBackendHandler(final ShowRuleStatement sqlStatement, final String schemaName) {
+        super(sqlStatement, schemaName);
         if (sqlStatement.getSchema().isPresent()) {
-            schema = sqlStatement.getSchema().get().getIdentifier().getValue();
+            this.schemaName = sqlStatement.getSchema().get().getIdentifier().getValue();
         } else {
-            schema = backendConnection.getSchemaName();
+            this.schemaName = schemaName;
         }
     }
     
@@ -72,18 +71,18 @@ public final class ShardingRuleQueryBackendHandler extends SchemaRequiredBackend
     
     private List<QueryHeader> getQueryHeader() {
         List<QueryHeader> result = new LinkedList();
-        result.add(new QueryHeader(schema, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "actualDataNodes", "actualDataNodes", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "tableStrategy", "tableStrategy", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "databaseStrategy", "databaseStrategy", Types.BIGINT, "BIGINT", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "keyGenerateStrategy", "keyGenerateStrategy", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "bindingTable", "bindingTable", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "actualDataNodes", "actualDataNodes", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "tableStrategy", "tableStrategy", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "databaseStrategy", "databaseStrategy", Types.BIGINT, "BIGINT", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "keyGenerateStrategy", "keyGenerateStrategy", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "bindingTable", "bindingTable", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         return result;
     }
     
     private Iterator<Map<String, Object>> loadRuleConfiguration() {
         List<Map<String, Object>> result = new LinkedList<>();
-        Optional<ShardingRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schema).getRuleMetaData().getConfigurations()
+        Optional<ShardingRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
         if (ruleConfig.isPresent()) {
             List<List<String>> bindingTables = ruleConfig.get().getBindingTableGroups().stream().filter(each -> null != each && !each.isEmpty()).map(each -> Arrays.asList(each.split(",")))

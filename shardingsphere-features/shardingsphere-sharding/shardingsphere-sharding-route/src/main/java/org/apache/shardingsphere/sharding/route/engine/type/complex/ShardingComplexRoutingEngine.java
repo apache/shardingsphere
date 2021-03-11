@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.complex;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
@@ -62,7 +63,7 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
             }
         }
         if (routeContexts.isEmpty()) {
-            throw new ShardingSphereException("Cannot find table rule and default data source with logic tables: '%s'", logicTables);
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_TABLE_ROUTE_EMPTY_ERROR, logicTables);
         }
         if (1 == routeContexts.size()) {
             RouteContext newRouteContext = routeContexts.iterator().next();

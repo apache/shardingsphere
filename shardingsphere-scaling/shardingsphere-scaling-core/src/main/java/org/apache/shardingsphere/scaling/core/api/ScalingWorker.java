@@ -21,6 +21,7 @@ import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.event.model.scaling.StartScalingEvent;
+import org.apache.shardingsphere.infra.eventbus.CompletableEventService;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.scaling.core.config.HandleConfiguration;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
@@ -46,7 +47,8 @@ public final class ScalingWorker {
      * Init scaling worker.
      */
     public static void init() {
-        ShardingSphereEventBus.getInstance().register(INSTANCE);
+        ShardingSphereEventBus.getInstance().register(new CompletableEventService<ScalingWorker>(INSTANCE) {
+        });
         new FinishedCheckJobExecutor().start();
         new ScalingJobExecutor().start();
     }
@@ -62,7 +64,7 @@ public final class ScalingWorker {
         Optional<Long> jobId = scalingAPI.start(createJobConfig(event));
         if (!jobId.isPresent()) {
             log.info("Switch rule configuration ruleCacheId = {} immediately.", event.getRuleCacheId());
-            ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(event.getSchemaName(), event.getRuleCacheId()));
+            ShardingSphereEventBus.postEvent(new SwitchRuleConfigurationEvent(event.getSchemaName(), event.getRuleCacheId()));
         }
     }
     

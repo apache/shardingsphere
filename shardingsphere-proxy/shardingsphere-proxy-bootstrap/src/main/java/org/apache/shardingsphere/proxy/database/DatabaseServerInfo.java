@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.database;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import javax.sql.DataSource;
@@ -41,7 +42,7 @@ public final class DatabaseServerInfo {
             databaseName = databaseMetaData.getDatabaseProductName();
             databaseVersion = databaseMetaData.getDatabaseProductVersion();
         } catch (final SQLException ex) {
-            throw new ShardingSphereException("Load database server info failed:", ex);
+            throw new ShardingSphereException(ex, CommonErrorCode.SHARDING_LOAD_DATABASE_SERVER_INFO_ERROR);
         }
     }
     

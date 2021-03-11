@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -136,7 +137,7 @@ public final class DriverJDBCExecutor {
     private boolean tryGlobalLock(final SQLStatement sqlStatement, final long lockTimeoutMilliseconds) {
         if (needLock(sqlStatement)) {
             if (!metaDataContexts.getLock().tryGlobalLock(lockTimeoutMilliseconds)) {
-                throw new ShardingSphereException("Service lock wait timeout of %s ms exceeded", lockTimeoutMilliseconds);
+                throw new ShardingSphereException(CommonErrorCode.SHARDING_SERVICE_LOCK_WAIT_TIMEOUT_ERROR, lockTimeoutMilliseconds);
             }
             return true;
         }
@@ -160,7 +161,7 @@ public final class DriverJDBCExecutor {
     }
     
     private void notifySchemaChanged(final ShardingSphereSchema schema) {
-        ShardingSphereEventBus.getInstance().post(new SchemaAlteredEvent(DefaultSchema.LOGIC_NAME, schema));
+        ShardingSphereEventBus.postEvent(new SchemaAlteredEvent(DefaultSchema.LOGIC_NAME, schema));
     }
     
     private void releaseGlobalLock() {

@@ -18,16 +18,18 @@
 package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Unknown database exception.
  */
-@RequiredArgsConstructor
 @Getter
 public final class UnknownDatabaseException extends BackendException {
     
     private static final long serialVersionUID = 6442120909016308638L;
     
     private final String databaseName;
+
+    public UnknownDatabaseException(final String databaseName) {
+        this.databaseName = databaseName;
+    }
 }

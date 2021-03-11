@@ -47,6 +47,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.optimize.execute.raw.plan.PlannerInitializer;
@@ -133,7 +134,7 @@ public final class CalciteContextFactory {
             properties.setProperty(CONFORMANCE_CAMEL_NAME, SqlConformanceEnum.SQL_SERVER_2008.name());
             return;
         }
-        throw new ShardingSphereException("No matching DatabaseType found");
+        throw new ShardingSphereException(CommonErrorCode.SHARDING_DATABASE_TYPE_INIT_CALCITE_PROPERTIES_NO_MATCHING);
     }
     
     private RelOptCluster newCluster() {

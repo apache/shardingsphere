@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.mysql.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.error.SQLErrorCode;
+import org.apache.shardingsphere.infra.exception.SQLErrorCode;
 
 /**
  * Server error code for MySQL.

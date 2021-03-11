@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -61,7 +62,7 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
         if ((1 == shardingTableNames.size() || shardingRule.isAllBindingTables(shardingTableNames)) && !isAllValidTables(shardingRule, tableNames)) {
-            throw new ShardingSphereException("Cannot support Multiple-Table for '%s'.", tableNames);
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_NOT_SUPPORT_MULTIPLE_TABLE_ERROR, tableNames);
         }
     }
     

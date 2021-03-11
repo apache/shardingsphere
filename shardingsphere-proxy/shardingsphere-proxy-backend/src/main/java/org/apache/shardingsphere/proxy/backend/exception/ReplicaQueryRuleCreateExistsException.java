@@ -18,14 +18,17 @@
 package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 
 /**
  * Replica query rule create exists exception.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ReplicaQueryRuleCreateExistsException extends BackendException {
     
     private static final long serialVersionUID = -6902287715467426449L;
+
+    public ReplicaQueryRuleCreateExistsException() {
+        super(CommonErrorCode.REPLICA_QUERY_RULE_EXIST);
+    }
 }

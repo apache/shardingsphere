@@ -18,18 +18,22 @@
 package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 
 import java.util.Collection;
 
 /**
  * Resource not existed exception.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ResourceNotExistedException extends BackendException {
 
     private static final long serialVersionUID = 1704331180489268L;
 
     private final Collection<String> resourceNames;
+
+    public ResourceNotExistedException(final Collection<String> resourceNames) {
+        super(CommonErrorCode.RESOURCE_NOT_EXIST, resourceNames);
+        this.resourceNames = resourceNames;
+    }
 }

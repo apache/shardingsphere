@@ -17,22 +17,20 @@
 
 package org.apache.shardingsphere.scaling.core.common.exception;
 
+import org.apache.shardingsphere.infra.exception.SQLErrorCode;
+
 /**
  * Scaling task run exception.
  */
-public final class ScalingTaskExecuteException extends RuntimeException {
+public final class ScalingTaskExecuteException extends ScalingException {
     
     private static final long serialVersionUID = 1797495940081148743L;
-    
-    public ScalingTaskExecuteException(final String message) {
-        super(message);
+
+    public ScalingTaskExecuteException(final SQLErrorCode sqlErrorCode, final Object... errorMessageArguments) {
+        super(sqlErrorCode, errorMessageArguments);
     }
-    
-    public ScalingTaskExecuteException(final Throwable cause) {
-        super(cause);
-    }
-    
-    public ScalingTaskExecuteException(final String message, final Throwable cause) {
-        super(message, cause);
+
+    public ScalingTaskExecuteException(final Throwable cause, final SQLErrorCode sqlErrorCode, final Object... errorMessageArguments) {
+        super(cause, sqlErrorCode, errorMessageArguments);
     }
 }

@@ -18,38 +18,28 @@
 package org.apache.shardingsphere.infra.exception;
 
 /**
- * Basic exception of ShardingSphere.
+ * SQL error code.
  */
-public class ShardingSphereException extends RuntimeException {
-    
-    private static final long serialVersionUID = -1343739516839252250L;
+public interface SQLErrorCode {
     
     /**
-     * Constructs an exception with formatted error message and arguments. 
+     * Get error code.
      * 
-     * @param errorMessage formatted error message
-     * @param args arguments of error message
+     * @return error code
      */
-    public ShardingSphereException(final String errorMessage, final Object... args) {
-        super(String.format(errorMessage, args));
-    }
+    int getErrorCode();
     
     /**
-     * Constructs an exception with error message and cause.
+     * Get SQL state.
      * 
-     * @param message error message
-     * @param cause error cause
+     * @return SQL state
      */
-    public ShardingSphereException(final String message, final Exception cause) {
-        super(message, cause);
-    }
+    String getSqlState();
     
     /**
-     * Constructs an exception with cause.
-     *
-     * @param cause error cause
+     * Get error message.
+     * 
+     * @return error message
      */
-    public ShardingSphereException(final Exception cause) {
-        super(cause);
-    }
+    String getErrorMessage();
 }

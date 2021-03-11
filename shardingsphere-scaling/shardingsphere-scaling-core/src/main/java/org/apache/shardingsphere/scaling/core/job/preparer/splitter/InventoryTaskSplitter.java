@@ -19,6 +19,7 @@ package org.apache.shardingsphere.scaling.core.job.preparer.splitter;
 
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.datasource.MetaDataManager;
@@ -166,7 +167,7 @@ public final class InventoryTaskSplitter {
                 }
             }
         } catch (final SQLException ex) {
-            throw new PrepareFailedException(String.format("Split task for table %s by primary key %s error", dumperConfig.getTableName(), dumperConfig.getPrimaryKey()), ex);
+            throw new PrepareFailedException(ex, CommonErrorCode.SCALING_SPLIT_TASK_FAIL, dumperConfig.getTableName(), dumperConfig.getPrimaryKey());
         }
         return result;
     }

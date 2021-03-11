@@ -17,31 +17,31 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataCreatedEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.AbstractBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 
 /**
  * Create database backend handler.
  */
-@RequiredArgsConstructor
-public final class CreateDatabaseBackendHandler implements TextProtocolBackendHandler {
+public final class CreateDatabaseBackendHandler extends AbstractBackendHandler<CreateDatabaseStatement> {
     
-    private final CreateDatabaseStatement sqlStatement;
-    
+    public CreateDatabaseBackendHandler(final CreateDatabaseStatement sqlStatement) {
+        super(sqlStatement, "");
+    }
+
     @Override
-    public ResponseHeader execute() {
+    protected ResponseHeader execute(final String schemaName, final CreateDatabaseStatement sqlStatement) {
         check(sqlStatement);
         post(sqlStatement);
         return new UpdateResponseHeader(sqlStatement);
     }
-    
+
     private void check(final CreateDatabaseStatement sqlStatement) {
         if (ProxyContext.getInstance().getAllSchemaNames().contains(sqlStatement.getDatabaseName())) {
             throw new DBCreateExistsException(sqlStatement.getDatabaseName());
@@ -49,7 +49,6 @@ public final class CreateDatabaseBackendHandler implements TextProtocolBackendHa
     }
     
     private void post(final CreateDatabaseStatement sqlStatement) {
-        // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new MetaDataCreatedEvent(sqlStatement.getDatabaseName()));
+        ShardingSphereEventBus.postEvent(new MetaDataCreatedEvent(sqlStatement.getDatabaseName()));
     }
 }

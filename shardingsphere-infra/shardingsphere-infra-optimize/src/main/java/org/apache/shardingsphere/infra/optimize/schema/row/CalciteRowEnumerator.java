@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.optimize.schema.row;
 
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 
@@ -97,7 +98,7 @@ public final class CalciteRowEnumerator implements Enumerator<Object[]> {
             }
             currentRow = null;
         } catch (final SQLException ex) {
-            throw new ShardingSphereException(ex);
+            throw new ShardingSphereException(ex, CommonErrorCode.SHARDING_CLOSE_CALCITE_ROW_ENUMERATOR_ERROR);
         }
     }
 }

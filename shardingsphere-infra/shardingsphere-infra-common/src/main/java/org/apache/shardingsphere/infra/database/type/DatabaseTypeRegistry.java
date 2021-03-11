@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.database.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.util.HashMap;
@@ -69,7 +70,7 @@ public final class DatabaseTypeRegistry {
      * @return actual database type
      */
     public static DatabaseType getActualDatabaseType(final String name) {
-        return Optional.ofNullable(DATABASE_TYPES.get(name)).orElseThrow(() -> new ShardingSphereException("Unsupported database:'%s'", name));
+        return Optional.ofNullable(DATABASE_TYPES.get(name)).orElseThrow(() -> new ShardingSphereException(CommonErrorCode.SHARDING_DATABASE_TYPE_NOT_UNSUPPORTED, name));
     }
     
     /**

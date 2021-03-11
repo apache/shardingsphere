@@ -24,7 +24,6 @@ import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurat
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleExistedException;
@@ -52,8 +51,8 @@ import java.util.stream.Collectors;
  */
 public final class AlterShardingRuleBackendHandler extends SchemaRequiredBackendHandler<AlterShardingRuleStatement> {
     
-    public AlterShardingRuleBackendHandler(final AlterShardingRuleStatement sqlStatement, final BackendConnection backendConnection) {
-        super(sqlStatement, backendConnection);
+    public AlterShardingRuleBackendHandler(final AlterShardingRuleStatement sqlStatement, final String schemaName) {
+        super(sqlStatement, schemaName);
     }
     
     @Override
@@ -211,6 +210,6 @@ public final class AlterShardingRuleBackendHandler extends SchemaRequiredBackend
     }
     
     private void post(final String schemaName, final Collection<RuleConfiguration> rules) {
-        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredEvent(schemaName, rules));
+        ShardingSphereEventBus.postEvent(new RuleConfigurationsAlteredEvent(schemaName, rules));
     }
 }

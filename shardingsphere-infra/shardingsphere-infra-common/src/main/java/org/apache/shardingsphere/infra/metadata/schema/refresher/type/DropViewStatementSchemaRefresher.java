@@ -37,7 +37,7 @@ public final class DropViewStatementSchemaRefresher implements SchemaRefresher<D
                         final Collection<String> routeDataSourceNames, final DropViewStatement sqlStatement, final SchemaBuilderMaterials materials) {
         sqlStatement.getViews().forEach(each -> schema.remove(each.getTableName().getIdentifier().getValue()));
         for (SimpleTableSegment each : sqlStatement.getViews()) {
-            ShardingSphereEventBus.getInstance().post(new DropTableEvent(each.getTableName().getIdentifier().getValue()));
+            ShardingSphereEventBus.postEvent(new DropTableEvent(each.getTableName().getIdentifier().getValue()));
         }
     }
 }

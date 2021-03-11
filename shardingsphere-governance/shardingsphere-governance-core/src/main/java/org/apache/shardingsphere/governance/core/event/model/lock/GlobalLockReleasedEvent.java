@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.governance.core.event.model.lock;
 
+import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 
 /**
  * Global lock released event.
  */
-public final class GlobalLockReleasedEvent implements GovernanceEvent {
+public final class GlobalLockReleasedEvent extends CompletableEvent implements GovernanceEvent {
 }

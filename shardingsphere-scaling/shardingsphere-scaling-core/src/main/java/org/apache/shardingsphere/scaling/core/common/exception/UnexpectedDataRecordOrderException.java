@@ -17,15 +17,23 @@
 
 package org.apache.shardingsphere.scaling.core.common.exception;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 
-@RequiredArgsConstructor
-public final class UnexpectedDataRecordOrderException extends RuntimeException {
+/**
+ * Unexpected data record order exception.
+ */
+public final class UnexpectedDataRecordOrderException extends ScalingException {
     
     private static final long serialVersionUID = 6023695604738387750L;
     
     private final DataRecord beforeDataRecord;
     
     private final DataRecord afterDataRecord;
+
+    public UnexpectedDataRecordOrderException(final DataRecord beforeDataRecord, final DataRecord afterDataRecord) {
+        super(CommonErrorCode.SCALING_UNEXPECTED_DATA_RECORD_ORDER_EXCEPTION, beforeDataRecord, afterDataRecord);
+        this.beforeDataRecord = beforeDataRecord;
+        this.afterDataRecord = afterDataRecord;
+    }
 }

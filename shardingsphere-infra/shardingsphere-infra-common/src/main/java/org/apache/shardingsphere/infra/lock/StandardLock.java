@@ -39,7 +39,7 @@ public final class StandardLock extends AbstractShardingSphereLock {
         } catch (final InterruptedException ignored) {
         }
         if (result) {
-            ShardingSphereEventBus.getInstance().post(new StateEvent(StateType.LOCK, true));
+            ShardingSphereEventBus.postEvent(new StateEvent(StateType.LOCK, true));
         }
         return result;
     }
@@ -47,7 +47,7 @@ public final class StandardLock extends AbstractShardingSphereLock {
     @Override
     public void releaseGlobalLock() {
         lock.unlock();
-        ShardingSphereEventBus.getInstance().post(new StateEvent(StateType.LOCK, false));
+        ShardingSphereEventBus.postEvent(new StateEvent(StateType.LOCK, false));
         signalAll();
     }
 }

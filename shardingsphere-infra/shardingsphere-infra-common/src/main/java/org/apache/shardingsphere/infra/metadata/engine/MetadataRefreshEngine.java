@@ -73,12 +73,12 @@ public final class MetadataRefreshEngine {
     private void refreshSchema(final SQLStatement sqlStatement, final Collection<String> routeDataSourceNames, final SchemaRefresher refresher) throws SQLException {
         ShardingSphereSchema schema = metaData.getSchema();
         refresher.refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, materials);
-        ShardingSphereEventBus.getInstance().post(new SchemaAlteredEvent(metaData.getName(), schema));
+        ShardingSphereEventBus.postEvent(new SchemaAlteredEvent(metaData.getName(), schema));
     }
     
     private void refreshAuthentication(final SQLStatement sqlStatement, final AuthenticationRefresher refresher) {
         refresher.refresh(authentication, sqlStatement, metaData);
         // TODO :Subscribe and handle this event
-        ShardingSphereEventBus.getInstance().post(new AuthenticationAlteredEvent(authentication));
+        ShardingSphereEventBus.postEvent(new AuthenticationAlteredEvent(authentication));
     }
 }

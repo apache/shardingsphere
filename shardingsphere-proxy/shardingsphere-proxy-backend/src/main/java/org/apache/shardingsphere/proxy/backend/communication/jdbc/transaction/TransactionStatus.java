@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -48,7 +49,7 @@ public final class TransactionStatus {
      */
     public void setTransactionType(final TransactionType transactionType) {
         if (inTransaction) {
-            throw new ShardingSphereException("Failed to switch transaction type, please terminate current transaction.");
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_SWITCH_TRANSACTION_TYPE_ERROR);
         }
         this.transactionType = transactionType;
     }

@@ -49,19 +49,19 @@ public final class RQLBackendHandlerFactory {
             String ruleType = ((ShowRuleStatement) sqlStatement).getRuleType();
             switch (ruleType.toUpperCase()) {
                 case "SHARDING":
-                    return Optional.of(new ShardingRuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
+                    return Optional.of(new ShardingRuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection.getSchemaName()));
                 case "REPLICA_QUERY":
-                    return Optional.of(new ReplicaQueryRuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
+                    return Optional.of(new ReplicaQueryRuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection.getSchemaName()));
                 case "ENCRYPT":
-                    return Optional.of(new RuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
+                    return Optional.of(new RuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection.getSchemaName()));
                 case "SHADOW":
-                    return Optional.of(new RuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection));
+                    return Optional.of(new RuleQueryBackendHandler((ShowRuleStatement) sqlStatement, backendConnection.getSchemaName()));
                 default:
                     throw new UnsupportedOperationException(ruleType);
             }
         }
         if (sqlStatement instanceof ShowResourcesStatement) {
-            return Optional.of(new DataSourcesQueryBackendHandler((ShowResourcesStatement) sqlStatement, backendConnection));
+            return Optional.of(new DataSourcesQueryBackendHandler((ShowResourcesStatement) sqlStatement, backendConnection.getSchemaName()));
         }
         return Optional.empty();
     }

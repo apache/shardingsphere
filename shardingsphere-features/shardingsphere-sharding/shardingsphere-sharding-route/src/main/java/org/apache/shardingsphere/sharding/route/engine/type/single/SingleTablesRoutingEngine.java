@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.single;
 
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -70,7 +71,7 @@ public final class SingleTablesRoutingEngine implements ShardingRouteEngine {
     private void fillRouteContext(final ShardingRule shardingRule, final RouteContext routeContext) {
         for (String each : logicTables) {
             if (!shardingRule.getSingleTableRules().containsKey(each)) {
-                throw new ShardingSphereException("`%s` single table does not exist.", each);
+                throw new ShardingSphereException(CommonErrorCode.SHARDING_SINGLE_TABLE_DOES_NOT_EXIST_ERROR, each);
             }
             String dataSource = shardingRule.getSingleTableRules().get(each).getDataSourceName();
             RouteMapper dataSourceMapper = new RouteMapper(dataSource, dataSource);

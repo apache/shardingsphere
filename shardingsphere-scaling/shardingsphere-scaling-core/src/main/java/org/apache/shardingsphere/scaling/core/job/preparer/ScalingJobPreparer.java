@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.core.job.preparer;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
 import org.apache.shardingsphere.scaling.core.config.TaskConfiguration;
@@ -55,7 +56,7 @@ public final class ScalingJobPreparer {
             initInventoryTasks(jobContext, dataSourceManager);
         } catch (final SQLException ex) {
             jobContext.setStatus(JobStatus.PREPARING_FAILURE);
-            throw new PrepareFailedException("Scaling job preparing failed", ex);
+            throw new PrepareFailedException(ex, CommonErrorCode.SCALING_PREPARE_FAIL);
         }
     }
     

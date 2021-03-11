@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.scaling.core.common.channel.Channel;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
@@ -100,7 +101,7 @@ public abstract class AbstractInventoryDumper extends AbstractScalingExecutor im
         } catch (final SQLException ex) {
             stop();
             channel.close();
-            throw new ScalingTaskExecuteException(ex);
+            throw new ScalingTaskExecuteException(ex, CommonErrorCode.SCALING_TASK_EXECUTE_DUMP_FAIL);
         } finally {
             pushRecord(new FinishedRecord(new PlaceholderPosition()));
         }

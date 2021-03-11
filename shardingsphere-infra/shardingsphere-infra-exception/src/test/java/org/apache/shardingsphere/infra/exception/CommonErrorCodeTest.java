@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.error;
+package org.apache.shardingsphere.infra.exception;
 
 import org.junit.Test;
 

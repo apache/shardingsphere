@@ -17,10 +17,32 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
+import lombok.Getter;
+import org.apache.shardingsphere.infra.exception.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.exception.SQLErrorCode;
+
+import java.sql.SQLException;
+
 /**
  * Backend exception.
  */
-public abstract class BackendException extends RuntimeException {
+@Getter
+public abstract class BackendException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = -2361593557266150160L;
+
+    public BackendException() {
+    }
+
+    public BackendException(final SQLErrorCode sqlErrorCode, final Object... errorMessageArguments) {
+        super(sqlErrorCode.getErrorCode(), sqlErrorCode.getSqlState(), String.format(sqlErrorCode.getErrorMessage(), errorMessageArguments));
+    }
+
+    public BackendException(final SQLException cause) {
+        super(cause);
+    }
+
+    public BackendException(final Throwable cause) {
+        super(cause);
+    }
 }

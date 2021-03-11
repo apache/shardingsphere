@@ -22,6 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.instance.GovernanceInstance;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.infra.eventbus.CompletableEventService;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
@@ -52,7 +53,8 @@ public final class RegistryCenter {
         repository = registryRepository;
         instance = GovernanceInstance.getInstance();
         lockNode = new LockNode();
-        ShardingSphereEventBus.getInstance().register(this);
+        ShardingSphereEventBus.getInstance().register(new CompletableEventService<RegistryCenter>(this) {
+        });
     }
     
     /**

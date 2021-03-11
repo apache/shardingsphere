@@ -38,6 +38,7 @@ import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.eventbus.CompletableEventService;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
@@ -76,7 +77,8 @@ public final class ConfigCenter {
         node = new ConfigCenterNode();
         this.repository = repository;
         configCacheManager = new ConfigCacheManager(repository, node);
-        ShardingSphereEventBus.getInstance().register(this);
+        ShardingSphereEventBus.getInstance().register(new CompletableEventService<ConfigCenter>(this) {
+        });
     }
     
     /**
@@ -200,7 +202,7 @@ public final class ConfigCenter {
                 repository.get(node.getDataSourcePath(event.getSchemaName())),
                 repository.get(node.getRulePath(event.getSchemaName())),
                 configCacheManager.loadCache(node.getRulePath(event.getSchemaName()), event.getCacheId()), event.getCacheId());
-        ShardingSphereEventBus.getInstance().post(startScalingEvent);
+        ShardingSphereEventBus.postEvent(startScalingEvent);
     }
     
     private Collection<RuleConfiguration> loadCachedRuleConfigurations(final String schemaName, final String ruleConfigurationCacheId) {
@@ -260,7 +262,7 @@ public final class ConfigCenter {
                 repository.get(node.getDataSourcePath(schemaName)),
                 repository.get(node.getRulePath(schemaName)),
                 configCacheManager.loadCache(node.getRulePath(schemaName), cacheId), cacheId);
-        ShardingSphereEventBus.getInstance().post(event);
+        ShardingSphereEventBus.postEvent(event);
     }
     
     private YamlRootRuleConfigurations createYamlRootRuleConfigurations(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations) {

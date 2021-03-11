@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.infra.config.exception;
 
+import org.apache.shardingsphere.infra.exception.ShardingSphereSQLException;
+
 /**
  * Configuration exception.
  */
-public final class ShardingSphereConfigurationException extends RuntimeException {
+public final class ShardingSphereConfigurationException extends ShardingSphereSQLException {
     
     private static final long serialVersionUID = -1360264079938958332L;
     

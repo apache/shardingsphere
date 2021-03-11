@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.postgresql.wal.decode;
 
 import lombok.AllArgsConstructor;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractRowEvent;
@@ -76,7 +77,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
                 result = readDeleteRowEvent(data);
                 break;
             default:
-                throw new ScalingTaskExecuteException("");
+                throw new ScalingTaskExecuteException(CommonErrorCode.SCALING_TASK_EXECUTE_READ_TABLE_EVENT_FAIL);
         }
         String[] tableMetadata = tableName.split("\\.");
         result.setSchemaName(tableMetadata[0]);
@@ -223,7 +224,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
                 if (' ' == c2) {
                     return result.toString();
                 } else if ('\'' != c2) {
-                    throw new ScalingTaskExecuteException("Read character varying data unexpected exception");
+                    throw new ScalingTaskExecuteException(CommonErrorCode.SCALING_TASK_EXECUTE_READ_CHARACTER_VARYING_FAIL);
                 }
             }
             result.append(c);

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.scaling.postgresql.component;
 
 import lombok.Setter;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.scaling.core.common.channel.Channel;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.common.record.Record;
@@ -86,7 +87,7 @@ public final class PostgreSQLWalDumper extends AbstractScalingExecutor implement
                 pushRecord(walEventConverter.convert(event));
             }
         } catch (final SQLException ex) {
-            throw new ScalingTaskExecuteException(ex);
+            throw new ScalingTaskExecuteException(ex, CommonErrorCode.SCALING_TASK_EXECUTE_DUMP_FAIL);
         }
     }
     

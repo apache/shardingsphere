@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmF
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.eventbus.CompletableEventService;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.CreateTableEvent;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.DropTableEvent;
@@ -111,7 +112,8 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? TypedSPIRegistry.getRegisteredService(KeyGenerateAlgorithm.class) : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
-        ShardingSphereEventBus.getInstance().register(this);
+        ShardingSphereEventBus.getInstance().register(new CompletableEventService<ShardingRule>(this) {
+        });
     }
     
     public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {

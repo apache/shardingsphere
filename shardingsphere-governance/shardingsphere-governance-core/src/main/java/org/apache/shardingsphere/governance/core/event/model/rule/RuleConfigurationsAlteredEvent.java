@@ -19,6 +19,7 @@ package org.apache.shardingsphere.governance.core.event.model.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
 import java.util.Collection;
@@ -28,7 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class RuleConfigurationsAlteredEvent {
+public final class RuleConfigurationsAlteredEvent extends CompletableEvent {
     
     private final String schemaName;
     

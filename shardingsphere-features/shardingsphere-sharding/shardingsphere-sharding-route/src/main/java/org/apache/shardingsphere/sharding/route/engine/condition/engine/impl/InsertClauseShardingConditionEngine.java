@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.condition.engine.impl;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.spi.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
@@ -95,7 +96,7 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
                 } else if (ExpressionConditionUtils.isNowExpression(each)) {
                     result.getValues().add(new ListShardingConditionValue<>(columnName, tableName, Collections.singletonList(datetimeService.getDatetime())));
                 } else if (ExpressionConditionUtils.isNullExpression(each)) {
-                    throw new ShardingSphereException("Insert clause sharding column can't be null.");
+                    throw new ShardingSphereException(CommonErrorCode.SHARDING_INSERT_CLAUSE_SHARDING_COLUMN_IS_NULL_ERROR);
                 }
             }
         }

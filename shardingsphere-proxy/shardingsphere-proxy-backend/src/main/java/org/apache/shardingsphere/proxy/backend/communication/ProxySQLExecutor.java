@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.communication;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -89,7 +91,14 @@ public final class ProxySQLExecutor {
      */
     public void checkExecutePrerequisites(final ExecutionContext executionContext) {
         if (isExecuteDDLInXATransaction(executionContext.getSqlStatementContext().getSqlStatement())) {
-            throw new TableModifyInTransactionException(executionContext.getSqlStatementContext());
+            final SQLStatementContext<?> sqlStatementContext = executionContext.getSqlStatementContext();
+            String tableName;
+            if (sqlStatementContext instanceof TableAvailable && !((TableAvailable) sqlStatementContext).getAllTables().isEmpty()) {
+                tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
+            } else {
+                tableName = "unknown_table";
+            }
+            throw new TableModifyInTransactionException(tableName);
         }
     }
     

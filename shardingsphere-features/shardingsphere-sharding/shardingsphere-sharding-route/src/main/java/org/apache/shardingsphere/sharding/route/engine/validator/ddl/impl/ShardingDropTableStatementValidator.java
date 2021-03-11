@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -67,7 +68,7 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
             }
         }
         if (!inUsedTable.isEmpty()) {
-            throw new ShardingSphereException("Actual Tables: [%s] are in use.", inUsedTable);
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_ACTUAL_TABLES_IN_USE_ERROR, inUsedTable);
         }
     }
 }

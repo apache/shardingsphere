@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.TableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.RuleBasedTableMetaDataBuilder;
@@ -127,12 +128,11 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
     
     private void throwExceptionIfNecessary(final Collection<TableMetaDataViolation> violations, final String logicTableName) {
         if (!violations.isEmpty()) {
-            StringBuilder errorMessage = new StringBuilder(
-                    "Cannot get uniformed table structure for logic table `%s`, it has different meta data of actual tables are as follows:").append(System.lineSeparator());
+            StringBuilder errorMessage = new StringBuilder("it has different meta data of actual tables are as follows:").append(System.lineSeparator());
             for (TableMetaDataViolation each : violations) {
                 errorMessage.append("actual table: ").append(each.getActualTableName()).append(", meta data: ").append(each.getTableMetaData()).append(System.lineSeparator());
             }
-            throw new ShardingSphereException(errorMessage.toString(), logicTableName);
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_TABLE_METAA_DATA_CHECK_UNIFORMED_ERROR, logicTableName, errorMessage.toString());
         }
     }
 

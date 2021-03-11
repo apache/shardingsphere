@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.optimize.schema.row;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -69,7 +70,7 @@ public final class CalciteRowExecutor {
             Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups = createExecutionGroups(context);
             return jdbcExecutor.execute(executionGroups, callback).stream().map(each -> (QueryResult) each).collect(Collectors.toList());
         } catch (final SQLException ex) {
-            throw new ShardingSphereException(ex);
+            throw new ShardingSphereException(ex, CommonErrorCode.SHARDING_EXECUTE_CALCITE_ROW_ENUMERATOR_ERROR);
         }
     }
     

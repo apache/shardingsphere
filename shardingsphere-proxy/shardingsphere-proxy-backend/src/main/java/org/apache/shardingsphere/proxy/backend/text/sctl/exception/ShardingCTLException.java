@@ -18,16 +18,21 @@
 package org.apache.shardingsphere.proxy.backend.text.sctl.exception;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.SQLErrorCode;
+import org.apache.shardingsphere.proxy.backend.exception.BackendException;
 
 /**
  * Sharding CTL exception.
  */
-@RequiredArgsConstructor
 @Getter
-public abstract class ShardingCTLException extends RuntimeException {
+public abstract class ShardingCTLException extends BackendException {
     
     private static final long serialVersionUID = -9206948159895184071L;
     
     private final String shardingCTL;
+
+    protected ShardingCTLException(final SQLErrorCode sqlErrorCode, final String shardingCTL) {
+        super(sqlErrorCode, shardingCTL);
+        this.shardingCTL = shardingCTL;
+    }
 }

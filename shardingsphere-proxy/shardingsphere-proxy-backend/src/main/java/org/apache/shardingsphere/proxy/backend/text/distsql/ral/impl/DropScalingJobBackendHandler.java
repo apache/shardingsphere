@@ -17,26 +17,26 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.DropScalingJobStatement;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.AbstractBackendHandler;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 
 /**
  * Drop scaling job backend handler.
  */
-@RequiredArgsConstructor
-public final class DropScalingJobBackendHandler implements TextProtocolBackendHandler {
-    
-    private final DropScalingJobStatement sqlStatement;
+public final class DropScalingJobBackendHandler extends AbstractBackendHandler<DropScalingJobStatement> {
     
     private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
-    
+
+    public DropScalingJobBackendHandler(final DropScalingJobStatement sqlStatement) {
+        super(sqlStatement, "");
+    }
+
     @Override
-    public ResponseHeader execute() {
+    protected ResponseHeader execute(final String schemaName, final DropScalingJobStatement sqlStatement) {
         scalingAPI.remove(sqlStatement.getJobId());
         return new UpdateResponseHeader(sqlStatement);
     }

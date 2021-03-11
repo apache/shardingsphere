@@ -23,6 +23,7 @@ import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -97,7 +98,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
      */
     public void setCurrentSchema(final String schemaName) {
         if (transactionStatus.isInTransaction()) {
-            throw new ShardingSphereException("Failed to switch schema, please terminate current transaction.");
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_SWITCH_SCHEMA_ERROR);
         }
         this.schemaName = schemaName;
     }

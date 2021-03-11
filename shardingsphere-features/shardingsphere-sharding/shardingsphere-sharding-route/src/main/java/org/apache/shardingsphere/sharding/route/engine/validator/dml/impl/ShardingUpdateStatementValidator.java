@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -61,7 +62,7 @@ public final class ShardingUpdateStatementValidator extends ShardingDMLStatement
                 if (shardingColumnSetAssignmentValue.isPresent() && shardingValue.isPresent() && shardingColumnSetAssignmentValue.get().equals(shardingValue.get())) {
                     continue;
                 }
-                throw new ShardingSphereException("Can not update sharding key, logic table: [%s], column: [%s].", tableName, shardingColumn);
+                throw new ShardingSphereException(CommonErrorCode.SHARDING_UPDATE_SHARDING_KEY_ERROR, tableName, shardingColumn);
             }
         }
     }
@@ -153,7 +154,7 @@ public final class ShardingUpdateStatementValidator extends ShardingDMLStatement
     @Override
     public void postValidate(final UpdateStatement sqlStatement, final RouteContext routeContext) {
         if (UpdateStatementHandler.getLimitSegment(sqlStatement).isPresent() && routeContext.getRouteUnits().size() > 1) {
-            throw new ShardingSphereException("UPDATE ... LIMIT can not support sharding route to multiple data nodes.");
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_NOT_SUPPORT_UPDATE_LIMIT_IN_MULTIPLE_DATA_NODES_ERROR);
         }
     }
 }

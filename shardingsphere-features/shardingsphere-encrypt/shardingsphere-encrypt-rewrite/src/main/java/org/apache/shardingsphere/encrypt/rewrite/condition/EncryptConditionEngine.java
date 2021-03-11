@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptEqualCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -120,7 +121,7 @@ public final class EncryptConditionEngine {
             return createInEncryptCondition(tableName, (InExpression) expression, ((InExpression) expression).getRight());
         }
         if (expression instanceof BetweenExpression) {
-            throw new ShardingSphereException("The SQL clause 'BETWEEN...AND...' is unsupported in encrypt rule.");
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_BETWEEN_AND_IN_ENCRYPT_RULE_NOT_UNSUPPORTED);
         }
         return Optional.empty();
     }

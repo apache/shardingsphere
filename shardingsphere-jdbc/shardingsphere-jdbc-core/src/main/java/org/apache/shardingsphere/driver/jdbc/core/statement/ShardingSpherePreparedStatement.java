@@ -43,6 +43,7 @@ import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -332,7 +333,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         try {
             return statement.getResultSet();
         } catch (final SQLException ex) {
-            throw new ShardingSphereException(ex);
+            throw new ShardingSphereException(ex, CommonErrorCode.SHARDING_GET_RESULTSET_FROM_STATEMENT_ERROR);
         }
     }
     

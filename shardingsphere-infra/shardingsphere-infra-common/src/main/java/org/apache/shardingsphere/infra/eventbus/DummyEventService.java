@@ -15,31 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.error;
+package org.apache.shardingsphere.infra.eventbus;
+
+import com.google.common.eventbus.Subscribe;
 
 /**
- * SQL error code.
+ * Dummy event service.
  */
-public interface SQLErrorCode {
-    
+public final class DummyEventService {
+
+    public DummyEventService() {
+        ShardingSphereEventBus.getInstance().register(new CompletableEventService<DummyEventService>(this) {
+        });
+    }
+
     /**
-     * Get error code.
-     * 
-     * @return error code
+     * Handle event.
+     *
+     * @param completableEvent completable event
      */
-    int getErrorCode();
-    
-    /**
-     * Get SQL state.
-     * 
-     * @return SQL state
-     */
-    String getSqlState();
-    
-    /**
-     * Get error message.
-     * 
-     * @return error message
-     */
-    String getErrorMessage();
+    @Subscribe
+    public void handle(final CompletableEvent completableEvent) {
+    }
 }

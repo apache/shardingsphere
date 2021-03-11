@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 
 /**
  * Table modify in transaction exception.
@@ -31,11 +29,7 @@ public final class TableModifyInTransactionException extends BackendException {
     
     private final String tableName;
     
-    public TableModifyInTransactionException(final SQLStatementContext<?> sqlStatementContext) {
-        if (sqlStatementContext instanceof TableAvailable && !((TableAvailable) sqlStatementContext).getAllTables().isEmpty()) {
-            tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
-        } else {
-            tableName = "unknown_table";
-        }
+    public TableModifyInTransactionException(final String tableName) {
+        this.tableName = tableName;
     }
 }

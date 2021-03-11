@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.optimize.schema;
 
 import org.apache.commons.collections4.map.LinkedMap;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.optimize.schema.generator.CalciteLogicSchemaGenerator;
@@ -39,7 +40,7 @@ public final class CalciteLogicSchemaFactory {
             try {
                 schemas.put(each.getKey(), new CalciteLogicSchemaGenerator(each.getValue()));
             } catch (final SQLException ex) {
-                throw new ShardingSphereException(ex);
+                throw new ShardingSphereException(ex, CommonErrorCode.SHARDING_INIT_CALCITE_LOGIC_SCHEMA_FACTORY_ERROR);
             }
         }
     }
@@ -53,7 +54,7 @@ public final class CalciteLogicSchemaFactory {
      */
     public CalciteLogicSchema create(final String name, final CalciteRowExecutor executor) {
         if (!schemas.containsKey(name)) {
-            throw new ShardingSphereException("No `%s` schema.", name);
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_CREATE_CALCITE_LOGIC_SCHEMA_ERROR, name);
         }
         return schemas.get(name).create(executor);
     }

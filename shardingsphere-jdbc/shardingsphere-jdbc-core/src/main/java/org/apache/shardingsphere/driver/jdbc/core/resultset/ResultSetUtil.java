@@ -22,6 +22,7 @@ import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.CommonErrorCode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.math.BigDecimal;
@@ -88,7 +89,7 @@ public final class ResultSetUtil {
         try {
             return new URL(val);
         } catch (final MalformedURLException ex) {
-            throw new ShardingSphereException("Unsupported Date type: URL for value %s", val);
+            throw new ShardingSphereException(CommonErrorCode.SHARDING_UNSUPPORTED_DATA_TYPE_URL_ERROR, val);
         }
     }
     
@@ -111,7 +112,7 @@ public final class ResultSetUtil {
             BigDecimal bigDecimal = new BigDecimal(value.toString());
             return adjustBigDecimalResult(bigDecimal, needScale, scale);
         }
-        throw new ShardingSphereException("Unsupported Date type: BigDecimal for value %s", value);
+        throw new ShardingSphereException(CommonErrorCode.SHARDING_UNSUPPORTED_DATA_TYPE_BIG_DECIMAL_ERROR, value);
     }
   
     private static BigDecimal adjustBigDecimalResult(final BigDecimal value, final boolean needScale, final int scale) {
@@ -185,7 +186,7 @@ public final class ResultSetUtil {
             case "java.lang.String":
                 return value.toString();
             default:
-                throw new ShardingSphereException("Unsupported data type: %s for value %s", convertType, value);
+                throw new ShardingSphereException(CommonErrorCode.SHARDING_UNSUPPORTED_DATA_TYPE_ERROR, convertType, value);
         }
     }
     
@@ -201,7 +202,7 @@ public final class ResultSetUtil {
             case "java.lang.String":
                 return date.toString();
             default:
-                throw new ShardingSphereException("Unsupported Date type: %s for value %s", convertType, value);
+                throw new ShardingSphereException(CommonErrorCode.SHARDING_UNSUPPORTED_DATA_TYPE_ERROR, convertType, value);
         }
     }
     
