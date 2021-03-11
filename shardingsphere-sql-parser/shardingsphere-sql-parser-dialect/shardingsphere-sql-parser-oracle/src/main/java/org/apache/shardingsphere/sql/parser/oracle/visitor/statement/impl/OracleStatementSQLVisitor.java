@@ -59,6 +59,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.String
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UnreservedWordContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -206,6 +207,16 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     @Override
     public final ASTNode visitColumnName(final ColumnNameContext ctx) {
         ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
+        OwnerContext owner = ctx.owner();
+        if (null != owner) {
+            result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
+        }
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitViewName(final ViewNameContext ctx) {
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name())));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
             result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
