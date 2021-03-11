@@ -44,7 +44,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-replica-query-common</artifactId>
+            <artifactId>shardingsphere-read-write-splitting-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
