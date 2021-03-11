@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect;
 
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
@@ -29,7 +30,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Table meta data loader for MySQL.
@@ -52,12 +52,12 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(String.format(TABLE_META_DATA_SQL, String.join(",", existedTables)))
         ) {
-            Map<String, Integer> dataTypeMap = getDataTypeMap(connection);
+            Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
             preparedStatement.setString(1, dataSource.getConnection().getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String tableName = resultSet.getString("TABLE_NAME");
-                    ColumnMetaData columnMetaData = loadColumnMetaData(dataTypeMap, resultSet);
+                    ColumnMetaData columnMetaData = loadColumnMetaData(dataTypes, resultSet);
                     if (!tableMetaDataMap.containsKey(tableName)) {
                         tableMetaDataMap.put(tableName, new TableMetaData());
                     }
@@ -74,16 +74,6 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
         boolean generated = "auto_increment".equals(resultSet.getString("EXTRA"));
         boolean caseSensitive = null != resultSet.getString("COLLATION_NAME") && resultSet.getString("COLLATION_NAME").endsWith("_ci");
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), dataType, primaryKey, generated, caseSensitive);
-    }
-    
-    private Map<String, Integer> getDataTypeMap(final Connection connection) throws SQLException {
-        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        try (ResultSet resultSet = connection.getMetaData().getTypeInfo()) {
-            while (resultSet.next()) {
-                result.put(resultSet.getString("TYPE_NAME"), resultSet.getInt("DATA_TYPE"));
-            }
-        }
-        return result;
     }
     
     @Override
