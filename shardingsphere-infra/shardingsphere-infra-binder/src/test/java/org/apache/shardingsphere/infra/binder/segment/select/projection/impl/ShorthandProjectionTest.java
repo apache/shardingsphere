@@ -30,21 +30,21 @@ public final class ShorthandProjectionTest {
     
     @Test
     public void assertGetExpression() {
-        assertThat(new ShorthandProjection("owner", Collections.emptyList(), Collections.emptyList()).getExpression(), is("owner.*"));
+        assertThat(new ShorthandProjection("owner", Collections.emptyList()).getExpression(), is("owner.*"));
     }
     
     @Test
     public void assertGetAliasWhenAbsent() {
-        assertFalse(new ShorthandProjection("owner", Collections.emptyList(), Collections.emptyList()).getAlias().isPresent());
+        assertFalse(new ShorthandProjection("owner", Collections.emptyList()).getAlias().isPresent());
     }
     
     @Test
     public void assertGetColumnLabel() {
-        assertTrue(new ShorthandProjection("owner", Collections.emptyList(), Collections.emptyList()).getColumnLabel().contains("*"));
+        assertTrue(new ShorthandProjection("owner", Collections.emptyList()).getColumnLabel().contains("*"));
     }
     
     @Test
     public void assertContains() {
-        assertTrue(new ShorthandProjection("owner", Collections.emptyList(), Collections.emptyList()).getOwner().isPresent());
+        assertTrue(new ShorthandProjection("owner", Collections.emptyList()).getOwner().isPresent());
     }
 }
