@@ -90,10 +90,10 @@ public final class MetaDataContextsBuilder {
      */
     public StandardMetaDataContexts build() throws SQLException {
         Map<String, ShardingSphereMetaData> mataDataMap = new HashMap<>(ruleConfigs.size(), 1);
-        Authentication authentication = buildAuthentication(users, mataDataMap);
         for (String each : ruleConfigs.keySet()) {
             mataDataMap.put(each, buildMetaData(each));
         }
+        Authentication authentication = buildAuthentication(users, mataDataMap);
         return new StandardMetaDataContexts(mataDataMap, executorEngine, authentication, props);
     }
     
