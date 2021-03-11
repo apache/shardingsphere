@@ -112,11 +112,11 @@
         <assertion parameters="2:int, 3:int" expected-data-file="batch_insert_into_broadcast_table.xml" />
     </test-case>
 
-    <test-case sql="INSERT INTO t_user(user_id, pwd) values (?, 'a100'),(?, 'b101')" scenario-types="encrypt">
-        <assertion parameters="100:int, 101:int" expected-data-file="batch_insert_into_user_table.xml" />
+    <test-case sql="INSERT INTO t_user(user_id, item_id, pwd) values (?, ?, 'a100'),(?, ?, 'b101')" scenario-types="encrypt">
+        <assertion parameters="100:int, 1000000:int, 101:int, 1010000:int" expected-data-file="batch_insert_into_user_table.xml" />
     </test-case>
 
-    <test-case sql="INSERT INTO t_user(user_id, pwd) values (100, 'a100'),(101, 'b101')" scenario-types="encrypt">
+    <test-case sql="INSERT INTO t_user(user_id, item_id, pwd) values (100, 1000000, 'a100'),(101, 1010000, 'b101')" scenario-types="encrypt">
         <assertion expected-data-file="batch_insert_into_user_table.xml" />
     </test-case>
     

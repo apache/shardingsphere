@@ -18,13 +18,14 @@
 <dataset update-count="2">
     <metadata data-nodes="encrypt.t_user">
         <column name="user_id" type="numeric"/>
+        <column name="item_id" type="numeric" />
         <column name="pwd_plain" type="varchar"/>
         <column name="pwd_cipher" type="varchar"/>
     </metadata>
-    <row data-node="encrypt.t_user" values="10, null, yK+tn8E43EyCEgbqNOrJ4w==" />
-    <row data-node="encrypt.t_user" values="11, null, CIbxTwI742pGwxb18lQLkQ==" />
-    <row data-node="encrypt.t_user" values="12, null, VCHpNlwod9AiuS1V+7DSLw==" />
-    <row data-node="encrypt.t_user" values="13, null, 8uxRFhW4c2rtSOoesudk/A==" />
-    <row data-node="encrypt.t_user" values="100, a100, H3tH4hBbXm/KoiEXezVLjA==" />
-    <row data-node="encrypt.t_user" values="101, b101, 6HiMmKtpbbDtDNUBICWu8g==" />
+    <row data-node="encrypt.t_user" values="10, 100000, null, yK+tn8E43EyCEgbqNOrJ4w==" />
+    <row data-node="encrypt.t_user" values="11, 110000, null, CIbxTwI742pGwxb18lQLkQ==" />
+    <row data-node="encrypt.t_user" values="12, 120000, null, VCHpNlwod9AiuS1V+7DSLw==" />
+    <row data-node="encrypt.t_user" values="13, 130000, null, 8uxRFhW4c2rtSOoesudk/A==" />
+    <row data-node="encrypt.t_user" values="100, 1000000, a100, H3tH4hBbXm/KoiEXezVLjA==" />
+    <row data-node="encrypt.t_user" values="101, 1010000, b101, 6HiMmKtpbbDtDNUBICWu8g==" />
 </dataset>
