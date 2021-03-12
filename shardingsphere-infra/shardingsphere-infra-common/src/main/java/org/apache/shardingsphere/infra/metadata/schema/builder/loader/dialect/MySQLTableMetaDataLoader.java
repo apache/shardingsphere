@@ -37,8 +37,9 @@ import java.util.stream.Collectors;
  */
 public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoader {
     
-    private static final String TABLE_META_DATA_SQL
-            = "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME FROM information_schema.columns WHERE TABLE_SCHEMA=? AND TABLE_NAME NOT IN (%s)";
+    private static final String BASIC_TABLE_META_DATA_SQL = "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME FROM information_schema.columns WHERE TABLE_SCHEMA=?";
+    
+    private static final String TABLE_META_DATA_SQL_WITH_EXISTED_TABLES = BASIC_TABLE_META_DATA_SQL + " AND TABLE_NAME NOT IN (%s)";
     
     @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
@@ -49,11 +50,9 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
     }
     
     private void loadColumnMetaData(final DataSource dataSource, final Collection<String> existedTables, final Map<String, TableMetaData> tableMetaDataMap) throws SQLException {
-        String sql = String.format(TABLE_META_DATA_SQL, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
         try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)
-        ) {
+                PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(existedTables))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
             preparedStatement.setString(1, connection.getCatalog());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -76,6 +75,11 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
         boolean generated = "auto_increment".equals(resultSet.getString("EXTRA"));
         boolean caseSensitive = null != resultSet.getString("COLLATION_NAME") && resultSet.getString("COLLATION_NAME").endsWith("_ci");
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
+    }
+    
+    private String getTableMetaDataSQL(final Collection<String> existedTables) {
+        return existedTables.isEmpty() ? BASIC_TABLE_META_DATA_SQL
+                : String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     @Override
