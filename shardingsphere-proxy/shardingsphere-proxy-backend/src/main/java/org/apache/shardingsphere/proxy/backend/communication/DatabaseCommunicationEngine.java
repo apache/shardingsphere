@@ -120,8 +120,8 @@ public final class DatabaseCommunicationEngine {
     }
     
     private boolean tryGlobalLock(final ExecutionContext executionContext, final Long lockTimeoutMilliseconds) {
-        if (needLock(executionContext.getSqlStatementContext().getSqlStatement())) {
-            if (!ProxyContext.getInstance().getLock().tryGlobalLock(lockTimeoutMilliseconds)) {
+        if (ProxyContext.getInstance().getLock().isPresent() && needLock(executionContext.getSqlStatementContext().getSqlStatement())) {
+            if (!ProxyContext.getInstance().getLock().get().tryGlobalLock(lockTimeoutMilliseconds)) {
                 throw new LockWaitTimeoutException(lockTimeoutMilliseconds);
             }
             return true;
@@ -134,7 +134,9 @@ public final class DatabaseCommunicationEngine {
     }
     
     private void releaseGlobalLock() {
-        ProxyContext.getInstance().getLock().releaseGlobalLock();
+        if (ProxyContext.getInstance().getLock().isPresent()) {
+            ProxyContext.getInstance().getLock().get().releaseGlobalLock();
+        }
     }
     
     private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {

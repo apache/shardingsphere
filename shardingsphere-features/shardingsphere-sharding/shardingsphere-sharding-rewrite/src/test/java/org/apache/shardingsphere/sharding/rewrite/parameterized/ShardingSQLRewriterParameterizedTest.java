@@ -120,7 +120,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     
     private Map<String, ColumnMetaData> createColumnMetaDataMap() {
         Map<String, ColumnMetaData> result = new LinkedHashMap<>(3, 1);
-        result.put("account_id", new ColumnMetaData("account_id", Types.INTEGER, "INT", true, true, false));
+        result.put("account_id", new ColumnMetaData("account_id", Types.INTEGER, true, true, false));
         result.put("amount", mock(ColumnMetaData.class));
         result.put("status", mock(ColumnMetaData.class));
         return result;

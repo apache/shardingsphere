@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
-import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
@@ -34,16 +33,12 @@ public final class GovernanceRepositoryFacade implements AutoCloseable {
     
     static {
         ShardingSphereServiceLoader.register(RegistryRepository.class);
-        ShardingSphereServiceLoader.register(ConfigurationRepository.class);
     }
     
     private final RegistryRepository registryRepository;
     
-    private final ConfigurationRepository configurationRepository;
-    
     public GovernanceRepositoryFacade(final GovernanceConfiguration config) {
         registryRepository = createRegistryRepository(config);
-        configurationRepository = (ConfigurationRepository) registryRepository;
     }
     
     private RegistryRepository createRegistryRepository(final GovernanceConfiguration config) {
@@ -57,8 +52,5 @@ public final class GovernanceRepositoryFacade implements AutoCloseable {
     @Override
     public void close() {
         registryRepository.close();
-        if (registryRepository != configurationRepository) {
-            configurationRepository.close();
-        }
     }
 }
