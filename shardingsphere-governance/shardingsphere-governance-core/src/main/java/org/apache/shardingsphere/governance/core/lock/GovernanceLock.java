@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.governance.core.lock;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockAddedEvent;
-import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockReleasedEvent;
+import org.apache.shardingsphere.governance.core.event.model.lock.LockNotificationEvent;
+import org.apache.shardingsphere.governance.core.event.model.lock.LockReleasedEvent;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.AbstractShardingSphereLock;
-import org.apache.shardingsphere.infra.state.StateEvent;
-import org.apache.shardingsphere.infra.state.StateType;
 
 /**
  * Governance lock.
@@ -50,25 +48,22 @@ public final class GovernanceLock extends AbstractShardingSphereLock {
     }
     
     /**
-     * Lock instance after global lock added.
+     * Lock instance.
      *
-     * @param event global lock added event
+     * @param event lock notification event
      */
     @Subscribe
-    public void doLock(final GlobalLockAddedEvent event) {
-        ShardingSphereEventBus.getInstance().post(new StateEvent(StateType.LOCK, true));
+    public void doLock(final LockNotificationEvent event) {
         registryCenter.persistInstanceData(RegistryCenterNodeStatus.LOCKED.toString());
     }
     
     /**
      * Unlock instance.
      *
-     * @param event global lock released event
+     * @param event lock released event
      */
     @Subscribe
-    public void unlock(final GlobalLockReleasedEvent event) {
-        ShardingSphereEventBus.getInstance().post(new StateEvent(StateType.LOCK, false));
+    public void unlock(final LockReleasedEvent event) {
         registryCenter.persistInstanceData("");
-        signalAll();
     }
 }

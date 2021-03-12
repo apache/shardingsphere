@@ -20,8 +20,8 @@ package org.apache.shardingsphere.governance.core.registry.listener;
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockAddedEvent;
-import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockReleasedEvent;
+import org.apache.shardingsphere.governance.core.event.model.lock.LockNotificationEvent;
+import org.apache.shardingsphere.governance.core.event.model.lock.LockReleasedEvent;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
@@ -31,24 +31,24 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Global lock changed listener.
+ * Lock changed listener.
  */
-public final class GlobalLockChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
+public final class LockChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
     private final LockNode lockNode;
     
-    public GlobalLockChangedListener(final RegistryRepository registryRepository) {
-        super(registryRepository, Collections.singleton(new LockNode().getGlobalLockNodePath()));
+    public LockChangedListener(final RegistryRepository registryRepository) {
+        super(registryRepository, Collections.singleton(new LockNode().getLockNodePath()));
         lockNode = new LockNode();
     }
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        if (event.getKey().startsWith(Joiner.on("/").join(lockNode.getGlobalLockNodePath(), ""))) {
+        if (event.getKey().startsWith(Joiner.on("/").join(lockNode.getLockNodePath(), ""))) {
             if (event.getType() == Type.ADDED) {
-                return Optional.of(new GlobalLockAddedEvent());
+                return Optional.of(new LockNotificationEvent());
             } else if (event.getType() == Type.DELETED) {
-                return Optional.of(new GlobalLockReleasedEvent());
+                return Optional.of(new LockReleasedEvent());
             }
         }
         return Optional.empty();

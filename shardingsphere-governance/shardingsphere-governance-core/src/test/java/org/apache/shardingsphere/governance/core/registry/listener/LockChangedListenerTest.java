@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.governance.core.registry.listener;
 
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockAddedEvent;
-import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockReleasedEvent;
+import org.apache.shardingsphere.governance.core.event.model.lock.LockNotificationEvent;
+import org.apache.shardingsphere.governance.core.event.model.lock.LockReleasedEvent;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
@@ -35,35 +35,35 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class GlobalLockChangedListenerTest {
+public final class LockChangedListenerTest {
     
-    private GlobalLockChangedListener globalLockChangedListener;
+    private LockChangedListener lockChangedListener;
     
     @Mock
     private RegistryRepository registryRepository;
     
     @Before
     public void setUp() {
-        globalLockChangedListener = new GlobalLockChangedListener(registryRepository);
+        lockChangedListener = new LockChangedListener(registryRepository);
     }
     
     @Test
     public void assertCreateEventWithInvalidPath() {
-        Optional<GovernanceEvent> actual = globalLockChangedListener.createEvent(new DataChangedEvent("/lock/glock", "", Type.ADDED));
+        Optional<GovernanceEvent> actual = lockChangedListener.createEvent(new DataChangedEvent("/lock/glock", "", Type.ADDED));
         assertFalse(actual.isPresent());
     }
     
     @Test
     public void assertCreateAddedEvent() {
-        Optional<GovernanceEvent> actual = globalLockChangedListener.createEvent(new DataChangedEvent("/lock/glock/lock-test-id", "", Type.ADDED));
+        Optional<GovernanceEvent> actual = lockChangedListener.createEvent(new DataChangedEvent("/lock/glock/lock-test-id", "", Type.ADDED));
         assertTrue(actual.isPresent());
-        assertTrue(actual.get() instanceof GlobalLockAddedEvent);
+        assertTrue(actual.get() instanceof LockNotificationEvent);
     }
     
     @Test
     public void assertCreateDeletedEvent() {
-        Optional<GovernanceEvent> actual = globalLockChangedListener.createEvent(new DataChangedEvent("/lock/glock/lock-test-id", "", Type.DELETED));
+        Optional<GovernanceEvent> actual = lockChangedListener.createEvent(new DataChangedEvent("/lock/glock/lock-test-id", "", Type.DELETED));
         assertTrue(actual.isPresent());
-        assertTrue(actual.get() instanceof GlobalLockReleasedEvent);
+        assertTrue(actual.get() instanceof LockReleasedEvent);
     }
 }

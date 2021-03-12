@@ -22,7 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockReleasedEvent;
+import org.apache.shardingsphere.governance.core.event.model.lock.LockReleasedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataPersistedEvent;
@@ -229,7 +229,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
             }
             metaDataContexts = new StandardMetaDataContexts(newMetaDataMap, metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), metaDataContexts.getProps());
         } finally {
-            ShardingSphereEventBus.getInstance().post(new GlobalLockReleasedEvent());
+            ShardingSphereEventBus.getInstance().post(new LockReleasedEvent());
         }
     }
     
