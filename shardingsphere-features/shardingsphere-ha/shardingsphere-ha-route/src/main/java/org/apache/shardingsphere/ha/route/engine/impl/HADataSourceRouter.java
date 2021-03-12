@@ -47,7 +47,7 @@ public final class HADataSourceRouter {
     }
     
     private boolean isPrimaryRoute(final SQLStatement sqlStatement) {
-        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || PrimaryVisitedManager.getPrimaryVisited() || HintManager.isPrimaryRouteOnly();
+        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || PrimaryVisitedManager.getPrimaryVisited() || HintManager.isWriteRouteOnly();
     }
     
     private boolean containsLockSegment(final SQLStatement sqlStatement) {

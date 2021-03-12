@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
-import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
+import org.apache.shardingsphere.readwrite.splitting.api.ReadWriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 
@@ -70,7 +70,7 @@ public final class RuleQueryBackendHandler extends SchemaRequiredBackendHandler<
             case "SHARDING":
                 return ShardingRuleConfiguration.class;
             case "REPLICA_QUERY":
-                return ReplicaQueryRuleConfiguration.class;
+                return ReadWriteSplittingRuleConfiguration.class;
             case "ENCRYPT":
                 return EncryptRuleConfiguration.class;
             case "SHADOW":

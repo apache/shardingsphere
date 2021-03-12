@@ -60,13 +60,13 @@ rules:
             plainColumn: plain_pwd
             cipherColumn: cipher_pwd
             encryptorName: test
-  - !REPLICA_QUERY
+  - !READ_WRITE_SPLITTING
     dataSources:
       calcite_ds:
         name: calcite_ds
-        primaryDataSourceName:
+        writeDataSourceName:
           - calcite_jdbc_1
-        replicaDataSourceNames:
+        readDataSourceNames:
           - calcite_jdbc_2
         loadBalancerName: roundRobin
     loadBalancers:

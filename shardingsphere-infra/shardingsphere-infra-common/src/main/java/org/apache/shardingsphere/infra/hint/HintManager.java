@@ -40,7 +40,7 @@ public final class HintManager implements AutoCloseable {
     
     private boolean databaseShardingOnly;
     
-    private boolean primaryRouteOnly;
+    private boolean writeRouteOnly;
     
     /**
      * Get a new instance for {@code HintManager}.
@@ -139,23 +139,23 @@ public final class HintManager implements AutoCloseable {
     }
     
     /**
-     * Set database operation force route to primary database only.
+     * Set database operation force route to write database only.
      */
-    public void setPrimaryRouteOnly() {
-        primaryRouteOnly = true;
+    public void setWriteRouteOnly() {
+        writeRouteOnly = true;
     }
     
     /**
-     * Judge whether route to primary database only or not.
+     * Judge whether route to write database only or not.
      *
-     * @return route to primary database only or not
+     * @return route to write database only or not
      */
-    public static boolean isPrimaryRouteOnly() {
-        return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().primaryRouteOnly;
+    public static boolean isWriteRouteOnly() {
+        return null != HINT_MANAGER_HOLDER.get() && HINT_MANAGER_HOLDER.get().writeRouteOnly;
     }
     
     /**
-     * Clear threadlocal for hint manager.
+     * Clear thread local for hint manager.
      */
     public static void clear() {
         HINT_MANAGER_HOLDER.remove();

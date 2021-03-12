@@ -62,56 +62,56 @@ rules:
     constant:
       type: Constant
       
-- !REPLICA_QUERY
+- !READ_WRITE_SPLITTING
   dataSources:
     pr_ds_0:
-      primaryDataSourceName: encrypt_primary_ds_0
-      replicaDataSourceNames:
+      writeDataSourceName: encrypt_primary_ds_0
+      readDataSourceNames:
         - encrypt_replica_ds_0
       loadBalancerName: roundRobin
     pr_ds_1:
-      primaryDataSourceName: encrypt_primary_ds_1
-      replicaDataSourceNames:
+      writeDataSourceName: encrypt_primary_ds_1
+      readDataSourceNames:
         - encrypt_replica_ds_1
       loadBalancerName: roundRobin
     pr_ds_2:
-      primaryDataSourceName: encrypt_primary_ds_2
-      replicaDataSourceNames:
+      writeDataSourceName: encrypt_primary_ds_2
+      readDataSourceNames:
         - encrypt_replica_ds_2
       loadBalancerName: roundRobin
     pr_ds_3:
-      primaryDataSourceName: encrypt_primary_ds_3
-      replicaDataSourceNames:
+      writeDataSourceName: encrypt_primary_ds_3
+      readDataSourceNames:
         - encrypt_replica_ds_3
       loadBalancerName: roundRobin
     pr_ds_4:
-      primaryDataSourceName: encrypt_primary_ds_4
-      replicaDataSourceNames:
+      writeDataSourceName: encrypt_primary_ds_4
+      readDataSourceNames:
         - encrypt_replica_ds_4
       loadBalancerName: roundRobin
     pr_ds_5:
-      primaryDataSourceName: encrypt_primary_ds_5
-      replicaDataSourceNames:
+      writeDataSourceName: encrypt_primary_ds_5
+      readDataSourceNames:
         - encrypt_replica_ds_5
       loadBalancerName: roundRobin
     pr_ds_6:
-      primaryDataSourceName: encrypt_primary_ds_6
-      replicaDataSourceNames:
+      writeDataSourceName: encrypt_primary_ds_6
+      readDataSourceNames:
         - encrypt_replica_ds_6
       loadBalancerName: roundRobin
     pr_ds_7:
-      primaryDataSourceName: encrypt_primary_ds_7
-      replicaDataSourceNames:
+      writeDataSourceName: encrypt_primary_ds_7
+      readDataSourceNames:
         - encrypt_replica_ds_7
       loadBalancerName: roundRobin
     pr_ds_8:
-      primaryDataSourceName: encrypt_primary_ds_8
-      replicaDataSourceNames:
+      writeDataSourceName: encrypt_primary_ds_8
+      readDataSourceNames:
         - encrypt_replica_ds_8
       loadBalancerName: roundRobin
     pr_ds_9:
-      primaryDataSourceName: encrypt_primary_ds_9
-      replicaDataSourceNames:
+      writeDataSourceName: encrypt_primary_ds_9
+      readDataSourceNames:
         - encrypt_replica_ds_9
       loadBalancerName: roundRobin
   loadBalancers:

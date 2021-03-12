@@ -174,47 +174,47 @@
                             </execution>
                             
                             <execution>
-                                <id>replica-query-up</id>
+                                <id>read-write-splitting-up</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
                                     <goal>up</goal>
                                 </goals>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/replica_query/docker-compose.yml</composeFile>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/read_write_splitting/docker-compose.yml</composeFile>
                                     <detachedMode>true</detachedMode>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>replica-query-down</id>
+                                <id>read-write-splitting-down</id>
                                 <phase>post-integration-test</phase>
                                 <goals>
                                     <goal>down</goal>
                                 </goals>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/replica_query/docker-compose.yml</composeFile>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/read_write_splitting/docker-compose.yml</composeFile>
                                     <removeVolumes>true</removeVolumes>
                                 </configuration>
                             </execution>
                             
                             <execution>
-                                <id>dbtbl-with-replica-query-up</id>
+                                <id>dbtbl-with-read-write-splitting-up</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
                                     <goal>up</goal>
                                 </goals>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/dbtbl_with_replica_query/docker-compose.yml</composeFile>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/dbtbl_with_read_write_splitting/docker-compose.yml</composeFile>
                                     <detachedMode>true</detachedMode>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>dbtbl-with-replica-query-down</id>
+                                <id>dbtbl-with-read-write-splitting-down</id>
                                 <phase>post-integration-test</phase>
                                 <goals>
                                     <goal>down</goal>
                                 </goals>
                                 <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/dbtbl_with_replica_query/docker-compose.yml</composeFile>
+                                    <composeFile>${project.basedir}/src/test/resources/docker/dbtbl_with_read_write_splitting/docker-compose.yml</composeFile>
                                     <removeVolumes>true</removeVolumes>
                                 </configuration>
                             </execution>
