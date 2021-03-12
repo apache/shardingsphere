@@ -15,29 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.prepare;
+package org.apache.shardingsphere.infra.executor.kernel.model;
 
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.sql.SQLException;
 import java.util.Collection;
+import java.util.UUID;
 
 /**
- * Execution prepare engine.
- * 
- * @param <T> type of input value
+ * Execution group context.
+ *
+ * @param <T> type of execution input value
  */
-public interface ExecutionPrepareEngine<T> {
+@RequiredArgsConstructor
+@Getter
+public final class ExecutionGroupContext<T> {
+    
+    private final Collection<ExecutionGroup<T>> inputGroups;
     
     /**
-     * Prepare to execute.
+     * Get execution ID.
      *
-     * @param routeContext route context
-     * @param executionUnits execution units
-     * @return execution group context
-     * @throws SQLException SQL exception
+     * @return execution ID
      */
-    ExecutionGroupContext<T> prepare(RouteContext routeContext, Collection<ExecutionUnit> executionUnits) throws SQLException;
+    public String getExecutionID() {
+        return UUID.randomUUID().toString();
+    }
 }

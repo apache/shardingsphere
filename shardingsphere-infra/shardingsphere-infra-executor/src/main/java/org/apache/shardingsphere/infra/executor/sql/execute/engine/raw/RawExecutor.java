@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
@@ -43,14 +43,14 @@ public final class RawExecutor {
     /**
      * Execute.
      *
-     * @param executionGroups execution groups
+     * @param executionGroupContext execution group context
      * @param callback raw SQL executor callback
      * @return execute results
      * @throws SQLException SQL exception
      */
-    public Collection<ExecuteResult> execute(final Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups, final RawSQLExecutorCallback callback) throws SQLException {
+    public Collection<ExecuteResult> execute(final ExecutionGroupContext<RawSQLExecutionUnit> executionGroupContext, final RawSQLExecutorCallback callback) throws SQLException {
         // TODO Load query header for first query
-        List<ExecuteResult> results = execute(executionGroups, null, callback);
+        List<ExecuteResult> results = execute(executionGroupContext, null, callback);
         if (null == results || results.isEmpty() || null == results.get(0)) {
             return Collections.singleton(new UpdateResult(0, 0L));
         }
@@ -58,10 +58,10 @@ public final class RawExecutor {
     }
     
     @SuppressWarnings("unchecked")
-    private <T> List<T> execute(final Collection<ExecutionGroup<RawSQLExecutionUnit>> executionGroups, 
+    private <T> List<T> execute(final ExecutionGroupContext<RawSQLExecutionUnit> executionGroupContext,
                                 final RawSQLExecutorCallback firstCallback, final RawSQLExecutorCallback callback) throws SQLException {
         try {
-            return executorEngine.execute((Collection) executionGroups, firstCallback, callback, serial);
+            return (List<T>) executorEngine.execute(executionGroupContext, firstCallback, callback, serial);
         } catch (final SQLException ex) {
             SQLExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();
