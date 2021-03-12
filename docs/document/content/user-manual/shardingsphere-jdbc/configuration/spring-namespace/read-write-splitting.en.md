@@ -1,29 +1,29 @@
 +++
-title = "Replica Query"
+title = "Read write splitting"
 weight = 2
 +++
 
 ## Configuration Item Explanation
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query-5.0.0.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/read-write-splitting/read-write-splitting-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/read-write-splitting/read-write-splitting-5.0.0.xsd)
 
-\<replica-query:rule />
+\<read-write-splitting:rule />
 
 | *Name*               | *Type*    | *Description*                                |
 | -------------------- | --------- | -------------------------------------------- |
 | id                   | Attribute | Spring Bean Id                               |
-| data-source-rule (+) | Tag       | Replica query data source rule configuration |
+| data-source-rule (+) | Tag       | Read write splitting data source rule configuration |
 
-\<replica-query:data-source-rule />
+\<read-write-splitting:data-source-rule />
 
 | *Name*                     | *Type*     | *Description*                                                              |
 | -------------------------- | ---------- | -------------------------------------------------------------------------- |
-| id                         | Attribute  | Primary-replica data source rule name                                      |
-| primary-data-source-name   | Attribute  | Primary data source name                                                   |
-| replica-data-source-names  | Attribute  | Replica data source names, multiple data source names separated with comma |
+| id                         | Attribute  | Read write splitting data source rule name                                      |
+| write-data-source-name     | Attribute  | Write data source name                                                   |
+| read-data-source-names     | Attribute  | Read data source names, multiple data source names separated with comma |
 | load-balance-algorithm-ref | Attribute  | Load balance algorithm name                                                |
 
-\<replica-query:load-balance-algorithm />
+\<read-write-splitting:load-balance-algorithm />
 
 | *Name*    | *Type*     | *Description*                     |
 | --------- | ---------- | --------------------------------- |

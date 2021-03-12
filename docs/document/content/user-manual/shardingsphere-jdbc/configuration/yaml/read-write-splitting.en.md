@@ -1,5 +1,5 @@
 +++
-title = "Replica Query"
+title = "Read write splitting"
 weight = 2
 +++
 
@@ -9,12 +9,12 @@ weight = 2
 dataSource: # Omit the data source configuration, please refer to the usage
 
 rules:
-- !REPLICA_QUERY
+- !READ_WRITE_SPLITTING
   dataSources:
-    <data-source-name> (+): # Logic data source name of replica query
-      primaryDataSourceName: # Primary data source name
-      replicaDataSourceNames: 
-        - <replica-data-source-name> (+) # Replica data source name
+    <data-source-name> (+): # Logic data source name of read write splitting
+      writeDataSourceName: # Write data source name
+      readDataSourceNames: 
+        - <read-data-source-name> (+) # Read data source name
       loadBalancerName: # Load balance algorithm name
   
   # Load balance algorithm configuration
