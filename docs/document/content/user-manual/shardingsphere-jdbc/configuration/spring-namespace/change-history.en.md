@@ -3,11 +3,11 @@ title = "Change History"
 weight = 7
 +++
 
-# ShardingSphere-5.0.0-alpha
+## 5.0.0-alpha
 
-## Replica Query
+### Replica Query
 
-## Configuration Item Explanation
+#### Configuration Item Explanation
 
 Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query-5.0.0.xsd)
 

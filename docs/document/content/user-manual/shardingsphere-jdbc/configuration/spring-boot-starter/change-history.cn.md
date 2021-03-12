@@ -3,11 +3,11 @@ title = "变更历史"
 weight = 7
 +++
 
-# ShardingSphere-5.0.0-alpha
+## 5.0.0-alpha
 
-## 读写分离
+### 读写分离
 
-### 配置项说明
+#### 配置项说明
 
 ```properties
 spring.shardingsphere.datasource.names= # 省略数据源配置，请参考使用手册

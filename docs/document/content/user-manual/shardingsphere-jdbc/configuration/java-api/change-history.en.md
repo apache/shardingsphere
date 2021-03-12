@@ -3,11 +3,11 @@ title = "Change History"
 weight = 7
 +++
 
-# ShardingSphere-5.0.0-alpha
+## 5.0.0-alpha
 
-## Replica Query
+### Replica Query
 
-### Root Configuration
+#### Root Configuration
 
 Class name: ReplicaQueryRuleConfiguration
 
@@ -18,7 +18,7 @@ Attributes:
 | dataSources (+)   | Collection\<ReplicaQueryDataSourceRuleConfiguration\> | Data sources of primary and replicas                                   |
 | loadBalancers (*) | Map\<String, ShardingSphereAlgorithmConfiguration\>   | Load balance algorithm name and configurations of replica data sources |
 
-### Replica Query Data Source Configuration
+#### Replica Query Data Source Configuration
 
 Class name: ReplicaQueryDataSourceRuleConfiguration
 
