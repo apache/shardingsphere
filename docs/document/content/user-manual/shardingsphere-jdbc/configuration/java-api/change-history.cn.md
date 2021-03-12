@@ -3,11 +3,11 @@ title = "变更历史"
 weight = 7
 +++
 
-# ShardingSphere-5.0.0-alpha
+## ShardingSphere-5.0.0-alpha
 
-## 读写分离
+### 读写分离
 
-### 配置入口
+#### 配置入口
 
 类名称：ReplicaQueryRuleConfiguration
 
@@ -18,7 +18,7 @@ weight = 7
 | dataSources (+)   | Collection\<ReplicaQueryDataSourceRuleConfiguration\> | 主从数据源配置      |
 | loadBalancers (*) | Map\<String, ShardingSphereAlgorithmConfiguration\>   | 从库负载均衡算法配置 |
 
-### 主从数据源配置
+#### 主从数据源配置
 
 类名称：ReplicaQueryDataSourceRuleConfiguration
 

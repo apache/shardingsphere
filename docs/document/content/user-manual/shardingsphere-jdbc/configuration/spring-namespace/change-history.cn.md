@@ -1,13 +1,13 @@
 +++
-title = "读写分离"
+title = "变更历史"
 weight = 7
 +++
 
-# ShardingSphere-5.0.0-alpha
+## 5.0.0-alpha
 
-## 读写分离
+### 读写分离
 
-## 配置项说明
+#### 配置项说明
 
 命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query-5.0.0.xsd](http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query-5.0.0.xsd)
 

@@ -3,11 +3,11 @@ title = "Change History"
 weight = 7
 +++
 
-# ShardingSphere-5.0.0-alpha
+## 5.0.0-alpha
 
-## Replica Query
+### Replica Query
 
-### Configuration Item Explanation
+#### Configuration Item Explanation
 
 ```properties
 spring.shardingsphere.datasource.names= # Omit the data source configuration, please refer to the usage
