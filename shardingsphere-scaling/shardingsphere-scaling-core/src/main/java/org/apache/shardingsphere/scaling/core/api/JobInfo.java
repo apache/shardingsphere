@@ -20,7 +20,6 @@ package org.apache.shardingsphere.scaling.core.api;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 /**
  * Job info.
@@ -28,20 +27,17 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString
 public final class JobInfo {
     
     private final long jobId;
     
     private boolean active;
     
-    private String status;
-    
-    private String[] tables;
+    private String tables;
     
     private int shardingTotalCount;
     
-    private int inventoryFinishedPercentage;
+    private String createTime;
     
-    private long incrementalAverageDelayMilliseconds = -1;
+    private String stopTime;
 }

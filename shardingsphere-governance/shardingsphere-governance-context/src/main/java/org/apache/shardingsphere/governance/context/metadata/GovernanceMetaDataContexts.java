@@ -22,7 +22,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.lock.UnlockEvent;
+import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockReleasedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataPersistedEvent;
@@ -30,14 +30,10 @@ import org.apache.shardingsphere.governance.core.event.model.props.PropertiesCha
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.schema.SchemaChangedEvent;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
-import org.apache.shardingsphere.governance.core.lock.GovernanceLockContext;
+import org.apache.shardingsphere.governance.core.lock.GovernanceLock;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
@@ -47,8 +43,12 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.auth.Authentication;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -78,7 +78,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private volatile StandardMetaDataContexts metaDataContexts;
     
-    private final LockContext lockContext;
+    private final ShardingSphereLock lock;
     
     public GovernanceMetaDataContexts(final StandardMetaDataContexts metaDataContexts, final GovernanceFacade governanceFacade) {
         this.governanceFacade = governanceFacade;
@@ -86,7 +86,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         ShardingSphereEventBus.getInstance().register(this);
         disableDataSources();
         persistMetaData();
-        lockContext = new GovernanceLockContext(governanceFacade.getRegistryCenter());
+        lock = new GovernanceLock(governanceFacade.getRegistryCenter());
     }
     
     private void disableDataSources() {
@@ -104,7 +104,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     private void persistMetaData() {
-        metaDataContexts.getMetaDataMap().forEach((key, value) -> governanceFacade.getConfigCenter().persistSchema(key, value.getSchema()));
+        metaDataContexts.getMetaDataMap().forEach((key, value) -> governanceFacade.getRegistryCenter().persistSchema(key, value.getSchema()));
     }
     
     @Override
@@ -143,8 +143,8 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     @Override
-    public LockContext getLockContext() {
-        return lockContext;
+    public Optional<ShardingSphereLock> getLock() {
+        return Optional.of(lock);
     }
     
     @Override
@@ -169,10 +169,10 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
         metaDataMap.put(event.getSchemaName(), buildMetaData(event));
         metaDataContexts = new StandardMetaDataContexts(metaDataMap, metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), metaDataContexts.getProps());
-        governanceFacade.getConfigCenter().persistSchema(event.getSchemaName(), metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getSchema());
+        governanceFacade.getRegistryCenter().persistSchema(event.getSchemaName(), metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getSchema());
         ShardingSphereEventBus.getInstance().post(new DataSourceChangeCompletedEvent(event.getSchemaName(), 
                 metaDataContexts.getMetaDataMap().get(event.getSchemaName()).getResource().getDatabaseType(), metaDataMap.get(event.getSchemaName()).getResource().getDataSources()));
-        ShardingSphereEventBus.getInstance().post(new MetaDataChangedEvent(governanceFacade.getConfigCenter().getAllSchemaNames()));
+        ShardingSphereEventBus.getInstance().post(new MetaDataChangedEvent(governanceFacade.getRegistryCenter().getAllSchemaNames()));
     }
     
     /**
@@ -185,7 +185,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         Map<String, ShardingSphereMetaData> metaDataMap = new HashMap<>(metaDataContexts.getMetaDataMap());
         metaDataMap.remove(event.getSchemaName());
         metaDataContexts = new StandardMetaDataContexts(metaDataMap, metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), metaDataContexts.getProps());
-        governanceFacade.getConfigCenter().deleteSchema(event.getSchemaName());
+        governanceFacade.getRegistryCenter().deleteSchema(event.getSchemaName());
     }
     
     /**
@@ -229,7 +229,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
             }
             metaDataContexts = new StandardMetaDataContexts(newMetaDataMap, metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), metaDataContexts.getProps());
         } finally {
-            ShardingSphereEventBus.getInstance().post(new UnlockEvent());
+            ShardingSphereEventBus.getInstance().post(new GlobalLockReleasedEvent());
         }
     }
     
@@ -246,7 +246,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         newMetaDataMap.remove(schemaName);
         newMetaDataMap.put(schemaName, getChangedMetaData(metaDataContexts.getMetaDataMap().get(schemaName), event.getRuleConfigurations()));
         metaDataContexts = new StandardMetaDataContexts(newMetaDataMap, metaDataContexts.getExecutorEngine(), metaDataContexts.getAuthentication(), metaDataContexts.getProps());
-        governanceFacade.getConfigCenter().persistSchema(schemaName, newMetaDataMap.get(schemaName).getSchema());
+        governanceFacade.getRegistryCenter().persistSchema(schemaName, newMetaDataMap.get(schemaName).getSchema());
     }
     
     /**
@@ -300,16 +300,16 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private ShardingSphereMetaData buildMetaData(final MetaDataPersistedEvent event) throws SQLException {
         String schemaName = event.getSchemaName();
-        if (!governanceFacade.getConfigCenter().hasDataSourceConfiguration(schemaName)) {
-            governanceFacade.getConfigCenter().persistDataSourceConfigurations(schemaName, new LinkedHashMap<>());
+        if (!governanceFacade.getRegistryCenter().hasDataSourceConfiguration(schemaName)) {
+            governanceFacade.getRegistryCenter().persistDataSourceConfigurations(schemaName, new LinkedHashMap<>());
         }
-        if (!governanceFacade.getConfigCenter().hasRuleConfiguration(schemaName)) {
-            governanceFacade.getConfigCenter().persistRuleConfigurations(schemaName, new LinkedList<>());
+        if (!governanceFacade.getRegistryCenter().hasRuleConfiguration(schemaName)) {
+            governanceFacade.getRegistryCenter().persistRuleConfigurations(schemaName, new LinkedList<>());
         }
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, 
-                governanceFacade.getConfigCenter().loadDataSourceConfigurations(schemaName)));
+                governanceFacade.getRegistryCenter().loadDataSourceConfigurations(schemaName)));
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap, 
-                Collections.singletonMap(schemaName, governanceFacade.getConfigCenter().loadRuleConfigurations(schemaName)), 
+                Collections.singletonMap(schemaName, governanceFacade.getRegistryCenter().loadRuleConfigurations(schemaName)), 
                 metaDataContexts.getAuthentication().getAuthentication().keySet(), metaDataContexts.getProps().getProps());
         return metaDataContextsBuilder.build().getMetaDataMap().get(schemaName);
     }

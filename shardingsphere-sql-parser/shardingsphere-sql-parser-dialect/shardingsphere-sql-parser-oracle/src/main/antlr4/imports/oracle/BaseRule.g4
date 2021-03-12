@@ -107,6 +107,10 @@ tableName
     : (owner DOT_)? name
     ;
 
+viewName
+    : (owner DOT_)? name
+    ;
+
 columnName
     : (owner DOT_)? name
     ;
@@ -132,6 +136,14 @@ owner
     ;
 
 name
+    : identifier
+    ;
+
+roleName
+    : identifier
+    ;
+
+password
     : identifier
     ;
 

@@ -27,18 +27,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class YamlEngineTest {
     
@@ -74,15 +67,8 @@ public final class YamlEngineTest {
     }
     
     @Test
-    @SuppressWarnings("unchecked")
-    public void assertSecureUnmarshalWithYamlContent() {
-        Map<String, Object> actual = (Map<String, Object>) YamlEngine.secureUnmarshal("name: test", Collections.emptyList());
-        assertThat(actual.get("name").toString(), is("test"));
-    }
-    
-    @Test
-    public void assertSecureUnmarshalProperties() {
-        Properties actual = YamlEngine.secureUnmarshal("password: pwd", Properties.class);
+    public void assertUnmarshalProperties() {
+        Properties actual = YamlEngine.unmarshal("password: pwd", Properties.class);
         assertThat(actual.getProperty("password"), is("pwd"));
     }
     
@@ -94,22 +80,7 @@ public final class YamlEngineTest {
     }
     
     @Test(expected = ConstructorException.class)
-    public void assertSecureUnmarshalMapWithIllegalClasses() {
-        YamlEngine.secureUnmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", Collections.emptyList());
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Test
-    public void assertSecureUnmarshalMapWithAcceptedClasses() {
-        Collection<Class<?>> acceptedClasses = new LinkedList<>();
-        acceptedClasses.add(URLClassLoader.class);
-        acceptedClasses.add(URL.class);
-        Map<String, URLClassLoader> actual = (Map) YamlEngine.secureUnmarshal("url: !!java.net.URLClassLoader [[!!java.net.URL [\"http://localhost\"]]]", acceptedClasses);
-        assertThat(actual.get("url").getClass().getName(), is(URLClassLoader.class.getName()));
-    }
-    
-    @Test
-    public void assertSecureUnmarshalWithAcceptedClass() throws IOException {
+    public void assertUnmarshalInvalidYaml() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/accepted-class.yaml");
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();
@@ -121,30 +92,6 @@ public final class YamlEngineTest {
                 yamlContent.append(line).append("\n");
             }
         }
-        Collection<Class<?>> acceptedClasses = new LinkedList<>();
-        acceptedClasses.add(URLClassLoader.class);
-        acceptedClasses.add(URL.class);
-        acceptedClasses.add(YamlRootRuleConfigurations.class);
-        YamlRootRuleConfigurations actual = YamlEngine.secureUnmarshal(yamlContent.toString(), YamlRootRuleConfigurations.class, acceptedClasses);
-        assertThat(actual.getProps().size(), is(2));
-        assertThat(actual.getProps().getProperty("normal"), is("normal"));
-        assertTrue(actual.getProps().containsKey("url"));
-        assertNull(actual.getProps().getProperty("url"));
-    }
-    
-    @Test(expected = ConstructorException.class)
-    public void assertSecureUnmarshalWithoutAcceptedClass() throws IOException {
-        URL url = getClass().getClassLoader().getResource("yaml/accepted-class.yaml");
-        assertNotNull(url);
-        StringBuilder yamlContent = new StringBuilder();
-        try (
-                FileReader fileReader = new FileReader(url.getFile());
-                BufferedReader reader = new BufferedReader(fileReader)) {
-            String line;
-            while (null != (line = reader.readLine())) {
-                yamlContent.append(line).append("\n");
-            }
-        }
-        YamlEngine.secureUnmarshal(yamlContent.toString(), YamlRootRuleConfigurations.class);
+        YamlEngine.unmarshal(yamlContent.toString(), YamlRootRuleConfigurations.class);
     }
 }

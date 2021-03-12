@@ -28,7 +28,7 @@ import org.apache.shardingsphere.scaling.core.common.record.Record;
 import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -116,7 +116,7 @@ public final class DistributionChannelTest {
     
     @RequiredArgsConstructor
     @Getter
-    private static final class IntPosition implements Position<IntPosition> {
+    private static final class IntPosition implements ScalingPosition<IntPosition> {
         
         private final int id;
         

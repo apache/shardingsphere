@@ -53,7 +53,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -84,8 +83,7 @@ public final class DatabaseCommunicationEngine {
         this.logicSQL = logicSQL;
         proxySQLExecutor = new ProxySQLExecutor(driverType, backendConnection);
         kernelProcessor = new KernelProcessor();
-        engine = new MetadataRefreshEngine(metaData,
-                ProxyContext.getInstance().getMetaDataContexts().getAuthentication(), ProxyContext.getInstance().getMetaDataContexts().getProps());
+        engine = new MetadataRefreshEngine(metaData, ProxyContext.getInstance().getMetaDataContexts().getAuthentication(), ProxyContext.getInstance().getMetaDataContexts().getProps());
     }
     
     /**
@@ -95,34 +93,35 @@ public final class DatabaseCommunicationEngine {
      * @throws SQLException SQL exception
      */
     public ResponseHeader execute() throws SQLException {
-        return execute(kernelProcessor.generateExecutionContext(logicSQL, metaData, ProxyContext.getInstance().getMetaDataContexts().getProps()));
-    }
-    
-    private ResponseHeader execute(final ExecutionContext executionContext) throws SQLException {
+        ExecutionContext executionContext = kernelProcessor.generateExecutionContext(logicSQL, metaData, ProxyContext.getInstance().getMetaDataContexts().getProps());
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
-        boolean locked = false;
-        Collection<ExecuteResult> executeResults;
-        try {
-            locked = tryGlobalLock(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
-            proxySQLExecutor.checkExecutePrerequisites(executionContext);
-            executeResults = proxySQLExecutor.execute(executionContext);
-            refreshMetadata(executionContext);
-        } finally {
-            if (locked) {
-                releaseGlobalLock();
-            }
-        }
+        proxySQLExecutor.checkExecutePrerequisites(executionContext);
+        Collection<ExecuteResult> executeResults = execute(executionContext);
         ExecuteResult executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
                 ? processExecuteQuery(executionContext, executeResults.stream().map(each -> (QueryResult) each).collect(Collectors.toList()), (QueryResult) executeResultSample)
                 : processExecuteUpdate(executionContext, executeResults.stream().map(each -> (UpdateResult) each).collect(Collectors.toList()));
     }
     
+    private Collection<ExecuteResult> execute(final ExecutionContext executionContext) throws SQLException {
+        boolean locked = false;
+        try {
+            locked = tryGlobalLock(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
+            Collection<ExecuteResult> result = proxySQLExecutor.execute(executionContext);
+            refreshMetadata(executionContext);
+            return result;
+        } finally {
+            if (locked) {
+                releaseGlobalLock();
+            }
+        }
+    }
+    
     private boolean tryGlobalLock(final ExecutionContext executionContext, final Long lockTimeoutMilliseconds) {
-        if (needLock(executionContext)) {
-            if (!ProxyContext.getInstance().getLockContext().tryGlobalLock(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
+        if (ProxyContext.getInstance().getLock().isPresent() && needLock(executionContext.getSqlStatementContext().getSqlStatement())) {
+            if (!ProxyContext.getInstance().getLock().get().tryGlobalLock(lockTimeoutMilliseconds)) {
                 throw new LockWaitTimeoutException(lockTimeoutMilliseconds);
             }
             return true;
@@ -130,12 +129,14 @@ public final class DatabaseCommunicationEngine {
         return false;
     }
     
-    private boolean needLock(final ExecutionContext executionContext) {
-        return MetadataRefresherFactory.newInstance(executionContext.getSqlStatementContext().getSqlStatement()).isPresent();
+    private boolean needLock(final SQLStatement sqlStatement) {
+        return MetadataRefresherFactory.newInstance(sqlStatement).isPresent();
     }
     
     private void releaseGlobalLock() {
-        ProxyContext.getInstance().getLockContext().releaseGlobalLock();
+        if (ProxyContext.getInstance().getLock().isPresent()) {
+            ProxyContext.getInstance().getLock().get().releaseGlobalLock();
+        }
     }
     
     private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {

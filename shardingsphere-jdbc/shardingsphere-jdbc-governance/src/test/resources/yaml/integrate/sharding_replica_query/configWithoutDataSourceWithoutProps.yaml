@@ -95,12 +95,4 @@ governance:
       timeToLiveSeconds: 10
       maxRetries: 10
       operationTimeoutMilliseconds: 10
-  additionalConfigCenter:
-    type: CONFIG_TEST
-    serverLists: localhost:3181
-    props:
-      retryIntervalMilliseconds: 10
-      timeToLiveSeconds: 10
-      maxRetries: 10
-      operationTimeoutMilliseconds: 10
   overwrite: true

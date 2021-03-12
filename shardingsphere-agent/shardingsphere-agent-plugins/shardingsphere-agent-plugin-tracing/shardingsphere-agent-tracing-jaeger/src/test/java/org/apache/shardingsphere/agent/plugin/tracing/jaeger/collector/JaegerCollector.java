@@ -53,10 +53,4 @@ public class JaegerCollector extends ExternalResource implements CollectorRule {
     public void cleanup() {
         tracer.reset();
     }
-    
-    @Override
-    @SneakyThrows
-    protected void after() {
-        super.after();
-    }
 }

@@ -60,7 +60,7 @@ threadTypes
     ;
 
 threadType
-    : IO_THREAD | SQL_THREAD
+    : RELAY_THREAD | SQL_THREAD
     ;
 
 utilOption
@@ -95,7 +95,7 @@ masterDef
     | MASTER_AUTO_POSITION EQ_ NUMBER_
     | RELAY_LOG_FILE EQ_ string_
     | RELAY_LOG_POS EQ_ NUMBER_
-    | MASTER_COMPRESSION_ALGORITHMS EQ_ string_
+    | MASTER_COMPRESSION_ALGORITHM EQ_ string_
     | MASTER_ZSTD_COMPRESSION_LEVEL EQ_ NUMBER_
     | MASTER_SSL EQ_ NUMBER_
     | MASTER_SSL_CA EQ_ string_

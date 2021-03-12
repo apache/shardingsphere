@@ -17,7 +17,7 @@
 
 grammar DistSQLStatement;
 
-import Symbol, RDLStatement, RQLStatement;
+import Symbol, RDLStatement, RQLStatement, RALStatement;
 
 execute
     : (addResource
@@ -30,5 +30,12 @@ execute
     | dropReplicaQueryRule
     | showResources
     | showRule
+    | showScalingJobList
+    | showScalingJobStatus
+    | startScalingJob
+    | stopScalingJob
+    | dropScalingJob
+    | resetScalingJob
+    | checkScalingJob
     ) SEMI?
     ;

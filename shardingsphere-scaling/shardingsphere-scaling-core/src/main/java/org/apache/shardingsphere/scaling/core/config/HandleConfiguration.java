@@ -37,7 +37,9 @@ public final class HandleConfiguration {
     
     private String[] shardingTables;
     
-    private Integer shardingItem;
+    private String logicTables;
+    
+    private int shardingItem;
     
     private int shardingSize = 1000 * 10000;
     

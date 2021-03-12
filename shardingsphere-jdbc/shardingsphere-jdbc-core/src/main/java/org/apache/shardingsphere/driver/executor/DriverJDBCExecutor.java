@@ -50,7 +50,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -135,8 +134,8 @@ public final class DriverJDBCExecutor {
     }
     
     private boolean tryGlobalLock(final SQLStatement sqlStatement, final long lockTimeoutMilliseconds) {
-        if (needLock(sqlStatement)) {
-            if (!metaDataContexts.getLockContext().tryGlobalLock(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
+        if (metaDataContexts.getLock().isPresent() && needLock(sqlStatement)) {
+            if (!metaDataContexts.getLock().get().tryGlobalLock(lockTimeoutMilliseconds)) {
                 throw new ShardingSphereException("Service lock wait timeout of %s ms exceeded", lockTimeoutMilliseconds);
             }
             return true;
@@ -148,7 +147,7 @@ public final class DriverJDBCExecutor {
         return sqlStatement instanceof DDLStatement;
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     private void refreshSchema(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
         Optional<MetadataRefresher> metadataRefresher = MetadataRefresherFactory.newInstance(sqlStatement);
         if (metadataRefresher.isPresent() && metadataRefresher.get() instanceof SchemaRefresher) {
@@ -165,6 +164,8 @@ public final class DriverJDBCExecutor {
     }
     
     private void releaseGlobalLock() {
-        metaDataContexts.getLockContext().releaseGlobalLock();
+        if (metaDataContexts.getLock().isPresent()) {
+            metaDataContexts.getLock().get().releaseGlobalLock();
+        }
     }
 }

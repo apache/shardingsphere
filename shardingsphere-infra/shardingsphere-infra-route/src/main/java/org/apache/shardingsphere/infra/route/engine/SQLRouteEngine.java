@@ -20,12 +20,11 @@ package org.apache.shardingsphere.infra.route.engine;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.impl.AllSQLRouteExecutor;
 import org.apache.shardingsphere.infra.route.engine.impl.PartialSQLRouteExecutor;
-import org.apache.shardingsphere.infra.route.hook.SPIRoutingHook;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
@@ -41,8 +40,6 @@ public final class SQLRouteEngine {
     
     private final ConfigurationProperties props;
     
-    private final SPIRoutingHook routingHook = new SPIRoutingHook();
-    
     /**
      * Route SQL.
      *
@@ -51,18 +48,8 @@ public final class SQLRouteEngine {
      * @return route context
      */
     public RouteContext route(final LogicSQL logicSQL, final ShardingSphereMetaData metaData) {
-        routingHook.start(logicSQL.getSql());
-        try {
-            SQLRouteExecutor executor = isNeedAllSchemas(logicSQL.getSqlStatementContext().getSqlStatement()) ? new AllSQLRouteExecutor() : new PartialSQLRouteExecutor(rules, props);
-            RouteContext result = executor.route(logicSQL, metaData);
-            routingHook.finishSuccess(result, metaData.getSchema());
-            return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            routingHook.finishFailure(ex);
-            throw ex;
-        }
+        SQLRouteExecutor executor = isNeedAllSchemas(logicSQL.getSqlStatementContext().getSqlStatement()) ? new AllSQLRouteExecutor() : new PartialSQLRouteExecutor(rules, props);
+        return executor.route(logicSQL, metaData);
     }
     
     // TODO use dynamic config to judge UnconfiguredSchema

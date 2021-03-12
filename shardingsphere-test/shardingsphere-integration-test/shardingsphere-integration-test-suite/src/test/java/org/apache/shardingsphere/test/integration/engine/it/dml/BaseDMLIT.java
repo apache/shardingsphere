@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.dml;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.it.SingleIT;
-import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.junit.After;
@@ -53,10 +51,9 @@ public abstract class BaseDMLIT extends SingleIT {
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    protected BaseDMLIT(final String parentPath, final IntegrationTestCaseAssertion assertion, final String adapter, final String scenario,
-                        final DatabaseType databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(parentPath, assertion, adapter, scenario, databaseType, sqlExecuteType, sql);
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(scenario), getActualDataSources());
+    protected BaseDMLIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
+        super(parameterizedArray);
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(parameterizedArray.getScenario()), getActualDataSources());
     }
     
     @Before

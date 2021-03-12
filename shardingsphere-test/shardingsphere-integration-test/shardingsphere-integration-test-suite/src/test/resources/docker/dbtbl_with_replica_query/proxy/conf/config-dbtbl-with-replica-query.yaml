@@ -222,8 +222,6 @@ dataSources:
 rules:
 - !SHARDING
   tables:
-    config:
-      actualDataNodes: pr_ds_${0..9}.t_config
     t_order:
       actualDataNodes: pr_ds_${0..9}.t_order_${0..9}
       databaseStrategy:
@@ -258,10 +256,10 @@ rules:
           shardingColumn: order_id
           shardingAlgorithmName: standard_test
   bindingTables:
-    - t_order,t_order_item
+    - t_order,t_order_item,t_order_details
   broadcastTables:
     - t_broadcast_table
-  
+    - t_broadcast_table_for_ddl
   shardingAlgorithms:
     standard_test:
       type: STANDARD_TEST

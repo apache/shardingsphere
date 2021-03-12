@@ -40,7 +40,7 @@ import static org.junit.Assert.assertThat;
 public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
     
     @ClassRule
-    public static JaegerCollector collector = new JaegerCollector();
+    public static final JaegerCollector COLLECTOR = new JaegerCollector();
     
     private static final CommandExecutorTaskAdvice ADVICE = new CommandExecutorTaskAdvice();
     
@@ -56,7 +56,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     public void assertMethod() {
         ADVICE.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
-        List<MockSpan> spans = collector.finishedSpans();
+        List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
         assertThat(spans.get(0).logEntries().size(), is(0));
         assertThat(spans.get(0).operationName(), is("/ShardingSphere/rootInvoke/"));
@@ -68,7 +68,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
         ADVICE.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         ADVICE.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
         ADVICE.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
-        List<MockSpan> spans = collector.finishedSpans();
+        List<MockSpan> spans = COLLECTOR.finishedSpans();
         Assert.assertEquals(1, spans.size());
         MockSpan span = spans.get(0);
         assertThat(span.tags().get("error"), is(true));
@@ -83,5 +83,4 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
         map.put(JaegerConstants.ErrorLogTagKeys.EVENT_ERROR_TYPE, true);
         assertThat(spans.get(0).tags(), is(map));
     }
-    
 }

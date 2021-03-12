@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.api.impl;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -29,30 +27,28 @@ import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
 import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoundException;
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
-import org.apache.shardingsphere.scaling.core.job.JobStatus;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckerFactory;
+import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
+import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
-import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
 public final class ScalingAPIImpl implements ScalingAPI {
     
-    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
     @Override
     public List<JobInfo> list() {
@@ -66,49 +62,12 @@ public final class ScalingAPIImpl implements ScalingAPI {
         JobInfo result = new JobInfo(Long.parseLong(jobName));
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(result.getJobId());
         JobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
-        Map<Integer, JobProgress> jobProgressMap = getProgress(result.getJobId());
         result.setActive(!jobConfigPOJO.isDisabled());
         result.setShardingTotalCount(jobConfig.getHandleConfig().getShardingTotalCount());
-        result.setTables(jobConfig.getHandleConfig().getShardingTables());
-        result.setStatus(getStatus(jobProgressMap));
-        result.setInventoryFinishedPercentage(getInventoryFinishedPercentage(jobProgressMap));
-        result.setIncrementalAverageDelayMilliseconds(getIncrementalAverageDelayMilliseconds(jobProgressMap));
+        result.setTables(jobConfig.getHandleConfig().getLogicTables());
+        result.setCreateTime(jobConfigPOJO.getProps().getProperty("create_time"));
+        result.setStopTime(jobConfigPOJO.getProps().getProperty("stop_time"));
         return result;
-    }
-    
-    private String getStatus(final Map<Integer, JobProgress> jobProgressMap) {
-        String result = null;
-        Set<JobProgress> jobProgressSet = jobProgressMap.values().stream()
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-        for (JobProgress each : jobProgressSet) {
-            if (null == result || !each.getStatus().isRunning()) {
-                result = each.getStatus().name();
-            }
-        }
-        return null == result ? JobStatus.RUNNING.name() : result;
-    }
-    
-    private int getInventoryFinishedPercentage(final Map<Integer, JobProgress> jobProgressMap) {
-        long isNull = jobProgressMap.values().stream()
-                .filter(Objects::isNull).count();
-        long total = jobProgressMap.values().stream()
-                .filter(Objects::nonNull).count();
-        long finished = jobProgressMap.values().stream()
-                .filter(Objects::nonNull)
-                .flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
-                .filter(each -> each.getPosition() instanceof FinishedPosition)
-                .count();
-        return total == 0 ? 0 : (int) ((finished * 100 / total) * (jobProgressMap.size() - isNull) / jobProgressMap.size());
-    }
-    
-    private long getIncrementalAverageDelayMilliseconds(final Map<Integer, JobProgress> jobProgressMap) {
-        List<Long> delays = jobProgressMap.values().stream()
-                .filter(Objects::nonNull)
-                .flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
-                .map(each -> each.getIncrementalTaskDelay().getDelayMilliseconds())
-                .collect(Collectors.toList());
-        return delays.isEmpty() ? -1 : delays.stream().reduce(Long::sum).orElse(0L) / delays.size();
     }
     
     @Override
@@ -116,26 +75,29 @@ public final class ScalingAPIImpl implements ScalingAPI {
         log.info("Start scaling job {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         jobConfigPOJO.setDisabled(false);
+        jobConfigPOJO.getProps().remove("stop_time");
         ScalingAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
     }
     
     @Override
     public Optional<Long> start(final JobConfiguration jobConfig) {
-        log.info("Start scaling job by {}", jobConfig);
         JobConfigurationUtil.fillInProperties(jobConfig);
         if (jobConfig.getHandleConfig().getShardingTotalCount() == 0) {
+            log.warn("Invalid scaling job config!");
             return Optional.empty();
         }
+        log.info("Start scaling job by {}", YamlEngine.marshal(jobConfig));
         ScalingAPIFactory.getRegistryRepositoryAPI().persist(String.format("%s/%d", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), ScalingJob.class.getCanonicalName());
-        ScalingAPIFactory.getRegistryRepositoryAPI().persist(String.format("%s/%d/config", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), createElasticJobConfig(jobConfig));
+        ScalingAPIFactory.getRegistryRepositoryAPI().persist(String.format("%s/%d/config", ScalingConstant.SCALING_ROOT, jobConfig.getHandleConfig().getJobId()), createJobConfig(jobConfig));
         return Optional.of(jobConfig.getHandleConfig().getJobId());
     }
     
-    private String createElasticJobConfig(final JobConfiguration jobConfig) {
+    private String createJobConfig(final JobConfiguration jobConfig) {
         JobConfigurationPOJO jobConfigPOJO = new JobConfigurationPOJO();
         jobConfigPOJO.setJobName(String.valueOf(jobConfig.getHandleConfig().getJobId()));
         jobConfigPOJO.setShardingTotalCount(jobConfig.getHandleConfig().getShardingTotalCount());
-        jobConfigPOJO.setJobParameter(GSON.toJson(jobConfig));
+        jobConfigPOJO.setJobParameter(YamlEngine.marshal(jobConfig));
+        jobConfigPOJO.getProps().setProperty("create_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
         return YamlEngine.marshal(jobConfigPOJO);
     }
     
@@ -144,24 +106,26 @@ public final class ScalingAPIImpl implements ScalingAPI {
         log.info("Stop scaling job {}", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         jobConfigPOJO.setDisabled(true);
+        jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
         ScalingAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
     }
     
     @Override
     public void remove(final long jobId) {
         log.info("Remove scaling job {}", jobId);
+        ScalingAPIFactory.getJobOperateAPI().remove(String.valueOf(jobId), null);
         ScalingAPIFactory.getRegistryRepositoryAPI().deleteJob(jobId);
     }
     
     @Override
     public Map<Integer, JobProgress> getProgress(final long jobId) {
         return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getShardingTotalCount()).boxed()
-                .collect(HashMap::new, (map, each) -> map.put(each, ScalingAPIFactory.getRegistryRepositoryAPI().getJobProgress(jobId, each)), HashMap::putAll);
+                .collect(LinkedHashMap::new, (map, each) -> map.put(each, ScalingAPIFactory.getRegistryRepositoryAPI().getJobProgress(jobId, each)), LinkedHashMap::putAll);
     }
     
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final long jobId) {
-        DataConsistencyChecker dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance(new JobContext(getJobConfig(jobId)));
+        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(new JobContext(getJobConfig(jobId)));
         Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.countCheck();
         if (result.values().stream().allMatch(DataConsistencyCheckResult::isCountValid)) {
             Map<String, Boolean> dataCheckResult = dataConsistencyChecker.dataCheck();
@@ -172,8 +136,9 @@ public final class ScalingAPIImpl implements ScalingAPI {
     }
     
     @Override
-    public void resetTargetTable(final long jobId) throws SQLException {
+    public void reset(final long jobId) throws SQLException {
         log.info("Scaling job {} reset target table", jobId);
+        ScalingAPIFactory.getRegistryRepositoryAPI().deleteJobProgress(jobId);
         new ScalingEnvironmentManager().resetTargetTable(new JobContext(getJobConfig(jobId)));
     }
     
@@ -183,15 +148,14 @@ public final class ScalingAPIImpl implements ScalingAPI {
     }
     
     private JobConfiguration getJobConfig(final JobConfigurationPOJO elasticJobConfigPOJO) {
-        return GSON.fromJson(elasticJobConfigPOJO.getJobParameter(), JobConfiguration.class);
+        return YamlEngine.unmarshal(elasticJobConfigPOJO.getJobParameter(), JobConfiguration.class);
     }
     
     private JobConfigurationPOJO getElasticJobConfigPOJO(final long jobId) {
         try {
             return ScalingAPIFactory.getJobConfigurationAPI().getJobConfiguration(String.valueOf(jobId));
         } catch (final NullPointerException ex) {
-            log.warn("Get job {} config failed.", jobId);
-            throw new ScalingJobNotFoundException(String.format("Can not find job by id %s", jobId));
+            throw new ScalingJobNotFoundException(String.format("Can not find scaling job %s", jobId), jobId);
         }
     }
 }

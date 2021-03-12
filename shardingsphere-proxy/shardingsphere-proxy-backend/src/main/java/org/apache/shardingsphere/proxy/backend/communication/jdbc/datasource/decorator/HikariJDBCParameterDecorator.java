@@ -29,7 +29,7 @@ public final class HikariJDBCParameterDecorator implements JDBCParameterDecorato
     public HikariDataSource decorate(final HikariDataSource dataSource) {
         dataSource.getDataSourceProperties().setProperty("useServerPrepStmts", Boolean.TRUE.toString());
         dataSource.getDataSourceProperties().setProperty("cachePrepStmts", Boolean.TRUE.toString());
-        dataSource.getDataSourceProperties().setProperty("prepStmtCacheSize", "250");
+        dataSource.getDataSourceProperties().setProperty("prepStmtCacheSize", "200000");
         dataSource.getDataSourceProperties().setProperty("prepStmtCacheSqlLimit", "2048");
         dataSource.getDataSourceProperties().setProperty("useLocalSessionState", Boolean.TRUE.toString());
         dataSource.getDataSourceProperties().setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());

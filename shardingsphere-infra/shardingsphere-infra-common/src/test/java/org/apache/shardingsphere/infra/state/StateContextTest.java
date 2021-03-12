@@ -24,7 +24,7 @@ import static org.junit.Assert.assertThat;
 
 public final class StateContextTest {
     
-    private StateContext stateContext = new StateContext();
+    private final StateContext stateContext = new StateContext();
     
     @Test
     public void assertSwitchStateWithCircuitBreakOn() {

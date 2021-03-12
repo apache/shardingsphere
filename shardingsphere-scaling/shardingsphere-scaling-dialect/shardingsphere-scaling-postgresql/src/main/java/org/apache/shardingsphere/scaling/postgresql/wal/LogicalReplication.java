@@ -46,12 +46,12 @@ public final class LogicalReplication {
     
     private Connection createConnection(final StandardJDBCDataSourceConfiguration jdbcDataSourceConfig) throws SQLException {
         Properties props = new Properties();
-        PGProperty.USER.set(props, jdbcDataSourceConfig.getUsername());
-        PGProperty.PASSWORD.set(props, jdbcDataSourceConfig.getPassword());
+        PGProperty.USER.set(props, jdbcDataSourceConfig.getHikariConfig().getUsername());
+        PGProperty.PASSWORD.set(props, jdbcDataSourceConfig.getHikariConfig().getPassword());
         PGProperty.ASSUME_MIN_SERVER_VERSION.set(props, "9.6");
         PGProperty.REPLICATION.set(props, "database");
         PGProperty.PREFER_QUERY_MODE.set(props, "simple");
-        return DriverManager.getConnection(jdbcDataSourceConfig.getJdbcUrl(), props);
+        return DriverManager.getConnection(jdbcDataSourceConfig.getHikariConfig().getJdbcUrl(), props);
     }
     
     /**

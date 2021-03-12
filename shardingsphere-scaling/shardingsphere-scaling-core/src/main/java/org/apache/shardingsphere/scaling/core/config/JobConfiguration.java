@@ -29,5 +29,5 @@ public final class JobConfiguration {
     
     private RuleConfiguration ruleConfig;
     
-    private HandleConfiguration handleConfig;
+    private HandleConfiguration handleConfig = new HandleConfiguration();
 }

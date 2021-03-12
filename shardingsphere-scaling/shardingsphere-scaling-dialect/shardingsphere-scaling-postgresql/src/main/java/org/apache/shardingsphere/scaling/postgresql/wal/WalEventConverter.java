@@ -58,7 +58,7 @@ public final class WalEventConverter {
      * @return record
      */
     public Record convert(final AbstractWalEvent event) {
-        JdbcUri uri = new JdbcUri(((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getJdbcUrl());
+        JdbcUri uri = new JdbcUri(((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getHikariConfig().getJdbcUrl());
         if (filter(uri.getDatabase(), event)) {
             return createPlaceholderRecord(event);
         } else if (event instanceof WriteRowEvent) {

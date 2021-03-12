@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.engine.it;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.integration.engine.param.model.CaseParameterizedArray;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.junit.After;
@@ -66,16 +66,15 @@ public abstract class BatchIT extends BaseIT {
     @Getter(AccessLevel.NONE)
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    protected BatchIT(final IntegrationTestCaseContext testCaseContext,
-                      final String adapter, final String scenario, final DatabaseType databaseType, final String sql) throws IOException, JAXBException, SQLException {
-        super(adapter, scenario, databaseType);
-        this.testCaseContext = testCaseContext;
-        this.sql = sql;
+    protected BatchIT(final CaseParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException {
+        super(parameterizedArray.getAdapter(), parameterizedArray.getScenario(), parameterizedArray.getDatabaseType());
+        this.testCaseContext = parameterizedArray.getTestCaseContext();
+        this.sql = parameterizedArray.getTestCaseContext().getTestCase().getSql();
         dataSets = new LinkedList<>();
         for (IntegrationTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
-            dataSets.add(DataSetLoader.load(testCaseContext.getParentPath(), scenario, databaseType, each.getExpectedDataFile()));
+            dataSets.add(DataSetLoader.load(testCaseContext.getParentPath(), parameterizedArray.getScenario(), parameterizedArray.getDatabaseType(), each.getExpectedDataFile()));
         }
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(scenario), getActualDataSources());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(parameterizedArray.getScenario()), getActualDataSources());
     }
     
     @Before

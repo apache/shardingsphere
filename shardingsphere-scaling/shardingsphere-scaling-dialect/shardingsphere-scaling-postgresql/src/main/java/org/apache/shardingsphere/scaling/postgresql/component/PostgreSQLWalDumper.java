@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.scaling.postgresql.component;
 
 import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.common.channel.Channel;
+import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
+import org.apache.shardingsphere.scaling.core.common.record.Record;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.common.exception.ScalingTaskExecuteException;
 import org.apache.shardingsphere.scaling.core.executor.AbstractScalingExecutor;
-import org.apache.shardingsphere.scaling.core.common.channel.Channel;
-import org.apache.shardingsphere.scaling.core.executor.dumper.LogDumper;
-import org.apache.shardingsphere.scaling.core.common.record.Record;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
+import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 import org.apache.shardingsphere.scaling.core.util.ThreadUtil;
 import org.apache.shardingsphere.scaling.postgresql.wal.LogicalReplication;
 import org.apache.shardingsphere.scaling.postgresql.wal.WalEventConverter;
@@ -43,7 +43,7 @@ import java.sql.SQLException;
 /**
  * PostgreSQL WAL dumper.
  */
-public final class PostgreSQLWalDumper extends AbstractScalingExecutor implements LogDumper {
+public final class PostgreSQLWalDumper extends AbstractScalingExecutor implements IncrementalDumper {
     
     private final WalPosition walPosition;
     
@@ -56,7 +56,7 @@ public final class PostgreSQLWalDumper extends AbstractScalingExecutor implement
     @Setter
     private Channel channel;
     
-    public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final Position<WalPosition> position) {
+    public PostgreSQLWalDumper(final DumperConfiguration dumperConfig, final ScalingPosition<WalPosition> position) {
         walPosition = (WalPosition) position;
         if (!StandardJDBCDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass())) {
             throw new UnsupportedOperationException("PostgreSQLWalDumper only support JDBCDataSourceConfiguration");

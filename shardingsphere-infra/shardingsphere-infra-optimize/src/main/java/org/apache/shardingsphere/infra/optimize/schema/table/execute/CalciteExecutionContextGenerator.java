@@ -55,14 +55,18 @@ public final class CalciteExecutionContextGenerator {
     private Collection<ExecutionUnit> getExecutionUnits(final Collection<RouteUnit> routeUnits, final CalciteExecutionSQLGenerator filter) {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
         for (RouteUnit each: routeUnits) {
-            for (RouteMapper mapper : each.getTableMappers()) {
-                if (mapper.getLogicName().equals(table)) {
-                    result.add(new ExecutionUnit(each.getDataSourceMapper().getActualName(),
-                            new SQLUnit(filter.generate(mapper.getActualName()), Collections.emptyList(), Collections.singletonList(mapper))));
-                }
-            }
+            fillExecutionUnits(result, filter, each);
         }
         return result;
+    }
+    
+    private void fillExecutionUnits(final Collection<ExecutionUnit> executionUnits, final CalciteExecutionSQLGenerator filter, final RouteUnit routeUnit) {
+        for (RouteMapper mapper : routeUnit.getTableMappers()) {
+            if (mapper.getLogicName().equals(table)) {
+                executionUnits.add(new ExecutionUnit(routeUnit.getDataSourceMapper().getActualName(),
+                        new SQLUnit(filter.generate(mapper.getActualName()), Collections.emptyList(), Collections.singletonList(mapper))));
+            }
+        }
     }
     
     private RouteContext getRouteContext(final RouteContext routeContext) {

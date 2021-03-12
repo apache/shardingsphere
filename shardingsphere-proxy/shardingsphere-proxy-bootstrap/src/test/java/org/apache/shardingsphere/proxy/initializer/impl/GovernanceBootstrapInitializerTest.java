@@ -20,19 +20,19 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
-import org.apache.shardingsphere.governance.core.config.ConfigCenterNode;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
-import org.apache.shardingsphere.proxy.fixture.FixtureConfigurationRepository;
+import org.apache.shardingsphere.proxy.fixture.FixtureRegistryRepository;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
@@ -61,15 +61,15 @@ import static org.mockito.Mockito.mock;
 
 public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
-    private static final String DATA_SOURCE_YAML = "conf/reg_center/config_center/data-sources.yaml";
+    private static final String DATA_SOURCE_YAML = "conf/reg_center/data-sources.yaml";
     
-    private static final String SHARDING_RULE_YAML = "conf/reg_center/config_center/sharding-rule.yaml";
+    private static final String SHARDING_RULE_YAML = "conf/reg_center/sharding-rule.yaml";
     
-    private static final String AUTHENTICATION_YAML = "conf/reg_center/config_center/authentication.yaml";
+    private static final String AUTHENTICATION_YAML = "conf/reg_center/authentication.yaml";
     
-    private static final String PROPS_YAML = "conf/reg_center/config_center/props.yaml";
+    private static final String PROPS_YAML = "conf/reg_center/props.yaml";
     
-    private final FixtureConfigurationRepository configurationRepository = new FixtureConfigurationRepository();
+    private final FixtureRegistryRepository registryRepository = new FixtureRegistryRepository();
     
     @Test
     public void assertGetProxyConfiguration() throws IOException {
@@ -80,12 +80,12 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     }
     
     private void initConfigCenter() {
-        ConfigCenterNode node = new ConfigCenterNode();
-        configurationRepository.persist(node.getAuthenticationPath(), readYAML(AUTHENTICATION_YAML));
-        configurationRepository.persist(node.getPropsPath(), readYAML(PROPS_YAML));
-        configurationRepository.persist(node.getMetadataNodePath(), "db");
-        configurationRepository.persist(node.getDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
-        configurationRepository.persist(node.getRulePath("db"), readYAML(SHARDING_RULE_YAML));
+        RegistryCenterNode node = new RegistryCenterNode();
+        registryRepository.persist(node.getAuthenticationPath(), readYAML(AUTHENTICATION_YAML));
+        registryRepository.persist(node.getPropsPath(), readYAML(PROPS_YAML));
+        registryRepository.persist(node.getMetadataNodePath(), "db");
+        registryRepository.persist(node.getMetadataDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
+        registryRepository.persist(node.getRulePath("db"), readYAML(SHARDING_RULE_YAML));
     }
     
     @SneakyThrows({URISyntaxException.class, IOException.class})
@@ -94,7 +94,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     }
     
     private void closeConfigCenter() {
-        configurationRepository.close();
+        registryRepository.close();
     }
     
     @Test

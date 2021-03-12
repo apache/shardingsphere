@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 
@@ -48,7 +47,12 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
     
     @Override
     public void route(final RouteContext routeContext, final ShardingRule shardingRule) {
-        for (String each : getLogicTableNames()) {
+        Collection<String> logicTableNames = getLogicTableNames();
+        if (logicTableNames.isEmpty()) {
+            routeContext.getRouteUnits().addAll(getBroadcastTableRouteUnits(shardingRule, ""));
+            return;
+        }
+        for (String each : logicTableNames) {
             if (shardingRule.getBroadcastTables().contains(each)) {
                 routeContext.getRouteUnits().addAll(getBroadcastTableRouteUnits(shardingRule, each));
             } else {
@@ -68,9 +72,7 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
     private Collection<String> getTableNamesFromMetaData(final DropIndexStatement dropIndexStatement) {
         Collection<String> result = new LinkedList<>();
         for (IndexSegment each : dropIndexStatement.getIndexes()) {
-            Optional<String> tableName = findLogicTableNameFromMetaData(each.getIdentifier().getValue());
-            Preconditions.checkState(tableName.isPresent(), "Cannot find index name `%s`.", each.getIdentifier().getValue());
-            result.add(tableName.get());
+            findLogicTableNameFromMetaData(each.getIdentifier().getValue()).ifPresent(result::add);
         }
         return result;
     }

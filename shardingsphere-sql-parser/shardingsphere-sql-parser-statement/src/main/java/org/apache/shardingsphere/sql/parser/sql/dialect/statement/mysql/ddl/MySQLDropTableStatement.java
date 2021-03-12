@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -24,6 +26,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL drop table statement.
  */
+@Getter
+@Setter
 @ToString
 public final class MySQLDropTableStatement extends DropTableStatement implements MySQLStatement {
+    
+    private boolean containsIfExistClause;
 }

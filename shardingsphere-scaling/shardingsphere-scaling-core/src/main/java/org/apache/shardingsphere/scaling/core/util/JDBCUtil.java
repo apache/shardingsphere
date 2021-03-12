@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.scaling.core.util;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.common.datasource.JdbcUri;
-import org.apache.shardingsphere.scaling.core.config.datasource.ConfigurationYamlConverter;
 import org.apache.shardingsphere.scaling.core.config.datasource.ScalingDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -50,16 +48,15 @@ public final class JDBCUtil {
     }
     
     private static void append(final StandardJDBCDataSourceConfiguration dataSourceConfig, final Map<String, String> parameters) {
-        dataSourceConfig.setJdbcUrl(append(dataSourceConfig.getJdbcUrl(), parameters));
+        dataSourceConfig.getHikariConfig().setJdbcUrl(append(dataSourceConfig.getHikariConfig().getJdbcUrl(), parameters));
     }
     
     private static void append(final ShardingSphereJDBCDataSourceConfiguration dataSourceConfig, final Map<String, String> parameters) {
-        Map<String, DataSourceConfiguration> dataSourceConfigMap = new HashMap<>(ConfigurationYamlConverter.loadDataSourceConfigs(dataSourceConfig.getDataSource()));
-        dataSourceConfigMap.forEach((key, value) -> {
-            String jdbcUrlKey = value.getProps().containsKey("url") ? "url" : "jdbcUrl";
-            value.getProps().replace(jdbcUrlKey, append(value.getProps().get(jdbcUrlKey).toString(), parameters));
-        });
-        dataSourceConfig.setDataSource(ConfigurationYamlConverter.serializeDataSourceConfigs(dataSourceConfigMap));
+        dataSourceConfig.getRootRuleConfigs().getDataSources()
+                .forEach((key, value) -> {
+                    String jdbcUrlKey = value.containsKey("url") ? "url" : "jdbcUrl";
+                    value.replace(jdbcUrlKey, append(value.get(jdbcUrlKey).toString(), parameters));
+                });
     }
     
     private static String append(final String url, final Map<String, String> parameters) {
@@ -82,6 +79,18 @@ public final class JDBCUtil {
             result.append("&");
         }
         result.deleteCharAt(result.length() - 1);
+        return result.toString();
+    }
+    
+    /**
+     * Get jdbc url from parameters, the key can be url or jdbcUrl.
+     *
+     * @param parameters parameters
+     * @return jdbc url
+     */
+    public static String getJdbcUrl(final Map<String, Object> parameters) {
+        Object result = parameters.getOrDefault("url", parameters.get("jdbcUrl"));
+        Preconditions.checkNotNull(result, "url or jdbcUrl is required.");
         return result.toString();
     }
 }

@@ -47,7 +47,7 @@ public final class PostgreSQLAuthenticationHandler {
      * @return PostgreSQL login result
      */
     public static PostgreSQLLoginResult loginWithMd5Password(final String username, final String databaseName, final byte[] md5Salt, final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
-        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(new Grantee(username, ""));
+        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(new Grantee(username, "%"));
         if (!user.isPresent()) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, String.format("unknown username: %s", username));
         }

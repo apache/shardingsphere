@@ -68,10 +68,15 @@ public final class ScalingWorker {
     
     private JobConfiguration createJobConfig(final StartScalingEvent event) {
         JobConfiguration result = new JobConfiguration();
-        result.setRuleConfig(new RuleConfiguration(
-                new ShardingSphereJDBCDataSourceConfiguration(event.getSourceDataSource(), event.getSourceRule()),
-                new ShardingSphereJDBCDataSourceConfiguration(event.getTargetDataSource(), event.getTargetRule())));
+        result.setRuleConfig(getRuleConfiguration(event));
         result.setHandleConfig(new HandleConfiguration(new WorkflowConfiguration(event.getSchemaName(), event.getRuleCacheId())));
+        return result;
+    }
+    
+    private RuleConfiguration getRuleConfiguration(final StartScalingEvent event) {
+        RuleConfiguration result = new RuleConfiguration();
+        result.setSource(new ShardingSphereJDBCDataSourceConfiguration(event.getSourceDataSource(), event.getSourceRule()).wrap());
+        result.setTarget(new ShardingSphereJDBCDataSourceConfiguration(event.getTargetDataSource(), event.getTargetRule()).wrap());
         return result;
     }
 }

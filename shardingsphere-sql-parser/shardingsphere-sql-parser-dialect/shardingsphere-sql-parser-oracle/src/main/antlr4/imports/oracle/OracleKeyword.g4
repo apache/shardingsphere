@@ -231,6 +231,10 @@ END
     : E N D
     ;
 
+EXCEPT
+    : E X C E P T
+    ;
+
 EXCEPTIONS
     : E X C E P T I O N S
     ;
@@ -289,6 +293,10 @@ NOMAXVALUE
 
 NOMINVALUE
     : N O M I N V A L U E
+    ;
+
+NOSORT
+    : N O S O R T
     ;
 
 MINING
@@ -357,6 +365,10 @@ REPLACE
 
 RESOURCE
     : R E S O U R C E
+    ;
+
+REVERSE
+    : R E V E R S E
     ;
 
 ROWID
@@ -891,10 +903,6 @@ PARALLEL
     : P A R A L L E L
     ;
 
-INVALIDATION
-    : I N V A L I D A T I O N
-    ;
-
 LOG
     : L O G
     ;
@@ -907,6 +915,14 @@ STORAGE
     : S T O R A G E
     ;
 
-ONLINE
-    : O N L I N E
+MATCHED
+    : M A T C H E D
+    ;
+
+ERRORS
+    : E R R O R S
+    ;
+
+REJECT
+    : R E J E C T
     ;
