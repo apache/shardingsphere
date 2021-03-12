@@ -112,7 +112,7 @@
         </assertion>
     </test-case>
     <!--TODO fix me! about issue #9570-->
-<!--    <test-case sql="CREATE TABLE t_user_details (user_id INT NOT NULL, item_id INT NOT NULL, pwd VARCHAR(45))" scenario-types="encrypt">-->
+<!--    <test-case sql="CREATE TABLE t_user_details (user_id INT NOT NULL, order_id INT NOT NULL, pwd VARCHAR(45))" scenario-types="encrypt">-->
 <!--        <assertion expected-data-file="create_user_table.xml">-->
 <!--            <initial-sql affected-table="t_user_details" />-->
 <!--        </assertion>-->
@@ -120,25 +120,25 @@
 
 <!--    <test-case sql="ALTER TABLE t_user_details CHANGE pwd pwd_new VARCHAR(50)" scenario-types="encrypt">-->
 <!--        <assertion expected-data-file="change_column_user_table.xml">-->
-<!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, item_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL)" affected-table="t_user_details" />-->
+<!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, order_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL)" affected-table="t_user_details" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
 
 <!--    <test-case sql="ALTER TABLE t_user_details DROP COLUMN pwd" scenario-types="encrypt">-->
 <!--        <assertion expected-data-file="drop_column_user_table.xml">-->
-<!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, item_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL)" affected-table="t_user_details" />-->
+<!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, order_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL)" affected-table="t_user_details" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
 
 <!--    <test-case sql="DROP TABLE t_user_details" scenario-types="encrypt">-->
 <!--        <assertion expected-data-file="drop_user_table.xml">-->
-<!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, item_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL)" affected-table="t_user_details" />-->
+<!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, order_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL)" affected-table="t_user_details" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
 
 <!--    <test-case sql="TRUNCATE TABLE t_user_details" scenario-types="encrypt">-->
 <!--        <assertion expected-data-file="unchanged_user_table.xml">-->
-<!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, item_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL)" affected-table="t_user_details" />-->
+<!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, order_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL)" affected-table="t_user_details" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
     <!-- TODO add single table DDL test cases -->
