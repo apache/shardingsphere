@@ -167,12 +167,7 @@ public final class DatabaseCommunicationEngine {
     }
     
     private boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext
-                && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty() && containAllTablesWithColumnMetaData(sqlStatementContext);
-    }
-    
-    private boolean containAllTablesWithColumnMetaData(final SQLStatementContext<?> sqlStatementContext) {
-        return sqlStatementContext.getTablesContext().getTableNames().stream().noneMatch(each -> metaData.getSchema().getAllColumnNames(each).isEmpty());
+        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
     }
     
     private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
