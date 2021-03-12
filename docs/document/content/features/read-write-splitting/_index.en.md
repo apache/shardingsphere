@@ -13,7 +13,7 @@ One primary database with multiple replica databases can further enhance system 
 
 Different from the horizontal sharding that separates data to all nodes according to sharding keys, replica query routes read operations and write operations separately to the primary database and the replica database according to SQL meaning analysis.
 
-![Read write splitting](hhttps://shardingsphere.apache.org/document/current/img/read-write-splitting/read-write-splitting-standalone.png)
+![Read write splitting](https://shardingsphere.apache.org/document/current/img/read-write-splitting/read-write-splitting-standalone.png)
 
 Data in replica query split nodes is consistent, whereas that in horizontal shards is not. The combined use of horizontal sharding and replica query will effectively enhance the system performance.
 

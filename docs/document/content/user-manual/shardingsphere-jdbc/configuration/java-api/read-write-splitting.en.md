@@ -1,5 +1,5 @@
 +++
-title = "Replica Query"
+title = "Read write splitting"
 weight = 2
 +++
 
