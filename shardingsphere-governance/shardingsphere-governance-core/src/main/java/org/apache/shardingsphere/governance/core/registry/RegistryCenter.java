@@ -540,14 +540,14 @@ public final class RegistryCenter {
      * @return true if get the lock, false if not
      */
     public boolean tryLock(final long timeout) {
-        return repository.tryLock(lockNode.getGlobalLockNodePath(), timeout, TimeUnit.MILLISECONDS) && checkLock();
+        return repository.tryLock(lockNode.getLockNodePath(), timeout, TimeUnit.MILLISECONDS) && checkLock();
     }
     
     /**
      * Release lock.
      */
     public void releaseLock() {
-        repository.releaseLock(lockNode.getGlobalLockNodePath());
+        repository.releaseLock(lockNode.getLockNodePath());
     }
     
     private boolean checkLock() {
