@@ -534,26 +534,26 @@ public final class RegistryCenter {
     }
     
     /**
-     * Try to get global lock.
+     * Try to get lock.
      *
      * @param timeout the maximum time in milliseconds to acquire lock
      * @return true if get the lock, false if not
      */
-    public boolean tryGlobalLock(final long timeout) {
+    public boolean tryLock(final long timeout) {
         return repository.tryLock(lockNode.getGlobalLockNodePath(), timeout, TimeUnit.MILLISECONDS) && checkLock();
     }
     
     /**
-     * Release global lock.
+     * Release lock.
      */
-    public void releaseGlobalLock() {
+    public void releaseLock() {
         repository.releaseLock(lockNode.getGlobalLockNodePath());
     }
     
     private boolean checkLock() {
         boolean result = checkOrRetry(loadAllInstances());
         if (!result) {
-            releaseGlobalLock();
+            releaseLock();
         }
         return result;
     }
