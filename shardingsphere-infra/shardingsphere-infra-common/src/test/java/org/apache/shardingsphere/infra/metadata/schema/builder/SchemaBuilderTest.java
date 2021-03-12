@@ -62,7 +62,7 @@ public final class SchemaBuilderTest {
     
     private SchemaBuilderMaterials schemaBuilderMaterials;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DatabaseType databaseType;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
@@ -74,8 +74,7 @@ public final class SchemaBuilderTest {
     @Before
     public void setUp() {
         schemaBuilderMaterials = new SchemaBuilderMaterials(
-                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(),
-                new DataNodeContainedFixtureRule()), props);
+                databaseType, Collections.singletonMap("logic_db", dataSource), Arrays.asList(new CommonFixtureRule(), new DataNodeContainedFixtureRule()), props);
     }
     
     @Test

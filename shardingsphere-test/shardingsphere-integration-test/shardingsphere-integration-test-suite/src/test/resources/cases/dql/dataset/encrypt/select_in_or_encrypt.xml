@@ -18,8 +18,9 @@
 <dataset>
     <metadata>
         <column name="user_id" />
+        <column name="item_id" />
         <column name="pwd" />
     </metadata>
-    <row values="10, a10" />
-    <row values="11, b11" />
+    <row values="10, 100000, a10" />
+    <row values="11, 110000, b11" />
 </dataset>

@@ -150,8 +150,7 @@ public final class ShardingTableMetaDataBuilder implements RuleBasedTableMetaDat
         Collection<ColumnMetaData> result = new LinkedList<>();
         for (Entry<String, ColumnMetaData> entry : tableMetaData.getColumns().entrySet()) {
             if (entry.getKey().equalsIgnoreCase(generateKeyColumn.get())) {
-                result.add(new ColumnMetaData(
-                        entry.getValue().getName(), entry.getValue().getDataType(), entry.getValue().getDataTypeName(), entry.getValue().isPrimaryKey(), true, entry.getValue().isCaseSensitive()));
+                result.add(new ColumnMetaData(entry.getValue().getName(), entry.getValue().getDataType(), entry.getValue().isPrimaryKey(), true, entry.getValue().isCaseSensitive()));
             } else {
                 result.add(entry.getValue());
             }

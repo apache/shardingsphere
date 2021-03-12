@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.orderby.engine;
 
-import java.sql.Types;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.engine.GroupByContextEngine;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
@@ -51,10 +47,14 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL9
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerSelectStatement;
 import org.junit.Test;
 
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -246,9 +246,9 @@ public final class OrderByContextEngineTest {
     private ShardingSphereSchema getShardingSphereSchemaForMySQLSelectWithoutOrderBy() {
         Map<String, TableMetaData> tables = new HashMap<>();
         TableMetaData orderTable = new TableMetaData(Arrays.asList(
-            new ColumnMetaData("order_id", Types.INTEGER, "INT", true, true, false),
-            new ColumnMetaData("user_id", Types.INTEGER, "INT", false, false, false),
-            new ColumnMetaData("status", Types.VARCHAR, "VARCHAR", false, false, false)
+            new ColumnMetaData("order_id", Types.INTEGER, true, true, false),
+            new ColumnMetaData("user_id", Types.INTEGER, false, false, false),
+            new ColumnMetaData("status", Types.VARCHAR, false, false, false)
         ), Collections.emptyList());
         tables.put("t_order", orderTable);
         return new ShardingSphereSchema(tables);
