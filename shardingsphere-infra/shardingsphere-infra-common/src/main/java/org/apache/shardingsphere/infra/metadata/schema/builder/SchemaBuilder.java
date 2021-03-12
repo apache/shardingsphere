@@ -37,6 +37,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -136,9 +137,13 @@ public final class SchemaBuilder {
     private static TableMetaData loadTableMetaData(final String tableName, final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
         TableMetaData result = new TableMetaData();
         try (Connection connection = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
-            result.getColumns().putAll(ColumnMetaDataLoader.load(connection, tableName, databaseType).stream().collect(Collectors.toMap(ColumnMetaData::getName, each -> each, (a, b) -> b)));
+            result.getColumns().putAll(loadColumnMetaDataMap(tableName, databaseType, connection));
         }
         return result;
+    }
+    
+    private static Map<String, ColumnMetaData> loadColumnMetaDataMap(final String tableName, final DatabaseType databaseType, final Connection connection) throws SQLException {
+        return ColumnMetaDataLoader.load(connection, tableName, databaseType).stream().collect(Collectors.toMap(ColumnMetaData::getName, each -> each, (a, b) -> b, LinkedHashMap::new));
     }
     
     private static Collection<String> getExistedTables(final Collection<ShardingSphereRule> rules, final ShardingSphereSchema schema) {
