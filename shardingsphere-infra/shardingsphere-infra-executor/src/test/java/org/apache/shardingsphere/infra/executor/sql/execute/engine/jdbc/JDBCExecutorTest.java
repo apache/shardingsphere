@@ -21,13 +21,12 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -43,10 +42,9 @@ public final class JDBCExecutorTest {
     @Test
     public void assertExecute() throws SQLException {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
-        Collection<ExecutionGroup<String>> inputGroups = new LinkedList<>();
-        ExecutionGroup<String> group = new ExecutionGroup<>(Collections.singletonList("input"));
+        ExecutionGroup<JDBCExecutionUnit> group = new ExecutionGroup<>(Collections.singletonList(mock(JDBCExecutionUnit.class)));
         ExecutionGroupContext context = new ExecutionGroupContext(Collections.singletonList(group));
-        when(executorEngine.execute(context, any(), any(), anyBoolean())).thenReturn(Collections.singletonList("test"));
+        when(executorEngine.execute(any(), any(), any(), anyBoolean())).thenReturn(Collections.singletonList("test"));
         JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, false);
         List<?> actual1 = jdbcExecutor.execute(context, null);
         assertThat(actual1, is(Collections.singletonList("test")));
