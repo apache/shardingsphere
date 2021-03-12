@@ -1,9 +1,13 @@
 +++
-title = "Replica Query"
-weight = 2
+title = "Change History"
+weight = 7
 +++
 
-## Configuration Item Explanation
+# ShardingSphere-5.0.0-alpha
+
+## Replica Query
+
+### Configuration Item Explanation
 
 ```properties
 spring.shardingsphere.datasource.names= # Omit the data source configuration, please refer to the usage

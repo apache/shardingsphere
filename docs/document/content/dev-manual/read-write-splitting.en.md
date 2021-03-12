@@ -1,6 +1,6 @@
 +++
 pre = "<b>5.5. </b>"
-title = "Replica Query"
+title = "Read write splitting"
 weight = 5
 chapter = true
 +++
