@@ -113,12 +113,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     }
     
     private boolean hasSelectExpandProjections() {
-        return sqlStatementContext instanceof SelectStatementContext
-                && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty() && containAllTablesWithColumnMetaData(sqlStatementContext);
-    }
-    
-    private boolean containAllTablesWithColumnMetaData(final SQLStatementContext<?> sqlStatementContext) {
-        return sqlStatementContext.getTablesContext().getTableNames().stream().noneMatch(each -> shardingSphereMetaData.getSchema().getAllColumnNames(each).isEmpty());
+        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
     }
     
     @Override

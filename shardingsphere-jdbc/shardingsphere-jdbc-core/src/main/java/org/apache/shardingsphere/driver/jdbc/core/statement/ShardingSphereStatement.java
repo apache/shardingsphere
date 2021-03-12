@@ -117,7 +117,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     @Getter(AccessLevel.PROTECTED)
     private CalciteExecutor calciteExecutor;
-
+    
     public ShardingSphereStatement(final ShardingSphereConnection connection) {
         this(connection, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT);
     }
@@ -388,13 +388,6 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return driverJDBCExecutor.execute(executionGroupContext, sqlStatement, routeUnits, jdbcExecutorCallback);
     }
     
-    private ExecutionContext createExecutionContext(final String sql) throws SQLException {
-        clearStatements();
-        LogicSQL logicSQL = createLogicSQL(sql);
-        SQLCheckEngine.check(logicSQL.getSqlStatementContext().getSqlStatement(), logicSQL.getParameters(), metaDataContexts.getDefaultMetaData(), metaDataContexts.getAuthentication());
-        return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getDefaultMetaData(), metaDataContexts.getProps());
-    }
-    
     private void clearStatements() throws SQLException {
         for (Statement each : statements) {
             each.close();
@@ -409,6 +402,13 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schema, Collections.emptyList(), sqlStatement);
         return new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
+    }
+    
+    private ExecutionContext createExecutionContext(final String sql) throws SQLException {
+        clearStatements();
+        LogicSQL logicSQL = createLogicSQL(sql);
+        SQLCheckEngine.check(logicSQL.getSqlStatementContext().getSqlStatement(), logicSQL.getParameters(), metaDataContexts.getDefaultMetaData(), metaDataContexts.getAuthentication());
+        return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getDefaultMetaData(), metaDataContexts.getProps());
     }
     
     private ExecutionGroupContext<JDBCExecutionUnit> createExecutionContext() throws SQLException {
