@@ -28,8 +28,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -43,13 +47,20 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
     
     @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
+        return loadTableMetaDataMap(dataSource, existedTables);
+    }
+    
+    private Map<String, TableMetaData> loadTableMetaDataMap(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
-        loadColumnMetaData(dataSource, existedTables, result);
-        // TODO load index
+        for (Entry<String, Collection<ColumnMetaData>> entry : loadColumnMetaDataMap(dataSource, existedTables).entrySet()) {
+            // TODO load index
+            result.put(entry.getKey(), new TableMetaData(entry.getValue(), Collections.emptyList()));
+        }
         return result;
     }
     
-    private void loadColumnMetaData(final DataSource dataSource, final Collection<String> existedTables, final Map<String, TableMetaData> tableMetaDataMap) throws SQLException {
+    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
+        Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(existedTables))) {
@@ -59,13 +70,14 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
                 while (resultSet.next()) {
                     String tableName = resultSet.getString("TABLE_NAME");
                     ColumnMetaData columnMetaData = loadColumnMetaData(dataTypes, resultSet);
-                    if (!tableMetaDataMap.containsKey(tableName)) {
-                        tableMetaDataMap.put(tableName, new TableMetaData());
+                    if (!result.containsKey(tableName)) {
+                        result.put(tableName, new LinkedList<>());
                     }
-                    tableMetaDataMap.get(tableName).getColumns().put(columnMetaData.getName(), columnMetaData);
+                    result.get(tableName).add(columnMetaData);
                 }
             }
         }
+        return result;
     }
     
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet) throws SQLException {
@@ -73,7 +85,8 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
         String dataType = resultSet.getString("DATA_TYPE");
         boolean primaryKey = "PRI".equals(resultSet.getString("COLUMN_KEY"));
         boolean generated = "auto_increment".equals(resultSet.getString("EXTRA"));
-        boolean caseSensitive = null != resultSet.getString("COLLATION_NAME") && resultSet.getString("COLLATION_NAME").endsWith("_ci");
+        String collationName = resultSet.getString("COLLATION_NAME");
+        boolean caseSensitive = null != collationName && collationName.endsWith("_ci");
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
     }
     
