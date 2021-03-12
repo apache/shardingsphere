@@ -20,10 +20,10 @@ version: "2.1"
 services:
   mysql:
     image: "mysql/mysql-server:5.7"
-    container_name: dbtbl-with-replica-query-and-encrypt-mysql
+    container_name: dbtbl-with-read-write-splitting-and-encrypt-mysql
     command: ['--sql_mode=', '--default-authentication-plugin=mysql_native_password']
     volumes:
-      - ../../env/dbtbl_with_replica_query_and_encrypt/init-sql/mysql:/docker-entrypoint-initdb.d/
+      - ../../env/dbtbl_with_read_write_splitting_and_encrypt/init-sql/mysql:/docker-entrypoint-initdb.d/
     ports:
       - "33560:3306"
     environment:
@@ -31,18 +31,18 @@ services:
   
 #  zookeeper:
 #    image: "zookeeper:3.6.2"
-#    container_name: dbtbl-with-replica-query-and-encrypt-register-center
+#    container_name: dbtbl-with-read-write-splitting-and-encrypt-register-center
 #    ports:
 #      - "25810:2181"
   
   shardingsphere-proxy:
     image: apache/shardingsphere-proxy-test
-    container_name: dbtbl-with-replica-query-and-encrypt-shardingsphere-proxy
+    container_name: dbtbl-with-read-write-splitting-and-encrypt-shardingsphere-proxy
     ports:
       - "33570:3307"
       - "33580:3308"
     links:
-      - "mysql:mysql.dbtbl-with-replica-query-and-encrypt.host"
+      - "mysql:mysql.dbtbl-with-read-write-splitting-and-encrypt.host"
 #      - "zookeeper:zk"
     volumes:
       - ./proxy/conf:/opt/shardingsphere-proxy/conf

@@ -19,5 +19,5 @@
     <metadata>
         <column name="schema_name" />
     </metadata>
-    <row values="dbtbl_with_replica_query_and_encrypt" />
+    <row values="dbtbl_with_read_write_splitting_and_encrypt" />
 </dataset>

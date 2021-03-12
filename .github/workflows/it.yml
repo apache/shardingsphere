@@ -129,8 +129,8 @@ jobs:
       - name: Run Integration Test
         run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=proxy -Dit.scenarios=encrypt -Dit.databases=MySQL
 
-  mysql-proxy-dbtbl-with-replica-query_and-encrypt:
-    name: MySQL-Proxy with DBTBL-WITH-REPLICA-QUERY-AND-ENCRYPT
+  mysql-proxy-dbtbl-with-read-write-splitting-and-encrypt:
+    name: MySQL-Proxy with DBTBL-WITH-READ-WRITE-SPLITTING-AND-ENCRYPT
     runs-on: ubuntu-latest
     steps:
       - name: Cache Maven Repos
@@ -148,7 +148,7 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests
       - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=proxy -Dit.scenarios=dbtbl_with_replica_query_and_encrypt -Dit.databases=MySQL
+        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=proxy -Dit.scenarios=dbtbl_with_read_write_splitting_and_encrypt -Dit.databases=MySQL
   
   mysql-jdbc-db:
     name: MySQL-JDBC with DB
@@ -255,8 +255,8 @@ jobs:
       - name: Run Integration Test
         run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=jdbc -Dit.scenarios=encrypt -Dit.databases=MySQL
 
-  mysql-jdbc-dbtbl-with-replica-query-and-encrypt:
-    name: MySQL-JDBC with DBTBL-WITH-REPLICA-QUERY-AND-ENCRYPT
+  mysql-jdbc-dbtbl-with-read-write-splitting-and-encrypt:
+    name: MySQL-JDBC with DBTBL-WITH--READ-WRITE-SPLITTING-AND-ENCRYPT
     runs-on: ubuntu-latest
     steps:
       - name: Cache Maven Repos
@@ -274,7 +274,7 @@ jobs:
       - name: Build Project
         run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests
       - name: Run Integration Test
-        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=jdbc -Dit.scenarios=dbtbl_with_replica_query_and_encrypt -Dit.databases=MySQL
+        run: ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.adapters=jdbc -Dit.scenarios=dbtbl_with_read_write_splitting_and_encrypt -Dit.databases=MySQL
 
   mysql-proxy-agent-metrics:
     name: MySQL-Proxy with Agent Metrics

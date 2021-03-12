@@ -486,23 +486,23 @@
     <test-case sql="SELECT * FROM t_broadcast_table" scenario-types="db,tbl,dbtbl_with_read_write_splitting,read_write_splitting">
         <assertion expected-data-file="select_for_broadcast_table.xml"/>
     </test-case>
-    <!--TODO #9625 fix 'select *' of dbtbl_with_replica_query_and_encrypt -->
+    <!--TODO #9625 fix 'select *' of dbtbl_with_read_write_splitting_and_encrypt -->
     <test-case sql="SELECT * FROM t_user" scenario-types="encrypt">
         <assertion expected-data-file="select_encrypt.xml"/>
     </test-case>
     
-    <test-case sql="SELECT user_id, pwd FROM t_user WHERE pwd = 'a10'" scenario-types="encrypt,dbtbl_with_replica_query_and_encrypt">
+    <test-case sql="SELECT user_id, pwd FROM t_user WHERE pwd = 'a10'" scenario-types="encrypt,dbtbl_with_read_write_splitting_and_encrypt">
         <assertion expected-data-file="select_by_encrypt.xml"/>
     </test-case>
     
-    <test-case sql="SELECT user_id FROM t_user WHERE pwd in ('a10', 'b11')" scenario-types="encrypt,dbtbl_with_replica_query_and_encrypt">
+    <test-case sql="SELECT user_id FROM t_user WHERE pwd in ('a10', 'b11')" scenario-types="encrypt,dbtbl_with_read_write_splitting_and_encrypt">
         <assertion expected-data-file="select_in_encrypt.xml"/>
     </test-case>
     
-    <test-case sql="SELECT user_id FROM t_user WHERE pwd in ('a10', 'b11') and user_id = 10" scenario-types="encrypt,dbtbl_with_replica_query_and_encrypt">
+    <test-case sql="SELECT user_id FROM t_user WHERE pwd in ('a10', 'b11') and user_id = 10" scenario-types="encrypt,dbtbl_with_read_write_splitting_and_encrypt">
         <assertion expected-data-file="select_in_encrypt_without_pwd.xml"/>
     </test-case>
-    <!--TODO #9625 fix 'select *' of dbtbl_with_replica_query_and_encrypt -->
+    <!--TODO #9625 fix 'select *' of dbtbl_with_read_write_splitting_and_encrypt -->
     <test-case sql="SELECT * FROM t_user WHERE pwd in ('a10', 'b11') OR user_id = 10" scenario-types="encrypt">
         <assertion expected-data-file="select_in_or_encrypt.xml"/>
     </test-case>
