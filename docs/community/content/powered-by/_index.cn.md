@@ -177,6 +177,7 @@ chapter = true
     <li><a href="http://www.ascf.com.cn/" rel="nofollow">航天长峰</a></li>
     <li><a href="http://www.chiscdc.com/" rel="nofollow">中卫信</a></li>
     <li><a href="http://www.taxchina.com/" rel="nofollow">中税网</a></li>
+    <li><a href="http://www.gddxit.com/" rel="nofollow">广东达信 - 昆明市自来水客户营销平台</a></li>
 </ul>
 
 ### 通信科技

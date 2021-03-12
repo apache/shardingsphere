@@ -177,6 +177,7 @@ Total: 163 companies.
     <li><a href="http://www.ascf.com.cn/" rel="nofollow">AreoSpace</a></li>
     <li><a href="http://www.chiscdc.com/" rel="nofollow">CHISCDC</a></li>
     <li><a href="http://www.taxchina.com/" rel="nofollow">Tax China</a></li>
+    <li><a href="http://www.gddxit.com/" rel="nofollow">GUANG DONG DA XIN</a></li>
 </ul>
 
 ### Communication
