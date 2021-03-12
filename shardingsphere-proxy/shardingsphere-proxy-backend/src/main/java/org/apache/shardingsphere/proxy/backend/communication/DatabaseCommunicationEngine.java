@@ -108,20 +108,20 @@ public final class DatabaseCommunicationEngine {
     private Collection<ExecuteResult> execute(final ExecutionContext executionContext) throws SQLException {
         boolean locked = false;
         try {
-            locked = tryGlobalLock(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
+            locked = tryLock(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
             Collection<ExecuteResult> result = proxySQLExecutor.execute(executionContext);
             refreshMetadata(executionContext);
             return result;
         } finally {
             if (locked) {
-                releaseGlobalLock();
+                releaseLock();
             }
         }
     }
     
-    private boolean tryGlobalLock(final ExecutionContext executionContext, final Long lockTimeoutMilliseconds) {
+    private boolean tryLock(final ExecutionContext executionContext, final Long lockTimeoutMilliseconds) {
         if (ProxyContext.getInstance().getLock().isPresent() && needLock(executionContext.getSqlStatementContext().getSqlStatement())) {
-            if (!ProxyContext.getInstance().getLock().get().tryGlobalLock(lockTimeoutMilliseconds)) {
+            if (!ProxyContext.getInstance().getLock().get().tryLock(lockTimeoutMilliseconds)) {
                 throw new LockWaitTimeoutException(lockTimeoutMilliseconds);
             }
             return true;
@@ -133,9 +133,9 @@ public final class DatabaseCommunicationEngine {
         return MetadataRefresherFactory.newInstance(sqlStatement).isPresent();
     }
     
-    private void releaseGlobalLock() {
+    private void releaseLock() {
         if (ProxyContext.getInstance().getLock().isPresent()) {
-            ProxyContext.getInstance().getLock().get().releaseGlobalLock();
+            ProxyContext.getInstance().getLock().get().releaseLock();
         }
     }
     

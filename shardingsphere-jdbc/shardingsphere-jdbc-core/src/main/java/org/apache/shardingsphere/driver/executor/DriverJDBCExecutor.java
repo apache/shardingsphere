@@ -122,20 +122,20 @@ public final class DriverJDBCExecutor {
         List<T> results;
         boolean locked = false;
         try {
-            locked = tryGlobalLock(sqlStatement, metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
+            locked = tryLock(sqlStatement, metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
             results = jdbcExecutor.execute(executionGroupContext, callback);
             refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatement, routeUnits);
         } finally {
             if (locked) {
-                releaseGlobalLock();
+                releaseLock();
             }
         }
         return results;
     }
     
-    private boolean tryGlobalLock(final SQLStatement sqlStatement, final long lockTimeoutMilliseconds) {
+    private boolean tryLock(final SQLStatement sqlStatement, final long lockTimeoutMilliseconds) {
         if (metaDataContexts.getLock().isPresent() && needLock(sqlStatement)) {
-            if (!metaDataContexts.getLock().get().tryGlobalLock(lockTimeoutMilliseconds)) {
+            if (!metaDataContexts.getLock().get().tryLock(lockTimeoutMilliseconds)) {
                 throw new ShardingSphereException("Service lock wait timeout of %s ms exceeded", lockTimeoutMilliseconds);
             }
             return true;
@@ -163,9 +163,9 @@ public final class DriverJDBCExecutor {
         ShardingSphereEventBus.getInstance().post(new SchemaAlteredEvent(DefaultSchema.LOGIC_NAME, schema));
     }
     
-    private void releaseGlobalLock() {
+    private void releaseLock() {
         if (metaDataContexts.getLock().isPresent()) {
-            metaDataContexts.getLock().get().releaseGlobalLock();
+            metaDataContexts.getLock().get().releaseLock();
         }
     }
 }
