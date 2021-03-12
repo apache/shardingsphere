@@ -36,7 +36,7 @@ public interface ExecutionPrepareEngine<T> {
      *
      * @param routeContext route context
      * @param executionUnits execution units
-     * @return execution groups
+     * @return execution group context
      * @throws SQLException SQL exception
      */
     ExecutionGroupContext<T> prepare(RouteContext routeContext, Collection<ExecutionUnit> executionUnits) throws SQLException;
