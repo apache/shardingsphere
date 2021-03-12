@@ -40,8 +40,6 @@ public final class ShorthandProjection implements Projection {
     
     private final Collection<ColumnProjection> actualColumns;
     
-    private final Collection<UnexpandShorthandProjection> unexpandShorthandProjections;
-    
     @Override
     public String getExpression() {
         return Strings.isNullOrEmpty(owner) ? "*" : owner + ".*";
