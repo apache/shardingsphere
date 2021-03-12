@@ -15,25 +15,25 @@
 -- limitations under the License.
 --
 
-CREATE TABLE t_user_0 (user_id INT NOT NULL, item_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_0 (user_id INT NOT NULL, order_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE t_user_item_0 (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
-CREATE TABLE t_user_1 (user_id INT NOT NULL, item_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_1 (user_id INT NOT NULL, order_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE t_user_item_1 (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
-CREATE TABLE t_user_2 (user_id INT NOT NULL, item_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_2 (user_id INT NOT NULL, order_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE t_user_item_2 (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
-CREATE TABLE t_user_3 (user_id INT NOT NULL, item_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_3 (user_id INT NOT NULL, order_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE t_user_item_3 (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
-CREATE TABLE t_user_4 (user_id INT NOT NULL, item_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_4 (user_id INT NOT NULL, order_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE t_user_item_4 (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
-CREATE TABLE t_user_5 (user_id INT NOT NULL, item_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_5 (user_id INT NOT NULL, order_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE t_user_item_5 (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
-CREATE TABLE t_user_6 (user_id INT NOT NULL, item_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_6 (user_id INT NOT NULL, order_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE t_user_item_6 (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
-CREATE TABLE t_user_7 (user_id INT NOT NULL, item_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_7 (user_id INT NOT NULL, order_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE t_user_item_7 (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
-CREATE TABLE t_user_8 (user_id INT NOT NULL, item_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_8 (user_id INT NOT NULL, order_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE t_user_item_8 (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
-CREATE TABLE t_user_9 (user_id INT NOT NULL, item_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE t_user_9 (user_id INT NOT NULL, order_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE t_user_item_9 (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE INDEX user_index_t_user_0 ON t_user_0 (user_id);
 CREATE INDEX user_index_t_user_1 ON t_user_1 (user_id);

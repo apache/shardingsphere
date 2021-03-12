@@ -35,17 +35,20 @@ rules:
       actualDataNodes: pr_ds_${0..9}.t_user_${0..9}
       databaseStrategy:
         standard:
-          shardingColumn: item_id
+          shardingColumn: order_id
           shardingAlgorithmName: standard_test
       tableStrategy:
         standard:
           shardingColumn: user_id
           shardingAlgorithmName: standard_test
+      keyGenerateStrategy:
+        column: user_id
+        keyGeneratorName: constant
     t_user_details:
       actualDataNodes: pr_ds_${0..9}.t_user_details_${0..9}
       databaseStrategy:
         standard:
-          shardingColumn: item_id
+          shardingColumn: order_id
           shardingAlgorithmName: standard_test
       tableStrategy:
         standard:
@@ -65,54 +68,54 @@ rules:
 - !READ_WRITE_SPLITTING
   dataSources:
     pr_ds_0:
-      writeDataSourceName: encrypt_primary_ds_0
+      writeDataSourceName: encrypt_write_ds_0
       readDataSourceNames:
-        - encrypt_replica_ds_0
+        - encrypt_read_ds_0
       loadBalancerName: roundRobin
     pr_ds_1:
-      writeDataSourceName: encrypt_primary_ds_1
+      writeDataSourceName: encrypt_write_ds_1
       readDataSourceNames:
-        - encrypt_replica_ds_1
+        - encrypt_read_ds_1
       loadBalancerName: roundRobin
     pr_ds_2:
-      writeDataSourceName: encrypt_primary_ds_2
+      writeDataSourceName: encrypt_write_ds_2
       readDataSourceNames:
-        - encrypt_replica_ds_2
+        - encrypt_read_ds_2
       loadBalancerName: roundRobin
     pr_ds_3:
-      writeDataSourceName: encrypt_primary_ds_3
+      writeDataSourceName: encrypt_write_ds_3
       readDataSourceNames:
-        - encrypt_replica_ds_3
+        - encrypt_read_ds_3
       loadBalancerName: roundRobin
     pr_ds_4:
-      writeDataSourceName: encrypt_primary_ds_4
+      writeDataSourceName: encrypt_write_ds_4
       readDataSourceNames:
-        - encrypt_replica_ds_4
+        - encrypt_read_ds_4
       loadBalancerName: roundRobin
     pr_ds_5:
-      writeDataSourceName: encrypt_primary_ds_5
+      writeDataSourceName: encrypt_write_ds_5
       readDataSourceNames:
-        - encrypt_replica_ds_5
+        - encrypt_read_ds_5
       loadBalancerName: roundRobin
     pr_ds_6:
-      writeDataSourceName: encrypt_primary_ds_6
+      writeDataSourceName: encrypt_write_ds_6
       readDataSourceNames:
-        - encrypt_replica_ds_6
+        - encrypt_read_ds_6
       loadBalancerName: roundRobin
     pr_ds_7:
-      writeDataSourceName: encrypt_primary_ds_7
+      writeDataSourceName: encrypt_write_ds_7
       readDataSourceNames:
-        - encrypt_replica_ds_7
+        - encrypt_read_ds_7
       loadBalancerName: roundRobin
     pr_ds_8:
-      writeDataSourceName: encrypt_primary_ds_8
+      writeDataSourceName: encrypt_write_ds_8
       readDataSourceNames:
-        - encrypt_replica_ds_8
+        - encrypt_read_ds_8
       loadBalancerName: roundRobin
     pr_ds_9:
-      writeDataSourceName: encrypt_primary_ds_9
+      writeDataSourceName: encrypt_write_ds_9
       readDataSourceNames:
-        - encrypt_replica_ds_9
+        - encrypt_read_ds_9
       loadBalancerName: roundRobin
   loadBalancers:
     roundRobin:
