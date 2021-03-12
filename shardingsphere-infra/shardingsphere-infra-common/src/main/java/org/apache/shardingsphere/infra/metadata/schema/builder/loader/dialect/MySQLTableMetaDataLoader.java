@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 import javax.sql.DataSource;
@@ -44,7 +46,9 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
     private static final String BASIC_TABLE_META_DATA_SQL = "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME FROM information_schema.columns WHERE TABLE_SCHEMA=?";
     
     private static final String TABLE_META_DATA_SQL_WITH_EXISTED_TABLES = BASIC_TABLE_META_DATA_SQL + " AND TABLE_NAME NOT IN (%s)";
-    
+
+    private static final String BASIC_INDEX_META_DATA_SQL ="SELECT INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=?";
+
     @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         return loadTableMetaDataMap(dataSource, existedTables);
@@ -54,11 +58,30 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         for (Entry<String, Collection<ColumnMetaData>> entry : loadColumnMetaDataMap(dataSource, existedTables).entrySet()) {
             // TODO load index
-            result.put(entry.getKey(), new TableMetaData(entry.getValue(), Collections.emptyList()));
+            Collection<IndexMetaData> indexMetaData = loadIndexMetaData(dataSource, entry.getKey());
+            result.put(entry.getKey(), new TableMetaData(entry.getValue(),indexMetaData));
         }
         return result;
     }
-    
+
+
+    private Collection<IndexMetaData>  loadIndexMetaData(final DataSource dataSource,String tableName)throws SQLException{
+        Collection<IndexMetaData> result = Lists.newArrayList();
+        try(
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(BASIC_INDEX_META_DATA_SQL)){
+            preparedStatement.setString(1, tableName);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    String indexName = resultSet.getString("INDEX_NAME");
+                    IndexMetaData indexMetaData = new IndexMetaData(indexName);
+                    result.add(indexMetaData);
+                }
+            }
+        }
+        return result;
+    }
+
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
         try (
