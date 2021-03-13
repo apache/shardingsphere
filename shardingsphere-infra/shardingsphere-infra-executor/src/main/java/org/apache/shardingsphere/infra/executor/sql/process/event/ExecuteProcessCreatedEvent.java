@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process.event;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -27,16 +28,16 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Execution context event.
+ * Execution process created event.
  */
-
-public final class CreateExecuteProcessEvent {
+@Getter
+public final class ExecuteProcessCreatedEvent {
     
     private final String executionID;
     
     private final Collection<ExecuteProcessUnit> unitStatuses;
     
-    public CreateExecuteProcessEvent(final ExecutionGroupContext<SQLExecutionUnit> executionGroupContext) {
+    public ExecuteProcessCreatedEvent(final ExecutionGroupContext<SQLExecutionUnit> executionGroupContext) {
         this.executionID = executionGroupContext.getExecutionID();
         unitStatuses = createExecutionUnitStatuses(executionGroupContext);
     }

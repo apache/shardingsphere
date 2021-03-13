@@ -20,39 +20,24 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.event.ExecuteProcessCreatedEvent;
-import org.apache.shardingsphere.infra.executor.sql.process.event.ExecuteProcessUnitCreatedEvent;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
 
 /**
- * Execute process engine.
+ * Process strategy evaluator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecuteProcessEngine {
+public final class ExecuteProcessStrategyEvaluator {
     
     /**
-     * Submit.
+     * Evaluate.
      *
      * @param context context
      * @param executionGroupContext execution group context
+     * @return submit or not
      */
-    public static void submit(final SQLStatementContext<?> context, final ExecutionGroupContext<SQLExecutionUnit> executionGroupContext) {
-        if (ExecuteProcessStrategyEvaluator.evaluate(context, executionGroupContext)) {
-            ShardingSphereEventBus.getInstance().post(new ExecuteProcessCreatedEvent(executionGroupContext));
-        }
-    }
-    
-    /**
-     * Submit.
-     *
-     * @param executionID execution ID
-     * @param executionUnit execution unit
-     * @param status status
-     */
-    public static void submit(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessStatus status) {
-        ShardingSphereEventBus.getInstance().post(new ExecuteProcessUnitCreatedEvent(executionID, executionUnit, status));
+    public static boolean evaluate(final SQLStatementContext<?> context, final ExecutionGroupContext<SQLExecutionUnit> executionGroupContext) {
+        // TODO : Add more conditions to evaluate whether to submit this process task or not
+        return true;
     }
 }
