@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.common.ExecutionMode;
 import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITStorageType;
+import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
 
 @Getter
 @Builder
@@ -63,6 +64,15 @@ public class TestCaseDescription {
      */
     public DatabaseType getDatabaseType() {
         return DatabaseTypeRegistry.getActualDatabaseType(database);
+    }
+   
+    public static TestCaseDescriptionBuilder fromSystemProps(final TestCaseSpec testCaseSpec) {
+        return TestCaseDescription.builder()
+                .adapter(System.getProperty("it.adapter"))
+                .database(System.getProperty("it.database"))
+                .scenario(System.getProperty("it.scenario"))
+                .executionMode(testCaseSpec.executionMode())
+                .sqlCommandType(testCaseSpec.sqlCommandType());
     }
     
 }

@@ -33,7 +33,7 @@ import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSpher
 import org.apache.shardingsphere.test.integration.junit.annotation.OnContainer;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.junit.container.StorageContainer;
-import org.apache.shardingsphere.test.integration.junit.runner.ShardingSphereITRunner;
+import org.apache.shardingsphere.test.integration.junit.runner.ShardingSphereRunner;
 import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
 import org.junit.After;
 import org.junit.Before;
@@ -52,7 +52,7 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 @Getter(AccessLevel.PROTECTED)
-@RunWith(ShardingSphereITRunner.class)
+@RunWith(ShardingSphereRunner.class)
 public abstract class BaseITCase {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
@@ -73,7 +73,8 @@ public abstract class BaseITCase {
     
     @ShardingSphereITInject
     private String statement;
-    
+   
+    @Getter
     @ShardingSphereITInject
     private TestCaseDescription description;
     

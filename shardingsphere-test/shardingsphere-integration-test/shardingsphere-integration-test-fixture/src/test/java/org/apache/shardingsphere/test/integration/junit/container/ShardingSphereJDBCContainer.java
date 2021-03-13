@@ -41,12 +41,11 @@ public class ShardingSphereJDBCContainer extends ShardingSphereAdapterContainer 
     private Map<String, DataSource> dataSourceMap;
     
     public ShardingSphereJDBCContainer() {
-        super("ShardingSphere-JDBC");
+        super("ShardingSphere-JDBC", true);
     }
     
     @Override
     public void start() {
-        setFake(true);
         super.start();
         // do not start because it is a fake container.
         List<Startable> startables = getDependencies().stream()

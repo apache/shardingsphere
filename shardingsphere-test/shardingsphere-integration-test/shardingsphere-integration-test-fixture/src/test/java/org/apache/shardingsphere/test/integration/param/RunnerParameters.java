@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.param;
+package org.apache.shardingsphere.test.integration.param;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.param.model.ParameterizedArray;
 import org.junit.runners.parameterized.BlockJUnit4ClassRunnerWithParameters;
 
 import java.lang.reflect.Field;

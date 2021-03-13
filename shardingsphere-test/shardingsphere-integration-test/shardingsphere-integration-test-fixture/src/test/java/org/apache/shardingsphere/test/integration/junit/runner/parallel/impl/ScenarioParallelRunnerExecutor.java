@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit.parallel.impl;
+package org.apache.shardingsphere.test.integration.junit.runner.parallel.impl;
 
 import lombok.EqualsAndHashCode;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.ParallelRunnerExecutor;
-import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.ParallelRunnerExecutor;
+import org.apache.shardingsphere.test.integration.param.model.ParameterizedArray;
 
 import java.util.Collection;
 import java.util.LinkedList;

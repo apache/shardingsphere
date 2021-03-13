@@ -39,7 +39,7 @@ import java.util.Optional;
 public abstract class StorageContainer extends ShardingSphereContainer {
     
     @Getter
-    @XmlResource(file = "/env/{it.scenario}/databases.xml", processor = DatabaseProcessor.class)
+    @XmlResource(file = "/env/{scenario}/databases.xml", processor = DatabaseProcessor.class)
     private Collection<String> databases;
     
     private ImmutableMap<String, DataSource> dataSourceMap;
@@ -48,7 +48,11 @@ public abstract class StorageContainer extends ShardingSphereContainer {
     private final DatabaseType databaseType;
     
     public StorageContainer(final String dockerImageName, final DatabaseType databaseType) {
-        super(dockerImageName);
+        this(dockerImageName, databaseType, false);
+    }
+    
+    public StorageContainer(final String dockerImageName, final DatabaseType databaseType, final boolean isFakeContainer) {
+        super(dockerImageName, isFakeContainer);
         this.databaseType = databaseType;
     }
     

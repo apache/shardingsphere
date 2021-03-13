@@ -15,12 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion;
+package org.apache.shardingsphere.test.integration.junit.runner.parallel;
+
+import org.apache.shardingsphere.test.integration.param.model.ParameterizedArray;
 
 /**
- * Parallel level.
+ * Parallel runner executor.
  */
-public enum ParallelLevel {
+public interface ParallelRunnerExecutor {
     
-    CASE, SCENARIO
+    /**
+     * Execute child statement.
+     *
+     * @param parameterizedArray parameterized array
+     * @param childStatement child statement
+     */
+    void execute(ParameterizedArray parameterizedArray, Runnable childStatement);
+    
+    /**
+     * Override to implement any behavior that must occur after all children have been scheduled (for example, waiting for them all to finish).
+     */
+    void finished();
 }

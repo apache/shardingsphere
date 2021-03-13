@@ -15,12 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.param;
+package org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * SQL execute type.
+ * Parallel runtime strategy.
  */
-public enum SQLExecuteType {
+@Documented
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+public @interface ParallelRuntimeStrategy {
     
-    Literal, Placeholder
+    /**
+     * Get parallel level.
+     * 
+     * @return value parallel level
+     */
+    ParallelLevel value();
 }

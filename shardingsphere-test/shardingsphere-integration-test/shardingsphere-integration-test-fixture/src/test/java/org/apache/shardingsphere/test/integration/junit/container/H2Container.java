@@ -17,14 +17,27 @@
 
 package org.apache.shardingsphere.test.integration.junit.container;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 
 import javax.sql.DataSource;
+import java.util.Map;
 
 public class H2Container extends StorageContainer {
     
     public H2Container() {
-        super("null", new H2DatabaseType());
+        super("h2:fake", new H2DatabaseType(), true);
+    }
+    
+    @Override
+    protected void configure() {
+        super.configure();
+    }
+    
+    @Override
+    public boolean isHealthy() {
+        return true;
     }
     
     @Override
@@ -48,7 +61,8 @@ public class H2Container extends StorageContainer {
     }
     
     @Override
-    protected DataSource createDataSource(final String dataSourceName) {
-        return null;
+    @SneakyThrows
+    public synchronized Map<String, DataSource> getDataSourceMap() {
+        return ActualDataSourceBuilder.createActualDataSources(getDescription().getScenario(), getDescription().getDatabaseType());
     }
 }

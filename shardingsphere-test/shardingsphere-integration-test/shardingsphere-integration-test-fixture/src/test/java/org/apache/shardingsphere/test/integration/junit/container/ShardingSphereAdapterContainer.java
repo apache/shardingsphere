@@ -30,7 +30,7 @@ import javax.sql.DataSource;
 public abstract class ShardingSphereAdapterContainer extends ShardingSphereContainer {
     
     @Getter
-    @XmlResource(file = "/docker/{it.scenario}/proxy/conf/server.yaml", processor = AuthenticationProcessor.class)
+    @XmlResource(file = "/docker/{scenario}/proxy/conf/server.yaml", processor = AuthenticationProcessor.class)
     private Authentication authentication;
     
     @Getter
@@ -38,7 +38,11 @@ public abstract class ShardingSphereAdapterContainer extends ShardingSphereConta
     private String dockerName;
     
     public ShardingSphereAdapterContainer(final String dockerImageName) {
-        super(dockerImageName);
+        this(dockerImageName, false);
+    }
+    
+    public ShardingSphereAdapterContainer(final String dockerImageName, final boolean isFakeContainer) {
+        super(dockerImageName, isFakeContainer);
     }
     
     /**

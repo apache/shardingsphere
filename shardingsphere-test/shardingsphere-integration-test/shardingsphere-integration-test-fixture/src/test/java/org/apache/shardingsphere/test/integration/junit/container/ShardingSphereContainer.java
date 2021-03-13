@@ -20,25 +20,32 @@ package org.apache.shardingsphere.test.integration.junit.container;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.annotation.XmlResource;
 import org.apache.shardingsphere.test.integration.junit.processor.Processor;
 import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.DockerHealthcheckWaitStrategy;
+import org.testcontainers.images.RemoteDockerImage;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,20 +56,21 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     
     private static final Pattern REGEX = Pattern.compile("\\{([\\w._-]*)}");
     
-    @Setter
     @Getter
-    private boolean fake;
+    private final boolean isFakeContainer;
     
-    @ShardingSphereITInject
     @Getter
+    @ShardingSphereITInject
     private TestCaseDescription description;
     
     @Getter
     @Setter
     private String dockerName;
     
-    public ShardingSphereContainer(final String dockerImageName) {
-        super(DockerImageName.parse(dockerImageName));
+    public ShardingSphereContainer(final String dockerImageName, final boolean isFakeContainer) {
+//        super(DockerImageName.parse(dockerImageName));
+        super(new RemoteDockerImage(DockerImageName.parse(dockerImageName)).withImagePullPolicy((dockerName) -> false));
+        this.isFakeContainer = isFakeContainer;
     }
     
     @Override
@@ -70,7 +78,7 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
         resolveXmlResource(this.getClass());
         configure();
         startDependencies();
-        if (!fake) {
+        if (!isFakeContainer) {
             super.start();
         }
         execute();
@@ -128,15 +136,25 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
             throw new RuntimeException(ex.getMessage(), ex);
         }
     }
-    
-    private static String parse(final String pattern) {
+   
+    @SneakyThrows
+    private String parse(final String pattern) {
         String result = pattern;
         Matcher matcher = REGEX.matcher(pattern);
+        Map<String, Method> methodMap = Arrays.stream(TestCaseDescription.class.getDeclaredMethods())
+                .filter(e -> e.getName().startsWith("get"))
+                .collect(Collectors.toMap(e -> StringUtils.uncapitalize(e.getName().substring(3)), e -> e));
         while (matcher.find()) {
-            result = result.replace(matcher.group(), System.getProperty(matcher.group(1), "null"));
+            result = result.replace(matcher.group(), invoke(methodMap.get(matcher.group(1))));
         }
         return result;
     }
+    
+    @SneakyThrows
+    private String invoke(final Method method) {
+        return String.valueOf(method.invoke(description));
+    }
+    
     
     protected void configure() {
     

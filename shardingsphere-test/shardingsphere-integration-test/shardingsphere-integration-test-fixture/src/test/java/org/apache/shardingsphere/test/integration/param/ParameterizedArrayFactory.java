@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.param;
+package org.apache.shardingsphere.test.integration.param;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -28,9 +28,10 @@ import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseConte
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCasesLoader;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
-import org.apache.shardingsphere.test.integration.engine.param.model.CaseParameterizedArray;
-import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.param.model.CaseParameterizedArray;
+import org.apache.shardingsphere.test.integration.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 
 import java.util.Arrays;
@@ -63,6 +64,14 @@ public final class ParameterizedArrayFactory {
             result.addAll(getAssertionParameterizedArray(each, sqlCommandType));
         }
         return toArrays(result);
+    }
+    
+    public static Collection<ParameterizedArray> getAssertionParameterized(final SQLCommandType sqlCommandType) {
+        Collection<ParameterizedArray> result = new LinkedList<>();
+        for (IntegrationTestCaseContext each : TEST_CASES_LOADER.getTestCaseContexts(sqlCommandType)) {
+            result.addAll(getAssertionParameterizedArray(each, sqlCommandType));
+        }
+        return result;
     }
     
     private static Collection<ParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext, final SQLCommandType sqlCommandType) {

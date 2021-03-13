@@ -28,8 +28,6 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class ConditionResolver {
     
-    private final TestClass testClass;
-    
     /**
      * Predicate whether the case/field/method is ignored.
      *

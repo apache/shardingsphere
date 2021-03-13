@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.junit.annotation.ContainerInitializer;
 import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.annotation.OnContainer;
+import org.apache.shardingsphere.test.integration.junit.container.H2Container;
 import org.apache.shardingsphere.test.integration.junit.container.MySQLContainer;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
@@ -153,7 +154,8 @@ public class ContainerCompose implements Closeable {
             case MySQL:
                 return new MySQLContainer();
             case H2:
-                throw new RuntimeException("Not yet support storage type " + description.getStorageType());
+//                throw new RuntimeException("Not yet support storage type " + description.getStorageType());
+                return new H2Container();
             default:
                 throw new RuntimeException("Unknown storage type " + description.getStorageType());
         }

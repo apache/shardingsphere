@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.param.model;
+package org.apache.shardingsphere.test.integration.param.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

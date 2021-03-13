@@ -21,6 +21,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
+import org.apache.shardingsphere.test.integration.junit.compose.ContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.resolver.ConditionResolver;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
@@ -29,17 +30,20 @@ import org.junit.runners.model.Statement;
 import java.lang.reflect.Field;
 
 @Slf4j
-public class ShardingSphereITSubCaseRunner extends BlockJUnit4ClassRunner {
+public class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
     
     private final TestCaseBeanContext context;
+    
+    private final ContainerCompose compose;
     
     @NonNull
     private final ConditionResolver resolver;
     
-    public ShardingSphereITSubCaseRunner(final Class<?> testClass, final TestCaseBeanContext context, final ConditionResolver resolver) throws InitializationError {
+    public ShardingSphereCISubRunner(final Class<?> testClass, final TestCaseBeanContext context, final ConditionResolver resolver) throws InitializationError {
         super(testClass);
         this.context = context;
         this.resolver = resolver;
+        this.compose = new ContainerCompose("", getTestClass(), context.getBean(TestCaseDescription.class), resolver, context);
     }
     
     @Override
@@ -59,19 +63,31 @@ public class ShardingSphereITSubCaseRunner extends BlockJUnit4ClassRunner {
                         throw new RuntimeException(ex.getMessage(), ex);
                     }
                 });
+        System.out.println(context.getBean(TestCaseDescription.class));
         return testInstance;
     }
 
     @Override
     protected Statement withBeforeClasses(final Statement statement) {
-        // skip @BeforeClass
-        return statement;
+        return super.withBeforeClasses(new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                compose.startup();
+                compose.waitUntilReady(); // FIXME: waiting for service available?
+                statement.evaluate();
+            }
+        });
     }
     
     @Override
     protected Statement withAfterClasses(final Statement statement) {
-        // skip @AfterClass
-        return statement;
+        return super.withAfterClasses(new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                statement.evaluate();
+                compose.close();
+            }
+        });
     }
     
     @Override
