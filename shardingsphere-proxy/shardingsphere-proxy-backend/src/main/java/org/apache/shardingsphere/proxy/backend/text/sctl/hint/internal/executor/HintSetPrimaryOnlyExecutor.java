@@ -30,7 +30,7 @@ public final class HintSetPrimaryOnlyExecutor extends AbstractHintUpdateExecutor
     @Override
     public ResponseHeader execute(final HintSetPrimaryOnlyCommand command) {
         if (command.isPrimaryOnly()) {
-            HintManagerHolder.get().setPrimaryRouteOnly();
+            HintManagerHolder.get().setWriteRouteOnly();
         }
         return new UpdateResponseHeader(null);
     }

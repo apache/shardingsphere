@@ -43,13 +43,13 @@ public final class GovernanceLockTest {
     
     @Test
     public void assertTryLock() {
-        lock.tryGlobalLock(50L);
-        verify(registryCenter).tryGlobalLock(eq(50L));
+        lock.tryLock(50L);
+        verify(registryCenter).tryLock(eq(50L));
     }
     
     @Test
     public void assertReleaseLock() {
-        lock.releaseGlobalLock();
-        verify(registryCenter).releaseGlobalLock();
+        lock.releaseLock();
+        verify(registryCenter).releaseLock();
     }
 }

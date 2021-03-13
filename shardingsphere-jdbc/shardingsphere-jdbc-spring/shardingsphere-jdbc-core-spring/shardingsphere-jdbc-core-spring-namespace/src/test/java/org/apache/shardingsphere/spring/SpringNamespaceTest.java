@@ -21,7 +21,7 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryRule;
+import org.apache.shardingsphere.readwrite.splitting.common.rule.ReadWriteSplittingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.spring.transaction.ShardingTransactionTypeScanner;
 import org.junit.Test;
@@ -51,8 +51,8 @@ public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests 
         for (ShardingSphereRule each : rules) {
             if (each instanceof ShardingRule) {
                 assertShardingRule((ShardingRule) each);
-            } else if (each instanceof ReplicaQueryRule) {
-                assertReplicaQueryRule((ReplicaQueryRule) each);
+            } else if (each instanceof ReadWriteSplittingRule) {
+                assertReadWriteSplittingRule((ReadWriteSplittingRule) each);
             } else if (each instanceof EncryptRule) {
                 assertEncryptRule((EncryptRule) each);
             }
@@ -61,12 +61,12 @@ public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests 
     
     private void assertDataSourceMap() {
         assertThat(dataSource.getDataSourceMap().size(), is(6));
-        assertTrue(dataSource.getDataSourceMap().containsKey("ds_0_primary"));
-        assertTrue(dataSource.getDataSourceMap().containsKey("ds_0_replica_0"));
-        assertTrue(dataSource.getDataSourceMap().containsKey("ds_0_replica_1"));
-        assertTrue(dataSource.getDataSourceMap().containsKey("ds_1_primary"));
-        assertTrue(dataSource.getDataSourceMap().containsKey("ds_1_replica_0"));
-        assertTrue(dataSource.getDataSourceMap().containsKey("ds_1_replica_1"));
+        assertTrue(dataSource.getDataSourceMap().containsKey("ds_0_write"));
+        assertTrue(dataSource.getDataSourceMap().containsKey("ds_0_read_0"));
+        assertTrue(dataSource.getDataSourceMap().containsKey("ds_0_read_1"));
+        assertTrue(dataSource.getDataSourceMap().containsKey("ds_1_write"));
+        assertTrue(dataSource.getDataSourceMap().containsKey("ds_1_read_0"));
+        assertTrue(dataSource.getDataSourceMap().containsKey("ds_1_read_1"));
     }
     
     private void assertShardingRule(final ShardingRule rule) {
@@ -76,13 +76,13 @@ public final class SpringNamespaceTest extends AbstractJUnit4SpringContextTests 
                 new DataNode("ds_1.t_order_0"), new DataNode("ds_1.t_order_1"), new DataNode("ds_1.t_order_2"), new DataNode("ds_1.t_order_3"))));
     }
     
-    private void assertReplicaQueryRule(final ReplicaQueryRule rule) {
+    private void assertReadWriteSplittingRule(final ReadWriteSplittingRule rule) {
         assertTrue(rule.findDataSourceRule("ds_0").isPresent());
-        assertThat(rule.findDataSourceRule("ds_0").get().getPrimaryDataSourceName(), is("ds_0_primary"));
-        assertThat(rule.findDataSourceRule("ds_0").get().getReplicaDataSourceNames(), is(Arrays.asList("ds_0_replica_0", "ds_0_replica_1")));
+        assertThat(rule.findDataSourceRule("ds_0").get().getWriteDataSourceName(), is("ds_0_write"));
+        assertThat(rule.findDataSourceRule("ds_0").get().getReadDataSourceNames(), is(Arrays.asList("ds_0_read_0", "ds_0_read_1")));
         assertTrue(rule.findDataSourceRule("ds_1").isPresent());
-        assertThat(rule.findDataSourceRule("ds_1").get().getPrimaryDataSourceName(), is("ds_1_primary"));
-        assertThat(rule.findDataSourceRule("ds_1").get().getReplicaDataSourceNames(), is(Arrays.asList("ds_1_replica_0", "ds_1_replica_1")));
+        assertThat(rule.findDataSourceRule("ds_1").get().getWriteDataSourceName(), is("ds_1_write"));
+        assertThat(rule.findDataSourceRule("ds_1").get().getReadDataSourceNames(), is(Arrays.asList("ds_1_read_0", "ds_1_read_1")));
     }
     
     private void assertEncryptRule(final EncryptRule rule) {
