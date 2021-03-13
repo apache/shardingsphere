@@ -34,7 +34,7 @@ public final class TableMetaDataTest {
     
     @Before
     public void setUp() {
-        tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("test", Types.INTEGER, "INT", true, false, true)), Collections.emptyList());
+        tableMetaData = new TableMetaData(Collections.singletonList(new ColumnMetaData("test", Types.INTEGER, true, false, true)), Collections.emptyList());
     }
     
     @Test
@@ -42,7 +42,6 @@ public final class TableMetaDataTest {
         ColumnMetaData actual = tableMetaData.getColumnMetaData(0);
         assertThat(actual.getName(), is("test"));
         assertThat(actual.getDataType(), is(Types.INTEGER));
-        assertThat(actual.getDataTypeName(), is("INT"));
         assertTrue(actual.isPrimaryKey());
         assertFalse(actual.isGenerated());
         assertTrue(actual.isCaseSensitive());

@@ -231,6 +231,10 @@ END
     : E N D
     ;
 
+EXCEPT
+    : E X C E P T
+    ;
+
 EXCEPTIONS
     : E X C E P T I O N S
     ;

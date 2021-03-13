@@ -30,6 +30,5 @@
     <modules>
         <module>shardingsphere-governance-repository-zookeeper-curator</module>
         <module>shardingsphere-governance-repository-etcd</module>
-        <module>shardingsphere-governance-repository-nacos</module>
     </modules>
 </project>

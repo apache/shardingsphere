@@ -47,14 +47,5 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-governance-repository-zookeeper-curator</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-governance-repository-nacos</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba.nacos</groupId>
-            <artifactId>nacos-client</artifactId>
-            <version>1.0.0</version>
-        </dependency>
     </dependencies>
 </project>

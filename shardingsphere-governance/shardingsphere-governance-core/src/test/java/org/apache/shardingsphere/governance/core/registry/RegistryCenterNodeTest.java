@@ -18,13 +18,16 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
+import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -68,5 +71,45 @@ public final class RegistryCenterNodeTest {
         assertThat(schemaPaths, hasItem("/states/datanodes/sharding_db"));
         assertThat(schemaPaths, hasItem("/states/primarynodes/replica_query_db"));
         assertThat(schemaPaths, hasItem("/states/primarynodes/sharding_db"));
+    }
+    
+    @Test
+    public void assertGetRulePath() {
+        assertThat(registryCenterNode.getRulePath(DefaultSchema.LOGIC_NAME), is("/metadata/logic_db/rule"));
+    }
+
+    @Test
+    public void assertGetAuthenticationPath() {
+        assertThat(registryCenterNode.getAuthenticationPath(), is("/authentication"));
+    }
+
+    @Test
+    public void assertGetPropsPath() {
+        assertThat(registryCenterNode.getPropsPath(), is("/props"));
+    }
+
+    @Test
+    public void assertGetSchemaName() {
+        assertThat(registryCenterNode.getSchemaName("/metadata/logic_db/rule"), is(DefaultSchema.LOGIC_NAME));
+    }
+
+    @Test
+    public void assertGetAllSchemaConfigPaths() {
+        Collection<String> actual = registryCenterNode.getAllSchemaConfigPaths(Collections.singletonList(DefaultSchema.LOGIC_NAME));
+        assertThat(actual.size(), is(4));
+        assertThat(actual, hasItems("/metadata"));
+        assertThat(actual, hasItems("/metadata/logic_db/rule"));
+        assertThat(actual, hasItems("/metadata/logic_db/datasource"));
+        assertThat(actual, hasItems("/metadata/logic_db/schema"));
+    }
+
+    @Test
+    public void assertGetSchemaNamePath() {
+        assertThat(registryCenterNode.getSchemaNamePath("sharding_db"), is("/metadata/sharding_db"));
+    }
+
+    @Test
+    public void assertGetTablePath() {
+        assertThat(registryCenterNode.getMetadataSchemaPath("sharding_db"), is("/metadata/sharding_db/schema"));
     }
 }

@@ -139,6 +139,14 @@ name
     : identifier
     ;
 
+roleName
+    : identifier
+    ;
+
+password
+    : identifier
+    ;
+
 columnNames
     : LP_? columnName (COMMA_ columnName)* RP_?
     ;

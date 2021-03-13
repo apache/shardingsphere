@@ -12,36 +12,36 @@ weight = 6
 
 ```java
 /* 数据源配置 */
-HikariDataSource primaryDataSource0 = new HikariDataSource();
-primaryDataSource0.setDriverClassName("com.mysql.jdbc.Driver");
-primaryDataSource0.setJdbcUrl("jdbc:mysql://localhost:3306/db0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8");
-primaryDataSource0.setUsername("root");
-primaryDataSource0.setPassword("");
+HikariDataSource writeDataSource0 = new HikariDataSource();
+writeDataSource0.setDriverClassName("com.mysql.jdbc.Driver");
+writeDataSource0.setJdbcUrl("jdbc:mysql://localhost:3306/db0?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8");
+writeDataSource0.setUsername("root");
+writeDataSource0.setPassword("");
 
-HikariDataSource primaryDataSource1 = new HikariDataSource();
+HikariDataSource writeDataSource1 = new HikariDataSource();
 // ...忽略其他数据库配置项
 
-HikariDataSource replica0OfPrimaryDataSource0 = new HikariDataSource();
+HikariDataSource read0OfwriteDataSource0 = new HikariDataSource();
 // ...忽略其他数据库配置项
 
-HikariDataSource replica1OfPrimaryDataSource0 = new HikariDataSource();
+HikariDataSource read1OfwriteDataSource0 = new HikariDataSource();
 // ...忽略其他数据库配置项
 
-HikariDataSource replica0OfPrimaryDataSource1 = new HikariDataSource();
+HikariDataSource read0OfwriteDataSource1 = new HikariDataSource();
 // ...忽略其他数据库配置项
 
-HikariDataSource replica1OfPrimaryDataSource1 = new HikariDataSource();
+HikariDataSource read1OfwriteDataSource1 = new HikariDataSource();
 // ...忽略其他数据库配置项
 
 Map<String, DataSource> datasourceMaps = new HashMap<>(6);
 
-datasourceMaps.put("primary_ds0", primaryDataSource0);
-datasourceMaps.put("primary_ds0_replica0", replica0OfPrimaryDataSource0);
-datasourceMaps.put("primary_ds0_replica1", replica1OfPrimaryDataSource0);
+datasourceMaps.put("write_ds0", writeDataSource0);
+datasourceMaps.put("write_ds0_read0", read0OfwriteDataSource0);
+datasourceMaps.put("write_ds0_read1", read1OfwriteDataSource0);
 
-datasourceMaps.put("primary_ds1", primaryDataSource1);
-datasourceMaps.put("primary_ds1_replica0", replica0OfPrimaryDataSource1);
-datasourceMaps.put("primary_ds1_replica1", replica1OfPrimaryDataSource1);
+datasourceMaps.put("write_ds1", writeDataSource1);
+datasourceMaps.put("write_ds1_read0", read0OfwriteDataSource1);
+datasourceMaps.put("write_ds1_read1", read1OfwriteDataSource1);
 
 /* 分片规则配置 */
 // 表达式 ds_${0..1} 枚举值表示的是主从配置的逻辑数据源名称列表
@@ -87,14 +87,14 @@ encryptAlgorithmConfigs.put("pwd_encryptor", new ShardingSphereAlgorithmConfigur
 EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
 
 /* 读写分离规则配置 */
-ReplicaQueryDataSourceRuleConfiguration dataSourceConfiguration1 = new ReplicaQueryDataSourceRuleConfiguration("ds_0", "primary_ds0", Arrays.asList("primary_ds0_replica0", "primary_ds0_replica1"), "roundRobin");
-ReplicaQueryDataSourceRuleConfiguration dataSourceConfiguration2 = new ReplicaQueryDataSourceRuleConfiguration("ds_1", "primary_ds0", Arrays.asList("primary_ds1_replica0", "primary_ds1_replica0"), "roundRobin");
+ReadWriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadWriteSplittingDataSourceRuleConfiguration("ds_0", "write_ds0", Arrays.asList("write_ds0_read0", "write_ds0_read1"), "roundRobin");
+ReadWriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadWriteSplittingDataSourceRuleConfiguration("ds_1", "write_ds0", Arrays.asList("write_ds1_read0", "write_ds1_read0"), "roundRobin");
 
 //负载均衡算法
 Map<String, ShardingSphereAlgorithmConfiguration> loadBalanceMaps = new HashMap<>(1);
 loadBalanceMaps.put("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties()));
 
-ReplicaQueryRuleConfiguration replicaQueryRuleConfiguration = new ReplicaQueryRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2), loadBalanceMaps);
+ReadWriteSplittingRuleConfiguration readWriteSplittingyRuleConfiguration = new ReadWriteSplittingRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2), loadBalanceMaps);
 
 /* 其他配置 */
 Properties otherProperties = new Properties();
@@ -102,6 +102,6 @@ otherProperties.setProperty("sql-show", "true");
 otherProperties.setProperty("query-with-cipher-column", "true");
 
 /* shardingDataSource 就是最终被ORM框架或其他jdbc框架引用的数据源名称 */
-DataSource shardingDataSource = ShardingSphereDataSourceFactory.createDataSource(datasourceMaps, Arrays.asList(shardingRuleConfiguration, replicaQueryRuleConfiguration, encryptRuleConfiguration), otherProperties);
+DataSource shardingDataSource = ShardingSphereDataSourceFactory.createDataSource(datasourceMaps, Arrays.asList(shardingRuleConfiguration, readWriteSplittingyRuleConfiguration, encryptRuleConfiguration), otherProperties);
 
 ```

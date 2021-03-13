@@ -91,22 +91,22 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
     }
     
     private ProxyConfiguration loadProxyConfiguration() {
-        Collection<String> schemaNames = governanceFacade.getConfigCenter().getAllSchemaNames();
+        Collection<String> schemaNames = governanceFacade.getRegistryCenter().getAllSchemaNames();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
         Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules(schemaNames);
-        Properties props = governanceFacade.getConfigCenter().loadProperties();
-        return new ProxyConfiguration(schemaDataSources, schemaRules, governanceFacade.getConfigCenter().loadUserRule(), props);
+        Properties props = governanceFacade.getRegistryCenter().loadProperties();
+        return new ProxyConfiguration(schemaDataSources, schemaRules, governanceFacade.getRegistryCenter().loadUserRule(), props);
     }
     
     private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {
         return schemaNames.stream()
-            .collect(Collectors.toMap(each -> each, each -> DataSourceParameterConverter.getDataSourceParameterMap(governanceFacade.getConfigCenter().loadDataSourceConfigurations(each)),
+            .collect(Collectors.toMap(each -> each, each -> DataSourceParameterConverter.getDataSourceParameterMap(governanceFacade.getRegistryCenter().loadDataSourceConfigurations(each)),
                 (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, Collection<RuleConfiguration>> loadSchemaRules(final Collection<String> schemaNames) {
         return schemaNames.stream()
-             .collect(Collectors.toMap(each -> each, each -> governanceFacade.getConfigCenter().loadRuleConfigurations(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+             .collect(Collectors.toMap(each -> each, each -> governanceFacade.getRegistryCenter().loadRuleConfigurations(each), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override

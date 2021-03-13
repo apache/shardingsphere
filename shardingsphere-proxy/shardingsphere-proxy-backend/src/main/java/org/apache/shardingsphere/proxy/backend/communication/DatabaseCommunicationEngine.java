@@ -108,20 +108,20 @@ public final class DatabaseCommunicationEngine {
     private Collection<ExecuteResult> execute(final ExecutionContext executionContext) throws SQLException {
         boolean locked = false;
         try {
-            locked = tryGlobalLock(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
+            locked = tryLock(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
             Collection<ExecuteResult> result = proxySQLExecutor.execute(executionContext);
             refreshMetadata(executionContext);
             return result;
         } finally {
             if (locked) {
-                releaseGlobalLock();
+                releaseLock();
             }
         }
     }
     
-    private boolean tryGlobalLock(final ExecutionContext executionContext, final Long lockTimeoutMilliseconds) {
-        if (needLock(executionContext.getSqlStatementContext().getSqlStatement())) {
-            if (!ProxyContext.getInstance().getLock().tryGlobalLock(lockTimeoutMilliseconds)) {
+    private boolean tryLock(final ExecutionContext executionContext, final Long lockTimeoutMilliseconds) {
+        if (ProxyContext.getInstance().getLock().isPresent() && needLock(executionContext.getSqlStatementContext().getSqlStatement())) {
+            if (!ProxyContext.getInstance().getLock().get().tryLock(lockTimeoutMilliseconds)) {
                 throw new LockWaitTimeoutException(lockTimeoutMilliseconds);
             }
             return true;
@@ -133,8 +133,10 @@ public final class DatabaseCommunicationEngine {
         return MetadataRefresherFactory.newInstance(sqlStatement).isPresent();
     }
     
-    private void releaseGlobalLock() {
-        ProxyContext.getInstance().getLock().releaseGlobalLock();
+    private void releaseLock() {
+        if (ProxyContext.getInstance().getLock().isPresent()) {
+            ProxyContext.getInstance().getLock().get().releaseLock();
+        }
     }
     
     private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
@@ -165,12 +167,7 @@ public final class DatabaseCommunicationEngine {
     }
     
     private boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext
-                && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty() && containAllTablesWithColumnMetaData(sqlStatementContext);
-    }
-    
-    private boolean containAllTablesWithColumnMetaData(final SQLStatementContext<?> sqlStatementContext) {
-        return sqlStatementContext.getTablesContext().getTableNames().stream().noneMatch(each -> metaData.getSchema().getAllColumnNames(each).isEmpty());
+        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
     }
     
     private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
