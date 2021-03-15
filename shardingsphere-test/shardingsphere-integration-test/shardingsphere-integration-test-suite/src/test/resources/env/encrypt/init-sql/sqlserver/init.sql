@@ -22,6 +22,6 @@ DROP DATABASE IF EXISTS encrypt;
 
 CREATE DATABASE encrypt;
 
-CREATE TABLE encrypt.t_user (user_id INT NOT NULL, order_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE encrypt.t_user (user_id INT NOT NULL, address_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE encrypt.t_user_item (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE INDEX user_index_t_user ON encrypt.t_user (user_id);
