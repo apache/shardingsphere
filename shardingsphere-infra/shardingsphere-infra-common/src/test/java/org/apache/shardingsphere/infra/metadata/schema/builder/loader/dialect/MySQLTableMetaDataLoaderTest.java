@@ -117,7 +117,7 @@ public final class MySQLTableMetaDataLoaderTest {
         assertThat(actual.get("tbl").getColumns().size(), is(2));
         assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, true, true)));
         assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
-        assertThat(actual.get("tbl").getIndexes().size(),is(1));
-        assertThat(actual.get("tbl").getIndexMetaData(0),is(new IndexMetaData("id")));
+        assertThat(actual.get("tbl").getIndexes().size(), is(1));
+        assertThat(actual.get("tbl").getIndexMetaData(0), is(new IndexMetaData("id")));
     }
 }

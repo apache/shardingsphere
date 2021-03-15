@@ -30,7 +30,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -47,7 +46,7 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
     
     private static final String TABLE_META_DATA_SQL_WITH_EXISTED_TABLES = BASIC_TABLE_META_DATA_SQL + " AND TABLE_NAME NOT IN (%s)";
 
-    private static final String BASIC_INDEX_META_DATA_SQL ="SELECT INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=?";
+    private static final String BASIC_INDEX_META_DATA_SQL = "SELECT INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=?";
 
     @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
@@ -59,17 +58,16 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
         for (Entry<String, Collection<ColumnMetaData>> entry : loadColumnMetaDataMap(dataSource, existedTables).entrySet()) {
             // TODO load index
             Collection<IndexMetaData> indexMetaData = loadIndexMetaData(dataSource, entry.getKey());
-            result.put(entry.getKey(), new TableMetaData(entry.getValue(),indexMetaData));
+            result.put(entry.getKey(), new TableMetaData(entry.getValue(), indexMetaData));
         }
         return result;
     }
 
-
-    private Collection<IndexMetaData>  loadIndexMetaData(final DataSource dataSource,String tableName)throws SQLException{
+    private Collection<IndexMetaData> loadIndexMetaData(final DataSource dataSource, final String tableName) throws SQLException {
         Collection<IndexMetaData> result = Lists.newArrayList();
-        try(
+        try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(BASIC_INDEX_META_DATA_SQL)){
+                PreparedStatement preparedStatement = connection.prepareStatement(BASIC_INDEX_META_DATA_SQL)) {
             preparedStatement.setString(1, tableName);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
