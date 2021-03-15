@@ -27,45 +27,36 @@ import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
-import org.hamcrest.Matchers;
-import org.junit.Before;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class KernelProcessorTest {
-
-    private KernelProcessor kernelProcessor;
-
-    @Before
-    public void setUp() throws Exception {
-        kernelProcessor = new KernelProcessor();
-    }
-
+public final class KernelProcessorTest {
+    
+    @SuppressWarnings("unchecked")
     @Test
-    public void testGenerateExecutionContext() {
+    public void assertGenerateExecutionContext() {
         SQLStatementContext<SQLStatement> sqlStatementContext = mock(SQLStatementContext.class);
-        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
-        when(selectStatement.getLock()).thenReturn(Optional.empty());
-        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
-        final LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "select * from t_order", Collections.emptyList());
-        final ShardingSphereMetaData metaData = new ShardingSphereMetaData("logic_schema",
-                mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS),
-                new ShardingSphereRuleMetaData(Collections.emptyList(),
-                        Collections.emptyList()),
-                mock(ShardingSphereSchema.class));
-        Properties properties = new Properties();
-        properties.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
-        final ConfigurationProperties props = new ConfigurationProperties(properties);
-        final ExecutionContext result = kernelProcessor.generateExecutionContext(logicSQL, metaData, props);
-        assertThat(1, Matchers.is(result.getExecutionUnits().size()));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "SELECT * FROM tbl", Collections.emptyList());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData("logic_schema", 
+                mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), mock(ShardingSphereSchema.class));
+        ConfigurationProperties props = new ConfigurationProperties(createProperties());
+        ExecutionContext actual = new KernelProcessor().generateExecutionContext(logicSQL, metaData, props);
+        assertThat(actual.getExecutionUnits().size(), is(1));
+    }
+    
+    private Properties createProperties() {
+        Properties result = new Properties();
+        result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString());
+        return result;
     }
 }
