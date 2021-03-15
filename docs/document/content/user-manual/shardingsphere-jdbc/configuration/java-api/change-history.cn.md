@@ -33,8 +33,6 @@ weight = 7
 
 算法类型的详情，请参见[内置负载均衡算法列表](/docs/document/content/user-manual/shardingsphere-jdbc/configuration/built-in-algorithm/load-balance.cn.md)。
 
-
-
 ## ShardingSphere-4.x
 
 ### 读写分离
@@ -70,8 +68,6 @@ weight = 7
 | executor.size (?)                  | int        | 用于SQL执行的工作线程数量，为零则表示无限制。默认值: 0 |
 | max.connections.size.per.query (?) | int        | 每个物理数据库为每次查询分配的最大连接数量。默认值: 1  |
 | check.table.metadata.enabled (?)   | boolean    | 是否在启动时检查分表元数据一致性，默认值: false        |
-
-
 
 ## ShardingSphere-3.x
 
