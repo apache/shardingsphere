@@ -12,22 +12,22 @@ weight = 6
 ```properties
 # 数据源配置
 # 数据源名称，多数据源以逗号分隔
-spring.shardingsphere.datasource.names= primary-ds0,primary-ds1,primary-ds0-replica0,primary-ds1-replica0
+spring.shardingsphere.datasource.names= write-ds0,write-ds1,write-ds0-read0,write-ds1-read0
 
-spring.shardingsphere.datasource.primary-ds0.url= # 数据库 URL 连接
-spring.shardingsphere.datasource.primary-ds0.type=  # 数据库连接池类名称
-spring.shardingsphere.datasource.primary-ds0.driver-class-name= # 数据库驱动类名
-spring.shardingsphere.datasource.primary-ds0.username= # 数据库用户名
-spring.shardingsphere.datasource.primary-ds0.password= # 数据库密码
-spring.shardingsphere.datasource.primary-ds0.xxx=  # 数据库连接池的其它属性
+spring.shardingsphere.datasource.write-ds0.url= # 数据库 URL 连接
+spring.shardingsphere.datasource.write-ds0.type=  # 数据库连接池类名称
+spring.shardingsphere.datasource.write-ds0.driver-class-name= # 数据库驱动类名
+spring.shardingsphere.datasource.write-ds0.username= # 数据库用户名
+spring.shardingsphere.datasource.write-ds0.password= # 数据库密码
+spring.shardingsphere.datasource.write-ds0.xxx=  # 数据库连接池的其它属性
 
-spring.shardingsphere.datasource.primary-ds1.url= # 数据库 URL 连接
+spring.shardingsphere.datasource.write-ds1.url= # 数据库 URL 连接
 ... 忽略其他数据库配置项
 
-spring.shardingsphere.datasource.primary-ds0-replica0.url= # 数据库 URL 连接
+spring.shardingsphere.datasource.write-ds0-read0.url= # 数据库 URL 连接
 ... 忽略其他数据库配置项
 
-spring.shardingsphere.datasource.primary-ds1-replica0.url= # 数据库 URL 连接
+spring.shardingsphere.datasource.write-ds1-read0.url= # 数据库 URL 连接
 ... 忽略其他数据库配置项
 
 # 分片规则配置
@@ -84,13 +84,13 @@ spring.shardingsphere.rules.sharding.key-generators.snowflake.props.worker-id=12
 
 # 读写分离策略配置
 # ds_0,ds_1为读写分离配置的逻辑数据源名称
-spring.shardingsphere.rules.replica-query.data-sources.ds_0.primary-data-source-name=primary-ds0
-spring.shardingsphere.rules.replica-query.data-sources.ds_0.replica-data-source-names=primary-ds0-replica0
-spring.shardingsphere.rules.replica-query.data-sources.ds_0.load-balancer-name=replica-random
-spring.shardingsphere.rules.replica-query.data-sources.ds_1.primary-data-source-name=primary-ds1
-spring.shardingsphere.rules.replica-query.data-sources.ds_1.replica-data-source-names=primary-ds1-replica0
-spring.shardingsphere.rules.replica-query.data-sources.ds_1.load-balancer-name=replica-random
+spring.shardingsphere.rules.read-write-splitting.data-sources.ds_0.write-data-source-name=write-ds0
+spring.shardingsphere.rules.read-write-splitting.data-sources.ds_0.read-data-source-names=write-ds0-read0
+spring.shardingsphere.rules.read-write-splitting.data-sources.ds_0.load-balancer-name=read-random
+spring.shardingsphere.rules.read-write-splitting.data-sources.ds_1.write-data-source-name=write-ds1
+spring.shardingsphere.rules.read-write-splitting.data-sources.ds_1.read-data-source-names=write-ds1-read0
+spring.shardingsphere.rules.read-write-splitting.data-sources.ds_1.load-balancer-name=read-random
 
 # 负载均衡算法配置
-spring.shardingsphere.rules.replica-query.load-balancers.replica-random.type=RANDOM
+spring.shardingsphere.rules.read-write-splitting.load-balancers.read-random.type=RANDOM
 ```

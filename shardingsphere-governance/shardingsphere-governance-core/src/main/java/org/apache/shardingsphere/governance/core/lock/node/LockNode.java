@@ -26,25 +26,14 @@ public final class LockNode {
     
     private static final String LOCK_NODE_ROOT = "lock";
     
-    private static final String GLOBAL_LOCK_NODE = "glock";
-    
-    private static final String RESOURCE_LOCK_NODE = "rlock";
+    private static final String LOCK_NODE = "glock";
     
     /**
-     * Get global lock node path.
+     * Get lock node path.
      * 
-     * @return global lock node path
+     * @return lock node path
      */
-    public String getGlobalLockNodePath() {
-        return Joiner.on("/").join("", LOCK_NODE_ROOT, GLOBAL_LOCK_NODE);
-    }
-    
-    /**
-     * Get resource lock node path.
-     * 
-     * @return resource lock node path
-     */
-    public String getResourceLockNodePath() {
-        return Joiner.on("/").join("", LOCK_NODE_ROOT, RESOURCE_LOCK_NODE);
+    public String getLockNodePath() {
+        return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCK_NODE);
     }
 }

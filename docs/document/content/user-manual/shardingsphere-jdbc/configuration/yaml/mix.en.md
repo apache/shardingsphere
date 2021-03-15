@@ -13,11 +13,11 @@ Similarly, if the previous rule is table aggregation-oriented, the next rule nee
 
 ```yml
 dataSources: # Configure the real data source name.
-  primary_ds:
+  write_ds:
     # ...Omit specific configuration.
-  replica_ds_0:
+  read_ds_0:
     # ...Omit specific configuration.
-  replica_ds_0:
+  read_ds_0:
     # ...Omit specific configuration.
 
 rules:
@@ -49,14 +49,14 @@ rules:
         props:
           aes-key-value: 123456abc
   
-  - !REPLICA_QUERY # Configure read-write separation rules.
+  - !READ_WRITE_SPLITTING # Configure read-write separation rules.
     dataSources:
       ds:
         name: ds # The logical data source name 'ds' for read-write separation is used in data sharding.
-        primaryDataSourceName: primary_ds # Use the real data source name 'primary_ds'.
-        replicaDataSourceNames:
-          - replica_ds_0 # Use the real data source name 'replica_ds_0'.
-          - replica_ds_1 # Use the real data source name 'replica_ds_1'.
+        writeDataSourceName: write_ds # Use the real data source name 'write_ds'.
+        readDataSourceNames:
+          - read_ds_0 # Use the real data source name 'read_ds_0'.
+          - read_ds_1 # Use the real data source name 'read_ds_1'.
         loadBalancerName: roundRobin
     loadBalancers:
       roundRobin:

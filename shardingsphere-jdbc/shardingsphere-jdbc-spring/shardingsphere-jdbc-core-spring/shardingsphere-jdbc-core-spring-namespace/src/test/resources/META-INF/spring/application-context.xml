@@ -21,7 +21,7 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
        xmlns:sharding="http://shardingsphere.apache.org/schema/shardingsphere/sharding"
-       xmlns:replica-query="http://shardingsphere.apache.org/schema/shardingsphere/replica-query"
+       xmlns:read-write-splitting="http://shardingsphere.apache.org/schema/shardingsphere/read-write-splitting"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -31,19 +31,19 @@
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding
                            http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/replica-query
-                           http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/read-write-splitting
+                           http://shardingsphere.apache.org/schema/shardingsphere/read-write-splitting/read-write-splitting.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt 
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
                            ">
     <context:property-placeholder location="classpath:conf/conf.properties" />
     
-    <bean id="ds_0_primary" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
-    <bean id="ds_0_replica_0" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
-    <bean id="ds_0_replica_1" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
-    <bean id="ds_1_primary" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
-    <bean id="ds_1_replica_0" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
-    <bean id="ds_1_replica_1" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
+    <bean id="ds_0_write" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
+    <bean id="ds_0_read_0" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
+    <bean id="ds_0_read_1" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
+    <bean id="ds_1_write" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
+    <bean id="ds_1_read_0" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
+    <bean id="ds_1_read_1" class="org.apache.shardingsphere.test.mock.MockedDataSource" />
     
     <sharding:sharding-algorithm id="dataSourceShardingAlgorithm" type="INLINE">
         <props>
@@ -77,12 +77,12 @@
         </encrypt:table>
     </encrypt:rule>
     
-    <replica-query:rule id="replicaQueryRule">
-        <replica-query:data-source-rule id="ds_0" primary-data-source-name="ds_0_primary" replica-data-source-names="ds_0_replica_0,ds_0_replica_1" />
-        <replica-query:data-source-rule id="ds_1" primary-data-source-name="ds_1_primary" replica-data-source-names="ds_1_replica_0,ds_1_replica_1" />
-    </replica-query:rule>
+    <read-write-splitting:rule id="readWriteSplittingRule">
+        <read-write-splitting:data-source-rule id="ds_0" write-data-source-name="ds_0_write" read-data-source-names="ds_0_read_0,ds_0_read_1" />
+        <read-write-splitting:data-source-rule id="ds_1" write-data-source-name="ds_1_write" read-data-source-names="ds_1_read_0,ds_1_read_1" />
+    </read-write-splitting:rule>
     
-    <shardingsphere:data-source id="dataSource" data-source-names="ds_0_primary,ds_0_replica_0,ds_0_replica_1,ds_1_primary,ds_1_replica_0,ds_1_replica_1" rule-refs="shardingRule, replicaQueryRule, encryptRule">
+    <shardingsphere:data-source id="dataSource" data-source-names="ds_0_write,ds_0_read_0,ds_0_read_1,ds_1_write,ds_1_read_0,ds_1_read_1" rule-refs="shardingRule, readWriteSplittingRule, encryptRule">
         <props>
             <prop key="sql-show">false</prop>
             <prop key="executor-size">${executor-size}</prop>
