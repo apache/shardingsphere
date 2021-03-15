@@ -47,6 +47,7 @@ public final class CreateTableStatementSchemaRefresher implements SchemaRefreshe
             tableMetaData = new TableMetaData();
         }
         schema.put(tableName, tableMetaData);
+        // just for test
         ShardingSphereEventBus.getInstance().post(new CreateTableEvent(routeDataSourceNames.iterator().next(), tableName, tableMetaData));
     }
     
