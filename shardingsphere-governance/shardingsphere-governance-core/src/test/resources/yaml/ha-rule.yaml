@@ -24,8 +24,6 @@ rules:
           - ds_0
           - ds_1
           - ds_2
-        loadBalancerName: random
-        replicaQuery: false
         haTypeName: mgr
     haTypes:
       mgr:

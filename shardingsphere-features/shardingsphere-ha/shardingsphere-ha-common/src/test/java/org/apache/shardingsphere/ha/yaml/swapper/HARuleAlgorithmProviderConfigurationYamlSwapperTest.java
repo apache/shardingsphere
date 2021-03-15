@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.ha.yaml.swapper;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.ha.algorithm.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.ha.algorithm.config.AlgorithmProvidedHARuleConfiguration;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
 import org.apache.shardingsphere.ha.constant.HAOrder;
@@ -45,12 +44,6 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapperTest {
         assertNotNull(actual.getDataSources());
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("name")));
         assertThat(actual.getDataSources().get("name").getName(), is("name"));
-        assertThat(actual.getDataSources().get("name").getLoadBalancerName(), is("loadBalancerName"));
-        assertThat(actual.getDataSources().get("name").getDataSourceNames(), is(Collections.singletonList("replicaDataSourceName")));
-        assertNotNull(actual.getLoadBalancers());
-        assertThat(actual.getLoadBalancers().keySet(), is(Collections.singleton("name")));
-        assertNotNull(actual.getLoadBalancers().get("name"));
-        assertThat(actual.getLoadBalancers().get("name").getType(), is("RANDOM"));
     }
     
     @Test
@@ -62,9 +55,6 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapperTest {
         HADataSourceRuleConfiguration ruleConfig = actual.getDataSources().iterator().next();
         assertNotNull(ruleConfig);
         assertThat(ruleConfig.getName(), is("name"));
-        assertThat(ruleConfig.getLoadBalancerName(), is("loadBalancerName"));
-        assertThat(ruleConfig.getDataSourceNames(), is(Collections.singletonList("replicaDataSourceName")));
-        assertThat(actual.getLoadBalanceAlgorithms(), is(Collections.emptyMap()));
     }
     
     @Test
@@ -84,9 +74,8 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapperTest {
     
     private YamlHARuleConfiguration createYamlHARuleConfiguration() {
         HADataSourceRuleConfiguration ruleConfig = new HADataSourceRuleConfiguration("name",
-                Collections.singletonList("replicaDataSourceName"), "loadBalancerName", true, "haTypeName");
+                Collections.singletonList("dataSourceNames"), "haTypeName");
         return swapper.swapToYamlConfiguration(
-                new AlgorithmProvidedHARuleConfiguration(Collections.singletonList(ruleConfig), ImmutableMap.of("name", new RandomReplicaLoadBalanceAlgorithm()),
-                        ImmutableMap.of("mgr", new MGRHAType())));
+                new AlgorithmProvidedHARuleConfiguration(Collections.singletonList(ruleConfig), ImmutableMap.of("mgr", new MGRHAType())));
     }
 }

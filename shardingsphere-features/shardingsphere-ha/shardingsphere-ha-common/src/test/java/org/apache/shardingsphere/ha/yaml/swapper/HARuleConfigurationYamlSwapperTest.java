@@ -35,7 +35,6 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -50,32 +49,27 @@ public final class HARuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlWithLoadBalanceAlgorithm() {
         HADataSourceRuleConfiguration dataSourceConfig =
-                new HADataSourceRuleConfiguration("ds", Collections.singletonList("replica"), "roundRobin", true, "haTypeName");
-        YamlHARuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(new HARuleConfiguration(
-                Collections.singleton(dataSourceConfig), ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties())),
-                ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("MGR", new Properties()))));
+                new HADataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"), "haTypeName");
+        YamlHARuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(new HARuleConfiguration(Collections.singleton(dataSourceConfig),
+                ImmutableMap.of("mgr", new ShardingSphereAlgorithmConfiguration("MGR", new Properties()))));
         assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
-        assertThat(actual.getDataSources().get("ds").getDataSourceNames(), is(Collections.singletonList("replica")));
-        assertThat(actual.getDataSources().get("ds").getLoadBalancerName(), is("roundRobin"));
+        assertThat(actual.getDataSources().get("ds").getDataSourceNames(), is(Collections.singletonList("dataSourceName")));
     }
     
     @Test
     public void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
-        HADataSourceRuleConfiguration dataSourceConfig = new HADataSourceRuleConfiguration("ds", Collections.singletonList("replica"), null, true, "haTypeName");
+        HADataSourceRuleConfiguration dataSourceConfig = new HADataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"), "haTypeName");
         YamlHARuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToYamlConfiguration(
-                new HARuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap(), Collections.emptyMap()));
+                new HARuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap()));
         assertThat(actual.getDataSources().get("ds").getName(), is("ds"));
-        assertThat(actual.getDataSources().get("ds").getDataSourceNames(), is(Collections.singletonList("replica")));
-        assertNull(actual.getDataSources().get("ds").getLoadBalancerName());
+        assertThat(actual.getDataSources().get("ds").getDataSourceNames(), is(Collections.singletonList("dataSourceName")));
     }
     
     @Test
     public void assertSwapToObjectWithLoadBalanceAlgorithmType() {
         YamlHARuleConfiguration yamlConfig = createYamlHARuleConfiguration();
-        yamlConfig.getDataSources().get("ha_ds").setLoadBalancerName("RANDOM");
         HARuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToObject(yamlConfig);
         assertHARuleConfiguration(actual);
-        assertThat(actual.getDataSources().iterator().next().getLoadBalancerName(), is("RANDOM"));
     }
     
     @Test
@@ -83,21 +77,20 @@ public final class HARuleConfigurationYamlSwapperTest {
         YamlHARuleConfiguration yamlConfig = createYamlHARuleConfiguration();
         HARuleConfiguration actual = getHARuleConfigurationYamlSwapper().swapToObject(yamlConfig);
         assertHARuleConfiguration(actual);
-        assertNull(actual.getDataSources().iterator().next().getLoadBalancerName());
     }
     
     private YamlHARuleConfiguration createYamlHARuleConfiguration() {
         YamlHARuleConfiguration result = new YamlHARuleConfiguration();
         result.getDataSources().put("ha_ds", new YamlHADataSourceRuleConfiguration());
         result.getDataSources().get("ha_ds").setName("ha_ds");
-        result.getDataSources().get("ha_ds").setDataSourceNames(Arrays.asList("replica_ds_0", "replica_ds_1"));
+        result.getDataSources().get("ha_ds").setDataSourceNames(Arrays.asList("ds_0", "ds_1"));
         return result;
     }
     
     private void assertHARuleConfiguration(final HARuleConfiguration actual) {
         HADataSourceRuleConfiguration group = actual.getDataSources().iterator().next();
         assertThat(group.getName(), is("ha_ds"));
-        assertThat(group.getDataSourceNames(), is(Arrays.asList("replica_ds_0", "replica_ds_1")));
+        assertThat(group.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     
     @Test

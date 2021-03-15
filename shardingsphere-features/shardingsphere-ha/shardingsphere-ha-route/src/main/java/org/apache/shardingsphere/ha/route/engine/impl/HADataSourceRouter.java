@@ -18,11 +18,7 @@
 package org.apache.shardingsphere.ha.route.engine.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.ha.rule.HADataSourceRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 /**
  * Data source router for HA.
@@ -35,22 +31,9 @@ public final class HADataSourceRouter {
     /**
      * Route.
      * 
-     * @param sqlStatement SQL statement
      * @return data source name
      */
-    public String route(final SQLStatement sqlStatement) {
-        if (isPrimaryRoute(sqlStatement) || !rule.isReplicaQuery()) {
-            PrimaryVisitedManager.setPrimaryVisited();
-            return rule.getPrimaryDataSourceName();
-        }
-        return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getPrimaryDataSourceName(), rule.getDataSourceNames());
-    }
-    
-    private boolean isPrimaryRoute(final SQLStatement sqlStatement) {
-        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || PrimaryVisitedManager.getPrimaryVisited() || HintManager.isWriteRouteOnly();
-    }
-    
-    private boolean containsLockSegment(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof SelectStatement && SelectStatementHandler.getLockSegment((SelectStatement) sqlStatement).isPresent();
+    public String route() {
+        return rule.getPrimaryDataSourceName();
     }
 }
