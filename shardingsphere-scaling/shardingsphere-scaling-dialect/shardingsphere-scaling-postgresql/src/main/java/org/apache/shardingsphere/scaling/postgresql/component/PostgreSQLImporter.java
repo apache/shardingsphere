@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.scaling.postgresql.component;
 
-import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.executor.importer.AbstractJDBCImporter;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
+import org.apache.shardingsphere.scaling.core.executor.importer.AbstractImporter;
 
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +28,7 @@ import java.util.Set;
 /**
  * PostgreSQL importer.
  */
-public final class PostgreSQLImporter extends AbstractJDBCImporter {
+public final class PostgreSQLImporter extends AbstractImporter {
     
     public PostgreSQLImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
         super(importerConfig, dataSourceManager);

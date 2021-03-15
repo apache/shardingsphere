@@ -36,6 +36,6 @@ public final class PositionInitializerFactory {
      */
     @SneakyThrows(ReflectiveOperationException.class)
     public static PositionInitializer newInstance(final String databaseType) {
-        return ScalingEntryLoader.getInstance(databaseType).getPositionInitializer().newInstance();
+        return ScalingEntryLoader.getInstance(databaseType).getPositionInitializerClass().newInstance();
     }
 }

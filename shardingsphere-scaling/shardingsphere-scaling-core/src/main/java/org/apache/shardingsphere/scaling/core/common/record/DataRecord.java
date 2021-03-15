@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -47,7 +47,7 @@ public final class DataRecord extends Record {
     
     private String tableName;
     
-    public DataRecord(final Position<?> position, final int columnCount) {
+    public DataRecord(final ScalingPosition<?> position, final int columnCount) {
         super(position);
         columns = new ArrayList<>(columnCount);
     }

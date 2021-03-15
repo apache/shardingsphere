@@ -20,7 +20,7 @@
   "groups": [
     {
       "name": "spring.shardingsphere.datasource",
-      "type": "org.apache.shardingsphere.spring.boot.governance.GovernanceSpringBootConfiguration"
+      "type": "org.apache.shardingsphere.spring.boot.governance.ShardingSphereGovernanceAutoConfiguration"
     },
     {
       "sourceType": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration",
@@ -85,7 +85,7 @@
     {
       "name": "spring.shardingsphere.datasource.names",
       "type": "java.lang.String",
-      "sourceType": "org.apache.shardingsphere.spring.boot.governance.GovernanceSpringBootConfiguration"
+      "sourceType": "org.apache.shardingsphere.spring.boot.governance.ShardingSphereGovernanceAutoConfiguration"
     },
     {
       "name": "spring.shardingsphere.datasource",

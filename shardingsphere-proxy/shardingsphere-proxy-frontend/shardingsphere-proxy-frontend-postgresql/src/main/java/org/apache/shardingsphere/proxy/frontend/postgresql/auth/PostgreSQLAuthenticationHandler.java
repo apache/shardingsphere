@@ -23,7 +23,6 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -48,7 +47,7 @@ public final class PostgreSQLAuthenticationHandler {
      * @return PostgreSQL login result
      */
     public static PostgreSQLLoginResult loginWithMd5Password(final String username, final String databaseName, final byte[] md5Salt, final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
-        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(new Grantee(username, PrivilegeType.ALL_HOST_NAME.getName()));
+        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(new Grantee(username, "%"));
         if (!user.isPresent()) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, String.format("unknown username: %s", username));
         }

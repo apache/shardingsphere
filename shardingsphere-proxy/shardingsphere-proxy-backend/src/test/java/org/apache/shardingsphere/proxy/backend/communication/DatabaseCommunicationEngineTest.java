@@ -40,7 +40,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeaderBuilder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.apache.shardingsphere.transaction.context.impl.StandardTransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
@@ -83,7 +83,7 @@ public final class DatabaseCommunicationEngineTest {
         BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getSchemaName()).thenReturn("schema");
         DatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(SQLStatement.class), "schemaName", Collections.emptyList(), backendConnection);
+                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(MySQLStatement.class), "schemaName", Collections.emptyList(), backendConnection);
         assertNotNull(engine);
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
         Field queryHeadersField = engine.getClass().getDeclaredField("queryHeaders");
@@ -112,7 +112,7 @@ public final class DatabaseCommunicationEngineTest {
     
     private ShardingSphereMetaData createMetaData() {
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        ColumnMetaData columnMetaData = new ColumnMetaData("order_id", Types.INTEGER, "int", true, false, false);
+        ColumnMetaData columnMetaData = new ColumnMetaData("order_id", Types.INTEGER, true, false, false);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.get("t_logic_order")).thenReturn(new TableMetaData(Collections.singletonList(columnMetaData), Collections.singletonList(new IndexMetaData("order_id"))));
         DataSourcesMetaData dataSourcesMetaData = mock(DataSourcesMetaData.class);

@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.communication;
 
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,7 +66,7 @@ public final class DatabaseCommunicationEngineFactoryTest {
         BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getSchemaName()).thenReturn("schema");
         DatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(mock(SQLStatement.class), "schemaName", backendConnection);
+                DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(mock(MySQLStatement.class), "schemaName", backendConnection);
         assertNotNull(engine);
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
     }
@@ -76,7 +76,7 @@ public final class DatabaseCommunicationEngineFactoryTest {
         BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getSchemaName()).thenReturn("schema");
         DatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(SQLStatement.class), "schemaName", Collections.emptyList(), backendConnection);
+                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(mock(MySQLStatement.class), "schemaName", Collections.emptyList(), backendConnection);
         assertNotNull(engine);
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
     }

@@ -21,12 +21,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.scaling.core.job.JobStatus;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.job.position.FinishedPosition;
+import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 import org.apache.shardingsphere.scaling.core.job.progress.yaml.JobProgressYamlSwapper;
 import org.apache.shardingsphere.scaling.core.job.progress.yaml.YamlJobProgress;
 import org.apache.shardingsphere.scaling.core.job.task.incremental.IncrementalTaskProgress;
 import org.apache.shardingsphere.scaling.core.job.task.inventory.InventoryTaskProgress;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
@@ -66,7 +68,7 @@ public final class JobProgress {
      * @param dataSourceName data source name
      * @return incremental position
      */
-    public Position<?> getIncrementalPosition(final String dataSourceName) {
+    public ScalingPosition<?> getIncrementalPosition(final String dataSourceName) {
         return incrementalTaskProgressMap.get(dataSourceName).getPosition();
     }
     
@@ -76,7 +78,7 @@ public final class JobProgress {
      * @param tableName table name
      * @return inventory position
      */
-    public Map<String, Position<?>> getInventoryPosition(final String tableName) {
+    public Map<String, ScalingPosition<?>> getInventoryPosition(final String tableName) {
         Pattern pattern = Pattern.compile(String.format("%s(#\\d+)?", tableName));
         return inventoryTaskProgressMap.entrySet().stream()
                 .filter(entry -> pattern.matcher(entry.getKey()).find())
@@ -86,5 +88,38 @@ public final class JobProgress {
     @Override
     public String toString() {
         return YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(this));
+    }
+    
+    /**
+     * Get data source.
+     *
+     * @return data source
+     */
+    public String getDataSource() {
+        return incrementalTaskProgressMap.keySet().stream().findAny().orElse("");
+    }
+    
+    /**
+     * Get inventory finished percentage.
+     *
+     * @return finished percentage
+     */
+    public int getInventoryFinishedPercentage() {
+        long finished = inventoryTaskProgressMap.values().stream()
+                .filter(each -> each.getPosition() instanceof FinishedPosition)
+                .count();
+        return inventoryTaskProgressMap.isEmpty() ? 0 : (int) (finished * 100 / inventoryTaskProgressMap.size());
+    }
+    
+    /**
+     * Get incremental delay milliseconds.
+     *
+     * @return average delay
+     */
+    public long getIncrementalDelayMilliseconds() {
+        List<Long> delays = incrementalTaskProgressMap.values().stream()
+                .map(each -> each.getIncrementalTaskDelay().getDelayMilliseconds())
+                .collect(Collectors.toList());
+        return delays.isEmpty() || delays.contains(-1L) ? -1L : delays.stream().reduce(Long::sum).orElse(0L) / delays.size();
     }
 }

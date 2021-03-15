@@ -56,18 +56,6 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     @Test
     public void assertExecuteUpdate() throws SQLException, ParseException {
-        // TODO fix replica-query
-        if ("replica_query".equals(getScenario())) {
-            return;
-        }
-        // TODO fix shadow
-        if ("shadow".equals(getScenario())) {
-            return;
-        }
-        // TODO fix encrypt
-        if ("encrypt".equals(getScenario())) {
-            return;
-        }
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
@@ -92,18 +80,6 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
-        // TODO fix replica_query
-        if ("replica_query".equals(getScenario())) {
-            return;
-        }
-        // TODO fix shadow
-        if ("shadow".equals(getScenario())) {
-            return;
-        }
-        // TODO fix encrypt
-        if ("encrypt".equals(getScenario())) {
-            return;
-        }
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeForStatement(connection) : executeForPreparedStatement(connection);

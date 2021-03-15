@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropUs
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GrantContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ObjectPrivilegeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RevokeContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetRoleContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleAlterRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleAlterUserStatement;
@@ -39,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleDropUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleGrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleRevokeStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleSetRoleStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -108,5 +110,10 @@ public final class OracleDCLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitDropRole(final DropRoleContext ctx) {
         return new OracleDropRoleStatement();
+    }
+
+    @Override
+    public ASTNode visitSetRole(final SetRoleContext ctx) {
+        return new OracleSetRoleStatement();
     }
 }

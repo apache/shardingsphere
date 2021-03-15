@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
@@ -50,7 +50,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -69,28 +68,28 @@ public final class DriverJDBCExecutor {
     /**
      * Execute query.
      *
-     * @param executionGroups execution groups
+     * @param executionGroupContext execution group context
      * @param callback execute query callback
      * @return query results
      * @throws SQLException SQL exception
      */
-    public List<QueryResult> executeQuery(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final ExecuteQueryCallback callback) throws SQLException {
-        return jdbcExecutor.execute(executionGroups, callback);
+    public List<QueryResult> executeQuery(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final ExecuteQueryCallback callback) throws SQLException {
+        return jdbcExecutor.execute(executionGroupContext, callback);
     }
     
     /**
      * Execute update.
      *
-     * @param executionGroups execution groups
+     * @param executionGroupContext execution group context
      * @param sqlStatementContext SQL statement context
      * @param routeUnits route units
      * @param callback JDBC executor callback
      * @return effected records count
      * @throws SQLException SQL exception
      */
-    public int executeUpdate(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, 
+    public int executeUpdate(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                              final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
-        List<Integer> results = doExecute(executionGroups, sqlStatementContext.getSqlStatement(), routeUnits, callback);
+        List<Integer> results = doExecute(executionGroupContext, sqlStatementContext.getSqlStatement(), routeUnits, callback);
         return isNeedAccumulate(metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
     }
     
@@ -105,38 +104,38 @@ public final class DriverJDBCExecutor {
     /**
      * Execute SQL.
      *
-     * @param executionGroups execution groups
+     * @param executionGroupContext execution group context
      * @param sqlStatement SQL statement
      * @param routeUnits route units
      * @param callback JDBC executor callback
      * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    public boolean execute(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final SQLStatement sqlStatement,
+    public boolean execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final SQLStatement sqlStatement,
                            final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
-        List<Boolean> results = doExecute(executionGroups, sqlStatement, routeUnits, callback);
+        List<Boolean> results = doExecute(executionGroupContext, sqlStatement, routeUnits, callback);
         return null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
     }
     
-    private <T> List<T> doExecute(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final SQLStatement sqlStatement, 
+    private <T> List<T> doExecute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final SQLStatement sqlStatement,
                                   final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<T> callback) throws SQLException {
         List<T> results;
         boolean locked = false;
         try {
-            locked = tryGlobalLock(sqlStatement, metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
-            results = jdbcExecutor.execute(executionGroups, callback);
+            locked = tryLock(sqlStatement, metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
+            results = jdbcExecutor.execute(executionGroupContext, callback);
             refreshSchema(metaDataContexts.getDefaultMetaData(), sqlStatement, routeUnits);
         } finally {
             if (locked) {
-                releaseGlobalLock();
+                releaseLock();
             }
         }
         return results;
     }
     
-    private boolean tryGlobalLock(final SQLStatement sqlStatement, final long lockTimeoutMilliseconds) {
-        if (needLock(sqlStatement)) {
-            if (!metaDataContexts.getLockContext().tryGlobalLock(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
+    private boolean tryLock(final SQLStatement sqlStatement, final long lockTimeoutMilliseconds) {
+        if (metaDataContexts.getLock().isPresent() && needLock(sqlStatement)) {
+            if (!metaDataContexts.getLock().get().tryLock(lockTimeoutMilliseconds)) {
                 throw new ShardingSphereException("Service lock wait timeout of %s ms exceeded", lockTimeoutMilliseconds);
             }
             return true;
@@ -148,7 +147,7 @@ public final class DriverJDBCExecutor {
         return sqlStatement instanceof DDLStatement;
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     private void refreshSchema(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final Collection<RouteUnit> routeUnits) throws SQLException {
         Optional<MetadataRefresher> metadataRefresher = MetadataRefresherFactory.newInstance(sqlStatement);
         if (metadataRefresher.isPresent() && metadataRefresher.get() instanceof SchemaRefresher) {
@@ -164,7 +163,9 @@ public final class DriverJDBCExecutor {
         ShardingSphereEventBus.getInstance().post(new SchemaAlteredEvent(DefaultSchema.LOGIC_NAME, schema));
     }
     
-    private void releaseGlobalLock() {
-        metaDataContexts.getLockContext().releaseGlobalLock();
+    private void releaseLock() {
+        if (metaDataContexts.getLock().isPresent()) {
+            metaDataContexts.getLock().get().releaseLock();
+        }
     }
 }

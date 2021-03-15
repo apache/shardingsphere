@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.scaling.postgresql.component;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,12 +38,12 @@ public final class PostgreSQLJdbcDumperTest {
     
     private DataSourceManager dataSourceManager;
     
-    private PostgreSQLJdbcDumper jdbcDumper;
+    private PostgreSQLInventoryDumper jdbcDumper;
     
     @Before
     public void setUp() {
         dataSourceManager = new DataSourceManager();
-        jdbcDumper = new PostgreSQLJdbcDumper(mockInventoryDumperConfiguration(), dataSourceManager);
+        jdbcDumper = new PostgreSQLInventoryDumper(mockInventoryDumperConfiguration(), dataSourceManager);
     }
     
     private InventoryDumperConfiguration mockInventoryDumperConfiguration() {

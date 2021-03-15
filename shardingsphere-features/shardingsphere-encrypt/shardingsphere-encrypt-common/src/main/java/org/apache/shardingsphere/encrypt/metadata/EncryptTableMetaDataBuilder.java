@@ -70,8 +70,7 @@ public final class EncryptTableMetaDataBuilder implements RuleBasedTableMetaData
     }
     
     private ColumnMetaData createColumnMetaData(final String columnName, final ColumnMetaData columnMetaData) {
-        return new ColumnMetaData(columnName, 
-                columnMetaData.getDataType(), columnMetaData.getDataTypeName(), columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive());
+        return new ColumnMetaData(columnName, columnMetaData.getDataType(), columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive());
     }
     
     @Override

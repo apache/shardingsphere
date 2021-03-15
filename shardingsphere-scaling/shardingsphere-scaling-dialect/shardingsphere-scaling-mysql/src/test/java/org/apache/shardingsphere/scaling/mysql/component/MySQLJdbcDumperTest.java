@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.scaling.mysql.component;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.InventoryDumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +46,7 @@ public final class MySQLJdbcDumperTest {
     
     private DataSourceManager dataSourceManager;
     
-    private MySQLJdbcDumper mysqlJdbcDumper;
+    private MySQLInventoryDumper mysqlJdbcDumper;
     
     @Mock
     private Connection connection;
@@ -54,7 +54,7 @@ public final class MySQLJdbcDumperTest {
     @Before
     public void setUp() {
         dataSourceManager = new DataSourceManager();
-        mysqlJdbcDumper = new MySQLJdbcDumper(mockInventoryDumperConfiguration(), dataSourceManager);
+        mysqlJdbcDumper = new MySQLInventoryDumper(mockInventoryDumperConfiguration(), dataSourceManager);
     }
     
     private InventoryDumperConfiguration mockInventoryDumperConfiguration() {
