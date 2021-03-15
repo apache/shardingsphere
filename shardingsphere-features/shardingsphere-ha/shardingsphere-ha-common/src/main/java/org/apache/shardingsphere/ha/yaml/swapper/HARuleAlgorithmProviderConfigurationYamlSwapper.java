@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.ha.yaml.swapper;
 
-import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.ha.algorithm.config.AlgorithmProvidedHARuleConfiguration;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
 import org.apache.shardingsphere.ha.constant.HAOrder;
 import org.apache.shardingsphere.ha.yaml.config.YamlHARuleConfiguration;
 import org.apache.shardingsphere.ha.yaml.config.rule.YamlHADataSourceRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -42,9 +41,6 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapper
         YamlHARuleConfiguration result = new YamlHARuleConfiguration();
         result.setDataSources(data.getDataSources().stream().collect(
                 Collectors.toMap(HADataSourceRuleConfiguration::getName, this::swapToYamlConfiguration, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
-        if (null != data.getLoadBalanceAlgorithms()) {
-            data.getLoadBalanceAlgorithms().forEach((key, value) -> result.getLoadBalancers().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
-        }
         return result;
     }
     
@@ -52,8 +48,6 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapper
         YamlHADataSourceRuleConfiguration result = new YamlHADataSourceRuleConfiguration();
         result.setName(dataSourceRuleConfig.getName());
         result.setDataSourceNames(dataSourceRuleConfig.getDataSourceNames());
-        result.setLoadBalancerName(dataSourceRuleConfig.getLoadBalancerName());
-        result.setReplicaQuery(dataSourceRuleConfig.isReplicaQuery());
         return result;
     }
     
@@ -69,8 +63,7 @@ public final class HARuleAlgorithmProviderConfigurationYamlSwapper
     }
     
     private HADataSourceRuleConfiguration swapToObject(final String name, final YamlHADataSourceRuleConfiguration yamlDataSourceRuleConfig) {
-        return new HADataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getDataSourceNames(),
-                yamlDataSourceRuleConfig.getLoadBalancerName(), yamlDataSourceRuleConfig.isReplicaQuery(), yamlDataSourceRuleConfig.getHaTypeName());
+        return new HADataSourceRuleConfiguration(name, yamlDataSourceRuleConfig.getDataSourceNames(), yamlDataSourceRuleConfig.getHaTypeName());
     }
     
     @Override

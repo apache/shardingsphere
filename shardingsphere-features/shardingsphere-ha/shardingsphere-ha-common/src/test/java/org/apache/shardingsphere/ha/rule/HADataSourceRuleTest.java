@@ -19,8 +19,6 @@ package org.apache.shardingsphere.ha.rule;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
-import org.apache.shardingsphere.ha.algorithm.RandomReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.ha.algorithm.RoundRobinReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.ha.mgr.MGRHAType;
 import org.junit.Test;
 
@@ -35,51 +33,51 @@ import static org.junit.Assert.assertThat;
 public final class HADataSourceRuleTest {
     
     private final HADataSourceRule haDataSourceRule = new HADataSourceRule(
-            new HADataSourceRuleConfiguration("test_pr", Arrays.asList("replica_ds_0", "replica_ds_1"), "random", true, "haTypeName"), new RandomReplicaLoadBalanceAlgorithm(), new MGRHAType());
+            new HADataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "haTypeName"), new MGRHAType());
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewHADataSourceRuleWithoutName() {
-        new HADataSourceRule(new HADataSourceRuleConfiguration("", Collections.singletonList("replica_ds"), null, true, "haTypeName"), new RoundRobinReplicaLoadBalanceAlgorithm(), new MGRHAType());
+        new HADataSourceRule(new HADataSourceRuleConfiguration("", Arrays.asList("ds_0", "ds_1"), "haTypeName"), new MGRHAType());
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertNewHADataSourceRuleWithNullReplicaDataSourceName() {
-        new HADataSourceRule(new HADataSourceRuleConfiguration("ds", null, null, true, "haTypeName"), new RoundRobinReplicaLoadBalanceAlgorithm(), new MGRHAType());
+    public void assertNewHADataSourceRuleWithNullDataSourceName() {
+        new HADataSourceRule(new HADataSourceRuleConfiguration("ds", null, "haTypeName"), new MGRHAType());
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertNewHADataSourceRuleWithEmptyReplicaDataSourceName() {
-        new HADataSourceRule(new HADataSourceRuleConfiguration("ds", Collections.emptyList(), null, true, "haTypeName"), new RoundRobinReplicaLoadBalanceAlgorithm(), new MGRHAType());
+    public void assertNewHADataSourceRuleWithEmptyDataSourceName() {
+        new HADataSourceRule(new HADataSourceRuleConfiguration("ds", Collections.emptyList(), "haTypeName"), new MGRHAType());
     }
     
     @Test
     public void assertGetDataSourceNamesWithoutDisabledDataSourceNames() {
-        assertThat(haDataSourceRule.getDataSourceNames(), is(Arrays.asList("replica_ds_0", "replica_ds_1")));
+        assertThat(haDataSourceRule.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     
     @Test
     public void assertGetDataSourceNamesWithDisabledDataSourceNames() {
-        haDataSourceRule.updateDisabledDataSourceNames("replica_ds_0", true);
-        assertThat(haDataSourceRule.getDataSourceNames(), is(Collections.singletonList("replica_ds_1")));
+        haDataSourceRule.updateDisabledDataSourceNames("ds_0", true);
+        assertThat(haDataSourceRule.getDataSourceNames(), is(Collections.singletonList("ds_1")));
     }
     
     @Test
     public void assertUpdateDisabledDataSourceNamesForDisabled() {
-        haDataSourceRule.updateDisabledDataSourceNames("replica_ds_0", true);
-        assertThat(haDataSourceRule.getDataSourceNames(), is(Collections.singletonList("replica_ds_1")));
+        haDataSourceRule.updateDisabledDataSourceNames("ds_0", true);
+        assertThat(haDataSourceRule.getDataSourceNames(), is(Collections.singletonList("ds_1")));
     }
     
     @Test
     public void assertUpdateDisabledDataSourceNamesForEnabled() {
-        haDataSourceRule.updateDisabledDataSourceNames("replica_ds_0", true);
-        haDataSourceRule.updateDisabledDataSourceNames("replica_ds_0", false);
-        assertThat(haDataSourceRule.getDataSourceNames(), is(Arrays.asList("replica_ds_0", "replica_ds_1")));
+        haDataSourceRule.updateDisabledDataSourceNames("ds_0", true);
+        haDataSourceRule.updateDisabledDataSourceNames("ds_0", false);
+        assertThat(haDataSourceRule.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     
     @Test
     public void assertGetDataSourceMapper() {
         Map<String, Collection<String>> actual = haDataSourceRule.getDataSourceMapper();
-        Map<String, Collection<String>> expected = ImmutableMap.of("test_pr", Arrays.asList("replica_ds_0", "replica_ds_1"));
+        Map<String, Collection<String>> expected = ImmutableMap.of("test_pr", Arrays.asList("ds_0", "ds_1"));
         assertThat(actual, is(expected));
     }
 }

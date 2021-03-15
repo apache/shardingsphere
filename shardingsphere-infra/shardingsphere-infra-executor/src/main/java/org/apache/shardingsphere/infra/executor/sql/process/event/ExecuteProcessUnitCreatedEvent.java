@@ -15,32 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ha.algorithm;
+package org.apache.shardingsphere.infra.executor.sql.process.event;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.ha.spi.ReplicaLoadBalanceAlgorithm;
-
-import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.ThreadLocalRandom;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 
 /**
- * Random replica load-balance algorithm.
+ * Execute process unit created event.
  */
 @Getter
-@Setter
-public final class RandomReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
+public final class ExecuteProcessUnitCreatedEvent {
     
-    private Properties props = new Properties();
+    private final String executionID;
     
-    @Override
-    public String getDataSource(final String name, final String primaryDataSourceName, final List<String> dataSourceNames) {
-        return dataSourceNames.get(ThreadLocalRandom.current().nextInt(dataSourceNames.size()));
-    }
+    private final ExecuteProcessUnit unitStatuses;
     
-    @Override
-    public String getType() {
-        return "RANDOM";
+    public ExecuteProcessUnitCreatedEvent(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessStatus status) {
+        this.executionID = executionID;
+        this.unitStatuses = new ExecuteProcessUnit(String.valueOf(executionUnit.getExecutionUnit().hashCode()), status);
     }
 }

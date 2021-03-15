@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ha.spi;
+package org.apache.shardingsphere.infra.executor.sql.process.model;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-
-import java.util.List;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Replica load-balance algorithm.
+ * Execute process unit.
  */
-public interface ReplicaLoadBalanceAlgorithm extends ShardingSphereAlgorithm {
+@RequiredArgsConstructor
+@Getter
+public final class ExecuteProcessUnit {
     
-    /**
-     * Get data source.
-     * 
-     * @param name HA logic data source name
-     * @param primaryDataSourceName name of primary data sources
-     * @param dataSourceNames names of replica data sources
-     * @return name of selected data source
-     */
-    String getDataSource(String name, String primaryDataSourceName, List<String> dataSourceNames);
+    private final String unitID;
+    
+    private final ExecuteProcessStatus status;
 }

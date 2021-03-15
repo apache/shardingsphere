@@ -18,7 +18,7 @@
 <dataset update-count="2">
     <metadata data-nodes="encrypt.t_user">
         <column name="user_id" type="numeric"/>
-        <column name="order_id" type="numeric" />
+        <column name="address_id" type="numeric" />
         <column name="pwd_plain" type="varchar"/>
         <column name="pwd_cipher" type="varchar"/>
     </metadata>

@@ -35,7 +35,5 @@ public final class HARuleConfiguration implements RuleConfiguration {
     
     private final Collection<HADataSourceRuleConfiguration> dataSources;
     
-    private final Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers;
-    
     private final Map<String, ShardingSphereAlgorithmConfiguration> haTypes;
 }

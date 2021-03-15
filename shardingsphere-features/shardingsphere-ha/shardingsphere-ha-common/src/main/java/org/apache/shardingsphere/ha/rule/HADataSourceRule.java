@@ -23,7 +23,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
 import org.apache.shardingsphere.ha.spi.HAType;
-import org.apache.shardingsphere.ha.spi.ReplicaLoadBalanceAlgorithm;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -44,34 +43,28 @@ public final class HADataSourceRule {
     
     private final List<String> dataSourceNames;
     
-    private final ReplicaLoadBalanceAlgorithm loadBalancer;
-    
-    private final boolean replicaQuery;
-    
     private final HAType haType;
     
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
     private String primaryDataSourceName;
     
-    public HADataSourceRule(final HADataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer, final HAType haType) {
+    public HADataSourceRule(final HADataSourceRuleConfiguration config, final HAType haType) {
         checkConfiguration(config);
         name = config.getName();
         dataSourceNames = config.getDataSourceNames();
-        this.loadBalancer = loadBalancer;
-        replicaQuery = config.isReplicaQuery();
         this.haType = haType;
     }
     
     private void checkConfiguration(final HADataSourceRuleConfiguration config) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
-        Preconditions.checkArgument(null != config.getDataSourceNames() && !config.getDataSourceNames().isEmpty(), "Replica data source names are required.");
+        Preconditions.checkArgument(null != config.getDataSourceNames() && !config.getDataSourceNames().isEmpty(), "Data source names are required.");
     }
     
     /**
-     * Get replica data source names.
+     * Get data source names.
      *
-     * @return available replica data source names
+     * @return available data source names
      */
     public List<String> getDataSourceNames() {
         return dataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toList());

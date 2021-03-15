@@ -15,41 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ha.route.engine.impl;
+package org.apache.shardingsphere.infra.executor.sql.process;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 
 /**
- * Primary data source visited manager.
- * 
- * <p>Trace primary data source visited or not in current thread.</p>
+ * Process strategy evaluator.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PrimaryVisitedManager {
-    
-    private static final ThreadLocal<Boolean> PRIMARY_VISITED = ThreadLocal.withInitial(() -> false);
+public final class ExecuteProcessStrategyEvaluator {
     
     /**
-     * Judge primary data source visited in current thread.
-     * 
-     * @return primary data source visited or not in current thread
+     * Evaluate.
+     *
+     * @param context context
+     * @param executionGroupContext execution group context
+     * @return submit or not
      */
-    public static boolean getPrimaryVisited() {
-        return PRIMARY_VISITED.get();
-    }
-    
-    /**
-     * Set primary data source visited in current thread.
-     */
-    public static void setPrimaryVisited() {
-        PRIMARY_VISITED.set(true);
-    }
-    
-    /**
-     * Clear primary data source visited.
-     */
-    public static void clear() {
-        PRIMARY_VISITED.remove();
+    public static boolean evaluate(final SQLStatementContext<?> context, final ExecutionGroupContext<SQLExecutionUnit> executionGroupContext) {
+        // TODO : Add more conditions to evaluate whether to submit this process task or not
+        return true;
     }
 }

@@ -75,7 +75,7 @@ public final class MGRHAType implements HAType {
         try (Connection connection = dataSourceMap.get(oldPrimaryDataSource).getConnection();
              Statement statement = connection.createStatement()) {
             checkPluginIsActive(statement);
-            checkReplicaMemberCount(statement);
+            checkMemberCount(statement);
             checkServerGroupName(statement);
             checkIsSinglePrimaryMode(statement);
         }
@@ -91,7 +91,7 @@ public final class MGRHAType implements HAType {
         }
     }
     
-    private void checkReplicaMemberCount(final Statement statement) throws SQLException {
+    private void checkMemberCount(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(MEMBER_COUNT)) {
             while (resultSet.next()) {
                 if (resultSet.getInt(1) < 1) {

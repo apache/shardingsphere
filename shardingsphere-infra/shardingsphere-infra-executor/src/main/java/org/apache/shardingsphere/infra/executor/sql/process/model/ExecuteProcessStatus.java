@@ -15,16 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.ha.spring.namespace.tag;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+package org.apache.shardingsphere.infra.executor.sql.process.model;
 
 /**
- * Load balance algorithm bean definition tag.
+ * Execute process status.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LoadBalanceAlgorithmBeanDefinitionTag {
+public enum ExecuteProcessStatus {
     
-    public static final String ROOT_TAG = "load-balance-algorithm";
+    DOING, DONE
 }

@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -15,11 +16,15 @@
   ~ limitations under the License.
   -->
 
-<dataset>
-    <metadata table-name="t_user_details" data-nodes="encrypt.t_user_details">
-        <column name="user_id" type="integer" />
-        <column name="address_id" type="numeric" />
-        <column name="number_new_plain" type="varchar" />
-        <column name="number_new_cipher" type="varchar" />
-    </metadata>
-</dataset>
+<configuration>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <root>
+        <level value="error" />
+        <appender-ref ref="console" />
+    </root>
+</configuration> 
