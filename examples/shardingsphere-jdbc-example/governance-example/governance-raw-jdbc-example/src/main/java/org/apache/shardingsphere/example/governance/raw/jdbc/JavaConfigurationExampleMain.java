@@ -24,11 +24,11 @@ import org.apache.shardingsphere.example.core.api.service.ExampleService;
 import org.apache.shardingsphere.example.core.jdbc.service.OrderServiceImpl;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.GovernanceRepositoryConfigurationUtil;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudEncryptConfiguration;
-import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudReplicaQueryConfiguration;
+import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudReadWriteSplittingConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudShadowConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.cloud.CloudShardingDatabasesAndTablesConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalEncryptConfiguration;
-import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalReplicaQueryConfiguration;
+import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalReadWriteSplittingConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalShadowConfiguration;
 import org.apache.shardingsphere.example.governance.raw.jdbc.config.local.LocalShardingDatabasesAndTablesConfiguration;
 import org.apache.shardingsphere.example.type.ShardingType;
@@ -44,7 +44,7 @@ import java.sql.SQLException;
 public final class JavaConfigurationExampleMain {
     
     private static ShardingType shardingType = ShardingType.SHARDING_DATABASES_AND_TABLES;
-//    private static ShardingType shardingType = ShardingType.REPLICA_QUERY;
+//    private static ShardingType shardingType = ShardingType.READ_WRITE_SPLITTING;
 //    private static ShardingType shardingType = ShardingType.ENCRYPT;
 //    private static ShardingType shardingType = ShardingType.SHADOW;
     
@@ -68,8 +68,8 @@ public final class JavaConfigurationExampleMain {
                 config = loadConfigFromRegCenter 
                         ? new CloudShardingDatabasesAndTablesConfiguration(governanceConfig) : new LocalShardingDatabasesAndTablesConfiguration(governanceConfig);
                 break;
-            case REPLICA_QUERY:
-                config = loadConfigFromRegCenter ? new CloudReplicaQueryConfiguration(governanceConfig) : new LocalReplicaQueryConfiguration(governanceConfig);
+            case READ_WRITE_SPLITTING:
+                config = loadConfigFromRegCenter ? new CloudReadWriteSplittingConfiguration(governanceConfig) : new LocalReadWriteSplittingConfiguration(governanceConfig);
                 break;
             case ENCRYPT:
                 config = loadConfigFromRegCenter ? new CloudEncryptConfiguration(governanceConfig) : new LocalEncryptConfiguration(governanceConfig);
