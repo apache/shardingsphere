@@ -111,7 +111,10 @@ public final class PrivilegeBuilder {
         }
         futures.forEach(each -> {
             try {
-                each.get(FUTURE_GET_TIME_OUT_SECOND, TimeUnit.SECONDS).ifPresent(result::add);
+                each.get(FUTURE_GET_TIME_OUT_SECOND, TimeUnit.SECONDS).ifPresent(privilege -> {
+                    privilege.setSuper();
+                    result.add(privilege);
+                });
             } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
                 throw new IllegalStateException(String.format("Error while fetching privilege with %s", each), ex);
             }
