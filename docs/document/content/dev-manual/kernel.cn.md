@@ -29,7 +29,7 @@ chapter = true
 
 | *已知实现类*                   | *详细说明*                   |
 | ----------------------------- | --------------------------- |
-
+| MySQLTableMetaDataLoader      | 使用 MySQL 方言加载元数据     |
 
 ## SQLRouter
 

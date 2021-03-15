@@ -23,12 +23,13 @@ chapter = true
 
 ## DialectTableMetaDataLoader
 
-| *SPI Name*                   | *Description*                     |
-| ---------------------------- | --------------------------------- |
-| DialectTableMetaDataLoader   | Use SQL dialect to load meta data |
+| *SPI Name*                   | *Description*                             |
+| ---------------------------- | ----------------------------------------- |
+| DialectTableMetaDataLoader   | Use SQL dialect to load meta data rapidly |
 
-| *Implementation Class*       | *Description*                     |
-| ---------------------------- | --------------------------------- |
+| *Implementation Class*       | *Description*                             |
+| ---------------------------- | ----------------------------------------- |
+| MySQLTableMetaDataLoader     | Use MySQL dialect to load meta data       |
 
 ## SQLRouter
 

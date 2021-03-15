@@ -31,7 +31,7 @@
     
     <modules>
         <module>shardingsphere-sharding</module>
-        <module>shardingsphere-replica-query</module>
+        <module>shardingsphere-read-write-splitting</module>
         <module>shardingsphere-ha</module>
         <module>shardingsphere-encrypt</module>
         <module>shardingsphere-shadow</module>

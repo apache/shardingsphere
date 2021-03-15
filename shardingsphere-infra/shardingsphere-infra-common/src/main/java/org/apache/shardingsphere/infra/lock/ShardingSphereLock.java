@@ -28,12 +28,12 @@ public interface ShardingSphereLock {
      * @param timeoutMilliseconds time out milliseconds to acquire lock
      * @return true if get the lock, false if not
      */
-    boolean tryGlobalLock(long timeoutMilliseconds);
+    boolean tryLock(long timeoutMilliseconds);
     
     /**
      * Release lock.
      */
-    void releaseGlobalLock();
+    void releaseLock();
     
     /**
      * Await lock.

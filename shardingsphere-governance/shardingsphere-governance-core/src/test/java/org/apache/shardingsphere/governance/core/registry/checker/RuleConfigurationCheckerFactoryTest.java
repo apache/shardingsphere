@@ -20,8 +20,8 @@ package org.apache.shardingsphere.governance.core.registry.checker;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
-import org.apache.shardingsphere.replicaquery.algorithm.config.AlgorithmProvidedReplicaQueryRuleConfiguration;
-import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
+import org.apache.shardingsphere.readwrite.splitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwrite.splitting.api.ReadWriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -47,12 +47,12 @@ public final class RuleConfigurationCheckerFactoryTest {
     
     @Test
     public void assertEncryptRuleConfigurationChecker() {
-        assertTrue(RuleConfigurationCheckerFactory.newInstance(mock(ReplicaQueryRuleConfiguration.class)).isPresent());
+        assertTrue(RuleConfigurationCheckerFactory.newInstance(mock(ReadWriteSplittingRuleConfiguration.class)).isPresent());
     }
     
     @Test
     public void assertAlgorithmProvidedEncryptRuleConfigurationChecker() {
-        assertTrue(RuleConfigurationCheckerFactory.newInstance(mock(AlgorithmProvidedReplicaQueryRuleConfiguration.class)).isPresent());
+        assertTrue(RuleConfigurationCheckerFactory.newInstance(mock(AlgorithmProvidedReadWriteSplittingRuleConfiguration.class)).isPresent());
     }
     
     @Test
