@@ -23,6 +23,8 @@ import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.common.ExecutionMode;
 import org.apache.shardingsphere.test.integration.engine.it.BatchITCase;
 import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -34,6 +36,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @TestCaseSpec(sqlCommandType = SQLCommandType.DML, executionMode = ExecutionMode.BATCH)
+@ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class BatchDMLIT extends BatchITCase {
     
     @Test

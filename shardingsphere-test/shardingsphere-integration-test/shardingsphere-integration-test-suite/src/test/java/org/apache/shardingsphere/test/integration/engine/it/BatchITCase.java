@@ -57,10 +57,9 @@ import static org.junit.Assert.assertThat;
 
 @Getter(AccessLevel.PROTECTED)
 public abstract class BatchITCase extends BaseITCase {
-    
-    @ShardingSphereITInject
+   
     @Getter
-    // Would it be better to use IntegrationTestCase?
+    @ShardingSphereITInject
     private IntegrationTestCase testCase;
     
     private Collection<DataSet> dataSets;
@@ -71,7 +70,6 @@ public abstract class BatchITCase extends BaseITCase {
     
     @Before
     public void setup() throws IOException, JAXBException {
-        System.out.println(testCase);
         dataSets = new LinkedList<>();
         for (IntegrationTestCaseAssertion each : testCase.getAssertions()) {
             dataSets.add(DataSetLoader.load(getParentPath(), getDescription().getScenario(), getDescription().getDatabaseType(), each.getExpectedDataFile()));

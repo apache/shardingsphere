@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.engine.filter;
 
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.junit.annotation.ParameterFilter.Filter;
-import org.apache.shardingsphere.test.integration.junit.runner.TestCaseParameters;
+import org.apache.shardingsphere.test.integration.junit.param.TestCaseParameters;
 
 public class LiteralOnlyParamFilter implements Filter {
     

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.dql;
 
-import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
@@ -27,7 +26,7 @@ import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
-import org.junit.BeforeClass;
+import org.apache.shardingsphere.test.integration.junit.annotation.BeforeAllCases;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -47,11 +46,16 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDQLIT extends SingleITCase {
     
-    @BeforeClass
+    @BeforeAllCases
     @SneakyThrows
-    public static void fillData() {
-        String scenario = System.getProperty("it.scenario");
-        if (Strings.isNullOrEmpty(scenario)) {
+    public void fillData() {
+        boolean isIT = Boolean.getBoolean("it.enable");
+        if (isIT) {
+            new DataSetEnvironmentManager(
+                    EnvironmentPath.getDataSetFile(getDescription().getScenario()),
+                    getStorage().getDataSourceMap()
+            ).fillData();
+        } else {
             IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet().forEach(e -> {
                 IntegrationTestEnvironment.getInstance().getScenarios().forEach(each -> {
                     try {
@@ -62,14 +66,9 @@ public abstract class BaseDQLIT extends SingleITCase {
                     } catch (SQLException | ParseException | IOException | JAXBException jaxbException) {
                         jaxbException.printStackTrace();
                     }
-                    
+            
                 });
             });
-        } else {
-            new DataSetEnvironmentManager(
-                    EnvironmentPath.getDataSetFile(scenario),
-                    getStorage().getDataSourceMap()
-            ).fillData();
         }
     }
     

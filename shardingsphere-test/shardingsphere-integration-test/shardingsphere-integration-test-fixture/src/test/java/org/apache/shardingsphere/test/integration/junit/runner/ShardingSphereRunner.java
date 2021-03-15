@@ -26,26 +26,39 @@ import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTes
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.integration.junit.annotation.BeforeAllCases;
 import org.apache.shardingsphere.test.integration.junit.annotation.ParameterFilter;
 import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
 import org.apache.shardingsphere.test.integration.junit.compose.ContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.compose.NotSupportedException;
 import org.apache.shardingsphere.test.integration.junit.resolver.ConditionResolver;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.ParallelRunnerExecutor;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.ParallelRunnerExecutorFactory;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.ParallelRunnerScheduler;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
-import org.apache.shardingsphere.test.integration.param.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.param.model.AssertionParameterizedArray;
-import org.apache.shardingsphere.test.integration.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.junit.param.TestCaseParameters;
+import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
+import org.junit.internal.runners.statements.RunAfters;
+import org.junit.runner.Description;
 import org.junit.runner.Runner;
+import org.junit.runner.notification.RunNotifier;
+import org.junit.runners.ParentRunner;
 import org.junit.runners.Suite;
+import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
+import org.junit.runners.model.RunnerScheduler;
 import org.junit.runners.model.Statement;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -72,8 +85,6 @@ public class ShardingSphereRunner extends Suite {
         if (Boolean.getBoolean("it.enable")) {
             // it process
             runners = createITRunners(testCaseSpec);
-            compose.startup();
-            compose.waitUntilReady();
         } else {
             // ci process
             runners = createCIRunners(testCaseSpec);
@@ -90,13 +101,7 @@ public class ShardingSphereRunner extends Suite {
                 .map(e -> {
                     try {
                         TestCaseBeanContext context = beanContext.subContext();
-                        
-                        context.registerBeanByName("statement", e.getStatement());
-                        context.registerBeanByName("parentPath", e.getParentPath());
-                        context.registerBean(SQLExecuteType.class, e.getExecuteType());
-                        context.registerBean(IntegrationTestCase.class, e.getTestCase());
-                        context.registerBean(IntegrationTestCaseAssertion.class, e.getAssertion());
-                        
+                        register(e, context);
                         return new ShardingSphereITSubRunner(getTestClass().getJavaClass(), context, resolver);
                     } catch (InitializationError ex) {
                         throw new RuntimeException("Initialization Error", ex);
@@ -105,16 +110,22 @@ public class ShardingSphereRunner extends Suite {
                 .collect(Collectors.toList());
     }
     
+    private void register(final TestCaseParameters parameters, final TestCaseBeanContext context) {
+        context.registerBeanByName("statement", parameters.getStatement());
+        context.registerBeanByName("parentPath", parameters.getParentPath());
+        context.registerBean(SQLExecuteType.class, parameters.getExecuteType());
+        context.registerBean(IntegrationTestCase.class, parameters.getTestCase());
+        context.registerBean(IntegrationTestCaseAssertion.class, parameters.getAssertion());
+    }
+    
     private List<Runner> createCIRunners(final TestCaseSpec testCaseSpec) {
         ParallelRuntimeStrategy parallelRuntimeStrategy = getTestClass().getAnnotation(ParallelRuntimeStrategy.class);
         if (null != parallelRuntimeStrategy) {
             setScheduler(new ParallelRunnerScheduler(parallelRuntimeStrategy.value()));
         }
         
-        Predicate<TestCaseParameters> predicate = createTestCaseParametersPredicate();
-        // there is only single IT runner;
-        Collection<ParameterizedArray> parameterized = ParameterizedArrayFactory.getAssertionParameterized(testCaseSpec.sqlCommandType());
-        return parameterized.stream()
+        final Predicate<TestCaseParameters> predicate = createTestCaseParametersPredicate();
+        return allCIParameters(testCaseSpec).stream()
                 .flatMap(e -> {
                     final TestCaseDescription description = TestCaseDescription.builder()
                             .sqlCommandType(testCaseSpec.sqlCommandType())
@@ -123,26 +134,36 @@ public class ShardingSphereRunner extends Suite {
                             .database(e.getDatabaseType().getName())
                             .scenario(e.getScenario())
                             .build();
-                    
                     IntegrationTestCase testCase = e.getTestCaseContext().getTestCase();
                     return testCase.getAssertions().stream()
                             .map(ee -> {
+                                SQLExecuteType executeType = (e instanceof AssertionParameterizedArray)
+                                        ? ((AssertionParameterizedArray) e).getSqlExecuteType()
+                                        : null;
+                                TestCaseParameters testCaseParameters = new TestCaseParameters(
+                                        e.toString(),
+                                        e.getTestCaseContext().getParentPath(),
+                                        testCase.getSql(),
+                                        executeType,
+                                        getTestClass().getJavaClass(),
+                                        testCase,
+                                        ee
+                                );
                                 TestCaseBeanContext context = beanContext.subContext();
+                                context.registerBean(ParameterizedArray.class, e);
                                 context.registerBean(TestCaseDescription.class, description);
-                                context.registerBeanByName("statement", testCase.getSql());
-                                context.registerBeanByName("parentPath", e.getTestCaseContext().getParentPath());
-                                context.registerBean(SQLExecuteType.class, ((AssertionParameterizedArray) e).getSqlExecuteType());
-                                context.registerBean(IntegrationTestCase.class, testCase);
-                                context.registerBean(IntegrationTestCaseAssertion.class, ee);
-                                
-                                try {
-                                    return new ShardingSphereCISubRunner(getTestClass().getJavaClass(), context, resolver);
-                                } catch (InitializationError initializationError) {
-                                    initializationError.printStackTrace();
-                                }
-                                return null;
-                            }).filter(Objects::nonNull);
-                    
+                                context.registerBean(TestCaseParameters.class, testCaseParameters);
+                                register(testCaseParameters, context);
+                                return context;
+                            });
+                })
+                .filter(e -> predicate.test(e.getBean(TestCaseParameters.class)))
+                .map(e -> {
+                    try {
+                        return new ShardingSphereCISubRunner(getTestClass().getJavaClass(), e, resolver);
+                    } catch (InitializationError initializationError) {
+                        throw new RuntimeException(initializationError);
+                    }
                 })
                 .collect(Collectors.toList());
     }
@@ -162,6 +183,19 @@ public class ShardingSphereRunner extends Suite {
             predicate = parameters -> true;
         }
         return predicate;
+    }
+    
+    private Collection<ParameterizedArray> allCIParameters(final TestCaseSpec testCaseSpec) {
+        switch (testCaseSpec.executionMode()) {
+            case ADDITIONAL:
+                return IntegrationTestEnvironment.getInstance().isRunAdditionalTestCases()
+                        ? ParameterizedArrayFactory.getAssertionParameterized(testCaseSpec.sqlCommandType())
+                        : Collections.emptyList();
+            case BATCH:
+                return ParameterizedArrayFactory.getCaseParameterized(testCaseSpec.sqlCommandType());
+            default:
+                return ParameterizedArrayFactory.getAssertionParameterized(testCaseSpec.sqlCommandType());
+        }
     }
     
     @SneakyThrows
@@ -215,6 +249,45 @@ public class ShardingSphereRunner extends Suite {
         return runners;
     }
     
+    public Statement withBeforeClasses(final Statement statement) {
+        return super.withBeforeClasses(new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                List<FrameworkMethod> methods = getTestClass().getAnnotatedMethods(BeforeAllCases.class);
+                List<Runner> children = getChildren();
+                if (!children.isEmpty()) {
+                    Runner runner = children.get(0);
+                    Object test;
+                    if (runner instanceof ShardingSphereITSubRunner) {
+                        test = ((ShardingSphereITSubRunner) runner).createTest();
+                        compose.setInstance(test);
+                        compose.createContainers();
+                        compose.createInitializerAndExecute(() -> test);
+                        compose.start();
+                        compose.waitUntilReady();
+                        methods.forEach(e -> {
+                            try {
+                                e.invokeExplosively(test);
+                            } catch (Throwable throwable) {
+                                throwable.printStackTrace();
+                            }
+                        });
+                    } else {
+                        test = ((ShardingSphereCISubRunner) runner).createTest();
+                        methods.forEach(e -> {
+                            try {
+                                e.invokeExplosively(test);
+                            } catch (Throwable throwable) {
+                                throwable.printStackTrace();
+                            }
+                        });
+                    }
+                }
+                statement.evaluate();
+            }
+        });
+    }
+    
     @Override
     protected Statement withAfterClasses(final Statement statement) {
         return super.withAfterClasses(new Statement() {
@@ -225,6 +298,7 @@ public class ShardingSphereRunner extends Suite {
                 if (Objects.nonNull(compose)) {
                     compose.close();
                 }
+                // missing @AfterAllCases
             }
         });
     }

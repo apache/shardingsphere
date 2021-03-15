@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.junit.runner.parallel;
 
-import org.apache.shardingsphere.test.integration.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 
 /**
  * Parallel runner executor.

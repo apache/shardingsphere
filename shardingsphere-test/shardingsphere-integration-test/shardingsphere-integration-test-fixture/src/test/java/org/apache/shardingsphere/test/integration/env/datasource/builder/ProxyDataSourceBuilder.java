@@ -31,6 +31,7 @@ import java.util.Map;
 /**
  * Proxy data source builder.
  */
+@Deprecated
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProxyDataSourceBuilder {
     

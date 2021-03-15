@@ -17,33 +17,17 @@
 
 package org.apache.shardingsphere.test.integration.junit.annotation;
 
-import org.apache.shardingsphere.test.integration.junit.param.TestCaseParameters;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.TYPE)
+/**
+ * It is very like @BeforeClass, but it could be marked at the non-static method.
+ * A method that has been marked by it, would be executed once.
+ */
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ParameterFilter {
-    
-    /**
-     * Filter.
-     *
-     * @return filter
-     */
-    Class<? extends Filter> filter();
-    
-    interface Filter {
-    
-        /**
-         * Filter.
-         *
-         * @param parameters test case parameters
-         * @return false if ignore
-         */
-        boolean filter(TestCaseParameters parameters);
-        
-    }
+public @interface BeforeAllCases {
+
 }

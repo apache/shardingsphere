@@ -36,7 +36,7 @@ import java.util.Optional;
 /**
  * The storage container was binding to the single scenario and database type.
  */
-public abstract class StorageContainer extends ShardingSphereContainer {
+public abstract class ShardingSphereStorageContainer extends ShardingSphereContainer {
     
     @Getter
     @XmlResource(file = "/env/{scenario}/databases.xml", processor = DatabaseProcessor.class)
@@ -47,11 +47,11 @@ public abstract class StorageContainer extends ShardingSphereContainer {
     @Getter
     private final DatabaseType databaseType;
     
-    public StorageContainer(final String dockerImageName, final DatabaseType databaseType) {
+    public ShardingSphereStorageContainer(final String dockerImageName, final DatabaseType databaseType) {
         this(dockerImageName, databaseType, false);
     }
     
-    public StorageContainer(final String dockerImageName, final DatabaseType databaseType, final boolean isFakeContainer) {
+    public ShardingSphereStorageContainer(final String dockerImageName, final DatabaseType databaseType, final boolean isFakeContainer) {
         super(dockerImageName, isFakeContainer);
         this.databaseType = databaseType;
     }
@@ -62,7 +62,7 @@ public abstract class StorageContainer extends ShardingSphereContainer {
      * @param resourcePath resource path
      * @return self
      */
-    public StorageContainer withInitSQLMapping(final String resourcePath) {
+    public ShardingSphereStorageContainer withInitSQLMapping(final String resourcePath) {
         withClasspathResourceMapping(resourcePath, "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
         return this;
     }

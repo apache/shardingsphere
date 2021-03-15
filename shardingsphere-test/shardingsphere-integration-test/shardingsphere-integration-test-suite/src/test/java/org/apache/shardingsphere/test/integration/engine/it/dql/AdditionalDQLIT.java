@@ -22,6 +22,8 @@ import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.common.ExecutionMode;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -34,6 +36,7 @@ import java.text.ParseException;
 import static org.junit.Assert.assertTrue;
 
 @TestCaseSpec(name = "Additional DQL", sqlCommandType = SQLCommandType.DQL, executionMode = ExecutionMode.ADDITIONAL)
+@ParallelRuntimeStrategy(ParallelLevel.CASE)
 public final class AdditionalDQLIT extends BaseDQLIT {
     
     @Test

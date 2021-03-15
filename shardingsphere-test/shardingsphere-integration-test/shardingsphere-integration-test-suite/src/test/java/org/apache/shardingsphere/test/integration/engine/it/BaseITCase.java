@@ -32,7 +32,7 @@ import org.apache.shardingsphere.test.integration.junit.annotation.ContainerType
 import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.annotation.OnContainer;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereAdapterContainer;
-import org.apache.shardingsphere.test.integration.junit.container.StorageContainer;
+import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.runner.ShardingSphereRunner;
 import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
 import org.junit.After;
@@ -59,11 +59,11 @@ public abstract class BaseITCase {
     
     @Getter
     @OnContainer(name = "adapter")
-    private static ShardingSphereAdapterContainer proxy;
+    private ShardingSphereAdapterContainer proxy;
     
     @Getter
     @OnContainer(name = "storage", type = ContainerType.STORAGE, hostName = "mysql.db.host")
-    private static StorageContainer storage;
+    private ShardingSphereStorageContainer storage;
     
     @ShardingSphereITInject
     private IntegrationTestCaseAssertion assertion;
@@ -91,7 +91,7 @@ public abstract class BaseITCase {
     }
     
     @ContainerInitializer
-    protected static void initialize() {
+    protected void initialize() {
         if (Objects.nonNull(proxy) && Objects.nonNull(storage)) {
             proxy.dependsOn(storage);
         }

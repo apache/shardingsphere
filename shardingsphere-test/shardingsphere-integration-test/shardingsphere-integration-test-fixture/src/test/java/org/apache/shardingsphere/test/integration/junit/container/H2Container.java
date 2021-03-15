@@ -24,20 +24,27 @@ import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualD
 import javax.sql.DataSource;
 import java.util.Map;
 
-public class H2Container extends StorageContainer {
+public class H2Container extends ShardingSphereStorageContainer {
+    
+    private volatile Map<String, DataSource> actualDataSources;
+    
+    private volatile boolean isHealthy;
     
     public H2Container() {
         super("h2:fake", new H2DatabaseType(), true);
     }
     
     @Override
+    @SneakyThrows
     protected void configure() {
         super.configure();
+        actualDataSources = ActualDataSourceBuilder.createActualDataSources(getDescription().getScenario(), getDescription().getDatabaseType());
+        isHealthy = true;
     }
     
     @Override
     public boolean isHealthy() {
-        return true;
+        return isHealthy;
     }
     
     @Override
@@ -63,6 +70,6 @@ public class H2Container extends StorageContainer {
     @Override
     @SneakyThrows
     public synchronized Map<String, DataSource> getDataSourceMap() {
-        return ActualDataSourceBuilder.createActualDataSources(getDescription().getScenario(), getDescription().getDatabaseType());
+        return actualDataSources;
     }
 }

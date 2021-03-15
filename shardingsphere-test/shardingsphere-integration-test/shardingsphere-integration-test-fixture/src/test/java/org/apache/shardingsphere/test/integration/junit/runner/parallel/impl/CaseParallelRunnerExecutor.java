@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.junit.runner.parallel.impl;
 
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.ParallelRunnerExecutor;
-import org.apache.shardingsphere.test.integration.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 
 import java.util.Collection;
 import java.util.LinkedList;

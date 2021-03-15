@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.junit.annotation;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.junit.container.H2Container;
 import org.apache.shardingsphere.test.integration.junit.container.MySQLContainer;
-import org.apache.shardingsphere.test.integration.junit.container.StorageContainer;
+import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereStorageContainer;
 
 public enum ShardingSphereITStorageType {
     
@@ -29,9 +29,9 @@ public enum ShardingSphereITStorageType {
     H2(H2Container.class);
     
     @Getter
-    private final Class<? extends StorageContainer> klass;
+    private final Class<? extends ShardingSphereStorageContainer> klass;
     
-    ShardingSphereITStorageType(final Class<? extends StorageContainer> klass) {
+    ShardingSphereITStorageType(final Class<? extends ShardingSphereStorageContainer> klass) {
         this.klass = klass;
     }
 }

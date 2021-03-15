@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.integration.engine.it.dcl;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -27,6 +29,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 
 @TestCaseSpec(sqlCommandType = SQLCommandType.DCL)
+@ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDCLIT extends BaseDCLIT {
     
     @Test

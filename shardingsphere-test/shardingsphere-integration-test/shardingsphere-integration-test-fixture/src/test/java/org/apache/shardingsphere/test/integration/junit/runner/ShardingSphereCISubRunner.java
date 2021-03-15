@@ -17,17 +17,21 @@
 
 package org.apache.shardingsphere.test.integration.junit.runner;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.compose.ContainerCompose;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.resolver.ConditionResolver;
+import org.junit.rules.TestRule;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 @Slf4j
 public class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
@@ -36,6 +40,11 @@ public class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
     
     private final ContainerCompose compose;
     
+    private volatile Object testInstance;
+    
+    @Getter
+    private final ParameterizedArray parameterized;
+    
     @NonNull
     private final ConditionResolver resolver;
     
@@ -43,12 +52,15 @@ public class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
         super(testClass);
         this.context = context;
         this.resolver = resolver;
-        this.compose = new ContainerCompose("", getTestClass(), context.getBean(TestCaseDescription.class), resolver, context);
+        this.parameterized = context.getBean(ParameterizedArray.class);
+        this.compose = new ContainerCompose(getTestClass().getName(), getTestClass(), context.getBean(TestCaseDescription.class), resolver, context);
     }
     
     @Override
     protected Object createTest() throws Exception {
-        final Object testInstance = super.createTest();
+        testInstance = super.createTest();
+        compose.setInstance(testInstance);
+        compose.createContainers();
         getTestClass().getAnnotatedFields(ShardingSphereITInject.class)
                 .forEach(e -> {
                     try {
@@ -63,36 +75,41 @@ public class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
                         throw new RuntimeException(ex.getMessage(), ex);
                     }
                 });
-        System.out.println(context.getBean(TestCaseDescription.class));
+        compose.createInitializerAndExecute(() -> testInstance);
+        compose.start();
+        compose.waitUntilReady();
         return testInstance;
     }
-
+    
     @Override
     protected Statement withBeforeClasses(final Statement statement) {
-        return super.withBeforeClasses(new Statement() {
+        return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                compose.startup();
-                compose.waitUntilReady(); // FIXME: waiting for service available?
                 statement.evaluate();
             }
-        });
+        };
+    }
+    
+    @Override
+    protected List<TestRule> getTestRules(Object target) {
+        return super.getTestRules(target);
     }
     
     @Override
     protected Statement withAfterClasses(final Statement statement) {
-        return super.withAfterClasses(new Statement() {
+        return new Statement() {
             @Override
             public void evaluate() throws Throwable {
                 statement.evaluate();
                 compose.close();
             }
-        });
+        };
     }
     
     @Override
     protected String getName() {
-        // {2}: {3} -> {4} -> {5} -> {6}
+//        return parameterized.toString();
         TestCaseDescription description = context.getBean(TestCaseDescription.class);
         return String.format("[%s: %s -> %s -> %s -> %s]",
                 description.getAdapter(),

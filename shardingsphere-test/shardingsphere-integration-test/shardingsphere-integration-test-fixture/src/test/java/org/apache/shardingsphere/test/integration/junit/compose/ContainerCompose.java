@@ -18,21 +18,23 @@
 package org.apache.shardingsphere.test.integration.junit.compose;
 
 import com.google.common.base.Strings;
+import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.junit.annotation.ContainerInitializer;
-import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.annotation.OnContainer;
+import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.container.H2Container;
 import org.apache.shardingsphere.test.integration.junit.container.MySQLContainer;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereJDBCContainer;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereProxyContainer;
-import org.apache.shardingsphere.test.integration.junit.container.StorageContainer;
+import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.logging.ContainerLogs;
 import org.apache.shardingsphere.test.integration.junit.resolver.ConditionResolver;
 import org.apache.shardingsphere.test.integration.junit.runner.TestCaseBeanContext;
@@ -70,17 +72,23 @@ public class ContainerCompose implements Closeable {
     
     private ImmutableList<ShardingSphereContainer> containers;
     
+    @Setter
+    private Object instance;
+    
     /**
      * Startup all containers.
      */
     @SneakyThrows
-    public void startup() {
+    public void startup(final Supplier<Object> supplier) {
         createContainers();
-        createInitializerAndExecute();
+        createInitializerAndExecute(supplier);
         containers.stream().filter(c -> !c.isCreated()).forEach(GenericContainer::start);
     }
     
-    private void createContainers() {
+    /**
+     * Create container and then autowired to test-case.
+     */
+    public void createContainers() {
         ImmutableList.Builder<ShardingSphereContainer> builder = new ImmutableList.Builder<>();
         testClass.getAnnotatedFields(OnContainer.class).stream()
                 .map(this::createContainer)
@@ -108,7 +116,9 @@ public class ContainerCompose implements Closeable {
             container.setNetwork(network);
             container.withLogConsumer(ContainerLogs.newConsumer(clusterName + "_" + metadata.name()));
             field.getField().setAccessible(true);
-            field.getField().set(testClass.getJavaClass(), container);
+            field.getField().set(instance, container);
+            beanContext.registerBeanByName(metadata.name(), container);
+            
             log.info("container {} is activated.", metadata.name());
             return container;
             // CHECKSTYLE:OFF
@@ -149,12 +159,11 @@ public class ContainerCompose implements Closeable {
         }
     }
     
-    private StorageContainer createStorageContainer() {
+    private ShardingSphereStorageContainer createStorageContainer() {
         switch (description.getStorageType()) {
             case MySQL:
                 return new MySQLContainer();
             case H2:
-//                throw new RuntimeException("Not yet support storage type " + description.getStorageType());
                 return new H2Container();
             default:
                 throw new RuntimeException("Unknown storage type " + description.getStorageType());
@@ -183,8 +192,13 @@ public class ContainerCompose implements Closeable {
                 });
     }
     
+    /**
+     * Create the initializer and execute.
+     *
+     * @param supplier supplier
+     */
     @SneakyThrows
-    private void createInitializerAndExecute() {
+    public void createInitializerAndExecute(final Supplier<Object> supplier) {
         List<FrameworkMethod> methods = testClass.getAnnotatedMethods(ContainerInitializer.class).stream()
                 .filter(conditionResolver::filter)
                 .collect(Collectors.toList());
@@ -192,14 +206,27 @@ public class ContainerCompose implements Closeable {
             throw new RuntimeException("Only support to have one or zero initializer.");
         }
         if (!methods.isEmpty()) {
-            FrameworkMethod method = methods.get(0);
-            if (method.isStatic()) {
-                method.getMethod().setAccessible(true);
-                method.invokeExplosively(testClass.getJavaClass());
-            } else {
-                throw new Exception("Method " + method.getName() + " is not a static method.");
-            }
+            methods.forEach(method -> {
+                try {
+                    if (method.isStatic()) {
+                        method.getMethod().setAccessible(true);
+                        method.invokeExplosively(null);
+                    } else {
+                        method.getMethod().setAccessible(true);
+                        method.invokeExplosively(supplier.get());
+                    }
+                } catch (Throwable throwable) {
+                    throwable.printStackTrace();
+                }
+            });
         }
+    }
+    
+    /**
+     * Startup.
+     */
+    public void start() {
+        containers.stream().filter(c -> !c.isCreated()).forEach(GenericContainer::start);
     }
     
     /**

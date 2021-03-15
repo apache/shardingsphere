@@ -26,7 +26,7 @@ import java.util.Optional;
 /**
  * MySQL Server Container.
  */
-public class MySQLContainer extends StorageContainer {
+public class MySQLContainer extends ShardingSphereStorageContainer {
     
     public MySQLContainer() {
         super("mysql/mysql-server:5.7", new MySQLDatabaseType());

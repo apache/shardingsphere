@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.junit.container;
 
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 
-public class PostgreSQLContainer extends StorageContainer {
+public class PostgreSQLContainer extends ShardingSphereStorageContainer {
     
     public PostgreSQLContainer() {
         super("postgres:12.6", new PostgreSQLDatabaseType());

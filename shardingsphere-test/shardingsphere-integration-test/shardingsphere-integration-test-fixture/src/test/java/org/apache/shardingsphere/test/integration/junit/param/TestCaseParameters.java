@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.runner;
+package org.apache.shardingsphere.test.integration.junit.param;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

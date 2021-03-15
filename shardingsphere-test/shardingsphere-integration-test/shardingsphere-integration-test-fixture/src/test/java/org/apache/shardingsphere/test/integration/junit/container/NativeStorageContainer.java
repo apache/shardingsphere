@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.junit.container;
 
-public class NativeStorageContainer extends StorageContainer {
+public class NativeStorageContainer extends ShardingSphereStorageContainer {
     
     public NativeStorageContainer() {
         super("native-storage", null);

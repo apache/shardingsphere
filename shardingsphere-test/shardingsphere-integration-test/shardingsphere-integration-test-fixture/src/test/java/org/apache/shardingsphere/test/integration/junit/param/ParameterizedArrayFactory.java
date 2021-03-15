@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.param;
+package org.apache.shardingsphere.test.integration.junit.param;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -29,9 +29,9 @@ import org.apache.shardingsphere.test.integration.cases.IntegrationTestCasesLoad
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.param.model.AssertionParameterizedArray;
-import org.apache.shardingsphere.test.integration.param.model.CaseParameterizedArray;
-import org.apache.shardingsphere.test.integration.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.param.model.CaseParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 
 import java.util.Arrays;
@@ -66,6 +66,12 @@ public final class ParameterizedArrayFactory {
         return toArrays(result);
     }
     
+    /**
+     * Get assertion parameterized array.
+     *
+     * @param sqlCommandType SQL command type
+     * @return assertion parameterized array
+     */
     public static Collection<ParameterizedArray> getAssertionParameterized(final SQLCommandType sqlCommandType) {
         Collection<ParameterizedArray> result = new LinkedList<>();
         for (IntegrationTestCaseContext each : TEST_CASES_LOADER.getTestCaseContexts(sqlCommandType)) {
@@ -132,6 +138,20 @@ public final class ParameterizedArrayFactory {
             result.addAll(getCaseParameterizedArray(each, sqlCommandType));
         }
         return toArrays(result);
+    }
+    
+    /**
+     * Get case parameterized array.
+     *
+     * @param sqlCommandType SQL command type
+     * @return case parameterized array
+     */
+    public static Collection<ParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
+        Collection<ParameterizedArray> result = new LinkedList<>();
+        for (IntegrationTestCaseContext each : TEST_CASES_LOADER.getTestCaseContexts(sqlCommandType)) {
+            result.addAll(getCaseParameterizedArray(each, sqlCommandType));
+        }
+        return result;
     }
     
     private static Collection<ParameterizedArray> getCaseParameterizedArray(final IntegrationTestCaseContext testCaseContext, final SQLCommandType sqlCommandType) {

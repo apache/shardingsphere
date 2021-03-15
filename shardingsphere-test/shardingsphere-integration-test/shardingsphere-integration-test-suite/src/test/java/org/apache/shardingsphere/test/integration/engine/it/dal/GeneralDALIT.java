@@ -22,6 +22,8 @@ import org.apache.shardingsphere.test.integration.engine.filter.LiteralOnlyParam
 import org.apache.shardingsphere.test.integration.junit.annotation.ParameterFilter;
 import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
 import org.apache.shardingsphere.test.integration.junit.condition.ConditionalOnProperty;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -36,6 +38,7 @@ import static org.junit.Assert.assertThat;
 @ParameterFilter(filter = LiteralOnlyParamFilter.class)
 @ConditionalOnProperty(key = "it.adapter", expected = "proxy")
 @TestCaseSpec(sqlCommandType = SQLCommandType.DAL)
+@ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDALIT extends BaseDALIT {
     
     @Test

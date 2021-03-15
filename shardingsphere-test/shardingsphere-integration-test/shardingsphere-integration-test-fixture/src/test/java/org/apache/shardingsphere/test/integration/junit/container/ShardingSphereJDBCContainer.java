@@ -49,9 +49,9 @@ public class ShardingSphereJDBCContainer extends ShardingSphereAdapterContainer 
         super.start();
         // do not start because it is a fake container.
         List<Startable> startables = getDependencies().stream()
-                .filter(e -> e instanceof StorageContainer)
+                .filter(e -> e instanceof ShardingSphereStorageContainer)
                 .collect(Collectors.toList());
-        dataSourceMap = ((StorageContainer) startables.get(0)).getDataSourceMap();
+        dataSourceMap = ((ShardingSphereStorageContainer) startables.get(0)).getDataSourceMap();
         isHealthy.set(true);
     }
     
