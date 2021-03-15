@@ -60,21 +60,12 @@ rules:
       dataSourceNames:
         - primary_ds_0_replica_0
         - primary_ds_0_replica_1
-      loadBalancerName: roundRobin
-      replicaQuery: true
       haTypeName: mgr
     ds_1:
       dataSourceNames:
         - primary_ds_1_replica_0
         - primary_ds_1_replica_1
-      loadBalancerName: random
-      replicaQuery: false
       haTypeName: mgr
-  loadBalancers:
-    roundRobin:
-      type: ROUND_ROBIN
-    random:
-      type: RANDOM
   haTypes:
     mgr:
       type: MGR

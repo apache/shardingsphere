@@ -17,11 +17,8 @@
 
 package org.apache.shardingsphere.ha.spring.namespace.handler;
 
-import org.apache.shardingsphere.ha.spring.namespace.factorybean.ReplicaLoadBalanceAlgorithmFactoryBean;
 import org.apache.shardingsphere.ha.spring.namespace.parser.HARuleBeanDefinitionParser;
-import org.apache.shardingsphere.ha.spring.namespace.tag.LoadBalanceAlgorithmBeanDefinitionTag;
 import org.apache.shardingsphere.ha.spring.namespace.tag.HARuleBeanDefinitionTag;
-import org.apache.shardingsphere.spring.namespace.parser.ShardingSphereAlgorithmBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
@@ -32,6 +29,5 @@ public final class HANamespaceHandler extends NamespaceHandlerSupport {
     @Override
     public void init() {
         registerBeanDefinitionParser(HARuleBeanDefinitionTag.ROOT_TAG, new HARuleBeanDefinitionParser());
-        registerBeanDefinitionParser(LoadBalanceAlgorithmBeanDefinitionTag.ROOT_TAG, new ShardingSphereAlgorithmBeanDefinitionParser(ReplicaLoadBalanceAlgorithmFactoryBean.class));
     }
 }

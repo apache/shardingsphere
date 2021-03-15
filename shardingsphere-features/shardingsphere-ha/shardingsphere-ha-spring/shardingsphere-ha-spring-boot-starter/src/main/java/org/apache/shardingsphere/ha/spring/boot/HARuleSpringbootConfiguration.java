@@ -18,25 +18,16 @@
 package org.apache.shardingsphere.ha.spring.boot;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.ha.algorithm.config.AlgorithmProvidedHARuleConfiguration;
-import org.apache.shardingsphere.ha.spi.ReplicaLoadBalanceAlgorithm;
-import org.apache.shardingsphere.ha.spring.boot.algorithm.HAAlgorithmProvidedBeanRegistry;
-import org.apache.shardingsphere.ha.spring.boot.rule.YamlHARuleSpringBootConfiguration;
 import org.apache.shardingsphere.ha.spring.boot.condition.HASpringBootCondition;
+import org.apache.shardingsphere.ha.spring.boot.rule.YamlHARuleSpringBootConfiguration;
 import org.apache.shardingsphere.ha.yaml.config.YamlHARuleConfiguration;
 import org.apache.shardingsphere.ha.yaml.swapper.HARuleAlgorithmProviderConfigurationYamlSwapper;
-import org.springframework.beans.factory.ObjectProvider;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Rule spring boot configuration for HA.
@@ -55,25 +46,10 @@ public class HARuleSpringbootConfiguration {
     /**
      * HA rule configuration for spring boot.
      *
-     * @param loadBalanceAlgorithms load balance algorithms
      * @return HA rule configuration
      */
     @Bean
-    public RuleConfiguration haRuleConfiguration(final ObjectProvider<Map<String, ReplicaLoadBalanceAlgorithm>> loadBalanceAlgorithms) {
-        AlgorithmProvidedHARuleConfiguration result = swapper.swapToObject(yamlConfig.getHa());
-        Map<String, ReplicaLoadBalanceAlgorithm> balanceAlgorithmMap = Optional.ofNullable(loadBalanceAlgorithms.getIfAvailable()).orElse(Collections.emptyMap());
-        result.setLoadBalanceAlgorithms(balanceAlgorithmMap);
-        return result;
-    }
-    
-    /**
-     * HA algorithm provided bean registry.
-     *
-     * @param environment environment
-     * @return HA algorithm provided bean registry
-     */
-    @Bean
-    public static HAAlgorithmProvidedBeanRegistry haAlgorithmProvidedBeanRegistry(final Environment environment) {
-        return new HAAlgorithmProvidedBeanRegistry(environment);
+    public RuleConfiguration haRuleConfiguration() {
+        return swapper.swapToObject(yamlConfig.getHa());
     }
 }

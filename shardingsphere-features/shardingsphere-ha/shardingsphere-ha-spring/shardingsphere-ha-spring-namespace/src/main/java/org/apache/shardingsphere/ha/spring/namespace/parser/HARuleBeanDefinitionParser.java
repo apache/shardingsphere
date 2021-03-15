@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.ha.spring.namespace.parser;
 
-import com.google.common.base.Splitter;
 import org.apache.shardingsphere.ha.algorithm.config.AlgorithmProvidedHARuleConfiguration;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
-import org.apache.shardingsphere.ha.spring.namespace.factorybean.ReplicaLoadBalanceAlgorithmFactoryBean;
 import org.apache.shardingsphere.ha.spring.namespace.tag.HARuleBeanDefinitionTag;
-import org.apache.shardingsphere.spring.namespace.registry.ShardingSphereAlgorithmBeanRegistry;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -32,7 +29,6 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -44,7 +40,6 @@ public final class HARuleBeanDefinitionParser extends AbstractBeanDefinitionPars
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(AlgorithmProvidedHARuleConfiguration.class);
         factory.addConstructorArgValue(parseHADataSourceRuleConfigurations(element));
-        factory.addConstructorArgValue(ShardingSphereAlgorithmBeanRegistry.getAlgorithmBeanReferences(parserContext, ReplicaLoadBalanceAlgorithmFactoryBean.class));
         return factory.getBeanDefinition();
     }
     
@@ -60,17 +55,6 @@ public final class HARuleBeanDefinitionParser extends AbstractBeanDefinitionPars
     private BeanDefinition parseHADataSourceRuleConfiguration(final Element element) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(HADataSourceRuleConfiguration.class);
         factory.addConstructorArgValue(element.getAttribute(HARuleBeanDefinitionTag.HA_DATA_SOURCE_ID_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(HARuleBeanDefinitionTag.PRIMARY_DATA_SOURCE_NAME_ATTRIBUTE));
-        factory.addConstructorArgValue(parseReplicaDataSourcesRef(element));
-        factory.addConstructorArgValue(element.getAttribute(HARuleBeanDefinitionTag.LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE));
-        factory.addConstructorArgValue(element.getAttribute(HARuleBeanDefinitionTag.READ_WRITE_SPLIT_ATTRIBUTE));
         return factory.getBeanDefinition();
-    }
-    
-    private Collection<String> parseReplicaDataSourcesRef(final Element element) {
-        List<String> replicaDataSources = Splitter.on(",").trimResults().splitToList(element.getAttribute(HARuleBeanDefinitionTag.REPLICA_DATA_SOURCE_NAMES_ATTRIBUTE));
-        Collection<String> result = new ManagedList<>(replicaDataSources.size());
-        result.addAll(replicaDataSources);
-        return result;
     }
 }

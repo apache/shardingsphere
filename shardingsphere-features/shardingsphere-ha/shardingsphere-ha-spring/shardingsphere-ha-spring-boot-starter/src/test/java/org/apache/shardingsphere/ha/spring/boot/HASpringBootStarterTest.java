@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.ha.spring.boot;
 
-import org.apache.shardingsphere.ha.algorithm.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.ha.algorithm.config.AlgorithmProvidedHARuleConfiguration;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
 import org.junit.Test;
@@ -40,15 +39,7 @@ import static org.junit.Assert.assertTrue;
 public class HASpringBootStarterTest {
     
     @Resource
-    private RandomReplicaLoadBalanceAlgorithm random;
-    
-    @Resource
     private AlgorithmProvidedHARuleConfiguration config;
-    
-    @Test
-    public void assertLoadBalanceAlgorithm() {
-        assertTrue(random.getProps().isEmpty());
-    }
     
     @Test
     public void assertHARuleConfiguration() {
@@ -56,11 +47,7 @@ public class HASpringBootStarterTest {
         assertTrue(config.getDataSources().stream().findFirst().isPresent());
         HADataSourceRuleConfiguration dataSourceRuleConfig = config.getDataSources().stream().findFirst().get();
         assertThat(dataSourceRuleConfig.getName(), is("pr_ds"));
-        assertThat(dataSourceRuleConfig.getLoadBalancerName(), is("random"));
-        assertTrue(dataSourceRuleConfig.isReplicaQuery());
         assertThat(dataSourceRuleConfig.getDataSourceNames().size(), is(2));
         assertTrue(config.getDataSources().contains(dataSourceRuleConfig));
-        assertThat(config.getLoadBalanceAlgorithms().size(), is(1));
-        assertTrue(config.getLoadBalanceAlgorithms().containsKey("random"));
     }
 }
