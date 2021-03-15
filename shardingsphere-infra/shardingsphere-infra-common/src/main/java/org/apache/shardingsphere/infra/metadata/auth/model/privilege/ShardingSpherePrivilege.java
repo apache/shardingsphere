@@ -38,4 +38,22 @@ public final class ShardingSpherePrivilege {
         administrationPrivilege.setSuper();
         dataPrivilege.setSuper();
     }
+    
+    /**
+     * Compares the specified ShardingSpherePrivilege with this.
+     * @param o privilege
+     * @return equal or not
+     */
+    public boolean equals(final Object o) {
+        if (!(o instanceof ShardingSpherePrivilege)) {
+            return false;
+        }
+        if (!administrationPrivilege.getPrivileges().equals(((ShardingSpherePrivilege) o).getAdministrationPrivilege())) {
+            return false;
+        }
+        if (!dataPrivilege.equals(((ShardingSpherePrivilege) o).getDataPrivilege())) {
+            return false;
+        }
+        return true;
+    }
 }
