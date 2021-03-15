@@ -28,7 +28,7 @@ public final class ReadWriteSplittingRuleNotExistedException extends BackendExce
 
     private static final long serialVersionUID = -5119217255419990719L;
 
-    public ReplicaQueryRuleNotExistedException() {
+    public ReadWriteSplittingRuleNotExistedException() {
         super(CommonErrorCode.REPLICA_QUERY_RULE_NOT_EXIST);
     }
 }

@@ -32,7 +32,7 @@ public final class ReadWriteSplittingRuleDataSourcesNotExistedException extends 
     
     private final Collection<String> ruleNames;
 
-    public ReplicaQueryRuleDataSourcesNotExistedException(final Collection<String> ruleNames) {
+    public ReadWriteSplittingRuleDataSourcesNotExistedException(final Collection<String> ruleNames) {
         super(CommonErrorCode.REPLICA_QUERY_RULE_DATA_SOURCE_NOT_EXIST, ruleNames);
         this.ruleNames = ruleNames;
     }

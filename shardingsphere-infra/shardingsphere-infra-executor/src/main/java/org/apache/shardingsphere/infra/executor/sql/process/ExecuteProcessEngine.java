@@ -41,7 +41,7 @@ public final class ExecuteProcessEngine {
      */
     public static void submit(final SQLStatementContext<?> context, final ExecutionGroupContext<SQLExecutionUnit> executionGroupContext) {
         if (ExecuteProcessStrategyEvaluator.evaluate(context, executionGroupContext)) {
-            ShardingSphereEventBus.getInstance().post(new ExecuteProcessCreatedEvent(executionGroupContext));
+            ShardingSphereEventBus.postEvent(new ExecuteProcessCreatedEvent(executionGroupContext));
         }
     }
     
@@ -53,6 +53,6 @@ public final class ExecuteProcessEngine {
      * @param status status
      */
     public static void submit(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessStatus status) {
-        ShardingSphereEventBus.getInstance().post(new ExecuteProcessUnitCreatedEvent(executionID, executionUnit, status));
+        ShardingSphereEventBus.postEvent(new ExecuteProcessUnitCreatedEvent(executionID, executionUnit, status));
     }
 }

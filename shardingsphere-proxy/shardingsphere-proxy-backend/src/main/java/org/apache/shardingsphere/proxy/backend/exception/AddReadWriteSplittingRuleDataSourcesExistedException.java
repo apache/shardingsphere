@@ -32,7 +32,7 @@ public final class AddReadWriteSplittingRuleDataSourcesExistedException extends 
     
     private final Collection<String> ruleNames;
 
-    public AddReplicaQueryRuleDataSourcesExistedException(final Collection<String> ruleNames) {
+    public AddReadWriteSplittingRuleDataSourcesExistedException(final Collection<String> ruleNames) {
         super(CommonErrorCode.ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST, ruleNames);
         this.ruleNames = ruleNames;
     }
