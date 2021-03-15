@@ -20,12 +20,13 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.event.ExecuteProcessCreatedEvent;
-import org.apache.shardingsphere.infra.executor.sql.process.event.ExecuteProcessUnitCreatedEvent;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
+import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+
+import java.util.Collection;
 
 /**
  * Execute process engine.
@@ -33,26 +34,34 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcess
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExecuteProcessEngine {
     
+    private static final Collection<ExecuteProcessReporter> HANDLERS;
+    
+    static {
+        ShardingSphereServiceLoader.register(ExecuteProcessReporter.class);
+        HANDLERS = ShardingSphereServiceLoader.newServiceInstances(ExecuteProcessReporter.class);
+    }
+    
     /**
-     * Submit.
+     * Initialize.
      *
      * @param context context
      * @param executionGroupContext execution group context
      */
-    public static void submit(final SQLStatementContext<?> context, final ExecutionGroupContext<SQLExecutionUnit> executionGroupContext) {
-        if (ExecuteProcessStrategyEvaluator.evaluate(context, executionGroupContext)) {
-            ShardingSphereEventBus.getInstance().post(new ExecuteProcessCreatedEvent(executionGroupContext));
+    public static void initialize(final SQLStatementContext<?> context, final ExecutionGroupContext<SQLExecutionUnit> executionGroupContext) {
+        if (!HANDLERS.isEmpty() && ExecuteProcessStrategyEvaluator.evaluate(context, executionGroupContext)) {
+            HANDLERS.iterator().next().report(context, executionGroupContext, ExecuteProcessStatus.DOING);
         }
     }
     
     /**
-     * Submit.
+     * Complete.
      *
      * @param executionID execution ID
      * @param executionUnit execution unit
-     * @param status status
      */
-    public static void submit(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessStatus status) {
-        ShardingSphereEventBus.getInstance().post(new ExecuteProcessUnitCreatedEvent(executionID, executionUnit, status));
+    public static void complete(final String executionID, final SQLExecutionUnit executionUnit) {
+        if (!HANDLERS.isEmpty()) {
+            HANDLERS.iterator().next().report(executionID, executionUnit, ExecuteProcessStatus.DONE);
+        }
     }
 }
