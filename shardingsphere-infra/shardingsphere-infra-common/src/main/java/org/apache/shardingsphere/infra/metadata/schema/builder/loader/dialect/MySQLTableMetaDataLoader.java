@@ -56,15 +56,13 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
     private Map<String, TableMetaData> loadTableMetaDataMap(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         for (Entry<String, Collection<ColumnMetaData>> entry : loadColumnMetaDataMap(dataSource, existedTables).entrySet()) {
-            // TODO load index
-            Collection<IndexMetaData> indexMetaData = loadIndexMetaData(dataSource, entry.getKey());
-            result.put(entry.getKey(), new TableMetaData(entry.getValue(), indexMetaData));
+            result.put(entry.getKey(), new TableMetaData(entry.getValue(), loadIndexMetaData(dataSource, entry.getKey())));
         }
         return result;
     }
 
     private Collection<IndexMetaData> loadIndexMetaData(final DataSource dataSource, final String tableName) throws SQLException {
-        Collection<IndexMetaData> result = Lists.newArrayList();
+        Collection<IndexMetaData> result = Lists.newLinkedList();
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(BASIC_INDEX_META_DATA_SQL)) {
@@ -72,8 +70,7 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String indexName = resultSet.getString("INDEX_NAME");
-                    IndexMetaData indexMetaData = new IndexMetaData(indexName);
-                    result.add(indexMetaData);
+                    result.add(new IndexMetaData(indexName));
                 }
             }
         }

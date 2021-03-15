@@ -44,9 +44,6 @@ public final class TableMetaData {
     @Getter(AccessLevel.NONE)
     private final List<String> columnNames = new ArrayList<>();
 
-    @Getter(AccessLevel.NONE)
-    private final List<String> indexNames = new ArrayList<>();
-    
     private final List<String> primaryKeyColumns = new ArrayList<>();
     
     public TableMetaData() {
@@ -74,9 +71,7 @@ public final class TableMetaData {
     private Map<String, IndexMetaData> getIndexes(final Collection<IndexMetaData> indexMetaDataList) {
         Map<String, IndexMetaData> result = new LinkedHashMap<>(indexMetaDataList.size(), 1);
         for (IndexMetaData each : indexMetaDataList) {
-            String lowerIndexName = each.getName().toLowerCase();
-            indexNames.add(lowerIndexName);
-            result.put(lowerIndexName, each);
+            result.put(each.getName().toLowerCase(), each);
         }
         return Collections.synchronizedMap(result);
     }
@@ -91,15 +86,7 @@ public final class TableMetaData {
         return columns.get(columnNames.get(columnIndex));
     }
 
-    /**
-     * Get index meta data.
-     *
-     * @param indexIndex  index index
-     * @return index meta data
-     */
-    public IndexMetaData getIndexMetaData(final int indexIndex) {
-        return indexes.get(indexNames.get(indexIndex));
-    }
+
     
     /**
      * Find index of column.

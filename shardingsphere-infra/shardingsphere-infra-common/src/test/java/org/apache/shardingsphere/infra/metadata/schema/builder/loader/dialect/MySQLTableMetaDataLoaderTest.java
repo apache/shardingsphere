@@ -98,7 +98,7 @@ public final class MySQLTableMetaDataLoaderTest {
 
     private ResultSet mockIndexMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, false, false);
+        when(result.next()).thenReturn(true, false);
         when(result.getString("INDEX_NAME")).thenReturn("id");
         return result;
     }
@@ -118,6 +118,6 @@ public final class MySQLTableMetaDataLoaderTest {
         assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, true, true)));
         assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
         assertThat(actual.get("tbl").getIndexes().size(), is(1));
-        assertThat(actual.get("tbl").getIndexMetaData(0), is(new IndexMetaData("id")));
+        assertThat(actual.get("tbl").getIndexes().get("id"), is(new IndexMetaData("id")));
     }
 }
