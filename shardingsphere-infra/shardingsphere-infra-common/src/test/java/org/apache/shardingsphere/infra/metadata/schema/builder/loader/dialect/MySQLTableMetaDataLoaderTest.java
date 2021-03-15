@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect;
 
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.junit.BeforeClass;
@@ -49,6 +50,9 @@ public final class MySQLTableMetaDataLoaderTest {
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
                 "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME FROM information_schema.columns WHERE TABLE_SCHEMA=?").executeQuery()).thenReturn(resultSet);
+        ResultSet indexResultSet = mockIndexMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(
+                "SELECT INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=?").executeQuery()).thenReturn(indexResultSet);
         assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList()));
     }
     
@@ -59,6 +63,9 @@ public final class MySQLTableMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(
                 "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME FROM information_schema.columns WHERE TABLE_SCHEMA=? AND TABLE_NAME NOT IN ('existed_tbl')")
                 .executeQuery()).thenReturn(resultSet);
+        ResultSet indexResultSet = mockIndexMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(
+                "SELECT INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=?").executeQuery()).thenReturn(indexResultSet);
         assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl")));
     }
     
@@ -88,6 +95,13 @@ public final class MySQLTableMetaDataLoaderTest {
         when(result.getString("COLLATION_NAME")).thenReturn("utf8_general_ci", "utf8");
         return result;
     }
+
+    private ResultSet mockIndexMetaDataResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("INDEX_NAME")).thenReturn("id");
+        return result;
+    }
     
     private DialectTableMetaDataLoader getTableMetaDataLoader() {
         for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.newServiceInstances(DialectTableMetaDataLoader.class)) {
@@ -103,5 +117,7 @@ public final class MySQLTableMetaDataLoaderTest {
         assertThat(actual.get("tbl").getColumns().size(), is(2));
         assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, true, true)));
         assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, false)));
+        assertThat(actual.get("tbl").getIndexes().size(), is(1));
+        assertThat(actual.get("tbl").getIndexes().get("id"), is(new IndexMetaData("id")));
     }
 }
