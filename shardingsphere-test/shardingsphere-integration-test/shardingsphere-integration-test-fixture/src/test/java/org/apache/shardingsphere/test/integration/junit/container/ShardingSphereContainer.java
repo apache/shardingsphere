@@ -68,9 +68,16 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     private String dockerName;
     
     public ShardingSphereContainer(final String dockerImageName, final boolean isFakeContainer) {
-//        super(DockerImageName.parse(dockerImageName));
-        super(new RemoteDockerImage(DockerImageName.parse(dockerImageName)).withImagePullPolicy((dockerName) -> false));
+        super(convertToDockerImage(dockerImageName, isFakeContainer));
         this.isFakeContainer = isFakeContainer;
+    }
+    
+    private static RemoteDockerImage convertToDockerImage(final String dockerImageName, final boolean isFakeContainer) {
+        if (isFakeContainer) {
+            return new RemoteDockerImage(DockerImageName.parse(dockerImageName)).withImagePullPolicy(dockerName -> false);
+        } else {
+          return new RemoteDockerImage(DockerImageName.parse(dockerImageName));
+        }
     }
     
     @Override
