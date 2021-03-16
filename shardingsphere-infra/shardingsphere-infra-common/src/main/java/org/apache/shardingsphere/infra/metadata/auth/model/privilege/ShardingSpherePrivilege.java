@@ -48,7 +48,7 @@ public final class ShardingSpherePrivilege {
         if (!(o instanceof ShardingSpherePrivilege)) {
             return false;
         }
-        if (!administrationPrivilege.getPrivileges().equals(((ShardingSpherePrivilege) o).getAdministrationPrivilege())) {
+        if (!administrationPrivilege.getPrivileges().equals(((ShardingSpherePrivilege) o).getAdministrationPrivilege().getPrivileges())) {
             return false;
         }
         if (!dataPrivilege.equals(((ShardingSpherePrivilege) o).getDataPrivilege())) {
