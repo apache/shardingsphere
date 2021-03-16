@@ -31,34 +31,24 @@ import org.apache.shardingsphere.test.integration.junit.annotation.ParameterFilt
 import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
 import org.apache.shardingsphere.test.integration.junit.compose.ContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.compose.NotSupportedException;
-import org.apache.shardingsphere.test.integration.junit.resolver.ConditionResolver;
-import org.apache.shardingsphere.test.integration.junit.runner.parallel.ParallelRunnerExecutor;
-import org.apache.shardingsphere.test.integration.junit.runner.parallel.ParallelRunnerExecutorFactory;
-import org.apache.shardingsphere.test.integration.junit.runner.parallel.ParallelRunnerScheduler;
-import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
 import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.junit.param.TestCaseParameters;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
-import org.junit.internal.runners.statements.RunAfters;
-import org.junit.runner.Description;
+import org.apache.shardingsphere.test.integration.junit.resolver.ConditionResolver;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.ParallelRunnerScheduler;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
 import org.junit.runner.Runner;
-import org.junit.runner.notification.RunNotifier;
-import org.junit.runners.ParentRunner;
 import org.junit.runners.Suite;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
-import org.junit.runners.model.RunnerScheduler;
 import org.junit.runners.model.Statement;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -217,28 +207,35 @@ public class ShardingSphereRunner extends Suite {
     private Collection<TestCaseParameters> getAssertionParameters(final Class<?> klass, final TestCaseDescription description) {
         final IntegrationTestCasesLoader testCasesLoader = IntegrationTestCasesLoader.getInstance();
         return testCasesLoader.getTestCaseContexts(description.getSqlCommandType()).stream()
-                .filter(e -> {
-                    String dbTypes = e.getTestCase().getDbTypes();
-                    if (Strings.isNullOrEmpty(dbTypes)) {
-                        return true;
-                    }
-                    return dbTypes.contains(description.getDatabase());
-                })
+                .filter(e -> contains(e.getTestCase().getDbTypes(), description.getDatabase()))
+                .filter(e -> contains(e.getTestCase().getScenarioTypes(), description.getScenario()))
+                .peek(e -> System.out.println(e.getTestCase().getScenarioTypes()))
                 .flatMap(e -> Arrays.stream(SQLExecuteType.values()).flatMap(type -> e.getTestCase().getAssertions().stream()
                         .map(a -> new TestCaseParameters(getCaseName(), e.getParentPath(), e.getTestCase().getSql(), type, klass, e.getTestCase(), a)))
                 ).collect(Collectors.toList());
     }
     
+    private static boolean contains(final String target, final String expected) {
+        if (Strings.isNullOrEmpty(target)) {
+            return true;
+        }
+        if (target.indexOf(',') < 0) {
+            return target.equals(expected);
+        }
+        String[] scenarioTypes = target.split("\\s*,\\s*");
+        for (String each : scenarioTypes) {
+            if (each.equals(expected)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private Collection<TestCaseParameters> getCaseParameters(final Class<?> klass, final TestCaseDescription description) {
         IntegrationTestCasesLoader testCasesLoader = IntegrationTestCasesLoader.getInstance();
         return testCasesLoader.getTestCaseContexts(description.getSqlCommandType()).stream()
-                .filter(e -> {
-                    String dbTypes = e.getTestCase().getDbTypes();
-                    if (Strings.isNullOrEmpty(dbTypes)) {
-                        return true;
-                    }
-                    return dbTypes.contains(description.getDatabase());
-                })
+                .filter(e -> contains(e.getTestCase().getDbTypes(), description.getDatabase()))
+                .filter(e -> contains(e.getTestCase().getScenarioTypes(), description.getScenario()))
                 .flatMap(e -> Arrays.stream(SQLExecuteType.values())
                         .map(type -> new TestCaseParameters(getCaseName(), e.getParentPath(), e.getTestCase().getSql(), type, klass, e.getTestCase(), null)))
                 .collect(Collectors.toList());
@@ -259,29 +256,23 @@ public class ShardingSphereRunner extends Suite {
                     Runner runner = children.get(0);
                     Object test;
                     if (runner instanceof ShardingSphereITSubRunner) {
-                        test = ((ShardingSphereITSubRunner) runner).createTest();
+                        test = ((ShardingSphereITSubRunner) runner).createTestInstance();
                         compose.setInstance(test);
                         compose.createContainers();
+                        ((ShardingSphereITSubRunner) runner).autowired(test);
                         compose.createInitializerAndExecute(() -> test);
                         compose.start();
                         compose.waitUntilReady();
-                        methods.forEach(e -> {
-                            try {
-                                e.invokeExplosively(test);
-                            } catch (Throwable throwable) {
-                                throwable.printStackTrace();
-                            }
-                        });
                     } else {
                         test = ((ShardingSphereCISubRunner) runner).createTest();
-                        methods.forEach(e -> {
-                            try {
-                                e.invokeExplosively(test);
-                            } catch (Throwable throwable) {
-                                throwable.printStackTrace();
-                            }
-                        });
                     }
+                    methods.forEach(e -> {
+                        try {
+                            e.invokeExplosively(test);
+                        } catch (Throwable throwable) {
+                            throwable.printStackTrace();
+                        }
+                    });
                 }
                 statement.evaluate();
             }

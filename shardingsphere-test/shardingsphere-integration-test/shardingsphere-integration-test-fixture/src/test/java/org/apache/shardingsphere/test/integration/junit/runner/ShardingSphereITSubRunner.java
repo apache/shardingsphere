@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.junit.runner;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.junit.annotation.OnContainer;
 import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.resolver.ConditionResolver;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -45,6 +46,17 @@ public class ShardingSphereITSubRunner extends BlockJUnit4ClassRunner {
     @Override
     protected Object createTest() throws Exception {
         final Object testInstance = super.createTest();
+        autowired(testInstance);
+        return testInstance;
+    }
+    
+    // execution before all case
+    
+    protected Object createTestInstance() throws Exception {
+        return super.createTest();
+    }
+    
+    protected void autowired(Object testInstance) {
         getTestClass().getAnnotatedFields(ShardingSphereITInject.class)
                 .forEach(e -> {
                     try {
@@ -59,9 +71,18 @@ public class ShardingSphereITSubRunner extends BlockJUnit4ClassRunner {
                         throw new RuntimeException(ex.getMessage(), ex);
                     }
                 });
-        return testInstance;
+        getTestClass().getAnnotatedFields(OnContainer.class).forEach(e -> {
+            OnContainer container = e.getAnnotation(OnContainer.class);
+            Object c = context.getBeanByName(container.name());
+            try {
+                e.getField().setAccessible(true);
+                e.getField().set(testInstance, c);
+            } catch (IllegalAccessException illegalAccessException) {
+                illegalAccessException.printStackTrace();
+            }
+        });
     }
-
+    
     @Override
     protected Statement withBeforeClasses(final Statement statement) {
         // skip @BeforeClass

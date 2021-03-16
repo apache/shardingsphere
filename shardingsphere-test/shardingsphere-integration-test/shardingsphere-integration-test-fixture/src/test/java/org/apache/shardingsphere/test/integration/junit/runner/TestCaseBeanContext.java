@@ -26,6 +26,16 @@ public class TestCaseBeanContext {
     
     private final Map<Object, Object> classObjectMap = Maps.newConcurrentMap();
     
+    private final Map<Object, Object> parent;
+    
+    public TestCaseBeanContext() {
+        parent = null;
+    }
+    
+    private TestCaseBeanContext(Map<Object, Object> parent) {
+        this.parent = parent;
+    }
+    
     /**
      * Register the bean into context.
      *
@@ -57,7 +67,14 @@ public class TestCaseBeanContext {
      * @return value
      */
     public <T> T getBean(final Class<T> klass) {
-        return (T) classObjectMap.get(klass);
+        Object result = classObjectMap.get(klass);
+        if (Objects.isNull(result)) {
+            if (parent != null) {
+                return (T) parent.get(klass);
+            }
+            return null;
+        }
+        return (T) result;
     }
     
     /**
@@ -68,7 +85,14 @@ public class TestCaseBeanContext {
      * @return value
      */
     public <T> T getBeanByName(final String name) {
-        return (T) classObjectMap.get(name);
+        Object result = classObjectMap.get(name);
+        if (Objects.isNull(result)) {
+            if (parent != null) {
+                return (T) parent.get(name);
+            }
+            return null;
+        }
+        return (T) result;
     }
     
     /**
@@ -77,9 +101,7 @@ public class TestCaseBeanContext {
      * @return Test case bean context
      */
     public TestCaseBeanContext subContext() {
-        TestCaseBeanContext subContext = new TestCaseBeanContext();
-        subContext.classObjectMap.putAll(classObjectMap);
-        return subContext;
+        return new TestCaseBeanContext(classObjectMap);
     }
     
     /**

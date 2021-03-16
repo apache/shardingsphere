@@ -213,7 +213,7 @@ public class ContainerCompose implements Closeable {
                         method.invokeExplosively(null);
                     } else {
                         method.getMethod().setAccessible(true);
-                        method.invokeExplosively(supplier.get());
+                        method.invokeExplosively(instance);
                     }
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
