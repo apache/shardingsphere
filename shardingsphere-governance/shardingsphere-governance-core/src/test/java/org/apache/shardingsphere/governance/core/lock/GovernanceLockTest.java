@@ -43,13 +43,13 @@ public final class GovernanceLockTest {
     
     @Test
     public void assertTryLock() {
-        lock.tryLock(50L);
-        verify(registryCenter).tryLock(eq(50L));
+        lock.tryLock("sharding_db", "t_order", 50L);
+        verify(registryCenter).tryLock(eq("sharding_db"), eq("t_order"), eq(50L));
     }
     
     @Test
     public void assertReleaseLock() {
-        lock.releaseLock();
-        verify(registryCenter).releaseLock();
+        lock.releaseLock("sharding_db", "t_order");
+        verify(registryCenter).releaseLock(eq("sharding_db"), eq("t_order"));
     }
 }

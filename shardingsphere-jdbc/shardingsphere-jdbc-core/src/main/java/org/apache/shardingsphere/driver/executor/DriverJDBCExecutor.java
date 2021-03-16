@@ -135,7 +135,8 @@ public final class DriverJDBCExecutor {
     
     private boolean tryLock(final SQLStatement sqlStatement, final long lockTimeoutMilliseconds) {
         if (metaDataContexts.getLock().isPresent() && needLock(sqlStatement)) {
-            if (!metaDataContexts.getLock().get().tryLock(lockTimeoutMilliseconds)) {
+            // TODO
+            if (!metaDataContexts.getLock().get().tryLock("", "", lockTimeoutMilliseconds)) {
                 throw new ShardingSphereException("Service lock wait timeout of %s ms exceeded", lockTimeoutMilliseconds);
             }
             return true;
@@ -164,8 +165,9 @@ public final class DriverJDBCExecutor {
     }
     
     private void releaseLock() {
+        // TODO
         if (metaDataContexts.getLock().isPresent()) {
-            metaDataContexts.getLock().get().releaseLock();
+            metaDataContexts.getLock().get().releaseLock("", "");
         }
     }
 }
