@@ -112,11 +112,11 @@
         <assertion parameters="2:int, 3:int" expected-data-file="batch_insert_into_broadcast_table.xml" />
     </test-case>
 
-    <test-case sql="INSERT INTO t_user(user_id, address_id, pwd) values (?, ?, 'a100'),(?, ?, 'b101')" scenario-types="encrypt">
+    <test-case sql="INSERT INTO t_user(user_id, address_id, pwd, status) values (?, ?, 'a100', 'init'),(?, ?, 'b101', 'init')" scenario-types="encrypt,dbtbl_with_read_write_splitting_and_encrypt">
         <assertion parameters="100:int, 100000:int, 101:int, 101000:int" expected-data-file="batch_insert_into_user_table.xml" />
     </test-case>
 
-    <test-case sql="INSERT INTO t_user(user_id, address_id, pwd) values (100, 100000, 'a100'),(101, 101000, 'b101')" scenario-types="encrypt">
+    <test-case sql="INSERT INTO t_user(user_id, address_id, pwd, status) values (100, 100000, 'a100', 'init'),(101, 101000, 'b101', 'init')" scenario-types="encrypt,dbtbl_with_read_write_splitting_and_encrypt">
         <assertion expected-data-file="batch_insert_into_user_table.xml" />
     </test-case>
     
@@ -153,11 +153,11 @@
         <assertion expected-data-file="update_broadcast_table.xml" />
     </test-case>
 
-    <test-case sql="UPDATE t_user u SET u.pwd = 'abc' WHERE user_id = 10" scenario-types="encrypt">
+    <test-case sql="UPDATE t_user u SET u.pwd = 'abc' WHERE user_id = 10" scenario-types="encrypt,dbtbl_with_read_write_splitting_and_encrypt">
         <assertion expected-data-file="update_user_table.xml" />
     </test-case>
 
-    <test-case sql="UPDATE t_user u SET u.user_id = 100 WHERE u.pwd = 'a10'" scenario-types="encrypt">
+    <test-case sql="UPDATE t_user u SET u.status = 'update' WHERE u.pwd = 'a10'" scenario-types="encrypt,dbtbl_with_read_write_splitting_and_encrypt">
         <assertion expected-data-file="update_user_table_by_pwd.xml" />
     </test-case>
     
@@ -169,11 +169,11 @@
         <assertion parameters="init:String" expected-data-file="delete_without_sharding_value.xml" />
     </test-case>
 
-    <test-case sql="DELETE FROM t_user WHERE user_id = 10" scenario-types="encrypt">
+    <test-case sql="DELETE FROM t_user WHERE user_id = 10" scenario-types="encrypt,dbtbl_with_read_write_splitting_and_encrypt">
         <assertion expected-data-file="delete_user_table.xml" />
     </test-case>
 
-    <test-case sql="DELETE FROM t_user WHERE pwd = 'a10'" scenario-types="encrypt">
+    <test-case sql="DELETE FROM t_user WHERE pwd = 'a10'" scenario-types="encrypt,dbtbl_with_read_write_splitting_and_encrypt">
         <assertion expected-data-file="delete_user_table.xml" />
     </test-case>
     

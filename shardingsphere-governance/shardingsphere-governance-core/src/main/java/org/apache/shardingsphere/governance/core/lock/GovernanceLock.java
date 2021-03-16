@@ -38,13 +38,13 @@ public final class GovernanceLock extends AbstractShardingSphereLock {
     }
     
     @Override
-    public boolean tryLock(final long timeoutMilliseconds) {
-        return registryCenter.tryLock(timeoutMilliseconds);
+    public boolean tryLock(final String schemaName, final String tableName, final long timeoutMilliseconds) {
+        return registryCenter.tryLock(schemaName, tableName, timeoutMilliseconds);
     }
     
     @Override
-    public void releaseLock() {
-        registryCenter.releaseLock();
+    public void releaseLock(final String schemaName, final String tableName) {
+        registryCenter.releaseLock(schemaName, tableName);
     }
     
     /**

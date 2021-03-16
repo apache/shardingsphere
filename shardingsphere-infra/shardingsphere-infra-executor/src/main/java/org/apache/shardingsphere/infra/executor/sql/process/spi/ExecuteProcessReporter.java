@@ -15,29 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.process;
+package org.apache.shardingsphere.infra.executor.sql.process.spi;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
 
 /**
- * Process strategy evaluator.
+ * Execute process report.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecuteProcessStrategyEvaluator {
+public interface ExecuteProcessReporter {
     
     /**
-     * Evaluate.
-     *
+     * Report the summary of this task.
      * @param context context
      * @param executionGroupContext execution group context
-     * @return submit or not
+     * @param status status
      */
-    public static boolean evaluate(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        // TODO : Add more conditions to evaluate whether to submit this process task or not
-        return true;
-    }
+    void report(SQLStatementContext<?> context, ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, ExecuteProcessStatus status);
+    
+    /**
+     * Report a unit of this task.
+     * @param executionID execution ID
+     * @param executionUnit execution unit
+     * @param status status
+     */
+    void report(String executionID, SQLExecutionUnit executionUnit, ExecuteProcessStatus status);
 }

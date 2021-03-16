@@ -15,29 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.process;
+package org.apache.shardingsphere.governance.context.process;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
+import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
 
 /**
- * Process strategy evaluator.
+ * Governance execute process reporter.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecuteProcessStrategyEvaluator {
+public final class GovernanceExecuteProcessReporter implements ExecuteProcessReporter {
     
-    /**
-     * Evaluate.
-     *
-     * @param context context
-     * @param executionGroupContext execution group context
-     * @return submit or not
-     */
-    public static boolean evaluate(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        // TODO : Add more conditions to evaluate whether to submit this process task or not
-        return true;
+    @Override
+    public void report(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus status) {
+        // TODO :Call API of configCenter
+    }
+    
+    @Override
+    public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessStatus status) {
+        // TODO :Call API of configCenter
     }
 }

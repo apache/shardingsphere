@@ -112,13 +112,13 @@
         </assertion>
     </test-case>
     <!--TODO fix me! about issue #9570-->
-<!--    <test-case sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number VARCHAR(45))" scenario-types="encrypt">-->
+<!--    <test-case sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number VARCHAR(45))" scenario-types="encrypt,dbtbl_with_read_write_splitting_and_encrypt">-->
 <!--        <assertion expected-data-file="create_user_table.xml">-->
 <!--            <initial-sql affected-table="t_user_details" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
 
-<!--    <test-case sql="ALTER TABLE t_user_details CHANGE number number_new VARCHAR(50)" scenario-types="encrypt">-->
+<!--    <test-case sql="ALTER TABLE t_user_details CHANGE number number_new VARCHAR(50)" scenario-types="encrypt,dbtbl_with_read_write_splitting_and_encrypt">-->
 <!--        <assertion expected-data-file="change_column_user_table.xml">-->
 <!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL)" affected-table="t_user_details" />-->
 <!--        </assertion>-->
@@ -130,13 +130,13 @@
 <!--        </assertion>-->
 <!--    </test-case>-->
 
-<!--    <test-case sql="DROP TABLE t_user_details" scenario-types="encrypt">-->
+<!--    <test-case sql="DROP TABLE t_user_details" scenario-types="encrypt,dbtbl_with_read_write_splitting_and_encrypt">-->
 <!--        <assertion expected-data-file="drop_user_table.xml">-->
 <!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL)" affected-table="t_user_details" />-->
 <!--        </assertion>-->
 <!--    </test-case>-->
 
-<!--    <test-case sql="TRUNCATE TABLE t_user_details" scenario-types="encrypt">-->
+<!--    <test-case sql="TRUNCATE TABLE t_user_details" scenario-types="encrypt,dbtbl_with_read_write_splitting_and_encrypt">-->
 <!--        <assertion expected-data-file="unchanged_user_table.xml">-->
 <!--            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL)" affected-table="t_user_details" />-->
 <!--        </assertion>-->

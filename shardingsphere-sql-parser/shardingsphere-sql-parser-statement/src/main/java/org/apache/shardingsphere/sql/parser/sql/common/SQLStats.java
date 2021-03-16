@@ -25,12 +25,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Getter
-public final class SqlStats {
-
+public final class SQLStats {
+    
     private final Map<String, SimpleTableSegment> tables = new LinkedHashMap<>();
-
+    
     private final Map<Integer, ColumnSegment> columns = new LinkedHashMap<>();
-
+    
     /**
      * add table to tables.
      * @param tableSegment SimpleTableSegment.
@@ -40,7 +40,7 @@ public final class SqlStats {
             tables.put(tableSegment.getTableName().getIdentifier().getValue(), tableSegment);
         }
     }
-
+    
     /**
      * add column to columns.
      * @param column ColumnSegment.
