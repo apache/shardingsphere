@@ -33,7 +33,7 @@ public interface ExecuteProcessReporter {
      * @param executionGroupContext execution group context
      * @param status status
      */
-    void report(SQLStatementContext<?> context, ExecutionGroupContext<SQLExecutionUnit> executionGroupContext, ExecuteProcessStatus status);
+    void report(SQLStatementContext<?> context, ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, ExecuteProcessStatus status);
     
     /**
      * Report a unit of this task.

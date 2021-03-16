@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresher;
 import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresherFactory;
@@ -69,11 +70,14 @@ public final class DriverJDBCExecutor {
      * Execute query.
      *
      * @param executionGroupContext execution group context
+     * @param sqlStatementContext SQL statement context
      * @param callback execute query callback
      * @return query results
      * @throws SQLException SQL exception
      */
-    public List<QueryResult> executeQuery(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final ExecuteQueryCallback callback) throws SQLException {
+    public List<QueryResult> executeQuery(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, 
+                                          final SQLStatementContext<?> sqlStatementContext, final ExecuteQueryCallback callback) throws SQLException {
+        ExecuteProcessEngine.initialize(sqlStatementContext, executionGroupContext);
         return jdbcExecutor.execute(executionGroupContext, callback);
     }
     
@@ -105,15 +109,16 @@ public final class DriverJDBCExecutor {
      * Execute SQL.
      *
      * @param executionGroupContext execution group context
-     * @param sqlStatement SQL statement
+     * @param sqlStatementContext SQL statement context
      * @param routeUnits route units
      * @param callback JDBC executor callback
      * @return return true if is DQL, false if is DML
      * @throws SQLException SQL exception
      */
-    public boolean execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final SQLStatement sqlStatement,
+    public boolean execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final SQLStatementContext<?> sqlStatementContext,
                            final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
-        List<Boolean> results = doExecute(executionGroupContext, sqlStatement, routeUnits, callback);
+        ExecuteProcessEngine.initialize(sqlStatementContext, executionGroupContext);
+        List<Boolean> results = doExecute(executionGroupContext, sqlStatementContext.getSqlStatement(), routeUnits, callback);
         return null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
     }
     

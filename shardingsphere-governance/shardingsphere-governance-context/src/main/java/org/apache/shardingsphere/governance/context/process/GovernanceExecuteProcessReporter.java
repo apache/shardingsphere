@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessRe
 public final class GovernanceExecuteProcessReporter implements ExecuteProcessReporter {
     
     @Override
-    public void report(final SQLStatementContext<?> context, final ExecutionGroupContext<SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus status) {
+    public void report(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus status) {
         // TODO :Call API of configCenter
     }
     
