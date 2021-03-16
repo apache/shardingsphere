@@ -22,10 +22,14 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.MergeStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.expression.ExpressionAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.set.SetClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.where.WhereClauseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.MergeStatementTestCase;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Merge statement assert.
@@ -43,6 +47,8 @@ public final class MergeStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertExpression(assertContext, actual, expected);
+        assertSetClause(assertContext, actual, expected);
+        assertWhereClause(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
@@ -63,6 +69,23 @@ public final class MergeStatementAssert {
             ExpressionAssert.assertExpression(assertContext, actual.getExpr(), expected.getExpr());
         } else {
             assertNull(assertContext.getText("Actual expression should not exist."), actual.getExpr());
+        }
+    }
+    
+    private static void assertSetClause(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
+        if (null != expected.getSetClause()) {
+            SetClauseAssert.assertIs(assertContext, actual.getSetAssignment(), expected.getSetClause());
+        } else {
+            assertNull(assertContext.getText("Actual assignment should not exist."), actual.getSetAssignment());
+        }
+    }
+    
+    private static void assertWhereClause(final SQLCaseAssertContext assertContext, final MergeStatement actual, final MergeStatementTestCase expected) {
+        if (null != expected.getWhereClause()) {
+            assertTrue(assertContext.getText("Actual where segment should exist."), actual.getWhere().isPresent());
+            WhereClauseAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhereClause());
+        } else {
+            assertFalse(assertContext.getText("Actual where segment should not exist."), actual.getWhere().isPresent());
         }
     }
 }
