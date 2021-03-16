@@ -47,7 +47,7 @@ public final class ExecuteProcessEngine {
      * @param context context
      * @param executionGroupContext execution group context
      */
-    public static void initialize(final SQLStatementContext<?> context, final ExecutionGroupContext<SQLExecutionUnit> executionGroupContext) {
+    public static void initialize(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         if (!HANDLERS.isEmpty() && ExecuteProcessStrategyEvaluator.evaluate(context, executionGroupContext)) {
             HANDLERS.iterator().next().report(context, executionGroupContext, ExecuteProcessStatus.DOING);
         }

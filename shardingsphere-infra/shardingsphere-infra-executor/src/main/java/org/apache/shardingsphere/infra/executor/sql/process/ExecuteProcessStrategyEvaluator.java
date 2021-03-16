@@ -36,7 +36,7 @@ public final class ExecuteProcessStrategyEvaluator {
      * @param executionGroupContext execution group context
      * @return submit or not
      */
-    public static boolean evaluate(final SQLStatementContext<?> context, final ExecutionGroupContext<SQLExecutionUnit> executionGroupContext) {
+    public static boolean evaluate(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         // TODO : Add more conditions to evaluate whether to submit this process task or not
         return true;
     }
