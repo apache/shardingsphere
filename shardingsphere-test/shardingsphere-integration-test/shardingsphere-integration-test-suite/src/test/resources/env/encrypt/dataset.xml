@@ -21,6 +21,7 @@
         <column name="address_id" type="numeric" />
         <column name="pwd_plain" type="varchar" />
         <column name="pwd_cipher" type="varchar" />
+        <column name="status" type="varchar" />
     </metadata>
     <metadata data-nodes="encrypt.t_user_item">
         <column name="item_id" type="numeric" />
@@ -28,10 +29,10 @@
         <column name="status" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
-    <row data-node="encrypt.t_user" values="10, 10000, null, yK+tn8E43EyCEgbqNOrJ4w==" />
-    <row data-node="encrypt.t_user" values="11, 11000, null, CIbxTwI742pGwxb18lQLkQ==" />
-    <row data-node="encrypt.t_user" values="12, 12000, null, VCHpNlwod9AiuS1V+7DSLw==" />
-    <row data-node="encrypt.t_user" values="13, 13000, null, 8uxRFhW4c2rtSOoesudk/A==" />
+    <row data-node="encrypt.t_user" values="10, 10000, null, yK+tn8E43EyCEgbqNOrJ4w==, init" />
+    <row data-node="encrypt.t_user" values="11, 11000, null, CIbxTwI742pGwxb18lQLkQ==, init" />
+    <row data-node="encrypt.t_user" values="12, 12000, null, VCHpNlwod9AiuS1V+7DSLw==, init" />
+    <row data-node="encrypt.t_user" values="13, 13000, null, 8uxRFhW4c2rtSOoesudk/A==, init" />
     <row data-node="encrypt.t_user_item" values="100000, 10, init, 2017-08-08" />
     <row data-node="encrypt.t_user_item" values="110000, 11, init, 2017-08-08" />
     <row data-node="encrypt.t_user_item" values="120000, 12, init, 2017-08-08" />

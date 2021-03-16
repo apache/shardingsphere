@@ -21,11 +21,12 @@
         <column name="address_id" type="numeric" />
         <column name="pwd_plain" type="varchar"/>
         <column name="pwd_cipher" type="varchar"/>
+        <column name="status" type="varchar"/>
     </metadata>
-    <row data-node="encrypt.t_user" values="10, 10000, null, yK+tn8E43EyCEgbqNOrJ4w==" />
-    <row data-node="encrypt.t_user" values="11, 11000, null, CIbxTwI742pGwxb18lQLkQ==" />
-    <row data-node="encrypt.t_user" values="12, 12000, null, VCHpNlwod9AiuS1V+7DSLw==" />
-    <row data-node="encrypt.t_user" values="13, 13000, null, 8uxRFhW4c2rtSOoesudk/A==" />
-    <row data-node="encrypt.t_user" values="100, 100000, a100, H3tH4hBbXm/KoiEXezVLjA==" />
-    <row data-node="encrypt.t_user" values="101, 101000, b101, 6HiMmKtpbbDtDNUBICWu8g==" />
+    <row data-node="encrypt.t_user" values="10, 10000, null, yK+tn8E43EyCEgbqNOrJ4w==, init" />
+    <row data-node="encrypt.t_user" values="11, 11000, null, CIbxTwI742pGwxb18lQLkQ==, init" />
+    <row data-node="encrypt.t_user" values="12, 12000, null, VCHpNlwod9AiuS1V+7DSLw==, init" />
+    <row data-node="encrypt.t_user" values="13, 13000, null, 8uxRFhW4c2rtSOoesudk/A==, init" />
+    <row data-node="encrypt.t_user" values="100, 100000, a100, H3tH4hBbXm/KoiEXezVLjA==, init" />
+    <row data-node="encrypt.t_user" values="101, 101000, b101, 6HiMmKtpbbDtDNUBICWu8g==, init" />
 </dataset>
