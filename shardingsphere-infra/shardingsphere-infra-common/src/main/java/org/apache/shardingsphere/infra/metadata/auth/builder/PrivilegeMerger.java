@@ -61,8 +61,7 @@ public final class PrivilegeMerger {
         while (iterator.hasNext()) {
             ShardingSpherePrivilege each = iterator.next();
             if (!result.equals(each)) {
-                throw new ShardingSphereException(String.format("Different physical instances have different permissions for user %s@%s",
-                        user.getGrantee().getUsername(), user.getGrantee().getHostname()));
+                throw new ShardingSphereException("Different physical instances have different permissions for user %s@%s", user.getGrantee().getUsername(), user.getGrantee().getHostname());
             }
         }
         return result;
