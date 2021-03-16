@@ -48,7 +48,7 @@ public abstract class BaseDQLIT extends SingleITCase {
     
     @BeforeAllCases
     @SneakyThrows
-    public void fillData() {
+    protected void fillData() {
         boolean isIT = Boolean.getBoolean("it.enable");
         if (isIT) {
             new DataSetEnvironmentManager(
@@ -66,7 +66,6 @@ public abstract class BaseDQLIT extends SingleITCase {
                     } catch (SQLException | ParseException | IOException | JAXBException jaxbException) {
                         jaxbException.printStackTrace();
                     }
-            
                 });
             });
         }

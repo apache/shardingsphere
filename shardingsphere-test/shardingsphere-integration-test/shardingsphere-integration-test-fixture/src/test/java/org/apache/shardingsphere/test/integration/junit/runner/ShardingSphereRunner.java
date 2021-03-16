@@ -60,7 +60,7 @@ public class ShardingSphereRunner extends Suite {
     @Getter
     private final String caseName;
     
-    private ContainerCompose compose = null;
+    private ContainerCompose compose;
     
     private final TestCaseBeanContext beanContext = new TestCaseBeanContext();
     
@@ -209,7 +209,6 @@ public class ShardingSphereRunner extends Suite {
         return testCasesLoader.getTestCaseContexts(description.getSqlCommandType()).stream()
                 .filter(e -> contains(e.getTestCase().getDbTypes(), description.getDatabase()))
                 .filter(e -> contains(e.getTestCase().getScenarioTypes(), description.getScenario()))
-                .peek(e -> System.out.println(e.getTestCase().getScenarioTypes()))
                 .flatMap(e -> Arrays.stream(SQLExecuteType.values()).flatMap(type -> e.getTestCase().getAssertions().stream()
                         .map(a -> new TestCaseParameters(getCaseName(), e.getParentPath(), e.getTestCase().getSql(), type, klass, e.getTestCase(), a)))
                 ).collect(Collectors.toList());

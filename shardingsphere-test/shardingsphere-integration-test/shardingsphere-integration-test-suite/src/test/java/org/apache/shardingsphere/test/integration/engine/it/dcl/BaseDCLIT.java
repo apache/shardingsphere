@@ -17,73 +17,27 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.dcl;
 
-import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
-import org.apache.shardingsphere.infra.database.metadata.MemorizedDataSourceMetaData;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
+import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.authority.AuthorityEnvironmentManager;
 import org.junit.After;
 import org.junit.Before;
 
+import javax.xml.bind.JAXBException;
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Objects;
 
 public abstract class BaseDCLIT extends SingleITCase {
     
     private AuthorityEnvironmentManager authorityEnvironmentManager;
-
-//    @Before
-//    public void before() throws IOException, JAXBException {
-//        // fixme
-//        authorityEnvironmentManager = new AuthorityEnvironmentManager(
-//                EnvironmentPath.getAuthorityFile(getDescription().getScenario()),
-//                getStorage().getDataSourceMap(),
-//                getDescription().getDatabaseType()
-//        );
-//    }
-
-//    private Map<String, DataSource> createInstanceDataSourceMap() throws SQLException {
-//        return "shadow".equals(getDescription().getScenario()) ? getStorage().getDataSourceMap() : getShardingInstanceDataSourceMap();
-//    }
-//
-//    private Map<String, DataSource> getShardingInstanceDataSourceMap() throws SQLException {
-//        Map<String, DataSource> result = new LinkedHashMap<>(getActualDataSources().size(), 1);
-//        Map<String, DataSourceMetaData> dataSourceMetaDataMap = getDataSourceMetaDataMap();
-//        for (Entry<String, DataSource> entry : getActualDataSources().entrySet()) {
-//            if (!isExisted(entry.getKey(), result.keySet(), dataSourceMetaDataMap)) {
-//                result.put(entry.getKey(), entry.getValue());
-//            }
-//        }
-//        return result;
-//    }
-//
-//    private Map<String, DataSourceMetaData> getDataSourceMetaDataMap() throws SQLException {
-//        Map<String, DataSourceMetaData> result = new LinkedHashMap<>(getActualDataSources().size(), 1);
-//        for (Entry<String, DataSource> entry : getActualDataSources().entrySet()) {
-//            try (Connection connection = entry.getValue().getConnection()) {
-//                DatabaseMetaData metaData = connection.getMetaData();
-//                result.put(entry.getKey(), getDatabaseType().getDataSourceMetaData(metaData.getURL(), metaData.getUserName()));
-//            }
-//        }
-//        return result;
-//    }
-//
-//    private boolean isExisted(final String dataSourceName, final Collection<String> existedDataSourceNames, final Map<String, DataSourceMetaData> dataSourceMetaDataMap) {
-//        DataSourceMetaData sample = dataSourceMetaDataMap.get(dataSourceName);
-//        for (String each : existedDataSourceNames) {
-//            if (isInSameDatabaseInstance(sample, dataSourceMetaDataMap.get(each))) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-    
-    private boolean isInSameDatabaseInstance(final DataSourceMetaData sample, final DataSourceMetaData target) {
-        return sample instanceof MemorizedDataSourceMetaData
-                ? (Objects.equals(target.getSchema(), sample.getSchema())) : target.getHostName().equals(sample.getHostName()) && target.getPort() == sample.getPort();
-    }
     
     @Before
-    public final void insertData() throws SQLException {
+    public final void insertData() throws SQLException, IOException, JAXBException {
+        authorityEnvironmentManager = new AuthorityEnvironmentManager(
+                EnvironmentPath.getAuthorityFile(getDescription().getScenario()),
+                getStorage().getDataSourceMap(),
+                getDescription().getDatabaseType()
+        );
         authorityEnvironmentManager.initialize();
     }
     
