@@ -36,4 +36,9 @@ public final class LockNodeTest {
     public void assertGetLockNodePath() {
         assertThat(lockNode.getLockNodePath(), is("/lock/glock"));
     }
+    
+    @Test
+    public void assertGetTableLockNodePath() {
+        assertThat(lockNode.getTableLockNodePath("sharding_db", "t_order"), is("/lock/glock/sharding_db/t_order"));
+    }
 }

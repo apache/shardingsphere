@@ -71,10 +71,6 @@ import java.util.stream.Collectors;
  */
 public final class RegistryCenter {
     
-    private static final int CHECK_RETRY_MAXIMUM = 5;
-    
-    private static final int CHECK_RETRY_INTERVAL_SECONDS = 3;
-    
     private final RegistryCenterNode node;
     
     private final RegistryRepository repository;
@@ -535,50 +531,22 @@ public final class RegistryCenter {
     
     /**
      * Try to get lock.
-     *
+     * 
+     * @param schemaName schema name
+     * @param tableName table name
      * @param timeout the maximum time in milliseconds to acquire lock
      * @return true if get the lock, false if not
      */
-    public boolean tryLock(final long timeout) {
-        return repository.tryLock(lockNode.getLockNodePath(), timeout, TimeUnit.MILLISECONDS) && checkLock();
+    public boolean tryLock(final String schemaName, final String tableName, final long timeout) {
+        return repository.tryLock(lockNode.getTableLockNodePath(schemaName, tableName), timeout, TimeUnit.MILLISECONDS);
     }
     
     /**
      * Release lock.
+     * @param schemaName schema name
+     * @param tableName table name
      */
-    public void releaseLock() {
-        repository.releaseLock(lockNode.getLockNodePath());
-    }
-    
-    private boolean checkLock() {
-        boolean result = checkOrRetry(loadAllInstances());
-        if (!result) {
-            releaseLock();
-        }
-        return result;
-    }
-    
-    private boolean checkOrRetry(final Collection<String> instanceIds) {
-        for (int i = 0; i < CHECK_RETRY_MAXIMUM; i++) {
-            if (check(instanceIds)) {
-                return true;
-            }
-            try {
-                Thread.sleep(CHECK_RETRY_INTERVAL_SECONDS * 1000L);
-                // CHECKSTYLE:OFF
-            } catch (final InterruptedException ex) {
-                // CHECKSTYLE:ON
-            }
-        }
-        return false;
-    }
-    
-    private boolean check(final Collection<String> instanceIds) {
-        for (String each : instanceIds) {
-            if (!RegistryCenterNodeStatus.LOCKED.toString().equalsIgnoreCase(loadInstanceData(each))) {
-                return false;
-            }
-        }
-        return true;
+    public void releaseLock(final String schemaName, final String tableName) {
+        repository.releaseLock(lockNode.getTableLockNodePath(schemaName, tableName));
     }
 }
