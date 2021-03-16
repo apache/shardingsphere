@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.proxy.backend;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
@@ -33,6 +36,7 @@ import org.apache.shardingsphere.proxy.backend.text.sctl.set.ShardingCTLSetBacke
 import org.apache.shardingsphere.proxy.backend.text.sctl.show.ShardingCTLShowBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
+import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -65,6 +69,13 @@ public final class TextProtocolBackendHandlerFactoryTest {
         when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         setTransactionContexts();
         when(backendConnection.getSchemaName()).thenReturn("schema");
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
+        when(metaDataContexts.getMetaData("schema")).thenReturn(mock(ShardingSphereMetaData.class));
+        when(metaDataContexts.getMetaData("schema").getResource()).thenReturn(mock(ShardingSphereResource.class));
+        when(metaDataContexts.getMetaData("schema").getResource().getDatabaseType()).thenReturn(databaseType);
+        TransactionContexts transactionContexts = mock(TransactionContexts.class);
+        ProxyContext proxyContext = ProxyContext.getInstance();
+        proxyContext.init(metaDataContexts, transactionContexts);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -193,6 +204,20 @@ public final class TextProtocolBackendHandlerFactoryTest {
     @Test
     public void assertNewInstanceWithEmptyString() throws SQLException {
         String sql = "";
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
+        assertThat(actual, instanceOf(SkipBackendHandler.class));
+    }
+    
+    @Test(expected = SQLParsingException.class)
+    public void assertNewInstanceWithErrorSQL() throws SQLException {
+        String sql = "SELECT";
+        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
+        assertThat(actual, instanceOf(SkipBackendHandler.class));
+    }
+    
+    @Test(expected = SQLParsingException.class)
+    public void assertNewInstanceWithErrorRDL() throws SQLException {
+        String sql = "CREATE SHARDING";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, backendConnection);
         assertThat(actual, instanceOf(SkipBackendHandler.class));
     }

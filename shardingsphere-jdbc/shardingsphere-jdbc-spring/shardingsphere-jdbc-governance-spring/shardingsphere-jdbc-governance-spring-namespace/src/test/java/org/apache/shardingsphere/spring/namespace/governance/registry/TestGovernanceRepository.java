@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.spring.namespace.governance.registry;
 
-import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
@@ -26,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public final class TestGovernanceRepository implements RegistryRepository, ConfigurationRepository {
+public final class TestGovernanceRepository implements RegistryRepository {
     
     @Override
     public void init(final String name, final GovernanceCenterConfiguration config) {
@@ -51,16 +50,13 @@ public final class TestGovernanceRepository implements RegistryRepository, Confi
     }
     
     @Override
-    public void initLock(final String key) {
-    }
-    
-    @Override
-    public boolean tryLock(final long time, final TimeUnit unit) {
+    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
         return false;
     }
     
     @Override
-    public void releaseLock() {
+    public void releaseLock(final String key) {
+        
     }
     
     @Override

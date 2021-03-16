@@ -28,18 +28,12 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
-import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresherFactory;
-import org.apache.shardingsphere.infra.metadata.schema.refresher.spi.SchemaChangedNotifier;
+import org.apache.shardingsphere.infra.metadata.engine.MetadataRefreshEngine;
+import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresherFactory;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.LockWaitTimeoutException;
@@ -57,10 +51,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -68,10 +60,6 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 public final class DatabaseCommunicationEngine {
-    
-    static {
-        ShardingSphereServiceLoader.register(SchemaChangedNotifier.class);
-    }
     
     private final String driverType;
     
@@ -83,6 +71,8 @@ public final class DatabaseCommunicationEngine {
     
     private final KernelProcessor kernelProcessor;
     
+    private final MetadataRefreshEngine engine;
+    
     private List<QueryHeader> queryHeaders;
     
     private MergedResult mergedResult;
@@ -93,6 +83,7 @@ public final class DatabaseCommunicationEngine {
         this.logicSQL = logicSQL;
         proxySQLExecutor = new ProxySQLExecutor(driverType, backendConnection);
         kernelProcessor = new KernelProcessor();
+        engine = new MetadataRefreshEngine(metaData, ProxyContext.getInstance().getMetaDataContexts().getAuthentication(), ProxyContext.getInstance().getMetaDataContexts().getProps());
     }
     
     /**
@@ -102,54 +93,50 @@ public final class DatabaseCommunicationEngine {
      * @throws SQLException SQL exception
      */
     public ResponseHeader execute() throws SQLException {
-        return execute(kernelProcessor.generateExecutionContext(logicSQL, metaData, ProxyContext.getInstance().getMetaDataContexts().getProps()));
-    }
-    
-    private ResponseHeader execute(final ExecutionContext executionContext) throws SQLException {
+        ExecutionContext executionContext = kernelProcessor.generateExecutionContext(logicSQL, metaData, ProxyContext.getInstance().getMetaDataContexts().getProps());
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
-        boolean locked = false;
-        Collection<ExecuteResult> executeResults;
-        try {
-            locked = tryLock(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
-            proxySQLExecutor.checkExecutePrerequisites(executionContext);
-            executeResults = proxySQLExecutor.execute(executionContext);
-            refreshSchema(executionContext);
-        } finally {
-            if (locked) {
-                releaseLock();
-            }
-        }
+        proxySQLExecutor.checkExecutePrerequisites(executionContext);
+        Collection<ExecuteResult> executeResults = execute(executionContext);
         ExecuteResult executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
                 ? processExecuteQuery(executionContext, executeResults.stream().map(each -> (QueryResult) each).collect(Collectors.toList()), (QueryResult) executeResultSample)
                 : processExecuteUpdate(executionContext, executeResults.stream().map(each -> (UpdateResult) each).collect(Collectors.toList()));
     }
     
+    private Collection<ExecuteResult> execute(final ExecutionContext executionContext) throws SQLException {
+        boolean locked = false;
+        try {
+            locked = tryLock(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
+            Collection<ExecuteResult> result = proxySQLExecutor.execute(executionContext);
+            refreshMetadata(executionContext);
+            return result;
+        } finally {
+            if (locked) {
+                releaseLock();
+            }
+        }
+    }
+    
     private boolean tryLock(final ExecutionContext executionContext, final Long lockTimeoutMilliseconds) {
-        if (needLock(executionContext)) {
-            if (!LockContext.getLockStrategy().tryLock(lockTimeoutMilliseconds, TimeUnit.MILLISECONDS)) {
+        if (ProxyContext.getInstance().getLock().isPresent() && needLock(executionContext.getSqlStatementContext().getSqlStatement())) {
+            if (!ProxyContext.getInstance().getLock().get().tryLock(lockTimeoutMilliseconds)) {
                 throw new LockWaitTimeoutException(lockTimeoutMilliseconds);
             }
-            checkLock(lockTimeoutMilliseconds);
             return true;
         }
         return false;
     }
     
-    private boolean needLock(final ExecutionContext executionContext) {
-        return SchemaRefresherFactory.newInstance(executionContext.getSqlStatementContext().getSqlStatement()).isPresent();
-    }
-    
-    private void checkLock(final Long lockTimeoutMilliseconds) {
-        if (!LockContext.getLockStrategy().checkLock()) {
-            throw new LockWaitTimeoutException(lockTimeoutMilliseconds);
-        }
+    private boolean needLock(final SQLStatement sqlStatement) {
+        return MetadataRefresherFactory.newInstance(sqlStatement).isPresent();
     }
     
     private void releaseLock() {
-        LockContext.getLockStrategy().releaseLock();
+        if (ProxyContext.getInstance().getLock().isPresent()) {
+            ProxyContext.getInstance().getLock().get().releaseLock();
+        }
     }
     
     private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {
@@ -180,12 +167,7 @@ public final class DatabaseCommunicationEngine {
     }
     
     private boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext
-                && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty() && containAllTablesWithColumnMetaData(sqlStatementContext);
-    }
-    
-    private boolean containAllTablesWithColumnMetaData(final SQLStatementContext<?> sqlStatementContext) {
-        return sqlStatementContext.getTablesContext().getTableNames().stream().noneMatch(each -> metaData.getSchema().getAllColumnNames(each).isEmpty());
+        return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
     }
     
     private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
@@ -200,23 +182,9 @@ public final class DatabaseCommunicationEngine {
         return result;
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private void refreshSchema(final ExecutionContext executionContext) throws SQLException {
+    private void refreshMetadata(final ExecutionContext executionContext) throws SQLException {
         SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
-        Optional<SchemaRefresher> schemaRefresher = SchemaRefresherFactory.newInstance(sqlStatement);
-        if (schemaRefresher.isPresent()) {
-            Collection<String> routeDataSourceNames = executionContext.getRouteContext().getRouteUnits().stream()
-                    .map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
-            SchemaBuilderMaterials materials = new SchemaBuilderMaterials(
-                    ProxyContext.getInstance().getMetaDataContexts().getMetaData(metaData.getName()).getResource().getDatabaseType(),
-                    metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), ProxyContext.getInstance().getMetaDataContexts().getProps());
-            schemaRefresher.get().refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, materials);
-            notifySchemaChanged(metaData.getName(), metaData.getSchema());
-        }
-    }
-    
-    private void notifySchemaChanged(final String schemaName, final ShardingSphereSchema schema) {
-        OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(schema), SchemaChangedNotifier.class).values().forEach(each -> each.notify(schemaName, schema));
+        engine.refresh(sqlStatement, executionContext.getRouteContext().getRouteUnits().stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList()));
     }
     
     private void mergeUpdateCount(final SQLStatementContext<?> sqlStatementContext, final UpdateResponseHeader response) {

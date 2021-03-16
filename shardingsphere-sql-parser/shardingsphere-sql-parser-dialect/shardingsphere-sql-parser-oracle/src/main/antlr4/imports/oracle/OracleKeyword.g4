@@ -231,6 +231,10 @@ END
     : E N D
     ;
 
+EXCEPT
+    : E X C E P T
+    ;
+
 EXCEPTIONS
     : E X C E P T I O N S
     ;
@@ -289,6 +293,10 @@ NOMAXVALUE
 
 NOMINVALUE
     : N O M I N V A L U E
+    ;
+
+NOSORT
+    : N O S O R T
     ;
 
 MINING
@@ -357,6 +365,10 @@ REPLACE
 
 RESOURCE
     : R E S O U R C E
+    ;
+
+REVERSE
+    : R E V E R S E
     ;
 
 ROWID
@@ -813,4 +825,104 @@ PARENT
 
 IDENTIFIER
     : I D E N T I F I E R
+    ;
+
+WORK
+    : W O R K
+    ;
+
+CONTAINER_MAP
+    : C O N T A I N E R UL_ M A P
+    ;
+
+CONTAINERS_DEFAULT
+    : C O N T A I N E R S UL_ D E F A U L T
+    ;
+
+WAIT
+    : W A I T
+    ;
+
+NOWAIT
+    : N O W A I T
+    ;
+
+BATCH
+    : B A T C H
+    ;
+
+BLOCK
+    : B L O C K
+    ;
+
+REBUILD
+    : R E B U I L D
+    ;
+
+INVALIDATION
+    : I N V A L I D A T I O N
+    ;
+
+COMPILE
+    : C O M P I L E
+    ;
+
+USABLE
+    : U S A B L E
+    ;
+
+UNUSABLE
+    : U N U S A B L E
+    ;
+
+ONLINE
+    : O N L I N E
+    ;
+
+MONITORING
+    : M O N I T O R I N G
+    ;
+
+NOMONITORING
+    : N O M O N I T O R I N G
+    ;
+
+USAGE
+    : U S A G E
+    ;
+
+COALESCE
+    : C O A L E S C E
+    ;
+
+CLEANUP
+    : C L E A N U P
+    ;
+
+PARALLEL
+    : P A R A L L E L
+    ;
+
+LOG
+    : L O G
+    ;
+
+REUSE
+    : R E U S E
+    ;
+
+STORAGE
+    : S T O R A G E
+    ;
+
+MATCHED
+    : M A T C H E D
+    ;
+
+ERRORS
+    : E R R O R S
+    ;
+
+REJECT
+    : R E J E C T
     ;

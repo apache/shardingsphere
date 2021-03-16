@@ -16,36 +16,42 @@
 #
 
 dataSources:
-  primary_ds_0: !!com.zaxxer.hikari.HikariDataSource
+  primary_ds_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
     jdbcUrl: jdbc:h2:mem:primary_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
-  primary_ds_0_replica_0: !!com.zaxxer.hikari.HikariDataSource
+  primary_ds_0_replica_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
     jdbcUrl: jdbc:h2:mem:replica_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
-  primary_ds_0_replica_1: !!com.zaxxer.hikari.HikariDataSource
-      driverClassName: org.h2.Driver
-      jdbcUrl: jdbc:h2:mem:replica_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-      username: sa
-      password: 
-  primary_ds_1: !!com.zaxxer.hikari.HikariDataSource
+  primary_ds_0_replica_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.h2.Driver
+    jdbcUrl: jdbc:h2:mem:replica_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
+  primary_ds_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
     jdbcUrl: jdbc:h2:mem:primary_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
-  primary_ds_1_replica_0: !!com.zaxxer.hikari.HikariDataSource
+  primary_ds_1_replica_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
     jdbcUrl: jdbc:h2:mem:replica_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password: 
-  primary_ds_1_replica_1: !!com.zaxxer.hikari.HikariDataSource
-      driverClassName: org.h2.Driver
-      jdbcUrl: jdbc:h2:mem:replica_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
-      username: sa
-      password: 
+  primary_ds_1_replica_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.h2.Driver
+    jdbcUrl: jdbc:h2:mem:replica_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    username: sa
+    password: 
 
 rules:
 - !HA
@@ -54,21 +60,12 @@ rules:
       dataSourceNames:
         - primary_ds_0_replica_0
         - primary_ds_0_replica_1
-      loadBalancerName: roundRobin
-      replicaQuery: true
       haTypeName: mgr
     ds_1:
       dataSourceNames:
         - primary_ds_1_replica_0
         - primary_ds_1_replica_1
-      loadBalancerName: random
-      replicaQuery: false
       haTypeName: mgr
-  loadBalancers:
-    roundRobin:
-      type: ROUND_ROBIN
-    random:
-      type: RANDOM
   haTypes:
     mgr:
       type: MGR

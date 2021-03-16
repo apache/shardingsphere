@@ -29,10 +29,10 @@ public final class HAOrder {
     /**
      * HA order.
      */
-    public static final int ORDER = 20;
+    public static final int ORDER = 2;
     
     /**
      * Algorithm provider HA order.
      */
-    public static final int ALGORITHM_PROVIDER_HA_ORDER = 21;
+    public static final int ALGORITHM_PROVIDER_HA_ORDER = 3;
 }

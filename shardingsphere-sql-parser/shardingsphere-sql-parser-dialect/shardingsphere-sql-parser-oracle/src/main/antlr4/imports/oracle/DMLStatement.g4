@@ -17,7 +17,7 @@
 
 grammar DMLStatement;
 
-import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
+import Symbol, Keyword, OracleKeyword, Literals, BaseRule, Comments;
 
 insert
     : INSERT (insertSingleTable | insertMultiTable)
@@ -179,4 +179,48 @@ subquery
         
 lockClause
     : FOR UPDATE 
+    ;
+
+merge
+    : MERGE hint? intoClause usingClause mergeUpdateClause? mergeInsertClause? errorLoggingClause?
+    ;
+
+hint
+    : (BLOCK_COMMENT | INLINE_COMMENT)
+    ;
+
+intoClause
+    : INTO (tableName | viewName) alias?
+    ;
+
+usingClause
+    : USING ((tableName | viewName) | subquery) alias? ON LP_ expr RP_
+    ;
+
+mergeUpdateClause
+    : WHEN MATCHED THEN UPDATE SET mergeAssignment (COMMA_ mergeAssignment)* whereClause? (DELETE whereClause)?
+    ;
+
+mergeAssignment
+    : columnName EQ_ mergeAssignmentValue
+    ;
+
+mergeAssignmentValue
+    : (expr | DEFAULT)
+    ;
+
+mergeInsertClause
+    : WHEN NOT MATCHED THEN INSERT mergeInsertColumn? mergeColumnValue whereClause?
+    ;
+
+mergeInsertColumn
+    : LP_ columnName (COMMA_ columnName)* RP_
+    ;
+
+mergeColumnValue
+    : VALUES LP_ (expr | DEFAULT) (COMMA_ (expr | DEFAULT))* RP_
+    ;
+
+errorLoggingClause
+    : LOG ERRORS (INTO tableName)? (LP_ simpleExpr RP_)? (REJECT LIMIT (numberLiterals | UNLIMITED))?
     ;

@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.dml;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
+import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelRuntimeStrategy;
 import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -37,31 +39,23 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertFalse;
 
+@ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDMLIT extends BaseDMLIT {
     
     private final IntegrationTestCaseAssertion assertion;
     
-    public GeneralDMLIT(final String parentPath, final IntegrationTestCaseAssertion assertion, final String adapter, final String scenario,
-                        final String databaseType, final SQLExecuteType sqlExecuteType, final String sql) throws IOException, JAXBException, SQLException, ParseException {
-        super(parentPath, assertion, adapter, scenario, DatabaseTypeRegistry.getActualDatabaseType(databaseType), sqlExecuteType, sql);
-        this.assertion = assertion;
+    public GeneralDMLIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
+        super(parameterizedArray);
+        assertion = parameterizedArray.getAssertion();
     }
     
-    @Parameters(name = "{2}: {3} -> {4} -> {5} -> {6}")
+    @Parameters(name = "{0}")
     public static Collection<Object[]> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DML);
     }
     
     @Test
     public void assertExecuteUpdate() throws SQLException, ParseException {
-        // TODO fix replica-query
-        if ("replica_query".equals(getScenario())) {
-            return;
-        }
-        // TODO fix shadow
-        if ("shadow".equals(getScenario())) {
-            return;
-        }
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
@@ -86,14 +80,6 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
-        // TODO fix replica_query
-        if ("replica_query".equals(getScenario())) {
-            return;
-        }
-        // TODO fix shadow
-        if ("shadow".equals(getScenario())) {
-            return;
-        }
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeForStatement(connection) : executeForPreparedStatement(connection);

@@ -43,6 +43,8 @@ execute
     | createRole
     | dropRole
     | alterRole
+    | setRole
     | call
+    | merge
     ) SEMI_?
     ;

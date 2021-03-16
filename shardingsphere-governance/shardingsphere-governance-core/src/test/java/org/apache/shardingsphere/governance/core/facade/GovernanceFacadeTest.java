@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.governance.core.facade;
 
-import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.facade.listener.GovernanceListenerManager;
 import org.apache.shardingsphere.governance.core.facade.repository.GovernanceRepositoryFacade;
 import org.apache.shardingsphere.governance.core.facade.util.FieldUtil;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.junit.Before;
@@ -52,9 +52,6 @@ public final class GovernanceFacadeTest {
     private GovernanceRepositoryFacade repositoryFacade;
     
     @Mock
-    private ConfigCenter configCenter;
-    
-    @Mock
     private RegistryCenter registryCenter;
     
     @Mock
@@ -65,7 +62,6 @@ public final class GovernanceFacadeTest {
         GovernanceConfiguration governanceConfig = new GovernanceConfiguration("test_name", new GovernanceCenterConfiguration("ALL", "127.0.0.1", new Properties()), false);
         governanceFacade.init(governanceConfig, Arrays.asList("sharding_db", "replica_query_db"));
         FieldUtil.setField(governanceFacade, "repositoryFacade", repositoryFacade);
-        FieldUtil.setField(governanceFacade, "configCenter", configCenter);
         FieldUtil.setField(governanceFacade, "registryCenter", registryCenter);
         FieldUtil.setField(governanceFacade, "listenerManager", listenerManager);
     }
@@ -74,13 +70,14 @@ public final class GovernanceFacadeTest {
     public void assertOnlineInstanceWithParameters() {
         Map<String, DataSourceConfiguration> dataSourceConfigMap = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));
         Map<String, Collection<RuleConfiguration>> ruleConfigurationMap = Collections.singletonMap("sharding_db", Collections.singletonList(mock(RuleConfiguration.class)));
-        ShardingSphereUser user = new ShardingSphereUser("root", Collections.singleton("db1"));
+        ShardingSphereUser user = new ShardingSphereUser("root", "root", "");
         DefaultAuthentication authentication = new DefaultAuthentication();
-        authentication.getUsers().put("root", user);
+        authentication.getAuthentication().put(user, new ShardingSpherePrivilege());
         Properties props = new Properties();
-        governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigMap), ruleConfigurationMap, authentication, props);
-        verify(configCenter).persistConfigurations("sharding_db", dataSourceConfigMap, ruleConfigurationMap.get("sharding_db"), false);
-        verify(configCenter).persistGlobalConfiguration(authentication, props, false);
+        governanceFacade.onlineInstance(
+                Collections.singletonMap("sharding_db", dataSourceConfigMap), ruleConfigurationMap, authentication.getAuthentication().keySet(), props);
+        verify(registryCenter).persistConfigurations("sharding_db", dataSourceConfigMap, ruleConfigurationMap.get("sharding_db"), false);
+        verify(registryCenter).persistGlobalConfiguration(authentication.getAuthentication().keySet(), props, false);
         verify(registryCenter).persistInstanceOnline();
         verify(registryCenter).persistDataNodes();
         verify(listenerManager).init();

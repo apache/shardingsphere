@@ -17,25 +17,19 @@
 
 package org.apache.shardingsphere.scaling.postgresql.wal;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
+import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
 import org.postgresql.replication.LogSequenceNumber;
 
 /**
  * PostgreSQL wal position.
  */
 @RequiredArgsConstructor
-@AllArgsConstructor
 @Getter
-@Setter
-public final class WalPosition implements Position<WalPosition> {
+public final class WalPosition implements ScalingPosition<WalPosition> {
     
     private final LogSequenceNumber logSequenceNumber;
-    
-    private long delay;
     
     @Override
     public int compareTo(final WalPosition position) {
@@ -43,5 +37,10 @@ public final class WalPosition implements Position<WalPosition> {
             return 1;
         }
         return Long.compare(logSequenceNumber.asLong(), position.logSequenceNumber.asLong());
+    }
+    
+    @Override
+    public String toString() {
+        return String.valueOf(logSequenceNumber.asLong());
     }
 }

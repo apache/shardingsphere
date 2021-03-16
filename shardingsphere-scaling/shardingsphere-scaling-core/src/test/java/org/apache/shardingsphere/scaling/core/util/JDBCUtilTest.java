@@ -18,11 +18,10 @@
 package org.apache.shardingsphere.scaling.core.util;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.config.datasource.ConfigurationYamlConverter;
 import org.apache.shardingsphere.scaling.core.config.datasource.ShardingSphereJDBCDataSourceConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.utils.JDBCUtil;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -30,20 +29,20 @@ import java.util.ArrayList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class JDBCUtilTest {
+public final class JDBCUtilTest {
     
     @Test
     public void assertAppendStandardJDBCDataSourceConfiguration() {
         StandardJDBCDataSourceConfiguration dataSourceConfig = new StandardJDBCDataSourceConfiguration("jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false", null, null);
         JDBCUtil.appendJDBCParameter(dataSourceConfig, ImmutableMap.<String, String>builder().put("rewriteBatchedStatements", "true").build());
-        assertThat(dataSourceConfig.getJdbcUrl(), is("jdbc:mysql://192.168.0.1:3306/scaling?rewriteBatchedStatements=true&serverTimezone=UTC&useSSL=false"));
+        assertThat(dataSourceConfig.getHikariConfig().getJdbcUrl(), is("jdbc:mysql://192.168.0.1:3306/scaling?rewriteBatchedStatements=true&serverTimezone=UTC&useSSL=false"));
     }
     
     @Test
     public void assertAppendShardingSphereJDBCDataSourceConfig() {
-        ShardingSphereJDBCDataSourceConfiguration dataSourceConfig = new ShardingSphereJDBCDataSourceConfiguration(mockDataSource(), null);
+        ShardingSphereJDBCDataSourceConfiguration dataSourceConfig = new ShardingSphereJDBCDataSourceConfiguration(mockDataSource(), "");
         JDBCUtil.appendJDBCParameter(dataSourceConfig, ImmutableMap.<String, String>builder().put("rewriteBatchedStatements", "true").build());
-        ArrayList<DataSourceConfiguration> actual = new ArrayList<>(ConfigurationYamlConverter.loadDataSourceConfigs(dataSourceConfig.getDataSource()).values());
+        ArrayList<DataSourceConfiguration> actual = new ArrayList<>(YamlConfigurationConverter.convertDataSourceConfigurations(dataSourceConfig.getRootRuleConfigs().getDataSources()).values());
         assertThat(actual.get(0).getProps().get("url"), is("jdbc:mysql://192.168.0.2:3306/scaling?rewriteBatchedStatements=true&serverTimezone=UTC&useSSL=false"));
         assertThat(actual.get(1).getProps().get("url"), is("jdbc:mysql://192.168.0.1:3306/scaling?rewriteBatchedStatements=true&serverTimezone=UTC&useSSL=false"));
     }
@@ -52,11 +51,9 @@ public class JDBCUtilTest {
         return "dataSources:\n"
                 + "  ds_1:\n"
                 + "    dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n"
-                + "    props:\n"
-                + "      url: jdbc:mysql://192.168.0.2:3306/scaling?serverTimezone=UTC&useSSL=false\n"
+                + "    url: jdbc:mysql://192.168.0.2:3306/scaling?serverTimezone=UTC&useSSL=false\n"
                 + "  ds_0:\n"
                 + "    dataSourceClassName: com.zaxxer.hikari.HikariDataSource\n"
-                + "    props:\n"
-                + "      url: jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false\n";
+                + "    url: jdbc:mysql://192.168.0.1:3306/scaling?serverTimezone=UTC&useSSL=false\n";
     }
 }

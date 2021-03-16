@@ -21,7 +21,7 @@ import io.opentracing.mock.MockSpan;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractJDBCExecutorCallbackAdviceTest;
 import org.apache.shardingsphere.agent.plugin.tracing.jaeger.constant.JaegerConstants;
-import org.apache.shardingsphere.agent.plugin.tracing.rule.JaegerCollector;
+import org.apache.shardingsphere.agent.plugin.tracing.jaeger.collector.JaegerCollector;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -36,8 +36,8 @@ import static org.junit.Assert.assertThat;
 public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
     
     @ClassRule
-    public static JaegerCollector collector = new JaegerCollector();
-    
+    public static final JaegerCollector COLLECTOR = new JaegerCollector();
+
     private static final JDBCExecutorCallbackAdvice ADVICE = new JDBCExecutorCallbackAdvice();
     
     @Before
@@ -49,7 +49,7 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
     public void assertMethod() {
         ADVICE.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
         ADVICE.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
-        List<MockSpan> spans = collector.finishedSpans();
+        List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);
         Map<String, Object> tags = span.tags();
@@ -66,7 +66,7 @@ public final class JDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCa
         ADVICE.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
         ADVICE.onThrowing(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new IOException());
         ADVICE.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new MethodInvocationResult());
-        List<MockSpan> spans = collector.finishedSpans();
+        List<MockSpan> spans = COLLECTOR.finishedSpans();
         assertThat(spans.size(), is(1));
         MockSpan span = spans.get(0);
         List<MockSpan.LogEntry> entries = span.logEntries();

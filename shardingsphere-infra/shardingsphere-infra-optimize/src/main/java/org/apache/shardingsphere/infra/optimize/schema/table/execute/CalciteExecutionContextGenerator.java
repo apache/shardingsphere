@@ -55,14 +55,18 @@ public final class CalciteExecutionContextGenerator {
     private Collection<ExecutionUnit> getExecutionUnits(final Collection<RouteUnit> routeUnits, final CalciteExecutionSQLGenerator filter) {
         Collection<ExecutionUnit> result = new LinkedHashSet<>();
         for (RouteUnit each: routeUnits) {
-            for (RouteMapper mapper : each.getTableMappers()) {
-                if (mapper.getLogicName().equals(table)) {
-                    result.add(new ExecutionUnit(each.getDataSourceMapper().getActualName(),
-                            new SQLUnit(filter.generate(mapper.getActualName()), Collections.emptyList(), Collections.singletonList(mapper))));
-                }
-            }
+            fillExecutionUnits(result, filter, each);
         }
         return result;
+    }
+    
+    private void fillExecutionUnits(final Collection<ExecutionUnit> executionUnits, final CalciteExecutionSQLGenerator filter, final RouteUnit routeUnit) {
+        for (RouteMapper mapper : routeUnit.getTableMappers()) {
+            if (mapper.getLogicName().equals(table)) {
+                executionUnits.add(new ExecutionUnit(routeUnit.getDataSourceMapper().getActualName(),
+                        new SQLUnit(filter.generate(mapper.getActualName()), Collections.emptyList(), Collections.singletonList(mapper))));
+            }
+        }
     }
     
     private RouteContext getRouteContext(final RouteContext routeContext) {
@@ -72,16 +76,21 @@ public final class CalciteExecutionContextGenerator {
     }
     
     private Collection<RouteUnit> getRouteUnits(final RouteContext routeContext) {
-        Collection<RouteUnit> result = new LinkedHashSet<>();
+        Collection<RouteUnit> result = new LinkedHashSet<>(routeContext.getRouteUnits().size(), 1);
         for (RouteUnit each : routeContext.getRouteUnits()) {
-            RouteUnit routeUnit = new RouteUnit(each.getDataSourceMapper(), new LinkedHashSet<>());
-            for (RouteMapper mapper : each.getTableMappers()) {
-                if (mapper.getLogicName().equals(table)) {
-                    routeUnit.getTableMappers().add(mapper);
-                }
-            }
+            RouteUnit routeUnit = getRouteUnit(each);
             if (!routeUnit.getTableMappers().isEmpty()) {
                 result.add(routeUnit);
+            }
+        }
+        return result;
+    }
+    
+    private RouteUnit getRouteUnit(final RouteUnit routeUnit) {
+        RouteUnit result = new RouteUnit(routeUnit.getDataSourceMapper(), new LinkedHashSet<>(routeUnit.getTableMappers().size(), 1));
+        for (RouteMapper each : routeUnit.getTableMappers()) {
+            if (each.getLogicName().equals(table)) {
+                result.getTableMappers().add(each);
             }
         }
         return result;

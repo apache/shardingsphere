@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.agent.metrics.prometheus.service;
 
 import io.prometheus.client.exporter.HTTPServer;
-import java.lang.reflect.Field;
-import java.util.Properties;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.junit.AfterClass;
 import org.junit.Test;
+
+import java.lang.reflect.Field;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;

@@ -17,20 +17,36 @@
 
 grammar TCLStatement;
 
-import Symbol, Keyword, OracleKeyword, Literals;
+import Symbol, Keyword, OracleKeyword, Literals, BaseRule;
 
 setTransaction
     : SET TRANSACTION
     ;
 
 commit
-    : COMMIT
+    : COMMIT WORK? (commentClause | writeClause | forceClause)?
+    ;
+
+commentClause
+    : COMMENT stringLiterals
+    ;
+
+writeClause
+    : WRITE (WAIT | NOWAIT)? (IMMEDIATE | BATCH)?
+    ;
+
+forceClause
+    : FORCE stringLiterals (COMMA_ numberLiterals)?
     ;
 
 rollback
-    : ROLLBACK
+    : ROLLBACK WORK? savepointClause
+    ;
+
+savepointClause
+    : (TO SAVEPOINT? savepointName | FORCE stringLiterals)?
     ;
 
 savepoint
-    : SAVEPOINT 
+    : SAVEPOINT savepointName
     ;

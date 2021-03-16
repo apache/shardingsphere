@@ -36,10 +36,6 @@ public final class YamlHADataSourceRuleConfiguration implements YamlConfiguratio
     
     private List<String> dataSourceNames = new ArrayList<>();
     
-    private String loadBalancerName;
-    
-    private boolean replicaQuery;
-    
     private String haTypeName;
     
     private Properties props = new Properties();

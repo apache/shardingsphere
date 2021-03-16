@@ -22,7 +22,7 @@
 # 
 ######################################################################################################
 #
-#schemaName: sharding_db
+#schemaName: shadow_db
 #
 #dataSources:
 #  ds:
@@ -61,7 +61,7 @@
 #
 ######################################################################################################
 #
-#schemaName: sharding_db
+#schemaName: shadow_db
 #
 #dataSources:
 #  ds:
@@ -91,4 +91,4 @@
 #  sourceDataSourceNames:
 #   - ds
 #  shadowDataSourceNames:
-#   - shadow_dsConfigCenter
+#   - shadow_ds

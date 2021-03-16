@@ -36,7 +36,7 @@ insertSelectClause
     ;
 
 update
-    : UPDATE tableReferences setAssignmentsClause whereClause?
+    : withClause? UPDATE top? tableReferences setAssignmentsClause whereClause? (OPTION queryHint)?
     ;
 
 assignment
@@ -44,7 +44,7 @@ assignment
     ;
 
 setAssignmentsClause
-    : SET assignment (COMMA_ assignment)*
+    : SET assignment (COMMA_ assignment)* fromClause?
     ;
 
 assignmentValues
@@ -209,7 +209,7 @@ queryHint
     | RECOMPILE
     | ROBUST PLAN
     | USE HINT LP_ useHitName* RP_
-    | USE PLAN N STRING_
+    | USE PLAN NCHAR_TEXT
     ;
 
 useHitName

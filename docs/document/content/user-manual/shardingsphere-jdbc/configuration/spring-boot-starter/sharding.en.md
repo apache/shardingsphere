@@ -6,7 +6,7 @@ weight = 1
 ## Configuration Item Explanation
 
 ```properties
-spring.shardingsphere.datasource.names= # Omit data source configuration
+spring.shardingsphere.datasource.names= # Omit the data source configuration, please refer to the usage
 
 # Standard sharding table configuration
 spring.shardingsphere.rules.sharding.tables.<table-name>.actual-data-nodes= # Describe data source names and actual tables, delimiter as point, multiple data nodes separated with comma, support inline expression. Absent means sharding databases only.

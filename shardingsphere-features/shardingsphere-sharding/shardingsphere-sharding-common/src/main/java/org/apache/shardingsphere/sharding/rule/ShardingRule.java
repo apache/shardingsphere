@@ -179,6 +179,7 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
     private Collection<String> getExcludedTables() {
         Collection<String> result = new HashSet<>(getTables());
         result.addAll(getAllActualTables());
+        result.addAll(broadcastTables);
         return result;
     }
     
@@ -283,6 +284,16 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
     }
     
     /**
+     * Judge logic tables is all belong to sharding tables.
+     *
+     * @param logicTableNames logic table names
+     * @return logic tables is all belong to sharding tables or not
+     */
+    public boolean isAllShardingTables(final Collection<String> logicTableNames) {
+        return logicTableNames.stream().allMatch(each -> findTableRule(each).isPresent());
+    }
+    
+    /**
      * Judge logic table is belong to broadcast tables.
      *
      * @param logicTableName logic table name
@@ -293,6 +304,19 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
     }
     
     /**
+     * Judge if all single tables exist in same data source.
+     *
+     * @param logicTableNames logic table names
+     * @return all single tables exist in same data source or not
+     */
+    public boolean isSingleTablesInSameDataSource(final Collection<String> logicTableNames) {
+        if (!singleTableRules.keySet().containsAll(logicTableNames)) {
+            return false;
+        }
+        return 1 == singleTableRules.values().stream().filter(each -> logicTableNames.contains(each.getTableName())).collect(Collectors.toSet()).size();
+    }
+    
+    /**
      * Judge if there is at least one table rule for logic tables.
      *
      * @param logicTableNames logic table names
@@ -300,6 +324,16 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
      */
     public boolean tableRuleExists(final Collection<String> logicTableNames) {
         return logicTableNames.stream().anyMatch(each -> findTableRule(each).isPresent() || isBroadcastTable(each));
+    }
+    
+    /**
+     * Judge if single table rule exists or not.
+     *
+     * @param logicTableNames logic table names
+     * @return whether single table rule exists for logic tables
+     */
+    public boolean singleTableRuleExists(final Collection<String> logicTableNames) {
+        return singleTableRules.keySet().stream().anyMatch(logicTableNames::contains);
     }
     
     /**

@@ -47,6 +47,22 @@ SHOW
     : S H O W
     ;
 
+START
+    : S T A R T
+    ;
+
+STOP
+    : S T O P
+    ;
+
+RESET
+    : R E S E T
+    ;
+
+CHECK
+    : C H E C K
+    ;
+
 RESOURCE
     : R E S O U R C E
     ;
@@ -85,4 +101,36 @@ PRIMARY
 
 REPLICA
     : R E P L I C A
+    ;
+
+BINDING_TABLE
+    : B I N D I N G UL_ T A B L E
+    ;
+
+BROADCAST_TABLES
+    : B R O A D C A S T UL_ T A B L E S
+    ;
+
+GENERATED_KEY
+    : G E N E R A T E D UL_ K E Y
+    ;
+
+DEFAULT_TABLE_STRATEGY
+    : D E F A U L T UL_ T A B L E UL_ S T R A T E G Y
+    ;
+
+SCALING
+    : S C A L I N G
+    ;
+
+JOB
+    : J O B
+    ;
+
+LIST
+    : L I S T
+    ;
+
+STATUS
+    : S T A T U S
     ;

@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.governance.core.yaml.config;
 
-import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+
+import java.util.Map;
 
 /**
  * Data source configuration warp for YAML.
@@ -29,5 +30,5 @@ import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 @Setter
 public final class YamlDataSourceConfigurationWrap implements YamlConfiguration {
     
-    private Map<String, YamlDataSourceConfiguration> dataSources;
+    private Map<String, Map<String, Object>> dataSources;
 }

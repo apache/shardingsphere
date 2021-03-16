@@ -19,12 +19,13 @@ package org.apache.shardingsphere.scaling.postgresql;
 
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntryLoader;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLDataSourceChecker;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLImporter;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLJdbcDumper;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLPositionManager;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLInventoryDumper;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLPositionInitializer;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLWalDumper;
+import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLDataConsistencyChecker;
+import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLDataSourceChecker;
+import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLEnvironmentChecker;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -34,14 +35,15 @@ import static org.junit.Assert.assertTrue;
 public final class PostgreSQLScalingEntryTest {
     
     @Test
-    public void assertGetScalingEntryByDatabaseType() {
-        ScalingEntry scalingEntry = ScalingEntryLoader.getScalingEntryByDatabaseType("PostgreSQL");
+    public void assertGetScalingEntryByDatabaseType() throws IllegalAccessException, InstantiationException {
+        ScalingEntry scalingEntry = ScalingEntryLoader.getInstance("PostgreSQL");
         assertTrue(scalingEntry instanceof PostgreSQLScalingEntry);
-        assertThat(scalingEntry.getPositionManager(), equalTo(PostgreSQLPositionManager.class));
-        assertThat(scalingEntry.getDataSourceCheckerClass(), equalTo(PostgreSQLDataSourceChecker.class));
-        assertThat(scalingEntry.getDataConsistencyCheckerClass(), equalTo(PostgreSQLDataConsistencyChecker.class));
+        assertThat(scalingEntry.getPositionInitializerClass(), equalTo(PostgreSQLPositionInitializer.class));
+        assertThat(scalingEntry.getEnvironmentCheckerClass(), equalTo(PostgreSQLEnvironmentChecker.class));
+        assertThat(scalingEntry.getEnvironmentCheckerClass().newInstance().getDataSourceCheckerClass(), equalTo(PostgreSQLDataSourceChecker.class));
+        assertThat(scalingEntry.getEnvironmentCheckerClass().newInstance().getDataConsistencyCheckerClass(), equalTo(PostgreSQLDataConsistencyChecker.class));
         assertThat(scalingEntry.getImporterClass(), equalTo(PostgreSQLImporter.class));
-        assertThat(scalingEntry.getJdbcDumperClass(), equalTo(PostgreSQLJdbcDumper.class));
-        assertThat(scalingEntry.getLogDumperClass(), equalTo(PostgreSQLWalDumper.class));
+        assertThat(scalingEntry.getInventoryDumperClass(), equalTo(PostgreSQLInventoryDumper.class));
+        assertThat(scalingEntry.getIncrementalDumperClass(), equalTo(PostgreSQLWalDumper.class));
     }
 }

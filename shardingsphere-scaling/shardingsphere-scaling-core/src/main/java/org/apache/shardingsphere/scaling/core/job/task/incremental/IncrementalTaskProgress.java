@@ -20,22 +20,20 @@ package org.apache.shardingsphere.scaling.core.job.task.incremental;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.scaling.core.job.TaskProgress;
-import org.apache.shardingsphere.scaling.core.job.position.Position;
+import lombok.Setter;
+import org.apache.shardingsphere.scaling.core.job.position.ScalingPosition;
+import org.apache.shardingsphere.scaling.core.job.progress.Progress;
 
 /**
  * Incremental task progress.
  */
-@Getter
 @RequiredArgsConstructor
 @AllArgsConstructor
-public final class IncrementalTaskProgress implements TaskProgress {
+@Getter
+@Setter
+public final class IncrementalTaskProgress implements Progress {
     
-    private final String id;
+    private final ScalingPosition<?> position;
     
-    private String shardingItem;
-    
-    private final long delayMillisecond;
-    
-    private final Position<?> position;
+    private IncrementalTaskDelay incrementalTaskDelay = new IncrementalTaskDelay();
 }

@@ -42,6 +42,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.junit.runners.Parameterized.Parameters;
 
@@ -73,7 +74,8 @@ public final class EncryptSQLRewriterParameterizedTest extends AbstractSQLRewrit
         YamlRootRuleConfigurations ruleConfigurations = createRuleConfigurations();
         String databaseType = null == getTestParameters().getDatabaseType() ? "MySQL" : getTestParameters().getDatabaseType();
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build(new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
-                ruleConfigurations.getRules()), DatabaseTypeRegistry.getTrunkDatabaseType(databaseType), ruleConfigurations.getDataSources(), "schema_name");
+                ruleConfigurations.getRules()), DatabaseTypeRegistry.getTrunkDatabaseType(databaseType),
+                new YamlDataSourceConfigurationSwapper().swapToDataSources(ruleConfigurations.getDataSources()), "schema_name");
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType);
         ShardingSphereSchema schema = mockSchema();
         ConfigurationProperties props = new ConfigurationProperties(ruleConfigurations.getProps());

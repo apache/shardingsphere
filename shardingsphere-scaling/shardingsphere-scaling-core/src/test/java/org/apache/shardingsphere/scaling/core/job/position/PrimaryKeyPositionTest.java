@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.job.position;
 
-import com.google.gson.Gson;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -35,15 +34,14 @@ public final class PrimaryKeyPositionTest {
     }
     
     @Test
-    public void assertFormJson() {
-        PrimaryKeyPosition position = new Gson().fromJson("[1,100]", PrimaryKeyPosition.class);
+    public void assertInit() {
+        PrimaryKeyPosition position = PrimaryKeyPosition.init("1,100");
         assertThat(position.getBeginValue(), is(1L));
         assertThat(position.getEndValue(), is(100L));
     }
     
     @Test
-    public void assertToJson() {
-        PrimaryKeyPosition position = new PrimaryKeyPosition(1, 100);
-        assertThat(new Gson().toJson(position), is("[1,100]"));
+    public void assertToString() {
+        assertThat(new PrimaryKeyPosition(1, 100).toString(), is("1,100"));
     }
 }

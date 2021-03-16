@@ -28,18 +28,18 @@ import java.sql.SQLException;
 public interface ScalingDataSourceConfiguration {
     
     /**
-     * Get config type.
-     *
-     * @return config type
-     */
-    String getConfigType();
-    
-    /**
      * Get database type.
      *
      * @return database type
      */
     DatabaseType getDatabaseType();
+    
+    /**
+     * Wrap.
+     *
+     * @return scaling data source configuration wrap
+     */
+    ScalingDataSourceConfigurationWrap wrap();
     
     /**
      * To data source.

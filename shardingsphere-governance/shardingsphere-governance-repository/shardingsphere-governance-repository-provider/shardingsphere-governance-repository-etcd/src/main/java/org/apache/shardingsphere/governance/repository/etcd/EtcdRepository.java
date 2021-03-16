@@ -30,7 +30,6 @@ import io.etcd.jetcd.watch.WatchEvent;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
@@ -47,7 +46,7 @@ import java.util.stream.Collectors;
 /**
  * Registry repository of ETCD.
  */
-public final class EtcdRepository implements ConfigurationRepository, RegistryRepository {
+public final class EtcdRepository implements RegistryRepository {
     
     private Client client;
     
@@ -100,18 +99,13 @@ public final class EtcdRepository implements ConfigurationRepository, RegistryRe
     }
     
     @Override
-    public void initLock(final String key) {
-        // TODO
-    }
-    
-    @Override
-    public boolean tryLock(final long time, final TimeUnit unit) {
+    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
         // TODO
         return false;
     }
     
     @Override
-    public void releaseLock() {
+    public void releaseLock(final String key) {
         // TODO
     }
     

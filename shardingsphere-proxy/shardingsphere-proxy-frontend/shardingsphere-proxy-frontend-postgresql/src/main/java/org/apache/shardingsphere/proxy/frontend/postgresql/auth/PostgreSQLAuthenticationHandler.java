@@ -17,19 +17,18 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.auth;
 
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
-import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.security.MessageDigest;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -48,7 +47,7 @@ public final class PostgreSQLAuthenticationHandler {
      * @return PostgreSQL login result
      */
     public static PostgreSQLLoginResult loginWithMd5Password(final String username, final String databaseName, final byte[] md5Salt, final PostgreSQLPasswordMessagePacket passwordMessagePacket) {
-        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(username);
+        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(new Grantee(username, "%"));
         if (!user.isPresent()) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, String.format("unknown username: %s", username));
         }
@@ -57,7 +56,7 @@ public final class PostgreSQLAuthenticationHandler {
         if (!expectedMd5Digest.equals(md5Digest)) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, String.format("password authentication failed for user \"%s\"", username));
         }
-        if (!isAuthorizedSchema(user.get().getAuthorizedSchemas(), databaseName)) {
+        if (!ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getAuthentication().get(user.get()).getDataPrivilege().hasPrivileges(databaseName, Collections.emptyList())) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.PRIVILEGE_NOT_GRANTED, String.format("Access denied for user '%s' to database '%s'", username, databaseName));
         }
         return new PostgreSQLLoginResult(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION, null);
@@ -69,9 +68,5 @@ public final class PostgreSQLAuthenticationHandler {
         messageDigest.update(passwordHash.getBytes());
         messageDigest.update(md5Salt);
         return "md5" + new String(Hex.encodeHex(messageDigest.digest(), true));
-    }
-    
-    private static boolean isAuthorizedSchema(final Collection<String> authorizedSchemas, final String schema) {
-        return Strings.isNullOrEmpty(schema) || CollectionUtils.isEmpty(authorizedSchemas) || authorizedSchemas.contains(schema);
     }
 }

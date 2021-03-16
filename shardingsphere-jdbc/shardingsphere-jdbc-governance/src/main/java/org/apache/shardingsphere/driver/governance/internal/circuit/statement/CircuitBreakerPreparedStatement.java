@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.governance.internal.circuit.statement;
 
+import java.sql.Array;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
 import org.apache.shardingsphere.driver.governance.internal.circuit.connection.CircuitBreakerConnection;
@@ -210,6 +211,10 @@ public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOp
     
     @Override
     public void setClob(final int parameterIndex, final Reader reader) {
+    }
+    
+    @Override
+    public void setArray(final int parameterIndex, final Array x) {
     }
     
     @Override

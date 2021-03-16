@@ -18,19 +18,20 @@ weight = 2
 ShardingSphere-JDBC 的 YAML 配置文件 通过数据源集合、规则集合以及属性配置组成。
 以下示例是根据 `user_id` 取模分库, 且根据 `order_id` 取模分表的 2 库 2 表的配置。
 
+注：示例的数据库连接池为HikariCP，可根据业务场景更换为其他主流数据库连接池。
 ```yaml
 # 配置真实数据源
 dataSources:
   # 配置第 1 个数据源
-  ds0: !!org.apache.commons.dbcp2.BasicDataSource
+  ds0: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds0
+    jdbcUrl: jdbc:mysql://localhost:3306/ds0
     username: root
     password:
   # 配置第 2 个数据源
-  ds1: !!org.apache.commons.dbcp2.BasicDataSource
+  ds1: !!com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ds1
+    jdbcUrl: jdbc:mysql://localhost:3306/ds1
     username: root
     password: 
 

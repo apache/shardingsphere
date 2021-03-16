@@ -38,10 +38,6 @@ public final class YamlGovernanceRepositoryConfigurationSwapperUtil {
      * @return governance repository configuration map
      */
     public static GovernanceConfiguration marshal(final YamlGovernanceConfiguration governance) {
-        if (null == governance.getAdditionalConfigCenter()) {
-            return new GovernanceConfiguration(governance.getName(), SWAPPER.swapToObject(governance.getRegistryCenter()), governance.isOverwrite());
-        }
-        return new GovernanceConfiguration(governance.getName(),
-                SWAPPER.swapToObject(governance.getRegistryCenter()), SWAPPER.swapToObject(governance.getAdditionalConfigCenter()), governance.isOverwrite());
+        return new GovernanceConfiguration(governance.getName(), SWAPPER.swapToObject(governance.getRegistryCenter()), governance.isOverwrite());
     }
 }

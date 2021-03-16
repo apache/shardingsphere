@@ -21,6 +21,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
@@ -49,21 +50,21 @@ public final class ExecutorEngine implements AutoCloseable {
     /**
      * Execute.
      *
-     * @param executionGroups execution groups
+     * @param executionGroupContext execution group context
      * @param callback executor callback
      * @param <I> type of input value
      * @param <O> type of return value
      * @return execute result
      * @throws SQLException throw if execute failure
      */
-    public <I, O> List<O> execute(final Collection<ExecutionGroup<I>> executionGroups, final ExecutorCallback<I, O> callback) throws SQLException {
-        return execute(executionGroups, null, callback, false);
+    public <I, O> List<O> execute(final ExecutionGroupContext<I> executionGroupContext, final ExecutorCallback<I, O> callback) throws SQLException {
+        return execute(executionGroupContext, null, callback, false);
     }
     
     /**
      * Execute.
      *
-     * @param executionGroups execution groups
+     * @param executionGroupContext execution group context
      * @param firstCallback first executor callback
      * @param callback other executor callback
      * @param serial whether using multi thread execute or not
@@ -72,12 +73,13 @@ public final class ExecutorEngine implements AutoCloseable {
      * @return execute result
      * @throws SQLException throw if execute failure
      */
-    public <I, O> List<O> execute(final Collection<ExecutionGroup<I>> executionGroups,
+    public <I, O> List<O> execute(final ExecutionGroupContext<I> executionGroupContext,
                                   final ExecutorCallback<I, O> firstCallback, final ExecutorCallback<I, O> callback, final boolean serial) throws SQLException {
-        if (executionGroups.isEmpty()) {
+        if (executionGroupContext.getInputGroups().isEmpty()) {
             return Collections.emptyList();
         }
-        return serial ? serialExecute(executionGroups.iterator(), firstCallback, callback) : parallelExecute(executionGroups.iterator(), firstCallback, callback);
+        return serial ? serialExecute(executionGroupContext.getInputGroups().iterator(), firstCallback, callback)
+                : parallelExecute(executionGroupContext.getInputGroups().iterator(), firstCallback, callback);
     }
     
     private <I, O> List<O> serialExecute(final Iterator<ExecutionGroup<I>> executionGroups, final ExecutorCallback<I, O> firstCallback, final ExecutorCallback<I, O> callback) throws SQLException {

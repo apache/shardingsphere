@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.ha.algorithm.config.AlgorithmProvidedHARuleConfiguration;
 import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
 import org.apache.shardingsphere.ha.api.config.rule.HADataSourceRuleConfiguration;
-import org.apache.shardingsphere.ha.spi.ReplicaLoadBalanceAlgorithm;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -50,11 +49,8 @@ import java.util.Optional;
 public final class HARule implements DataSourceContainedRule, StatusContainedRule {
     
     static {
-        ShardingSphereServiceLoader.register(ReplicaLoadBalanceAlgorithm.class);
         ShardingSphereServiceLoader.register(HAType.class);
     }
-    
-    private final Map<String, ReplicaLoadBalanceAlgorithm> loadBalancers = new LinkedHashMap<>();
     
     private final Map<String, HAType> haTypes = new LinkedHashMap<>();
     
@@ -64,15 +60,12 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
         Preconditions.checkArgument(!config.getDataSources().isEmpty(), "HA data source rules can not be empty.");
         Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
         Preconditions.checkArgument(null != databaseType, "Database type cannot be null.");
-        config.getLoadBalancers().forEach((key, value) -> loadBalancers.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, ReplicaLoadBalanceAlgorithm.class)));
         config.getHaTypes().forEach((key, value) -> haTypes.put(key, ShardingSphereAlgorithmFactory.createAlgorithm(value, HAType.class)));
         dataSourceRules = new HashMap<>(config.getDataSources().size(), 1);
         for (HADataSourceRuleConfiguration each : config.getDataSources()) {
-            ReplicaLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
-                    ? TypedSPIRegistry.getRegisteredService(ReplicaLoadBalanceAlgorithm.class) : loadBalancers.get(each.getLoadBalancerName());
             HAType haType = Strings.isNullOrEmpty(each.getHaTypeName()) || !haTypes.containsKey(each.getHaTypeName())
                     ? TypedSPIRegistry.getRegisteredService(HAType.class) : haTypes.get(each.getHaTypeName());
-            dataSourceRules.put(each.getName(), new HADataSourceRule(each, loadBalanceAlgorithm, haType));
+            dataSourceRules.put(each.getName(), new HADataSourceRule(each, haType));
         }
         for (Entry<String, HADataSourceRule> entry : dataSourceRules.entrySet()) {
             String groupName = entry.getKey();
@@ -97,14 +90,11 @@ public final class HARule implements DataSourceContainedRule, StatusContainedRul
         Preconditions.checkArgument(!config.getDataSources().isEmpty(), "HA data source rules can not be empty.");
         Preconditions.checkArgument(null != dataSourceMap && !dataSourceMap.isEmpty(), "Data sources cannot be empty.");
         Preconditions.checkArgument(null != databaseType, "Database type cannot be null.");
-        loadBalancers.putAll(config.getLoadBalanceAlgorithms());
         dataSourceRules = new HashMap<>(config.getDataSources().size(), 1);
         for (HADataSourceRuleConfiguration each : config.getDataSources()) {
-            ReplicaLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
-                    ? TypedSPIRegistry.getRegisteredService(ReplicaLoadBalanceAlgorithm.class) : loadBalancers.get(each.getLoadBalancerName());
             HAType haType = Strings.isNullOrEmpty(each.getHaTypeName()) || !haTypes.containsKey(each.getHaTypeName())
                     ? TypedSPIRegistry.getRegisteredService(HAType.class) : haTypes.get(each.getHaTypeName());
-            dataSourceRules.put(each.getName(), new HADataSourceRule(each, loadBalanceAlgorithm, haType));
+            dataSourceRules.put(each.getName(), new HADataSourceRule(each, haType));
         }
         for (Entry<String, HADataSourceRule> entry : dataSourceRules.entrySet()) {
             String groupName = entry.getKey();

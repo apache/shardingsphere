@@ -24,14 +24,16 @@ import com.google.common.base.Joiner;
  */
 public final class LockNode {
     
-    private static final String GLOBAL_LOCK_NODE = "glock";
+    private static final String LOCK_NODE_ROOT = "lock";
+    
+    private static final String LOCK_NODE = "glock";
     
     /**
-     * Get global lock node path.
+     * Get lock node path.
      * 
-     * @return global lock node path
+     * @return lock node path
      */
-    public String getGlobalLockNodePath() {
-        return Joiner.on("/").join("", GLOBAL_LOCK_NODE);
+    public String getLockNodePath() {
+        return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCK_NODE);
     }
 }

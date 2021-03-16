@@ -31,7 +31,6 @@
     <modules>
         <module>shardingsphere-scaling-bootstrap</module>
         <module>shardingsphere-scaling-core</module>
-        <module>shardingsphere-scaling-elasticjob</module>
         <module>shardingsphere-scaling-dialect</module>
     </modules>
 </project>

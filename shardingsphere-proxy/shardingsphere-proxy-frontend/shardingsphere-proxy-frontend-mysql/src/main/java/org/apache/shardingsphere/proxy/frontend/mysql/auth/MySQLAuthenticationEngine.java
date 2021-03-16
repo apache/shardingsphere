@@ -74,9 +74,9 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         } else if (MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH == connectionPhase) {
             authenticationMethodMismatch((MySQLPacketPayload) payload);
         }
-        Optional<MySQLServerErrorCode> errorCode = authenticationHandler.login(currentAuthResult.getUsername(), authResponse, currentAuthResult.getDatabase());
+        Optional<MySQLServerErrorCode> errorCode = authenticationHandler.login(currentAuthResult.getUsername(), getHostAddress(context), authResponse, currentAuthResult.getDatabase());
         context.writeAndFlush(errorCode.isPresent() ? createErrorPacket(errorCode.get(), context) : new MySQLOKPacket(++sequenceId));
-        return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), currentAuthResult.getDatabase());
+        return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), getHostAddress(context), currentAuthResult.getDatabase());
     }
     
     private AuthenticationResult authPhaseFastPath(final ChannelHandlerContext context, final PacketPayload payload) {
@@ -90,9 +90,9 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         if (isClientPluginAuth(packet) && !MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName().equals(packet.getAuthPluginName())) {
             connectionPhase = MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH;
             context.writeAndFlush(new MySQLAuthSwitchRequestPacket(++sequenceId, MySQLAuthenticationMethod.SECURE_PASSWORD_AUTHENTICATION.getMethodName(), authenticationHandler.getAuthPluginData()));
-            return AuthenticationResultBuilder.continued(packet.getUsername(), packet.getDatabase());
+            return AuthenticationResultBuilder.continued(packet.getUsername(), getHostAddress(context), packet.getDatabase());
         }
-        return AuthenticationResultBuilder.finished(packet.getUsername(), packet.getDatabase());
+        return AuthenticationResultBuilder.finished(packet.getUsername(), getHostAddress(context), packet.getDatabase());
     }
     
     private boolean isClientPluginAuth(final MySQLHandshakeResponse41Packet packet) {

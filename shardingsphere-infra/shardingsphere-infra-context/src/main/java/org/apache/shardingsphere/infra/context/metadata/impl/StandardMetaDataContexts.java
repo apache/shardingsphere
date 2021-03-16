@@ -18,20 +18,23 @@
 package org.apache.shardingsphere.infra.context.metadata.impl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.auth.Authentication;
-import org.apache.shardingsphere.infra.auth.AuthenticationEngine;
-import org.apache.shardingsphere.infra.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.auth.Authentication;
+import org.apache.shardingsphere.infra.metadata.auth.AuthenticationEngine;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
+import org.apache.shardingsphere.infra.state.StateContext;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Standard meta data contexts.
@@ -49,17 +52,20 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     
     private final ConfigurationProperties props;
     
+    private final StateContext stateContext;
+    
     public StandardMetaDataContexts() {
-        this(new ConcurrentHashMap<>(), null, new DefaultAuthentication(), new ConfigurationProperties(new Properties()));
+        this(new LinkedHashMap<>(), null, new DefaultAuthentication(), new ConfigurationProperties(new Properties()));
     }
     
     public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap, 
                                     final ExecutorEngine executorEngine, final Authentication authentication, final ConfigurationProperties props) {
-        this.metaDataMap = new ConcurrentHashMap<>(metaDataMap);
+        this.metaDataMap = new LinkedHashMap<>(metaDataMap);
         this.executorEngine = executorEngine;
-        this.calciteContextFactory = new CalciteContextFactory(metaDataMap);
+        calciteContextFactory = new CalciteContextFactory(metaDataMap);
         this.authentication = AuthenticationEngine.findSPIAuthentication().orElse(authentication);
         this.props = props;
+        stateContext = new StateContext();
     }
     
     @Override
@@ -75,6 +81,11 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     @Override
     public ShardingSphereMetaData getDefaultMetaData() {
         return getMetaData(DefaultSchema.LOGIC_NAME);
+    }
+    
+    @Override
+    public Optional<ShardingSphereLock> getLock() {
+        return Optional.empty();
     }
     
     @Override

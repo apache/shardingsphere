@@ -36,8 +36,6 @@ public final class YamlHARuleConfiguration implements YamlRuleConfiguration {
     
     private Map<String, YamlHADataSourceRuleConfiguration> dataSources = new LinkedHashMap<>();
     
-    private Map<String, YamlShardingSphereAlgorithmConfiguration> loadBalancers = new LinkedHashMap<>();
-    
     private Map<String, YamlShardingSphereAlgorithmConfiguration> haTypes = new LinkedHashMap<>();
     
     @Override

@@ -21,27 +21,15 @@ chapter = true
 | SQLServerDatabaseType  | SQLServer database      |
 | H2DatabaseType         | H2 database             |
 
-## LogicMetaDataLoader
+## DialectTableMetaDataLoader
 
-| *SPI Name*             | *Description*                           |
-| ---------------------- | --------------------------------------- |
-| LogicMetaDataLoader    | Used to initialize meta data            |
+| *SPI Name*                   | *Description*                             |
+| ---------------------------- | ----------------------------------------- |
+| DialectTableMetaDataLoader   | Use SQL dialect to load meta data rapidly |
 
-| *Implementation Class* | *Description*                           |
-| ---------------------- | --------------------------------------- |
-| ShardingMetaDataLoader | Used to initialize sharding meta data   |
-| EncryptMetaDataLoader  | Used to initialize encryption meta data |
-
-## LogicMetaDataDecorator
-
-| *SPI Name*                | *Description*                        |
-| ------------------------- | ------------------------------------ |
-| LogicMetaDataDecorator    | Used to update meta data             |
-
-| *Implementation Class*    | *Description*                        |
-| ------------------------- | ------------------------------------ |
-| ShardingMetaDataDecorator | Used to update sharding meta data    |
-| EncryptMetaDataDecorator  | Used to update encryption meta data  |
+| *Implementation Class*       | *Description*                             |
+| ---------------------------- | ----------------------------------------- |
+| MySQLTableMetaDataLoader     | Use MySQL dialect to load meta data       |
 
 ## SQLRouter
 

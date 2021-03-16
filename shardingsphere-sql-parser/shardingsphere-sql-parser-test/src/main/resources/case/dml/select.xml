@@ -23,6 +23,13 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_with_schema_func" >
+        <projections start-index="7" stop-index="26">
+            <expression-projection text="schema()" start-index="7" stop-index="14" />
+            <expression-projection text="database()" start-index="17" stop-index="26" />
+        </projections>
+    </select>
+
     <select sql-case-id="select_sqlmode_ansi_quotes" >
         <projections start-index="7" stop-index="10">
             <expression-projection text="id" start-index="7" stop-index="10" />

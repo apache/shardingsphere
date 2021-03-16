@@ -23,7 +23,7 @@ services:
     container_name: tbl-mysql
     command: ['--sql_mode=', '--default-authentication-plugin=mysql_native_password']
     volumes:
-      - ../../env/tbl/mysql:/docker-entrypoint-initdb.d/
+      - ../../env/tbl/init-sql/mysql:/docker-entrypoint-initdb.d/
     ports:
       - "33160:3306"
     environment:
@@ -33,7 +33,7 @@ services:
 #    image: "zookeeper:3.6.2"
 #    container_name: tbl-register-center
 #    ports:
-#      - "2181:22810"
+#      - "21810:2181"
   
   shardingsphere-proxy:
     image: apache/shardingsphere-proxy-test

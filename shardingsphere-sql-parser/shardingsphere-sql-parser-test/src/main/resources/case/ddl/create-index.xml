@@ -101,6 +101,45 @@
         </table>
     </create-index>
     
+    <create-index sql-case-id="create_index_with_unique">
+        <table>
+            <simple-table name="t_order" start-index="35" stop-index="41" />
+        </table>
+        <index name="order_index" start-index="20" stop-index="30" />
+    </create-index>
+    
+    <create-index sql-case-id="create_index_with_usable">
+        <table>
+            <simple-table name="t_order" start-index="35" stop-index="41" />
+        </table>
+        <index name="order_index" start-index="20" stop-index="30" />
+    </create-index>
+    
+    <create-index sql-case-id="create_index_with_unusable">
+        <table>
+            <simple-table name="t_order" start-index="35" stop-index="41" />
+        </table>
+        <index name="order_index" start-index="20" stop-index="30" />
+    </create-index>
+    
+    <create-index sql-case-id="create_index_with_immediate_invalidation">
+        <table>
+            <simple-table name="t_order" start-index="35" stop-index="41" />
+        </table>
+        <index name="order_index" start-index="20" stop-index="30" />
+    </create-index>
+    
+    <create-index sql-case-id="create_index_with_cluster_index">
+        <index name="order_index" start-index="20" stop-index="30" />
+    </create-index>
+    
+    <create-index sql-case-id="create_index_with_bitmap">
+        <table>
+            <simple-table name="t_order" start-index="35" stop-index="41" />
+        </table>
+        <index name="order_index" start-index="20" stop-index="30" />
+    </create-index>
+    
     <create-index sql-case-id="create_index_with_bracket">
         <table>
             <simple-table name="t_order" start-delimiter="[" end-delimiter="]" start-index="30" stop-index="38" />

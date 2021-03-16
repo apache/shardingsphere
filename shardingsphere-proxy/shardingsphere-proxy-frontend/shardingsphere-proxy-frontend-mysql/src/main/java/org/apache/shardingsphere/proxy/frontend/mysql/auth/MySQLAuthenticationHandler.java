@@ -20,14 +20,14 @@ package org.apache.shardingsphere.proxy.frontend.mysql.auth;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
-import org.apache.shardingsphere.infra.auth.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -43,17 +43,18 @@ public final class MySQLAuthenticationHandler {
     /**
      * Login.
      *
-     * @param username username.
+     * @param username username
+     * @param hostname hostname
      * @param authResponse auth response
      * @param database database
      * @return login success or failure
      */
-    public Optional<MySQLServerErrorCode> login(final String username, final byte[] authResponse, final String database) {
-        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(username);
+    public Optional<MySQLServerErrorCode> login(final String username, final String hostname, final byte[] authResponse, final String database) {
+        Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(new Grantee(username, hostname));
         if (!user.isPresent() || !isPasswordRight(user.get().getPassword(), authResponse)) {
             return Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR);
         }
-        if (!isAuthorizedSchema(user.get().getAuthorizedSchemas(), database)) {
+        if (!ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getAuthentication().get(user.get()).getDataPrivilege().hasPrivileges(database, Collections.emptyList())) {
             return Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
         }
         return Optional.empty();
@@ -61,10 +62,6 @@ public final class MySQLAuthenticationHandler {
     
     private boolean isPasswordRight(final String password, final byte[] authResponse) {
         return Strings.isNullOrEmpty(password) || Arrays.equals(getAuthCipherBytes(password), authResponse);
-    }
-    
-    private boolean isAuthorizedSchema(final Collection<String> authorizedSchemas, final String schema) {
-        return Strings.isNullOrEmpty(schema) || CollectionUtils.isEmpty(authorizedSchemas) || authorizedSchemas.contains(schema);
     }
     
     private byte[] getAuthCipherBytes(final String password) {

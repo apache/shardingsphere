@@ -107,6 +107,10 @@ tableName
     : (owner DOT_)? name
     ;
 
+viewName
+    : (owner DOT_)? name
+    ;
+
 columnName
     : (owner DOT_)? name
     ;
@@ -115,15 +119,31 @@ objectName
     : (owner DOT_)? name
     ;
 
+clusterName
+    : (owner DOT_)? name
+    ;
+
 indexName
     : identifier
     ;
 
+savepointName
+    : identifier
+    ;
+    
 owner
     : identifier
     ;
 
 name
+    : identifier
+    ;
+
+roleName
+    : identifier
+    ;
+
+password
     : identifier
     ;
 

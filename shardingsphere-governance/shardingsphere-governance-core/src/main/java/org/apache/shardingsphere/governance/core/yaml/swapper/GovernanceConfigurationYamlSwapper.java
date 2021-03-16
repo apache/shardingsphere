@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.yaml.swapper;
 
-import org.apache.shardingsphere.infra.yaml.swapper.YamlSwapper;
+import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
@@ -25,7 +25,7 @@ import org.apache.shardingsphere.governance.repository.api.config.GovernanceConf
 /**
  * Governance configuration YAML swapper.
  */
-public final class GovernanceConfigurationYamlSwapper implements YamlSwapper<YamlGovernanceConfiguration, GovernanceConfiguration> {
+public final class GovernanceConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlGovernanceConfiguration, GovernanceConfiguration> {
     
     private final GovernanceCenterConfigurationYamlSwapper governanceCenterConfigurationSwapper = new GovernanceCenterConfigurationYamlSwapper();
     
@@ -34,19 +34,12 @@ public final class GovernanceConfigurationYamlSwapper implements YamlSwapper<Yam
         YamlGovernanceConfiguration result = new YamlGovernanceConfiguration();
         result.setName(data.getName());
         result.setRegistryCenter(governanceCenterConfigurationSwapper.swapToYamlConfiguration(data.getRegistryCenterConfiguration()));
-        if (data.getAdditionalConfigCenterConfiguration().isPresent()) {
-            result.setAdditionalConfigCenter(governanceCenterConfigurationSwapper.swapToYamlConfiguration(data.getAdditionalConfigCenterConfiguration().get()));
-        }
         return result;
     }
     
     @Override
     public GovernanceConfiguration swapToObject(final YamlGovernanceConfiguration yamlConfig) {
-        GovernanceCenterConfiguration registryCenter = governanceCenterConfigurationSwapper.swapToObject(yamlConfig.getRegistryCenter());
-        if (null == yamlConfig.getAdditionalConfigCenter()) {
-            return new GovernanceConfiguration(yamlConfig.getName(), registryCenter, yamlConfig.isOverwrite());
-        }
-        GovernanceCenterConfiguration additionalConfigCenter = governanceCenterConfigurationSwapper.swapToObject(yamlConfig.getAdditionalConfigCenter());
-        return new GovernanceConfiguration(yamlConfig.getName(), registryCenter, additionalConfigCenter, yamlConfig.isOverwrite());
+        GovernanceCenterConfiguration governanceCenterConfiguration = governanceCenterConfigurationSwapper.swapToObject(yamlConfig.getRegistryCenter());
+        return new GovernanceConfiguration(yamlConfig.getName(), governanceCenterConfiguration, yamlConfig.isOverwrite());
     }
 }

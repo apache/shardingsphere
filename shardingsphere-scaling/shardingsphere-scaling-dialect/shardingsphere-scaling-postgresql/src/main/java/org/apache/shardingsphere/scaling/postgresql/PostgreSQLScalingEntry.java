@@ -17,21 +17,13 @@
 
 package org.apache.shardingsphere.scaling.postgresql;
 
-import org.apache.shardingsphere.scaling.core.execute.executor.dumper.JDBCDumper;
-import org.apache.shardingsphere.scaling.core.execute.executor.dumper.LogDumper;
-import org.apache.shardingsphere.scaling.core.execute.executor.importer.Importer;
-import org.apache.shardingsphere.scaling.core.execute.executor.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.job.position.PositionManager;
-import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLDataConsistencyChecker;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLDataSourceChecker;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLImporter;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLJdbcDumper;
-import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLPositionManager;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLInventoryDumper;
+import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLPositionInitializer;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLScalingSQLBuilder;
 import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLWalDumper;
+import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLEnvironmentChecker;
 
 /**
  * PostgreSQL scaling entry.
@@ -39,37 +31,32 @@ import org.apache.shardingsphere.scaling.postgresql.component.PostgreSQLWalDumpe
 public final class PostgreSQLScalingEntry implements ScalingEntry {
     
     @Override
-    public Class<? extends JDBCDumper> getJdbcDumperClass() {
-        return PostgreSQLJdbcDumper.class;
+    public Class<PostgreSQLInventoryDumper> getInventoryDumperClass() {
+        return PostgreSQLInventoryDumper.class;
     }
     
     @Override
-    public Class<? extends LogDumper> getLogDumperClass() {
+    public Class<PostgreSQLWalDumper> getIncrementalDumperClass() {
         return PostgreSQLWalDumper.class;
     }
     
     @Override
-    public Class<? extends PositionManager> getPositionManager() {
-        return PostgreSQLPositionManager.class;
+    public Class<PostgreSQLPositionInitializer> getPositionInitializerClass() {
+        return PostgreSQLPositionInitializer.class;
     }
     
     @Override
-    public Class<? extends Importer> getImporterClass() {
+    public Class<PostgreSQLImporter> getImporterClass() {
         return PostgreSQLImporter.class;
     }
     
     @Override
-    public Class<? extends DataSourceChecker> getDataSourceCheckerClass() {
-        return PostgreSQLDataSourceChecker.class;
+    public Class<PostgreSQLEnvironmentChecker> getEnvironmentCheckerClass() {
+        return PostgreSQLEnvironmentChecker.class;
     }
     
     @Override
-    public Class<? extends DataConsistencyChecker> getDataConsistencyCheckerClass() {
-        return PostgreSQLDataConsistencyChecker.class;
-    }
-    
-    @Override
-    public Class<? extends ScalingSQLBuilder> getSQLBuilderClass() {
+    public Class<PostgreSQLScalingSQLBuilder> getSQLBuilderClass() {
         return PostgreSQLScalingSQLBuilder.class;
     }
     

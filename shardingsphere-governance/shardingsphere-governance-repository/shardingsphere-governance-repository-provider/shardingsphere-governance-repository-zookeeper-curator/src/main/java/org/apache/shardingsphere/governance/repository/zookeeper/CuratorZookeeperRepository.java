@@ -23,7 +23,6 @@ import lombok.Setter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
-import org.apache.curator.framework.api.transaction.TransactionOp;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.framework.recipes.cache.CuratorCacheListener;
@@ -31,7 +30,6 @@ import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
-import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
@@ -47,27 +45,27 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Governance repository of ZooKeeper.
  */
-public final class CuratorZookeeperRepository implements ConfigurationRepository, RegistryRepository {
+public final class CuratorZookeeperRepository implements RegistryRepository {
     
     private final Map<String, CuratorCache> caches = new HashMap<>();
     
-    private final Set<String> watchedKeys = new HashSet<>();
-    
     private CuratorFramework client;
     
-    private InterProcessLock lock;
+    private CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder();
+    
+    private final Map<String, InterProcessLock> locks = new ConcurrentHashMap<>();
     
     @Getter
     @Setter
@@ -85,9 +83,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         int maxRetries = zookeeperProperties.getValue(ZookeeperPropertyKey.MAX_RETRIES);
         int timeToLiveSeconds = zookeeperProperties.getValue(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS);
         int operationTimeoutMilliseconds = zookeeperProperties.getValue(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS);
-        String digest = zookeeperProperties.getValue(ZookeeperPropertyKey.DIGEST);
-        CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
-            .connectString(config.getServerLists())
+        builder.connectString(config.getServerLists())
             .retryPolicy(new ExponentialBackoffRetry(retryIntervalMilliseconds, maxRetries, retryIntervalMilliseconds * maxRetries))
             .namespace(namespace);
         if (0 != timeToLiveSeconds) {
@@ -96,6 +92,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
         if (0 != operationTimeoutMilliseconds) {
             builder.connectionTimeoutMs(operationTimeoutMilliseconds);
         }
+        String digest = zookeeperProperties.getValue(ZookeeperPropertyKey.DIGEST);
         if (!Strings.isNullOrEmpty(digest)) {
             builder.authorization(ZookeeperPropertyKey.DIGEST.getKey(), digest.getBytes(StandardCharsets.UTF_8))
                 .aclProvider(new ACLProvider() {
@@ -176,8 +173,7 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     
     private void update(final String key, final String value) {
         try {
-            TransactionOp transactionOp = client.transactionOp();
-            client.transaction().forOperations(transactionOp.check().forPath(key), transactionOp.setData().forPath(key, value.getBytes(StandardCharsets.UTF_8)));
+            client.setData().forPath(key, value.getBytes(StandardCharsets.UTF_8));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -237,29 +233,18 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
         String path = key + PATH_SEPARATOR;
-        if (isDuplicate(path)) {
-            return;
-        }
         if (!caches.containsKey(path)) {
             addCacheData(key);
+            CuratorCache cache = caches.get(path);
+            cache.listenable().addListener((type, oldData, data) -> {
+                String eventPath = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getPath() : data.getPath();
+                byte[] eventDataByte = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getData() : data.getData();
+                Type changedType = getChangedType(type);
+                if (Type.IGNORED != changedType) {
+                    listener.onChange(new DataChangedEvent(eventPath, null == eventDataByte ? null : new String(eventDataByte, StandardCharsets.UTF_8), changedType));
+                }
+            });
         }
-        CuratorCache cache = caches.get(path);
-        cache.listenable().addListener((type, oldData, data) -> {
-            String eventPath = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getPath() : data.getPath();
-            byte[] eventDataByte = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getData() : data.getData();
-            Type changedType = getChangedType(type);
-            if (Type.IGNORED != changedType) {
-                listener.onChange(new DataChangedEvent(eventPath, null == eventDataByte ? null : new String(eventDataByte, StandardCharsets.UTF_8), changedType));
-            }
-        });
-    }
-    
-    private boolean isDuplicate(final String key) {
-        if (!watchedKeys.isEmpty()) {
-            return watchedKeys.stream().filter(each -> key.startsWith(each)).findFirst().isPresent();
-        }
-        watchedKeys.add(key);
-        return false;
     }
     
     private void addCacheData(final String cachePath) {
@@ -288,14 +273,9 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     }
     
     @Override
-    public void initLock(final String key) {
-        lock = new InterProcessMutex(client, key);
-    }
-    
-    @Override
-    public boolean tryLock(final long time, final TimeUnit unit) {
+    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
         try {
-            return lock.acquire(time, unit);
+            return getLock(key).acquire(time, unit);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -305,14 +285,30 @@ public final class CuratorZookeeperRepository implements ConfigurationRepository
     }
     
     @Override
-    public void releaseLock() {
+    public void releaseLock(final String key) {
         try {
-            lock.release();
+            if (availableLock(key)) {
+                locks.get(key).release();
+                locks.remove(key);
+            }
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             CuratorZookeeperExceptionHandler.handleException(ex);
         }
+    }
+    
+    private InterProcessLock getLock(final String key) {
+        if (availableLock(key)) {
+            return locks.get(key);
+        }
+        InterProcessLock lock = new InterProcessMutex(client, key);
+        locks.put(key, lock);
+        return lock;
+    }
+    
+    private boolean availableLock(final String key) {
+        return Objects.nonNull(locks.get(key));
     }
     
     @Override

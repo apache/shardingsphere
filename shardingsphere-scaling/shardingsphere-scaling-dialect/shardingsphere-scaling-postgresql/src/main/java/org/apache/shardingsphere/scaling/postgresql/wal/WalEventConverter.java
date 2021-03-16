@@ -19,14 +19,14 @@ package org.apache.shardingsphere.scaling.postgresql.wal;
 
 import org.apache.shardingsphere.scaling.core.config.DumperConfiguration;
 import org.apache.shardingsphere.scaling.core.config.datasource.StandardJDBCDataSourceConfiguration;
-import org.apache.shardingsphere.scaling.core.constant.ScalingConstant;
-import org.apache.shardingsphere.scaling.core.datasource.DataSourceFactory;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.Column;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.DataRecord;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.PlaceholderRecord;
-import org.apache.shardingsphere.scaling.core.execute.executor.record.Record;
-import org.apache.shardingsphere.scaling.core.metadata.JdbcUri;
-import org.apache.shardingsphere.scaling.core.metadata.MetaDataManager;
+import org.apache.shardingsphere.scaling.core.common.constant.ScalingConstant;
+import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceFactory;
+import org.apache.shardingsphere.scaling.core.common.record.Column;
+import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
+import org.apache.shardingsphere.scaling.core.common.record.PlaceholderRecord;
+import org.apache.shardingsphere.scaling.core.common.record.Record;
+import org.apache.shardingsphere.scaling.core.common.datasource.JdbcUri;
+import org.apache.shardingsphere.scaling.core.common.datasource.MetaDataManager;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.AbstractWalEvent;
 import org.apache.shardingsphere.scaling.postgresql.wal.event.DeleteRowEvent;
@@ -58,7 +58,7 @@ public final class WalEventConverter {
      * @return record
      */
     public Record convert(final AbstractWalEvent event) {
-        JdbcUri uri = new JdbcUri(((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getJdbcUrl());
+        JdbcUri uri = new JdbcUri(((StandardJDBCDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getHikariConfig().getJdbcUrl());
         if (filter(uri.getDatabase(), event)) {
             return createPlaceholderRecord(event);
         } else if (event instanceof WriteRowEvent) {

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.engine.it;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
+import org.apache.shardingsphere.test.integration.engine.param.model.CaseParameterizedArray;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.junit.After;
@@ -57,24 +57,24 @@ import static org.junit.Assert.assertThat;
 @Getter(AccessLevel.PROTECTED)
 public abstract class BatchIT extends BaseIT {
     
-    private static DataSetEnvironmentManager dataSetEnvironmentManager;
-    
     private final IntegrationTestCaseContext testCaseContext;
     
     private final String sql;
     
     private final Collection<DataSet> dataSets;
+
+    @Getter(AccessLevel.NONE)
+    private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    protected BatchIT(final IntegrationTestCaseContext testCaseContext,
-                      final String adapter, final String scenario, final DatabaseType databaseType, final String sql) throws IOException, JAXBException, SQLException {
-        super(adapter, scenario, databaseType);
-        this.testCaseContext = testCaseContext;
-        this.sql = sql;
+    protected BatchIT(final CaseParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException {
+        super(parameterizedArray.getAdapter(), parameterizedArray.getScenario(), parameterizedArray.getDatabaseType());
+        this.testCaseContext = parameterizedArray.getTestCaseContext();
+        this.sql = parameterizedArray.getTestCaseContext().getTestCase().getSql();
         dataSets = new LinkedList<>();
         for (IntegrationTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
-            dataSets.add(DataSetLoader.load(testCaseContext.getParentPath(), scenario, databaseType, each.getExpectedDataFile()));
+            dataSets.add(DataSetLoader.load(testCaseContext.getParentPath(), parameterizedArray.getScenario(), parameterizedArray.getDatabaseType(), each.getExpectedDataFile()));
         }
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(scenario), getActualDataSources());
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(parameterizedArray.getScenario()), getActualDataSources());
     }
     
     @Before
@@ -87,16 +87,8 @@ public abstract class BatchIT extends BaseIT {
         dataSetEnvironmentManager.clearData();
     }
     
-    protected final void assertDataSet(final int[] actualUpdateCounts) throws SQLException {
-        Collection<DataSet> expectedList = new LinkedList<>();
-        assertThat(actualUpdateCounts.length, is(dataSets.size()));
-        int count = 0;
-        for (DataSet each : dataSets) {
-            assertThat(actualUpdateCounts[count], is(each.getUpdateCount()));
-            expectedList.add(each);
-            count++;
-        }
-        DataSet expected = merge(expectedList);
+    protected final void assertDataSets(final int[] actualUpdateCounts) throws SQLException {
+        DataSet expected = getDataSet(actualUpdateCounts);
         assertThat("Only support single table for DML.", expected.getMetadataList().size(), is(1));
         DataSetMetadata expectedDataSetMetadata = expected.getMetadataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
@@ -108,19 +100,24 @@ public abstract class BatchIT extends BaseIT {
         }
     }
     
-    private void assertDataSet(final PreparedStatement actualPreparedStatement, final List<DataSetRow> expectedDataSetRows, final DataSetMetadata expectedDataSetMetadata) throws SQLException {
-        try (ResultSet actualResultSet = actualPreparedStatement.executeQuery()) {
-            assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetadata.getColumns());
-            assertRows(actualResultSet, expectedDataSetRows);
+    private DataSet getDataSet(final int[] actualUpdateCounts) {
+        Collection<DataSet> dataSets = new LinkedList<>();
+        assertThat(actualUpdateCounts.length, is(this.dataSets.size()));
+        int count = 0;
+        for (DataSet each : this.dataSets) {
+            assertThat(actualUpdateCounts[count], is(each.getUpdateCount()));
+            dataSets.add(each);
+            count++;
         }
+        return mergeDataSets(dataSets);
     }
     
-    private DataSet merge(final Collection<DataSet> expectedList) {
+    private DataSet mergeDataSets(final Collection<DataSet> dataSets) {
         DataSet result = new DataSet();
-        Set<List<String>> existedRowValues = new HashSet<>();
-        for (DataSet each : expectedList) {
+        Set<DataSetRow> existedRows = new HashSet<>();
+        for (DataSet each : dataSets) {
             mergeMetadata(each, result);
-            mergeRow(each, result, existedRowValues);
+            mergeRow(each, result, existedRows);
         }
         sortRow(result);
         return result;
@@ -132,9 +129,9 @@ public abstract class BatchIT extends BaseIT {
         }
     }
     
-    private void mergeRow(final DataSet original, final DataSet dist, final Set<List<String>> existedRowValues) {
+    private void mergeRow(final DataSet original, final DataSet dist, final Set<DataSetRow> existedRows) {
         for (DataSetRow each : original.getRows()) {
-            if (existedRowValues.add(each.getValues())) {
+            if (existedRows.add(each)) {
                 dist.getRows().add(each);
             }
         }
@@ -142,6 +139,13 @@ public abstract class BatchIT extends BaseIT {
     
     private void sortRow(final DataSet dataSet) {
         dataSet.getRows().sort(Comparator.comparingInt(o -> Integer.parseInt(o.getValues().get(0))));
+    }
+    
+    private void assertDataSet(final PreparedStatement actualPreparedStatement, final List<DataSetRow> expectedDataSetRows, final DataSetMetadata expectedDataSetMetadata) throws SQLException {
+        try (ResultSet actualResultSet = actualPreparedStatement.executeQuery()) {
+            assertMetaData(actualResultSet.getMetaData(), expectedDataSetMetadata.getColumns());
+            assertRows(actualResultSet, expectedDataSetRows);
+        }
     }
     
     private void assertMetaData(final ResultSetMetaData actualMetaData, final Collection<DataSetColumn> columnMetadataList) throws SQLException {

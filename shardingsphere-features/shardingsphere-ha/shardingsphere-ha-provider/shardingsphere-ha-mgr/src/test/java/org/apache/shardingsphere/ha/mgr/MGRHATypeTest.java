@@ -109,9 +109,9 @@ public final class MGRHATypeTest {
         } catch (final SQLException ex) {
             throw new ShardingSphereException(ex);
         }
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
         for (int i = 0; i < 3; i++) {
-            dataSourceMap.put("ds_" + i, dataSources.get(i));
+            dataSourceMap.put(String.format("ds_%s", i), dataSources.get(i));
         }
         mgrHaType.getProps().setProperty("groupName", "group_name");
         mgrHaType.updatePrimaryDataSource(dataSourceMap, "ha_db", Collections.emptySet(), "group_name", null);

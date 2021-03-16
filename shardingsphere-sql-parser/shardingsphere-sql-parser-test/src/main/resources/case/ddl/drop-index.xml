@@ -52,4 +52,9 @@
     <drop-index sql-case-id="drop_index_if_exists_on_table">
         <table name="t_order" start-index="36" stop-index="42" />
     </drop-index>
+    
+    <drop-index sql-case-id="drop_index_with_online_force_invalidation">
+        <index name="order_index" start-index="11" stop-index="21" />
+    </drop-index>
+    
 </sql-parser-test-cases>

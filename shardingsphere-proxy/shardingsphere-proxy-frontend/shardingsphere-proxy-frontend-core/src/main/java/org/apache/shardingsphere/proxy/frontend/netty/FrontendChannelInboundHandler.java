@@ -22,6 +22,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -29,7 +30,7 @@ import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.executor.ChannelThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyStateContext;
-import org.apache.shardingsphere.replicaquery.route.engine.impl.PrimaryVisitedManager;
+import org.apache.shardingsphere.readwrite.splitting.route.engine.impl.PrimaryVisitedManager;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
 /**
@@ -69,7 +70,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
         try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload(message)) {
             AuthenticationResult authResult = databaseProtocolFrontendEngine.getAuthEngine().auth(context, payload);
             if (authResult.isFinished()) {
-                backendConnection.setUsername(authResult.getUsername());
+                backendConnection.setGrantee(new Grantee(authResult.getUsername(), authResult.getHostname()));
                 backendConnection.setCurrentSchema(authResult.getDatabase());
             }
             return authResult.isFinished();

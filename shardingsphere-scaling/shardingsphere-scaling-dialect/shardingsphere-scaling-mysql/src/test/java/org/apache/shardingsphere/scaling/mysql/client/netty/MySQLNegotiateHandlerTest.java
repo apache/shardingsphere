@@ -28,7 +28,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
-import org.apache.shardingsphere.scaling.core.utils.ReflectionUtil;
+import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.apache.shardingsphere.scaling.mysql.client.ServerInfo;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,9 +79,9 @@ public final class MySQLNegotiateHandlerTest {
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLHandshakeResponse41Packet.class));
         ServerInfo serverInfo = ReflectionUtil.getFieldValue(mysqlNegotiateHandler, "serverInfo", ServerInfo.class);
         assertNotNull(serverInfo);
-        assertThat(serverInfo.getServerVersion().getMajor(), is(8));
-        assertThat(serverInfo.getServerVersion().getMinor(), is(0));
-        assertThat(serverInfo.getServerVersion().getSeries(), is(20));
+        assertThat(serverInfo.getServerVersion().getMajor(), is(5));
+        assertThat(serverInfo.getServerVersion().getMinor(), is(7));
+        assertThat(serverInfo.getServerVersion().getSeries(), is(22));
     }
     
     @Test

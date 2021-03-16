@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.postgresql.wal;
 
-import com.google.gson.Gson;
 import org.junit.Test;
 import org.postgresql.replication.LogSequenceNumber;
 
@@ -25,8 +24,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class WalPositionTest {
-    
-    private static final Gson GSON = new Gson();
     
     @Test
     public void assertCompareTo() {
@@ -36,15 +33,7 @@ public final class WalPositionTest {
     }
     
     @Test
-    public void assertToJson() {
-        WalPosition walPosition = new WalPosition(LogSequenceNumber.valueOf(100L));
-        assertThat(GSON.toJson(walPosition), is("{\"logSequenceNumber\":{\"value\":100},\"delay\":0}"));
-    }
-    
-    @Test
-    public void assertFromJson() {
-        WalPosition walPosition = GSON.fromJson("{\"logSequenceNumber\":{\"value\":100},\"delay\":0}", WalPosition.class);
-        assertThat(walPosition.getLogSequenceNumber().asLong(), is(100L));
-        assertThat(walPosition.getDelay(), is(0L));
+    public void assertToString() {
+        assertThat(new WalPosition(LogSequenceNumber.valueOf(100L)).toString(), is("100"));
     }
 }

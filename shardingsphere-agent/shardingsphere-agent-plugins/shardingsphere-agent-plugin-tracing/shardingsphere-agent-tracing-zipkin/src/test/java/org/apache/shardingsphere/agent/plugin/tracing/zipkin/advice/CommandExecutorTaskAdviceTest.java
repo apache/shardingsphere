@@ -19,7 +19,7 @@ package org.apache.shardingsphere.agent.plugin.tracing.zipkin.advice;
 
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 import org.apache.shardingsphere.agent.plugin.tracing.advice.AbstractCommandExecutorTaskAdviceTest;
-import org.apache.shardingsphere.agent.plugin.tracing.rule.ZipkinCollector;
+import org.apache.shardingsphere.agent.plugin.tracing.zipkin.collector.ZipkinCollector;
 import org.apache.shardingsphere.agent.plugin.tracing.zipkin.constant.ZipkinConstants;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -36,7 +36,7 @@ import static org.junit.Assert.assertThat;
 public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutorTaskAdviceTest {
     
     @ClassRule
-    public static ZipkinCollector collector = new ZipkinCollector();
+    public static final ZipkinCollector COLLECTOR = new ZipkinCollector();
     
     private CommandExecutorTaskAdvice advice;
     
@@ -49,7 +49,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
     public void assertMethod() {
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
-        Span span = collector.pop();
+        Span span = COLLECTOR.pop();
         assertNotNull(span);
         Map<String, String> tags = span.tags();
         assertThat(tags.get(ZipkinConstants.Tags.DB_TYPE), is(ZipkinConstants.DB_TYPE_VALUE));
@@ -63,7 +63,7 @@ public final class CommandExecutorTaskAdviceTest extends AbstractCommandExecutor
         advice.beforeMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
         advice.onThrowing(getTargetObject(), null, new Object[]{}, new IOException());
         advice.afterMethod(getTargetObject(), null, new Object[]{}, new MethodInvocationResult());
-        Span span = collector.pop();
+        Span span = COLLECTOR.pop();
         assertNotNull(span);
         Map<String, String> tags = span.tags();
         assertThat(tags.get("error"), is("IOException"));

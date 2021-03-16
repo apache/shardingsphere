@@ -17,17 +17,25 @@
 
 grammar DistSQLStatement;
 
-import Symbol, RDLStatement, RQLStatement;
+import Symbol, RDLStatement, RQLStatement, RALStatement;
 
 execute
     : (addResource
     | dropResource
     | createShardingRule
+    | alterShardingRule
     | dropShardingRule
     | createReplicaQueryRule
     | alterReplicaQueryRule
     | dropReplicaQueryRule
     | showResources
     | showRule
+    | showScalingJobList
+    | showScalingJobStatus
+    | startScalingJob
+    | stopScalingJob
+    | dropScalingJob
+    | resetScalingJob
+    | checkScalingJob
     ) SEMI?
     ;

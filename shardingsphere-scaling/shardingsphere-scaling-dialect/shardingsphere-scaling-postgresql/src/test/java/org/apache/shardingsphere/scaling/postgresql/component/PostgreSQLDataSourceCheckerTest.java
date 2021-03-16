@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.scaling.postgresql.component;
 
-import org.apache.shardingsphere.scaling.core.exception.PrepareFailedException;
+import org.apache.shardingsphere.scaling.core.common.exception.PrepareFailedException;
+import org.apache.shardingsphere.scaling.postgresql.component.checker.PostgreSQLDataSourceChecker;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

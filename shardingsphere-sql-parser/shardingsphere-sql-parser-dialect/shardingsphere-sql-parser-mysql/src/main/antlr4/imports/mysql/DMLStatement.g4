@@ -201,7 +201,7 @@ loadDataStatement
       (REPLACE | IGNORE)?
       INTO TABLE tableName partitionNames?
       (CHARACTER SET identifier)?
-      ((FIELDS | COLUMNS) selectFieldsInto+ )?
+      (COLUMNS selectFieldsInto+ )?
       ( LINES selectLinesInto+ )?
       ( IGNORE numberLiterals (LINES | ROWS) )?
       fieldOrVarSpec?
@@ -242,7 +242,7 @@ cteClause
     ;
 
 selectSpecification
-    : duplicateSpecification | HIGH_PRIORITY | STRAIGHT_JOIN | SQL_SMALL_RESULT | SQL_BIG_RESULT | SQL_BUFFER_RESULT | (SQL_CACHE | SQL_NO_CACHE) | SQL_CALC_FOUND_ROWS
+    : duplicateSpecification | HIGH_PRIORITY | STRAIGHT_JOIN | SQL_SMALL_RESULT | SQL_BIG_RESULT | SQL_BUFFER_RESULT | SQL_NO_CACHE | SQL_CALC_FOUND_ROWS
     ;
 
 duplicateSpecification
@@ -367,7 +367,7 @@ selectFieldsInto
 
 selectIntoExpression
     : INTO variable (COMMA_ variable )* | INTO DUMPFILE string_
-    | (INTO OUTFILE string_ (CHARACTER SET charsetName)?((FIELDS | COLUMNS) selectFieldsInto+)? (LINES selectLinesInto+)?)
+    | (INTO OUTFILE string_ (CHARACTER SET charsetName)?(COLUMNS selectFieldsInto+)? (LINES selectLinesInto+)?)
     ;
 
 lockClause

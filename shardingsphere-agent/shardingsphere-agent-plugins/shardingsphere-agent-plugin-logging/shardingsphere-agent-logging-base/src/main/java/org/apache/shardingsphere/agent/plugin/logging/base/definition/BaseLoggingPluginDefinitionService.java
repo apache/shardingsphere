@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.logging.base.definition;
 
-import java.util.Collection;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
 
 /**
@@ -27,19 +25,18 @@ import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionSe
  */
 public final class BaseLoggingPluginDefinitionService extends AbstractPluginDefinitionService {
     
-    private static final String SCHEMA_METADATA_LOADER_CLASS = "org.apache.shardingsphere.infra.metadata.schema.builder.loader.SchemaMetaDataLoader";
+    private static final String SCHEMA_METADATA_LOADER_CLASS = "org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder";
     
-    private static final String SCHEMA_METADATA_LOADER_METHOD_NAME = "loadAllTableNames";
+    private static final String SCHEMA_METADATA_LOADER_METHOD_NAME = "buildMetaData";
     
     private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.logging.base.advice.SchemaMetaDataLoaderAdvice";
     
     @Override
-    public Collection<PluginInterceptorPoint> define() {
-        intercept(SCHEMA_METADATA_LOADER_CLASS)
-                .aroundClassStaticMethod(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME))
+    public void defineInterceptors() {
+        defineInterceptor(SCHEMA_METADATA_LOADER_CLASS)
+                .aroundInstanceMethod(ElementMatchers.named(SCHEMA_METADATA_LOADER_METHOD_NAME))
                 .implement(SCHEMA_METADATA_LOADER_ADVICE_CLASS)
                 .build();
-        return install();
     }
     
     @Override

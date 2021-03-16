@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
@@ -52,7 +53,7 @@ public final class BatchPreparedStatementExecutor {
     
     private final JDBCExecutor jdbcExecutor;
     
-    private final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups;
+    private ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext;
     
     @Getter
     private final Collection<BatchExecutionUnit> batchExecutionUnits;
@@ -62,17 +63,17 @@ public final class BatchPreparedStatementExecutor {
     public BatchPreparedStatementExecutor(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor) {
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
-        executionGroups = new LinkedList<>();
+        executionGroupContext = new ExecutionGroupContext<>(new LinkedList<>());
         batchExecutionUnits = new LinkedList<>();
     }
     
     /**
      * Initialize executor.
      *
-     * @param executionGroups execution groups
+     * @param executionGroupContext execution group context
      */
-    public void init(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups) {
-        this.executionGroups.addAll(executionGroups);
+    public void init(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext) {
+        this.executionGroupContext = executionGroupContext;
     }
     
     /**
@@ -133,7 +134,10 @@ public final class BatchPreparedStatementExecutor {
                 return Optional.of(new int[batchCount]);
             }
         };
-        List<int[]> results = jdbcExecutor.execute(executionGroups, callback);
+        List<int[]> results = jdbcExecutor.execute(executionGroupContext, callback);
+        if (results.isEmpty()) {
+            return new int[0];
+        }
         return isNeedAccumulate(
                 metaDataContexts.getDefaultMetaData().getRuleMetaData().getRules().stream().filter(rule -> rule instanceof DataNodeContainedRule).collect(Collectors.toList()), sqlStatementContext)
                 ? accumulate(results) : results.get(0);
@@ -146,7 +150,7 @@ public final class BatchPreparedStatementExecutor {
     private int[] accumulate(final List<int[]> results) {
         int[] result = new int[batchCount];
         int count = 0;
-        for (ExecutionGroup<JDBCExecutionUnit> each : executionGroups) {
+        for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
             for (JDBCExecutionUnit eachUnit : each.getInputs()) {
                 Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = Collections.emptyMap();
                 for (BatchExecutionUnit eachExecutionUnit : batchExecutionUnits) {
@@ -177,7 +181,7 @@ public final class BatchPreparedStatementExecutor {
      */
     public List<Statement> getStatements() {
         List<Statement> result = new LinkedList<>();
-        for (ExecutionGroup<JDBCExecutionUnit> each : executionGroups) {
+        for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
             result.addAll(each.getInputs().stream().map(JDBCExecutionUnit::getStorageResource).collect(Collectors.toList()));
         }
         return result;
@@ -190,7 +194,7 @@ public final class BatchPreparedStatementExecutor {
      * @return parameter sets
      */
     public List<List<Object>> getParameterSet(final Statement statement) {
-        return executionGroups.stream().map(each -> findJDBCExecutionUnit(statement, each)).filter(Optional::isPresent).findFirst().map(Optional::get)
+        return executionGroupContext.getInputGroups().stream().map(each -> findJDBCExecutionUnit(statement, each)).filter(Optional::isPresent).findFirst().map(Optional::get)
                 .map(this::getParameterSets).orElse(Collections.emptyList());
     }
     
@@ -212,7 +216,7 @@ public final class BatchPreparedStatementExecutor {
     public void clear() throws SQLException {
         closeStatements();
         getStatements().clear();
-        executionGroups.clear();
+        executionGroupContext.getInputGroups().clear();
         batchCount = 0;
         batchExecutionUnits.clear();
     }
@@ -223,5 +227,3 @@ public final class BatchPreparedStatementExecutor {
         }
     }
 }
-
-

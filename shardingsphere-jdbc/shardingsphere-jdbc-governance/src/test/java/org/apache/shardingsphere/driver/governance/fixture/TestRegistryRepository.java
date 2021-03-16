@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.governance.fixture;
 
-import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEventListener;
@@ -28,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public final class TestRegistryRepository implements RegistryRepository, ConfigurationRepository {
+public final class TestRegistryRepository implements RegistryRepository {
     
     private static final Map<String, String> REGISTRY_DATA = new LinkedHashMap<>();
     
@@ -57,16 +56,12 @@ public final class TestRegistryRepository implements RegistryRepository, Configu
     }
     
     @Override
-    public void initLock(final String key) {
-    }
-    
-    @Override
-    public boolean tryLock(final long time, final TimeUnit unit) {
+    public boolean tryLock(final String key, final long time, final TimeUnit unit) {
         return false;
     }
     
     @Override
-    public void releaseLock() {
+    public void releaseLock(final String key) {
     }
     
     @Override

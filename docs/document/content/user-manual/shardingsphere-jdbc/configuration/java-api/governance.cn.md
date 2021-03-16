@@ -17,11 +17,9 @@ weight = 5
 | ----------------------------------- | ----------------------------------- | ----------------------------------------------------------------- |
 | name         | String  | 注册中心实例名称 |
 | registryCenterConfiguration         | GovernanceCenterConfiguration  | 注册中心实例的配置 |
-| additionalConfigCenterConfiguration | GovernanceCenterConfiguration  | 可选的配置中心实例配置 |
 | overwrite | boolean   | 本地配置是否覆盖配置中心配置，如果可覆盖，每次启动都以本地配置为准 |
 
 注册中心的类型可以为Zookeeper或etcd。
-配置中心的类型可以为Zookeeper或etcd、Apollo、Nacos。
 
 *治理实例配置*
 
@@ -31,7 +29,7 @@ weight = 5
 
 | *名称*         | *数据类型* | *说明*                                                                      |
 | ------------- | ---------- | -------------------------------------------------------------------------- |
-| type          | String     | 治理实例类型，如：Zookeeper, etcd, Apollo, Nacos                             |
+| type          | String     | 治理实例类型，如：Zookeeper, etcd                            |
 | serverLists   | String     | 治理服务列表，包括 IP 地址和端口号，多个地址用逗号分隔，如: host1:2181,host2:2181 |                                                             |
 | props         | Properties | 配置本实例需要的其他参数，例如 ZooKeeper 的连接参数等                            |
 
@@ -50,23 +48,3 @@ Etcd 属性配置
 | *名称*                 | *数据类型* | *说明*     | *默认值* |
 | --------------------- | --------- | ---------- | ------- |
 | timeToLiveSeconds (?) | long      | 数据存活秒数 | 30秒    |
-
-Apollo 属性配置
-
-| *名称*             | *数据类型* | *说明*               | *默认值*               |
-| ------------------ | -------- | -------------------- | --------------------- |
-| appId (?)          | String   | Apollo appId         | APOLLO_SHARDINGSPHERE |
-| env (?)            | String   | Apollo env           | DEV                   |
-| clusterName (?)    | String   | Apollo clusterName   | default               |
-| administrator (?)  | String   | Apollo administrator | 空                    |
-| token (?)          | String   | Apollo token         | 空                    |
-| portalUrl (?)      | String   | Apollo portalUrl     | 空                    |
-| connectTimeout (?) | int      | 连接超时毫秒数         | 1000 毫秒             |
-| readTimeout (?)    | int      | 读取超时毫秒数         | 5000 毫秒             |
-
-Nacos 属性配置
-
-| *名称*       | *数据类型* | *说明*                 | *默认值*                      |
-| ----------- | --------- | ---------------------- | ---------------------------- |
-| group (?)   | String    | nacos group 配置       | SHARDING_SPHERE_DEFAULT_GROUP |
-| timeout (?) | long      | nacos 获取数据超时毫秒数 | 3000 毫秒                     |
