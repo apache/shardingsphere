@@ -28,6 +28,7 @@ import org.apache.shardingsphere.driver.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.constant.SQLExceptionConstant;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.SSResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.infra.audit.SQLCheckEngine;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
@@ -40,8 +41,12 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.executor.exec.ExecContext;
+import org.apache.shardingsphere.infra.executor.exec.Executor;
+import org.apache.shardingsphere.infra.executor.exec.ExecutorBuilder;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -66,13 +71,17 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.optimize.ExecStmt;
 import org.apache.shardingsphere.infra.optimize.execute.CalciteExecutor;
 import org.apache.shardingsphere.infra.optimize.execute.CalciteJDBCExecutor;
+import org.apache.shardingsphere.infra.optimize.planner.Compiler;
 import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
+import org.apache.shardingsphere.infra.optimize.tools.OptimizerContext;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.RawExecutionRule;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -145,10 +154,26 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
         ResultSet result;
         try {
-            executionContext = createExecutionContext(sql);
-            List<QueryResult> queryResults = executeQuery0();
-            MergedResult mergedResult = mergeQuery(queryResults);
-            result = new ShardingSphereResultSet(getResultSetsForShardingSphereResultSet(), mergedResult, this, executionContext);
+            LogicSQL logicSQL = createLogicSQL(sql);
+            ShardingSphereMetaData shardingSphereMetaData = metaDataContexts.getDefaultMetaData();
+            Optional<ShardingRule> shardingRule = shardingSphereMetaData.getRuleMetaData().getRules().stream()
+                    .filter(rule -> rule instanceof ShardingRule).map(rule -> (ShardingRule)rule).findAny();
+            OptimizerContext.create(shardingRule.get());
+            ExecStmt execStmt = Compiler.compileQuery(shardingSphereMetaData.getName(), shardingSphereMetaData.getSchema(), logicSQL.getSqlStatementContext());
+            if(execStmt.isSuccess()) {
+                DatabaseType databaseType = metaDataContexts.getDefaultMetaData().getResource().getDatabaseType();
+        
+                ExecContext execContext = new ExecContext(sql, shardingRule.get(),
+                        logicSQL.getParameters(), execStmt.getSqlNode(), databaseType, metaDataContexts.getProps(),
+                        this.getConnection(), this.statementOption, this.connection.isHoldTransaction());
+                Executor executor = ExecutorBuilder.build(execContext, execStmt.getPhysicalPlan());
+                result = new SSResultSet(executor, executor.getMetaData(), this, execContext);
+            } else {
+                executionContext = createExecutionContext(sql);
+                List<QueryResult> queryResults = executeQuery0();
+                MergedResult mergedResult = mergeQuery(queryResults);
+                result = new ShardingSphereResultSet(getResultSetsForShardingSphereResultSet(), mergedResult, this, executionContext);
+            }
         } finally {
             currentResultSet = null;
         }
