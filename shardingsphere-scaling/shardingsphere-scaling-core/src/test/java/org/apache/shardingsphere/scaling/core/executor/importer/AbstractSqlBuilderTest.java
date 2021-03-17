@@ -23,7 +23,7 @@ import org.apache.shardingsphere.scaling.core.common.record.Column;
 import org.apache.shardingsphere.scaling.core.common.record.DataRecord;
 import org.apache.shardingsphere.scaling.core.common.record.RecordUtil;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
-import org.apache.shardingsphere.scaling.core.fixture.FixtureScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.fixture.FixtureSQLBuilder;
 import org.apache.shardingsphere.scaling.core.job.position.PlaceholderPosition;
 import org.junit.Test;
 
@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
 
 public final class AbstractSqlBuilderTest {
     
-    private final ScalingSQLBuilder scalingSqlBuilder = new FixtureScalingSQLBuilder(Maps.newHashMap());
+    private final ScalingSQLBuilder scalingSqlBuilder = new FixtureSQLBuilder(Maps.newHashMap());
     
     @Test
     public void assertBuildInsertSQL() {

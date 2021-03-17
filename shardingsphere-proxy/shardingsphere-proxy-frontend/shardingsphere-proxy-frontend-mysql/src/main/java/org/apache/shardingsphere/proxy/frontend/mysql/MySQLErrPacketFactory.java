@@ -23,15 +23,15 @@ import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.proxy.backend.exception.AddReplicaQueryRuleDataSourcesExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.AddReadWriteSplittingRuleDataSourcesExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.LockWaitTimeoutException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleCreateExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleDataSourcesNotExistedException;
-import org.apache.shardingsphere.proxy.backend.exception.ReplicaQueryRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleCreateExistsException;
+import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleDataSourcesNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
@@ -131,16 +131,16 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof ShardingTableRuleExistedException) {
             return new MySQLErrPacket(1, CommonErrorCode.SHARDING_TABLE_RULE_EXIST, ((ShardingTableRuleExistedException) cause).getTableNames());
         }
-        if (cause instanceof ReplicaQueryRuleNotExistedException) {
+        if (cause instanceof ReadWriteSplittingRuleNotExistedException) {
             return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_NOT_EXIST);
         }
-        if (cause instanceof ReplicaQueryRuleDataSourcesNotExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_DATA_SOURCE_NOT_EXIST, ((ReplicaQueryRuleDataSourcesNotExistedException) cause).getRuleNames());
+        if (cause instanceof ReadWriteSplittingRuleDataSourcesNotExistedException) {
+            return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_DATA_SOURCE_NOT_EXIST, ((ReadWriteSplittingRuleDataSourcesNotExistedException) cause).getRuleNames());
         }
-        if (cause instanceof AddReplicaQueryRuleDataSourcesExistedException) {
-            return new MySQLErrPacket(1, CommonErrorCode.ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST, ((AddReplicaQueryRuleDataSourcesExistedException) cause).getRuleNames());
+        if (cause instanceof AddReadWriteSplittingRuleDataSourcesExistedException) {
+            return new MySQLErrPacket(1, CommonErrorCode.ADD_REPLICA_QUERY_RULE_DATA_SOURCE_EXIST, ((AddReadWriteSplittingRuleDataSourcesExistedException) cause).getRuleNames());
         }
-        if (cause instanceof ReplicaQueryRuleCreateExistsException) {
+        if (cause instanceof ReadWriteSplittingRuleCreateExistsException) {
             return new MySQLErrPacket(1, CommonErrorCode.REPLICA_QUERY_RULE_EXIST);
         }
         if (cause instanceof ScalingJobNotFoundException) {

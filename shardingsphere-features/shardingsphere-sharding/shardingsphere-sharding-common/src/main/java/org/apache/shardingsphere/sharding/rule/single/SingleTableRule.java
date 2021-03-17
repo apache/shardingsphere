@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rule.single;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 public final class SingleTableRule {
     
     private final String tableName;

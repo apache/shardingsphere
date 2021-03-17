@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.infra.yaml.swapper;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,7 +32,23 @@ import static org.junit.Assert.assertThat;
 public final class YamlDataSourceConfigurationSwapperTest {
     
     private final YamlDataSourceConfigurationSwapper swapper = new YamlDataSourceConfigurationSwapper();
-    
+
+    @Test
+    public void assertSwapToDataSources() {
+        Map<String, Map<String, Object>> yamlConfig = createYamlConfig();
+        Map<String, DataSource> dataSources = swapper.swapToDataSources(yamlConfig);
+        HikariDataSource actual0 = (HikariDataSource) dataSources.get("ds_0");
+        assertThat(actual0.getDriverClassName(), is("org.h2.Driver"));
+        assertThat(actual0.getJdbcUrl(), is("jdbc:h2:mem:test_ds_0;MODE=MySQL"));
+        assertThat(actual0.getUsername(), is("root"));
+        assertThat(actual0.getPassword(), is("root"));
+        HikariDataSource actual1 = (HikariDataSource) dataSources.get("ds_1");
+        assertThat(actual1.getDriverClassName(), is("org.h2.Driver"));
+        assertThat(actual1.getJdbcUrl(), is("jdbc:h2:mem:test_ds_1;MODE=MySQL"));
+        assertThat(actual1.getUsername(), is("root"));
+        assertThat(actual1.getPassword(), is("root"));
+    }
+
     @Test
     public void assertSwapToDataSourceConfiguration() {
         Map<String, Object> yamlConfig = new HashMap<>(3, 1);
@@ -52,5 +71,22 @@ public final class YamlDataSourceConfigurationSwapperTest {
         assertThat(actual.get("dataSourceClassName"), is("xxx.jdbc.driver"));
         assertThat(actual.get("url").toString(), is("xx:xxx"));
         assertThat(actual.get("username").toString(), is("root"));
+    }
+
+    private Map<String, Map<String, Object>> createYamlConfig() {
+        Map<String, Map<String, Object>> result = new LinkedHashMap<>(2, 1);
+        result.put("ds_0", createPropertyMap("ds_0"));
+        result.put("ds_1", createPropertyMap("ds_1"));
+        return result;
+    }
+
+    private Map<String, Object> createPropertyMap(final String name) {
+        Map<String, Object> result = new LinkedHashMap<>(5, 1);
+        result.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
+        result.put("driverClassName", "org.h2.Driver");
+        result.put("jdbcUrl", String.format("jdbc:h2:mem:test_%s;MODE=MySQL", name));
+        result.put("username", "root");
+        result.put("password", "root");
+        return result;
     }
 }

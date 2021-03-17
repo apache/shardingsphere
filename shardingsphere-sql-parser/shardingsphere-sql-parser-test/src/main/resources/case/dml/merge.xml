@@ -19,8 +19,12 @@
 
 <sql-parser-test-cases>
     <merge sql-case-id="merge_into_table_using_table" >
-        <table name="people_target" start-index="11" stop-index="23" />
-        <table name="people_source" start-index="31" stop-index="43" />
+        <target>
+            <simple-table name="people_target" start-index="11" stop-index="23" />
+        </target>
+        <source>
+            <simple-table name="people_source" start-index="31" stop-index="43" />
+        </source>
         <expr>
             <binary-operation-expression start-index="49" stop-index="97">
                 <left>
@@ -32,6 +36,55 @@
                 <right>
                     <column name="person_id" start-index="75" stop-index="97">
                         <owner name="people_source" start-index="75" stop-index="87" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+    </merge>
+    <merge sql-case-id="merge_into_table_using_subquery_alias" >
+        <target>
+            <simple-table name="bonuses" alias="D" start-index="11" stop-index="19" />
+        </target>
+        <source>
+            <subquery-table alias="S">
+                <subquery>
+                    <select>
+                        <from>
+                            <simple-table name="employees" start-index="75" stop-index="83" />
+                        </from>
+                        <projections start-index="35" stop-index="68">
+                            <column-projection name="employee_id" start-index="35" stop-index="45" />
+                            <column-projection name="salary" start-index="48" stop-index="53" />
+                            <column-projection name="department_id" start-index="56" stop-index="68" />
+                        </projections>
+                        <where start-index="85" stop-index="108">
+                            <expr>
+                                <binary-operation-expression start-index="91" stop-index="108">
+                                    <left>
+                                        <column name="department_id" start-index="91" stop-index="103"/>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="80" start-index="107" stop-index="108" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </source>
+        <expr>
+            <binary-operation-expression start-index="117" stop-index="145">
+                <left>
+                    <column name="employee_id" start-index="117" stop-index="129">
+                        <owner name="D" start-index="117" stop-index="117" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="employee_id" start-index="133" stop-index="145">
+                        <owner name="S" start-index="133" stop-index="133" />
                     </column>
                 </right>
             </binary-operation-expression>

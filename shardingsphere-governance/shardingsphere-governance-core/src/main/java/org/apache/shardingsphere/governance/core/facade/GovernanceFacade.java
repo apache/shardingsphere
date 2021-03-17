@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.governance.core.facade;
 
 import lombok.Getter;
-import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.facade.listener.GovernanceListenerManager;
 import org.apache.shardingsphere.governance.core.facade.repository.GovernanceRepositoryFacade;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 
 import java.util.Collection;
 import java.util.Map;
@@ -44,9 +43,6 @@ public final class GovernanceFacade implements AutoCloseable {
     private GovernanceRepositoryFacade repositoryFacade;
     
     @Getter
-    private ConfigCenter configCenter;
-    
-    @Getter
     private RegistryCenter registryCenter;
     
     private GovernanceListenerManager listenerManager;
@@ -61,10 +57,9 @@ public final class GovernanceFacade implements AutoCloseable {
         isOverwrite = config.isOverwrite();
         repositoryFacade = new GovernanceRepositoryFacade(config);
         registryCenter = new RegistryCenter(repositoryFacade.getRegistryRepository());
-        configCenter = new ConfigCenter(repositoryFacade.getConfigurationRepository());
         listenerManager = new GovernanceListenerManager(repositoryFacade.getRegistryRepository(),
-                repositoryFacade.getConfigurationRepository(), schemaNames.isEmpty() ? configCenter.getAllSchemaNames()
-                : Stream.of(configCenter.getAllSchemaNames(), schemaNames).flatMap(Collection::stream).distinct().collect(Collectors.toList()));
+                schemaNames.isEmpty() ? registryCenter.getAllSchemaNames()
+                : Stream.of(registryCenter.getAllSchemaNames(), schemaNames).flatMap(Collection::stream).distinct().collect(Collectors.toList()));
     }
     
     /**
@@ -77,9 +72,9 @@ public final class GovernanceFacade implements AutoCloseable {
      */
     public void onlineInstance(final Map<String, Map<String, DataSourceConfiguration>> dataSourceConfigMap,
                                final Map<String, Collection<RuleConfiguration>> schemaRuleMap, final Collection<ShardingSphereUser> users, final Properties props) {
-        configCenter.persistGlobalConfiguration(users, props, isOverwrite);
+        registryCenter.persistGlobalConfiguration(users, props, isOverwrite);
         for (Entry<String, Map<String, DataSourceConfiguration>> entry : dataSourceConfigMap.entrySet()) {
-            configCenter.persistConfigurations(entry.getKey(), dataSourceConfigMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), isOverwrite);
+            registryCenter.persistConfigurations(entry.getKey(), dataSourceConfigMap.get(entry.getKey()), schemaRuleMap.get(entry.getKey()), isOverwrite);
         }
         onlineInstance();
     }

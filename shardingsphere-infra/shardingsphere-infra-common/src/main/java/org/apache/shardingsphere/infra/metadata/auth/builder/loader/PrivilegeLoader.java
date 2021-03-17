@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.infra.metadata.auth.builder.loader;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Optional;
 
 /**
@@ -30,18 +30,19 @@ import java.util.Optional;
 public interface PrivilegeLoader {
     
     /**
-     * Get database type.
-     *
-     * @return database type
-     */
-    DatabaseType getDatabaseType();
-    
-    /**
      * Load.
      *
      * @param user user
      * @param dataSource data source
      * @return sharding sphere privilege
+     * @throws SQLException sql exception
      */
-    Optional<ShardingSpherePrivilege> load(ShardingSphereUser user, DataSource dataSource);
+    Optional<ShardingSpherePrivilege> load(ShardingSphereUser user, DataSource dataSource) throws SQLException;
+    
+    /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    String getDatabaseType();
 }

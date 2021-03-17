@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.scaling.mysql.component;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
 import org.apache.shardingsphere.scaling.core.common.datasource.DataSourceManager;
-import org.apache.shardingsphere.scaling.core.executor.importer.AbstractJDBCImporter;
 import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilder;
+import org.apache.shardingsphere.scaling.core.config.ImporterConfiguration;
+import org.apache.shardingsphere.scaling.core.executor.importer.AbstractImporter;
 import org.apache.shardingsphere.scaling.core.util.JDBCUtil;
 
 import java.util.Map;
@@ -30,7 +30,7 @@ import java.util.Set;
 /**
  * MySQL importer.
  */
-public final class MySQLImporter extends AbstractJDBCImporter {
+public final class MySQLImporter extends AbstractImporter {
     
     public MySQLImporter(final ImporterConfiguration importerConfig, final DataSourceManager dataSourceManager) {
         super(importerConfig, dataSourceManager);

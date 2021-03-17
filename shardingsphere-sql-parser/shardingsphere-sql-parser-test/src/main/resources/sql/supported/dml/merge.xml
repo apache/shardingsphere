@@ -18,4 +18,5 @@
 
 <sql-cases>
     <sql-case id="merge_into_table_using_table" value="MERGE INTO people_target USING people_source ON (people_target.person_id = people_source.person_id)"  db-types="Oracle"/>
+    <sql-case id="merge_into_table_using_subquery_alias" value="MERGE INTO bonuses D USING (SELECT employee_id, salary, department_id FROM employees WHERE department_id = 80) S ON (D.employee_id = S.employee_id)"  db-types="Oracle"/>
 </sql-cases>

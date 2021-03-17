@@ -79,7 +79,7 @@ public final class PrivilegeBuilder {
     private static Map<ShardingSphereUser, ShardingSpherePrivilege> getDefaultShardingSpherePrivileges(final Collection<ShardingSphereUser> users) {
         Map<ShardingSphereUser, ShardingSpherePrivilege> result = new LinkedHashMap<>();
         ShardingSpherePrivilege privilege = new ShardingSpherePrivilege();
-        privilege.setSuper();
+        privilege.setSuperPrivilege();
         users.forEach(each -> result.put(each, privilege));
         return result;
     }

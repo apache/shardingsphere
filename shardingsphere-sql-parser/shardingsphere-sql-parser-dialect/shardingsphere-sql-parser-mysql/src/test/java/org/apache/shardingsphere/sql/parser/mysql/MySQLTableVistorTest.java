@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.core.parser.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.mysql.parser.MySQLLexer;
 import org.apache.shardingsphere.sql.parser.mysql.parser.MySQLParser;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.MySQLSQLStatVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.SqlStats;
+import org.apache.shardingsphere.sql.parser.sql.common.SQLStats;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -80,7 +80,7 @@ public final class MySQLTableVistorTest {
         MySQLParser parser = new MySQLParser(new CommonTokenStream(lexer));
         ParseTree tree = ((ParseASTNode) parser.parse()).getRootNode();
         MySQLSQLStatVisitor visitor = new MySQLSQLStatVisitor();
-        SqlStats sqlStats = visitor.visit(tree);
+        SQLStats sqlStats = visitor.visit(tree);
         assertThat("table assert error", sqlStats.getTables().keySet().size(), is(tableNum));
         assertThat("column assert error", sqlStats.getColumns().keySet().size(), is(columnNum));
     }

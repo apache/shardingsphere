@@ -28,9 +28,9 @@ import org.apache.shardingsphere.scaling.core.common.exception.ScalingJobNotFoun
 import org.apache.shardingsphere.scaling.core.config.JobConfiguration;
 import org.apache.shardingsphere.scaling.core.job.JobContext;
 import org.apache.shardingsphere.scaling.core.job.ScalingJob;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckResult;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyCheckerFactory;
+import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
+import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.scaling.core.job.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
 import org.apache.shardingsphere.scaling.core.job.progress.JobProgress;
 import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
@@ -38,7 +38,7 @@ import org.apache.shardingsphere.scaling.core.util.JobConfigurationUtil;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -113,18 +113,19 @@ public final class ScalingAPIImpl implements ScalingAPI {
     @Override
     public void remove(final long jobId) {
         log.info("Remove scaling job {}", jobId);
+        ScalingAPIFactory.getJobOperateAPI().remove(String.valueOf(jobId), null);
         ScalingAPIFactory.getRegistryRepositoryAPI().deleteJob(jobId);
     }
     
     @Override
     public Map<Integer, JobProgress> getProgress(final long jobId) {
         return IntStream.range(0, getJobConfig(jobId).getHandleConfig().getShardingTotalCount()).boxed()
-                .collect(HashMap::new, (map, each) -> map.put(each, ScalingAPIFactory.getRegistryRepositoryAPI().getJobProgress(jobId, each)), HashMap::putAll);
+                .collect(LinkedHashMap::new, (map, each) -> map.put(each, ScalingAPIFactory.getRegistryRepositoryAPI().getJobProgress(jobId, each)), LinkedHashMap::putAll);
     }
     
     @Override
     public Map<String, DataConsistencyCheckResult> dataConsistencyCheck(final long jobId) {
-        DataConsistencyChecker dataConsistencyChecker = DataConsistencyCheckerFactory.newInstance(new JobContext(getJobConfig(jobId)));
+        DataConsistencyChecker dataConsistencyChecker = EnvironmentCheckerFactory.newInstance(new JobContext(getJobConfig(jobId)));
         Map<String, DataConsistencyCheckResult> result = dataConsistencyChecker.countCheck();
         if (result.values().stream().allMatch(DataConsistencyCheckResult::isCountValid)) {
             Map<String, Boolean> dataCheckResult = dataConsistencyChecker.dataCheck();

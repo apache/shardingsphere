@@ -60,7 +60,7 @@ public final class DataPrivilege {
     }
     
     private boolean hasGlobalPrivileges(final Collection<PrivilegeType> privileges) {
-        return globalPrivileges.contains(PrivilegeType.ALL) || !globalPrivileges.isEmpty() && globalPrivileges.containsAll(privileges);
+        return globalPrivileges.contains(PrivilegeType.SUPER) || !globalPrivileges.isEmpty() && globalPrivileges.containsAll(privileges);
     }
     
     private boolean hasSpecificPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
@@ -75,9 +75,26 @@ public final class DataPrivilege {
     
     /**
      * Set super privilege.
-     *
      */
-    public void setSuper() {
-        globalPrivileges.add(PrivilegeType.ALL);
+    public void setSuperPrivilege() {
+        for (PrivilegeType each : PrivilegeType.values()) {
+            if (each != PrivilegeType.GRANT) {
+                globalPrivileges.add(each);
+            }
+        }
+    }
+    
+    @Override
+    public boolean equals(final Object o) {
+        if (!(o instanceof DataPrivilege)) {
+            return false;
+        }
+        if (!globalPrivileges.equals(((DataPrivilege) o).getGlobalPrivileges())) {
+            return false;
+        }
+        if (!specificPrivileges.equals(((DataPrivilege) o).specificPrivileges)) {
+            return false;
+        }
+        return true;
     }
 }

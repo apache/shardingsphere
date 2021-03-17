@@ -62,11 +62,40 @@ public final class SchemaPrivilege {
     }
     
     private boolean hasGlobalPrivileges(final Collection<PrivilegeType> privileges) {
-        return globalPrivileges.contains(PrivilegeType.ALL) || !globalPrivileges.isEmpty() && globalPrivileges.containsAll(privileges);
+        return !globalPrivileges.isEmpty() && globalPrivileges.containsAll(privileges);
     }
     
     private boolean hasSpecificPrivileges(final String table, final Collection<PrivilegeType> privileges) {
         Collection<PrivilegeType> targets = privileges.stream().filter(each -> !globalPrivileges.contains(each)).collect(Collectors.toList());
         return specificPrivileges.containsKey(table) && specificPrivileges.get(table).hasPrivileges(targets);
+    }
+    
+    /**
+     * Set super privilege.
+     *
+     */
+    public void setSuper() {
+        for (PrivilegeType each : PrivilegeType.values()) {
+            if (!each.equals(PrivilegeType.GRANT)) {
+                globalPrivileges.add(each);
+            }
+        }
+    }
+    
+    @Override
+    public boolean equals(final Object o) {
+        if (!(o instanceof SchemaPrivilege)) {
+            return false;
+        }
+        if (name != ((SchemaPrivilege) o).name) {
+            return false;
+        }
+        if (!globalPrivileges.equals(((SchemaPrivilege) o).getGlobalPrivileges())) {
+            return false;
+        }
+        if (!specificPrivileges.equals(((SchemaPrivilege) o).getSpecificPrivileges())) {
+            return false;
+        }
+        return true;
     }
 }

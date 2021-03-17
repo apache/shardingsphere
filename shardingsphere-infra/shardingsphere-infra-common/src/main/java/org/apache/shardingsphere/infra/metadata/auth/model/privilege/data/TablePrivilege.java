@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 
 /**
  * Table privilege.
@@ -32,7 +33,7 @@ public final class TablePrivilege {
     
     private final String tableName;
     
-    private final Collection<PrivilegeType> privileges;
+    private final Collection<PrivilegeType> privileges = new LinkedHashSet<>();
     
     /**
      * Has privileges.
@@ -41,9 +42,6 @@ public final class TablePrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        if (this.privileges.contains(PrivilegeType.ALL)) {
-            return true;
-        }
         return this.privileges.containsAll(privileges);
     }
 }
