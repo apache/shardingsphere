@@ -18,10 +18,7 @@
 package org.apache.shardingsphere.driver.governance.internal.state.impl;
 
 import org.apache.shardingsphere.driver.governance.internal.state.DriverState;
-import org.apache.shardingsphere.driver.governance.internal.state.DriverStateContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -37,14 +34,7 @@ public final class LockDriverState implements DriverState {
     @Override
     public Connection getConnection(final Map<String, DataSource> dataSourceMap, 
                                     final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts, final TransactionType transactionType) {
-        block(metaDataContexts);
-        return DriverStateContext.getConnection(dataSourceMap, metaDataContexts, transactionContexts, transactionType);
-    }
-    
-    private void block(final MetaDataContexts metaDataContexts) {
-        long lockTimeoutMilliseconds = metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS);
-        if (metaDataContexts.getLock().isPresent() && !metaDataContexts.getLock().get().await(lockTimeoutMilliseconds)) {
-            throw new ShardingSphereException("Service lock wait timeout of %s ms exceeded", lockTimeoutMilliseconds); 
-        }
+        // TODO
+        throw new UnsupportedOperationException("LockDriverState");
     }
 }
