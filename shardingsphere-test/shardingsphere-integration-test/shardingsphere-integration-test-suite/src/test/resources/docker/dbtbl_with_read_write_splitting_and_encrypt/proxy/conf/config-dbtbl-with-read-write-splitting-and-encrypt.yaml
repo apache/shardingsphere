@@ -25,7 +25,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   encrypt_write_ds_1:
@@ -35,7 +35,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   encrypt_write_ds_2:
@@ -45,7 +45,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   encrypt_write_ds_3:
@@ -55,7 +55,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   encrypt_write_ds_4:
@@ -65,7 +65,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   encrypt_write_ds_5:
@@ -75,7 +75,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   encrypt_write_ds_6:
@@ -95,7 +95,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   encrypt_write_ds_8:
@@ -105,7 +105,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   encrypt_write_ds_9:
@@ -115,7 +115,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   encrypt_read_ds_0:
@@ -125,7 +125,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   encrypt_read_ds_1:
@@ -135,7 +135,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   encrypt_read_ds_2:
@@ -145,7 +145,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   encrypt_read_ds_3:
@@ -155,7 +155,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   encrypt_read_ds_4:
@@ -165,7 +165,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   encrypt_read_ds_5:
@@ -175,7 +175,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   encrypt_read_ds_6:
@@ -185,7 +185,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   encrypt_read_ds_7:
@@ -195,7 +195,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   encrypt_read_ds_8:
@@ -205,7 +205,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   encrypt_read_ds_9:
@@ -215,7 +215,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
 

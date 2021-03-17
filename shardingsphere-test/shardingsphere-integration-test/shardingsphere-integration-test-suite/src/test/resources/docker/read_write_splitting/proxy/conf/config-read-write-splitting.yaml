@@ -25,7 +25,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   read_0:
@@ -35,7 +35,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   read_1:
@@ -45,7 +45,7 @@ dataSources:
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
+    maxPoolSize: 50
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
 
