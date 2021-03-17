@@ -38,12 +38,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class MySQLTableMetaDataLoaderTest {
-    
+
     @BeforeClass
     public static void setUp() {
         ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
     }
-    
+
     @Test
     public void assertLoadWithoutExistedTables() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -52,10 +52,10 @@ public final class MySQLTableMetaDataLoaderTest {
                 "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME FROM information_schema.columns WHERE TABLE_SCHEMA=?").executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=?").executeQuery()).thenReturn(indexResultSet);
+                "SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl')").executeQuery()).thenReturn(indexResultSet);
         assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList()));
     }
-    
+
     @Test
     public void assertLoadWithExistedTables() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -65,17 +65,18 @@ public final class MySQLTableMetaDataLoaderTest {
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=?").executeQuery()).thenReturn(indexResultSet);
+                "SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl') AND TABLE_NAME NOT IN ('existed_tbl')")
+                .executeQuery()).thenReturn(indexResultSet);
         assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl")));
     }
-    
+
     private DataSource mockDataSource() throws SQLException {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet typeInfoResultSet = mockTypeInfoResultSet();
         when(result.getConnection().getMetaData().getTypeInfo()).thenReturn(typeInfoResultSet);
         return result;
     }
-    
+
     private ResultSet mockTypeInfoResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, false);
@@ -83,7 +84,7 @@ public final class MySQLTableMetaDataLoaderTest {
         when(result.getInt("DATA_TYPE")).thenReturn(4, 12);
         return result;
     }
-    
+
     private ResultSet mockTableMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, false);
@@ -100,9 +101,10 @@ public final class MySQLTableMetaDataLoaderTest {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
         when(result.getString("INDEX_NAME")).thenReturn("id");
+        when(result.getString("TABLE_NAME")).thenReturn("tbl");
         return result;
     }
-    
+
     private DialectTableMetaDataLoader getTableMetaDataLoader() {
         for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.newServiceInstances(DialectTableMetaDataLoader.class)) {
             if ("MySQL".equals(each.getDatabaseType())) {
@@ -111,7 +113,7 @@ public final class MySQLTableMetaDataLoaderTest {
         }
         throw new IllegalStateException("Can not find MySQLTableMetaDataLoader");
     }
-    
+
     private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {
         assertThat(actual.size(), is(1));
         assertThat(actual.get("tbl").getColumns().size(), is(2));
@@ -121,3 +123,4 @@ public final class MySQLTableMetaDataLoaderTest {
         assertThat(actual.get("tbl").getIndexes().get("id"), is(new IndexMetaData("id")));
     }
 }
+
