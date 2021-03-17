@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -28,38 +29,63 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
  * Table meta data loader for MySQL.
  */
 public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoader {
-    
+
     private static final String BASIC_TABLE_META_DATA_SQL = "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME FROM information_schema.columns WHERE TABLE_SCHEMA=?";
-    
-    private static final String TABLE_META_DATA_SQL_WITH_EXISTED_TABLES = BASIC_TABLE_META_DATA_SQL + " AND TABLE_NAME NOT IN (%s)";
-    
-    private static final String BASIC_INDEX_META_DATA_SQL = "SELECT INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=?";
-    
+
+    private static final String BASIC_INDEX_META_DATA_SQL = "SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN (%s)";
+
+    private static final String SQL_WITH_EXISTED_TABLES = " AND TABLE_NAME NOT IN (%s)";
+
+    private static final String TABLE_META_DATA_SQL_WITH_EXISTED_TABLES = BASIC_TABLE_META_DATA_SQL + SQL_WITH_EXISTED_TABLES;
+
     @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         return loadTableMetaDataMap(dataSource, existedTables);
     }
-    
+
     private Map<String, TableMetaData> loadTableMetaDataMap(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
-        for (Entry<String, Collection<ColumnMetaData>> entry : loadColumnMetaDataMap(dataSource, existedTables).entrySet()) {
-            result.put(entry.getKey(), new TableMetaData(entry.getValue(), loadIndexMetaData(dataSource, entry.getKey())));
+        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, existedTables);
+        if (CollectionUtils.isNotEmpty(columnMetaDataMap.keySet())) {
+            Map<String, Collection<IndexMetaData>> indexMetaDataMap = loadIndexMetaData(dataSource, columnMetaDataMap.keySet(), existedTables);
+            for (Map.Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
+                result.put(entry.getKey(), new TableMetaData(entry.getValue(), indexMetaDataMap.get(entry.getKey())));
+            }
         }
         return result;
     }
-    
+
+    private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames, final Collection<String> existedTables) throws SQLException {
+        Map<String, Collection<IndexMetaData>> result = new HashMap<>();
+        try (
+                Connection connection = dataSource.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames, existedTables))) {
+            preparedStatement.setString(1, connection.getCatalog());
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    String indexName = resultSet.getString("INDEX_NAME");
+                    String tableName = resultSet.getString("TABLE_NAME");
+                    if (!result.containsKey(tableName)) {
+                        result.put(tableName, new LinkedList<>());
+                    }
+                    result.get(tableName).add(new IndexMetaData(indexName));
+                }
+            }
+        }
+        return result;
+    }
+
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
         try (
@@ -80,7 +106,7 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
         }
         return result;
     }
-    
+
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet) throws SQLException {
         String columnName = resultSet.getString("COLUMN_NAME");
         String dataType = resultSet.getString("DATA_TYPE");
@@ -90,30 +116,21 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
         boolean caseSensitive = null != collationName && collationName.endsWith("_ci");
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
     }
-    
+
     private String getTableMetaDataSQL(final Collection<String> existedTables) {
         return existedTables.isEmpty() ? BASIC_TABLE_META_DATA_SQL
                 : String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
-    
-    private Collection<IndexMetaData> loadIndexMetaData(final DataSource dataSource, final String tableName) throws SQLException {
-        Collection<IndexMetaData> result = new LinkedList<>();
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(BASIC_INDEX_META_DATA_SQL)) {
-            preparedStatement.setString(1, tableName);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    String indexName = resultSet.getString("INDEX_NAME");
-                    result.add(new IndexMetaData(indexName));
-                }
-            }
-        }
-        return result;
+
+    private String getIndexMetaDataSQL(final Collection<String> tableNames, final Collection<String> existedTables) {
+        String sql = String.format(BASIC_INDEX_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+        return existedTables.isEmpty() ? sql
+                : sql + String.format(SQL_WITH_EXISTED_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
-    
+
     @Override
     public String getDatabaseType() {
         return "MySQL";
     }
 }
+
