@@ -82,17 +82,20 @@ public class ShardingSphereRunner extends Suite {
     }
     
     private List<Runner> createITRunners(final TestCaseSpec testCaseSpec) {
-        final Predicate<TestCaseParameters> predicate = createTestCaseParametersPredicate();
+        final Predicate<TestCaseBeanContext> predicate = createTestCaseParametersPredicate();
         TestCaseDescription description = TestCaseDescription.fromSystemProps(testCaseSpec).build();
         beanContext.registerBean(TestCaseDescription.class, description);
         compose = new ContainerCompose(caseName, getTestClass(), description, resolver, beanContext);
         return allParameters(description).stream()
+                .map(e -> {
+                    TestCaseBeanContext context = beanContext.subContext();
+                    register(e, context);
+                    return context;
+                })
                 .filter(predicate)
                 .map(e -> {
                     try {
-                        TestCaseBeanContext context = beanContext.subContext();
-                        register(e, context);
-                        return new ShardingSphereITSubRunner(getTestClass().getJavaClass(), context, resolver);
+                        return new ShardingSphereITSubRunner(getTestClass().getJavaClass(), e, resolver);
                     } catch (InitializationError ex) {
                         throw new RuntimeException("Initialization Error", ex);
                     }
@@ -101,6 +104,7 @@ public class ShardingSphereRunner extends Suite {
     }
     
     private void register(final TestCaseParameters parameters, final TestCaseBeanContext context) {
+        context.registerBean(TestCaseParameters.class, parameters);
         context.registerBeanByName("statement", parameters.getStatement());
         context.registerBeanByName("parentPath", parameters.getParentPath());
         context.registerBean(SQLExecuteType.class, parameters.getExecuteType());
@@ -114,8 +118,9 @@ public class ShardingSphereRunner extends Suite {
             setScheduler(new ParallelRunnerScheduler(parallelRuntimeStrategy.value()));
         }
         
-        final Predicate<TestCaseParameters> predicate = createTestCaseParametersPredicate();
+        final Predicate<TestCaseBeanContext> predicate = createTestCaseParametersPredicate();
         return allCIParameters(testCaseSpec).stream()
+                .peek(System.out::println)
                 .flatMap(e -> {
                     final TestCaseDescription description = TestCaseDescription.builder()
                             .sqlCommandType(testCaseSpec.sqlCommandType())
@@ -142,12 +147,11 @@ public class ShardingSphereRunner extends Suite {
                                 TestCaseBeanContext context = beanContext.subContext();
                                 context.registerBean(ParameterizedArray.class, e);
                                 context.registerBean(TestCaseDescription.class, description);
-                                context.registerBean(TestCaseParameters.class, testCaseParameters);
                                 register(testCaseParameters, context);
                                 return context;
                             });
                 })
-                .filter(e -> predicate.test(e.getBean(TestCaseParameters.class)))
+                .filter(predicate)
                 .map(e -> {
                     try {
                         return new ShardingSphereCISubRunner(getTestClass().getJavaClass(), e, resolver);
@@ -158,9 +162,9 @@ public class ShardingSphereRunner extends Suite {
                 .collect(Collectors.toList());
     }
     
-    private Predicate<TestCaseParameters> createTestCaseParametersPredicate() {
+    private Predicate<TestCaseBeanContext> createTestCaseParametersPredicate() {
         ParameterFilter filter = getTestClass().getAnnotation(ParameterFilter.class);
-        final Predicate<TestCaseParameters> predicate;
+        final Predicate<TestCaseBeanContext> predicate;
         if (Objects.nonNull(filter)) {
             Class<? extends ParameterFilter.Filter> filtered = filter.filter();
             try {
@@ -246,6 +250,9 @@ public class ShardingSphereRunner extends Suite {
     }
     
     public Statement withBeforeClasses(final Statement statement) {
+        if (getChildren().isEmpty()) {
+            return super.withBeforeClasses(statement);
+        }
         return super.withBeforeClasses(new Statement() {
             @Override
             public void evaluate() throws Throwable {

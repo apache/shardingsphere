@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.test.integration.engine.it.dal;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.engine.filter.LiteralOnlyParamFilter;
+import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.junit.annotation.ParameterFilter;
 import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
-import org.apache.shardingsphere.test.integration.junit.condition.ConditionalOnProperty;
+import org.apache.shardingsphere.test.integration.junit.param.TestCaseParameters;
+import org.apache.shardingsphere.test.integration.junit.runner.TestCaseBeanContext;
+import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
 import org.junit.Test;
@@ -35,8 +37,7 @@ import java.text.ParseException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@ParameterFilter(filter = LiteralOnlyParamFilter.class)
-@ConditionalOnProperty(key = "it.adapter", expected = "proxy")
+@ParameterFilter(filter = GeneralDALIT.Filter.class)
 @TestCaseSpec(sqlCommandType = SQLCommandType.DAL)
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDALIT extends BaseDALIT {
@@ -58,6 +59,14 @@ public final class GeneralDALIT extends BaseDALIT {
             } else {
                 assertThat(statement.getUpdateCount(), is(0));
             }
+        }
+    }
+    
+    public static class Filter implements ParameterFilter.Filter {
+        @Override
+        public boolean filter(final TestCaseBeanContext context) {
+            return context.getBean(TestCaseParameters.class).getExecuteType() == SQLExecuteType.Literal
+                    && "proxy".equals(context.getBean(TestCaseDescription.class).getAdapter());
         }
     }
 }

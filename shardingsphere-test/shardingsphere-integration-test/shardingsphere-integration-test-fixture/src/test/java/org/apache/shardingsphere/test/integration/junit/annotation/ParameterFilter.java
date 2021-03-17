@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.junit.annotation;
 
-import org.apache.shardingsphere.test.integration.junit.param.TestCaseParameters;
+import org.apache.shardingsphere.test.integration.junit.runner.TestCaseBeanContext;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -36,14 +36,14 @@ public @interface ParameterFilter {
     Class<? extends Filter> filter();
     
     interface Filter {
-    
+        
         /**
          * Filter.
          *
-         * @param parameters test case parameters
+         * @param context test case context
          * @return false if ignore
          */
-        boolean filter(TestCaseParameters parameters);
+        boolean filter(TestCaseBeanContext context);
         
     }
 }
