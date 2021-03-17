@@ -160,7 +160,7 @@ public final class ProxySQLExecutor {
         } catch (final SQLException ex) {
             return getSaneExecuteResults(executionContext, ex);
         }
-        return jdbcExecutor.execute(executionContext.getSqlStatementContext().getSqlStatement(), executionGroupContext, isReturnGeneratedKeys, isExceptionThrown);
+        return jdbcExecutor.execute(executionContext.getSqlStatementContext(), executionGroupContext, isReturnGeneratedKeys, isExceptionThrown);
     }
     
     private Collection<ExecuteResult> getSaneExecuteResults(final ExecutionContext executionContext, final SQLException originalException) throws SQLException {

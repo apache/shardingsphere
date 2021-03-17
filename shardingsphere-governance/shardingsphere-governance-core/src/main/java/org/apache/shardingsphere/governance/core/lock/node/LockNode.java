@@ -28,6 +28,8 @@ public final class LockNode {
     
     private static final String LOCK_NODE = "glock";
     
+    private static final String LOCKED_RESOURCES_NODE = "locked_resources";
+    
     /**
      * Get lock node path.
      * 
@@ -35,5 +37,14 @@ public final class LockNode {
      */
     public String getLockNodePath() {
         return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCK_NODE);
+    }
+    
+    /**
+     * Get locked resources node path.
+     *
+     * @return locked resources node path
+     */
+    public String getLockedResourcesNodePath() {
+        return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCKED_RESOURCES_NODE);
     }
 }

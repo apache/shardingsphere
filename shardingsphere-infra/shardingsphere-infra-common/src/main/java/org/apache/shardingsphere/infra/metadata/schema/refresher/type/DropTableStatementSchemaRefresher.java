@@ -33,8 +33,7 @@ import java.util.Collection;
 public final class DropTableStatementSchemaRefresher implements SchemaRefresher<DropTableStatement> {
     
     @Override
-    public void refresh(final ShardingSphereSchema schema, 
-                        final Collection<String> routeDataSourceNames, final DropTableStatement sqlStatement, final SchemaBuilderMaterials materials) {
+    public void refresh(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames, final DropTableStatement sqlStatement, final SchemaBuilderMaterials materials) {
         sqlStatement.getTables().forEach(each -> schema.remove(each.getTableName().getIdentifier().getValue()));
         for (SimpleTableSegment each : sqlStatement.getTables()) {
             ShardingSphereEventBus.getInstance().post(new DropTableEvent(each.getTableName().getIdentifier().getValue()));

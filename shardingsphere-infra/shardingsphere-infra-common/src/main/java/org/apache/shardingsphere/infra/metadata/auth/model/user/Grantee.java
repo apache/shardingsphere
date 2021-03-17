@@ -37,15 +37,21 @@ public final class Grantee {
     public boolean equals(final Object obj) {
         if (obj instanceof Grantee) {
             Grantee grantee = (Grantee) obj;
-            return grantee.getUsername().equalsIgnoreCase(username) && (grantee.getHostname().equalsIgnoreCase(hostname) || Strings.isNullOrEmpty(hostname)
-                    || "%".equals(hostname));
+            return grantee.username.equalsIgnoreCase(username) && isPermittedHost(grantee);
         }
         return false;
     }
     
+    private boolean isPermittedHost(final Grantee grantee) {
+        return grantee.hostname.equalsIgnoreCase(hostname) || isUnlimitedHost();
+    }
+    
+    private boolean isUnlimitedHost() {
+        return Strings.isNullOrEmpty(hostname) || "%".equals(hostname);
+    }
+    
     @Override
     public int hashCode() {
-        return (Strings.isNullOrEmpty(hostname) || "%".equals(hostname))
-                ? Objects.hashCode(username.toUpperCase()) : Objects.hashCode(username.toUpperCase(), hostname.toUpperCase());
+        return isUnlimitedHost() ? Objects.hashCode(username.toUpperCase()) : Objects.hashCode(username.toUpperCase(), hostname.toUpperCase());
     }
 }

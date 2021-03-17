@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.auth.model.privilege;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.data.DataPrivilege;
 
@@ -24,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.auth.model.privilege.data.DataPr
  * ShardingSphere privilege.
  */
 @Getter
+@EqualsAndHashCode
 public final class ShardingSpherePrivilege {
     
     private final AdministrationPrivilege administrationPrivilege = new AdministrationPrivilege();
@@ -32,10 +34,9 @@ public final class ShardingSpherePrivilege {
     
     /**
      * Set super privilege.
-     *
      */
-    public void setSuper() {
-        administrationPrivilege.setSuper();
-        dataPrivilege.setSuper();
+    public void setSuperPrivilege() {
+        administrationPrivilege.setSuperPrivilege();
+        dataPrivilege.setSuperPrivilege();
     }
 }
