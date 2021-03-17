@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.impl.CheckScalingJ
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.AbstractBackendHandler;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * Check scaling job backend handler.
  */
-public final class CheckScalingJobBackendHandler implements TextProtocolBackendHandler {
+public final class CheckScalingJobBackendHandler extends AbstractBackendHandler<CheckScalingJobStatement> {
     
     private final CheckScalingJobStatement sqlStatement;
     
@@ -48,6 +48,7 @@ public final class CheckScalingJobBackendHandler implements TextProtocolBackendH
     private Iterator<Map<String, Object>> data;
     
     public CheckScalingJobBackendHandler(final CheckScalingJobStatement sqlStatement) {
+        super(sqlStatement, "");
         this.sqlStatement = sqlStatement;
         queryHeaders = getQueryHeader();
     }
@@ -61,13 +62,13 @@ public final class CheckScalingJobBackendHandler implements TextProtocolBackendH
         result.add(new QueryHeader("", "", "data_valid", "", Types.TINYINT, "TINYINT", 255, 0, false, false, false, false));
         return result;
     }
-    
+
     @Override
-    public ResponseHeader execute() {
+    protected ResponseHeader execute(final String schemaName, final CheckScalingJobStatement sqlStatement) {
         loadData();
         return new QueryResponseHeader(queryHeaders);
     }
-    
+
     private void loadData() {
         data = scalingAPI.dataConsistencyCheck(sqlStatement.getJobId()).entrySet().stream()
                 .map(entry -> {

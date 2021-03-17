@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.process.event;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcess
  * Execute process unit created event.
  */
 @Getter
-public final class ExecuteProcessUnitCreatedEvent {
+public final class ExecuteProcessUnitCreatedEvent extends CompletableEvent {
     
     private final String executionID;
     

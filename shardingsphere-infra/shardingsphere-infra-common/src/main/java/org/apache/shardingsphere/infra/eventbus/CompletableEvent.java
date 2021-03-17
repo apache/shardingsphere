@@ -15,25 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.eventbus;
 
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 
-import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 
 /**
- * Read write splitting rule data source not existed exception.
+ * Completable event.
  */
 @Getter
-public final class ReadWriteSplittingRuleDataSourcesNotExistedException extends BackendException {
-    
-    private static final long serialVersionUID = -2151854349124198061L;
-    
-    private final Collection<String> ruleNames;
+public abstract class CompletableEvent {
 
-    public ReadWriteSplittingRuleDataSourcesNotExistedException(final Collection<String> ruleNames) {
-        super(CommonErrorCode.REPLICA_QUERY_RULE_DATA_SOURCE_NOT_EXIST, ruleNames);
-        this.ruleNames = ruleNames;
-    }
+    private final CompletableFuture future = new CompletableFuture();
 }

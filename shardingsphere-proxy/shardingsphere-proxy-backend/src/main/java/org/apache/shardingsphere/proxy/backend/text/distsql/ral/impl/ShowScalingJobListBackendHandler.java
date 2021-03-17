@@ -22,9 +22,10 @@ import com.google.common.collect.Maps;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.AbstractBackendHandler;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.Types;
 import java.util.Collection;
@@ -36,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * Show scaling job list backend handler.
  */
-public final class ShowScalingJobListBackendHandler implements TextProtocolBackendHandler {
+public final class ShowScalingJobListBackendHandler extends AbstractBackendHandler {
     
     private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
     
@@ -45,6 +46,7 @@ public final class ShowScalingJobListBackendHandler implements TextProtocolBacke
     private Iterator<Map<String, Object>> data;
     
     public ShowScalingJobListBackendHandler() {
+        super(null, "");
         queryHeaders = getQueryHeader();
     }
     
@@ -58,13 +60,13 @@ public final class ShowScalingJobListBackendHandler implements TextProtocolBacke
         result.add(new QueryHeader("", "", "stop_time", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         return result;
     }
-    
+
     @Override
-    public ResponseHeader execute() {
+    protected ResponseHeader execute(final String schemaName, final SQLStatement sqlStatement) {
         loadData();
         return new QueryResponseHeader(queryHeaders);
     }
-    
+
     private void loadData() {
         data = scalingAPI.list().stream()
                 .map(each -> {

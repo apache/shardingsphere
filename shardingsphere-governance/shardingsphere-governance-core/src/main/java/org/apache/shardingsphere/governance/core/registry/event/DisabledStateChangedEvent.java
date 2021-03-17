@@ -21,13 +21,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
+import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 
 /**
  * Disabled state event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DisabledStateChangedEvent implements GovernanceEvent {
+public final class DisabledStateChangedEvent extends CompletableEvent implements GovernanceEvent {
     
     private final GovernanceSchema governanceSchema;
     

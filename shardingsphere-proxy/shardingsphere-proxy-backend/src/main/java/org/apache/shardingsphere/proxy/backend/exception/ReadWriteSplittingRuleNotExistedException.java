@@ -18,14 +18,17 @@
 package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 
 /**
  * Read write splitting rule not existed exception.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ReadWriteSplittingRuleNotExistedException extends BackendException {
 
     private static final long serialVersionUID = -5119217255419990719L;
+
+    public ReadWriteSplittingRuleNotExistedException() {
+        super(CommonErrorCode.REPLICA_QUERY_RULE_NOT_EXIST);
+    }
 }

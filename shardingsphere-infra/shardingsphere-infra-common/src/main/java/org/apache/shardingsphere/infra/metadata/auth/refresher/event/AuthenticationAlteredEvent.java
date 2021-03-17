@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.auth.refresher.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 
 /**
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.auth.Authentication;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AuthenticationAlteredEvent {
+public final class AuthenticationAlteredEvent extends CompletableEvent {
     
     private final Authentication authentication;
 }

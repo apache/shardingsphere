@@ -17,42 +17,33 @@
 
 package org.apache.shardingsphere.proxy.backend.text;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
-
-import java.util.Optional;
 
 /**
  * Schema required backend handler.
  * 
  * @param <T> type of SQL statement
  */
-@RequiredArgsConstructor
-public abstract class SchemaRequiredBackendHandler<T extends SQLStatement> implements TextProtocolBackendHandler {
+public abstract class SchemaRequiredBackendHandler<T extends SQLStatement> extends AbstractBackendHandler<T> {
     
     private final T sqlStatement;
     
-    private final BackendConnection backendConnection;
-    
+    private final String schemaName;
+
+    public SchemaRequiredBackendHandler(final T sqlStatement, final String schemaName) {
+        super(sqlStatement, schemaName);
+        this.sqlStatement = sqlStatement;
+        this.schemaName = schemaName;
+    }
+
     @Override
     public final ResponseHeader execute() {
-        String schemaName = getSchemaName(backendConnection, sqlStatement);
-        checkSchema(schemaName);
-        return execute(schemaName, sqlStatement);
-    }
-    
-    protected abstract ResponseHeader execute(String schemaName, T sqlStatement);
-    
-    private String getSchemaName(final BackendConnection backendConnection, final T sqlStatement) {
-        Optional<SchemaSegment> schemaFromSQL = sqlStatement instanceof FromSchemaAvailable ? ((FromSchemaAvailable) sqlStatement).getSchema() : Optional.empty();
-        return schemaFromSQL.isPresent() ? schemaFromSQL.get().getIdentifier().getValue() : backendConnection.getSchemaName();
+        checkSchema(getSchemaName(schemaName, sqlStatement));
+        return super.execute();
     }
     
     private void checkSchema(final String schemaName) {

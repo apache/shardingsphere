@@ -19,6 +19,7 @@ package org.apache.shardingsphere.governance.core.event.model.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 
 /**
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
  */
 @RequiredArgsConstructor
 @Getter
-public final class RuleConfigurationCachedEvent implements GovernanceEvent {
+public final class RuleConfigurationCachedEvent extends CompletableEvent implements GovernanceEvent {
     
     private final String cacheId;
     

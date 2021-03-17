@@ -78,34 +78,34 @@ public final class RDLBackendHandlerFactory {
     
     private static Optional<TextProtocolBackendHandler> createRDLBackendHandler(final DatabaseType databaseType, final SQLStatement sqlStatement, final BackendConnection backendConnection) {
         if (sqlStatement instanceof AddResourceStatement) {
-            return Optional.of(new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, backendConnection));
+            return Optional.of(new AddResourceBackendHandler(databaseType, (AddResourceStatement) sqlStatement, backendConnection.getSchemaName()));
         }
         if (sqlStatement instanceof DropResourceStatement) {
-            return Optional.of(new DropResourceBackendHandler((DropResourceStatement) sqlStatement, backendConnection));
+            return Optional.of(new DropResourceBackendHandler((DropResourceStatement) sqlStatement, backendConnection.getSchemaName()));
         }
         if (sqlStatement instanceof CreateDatabaseStatement) {
             return Optional.of(new CreateDatabaseBackendHandler((CreateDatabaseStatement) sqlStatement));
         }
         if (sqlStatement instanceof CreateShardingRuleStatement) {
-            return Optional.of(new CreateShardingRuleBackendHandler((CreateShardingRuleStatement) sqlStatement, backendConnection));
+            return Optional.of(new CreateShardingRuleBackendHandler((CreateShardingRuleStatement) sqlStatement, backendConnection.getSchemaName()));
         }
         if (sqlStatement instanceof AlterShardingRuleStatement) {
-            return Optional.of(new AlterShardingRuleBackendHandler((AlterShardingRuleStatement) sqlStatement, backendConnection));
+            return Optional.of(new AlterShardingRuleBackendHandler((AlterShardingRuleStatement) sqlStatement, backendConnection.getSchemaName()));
         }
         if (sqlStatement instanceof CreateReadWriteSplittingRuleStatement) {
-            return Optional.of(new CreateReadWriteSplittingRuleBackendHandler((CreateReadWriteSplittingRuleStatement) sqlStatement, backendConnection));
+            return Optional.of(new CreateReadWriteSplittingRuleBackendHandler((CreateReadWriteSplittingRuleStatement) sqlStatement, backendConnection.getSchemaName()));
         }
         if (sqlStatement instanceof AlterReadWriteSplittingRuleStatement) {
-            return Optional.of(new AlterReadWriteSplittingRuleBackendHandler((AlterReadWriteSplittingRuleStatement) sqlStatement, backendConnection));
+            return Optional.of(new AlterReadWriteSplittingRuleBackendHandler((AlterReadWriteSplittingRuleStatement) sqlStatement, backendConnection.getSchemaName()));
         }
         if (sqlStatement instanceof DropReplicaQueryRuleStatement) {
-            return Optional.of(new DropReadWriteSplittingRuleBackendHandler((DropReplicaQueryRuleStatement) sqlStatement, backendConnection));
+            return Optional.of(new DropReadWriteSplittingRuleBackendHandler((DropReplicaQueryRuleStatement) sqlStatement, backendConnection.getSchemaName()));
         }
         if (sqlStatement instanceof DropDatabaseStatement) {
             return Optional.of(new DropDatabaseBackendHandler((DropDatabaseStatement) sqlStatement));
         }
         if (sqlStatement instanceof DropShardingRuleStatement) {
-            return Optional.of(new DropShardingRuleBackendHandler((DropShardingRuleStatement) sqlStatement, backendConnection));
+            return Optional.of(new DropShardingRuleBackendHandler((DropShardingRuleStatement) sqlStatement, backendConnection.getSchemaName()));
         }
         return Optional.empty();
     }

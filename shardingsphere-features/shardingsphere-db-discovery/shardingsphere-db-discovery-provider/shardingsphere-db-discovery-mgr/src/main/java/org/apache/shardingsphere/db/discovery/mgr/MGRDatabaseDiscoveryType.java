@@ -137,7 +137,7 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
             }
             if (!newPrimaryDataSource.equals(oldPrimaryDataSource)) {
                 oldPrimaryDataSource = newPrimaryDataSource;
-                ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceEvent(schemaName, groupName, newPrimaryDataSource));
+                ShardingSphereEventBus.postEvent(new PrimaryDataSourceEvent(schemaName, groupName, newPrimaryDataSource));
             }
         } else {
             oldPrimaryDataSource = primaryDataSourceName;
@@ -232,7 +232,7 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
                 log.error("An exception occurred while find data source urls", ex);
             }
             if (disable) {
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), true));
+                ShardingSphereEventBus.postEvent(new DataSourceDisabledEvent(schemaName, entry.getKey(), true));
             } else if (!url.isEmpty()) {
                 dataSourceURLs.put(entry.getKey(), url);
             }
@@ -257,7 +257,7 @@ public final class MGRDatabaseDiscoveryType implements DatabaseDiscoveryType {
                 try (Connection connection = entry.getValue().getConnection()) {
                     url = connection.getMetaData().getURL();
                     if (null != url && url.contains(each)) {
-                        ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), false));
+                        ShardingSphereEventBus.postEvent(new DataSourceDisabledEvent(schemaName, entry.getKey(), false));
                         break;
                     }
                 } catch (final SQLException ex) {

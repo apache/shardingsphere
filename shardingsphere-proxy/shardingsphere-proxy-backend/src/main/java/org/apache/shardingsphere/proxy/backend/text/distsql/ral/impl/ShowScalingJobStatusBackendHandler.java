@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingJo
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.AbstractBackendHandler;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * Show scaling job status backend handler.
  */
-public final class ShowScalingJobStatusBackendHandler implements TextProtocolBackendHandler {
+public final class ShowScalingJobStatusBackendHandler extends AbstractBackendHandler<ShowScalingJobStatusStatement> {
     
     private final ShowScalingJobStatusStatement sqlStatement;
     
@@ -48,6 +48,7 @@ public final class ShowScalingJobStatusBackendHandler implements TextProtocolBac
     private Iterator<Map<String, Object>> data;
     
     public ShowScalingJobStatusBackendHandler(final ShowScalingJobStatusStatement sqlStatement) {
+        super(sqlStatement, "");
         this.sqlStatement = sqlStatement;
         queryHeaders = getQueryHeader();
     }
@@ -61,13 +62,13 @@ public final class ShowScalingJobStatusBackendHandler implements TextProtocolBac
         result.add(new QueryHeader("", "", "incremental_delay_milliseconds", "", Types.BIGINT, "BIGINT", 255, 0, false, false, false, false));
         return result;
     }
-    
+
     @Override
-    public ResponseHeader execute() {
+    protected ResponseHeader execute(final String schemaName, final ShowScalingJobStatusStatement sqlStatement) {
         loadData();
         return new QueryResponseHeader(queryHeaders);
     }
-    
+
     private void loadData() {
         data = scalingAPI.getProgress(sqlStatement.getJobId()).entrySet().stream()
                 .map(entry -> {

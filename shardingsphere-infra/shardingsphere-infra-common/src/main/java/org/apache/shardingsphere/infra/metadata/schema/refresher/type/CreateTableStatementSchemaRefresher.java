@@ -47,7 +47,7 @@ public final class CreateTableStatementSchemaRefresher implements SchemaRefreshe
             tableMetaData = new TableMetaData();
         }
         schema.put(tableName, tableMetaData);
-        ShardingSphereEventBus.getInstance().post(new CreateTableEvent(routeDataSourceNames.iterator().next(), tableName, tableMetaData));
+        ShardingSphereEventBus.postEvent(new CreateTableEvent(routeDataSourceNames.iterator().next(), tableName, tableMetaData));
     }
     
     private boolean containsInTableContainedRule(final String tableName, final SchemaBuilderMaterials materials) {

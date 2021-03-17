@@ -37,6 +37,6 @@ public final class CreateViewStatementSchemaRefresher implements SchemaRefresher
         String viewName = sqlStatement.getView().getTableName().getIdentifier().getValue();
         TableMetaData tableMetaData = new TableMetaData();
         schema.put(viewName, tableMetaData);
-        ShardingSphereEventBus.getInstance().post(new CreateTableEvent(routeDataSourceNames.iterator().next(), viewName, tableMetaData));
+        ShardingSphereEventBus.postEvent(new CreateTableEvent(routeDataSourceNames.iterator().next(), viewName, tableMetaData));
     }
 }

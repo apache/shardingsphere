@@ -19,13 +19,14 @@ package org.apache.shardingsphere.governance.core.event.model.scaling;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 
 /**
  * Start scaling event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class StartScalingEvent {
+public final class StartScalingEvent extends CompletableEvent {
     
     private final String schemaName;
     

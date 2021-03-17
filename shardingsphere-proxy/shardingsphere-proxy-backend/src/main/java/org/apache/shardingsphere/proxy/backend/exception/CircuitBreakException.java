@@ -17,10 +17,16 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
+import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
+
 /**
  * Circuit break exception.
  */
 public final class CircuitBreakException extends BackendException {
     
     private static final long serialVersionUID = 6339672680026286798L;
+
+    public CircuitBreakException() {
+        super(CommonErrorCode.CIRCUIT_BREAK_MODE);
+    }
 }

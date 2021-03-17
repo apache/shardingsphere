@@ -19,6 +19,7 @@ package org.apache.shardingsphere.governance.core.event.model.props;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 
 import java.util.Properties;
@@ -28,7 +29,7 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
-public final class PropertiesChangedEvent implements GovernanceEvent {
+public final class PropertiesChangedEvent extends CompletableEvent implements GovernanceEvent {
     
     private final Properties props;
 }

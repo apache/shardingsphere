@@ -18,18 +18,22 @@
 package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 
 import java.util.Collection;
 
 /**
  * Resource in used exception.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ResourceInUsedException extends BackendException {
 
     private static final long serialVersionUID = -3427324685070457375L;
 
     private final Collection<String> resourceNames;
+
+    public ResourceInUsedException(final Collection<String> resourceNames) {
+        super(CommonErrorCode.RESOURCE_IN_USED, resourceNames);
+        this.resourceNames = resourceNames;
+    }
 }

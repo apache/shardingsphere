@@ -18,22 +18,18 @@
 package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 
 /**
- * Read write splitting rule data source not existed exception.
+ * Resource existed exception.
  */
+@RequiredArgsConstructor
 @Getter
-public final class ReadWriteSplittingRuleDataSourcesNotExistedException extends BackendException {
-    
-    private static final long serialVersionUID = -2151854349124198061L;
-    
-    private final Collection<String> ruleNames;
+public final class ResourceCheckedException extends BackendException {
 
-    public ReadWriteSplittingRuleDataSourcesNotExistedException(final Collection<String> ruleNames) {
-        super(CommonErrorCode.REPLICA_QUERY_RULE_DATA_SOURCE_NOT_EXIST, ruleNames);
-        this.ruleNames = ruleNames;
-    }
+    private static final long serialVersionUID = 1704331180489268L;
+
+    private final Collection<String> resourceNames;
 }

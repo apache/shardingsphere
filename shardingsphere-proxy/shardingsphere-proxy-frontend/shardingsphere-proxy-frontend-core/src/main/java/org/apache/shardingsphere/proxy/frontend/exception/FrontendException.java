@@ -17,10 +17,28 @@
 
 package org.apache.shardingsphere.proxy.frontend.exception;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
+import org.apache.shardingsphere.db.protocol.error.SQLErrorCode;
+import org.apache.shardingsphere.proxy.exception.ProxySQLException;
+
 /**
  * Frontend exception.
  */
-public abstract class FrontendException extends RuntimeException {
+public abstract class FrontendException extends ProxySQLException {
     
     private static final long serialVersionUID = 1127309123050216974L;
+
+    public FrontendException() {
+    }
+
+    public FrontendException(final SQLErrorCode sqlErrorCode, final Object... errorMessageArguments) {
+        super(sqlErrorCode.getErrorCode(), sqlErrorCode.getSqlState(), String.format(sqlErrorCode.getErrorMessage(), errorMessageArguments));
+    }
+
+    @Override
+    protected ProxySQLException transform(final Throwable cause) {
+        SQLErrorCode sqlErrorCode = CommonErrorCode.UNKNOWN_EXCEPTION;
+        return transform(sqlErrorCode.getErrorCode(), sqlErrorCode.getSqlState(), String.format(sqlErrorCode.getErrorMessage(), ExceptionUtils.getRootCauseMessage(cause)));
+    }
 }

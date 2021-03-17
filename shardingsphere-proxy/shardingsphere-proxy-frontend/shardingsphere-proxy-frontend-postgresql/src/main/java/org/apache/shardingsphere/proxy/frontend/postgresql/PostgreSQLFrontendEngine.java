@@ -22,6 +22,8 @@ import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.postgresql.codec.PostgreSQLPacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
+import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationEngine;
+import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.auth.PostgreSQLAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLCommandExecuteEngine;
@@ -35,9 +37,9 @@ public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendE
     
     private final FrontendContext frontendContext = new FrontendContext(true, false);
     
-    private final PostgreSQLAuthenticationEngine authEngine = new PostgreSQLAuthenticationEngine();
+    private final AuthenticationEngine authEngine = new PostgreSQLAuthenticationEngine();
     
-    private final PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
+    private final CommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
     
     private final DatabasePacketCodecEngine<?> codecEngine = new PostgreSQLPacketCodecEngine();
     

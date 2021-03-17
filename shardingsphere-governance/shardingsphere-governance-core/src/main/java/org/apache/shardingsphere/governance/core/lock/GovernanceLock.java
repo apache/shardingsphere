@@ -34,7 +34,7 @@ public final class GovernanceLock extends AbstractShardingSphereLock {
     
     public GovernanceLock(final RegistryCenter registryCenter) {
         this.registryCenter = registryCenter;
-        ShardingSphereEventBus.getInstance().register(this);
+        ShardingSphereEventBus.register(this);
     }
     
     @Override

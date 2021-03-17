@@ -22,7 +22,6 @@ import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurat
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -40,8 +39,8 @@ import java.util.Collections;
  */
 public final class CreateReadWriteSplittingRuleBackendHandler extends SchemaRequiredBackendHandler<CreateReadWriteSplittingRuleStatement> {
     
-    public CreateReadWriteSplittingRuleBackendHandler(final CreateReadWriteSplittingRuleStatement sqlStatement, final BackendConnection backendConnection) {
-        super(sqlStatement, backendConnection);
+    public CreateReadWriteSplittingRuleBackendHandler(final CreateReadWriteSplittingRuleStatement sqlStatement, final String schemaName) {
+        super(sqlStatement, schemaName);
     }
     
     @Override
@@ -60,6 +59,6 @@ public final class CreateReadWriteSplittingRuleBackendHandler extends SchemaRequ
     }
     
     private void post(final String schemaName, final Collection<RuleConfiguration> rules) {
-        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredEvent(schemaName, rules));
+        ShardingSphereEventBus.postEvent(new RuleConfigurationsAlteredEvent(schemaName, rules));
     }
 }

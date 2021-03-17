@@ -17,10 +17,40 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
+import lombok.Getter;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
+import org.apache.shardingsphere.db.protocol.error.SQLErrorCode;
+import org.apache.shardingsphere.proxy.exception.ProxySQLException;
+
+import java.sql.SQLException;
+
 /**
  * Backend exception.
  */
-public abstract class BackendException extends RuntimeException {
+@Getter
+public abstract class BackendException extends ProxySQLException {
     
     private static final long serialVersionUID = -2361593557266150160L;
+
+    public BackendException() {
+    }
+
+    public BackendException(final SQLErrorCode sqlErrorCode, final Object... errorMessageArguments) {
+        super(sqlErrorCode.getErrorCode(), sqlErrorCode.getSqlState(), String.format(sqlErrorCode.getErrorMessage(), errorMessageArguments));
+    }
+
+    public BackendException(final SQLException cause) {
+        super(cause);
+    }
+
+    public BackendException(final Throwable cause) {
+        super(cause);
+    }
+
+    @Override
+    protected ProxySQLException transform(final Throwable cause) {
+        SQLErrorCode sqlErrorCode = CommonErrorCode.UNKNOWN_EXCEPTION;
+        return transform(sqlErrorCode.getErrorCode(), sqlErrorCode.getSqlState(), String.format(sqlErrorCode.getErrorMessage(), ExceptionUtils.getRootCauseMessage(cause)));
+    }
 }

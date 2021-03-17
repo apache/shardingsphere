@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.governance.core.event.listener;
 
+import org.apache.shardingsphere.governance.core.event.model.DummyEvent;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
@@ -51,7 +52,7 @@ public final class PostGovernanceRepositoryEventListenerTest {
             
             @Override
             protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-                return Optional.of(mock(GovernanceEvent.class));
+                return Optional.of(new DummyEvent());
             }
         };
         doAnswer(invocationOnMock -> {
@@ -69,7 +70,7 @@ public final class PostGovernanceRepositoryEventListenerTest {
             
             @Override
             protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-                return Optional.of(mock(GovernanceEvent.class));
+                return Optional.of(new DummyEvent());
             }
         };
         doAnswer(invocationOnMock -> {

@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
@@ -47,8 +46,8 @@ import java.util.stream.Collectors;
  */
 public final class DropResourceBackendHandler extends SchemaRequiredBackendHandler<DropResourceStatement> {
 
-    public DropResourceBackendHandler(final DropResourceStatement sqlStatement, final BackendConnection backendConnection) {
-        super(sqlStatement, backendConnection);
+    public DropResourceBackendHandler(final DropResourceStatement sqlStatement, final String schemaName) {
+        super(sqlStatement, schemaName);
     }
     
     @Override
@@ -115,6 +114,6 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
     
     private void post(final String schemaName, final Map<String, DataSource> resourceMap) {
         Map<String, DataSourceConfiguration> datasourceMap = DataSourceConverter.getDataSourceConfigurationMap(resourceMap);
-        ShardingSphereEventBus.getInstance().post(new DataSourceAlteredEvent(schemaName, datasourceMap));
+        ShardingSphereEventBus.postEvent(new DataSourceAlteredEvent(schemaName, datasourceMap));
     }
 }

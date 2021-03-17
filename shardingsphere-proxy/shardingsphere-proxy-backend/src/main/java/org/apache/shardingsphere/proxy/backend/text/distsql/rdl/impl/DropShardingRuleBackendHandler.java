@@ -22,7 +22,6 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropShar
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.TablesInUsedException;
@@ -43,8 +42,8 @@ import java.util.stream.Collectors;
  */
 public final class DropShardingRuleBackendHandler extends SchemaRequiredBackendHandler<DropShardingRuleStatement> {
     
-    public DropShardingRuleBackendHandler(final DropShardingRuleStatement sqlStatement, final BackendConnection backendConnection) {
-        super(sqlStatement, backendConnection);
+    public DropShardingRuleBackendHandler(final DropShardingRuleStatement sqlStatement, final String schemaName) {
+        super(sqlStatement, schemaName);
     }
     
     @Override
@@ -112,7 +111,6 @@ public final class DropShardingRuleBackendHandler extends SchemaRequiredBackendH
     
     private void post(final String schemaName) {
         // TODO should use RuleConfigurationsChangeEvent
-        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredEvent(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
-        // TODO Need to get the executed feedback from registry center for returning.
+        ShardingSphereEventBus.postEvent(new RuleConfigurationsAlteredEvent(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
     }
 }

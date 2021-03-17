@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.impl;
 
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRuleStatement;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -44,20 +43,20 @@ public final class ReadWriteSplittingRuleQueryBackendHandler extends SchemaRequi
     
     private Iterator<ReadWriteSplittingDataSourceRuleConfiguration> data;
     
-    private final String schema;
+    private final String schemaName;
     
-    public ReadWriteSplittingRuleQueryBackendHandler(final ShowRuleStatement sqlStatement, final BackendConnection backendConnection) {
-        super(sqlStatement, backendConnection);
+    public ReadWriteSplittingRuleQueryBackendHandler(final ShowRuleStatement sqlStatement, final String schemaName) {
+        super(sqlStatement, schemaName);
         if (sqlStatement.getSchema().isPresent()) {
-            schema = sqlStatement.getSchema().get().getIdentifier().getValue();
+            this.schemaName = sqlStatement.getSchema().get().getIdentifier().getValue();
         } else {
-            schema = backendConnection.getSchemaName();
+            this.schemaName = schemaName;
         }
     }
     
     @Override
     protected ResponseHeader execute(final String schemaName, final ShowRuleStatement sqlStatement) {
-        loadRuleConfiguration(schema);
+        loadRuleConfiguration(schemaName);
         return new QueryResponseHeader(getQueryHeader());
     }
     
@@ -69,10 +68,10 @@ public final class ReadWriteSplittingRuleQueryBackendHandler extends SchemaRequi
     
     private List<QueryHeader> getQueryHeader() {
         List<QueryHeader> result = new LinkedList<>();
-        result.add(new QueryHeader(schema, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "writeDataSourceName", "writeDataSourceName", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "readDataSourceNames", "readDataSourceNames", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "loadBalancerName", "loadBalancerName", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "writeDataSourceName", "writeDataSourceName", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "readDataSourceNames", "readDataSourceNames", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schemaName, "", "loadBalancerName", "loadBalancerName", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         return result;
     }
     

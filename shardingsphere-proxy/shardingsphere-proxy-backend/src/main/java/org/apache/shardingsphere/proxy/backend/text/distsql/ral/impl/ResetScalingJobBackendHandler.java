@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ResetScalingJobStatement;
 import org.apache.shardingsphere.proxy.backend.exception.ScalingJobOperateException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.AbstractBackendHandler;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPI;
 import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 
@@ -31,20 +30,21 @@ import java.sql.SQLException;
 /**
  * Reset scaling job backend handler.
  */
-@RequiredArgsConstructor
-public final class ResetScalingJobBackendHandler implements TextProtocolBackendHandler {
-    
-    private final ResetScalingJobStatement sqlStatement;
+public final class ResetScalingJobBackendHandler extends AbstractBackendHandler<ResetScalingJobStatement> {
     
     private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
-    
+
+    public ResetScalingJobBackendHandler(final ResetScalingJobStatement sqlStatement) {
+        super(sqlStatement, "");
+    }
+
     @Override
-    public ResponseHeader execute() {
+    protected ResponseHeader execute(final String schemaName, final ResetScalingJobStatement sqlStatement) {
         try {
             scalingAPI.reset(sqlStatement.getJobId());
+            return new UpdateResponseHeader(sqlStatement);
         } catch (final SQLException ex) {
-            throw new ScalingJobOperateException(ex.getMessage());
+            throw new ScalingJobOperateException(ex);
         }
-        return new UpdateResponseHeader(sqlStatement);
     }
 }

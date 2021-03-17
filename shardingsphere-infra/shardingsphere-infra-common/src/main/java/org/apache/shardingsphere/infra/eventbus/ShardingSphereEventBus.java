@@ -20,6 +20,11 @@ package org.apache.shardingsphere.infra.eventbus;
 import com.google.common.eventbus.EventBus;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * ShardingSphere event bus.
@@ -35,8 +40,50 @@ public final class ShardingSphereEventBus {
     public static EventBus getInstance() {
         return ShardingSphereEventBusHolder.INSTANCE;
     }
-    
+
+    /**
+     * Registers all subscriber methods on {@code object} to receive events.
+     *
+     * @param target whose subscriber methods should be registered.
+     * @param <T> subscriber type.
+     */
+    public static <T> void register(final T target) {
+        getInstance().register(new CompletableEventService<T>(target) {
+        });
+    }
+
+    /**
+     * Post the event, blocking waiting for the result, default timeout 60 seconds.
+     *
+     * @param event eventbus event
+     * @param <T> The value type returned after the event is consumed
+     * @return T The value returned after the event is consumed
+     */
+    public static <T> T postEvent(final CompletableEvent event) {
+        return postEvent(event, 60);
+    }
+
+    /**
+     * Post the event, blocking waiting for the result.
+     *
+     * @param event eventbus event
+     * @param timeout SECONDS
+     * @param <T> The value type returned after the event is consumed
+     * @return T The value returned after the event is consumed
+     */
+    public static <T> T postEvent(final CompletableEvent event, final long timeout) {
+        try {
+            getInstance().post(event);
+            return (T) event.getFuture().get(timeout, TimeUnit.SECONDS);
+        } catch (final InterruptedException | ExecutionException | TimeoutException e) {
+            throw new ShardingSphereException(e);
+        }
+    }
+
     private static final class ShardingSphereEventBusHolder {
-        private static final EventBus INSTANCE = new EventBus();
+
+        private static final EventBus INSTANCE = new EventBus("ShardingSphere-EventBus");
+
+        private static final DummyEventService DUMMY_EVENT_SERVICE = new DummyEventService();
     }
 }

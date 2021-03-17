@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.infra.executor.sql.process.event;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
+import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 
@@ -31,7 +32,7 @@ import java.util.LinkedList;
  * Execution process created event.
  */
 @Getter
-public final class ExecuteProcessCreatedEvent {
+public final class ExecuteProcessCreatedEvent extends CompletableEvent {
     
     private final String executionID;
     

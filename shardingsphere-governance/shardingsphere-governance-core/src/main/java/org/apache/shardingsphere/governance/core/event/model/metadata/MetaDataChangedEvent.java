@@ -19,6 +19,7 @@ package org.apache.shardingsphere.governance.core.event.model.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 
 import java.util.Collection;
 
@@ -27,7 +28,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MetaDataChangedEvent {
+public final class MetaDataChangedEvent extends CompletableEvent {
     
     private final Collection<String> schemaNames;
 }

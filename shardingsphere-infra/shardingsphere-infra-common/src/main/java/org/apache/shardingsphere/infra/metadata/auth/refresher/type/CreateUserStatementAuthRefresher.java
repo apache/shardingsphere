@@ -41,7 +41,7 @@ public final class CreateUserStatementAuthRefresher implements AuthenticationRef
         for (ShardingSphereUser each : authentication.getAuthentication().keySet()) {
             users.add(each);
         }
-        ShardingSphereEventBus.getInstance().post(new CreateUserEvent(users));
+        ShardingSphereEventBus.postEvent(new CreateUserEvent(users));
     }
     
     private Collection<ShardingSphereUser> generateUsers(final CreateUserStatement statement) {
