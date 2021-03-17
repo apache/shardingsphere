@@ -249,6 +249,7 @@ public class ShardingSphereRunner extends Suite {
         return super.withBeforeClasses(new Statement() {
             @Override
             public void evaluate() throws Throwable {
+                // for execution beforeAllClasses
                 List<FrameworkMethod> methods = getTestClass().getAnnotatedMethods(BeforeAllCases.class);
                 List<Runner> children = getChildren();
                 if (!children.isEmpty()) {
@@ -266,6 +267,7 @@ public class ShardingSphereRunner extends Suite {
                         test = ((ShardingSphereCISubRunner) runner).createTest();
                     }
                     methods.forEach(e -> {
+                        e.getMethod().setAccessible(true);
                         try {
                             e.invokeExplosively(test);
                         } catch (Throwable throwable) {
