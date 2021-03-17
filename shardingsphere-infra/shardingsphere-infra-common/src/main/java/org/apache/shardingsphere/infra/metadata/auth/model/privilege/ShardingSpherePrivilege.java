@@ -40,14 +40,14 @@ public final class ShardingSpherePrivilege {
     }
     
     @Override
-    public boolean equals(final Object o) {
-        if (!(o instanceof ShardingSpherePrivilege)) {
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof ShardingSpherePrivilege)) {
             return false;
         }
-        if (!administrationPrivilege.getPrivileges().equals(((ShardingSpherePrivilege) o).getAdministrationPrivilege().getPrivileges())) {
+        if (!administrationPrivilege.getPrivileges().equals(((ShardingSpherePrivilege) obj).administrationPrivilege.getPrivileges())) {
             return false;
         }
-        if (!dataPrivilege.equals(((ShardingSpherePrivilege) o).getDataPrivilege())) {
+        if (!dataPrivilege.equals(((ShardingSpherePrivilege) obj).dataPrivilege)) {
             return false;
         }
         return true;
