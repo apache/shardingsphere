@@ -77,22 +77,18 @@ public final class DataPrivilege {
      * Set super privilege.
      */
     public void setSuperPrivilege() {
-        for (PrivilegeType each : PrivilegeType.values()) {
-            if (each != PrivilegeType.GRANT) {
-                globalPrivileges.add(each);
-            }
-        }
+        globalPrivileges.add(PrivilegeType.SUPER);
     }
     
     @Override
-    public boolean equals(final Object o) {
-        if (!(o instanceof DataPrivilege)) {
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof DataPrivilege)) {
             return false;
         }
-        if (!globalPrivileges.equals(((DataPrivilege) o).getGlobalPrivileges())) {
+        if (!globalPrivileges.equals(((DataPrivilege) obj).getGlobalPrivileges())) {
             return false;
         }
-        if (!specificPrivileges.equals(((DataPrivilege) o).specificPrivileges)) {
+        if (!specificPrivileges.equals(((DataPrivilege) obj).specificPrivileges)) {
             return false;
         }
         return true;
