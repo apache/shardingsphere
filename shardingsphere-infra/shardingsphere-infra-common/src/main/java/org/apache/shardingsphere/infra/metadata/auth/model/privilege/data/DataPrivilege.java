@@ -85,11 +85,7 @@ public final class DataPrivilege {
         }
     }
     
-    /**
-     * Compares the specified DataPrivilege with this.
-     * @param o privilege
-     * @return equal or not
-     */
+    @Override
     public boolean equals(final Object o) {
         if (!(o instanceof DataPrivilege)) {
             return false;

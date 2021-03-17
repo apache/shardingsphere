@@ -82,11 +82,7 @@ public final class SchemaPrivilege {
         }
     }
     
-    /**
-     * Compares the specified schemaPrivilege with this.
-     * @param o privilege
-     * @return equal or not
-     */
+    @Override
     public boolean equals(final Object o) {
         if (!(o instanceof SchemaPrivilege)) {
             return false;
