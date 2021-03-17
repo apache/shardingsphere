@@ -36,4 +36,15 @@ public final class LockNode {
     public String getLockNodePath() {
         return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCK_NODE);
     }
+    
+    /**
+     * Get table lock node path.
+     * 
+     * @param schemaName schema name
+     * @param tableName table name
+     * @return table lock node path
+     */
+    public String getTableLockNodePath(final String schemaName, final String tableName) {
+        return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCK_NODE, schemaName, tableName);
+    }
 }

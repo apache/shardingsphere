@@ -174,7 +174,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         cacheStatements(executionGroupContext.getInputGroups());
         StatementExecuteQueryCallback callback = new StatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(),
                 executionContext.getSqlStatementContext().getSqlStatement(), SQLExecutorExceptionHandler.isExceptionThrown());
-        return driverJDBCExecutor.executeQuery(executionGroupContext, callback);
+        return driverJDBCExecutor.executeQuery(executionGroupContext, executionContext.getSqlStatementContext(), callback);
     }
     
     private List<QueryResult> executeQueryByCalcite() throws SQLException {
@@ -385,7 +385,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 return Optional.of(sqlStatement instanceof SelectStatement);
             }
         };
-        return driverJDBCExecutor.execute(executionGroupContext, sqlStatement, routeUnits, jdbcExecutorCallback);
+        return driverJDBCExecutor.execute(executionGroupContext, executionContext.getSqlStatementContext(), routeUnits, jdbcExecutorCallback);
     }
     
     private void clearStatements() throws SQLException {

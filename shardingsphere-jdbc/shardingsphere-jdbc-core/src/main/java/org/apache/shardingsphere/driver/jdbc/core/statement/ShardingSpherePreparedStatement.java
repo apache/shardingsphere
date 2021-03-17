@@ -203,7 +203,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext();
         cacheStatements(executionGroupContext.getInputGroups());
-        return driverJDBCExecutor.executeQuery(executionGroupContext,
+        return driverJDBCExecutor.executeQuery(executionGroupContext, executionContext.getSqlStatementContext(), 
                 new PreparedStatementExecuteQueryCallback(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType(), sqlStatement, SQLExecutorExceptionHandler.isExceptionThrown()));
     }
     
@@ -281,7 +281,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext();
             cacheStatements(executionGroupContext.getInputGroups());
             return driverJDBCExecutor.execute(executionGroupContext,
-                    executionContext.getSqlStatementContext().getSqlStatement(), executionContext.getRouteContext().getRouteUnits(), createExecuteCallback());
+                    executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits(), createExecuteCallback());
         } finally {
             clearBatch();
         }
