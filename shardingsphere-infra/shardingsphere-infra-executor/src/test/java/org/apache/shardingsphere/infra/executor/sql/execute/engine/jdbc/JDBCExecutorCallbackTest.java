@@ -90,9 +90,9 @@ public final class JDBCExecutorCallbackTest {
         field.setAccessible(true);
         Map<String, DataSourceMetaData> cachedDataSourceMetaData = (Map<String, DataSourceMetaData>) field.get(jdbcExecutorCallback);
         assertThat(cachedDataSourceMetaData.size(), is(0));
-        jdbcExecutorCallback.execute(units, true, null);
+        jdbcExecutorCallback.execute(units, true, Collections.emptyMap());
         assertThat(cachedDataSourceMetaData.size(), is(1));
-        jdbcExecutorCallback.execute(units, true, null);
+        jdbcExecutorCallback.execute(units, true, Collections.emptyMap());
         assertThat(cachedDataSourceMetaData.size(), is(1));
     }
 }
