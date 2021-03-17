@@ -32,22 +32,21 @@ public final class ShardingSpherePrivilege {
     
     /**
      * Set super privilege.
-     *
      */
-    public void setSuper() {
-        administrationPrivilege.setSuper();
-        dataPrivilege.setSuper();
+    public void setSuperPrivilege() {
+        administrationPrivilege.setSuperPrivilege();
+        dataPrivilege.setSuperPrivilege();
     }
     
     @Override
-    public boolean equals(final Object o) {
-        if (!(o instanceof ShardingSpherePrivilege)) {
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof ShardingSpherePrivilege)) {
             return false;
         }
-        if (!administrationPrivilege.getPrivileges().equals(((ShardingSpherePrivilege) o).getAdministrationPrivilege().getPrivileges())) {
+        if (!administrationPrivilege.getPrivileges().equals(((ShardingSpherePrivilege) obj).administrationPrivilege.getPrivileges())) {
             return false;
         }
-        if (!dataPrivilege.equals(((ShardingSpherePrivilege) o).getDataPrivilege())) {
+        if (!dataPrivilege.equals(((ShardingSpherePrivilege) obj).dataPrivilege)) {
             return false;
         }
         return true;
