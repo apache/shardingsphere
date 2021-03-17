@@ -20,6 +20,6 @@
         <column name="single_id"/>
         <column name="status"/>
     </metadata>
-    <row values="0, init" />
-    <row values="1, init" />
+    <row values="0, 1000, init" />
+    <row values="1, 1001, init" />
 </dataset>

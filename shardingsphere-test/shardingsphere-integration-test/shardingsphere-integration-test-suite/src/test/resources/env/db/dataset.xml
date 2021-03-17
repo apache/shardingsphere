@@ -30,14 +30,15 @@
     </metadata>
     <metadata data-nodes="db_0.t_single_table">
         <column name="single_id" type="numeric" />
+        <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
     <metadata data-nodes="db_${0..9}.t_broadcast_table">
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <row data-node="db_0.t_single_table" values="1, init" />>
-    <row data-node="db_0.t_single_table" values="2, init" />
+    <row data-node="db_0.t_single_table" values="1, 1000, init" />>
+    <row data-node="db_0.t_single_table" values="2, 1001, init" />
     <row data-node="db_0.t_order" values="1000, 10, init" />
     <row data-node="db_0.t_order" values="1001, 10, init" />
     <row data-node="db_0.t_order" values="2000, 20, init" />
