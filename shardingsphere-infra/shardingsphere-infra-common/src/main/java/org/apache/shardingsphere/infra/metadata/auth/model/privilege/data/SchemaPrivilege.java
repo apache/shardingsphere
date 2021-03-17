@@ -81,4 +81,21 @@ public final class SchemaPrivilege {
             }
         }
     }
+    
+    @Override
+    public boolean equals(final Object o) {
+        if (!(o instanceof SchemaPrivilege)) {
+            return false;
+        }
+        if (name != ((SchemaPrivilege) o).name) {
+            return false;
+        }
+        if (!globalPrivileges.equals(((SchemaPrivilege) o).getGlobalPrivileges())) {
+            return false;
+        }
+        if (!specificPrivileges.equals(((SchemaPrivilege) o).getSpecificPrivileges())) {
+            return false;
+        }
+        return true;
+    }
 }

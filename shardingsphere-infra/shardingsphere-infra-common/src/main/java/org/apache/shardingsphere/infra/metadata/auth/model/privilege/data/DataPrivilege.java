@@ -84,4 +84,18 @@ public final class DataPrivilege {
             }
         }
     }
+    
+    @Override
+    public boolean equals(final Object o) {
+        if (!(o instanceof DataPrivilege)) {
+            return false;
+        }
+        if (!globalPrivileges.equals(((DataPrivilege) o).getGlobalPrivileges())) {
+            return false;
+        }
+        if (!specificPrivileges.equals(((DataPrivilege) o).specificPrivileges)) {
+            return false;
+        }
+        return true;
+    }
 }
