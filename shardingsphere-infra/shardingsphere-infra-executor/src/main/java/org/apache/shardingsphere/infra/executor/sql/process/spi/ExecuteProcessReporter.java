@@ -31,15 +31,15 @@ public interface ExecuteProcessReporter {
      * Report the summary of this task.
      * @param context context
      * @param executionGroupContext execution group context
-     * @param status status
+     * @param constants constants
      */
-    void report(SQLStatementContext<?> context, ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, ExecuteProcessConstants status);
+    void report(SQLStatementContext<?> context, ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, ExecuteProcessConstants constants);
     
     /**
      * Report a unit of this task.
      * @param executionID execution ID
      * @param executionUnit execution unit
-     * @param status status
+     * @param constants constants
      */
-    void report(String executionID, SQLExecutionUnit executionUnit, ExecuteProcessConstants status);
+    void report(String executionID, SQLExecutionUnit executionUnit, ExecuteProcessConstants constants);
 }

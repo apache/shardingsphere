@@ -29,12 +29,12 @@ import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessRe
 public final class GovernanceExecuteProcessReporter implements ExecuteProcessReporter {
     
     @Override
-    public void report(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants status) {
+    public void report(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessConstants constants) {
         // TODO :Call API of configCenter
     }
     
     @Override
-    public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants status) {
+    public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants constants) {
         // TODO :Call API of configCenter
     }
 }
