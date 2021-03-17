@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.auth.model.privilege;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.Collection;
@@ -26,6 +27,7 @@ import java.util.LinkedHashSet;
  * Administration privilege.
  */
 @Getter
+@EqualsAndHashCode
 public final class AdministrationPrivilege {
     
     private final Collection<PrivilegeType> privileges = new LinkedHashSet<>();
