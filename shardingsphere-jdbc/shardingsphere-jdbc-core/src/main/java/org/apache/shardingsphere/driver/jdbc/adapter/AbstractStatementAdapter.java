@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
-import org.apache.shardingsphere.infra.optimize.execute.CalciteExecutor;
+import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -58,10 +57,10 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     private void closeCalciteExecutor() throws SQLException {
-        CalciteExecutor executor = getCalciteExecutor();
+        /*CalciteExecutor executor = getCalciteExecutor();
         if (null != executor) {
             executor.close();
-        }
+        }*/
     }
     
     @Override
@@ -212,5 +211,5 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     
     protected abstract Collection<? extends Statement> getRoutedStatements();
     
-    protected abstract CalciteExecutor getCalciteExecutor();
+    // protected abstract CalciteExecutor getCalciteExecutor();
 }

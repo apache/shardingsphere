@@ -23,13 +23,12 @@ import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
-import org.apache.shardingsphere.infra.optimize.execute.CalciteExecutor;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.StatementMemoryStrictlyFetchSizeSetter;
@@ -69,8 +68,8 @@ public final class BackendConnection implements ExecutorJDBCManager {
     @Setter
     private Grantee grantee;
     
-    @Setter
-    private CalciteExecutor calciteExecutor;
+    /*@Setter
+    private CalciteExecutor calciteExecutor;*/
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
@@ -295,7 +294,7 @@ public final class BackendConnection implements ExecutorJDBCManager {
      * 
      * @return SQL exception when calcite executor close
      */
-    public synchronized Collection<SQLException> closeCalciteExecutor() {
+    /*public synchronized Collection<SQLException> closeCalciteExecutor() {
         Collection<SQLException> result = new LinkedList<>();
         if (null != calciteExecutor) {
             try {
@@ -305,5 +304,5 @@ public final class BackendConnection implements ExecutorJDBCManager {
             }
         }
         return result;
-    }
+    }*/
 }

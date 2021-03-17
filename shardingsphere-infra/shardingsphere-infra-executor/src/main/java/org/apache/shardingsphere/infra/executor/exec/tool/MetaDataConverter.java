@@ -16,8 +16,7 @@ public class MetaDataConverter {
             String columnName = relDataTypeField.getName();
             RelDataType fieldDataType = relDataTypeField.getType();
             int dataType = fieldDataType.getSqlTypeName().getJdbcOrdinal();
-            String dataTypeName = fieldDataType.getSqlTypeName().getName();
-            return new ColumnMetaData(columnName, dataType, dataTypeName, false, false, false);
+            return new ColumnMetaData(columnName, dataType, false, false, false);
         }).collect(Collectors.toList());
     }
     

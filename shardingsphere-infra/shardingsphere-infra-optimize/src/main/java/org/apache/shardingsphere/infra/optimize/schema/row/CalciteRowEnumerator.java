@@ -13,7 +13,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *//*
+
 
 package org.apache.shardingsphere.infra.optimize.schema.row;
 
@@ -26,10 +27,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+*/
 /**
  * Calcite row enumerator.
  *
- */
+ *//*
+
 public final class CalciteRowEnumerator implements Enumerator<Object[]> {
     
     private final Collection<QueryResult> queryResults = new LinkedList<>();
@@ -101,3 +104,4 @@ public final class CalciteRowEnumerator implements Enumerator<Object[]> {
         }
     }
 }
+*/

@@ -41,4 +41,9 @@ public class ExecutorQueryResult implements QueryResult {
     public QueryResultMetaData getMetaData() {
         return this.executor.getMetaData();
     }
+    
+    @Override
+    public void close() throws SQLException {
+        executor.close();
+    }
 }

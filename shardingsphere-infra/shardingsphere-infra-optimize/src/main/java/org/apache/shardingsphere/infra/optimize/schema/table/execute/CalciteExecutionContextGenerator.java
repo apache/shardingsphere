@@ -13,7 +13,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *//*
+
 
 package org.apache.shardingsphere.infra.optimize.schema.table.execute;
 
@@ -29,9 +30,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 
+*/
 /**
  * Calcite table execution context generator.
- */
+ *//*
+
 @RequiredArgsConstructor
 public final class CalciteExecutionContextGenerator {
     
@@ -41,11 +44,13 @@ public final class CalciteExecutionContextGenerator {
     
     private final CalciteExecutionSQLGenerator filter;
     
-    /**
+    */
+/**
      * Create execution context.
      *
      * @return execution context
-     */
+     *//*
+
     public ExecutionContext generate() {
         RouteContext routeContext = getRouteContext(initialExecutionContext.getRouteContext());
         return new ExecutionContext(initialExecutionContext.getSqlStatementContext(),
@@ -96,3 +101,4 @@ public final class CalciteExecutionContextGenerator {
         return result;
     }
 }
+*/

@@ -13,7 +13,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *//*
+
 
 package org.apache.shardingsphere.infra.optimize.schema.table.execute;
 
@@ -71,3 +72,4 @@ public final class CalciteExecutionContextGeneratorTest {
         assertThat(actual.getExecutionUnits().iterator().next().getSqlUnit().getSql(), is("SELECT * FROM t_order_0"));
     }
 }
+*/

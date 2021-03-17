@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.driver.governance.internal.circuit.statement;
 
-import java.sql.Array;
 import lombok.Getter;
-import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
 import org.apache.shardingsphere.driver.governance.internal.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.driver.governance.internal.circuit.resultset.CircuitBreakerResultSet;
-import org.apache.shardingsphere.infra.optimize.execute.CalciteExecutor;
+import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
 
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
@@ -275,11 +274,11 @@ public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOp
         return Collections.emptyList();
     }
     
-    @Override
+    /*@Override
     protected CalciteExecutor getCalciteExecutor() {
         return null;
     }
-    
+    */
     @Override
     public ResultSet executeQuery() {
         return new CircuitBreakerResultSet();

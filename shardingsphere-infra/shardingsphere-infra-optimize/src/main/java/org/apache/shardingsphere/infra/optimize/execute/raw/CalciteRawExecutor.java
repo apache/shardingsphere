@@ -13,7 +13,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *//*
+
 
 package org.apache.shardingsphere.infra.optimize.execute.raw;
 
@@ -38,9 +39,11 @@ import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.List;
 
+*/
 /**
  * Calcite raw executor.
- */
+ *//*
+
 @RequiredArgsConstructor
 public final class CalciteRawExecutor implements CalciteExecutor {
     
@@ -89,3 +92,4 @@ public final class CalciteRawExecutor implements CalciteExecutor {
         }
     }
 }
+*/

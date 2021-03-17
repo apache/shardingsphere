@@ -25,10 +25,7 @@ import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ProjectableFilterableTable;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowEnumerator;
 import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
-import org.apache.shardingsphere.infra.optimize.schema.table.execute.CalciteExecutionContextGenerator;
-import org.apache.shardingsphere.infra.optimize.schema.table.execute.CalciteExecutionSQLGenerator;
 
 import java.util.List;
 
@@ -49,9 +46,10 @@ public final class CalciteFilterableTable extends AbstractCalciteTable implement
 
             @Override
             public Enumerator<Object[]> enumerator() {
-                CalciteExecutionContextGenerator generator =
+                /*CalciteExecutionContextGenerator generator =
                         new CalciteExecutionContextGenerator(getName(), getExecutor().getInitialExecutionContext(), new CalciteExecutionSQLGenerator(root, filters, projects));
-                return new CalciteRowEnumerator(getExecutor().execute(generator.generate()));
+                return new CalciteRowEnumerator(getExecutor().execute(generator.generate()));*/
+                throw new UnsupportedOperationException();
             }
         };
     }

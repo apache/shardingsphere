@@ -13,7 +13,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *//*
+
 
 package org.apache.shardingsphere.infra.optimize.execute;
 
@@ -34,9 +35,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+*/
 /**
  * Calcite JDBC executor.
- */
+ *//*
+
 public final class CalciteJDBCExecutor implements CalciteExecutor {
     
     public static final String CONNECTION_URL = "jdbc:calcite:";
@@ -105,3 +108,4 @@ public final class CalciteJDBCExecutor implements CalciteExecutor {
         }
     }
 }
+*/

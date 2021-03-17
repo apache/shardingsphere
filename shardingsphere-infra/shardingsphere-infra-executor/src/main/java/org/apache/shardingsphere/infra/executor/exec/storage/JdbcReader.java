@@ -16,7 +16,7 @@ import org.apache.shardingsphere.infra.executor.exec.sql.ShardingSqlImplementor;
 import org.apache.shardingsphere.infra.executor.exec.tool.MetaDataConverter;
 import org.apache.shardingsphere.infra.executor.exec.tool.SqlDialects;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.optimize.sql.SqlDynamicValueParam;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -46,6 +47,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class JdbcReader {
@@ -94,11 +96,11 @@ public class JdbcReader {
     
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(stmtType,
                 maxConnectionsSizePerQuery, execContext.getExecutorDriverManager(), execContext.getOption(), Collections.singletonList(shardingRule));
-        Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups =  prepareEngine.prepare(routeContext, executionUnits);
+        ExecutionGroupContext<JDBCExecutionUnit> executionGroups =  prepareEngine.prepare(routeContext, executionUnits);
     
         ExecutorEngine executorEngine = new ExecutorEngine(execContext.getProps().<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
         JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, execContext.isHoldTransaction());
-        List<QueryResult> results = jdbcExecutor.execute(executionGroups, new JDBCExecutorCallback<QueryResult>(execContext.getDatabaseType(), true) {
+        List<QueryResult> results = jdbcExecutor.execute(executionGroups, new JDBCExecutorCallback<QueryResult>(execContext.getDatabaseType(), null, true) {
             @Override
             protected QueryResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 ResultSet resultSet;
@@ -112,6 +114,11 @@ public class JdbcReader {
                     resultSet = statement.executeQuery(sql);
                 }
                 return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new JDBCStreamQueryResult(resultSet) : new JDBCMemoryQueryResult(resultSet);
+            }
+    
+            @Override
+            protected Optional<QueryResult> getSaneResult(final SQLStatement sqlStatement) {
+                return Optional.empty();
             }
         });
         // wraper results to another queryResult

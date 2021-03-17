@@ -41,7 +41,9 @@ public class ResultColumnMetaData implements QueryResultMetaData {
     
     @Override
     public String getColumnTypeName(final int columnIndex) throws SQLException {
-        return getColumnMetaData(columnIndex).getDataTypeName();
+        // TODO 
+        int dataType = getColumnMetaData(columnIndex).getDataType();
+        return null;
     }
     
     @Override

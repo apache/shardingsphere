@@ -17,26 +17,7 @@
 
 package org.apache.shardingsphere.infra.optimize.schema.row;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Calcite internal executor.
@@ -45,7 +26,7 @@ import java.util.stream.Collectors;
 public final class CalciteRowExecutor {
     
     // TODO Consider use emptyList
-    private final Collection<ShardingSphereRule> rules;
+    /*private final Collection<ShardingSphereRule> rules;
     
     private final int maxConnectionsSizePerQuery;
     
@@ -58,12 +39,12 @@ public final class CalciteRowExecutor {
     
     private final JDBCExecutorCallback<? extends ExecuteResult> callback;
     
-    /**
+    *//**
      * Execute.
      *
      * @param context context
      * @return a query result list
-     */
+     *//*
     public Collection<QueryResult> execute(final ExecutionContext context) {
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(context);
@@ -78,5 +59,5 @@ public final class CalciteRowExecutor {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
                 JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, jdbcManager, new StatementOption(true), rules);
         return prepareEngine.prepare(executionContext.getRouteContext(), executionContext.getExecutionUnits());
-    }
+    }*/
 }

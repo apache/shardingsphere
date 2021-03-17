@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.infra.optimize.context;
 
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -48,7 +46,8 @@ public final class CalciteContextFactoryTest {
         ShardingSphereMetaData shardingSphereMetaData = new ShardingSphereMetaData("logic_db", shardingSphereResource, metaData, schema);
         CalciteContextFactory calciteContextFactory = new CalciteContextFactory(Collections.singletonMap("logic_db", shardingSphereMetaData));
         assertNotNull(calciteContextFactory);
-        CalciteContext logicDb = calciteContextFactory.create("logic_db", new CalciteRowExecutor(Collections.emptyList(), 0, null, mock(JDBCExecutor.class), mock(ExecutionContext.class), null));
+        //CalciteContext logicDb = calciteContextFactory.create("logic_db", new CalciteRowExecutor(Collections.emptyList(), 0, null, mock(JDBCExecutor.class), mock(ExecutionContext.class), null));
+        CalciteContext logicDb = calciteContextFactory.create("logic_db", new CalciteRowExecutor());
         assertNotNull(logicDb);
         Properties properties = logicDb.getConnectionProperties();
         assertNotNull(properties);
