@@ -34,7 +34,7 @@ Developers can customize their own ShardingSphere systems just like building leg
 
 ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top Level Project on April 16, 2020.
 
-You can communicate with community via the [mailing list](mailto:dev@shardingsphere.apache.org).
+You are welcome to communicate with the community via the [mailing list](mailto:dev@shardingsphere.apache.org).
 
 ![ShardingSphere Scope](https://shardingsphere.apache.org/document/current/img/shardingsphere-scope_en.png)
 
