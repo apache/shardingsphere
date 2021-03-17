@@ -32,11 +32,10 @@ public final class ShardingSpherePrivilege {
     
     /**
      * Set super privilege.
-     *
      */
-    public void setSuper() {
-        administrationPrivilege.setSuper();
-        dataPrivilege.setSuper();
+    public void setSuperPrivilege() {
+        administrationPrivilege.setSuperPrivilege();
+        dataPrivilege.setSuperPrivilege();
     }
     
     @Override
