@@ -42,11 +42,10 @@ public final class AdministrationPrivilege {
     
     /**
      * Set super privilege.
-     *
      */
-    public void setSuper() {
+    public void setSuperPrivilege() {
         for (PrivilegeType each : PrivilegeType.values()) {
-            if (!each.equals(PrivilegeType.GRANT)) {
+            if (each != PrivilegeType.GRANT) {
                 privileges.add(each);
             }
         }

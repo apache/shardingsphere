@@ -75,11 +75,10 @@ public final class DataPrivilege {
     
     /**
      * Set super privilege.
-     *
      */
-    public void setSuper() {
+    public void setSuperPrivilege() {
         for (PrivilegeType each : PrivilegeType.values()) {
-            if (!each.equals(PrivilegeType.GRANT)) {
+            if (each != PrivilegeType.GRANT) {
                 globalPrivileges.add(each);
             }
         }

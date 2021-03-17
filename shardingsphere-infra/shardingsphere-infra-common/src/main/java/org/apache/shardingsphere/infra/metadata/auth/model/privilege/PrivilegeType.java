@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum PrivilegeType {
     
+    SUPER("SUPER"),
     SELECT("SELECT"),
     INSERT("INSERT"),
     UPDATE("UPDATE"),
@@ -44,7 +45,6 @@ public enum PrivilegeType {
     INDEX("INDEX"),
     ALTER("ALTER"),
     SHOW_DB("SHOW_DB"),
-    SUPER("SUPER"),
     CREATE_TMP("CREATE_TMP"),
     LOCK_TABLES("LOCK_TABLES"),
     EXECUTE("EXECUTE"),
