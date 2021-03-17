@@ -72,28 +72,23 @@ public final class SchemaPrivilege {
     
     /**
      * Set super privilege.
-     *
      */
-    public void setSuper() {
-        for (PrivilegeType each : PrivilegeType.values()) {
-            if (!each.equals(PrivilegeType.GRANT)) {
-                globalPrivileges.add(each);
-            }
-        }
+    public void setSuperPrivilege() {
+        globalPrivileges.add(PrivilegeType.SUPER);
     }
     
     @Override
-    public boolean equals(final Object o) {
-        if (!(o instanceof SchemaPrivilege)) {
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof SchemaPrivilege)) {
             return false;
         }
-        if (name != ((SchemaPrivilege) o).name) {
+        if (!name.equals(((SchemaPrivilege) obj).name)) {
             return false;
         }
-        if (!globalPrivileges.equals(((SchemaPrivilege) o).getGlobalPrivileges())) {
+        if (!globalPrivileges.equals(((SchemaPrivilege) obj).globalPrivileges)) {
             return false;
         }
-        if (!specificPrivileges.equals(((SchemaPrivilege) o).getSpecificPrivileges())) {
+        if (!specificPrivileges.equals(((SchemaPrivilege) obj).specificPrivileges)) {
             return false;
         }
         return true;
