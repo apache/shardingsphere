@@ -24,6 +24,7 @@ import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLT
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumn;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -78,18 +79,28 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
             if (!encryptTable.isPresent() || !encryptTable.get().findEncryptorName(column.get().getIdentifier().getValue()).isPresent()) {
                 continue;
             }
-            int startIndex = column.get().getOwner().isPresent() ? column.get().getOwner().get().getStopIndex() + 2 : column.get().getStartIndex();
+            int startIndex = column.get().getOwner().isPresent() ? column.get().getOwner().get().getStartIndex() : column.get().getStartIndex();
             int stopIndex = column.get().getStopIndex();
+            Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(column.get(), schema);
+            Optional<String> owner = column.get().getOwner().isPresent() ? Optional.ofNullable(column.get().getOwner().get().getIdentifier().getValue()) : Optional.empty();
+            SubstitutableColumnNameToken token = new SubstitutableColumnNameToken(startIndex, stopIndex, Optional.empty());
             if (!queryWithCipherColumn) {
                 Optional<String> plainColumn = encryptTable.get().findPlainColumn(column.get().getIdentifier().getValue());
                 if (plainColumn.isPresent()) {
-                    result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, plainColumn.get()));
+                    token.put(tableName.get(), new SubstitutableColumn(tableName, owner,plainColumn.get(), column.get().getIdentifier().getQuoteCharacter(),Optional.empty()));
+                    result.add(token);
                     continue;
                 }
             }
             Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(column.get().getIdentifier().getValue());
-            SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(columnName -> new SubstitutableColumnNameToken(startIndex, stopIndex, columnName))
-                    .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex, encryptTable.get().getCipherColumn(column.get().getIdentifier().getValue())));
+            SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(columnName -> {
+                token.put(tableName.get(), new SubstitutableColumn(tableName, owner,columnName, column.get().getIdentifier().getQuoteCharacter(),Optional.empty()));
+                return token;
+            })
+                    .orElseGet(() -> {
+                        token.put(tableName.get(), new SubstitutableColumn(tableName, owner,encryptTable.get().getCipherColumn(column.get().getIdentifier().getValue()), column.get().getIdentifier().getQuoteCharacter(),Optional.empty()));
+                        return token;
+                    });
             result.add(encryptColumnNameToken);
         }
         return result;

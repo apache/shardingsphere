@@ -76,7 +76,8 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
                     if(column.getTableName().isPresent() && !column.getTableName().get().equals(owner.get())){
                         return Joiner.on(".").join(column.getQuoteCharacter().wrap(owner.get()), actualColumnName);
                     }
-                    return actualColumnName;
+//                    return actualColumnName;
+                    return Joiner.on(".").join(column.getQuoteCharacter().wrap(actualTableName), actualColumnName);
                 }
                 if(column.getOwner().isPresent()){
                     if(column.getTableName().isPresent() && !column.getTableName().get().equals(column.getOwner().get())){
