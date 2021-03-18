@@ -22,6 +22,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.admin.AdministrationPrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.data.DataPrivilege;
 
+import java.util.Collection;
+
 /**
  * ShardingSphere privilege.
  */
@@ -39,5 +41,38 @@ public final class ShardingSpherePrivilege {
     public void setSuperPrivilege() {
         administrationPrivilege.setSuperPrivilege();
         dataPrivilege.setSuperPrivilege();
+    }
+    
+    /**
+     * Has privileges.
+     *
+     * @param privileges privileges
+     * @return has privileges or not
+     */
+    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
+        return administrationPrivilege.hasPrivileges(privileges);
+    }
+    
+    /**
+     * Has privileges.
+     *
+     * @param schema schema
+     * @param privileges privileges
+     * @return has privileges or not
+     */
+    public boolean hasPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
+        return dataPrivilege.hasPrivileges(schema, privileges);
+    }
+    
+    /**
+     * Has privileges.
+     *
+     * @param schema schema
+     * @param table table
+     * @param privileges privileges
+     * @return has privileges or not
+     */
+    public boolean hasPrivileges(final String schema, final String table, final Collection<PrivilegeType> privileges) {
+        return dataPrivilege.hasPrivileges(schema, table, privileges);
     }
 }

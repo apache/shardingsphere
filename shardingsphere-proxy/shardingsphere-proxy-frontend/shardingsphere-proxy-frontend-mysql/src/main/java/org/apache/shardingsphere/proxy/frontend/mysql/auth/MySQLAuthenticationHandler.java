@@ -58,7 +58,7 @@ public final class MySQLAuthenticationHandler {
         }
         ShardingSpherePrivilege privilege = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getAuthentication().get(user.get());
         // TODO : privilege.getDataPrivilege().getSpecificPrivileges().containsKey(database) is bound to be replaced with privilege.hasPrivileges(schema, xxx) (xxx means the privileges needed here)
-        if (!privilege.getAdministrationPrivilege().hasPrivileges(Collections.singletonList(PrivilegeType.SUPER)) && !privilege.getDataPrivilege().getSpecificPrivileges().containsKey(database)) {
+        if (!privilege.hasPrivileges(Collections.singletonList(PrivilegeType.SUPER)) && !privilege.getDataPrivilege().getSpecificPrivileges().containsKey(database)) {
             return Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
         }
         return Optional.empty();
