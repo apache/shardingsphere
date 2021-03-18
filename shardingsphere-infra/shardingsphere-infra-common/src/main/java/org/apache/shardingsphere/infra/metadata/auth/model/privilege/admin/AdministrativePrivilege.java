@@ -25,11 +25,11 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 
 /**
- * Administration privilege.
+ * Administrative privilege.
  */
 @Getter
 @EqualsAndHashCode
-public final class AdministrationPrivilege {
+public final class AdministrativePrivilege {
     
     private final Collection<PrivilegeType> privileges = new LinkedHashSet<>();
     

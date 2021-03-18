@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.metadata.auth.model.privilege;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.admin.AdministrationPrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.data.DataPrivilege;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.admin.AdministrativePrivilege;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.data.DatabasePrivilege;
 
 import java.util.Collection;
 
@@ -31,16 +31,16 @@ import java.util.Collection;
 @EqualsAndHashCode
 public final class ShardingSpherePrivilege {
     
-    private final AdministrationPrivilege administrationPrivilege = new AdministrationPrivilege();
+    private final AdministrativePrivilege administrativePrivilege = new AdministrativePrivilege();
     
-    private final DataPrivilege dataPrivilege = new DataPrivilege();
+    private final DatabasePrivilege databasePrivilege = new DatabasePrivilege();
     
     /**
      * Set super privilege.
      */
     public void setSuperPrivilege() {
-        administrationPrivilege.setSuperPrivilege();
-        dataPrivilege.setSuperPrivilege();
+        administrativePrivilege.setSuperPrivilege();
+        databasePrivilege.setSuperPrivilege();
     }
     
     /**
@@ -50,7 +50,7 @@ public final class ShardingSpherePrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return administrationPrivilege.hasPrivileges(privileges);
+        return administrativePrivilege.hasPrivileges(privileges);
     }
     
     /**
@@ -61,7 +61,7 @@ public final class ShardingSpherePrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
-        return dataPrivilege.hasPrivileges(schema, privileges);
+        return databasePrivilege.hasPrivileges(schema, privileges);
     }
     
     /**
@@ -73,6 +73,6 @@ public final class ShardingSpherePrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final String schema, final String table, final Collection<PrivilegeType> privileges) {
-        return dataPrivilege.hasPrivileges(schema, table, privileges);
+        return databasePrivilege.hasPrivileges(schema, table, privileges);
     }
 }
