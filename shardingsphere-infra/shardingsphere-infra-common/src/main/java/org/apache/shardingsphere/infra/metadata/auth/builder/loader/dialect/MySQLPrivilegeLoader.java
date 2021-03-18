@@ -199,7 +199,7 @@ public final class MySQLPrivilegeLoader implements PrivilegeLoader {
     private void fillSchemaPrivilege(final ShardingSpherePrivilege privilege, final DataSource dataSource, final ShardingSphereUser user) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(true);
-            PreparedStatement statement = connection.prepareStatement("select * from mysql.db where user=? and host=?");
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM mysql.db WHERE user=? AND host=?");
             statement.setString(1, user.getGrantee().getUsername());
             statement.setString(2, user.getGrantee().getHostname());
             ResultSet resultSet = statement.executeQuery();
@@ -290,25 +290,24 @@ public final class MySQLPrivilegeLoader implements PrivilegeLoader {
     private void fillTablePrivilege(final ShardingSpherePrivilege privilege, final DataSource dataSource, final ShardingSphereUser user) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(true);
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM mysql.tables_priv WHERE user=? AND host=?");
-            statement.setString(1, user.getGrantee().getUsername());
-            statement.setString(2, user.getGrantee().getHostname());
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                String schema = resultSet.getString("Db");
-                String tableName = resultSet.getString("Table_name");
-                TablePrivilege tablePrivilege = new TablePrivilege(tableName, getPrivileges((String[]) resultSet.getArray("Table_priv").getArray()));
-                if (privilege.getDatabasePrivilege().getSpecificPrivileges().containsKey(schema)) {
-                    privilege.getDatabasePrivilege().getSpecificPrivileges().get(schema).getSpecificPrivileges().put(tableName, tablePrivilege);
-                } else {
-                    SchemaPrivilege schemaPrivilege = new SchemaPrivilege(schema);
-                    schemaPrivilege.getSpecificPrivileges().put(tableName, tablePrivilege);
-                    privilege.getDatabasePrivilege().getSpecificPrivileges().put(schema, schemaPrivilege);
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT Db, Table_name, Table_priv FROM mysql.tables_priv WHERE user=? AND host=?");
+            preparedStatement.setString(1, user.getGrantee().getUsername());
+            preparedStatement.setString(2, user.getGrantee().getHostname());
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    String db = resultSet.getString("Db");
+                    String tableName = resultSet.getString("Table_name");
+                    String[] tablePrivileges = (String[]) resultSet.getArray("Table_priv").getArray();
+                    TablePrivilege tablePrivilege = new TablePrivilege(tableName, getPrivileges(tablePrivileges));
+                    if (!privilege.getDatabasePrivilege().getSpecificPrivileges().containsKey(db)) {
+                        privilege.getDatabasePrivilege().getSpecificPrivileges().put(db, new SchemaPrivilege(db));
+                    }
+                    privilege.getDatabasePrivilege().getSpecificPrivileges().get(db).getSpecificPrivileges().put(tableName, tablePrivilege);
                 }
             }
         }
     }
-
+    
     private Collection<PrivilegeType> getPrivileges(final String[] privileges) {
         return Arrays.stream(privileges).map(this::getPrivilegeType).collect(Collectors.toSet());
     }
