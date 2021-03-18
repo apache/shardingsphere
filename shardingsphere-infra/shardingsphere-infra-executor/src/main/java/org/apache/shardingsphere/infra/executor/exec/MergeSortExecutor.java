@@ -1,13 +1,11 @@
 package org.apache.shardingsphere.infra.executor.exec;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Ordering;
-import org.apache.calcite.rel.RelFieldCollation;
-import org.apache.calcite.rel.RelFieldCollation.Direction;
 import org.apache.calcite.rex.RexDynamicParam;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
 import org.apache.shardingsphere.infra.executor.exec.meta.Row;
+import org.apache.shardingsphere.infra.executor.exec.tool.RowComparatorUtil;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSMergeSort;
 
@@ -35,9 +33,7 @@ public class MergeSortExecutor extends AbstractExector implements Executor{
         super(execContext);
         this.executors = executors;
         this.mergeSort = ssMergeSort;
-        List<RelFieldCollation> fieldCollations = this.mergeSort.collation.getFieldCollations();
-        Iterable<Comparator<Row>> comparators = Iterables.transform(fieldCollations, fieldCollation -> comparator(fieldCollation));
-        ordering = Ordering.compound(comparators);
+        ordering = RowComparatorUtil.convertCollationToRowComparator(this.mergeSort.collation);
     
         this.offset = resolveRexNodeValue(this.mergeSort.offset, 0L, Long.class);
         this.fetch = resolveRexNodeValue(this.mergeSort.fetch, Long.MAX_VALUE, Long.class);
@@ -85,22 +81,6 @@ public class MergeSortExecutor extends AbstractExector implements Executor{
     @Override
     public QueryResultMetaData getMetaData() {
         return executors.get(0).getMetaData();
-    }
-    
-    private Comparator<Row> comparator(RelFieldCollation fieldCollation) {
-        int nullComparison = fieldCollation.nullDirection.nullComparison;
-        int fieldIdx = fieldCollation.getFieldIndex();
-        if(fieldCollation.direction == Direction.ASCENDING) {
-            return (o1, o2) -> comparator(o1, o2, fieldIdx, nullComparison);
-        } else {
-            return (o1, o2) -> comparator(o2, o1, fieldIdx, nullComparison);
-        }
-    } 
-    
-    private int comparator(Row r1, Row r2, int fieldIdx, int nullComparison) {
-        Comparable<?> c1 = r1.getColumnValue(fieldIdx);
-        Comparable<?> c2 = r2.getColumnValue(fieldIdx);
-        return RelFieldCollation.compare(c1, c2, nullComparison);
     }
     
     private <T> T resolveRexNodeValue(RexNode rexNode, T defaultValue, Class<T> clazz) {
