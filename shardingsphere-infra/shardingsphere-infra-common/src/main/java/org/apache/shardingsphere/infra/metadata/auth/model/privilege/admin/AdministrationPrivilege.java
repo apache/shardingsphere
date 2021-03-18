@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.model.privilege;
+package org.apache.shardingsphere.infra.metadata.auth.model.privilege.admin;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;

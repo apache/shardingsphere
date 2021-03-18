@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.auth.model.privilege;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.admin.AdministrationPrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.data.DataPrivilege;
 
 /**

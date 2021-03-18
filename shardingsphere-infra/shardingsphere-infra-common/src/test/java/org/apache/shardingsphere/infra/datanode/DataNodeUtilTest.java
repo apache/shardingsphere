@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule;
+package org.apache.shardingsphere.infra.datanode;
 
-import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.junit.Test;
 
 import java.util.Arrays;
