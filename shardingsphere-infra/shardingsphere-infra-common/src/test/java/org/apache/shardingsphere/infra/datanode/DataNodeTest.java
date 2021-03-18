@@ -21,58 +21,52 @@ import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurat
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class DataNodeTest {
-
+    
     @Test
-    public void assertNewDateNodeWithPointDelimiter() {
-        DataNode dataNode = new DataNode("db.table_1");
-        assertThat(dataNode.getDataSourceName(), is("db"));
-        assertThat(dataNode.getTableName(), is("table_1"));
+    public void assertNewValidDataNode() {
+        DataNode dataNode = new DataNode("ds_0.tbl_0");
+        assertThat(dataNode.getDataSourceName(), is("ds_0"));
+        assertThat(dataNode.getTableName(), is("tbl_0"));
     }
-
+    
     @Test(expected = ShardingSphereConfigurationException.class)
-    public void assertNewDateNodeWithoutDelimiter() {
-        DataNode dataNode = new DataNode("db");
+    public void assertNewInValidDataNodeWithoutDelimiter() {
+        new DataNode("ds_0tbl_0");
     }
-
+    
     @Test(expected = ShardingSphereConfigurationException.class)
-    public void assertNewDateNodeWithInvalidDelimiter() {
-        DataNode dataNode = new DataNode("db,table_1");
+    public void assertNewInValidDataNodeWithTwoDelimiters() {
+        new DataNode("ds_0.tbl_0.tbl_1");
     }
-
+    
     @Test(expected = ShardingSphereConfigurationException.class)
-    public void assertNewDateNodeWithGreaterThenOneValidDelimiter() {
-        DataNode dataNode = new DataNode("schema.db.table_1");
+    public void assertNewValidDataNodeWithInvalidDelimiter() {
+        new DataNode("ds_0,tbl_0");
     }
-
+    
     @Test
-    public void assertNewDateNodeWithNoTableNameOrDbName() {
-        DataNode dataNodeWithNoTableName = new DataNode("db.");
-        assertThat(dataNodeWithNoTableName.getDataSourceName(), is("db"));
-        assertThat(dataNodeWithNoTableName.getTableName(), is(""));
-        DataNode dataNodeWithNoDbName = new DataNode(".table");
-        assertThat(dataNodeWithNoDbName.getDataSourceName(), is(""));
-        assertThat(dataNodeWithNoDbName.getTableName(), is("table"));
+    public void assertEquals() {
+        DataNode dataNode = new DataNode("ds_0.tbl_0");
+        assertThat(dataNode, is(new DataNode("ds_0.tbl_0")));
+        assertThat(dataNode, is(dataNode));
+        assertThat(dataNode, not(new DataNode("ds_0.tbl_1")));
+        assertFalse(dataNode.equals(null));
+        assertNotNull(dataNode);
     }
-
+    
     @Test
-    public void assertDateNodeEqualsAndHashCode() {
-        DataNode dataNode1 = new DataNode("db.table_1");
-        DataNode dataNode2 = new DataNode("db.table_1");
-        assertThat(dataNode1, is(dataNode2));
-        assertTrue(dataNode1.equals(dataNode2));
-        assertTrue(dataNode1.hashCode() == dataNode2.hashCode());
-        DataNode dataNode3 = new DataNode("db.table_3");
-        assertFalse(dataNode1.equals(dataNode3));
+    public void assertHashCode() {
+        assertThat(new DataNode("ds_0.tbl_0").hashCode(), is(new DataNode("ds_0.tbl_0").hashCode()));
     }
-
+    
     @Test
-    public void assertDateNodeToString() {
-        DataNode dataNode1 = new DataNode("db.table_1");
-        assertThat(dataNode1.toString(), is("DataNode(dataSourceName=db, tableName=table_1)"));
+    public void assertToString() {
+        assertThat(new DataNode("ds_0.tbl_0").toString(), is("DataNode(dataSourceName=ds_0, tableName=tbl_0)"));
     }
 }
