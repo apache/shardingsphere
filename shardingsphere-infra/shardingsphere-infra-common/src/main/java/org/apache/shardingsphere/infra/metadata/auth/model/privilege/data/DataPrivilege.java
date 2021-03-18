@@ -62,17 +62,19 @@ public final class DataPrivilege {
     }
     
     private boolean hasGlobalPrivileges(final Collection<PrivilegeType> privileges) {
-        return globalPrivileges.contains(PrivilegeType.SUPER) || !globalPrivileges.isEmpty() && globalPrivileges.containsAll(privileges);
+        return globalPrivileges.contains(PrivilegeType.SUPER) || globalPrivileges.containsAll(privileges);
     }
     
     private boolean hasSpecificPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
-        Collection<PrivilegeType> targets = privileges.stream().filter(each -> !globalPrivileges.contains(each)).collect(Collectors.toList());
-        return specificPrivileges.containsKey(schema) && specificPrivileges.get(schema).hasPrivileges(targets);
+        return specificPrivileges.containsKey(schema) && specificPrivileges.get(schema).hasPrivileges(getSpecificPrivileges(privileges));
     }
     
     private boolean hasSpecificPrivileges(final String schema, final String table, final Collection<PrivilegeType> privileges) {
-        Collection<PrivilegeType> targets = privileges.stream().filter(each -> !globalPrivileges.contains(each)).collect(Collectors.toList());
-        return specificPrivileges.containsKey(schema) && specificPrivileges.get(schema).hasPrivileges(table, targets);
+        return specificPrivileges.containsKey(schema) && specificPrivileges.get(schema).hasPrivileges(table, getSpecificPrivileges(privileges));
+    }
+    
+    private Collection<PrivilegeType> getSpecificPrivileges(final Collection<PrivilegeType> privileges) {
+        return privileges.stream().filter(each -> !globalPrivileges.contains(each)).collect(Collectors.toList());
     }
     
     /**
