@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.metadata.auth.builder.loader.dialect;
 import org.apache.shardingsphere.infra.metadata.auth.builder.loader.PrivilegeLoader;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.data.SchemaPrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.data.TablePrivilege;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.database.SchemaPrivilege;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.database.TablePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 
 import javax.sql.DataSource;

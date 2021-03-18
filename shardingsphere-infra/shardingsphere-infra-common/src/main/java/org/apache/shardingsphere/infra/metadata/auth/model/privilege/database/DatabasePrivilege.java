@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.model.privilege.data;
+package org.apache.shardingsphere.infra.metadata.auth.model.privilege.database;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
