@@ -161,14 +161,14 @@ public final class RegistryCenterTest {
     
     @Test
     public void assertTryLock() {
-        registryCenter.tryLock("sharding_db", "t_order", 50L);
-        verify(registryRepository).tryLock(eq(new LockNode().getTableLockNodePath("sharding_db", "t_order")), eq(50L), eq(TimeUnit.MILLISECONDS));
+        registryCenter.tryLock(50L);
+        verify(registryRepository).tryLock(eq(new LockNode().getLockNodePath()), eq(50L), eq(TimeUnit.MILLISECONDS));
     }
     
     @Test
     public void assertReleaseLock() {
-        registryCenter.releaseLock("sharding_db", "t_order");
-        verify(registryRepository).releaseLock(eq(new LockNode().getTableLockNodePath("sharding_db", "t_order")));
+        registryCenter.releaseLock();
+        verify(registryRepository).releaseLock(eq(new LockNode().getLockNodePath()));
     }
     
     @Test
