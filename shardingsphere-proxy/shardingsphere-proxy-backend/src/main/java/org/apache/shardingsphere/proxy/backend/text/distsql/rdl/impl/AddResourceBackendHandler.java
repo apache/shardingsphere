@@ -43,7 +43,7 @@ public final class AddResourceBackendHandler extends AbstractBackendHandler<AddR
         super(sqlStatement, schemaName);
         this.databaseType = databaseType;
     }
-
+    
     @Override
     protected ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) {
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
@@ -54,7 +54,7 @@ public final class AddResourceBackendHandler extends AbstractBackendHandler<AddR
         post(schemaName, dataSources);
         return new UpdateResponseHeader(sqlStatement);
     }
-
+    
     private void post(final String schemaName, final Map<String, DataSourceConfiguration> dataSources) {
         ShardingSphereEventBus.postEvent(new DataSourceAddedEvent(schemaName, dataSources));
     }

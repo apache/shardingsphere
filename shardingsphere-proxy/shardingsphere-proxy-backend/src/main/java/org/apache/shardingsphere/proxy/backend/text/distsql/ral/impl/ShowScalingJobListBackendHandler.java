@@ -60,13 +60,13 @@ public final class ShowScalingJobListBackendHandler extends AbstractBackendHandl
         result.add(new QueryHeader("", "", "stop_time", "", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         return result;
     }
-
+    
     @Override
     protected ResponseHeader execute(final String schemaName, final SQLStatement sqlStatement) {
         loadData();
         return new QueryResponseHeader(queryHeaders);
     }
-
+    
     private void loadData() {
         data = scalingAPI.list().stream()
                 .map(each -> {

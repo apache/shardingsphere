@@ -34,14 +34,14 @@ public final class DropDatabaseBackendHandler extends AbstractBackendHandler<Dro
     public DropDatabaseBackendHandler(final DropDatabaseStatement sqlStatement) {
         super(sqlStatement, "");
     }
-
+    
     @Override
     protected ResponseHeader execute(final String schemaName, final DropDatabaseStatement sqlStatement) {
         check(sqlStatement);
         post(sqlStatement);
         return new UpdateResponseHeader(sqlStatement);
     }
-
+    
     private void check(final DropDatabaseStatement sqlStatement) {
         if (!ProxyContext.getInstance().getAllSchemaNames().contains(sqlStatement.getDatabaseName())) {
             throw new DBCreateExistsException(sqlStatement.getDatabaseName());

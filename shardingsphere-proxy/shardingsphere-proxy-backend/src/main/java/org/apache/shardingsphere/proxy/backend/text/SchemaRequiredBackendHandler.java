@@ -39,7 +39,7 @@ public abstract class SchemaRequiredBackendHandler<T extends SQLStatement> exten
         this.sqlStatement = sqlStatement;
         this.schemaName = schemaName;
     }
-
+    
     @Override
     public final ResponseHeader execute() {
         checkSchema(getSchemaName(schemaName, sqlStatement));

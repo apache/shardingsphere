@@ -30,7 +30,7 @@ import org.apache.shardingsphere.scaling.core.api.ScalingAPIFactory;
 public final class StopScalingJobBackendHandler extends AbstractBackendHandler<StopScalingJobStatement> {
     
     private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
-
+    
     public StopScalingJobBackendHandler(final StopScalingJobStatement sqlStatement) {
         super(sqlStatement, "");
     }

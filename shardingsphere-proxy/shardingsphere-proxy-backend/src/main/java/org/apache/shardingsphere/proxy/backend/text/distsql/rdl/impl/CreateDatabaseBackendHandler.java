@@ -34,14 +34,14 @@ public final class CreateDatabaseBackendHandler extends AbstractBackendHandler<C
     public CreateDatabaseBackendHandler(final CreateDatabaseStatement sqlStatement) {
         super(sqlStatement, "");
     }
-
+    
     @Override
     protected ResponseHeader execute(final String schemaName, final CreateDatabaseStatement sqlStatement) {
         check(sqlStatement);
         post(sqlStatement);
         return new UpdateResponseHeader(sqlStatement);
     }
-
+    
     private void check(final CreateDatabaseStatement sqlStatement) {
         if (ProxyContext.getInstance().getAllSchemaNames().contains(sqlStatement.getDatabaseName())) {
             throw new DBCreateExistsException(sqlStatement.getDatabaseName());

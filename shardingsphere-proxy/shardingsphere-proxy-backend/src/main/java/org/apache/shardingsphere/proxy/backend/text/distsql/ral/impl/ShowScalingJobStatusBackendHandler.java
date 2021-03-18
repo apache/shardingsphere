@@ -62,13 +62,13 @@ public final class ShowScalingJobStatusBackendHandler extends AbstractBackendHan
         result.add(new QueryHeader("", "", "incremental_delay_milliseconds", "", Types.BIGINT, "BIGINT", 255, 0, false, false, false, false));
         return result;
     }
-
+    
     @Override
     protected ResponseHeader execute(final String schemaName, final ShowScalingJobStatusStatement sqlStatement) {
         loadData();
         return new QueryResponseHeader(queryHeaders);
     }
-
+    
     private void loadData() {
         data = scalingAPI.getProgress(sqlStatement.getJobId()).entrySet().stream()
                 .map(entry -> {

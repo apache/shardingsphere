@@ -308,7 +308,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         }
         Map<String, Map<String, DataSource>> dataSourcesMap = createDataSourcesMap(Collections.singletonMap(schemaName, 
                 governanceFacade.getRegistryCenter().loadDataSourceConfigurations(schemaName)));
-        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap, 
+        MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap,
                 Collections.singletonMap(schemaName, governanceFacade.getRegistryCenter().loadRuleConfigurations(schemaName)),
                 metaDataContexts.getAuthentication().getAuthentication().keySet(), metaDataContexts.getProps().getProps());
         return metaDataContextsBuilder.build().getMetaDataMap().get(schemaName);

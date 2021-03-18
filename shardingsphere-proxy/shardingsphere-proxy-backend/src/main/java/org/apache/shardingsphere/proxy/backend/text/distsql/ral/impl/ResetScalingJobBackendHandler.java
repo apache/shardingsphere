@@ -33,7 +33,7 @@ import java.sql.SQLException;
 public final class ResetScalingJobBackendHandler extends AbstractBackendHandler<ResetScalingJobStatement> {
     
     private final ScalingAPI scalingAPI = ScalingAPIFactory.getScalingAPI();
-
+    
     public ResetScalingJobBackendHandler(final ResetScalingJobStatement sqlStatement) {
         super(sqlStatement, "");
     }

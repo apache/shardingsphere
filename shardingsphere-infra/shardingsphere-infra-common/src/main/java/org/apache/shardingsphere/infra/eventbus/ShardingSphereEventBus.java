@@ -40,7 +40,7 @@ public final class ShardingSphereEventBus {
     public static EventBus getInstance() {
         return ShardingSphereEventBusHolder.INSTANCE;
     }
-
+    
     /**
      * Registers all subscriber methods on {@code object} to receive events.
      *
@@ -81,7 +81,7 @@ public final class ShardingSphereEventBus {
     }
 
     private static final class ShardingSphereEventBusHolder {
-
+        
         private static final EventBus INSTANCE = new EventBus("ShardingSphere-EventBus");
 
         private static final DummyEventService DUMMY_EVENT_SERVICE = new DummyEventService();

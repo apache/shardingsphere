@@ -62,13 +62,13 @@ public final class CheckScalingJobBackendHandler extends AbstractBackendHandler<
         result.add(new QueryHeader("", "", "data_valid", "", Types.TINYINT, "TINYINT", 255, 0, false, false, false, false));
         return result;
     }
-
+    
     @Override
     protected ResponseHeader execute(final String schemaName, final CheckScalingJobStatement sqlStatement) {
         loadData();
         return new QueryResponseHeader(queryHeaders);
     }
-
+    
     private void loadData() {
         data = scalingAPI.dataConsistencyCheck(sqlStatement.getJobId()).entrySet().stream()
                 .map(entry -> {
