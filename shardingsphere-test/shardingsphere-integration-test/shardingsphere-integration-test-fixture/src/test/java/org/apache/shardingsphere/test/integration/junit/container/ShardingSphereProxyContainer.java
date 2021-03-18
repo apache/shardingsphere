@@ -21,6 +21,8 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.testcontainers.containers.BindMode;
+import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.utility.MountableFile;
 
 import javax.sql.DataSource;
@@ -86,6 +88,11 @@ public class ShardingSphereProxyContainer extends ShardingSphereAdapterContainer
         log.info("Mapped port 3308: {}", getMappedPort(3308));
     }
     
+    @Override
+    public void setWaitStrategy(final WaitStrategy waitStrategy) {
+        super.setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*start success\\."));
+    }
+    
     /**
      * Get DataSource.
      *
@@ -107,7 +114,6 @@ public class ShardingSphereProxyContainer extends ShardingSphereAdapterContainer
         result.setPassword(getAuthentication().getPassword());
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        // FIXME
         result.setConnectionInitSql("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
         return new HikariDataSource(result);
     }

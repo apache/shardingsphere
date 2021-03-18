@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.junit.runner;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
@@ -32,6 +33,7 @@ import java.lang.reflect.Field;
 @Slf4j
 public class ShardingSphereITSubRunner extends BlockJUnit4ClassRunner {
     
+    @Getter
     private final TestCaseBeanContext context;
     
     @NonNull
