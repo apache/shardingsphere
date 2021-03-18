@@ -19,7 +19,10 @@ package org.apache.shardingsphere.infra.metadata.auth.model.privilege;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.data.DataPrivilege;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.admin.AdministrativePrivilege;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.database.DatabasePrivilege;
+
+import java.util.Collection;
 
 /**
  * ShardingSphere privilege.
@@ -28,15 +31,48 @@ import org.apache.shardingsphere.infra.metadata.auth.model.privilege.data.DataPr
 @EqualsAndHashCode
 public final class ShardingSpherePrivilege {
     
-    private final AdministrationPrivilege administrationPrivilege = new AdministrationPrivilege();
+    private final AdministrativePrivilege administrativePrivilege = new AdministrativePrivilege();
     
-    private final DataPrivilege dataPrivilege = new DataPrivilege();
+    private final DatabasePrivilege databasePrivilege = new DatabasePrivilege();
     
     /**
      * Set super privilege.
      */
     public void setSuperPrivilege() {
-        administrationPrivilege.setSuperPrivilege();
-        dataPrivilege.setSuperPrivilege();
+        administrativePrivilege.setSuperPrivilege();
+        databasePrivilege.setSuperPrivilege();
+    }
+    
+    /**
+     * Has privileges.
+     *
+     * @param privileges privileges
+     * @return has privileges or not
+     */
+    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
+        return administrativePrivilege.hasPrivileges(privileges);
+    }
+    
+    /**
+     * Has privileges.
+     *
+     * @param schema schema
+     * @param privileges privileges
+     * @return has privileges or not
+     */
+    public boolean hasPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
+        return databasePrivilege.hasPrivileges(schema, privileges);
+    }
+    
+    /**
+     * Has privileges.
+     *
+     * @param schema schema
+     * @param table table
+     * @param privileges privileges
+     * @return has privileges or not
+     */
+    public boolean hasPrivileges(final String schema, final String table, final Collection<PrivilegeType> privileges) {
+        return databasePrivilege.hasPrivileges(schema, table, privileges);
     }
 }
