@@ -65,7 +65,7 @@ public final class ReadWriteSplittingDataSourceRule {
     
     private void checkConfiguration(final ReadWriteSplittingDataSourceRuleConfiguration config) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
-        if (null == config.getAutoAwareDataSourceName() || "".equals(config.getAutoAwareDataSourceName())) {
+        if (Strings.isNullOrEmpty(config.getAutoAwareDataSourceName())) {
             Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getWriteDataSourceName()), "Write data source name is required.");
             Preconditions.checkArgument(null != config.getReadDataSourceNames() && !config.getReadDataSourceNames().isEmpty(), "Read data source names are required.");
         }
