@@ -49,6 +49,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -211,14 +212,14 @@ public class ShardingSphereRunner extends Suite {
     private Collection<TestCaseParameters> getAssertionParameters(final Class<?> klass, final TestCaseDescription description) {
         final IntegrationTestCasesLoader testCasesLoader = IntegrationTestCasesLoader.getInstance();
         return testCasesLoader.getTestCaseContexts(description.getSqlCommandType()).stream()
-                .filter(e -> contains(e.getTestCase().getDbTypes(), description.getDatabase()))
-                .filter(e -> contains(e.getTestCase().getScenarioTypes(), description.getScenario()))
+                .filter(e -> assertThan(e.getTestCase().getDbTypes(), description.getDatabase()))
+                .filter(e -> assertThan(e.getTestCase().getScenarioTypes(), description.getScenario()))
                 .flatMap(e -> Arrays.stream(SQLExecuteType.values()).flatMap(type -> e.getTestCase().getAssertions().stream()
                         .map(a -> new TestCaseParameters(getCaseName(), e.getParentPath(), e.getTestCase().getSql(), type, klass, e.getTestCase(), a)))
                 ).collect(Collectors.toList());
     }
     
-    private static boolean contains(final String target, final String expected) {
+    private static boolean assertThan(final String target, final String expected) {
         if (Strings.isNullOrEmpty(target)) {
             return true;
         }
@@ -237,8 +238,8 @@ public class ShardingSphereRunner extends Suite {
     private Collection<TestCaseParameters> getCaseParameters(final Class<?> klass, final TestCaseDescription description) {
         IntegrationTestCasesLoader testCasesLoader = IntegrationTestCasesLoader.getInstance();
         return testCasesLoader.getTestCaseContexts(description.getSqlCommandType()).stream()
-                .filter(e -> contains(e.getTestCase().getDbTypes(), description.getDatabase()))
-                .filter(e -> contains(e.getTestCase().getScenarioTypes(), description.getScenario()))
+                .filter(e -> assertThan(e.getTestCase().getDbTypes(), description.getDatabase()))
+                .filter(e -> assertThan(e.getTestCase().getScenarioTypes(), description.getScenario()))
                 .flatMap(e -> Arrays.stream(SQLExecuteType.values())
                         .map(type -> new TestCaseParameters(getCaseName(), e.getParentPath(), e.getTestCase().getSql(), type, klass, e.getTestCase(), null)))
                 .collect(Collectors.toList());
@@ -263,6 +264,7 @@ public class ShardingSphereRunner extends Suite {
                     Runner runner = children.get(0);
                     Object test;
                     if (runner instanceof ShardingSphereITSubRunner) {
+                        runner = new ShardingSphereITSubRunner(getTestClass().getJavaClass(), ((ShardingSphereITSubRunner) runner).getContext(), resolver);
                         test = ((ShardingSphereITSubRunner) runner).createTestInstance();
                         compose.setInstance(test);
                         compose.createContainers();
