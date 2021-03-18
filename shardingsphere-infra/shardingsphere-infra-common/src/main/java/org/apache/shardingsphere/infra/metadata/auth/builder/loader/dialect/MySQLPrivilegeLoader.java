@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.auth.builder.loader.dialect;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.auth.builder.loader.PrivilegeLoader;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
@@ -37,11 +35,6 @@ import java.util.Optional;
  * MySQL privilege loader.
  */
 public final class MySQLPrivilegeLoader implements PrivilegeLoader {
-    
-    @Override
-    public DatabaseType getDatabaseType() {
-        return new MySQLDatabaseType();
-    }
     
     @Override
     public Optional<ShardingSpherePrivilege> load(final ShardingSphereUser user, final DataSource dataSource) throws SQLException {
@@ -357,5 +350,10 @@ public final class MySQLPrivilegeLoader implements PrivilegeLoader {
                 }
             }
         }
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "MySQL";
     }
 }
