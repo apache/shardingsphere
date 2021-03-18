@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.auth.builder.loader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.auth.builder.loader.dialect.MySQLPrivilegeLoader;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Optional;
 
@@ -30,6 +30,10 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PrivilegeLoaderEngine {
     
+    static {
+        ShardingSphereServiceLoader.newServiceInstances(PrivilegeLoader.class);
+    }
+    
     /**
      * Get privilege loader.
      *
@@ -37,11 +41,11 @@ public final class PrivilegeLoaderEngine {
      * @return privilege loader
      */
     public static Optional<PrivilegeLoader> getPrivilegeLoader(final DatabaseType databaseType) {
-        switch (databaseType.getName()) {
-            case "MySQL":
-                return Optional.of(new MySQLPrivilegeLoader());
-            default:
-                return Optional.empty();
+        for (PrivilegeLoader each : ShardingSphereServiceLoader.newServiceInstances(PrivilegeLoader.class)) {
+            if (each.getDatabaseType().equals(databaseType.getName())) {
+                return Optional.of(each);
+            }
         }
+        return Optional.empty();
     }
 }

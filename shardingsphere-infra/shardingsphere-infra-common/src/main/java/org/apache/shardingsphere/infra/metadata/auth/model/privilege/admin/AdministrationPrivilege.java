@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.model.privilege;
+package org.apache.shardingsphere.infra.metadata.auth.model.privilege.admin;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -26,6 +28,7 @@ import java.util.LinkedHashSet;
  * Administration privilege.
  */
 @Getter
+@EqualsAndHashCode
 public final class AdministrationPrivilege {
     
     private final Collection<PrivilegeType> privileges = new LinkedHashSet<>();
@@ -42,13 +45,8 @@ public final class AdministrationPrivilege {
     
     /**
      * Set super privilege.
-     *
      */
-    public void setSuper() {
-        for (PrivilegeType each : PrivilegeType.values()) {
-            if (!each.equals(PrivilegeType.GRANT)) {
-                privileges.add(each);
-            }
-        }
+    public void setSuperPrivilege() {
+        privileges.add(PrivilegeType.SUPER);
     }
 }

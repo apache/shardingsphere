@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.auth.model.privilege.data;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
  * Data privilege.
  */
 @Getter
+@EqualsAndHashCode
 public final class DataPrivilege {
     
     private final Collection<PrivilegeType> globalPrivileges = new LinkedHashSet<>();
@@ -75,27 +77,8 @@ public final class DataPrivilege {
     
     /**
      * Set super privilege.
-     *
      */
-    public void setSuper() {
-        for (PrivilegeType each : PrivilegeType.values()) {
-            if (!each.equals(PrivilegeType.GRANT)) {
-                globalPrivileges.add(each);
-            }
-        }
-    }
-    
-    @Override
-    public boolean equals(final Object o) {
-        if (!(o instanceof DataPrivilege)) {
-            return false;
-        }
-        if (!globalPrivileges.equals(((DataPrivilege) o).getGlobalPrivileges())) {
-            return false;
-        }
-        if (!specificPrivileges.equals(((DataPrivilege) o).specificPrivileges)) {
-            return false;
-        }
-        return true;
+    public void setSuperPrivilege() {
+        globalPrivileges.add(PrivilegeType.SUPER);
     }
 }
