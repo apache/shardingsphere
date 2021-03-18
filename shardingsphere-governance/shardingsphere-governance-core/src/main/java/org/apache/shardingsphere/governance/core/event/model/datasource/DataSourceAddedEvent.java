@@ -19,7 +19,6 @@ package org.apache.shardingsphere.governance.core.event.model.datasource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 
 import java.util.Map;
@@ -29,7 +28,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DataSourceAddedEvent extends CompletableEvent {
+public final class DataSourceAddedEvent {
     
     private final String schemaName;
     

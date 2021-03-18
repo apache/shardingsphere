@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.governance.core.event.model;
 
-import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
-
 /**
  * Dummy event.
  */
-public final class DummyEvent extends CompletableEvent implements GovernanceEvent {
+public final class DummyEvent implements GovernanceEvent {
 }

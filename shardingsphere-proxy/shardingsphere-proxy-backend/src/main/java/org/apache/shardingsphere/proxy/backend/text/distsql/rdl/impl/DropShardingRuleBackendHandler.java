@@ -111,6 +111,6 @@ public final class DropShardingRuleBackendHandler extends SchemaRequiredBackendH
     
     private void post(final String schemaName) {
         // TODO should use RuleConfigurationsChangeEvent
-        ShardingSphereEventBus.postEvent(new RuleConfigurationsAlteredEvent(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
+        ShardingSphereEventBus.getInstance().post(new RuleConfigurationsAlteredEvent(schemaName, ProxyContext.getInstance().getMetaData(schemaName).getRuleMetaData().getConfigurations()));
     }
 }

@@ -46,7 +46,7 @@ public final class MetaDataListener {
         ruleChangedListener = new RuleChangedListener(registryRepository, schemaNames);
         dataSourceChangedListener = new DataSourceChangedListener(registryRepository, schemaNames);
         schemaChangedListener = new SchemaChangedListener(registryRepository, schemaNames);
-        ShardingSphereEventBus.register(this);
+        ShardingSphereEventBus.getInstance().register(this);
     }
     
     /**

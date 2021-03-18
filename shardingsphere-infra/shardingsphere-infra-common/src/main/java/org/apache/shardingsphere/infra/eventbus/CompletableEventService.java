@@ -51,15 +51,15 @@ public abstract class CompletableEventService<T> {
      * @param completableEvent completable event
      */
     @Subscribe
-    public synchronized void handle(final CompletableEvent completableEvent) {
+    public void handle(final CompletableEvent completableEvent) {
         try {
-            Method handler = targetMethods.get(completableEvent.getClass());
+            Method handler = targetMethods.get(completableEvent.getTarget().getClass());
             if (null != handler) {
                 handler.invoke(this.target, completableEvent);
             }
-            completableEvent.getFuture().complete(true);
+            completableEvent.getCompletableFuture().complete(true);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            completableEvent.getFuture().completeExceptionally(e);
+            completableEvent.getCompletableFuture().completeExceptionally(e);
         }
     }
 }

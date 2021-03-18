@@ -19,7 +19,6 @@ package org.apache.shardingsphere.governance.core.event.model.schema;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 
@@ -28,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaChangedEvent extends CompletableEvent implements GovernanceEvent {
+public final class SchemaChangedEvent implements GovernanceEvent {
 
     private final String schemaName;
 

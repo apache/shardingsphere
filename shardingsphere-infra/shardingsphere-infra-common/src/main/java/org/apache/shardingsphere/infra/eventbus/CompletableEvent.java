@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.eventbus;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -25,7 +26,10 @@ import java.util.concurrent.CompletableFuture;
  * Completable event.
  */
 @Getter
-public abstract class CompletableEvent {
+@RequiredArgsConstructor
+public class CompletableEvent<E> {
 
-    private final CompletableFuture future = new CompletableFuture();
+    private final CompletableFuture completableFuture = new CompletableFuture();
+    
+    private final E target;
 }

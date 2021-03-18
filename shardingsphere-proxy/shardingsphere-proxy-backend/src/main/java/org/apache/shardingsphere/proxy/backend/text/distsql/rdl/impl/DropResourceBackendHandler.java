@@ -114,6 +114,6 @@ public final class DropResourceBackendHandler extends SchemaRequiredBackendHandl
     
     private void post(final String schemaName, final Map<String, DataSource> resourceMap) {
         Map<String, DataSourceConfiguration> datasourceMap = DataSourceConverter.getDataSourceConfigurationMap(resourceMap);
-        ShardingSphereEventBus.postEvent(new DataSourceAlteredEvent(schemaName, datasourceMap));
+        ShardingSphereEventBus.getInstance().post(new DataSourceAlteredEvent(schemaName, datasourceMap));
     }
 }

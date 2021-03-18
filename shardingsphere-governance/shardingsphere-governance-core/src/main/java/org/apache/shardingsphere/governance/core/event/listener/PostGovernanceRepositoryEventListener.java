@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.governance.repository.api.GovernanceRepository;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent;
 import org.apache.shardingsphere.governance.repository.api.listener.DataChangedEvent.Type;
-import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 
 import java.util.Arrays;
@@ -52,7 +51,7 @@ public abstract class PostGovernanceRepositoryEventListener<T> implements Govern
         governanceRepository.watch(watchKey, dataChangedEvent -> {
             if (types.contains(dataChangedEvent.getType())) {
                 Optional<T> eventOptional = createEvent(dataChangedEvent);
-                eventOptional.ifPresent(event -> ShardingSphereEventBus.postEvent((CompletableEvent) event));
+                eventOptional.ifPresent(event -> ShardingSphereEventBus.getInstance().post(event));
             }
         });
     }

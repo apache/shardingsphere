@@ -37,7 +37,7 @@ public final class GovernanceTransactionContexts implements TransactionContexts 
     public GovernanceTransactionContexts(final TransactionContexts contexts, final String xaTransactionMangerType) {
         this.contexts = contexts;
         this.xaTransactionMangerType = xaTransactionMangerType;
-        ShardingSphereEventBus.register(this);
+        ShardingSphereEventBus.getInstance().register(this);
     }
     
     @Override

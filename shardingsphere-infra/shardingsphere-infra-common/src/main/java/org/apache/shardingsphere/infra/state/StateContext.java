@@ -33,7 +33,7 @@ public final class StateContext {
     private final Deque<StateType> currentState = new ConcurrentLinkedDeque<>(Collections.singleton(StateType.OK));
     
     public StateContext() {
-        ShardingSphereEventBus.register(this);
+        ShardingSphereEventBus.getInstance().register(this);
     }
     
     /**

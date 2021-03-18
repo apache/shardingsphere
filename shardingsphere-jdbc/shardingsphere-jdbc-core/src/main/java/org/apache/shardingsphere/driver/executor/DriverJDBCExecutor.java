@@ -166,7 +166,7 @@ public final class DriverJDBCExecutor {
     }
     
     private void notifySchemaChanged(final ShardingSphereSchema schema) {
-        ShardingSphereEventBus.postEvent(new SchemaAlteredEvent(DefaultSchema.LOGIC_NAME, schema));
+        ShardingSphereEventBus.getInstance().post(new SchemaAlteredEvent(DefaultSchema.LOGIC_NAME, schema));
     }
     
     private void releaseLock() {

@@ -49,6 +49,6 @@ public final class CreateDatabaseBackendHandler extends AbstractBackendHandler<C
     }
     
     private void post(final CreateDatabaseStatement sqlStatement) {
-        ShardingSphereEventBus.postEvent(new MetaDataCreatedEvent(sqlStatement.getDatabaseName()));
+        ShardingSphereEventBus.getInstance().post(new MetaDataCreatedEvent(sqlStatement.getDatabaseName()));
     }
 }

@@ -70,7 +70,7 @@ public final class FinishedCheckJob implements SimpleJob {
         ThreadUtil.sleep(10 * 1000L);
         if (dataConsistencyCheck(jobId)) {
             scalingAPI.stop(jobId);
-            ShardingSphereEventBus.postEvent(new SwitchRuleConfigurationEvent(workflowConfig.getSchemaName(), workflowConfig.getRuleCacheId()));
+            ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(workflowConfig.getSchemaName(), workflowConfig.getRuleCacheId()));
         }
     }
     

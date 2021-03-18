@@ -19,14 +19,13 @@ package org.apache.shardingsphere.governance.core.event.model.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 
 /**
  * Meta data created event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MetaDataCreatedEvent extends CompletableEvent {
+public final class MetaDataCreatedEvent {
     
     private final String schemaName;
 }

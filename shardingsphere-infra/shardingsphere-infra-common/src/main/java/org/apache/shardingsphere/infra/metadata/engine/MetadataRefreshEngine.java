@@ -71,12 +71,12 @@ public final class MetadataRefreshEngine {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void refreshSchema(final SQLStatement sqlStatement, final Collection<String> routeDataSourceNames, final SchemaRefresher refresher) throws SQLException {
         refresher.refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, materials);
-        ShardingSphereEventBus.postEvent(new SchemaAlteredEvent(metaData.getName(), metaData.getSchema()));
+        ShardingSphereEventBus.getInstance().post(new SchemaAlteredEvent(metaData.getName(), metaData.getSchema()));
     }
     
     private void refreshAuthentication(final SQLStatement sqlStatement, final AuthenticationRefresher refresher) {
         refresher.refresh(authentication, sqlStatement, metaData);
         // TODO :Subscribe and handle this event
-        ShardingSphereEventBus.postEvent(new AuthenticationAlteredEvent(authentication));
+        ShardingSphereEventBus.getInstance().post(new AuthenticationAlteredEvent(authentication));
     }
 }

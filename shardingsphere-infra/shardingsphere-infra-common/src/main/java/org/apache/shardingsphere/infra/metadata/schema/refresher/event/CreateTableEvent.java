@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.metadata.schema.refresher.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 /**
@@ -27,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateTableEvent extends CompletableEvent {
+public final class CreateTableEvent {
     
     private final String dataSourceName;
     

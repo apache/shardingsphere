@@ -49,6 +49,6 @@ public final class DropDatabaseBackendHandler extends AbstractBackendHandler<Dro
     }
     
     private void post(final DropDatabaseStatement sqlStatement) {
-        ShardingSphereEventBus.postEvent(new MetaDataDroppedEvent(sqlStatement.getDatabaseName()));
+        ShardingSphereEventBus.getInstance().post(new MetaDataDroppedEvent(sqlStatement.getDatabaseName()));
     }
 }

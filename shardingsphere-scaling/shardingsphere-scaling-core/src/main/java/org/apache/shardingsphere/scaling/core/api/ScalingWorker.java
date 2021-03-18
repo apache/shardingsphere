@@ -46,7 +46,7 @@ public final class ScalingWorker {
      * Init scaling worker.
      */
     public static void init() {
-        ShardingSphereEventBus.register(INSTANCE);
+        ShardingSphereEventBus.getInstance().register(INSTANCE);
         new FinishedCheckJobExecutor().start();
         new ScalingJobExecutor().start();
     }
@@ -62,7 +62,7 @@ public final class ScalingWorker {
         Optional<Long> jobId = scalingAPI.start(createJobConfig(event));
         if (!jobId.isPresent()) {
             log.info("Switch rule configuration ruleCacheId = {} immediately.", event.getRuleCacheId());
-            ShardingSphereEventBus.postEvent(new SwitchRuleConfigurationEvent(event.getSchemaName(), event.getRuleCacheId()));
+            ShardingSphereEventBus.getInstance().post(new SwitchRuleConfigurationEvent(event.getSchemaName(), event.getRuleCacheId()));
         }
     }
     

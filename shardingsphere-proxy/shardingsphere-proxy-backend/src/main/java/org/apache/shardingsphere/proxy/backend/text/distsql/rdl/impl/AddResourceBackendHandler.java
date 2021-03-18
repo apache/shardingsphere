@@ -56,6 +56,6 @@ public final class AddResourceBackendHandler extends AbstractBackendHandler<AddR
     }
     
     private void post(final String schemaName, final Map<String, DataSourceConfiguration> dataSources) {
-        ShardingSphereEventBus.postEvent(new DataSourceAddedEvent(schemaName, dataSources));
+        ShardingSphereEventBus.getInstance().post(new DataSourceAddedEvent(schemaName, dataSources));
     }
 }

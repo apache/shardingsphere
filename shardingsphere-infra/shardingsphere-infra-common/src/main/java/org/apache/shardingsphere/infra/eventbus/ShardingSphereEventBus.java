@@ -32,12 +32,21 @@ import java.util.concurrent.TimeoutException;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereEventBus {
     
+    private EventBus eventBus;
+    
+    private DummyEventService dummyEventService;
+    
+    private ShardingSphereEventBus(final EventBus eventBus, final DummyEventService dummyEventService) {
+        this.eventBus = eventBus;
+        this.dummyEventService = dummyEventService;
+    }
+    
     /**
      * Get instance of ShardingSphere event bus.
      *
      * @return instance of ShardingSphere event bus
      */
-    public static EventBus getInstance() {
+    public static ShardingSphereEventBus getInstance() {
         return ShardingSphereEventBusHolder.INSTANCE;
     }
     
@@ -47,8 +56,8 @@ public final class ShardingSphereEventBus {
      * @param target whose subscriber methods should be registered.
      * @param <T> subscriber type.
      */
-    public static <T> void register(final T target) {
-        getInstance().register(new CompletableEventService<T>(target) {
+    public <T> void register(final T target) {
+        eventBus.register(new CompletableEventService<T>(target) {
         });
     }
 
@@ -59,8 +68,8 @@ public final class ShardingSphereEventBus {
      * @param <T> The value type returned after the event is consumed
      * @return T The value returned after the event is consumed
      */
-    public static <T> T postEvent(final CompletableEvent event) {
-        return postEvent(event, 60);
+    public <T> T post(final Object event) {
+        return post(event, 60);
     }
 
     /**
@@ -71,10 +80,11 @@ public final class ShardingSphereEventBus {
      * @param <T> The value type returned after the event is consumed
      * @return T The value returned after the event is consumed
      */
-    public static <T> T postEvent(final CompletableEvent event, final long timeout) {
+    public <T> T post(final Object event, final long timeout) {
         try {
-            getInstance().post(event);
-            return (T) event.getFuture().get(timeout, TimeUnit.SECONDS);
+            CompletableEvent completableEvent = new CompletableEvent<>(event);
+            eventBus.post(completableEvent);
+            return (T) completableEvent.getCompletableFuture().get(timeout, TimeUnit.SECONDS);
         } catch (final InterruptedException | ExecutionException | TimeoutException e) {
             throw new ShardingSphereException(e);
         }
@@ -82,8 +92,6 @@ public final class ShardingSphereEventBus {
 
     private static final class ShardingSphereEventBusHolder {
         
-        private static final EventBus INSTANCE = new EventBus("ShardingSphere-EventBus");
-
-        private static final DummyEventService DUMMY_EVENT_SERVICE = new DummyEventService();
+        private static final ShardingSphereEventBus INSTANCE = new ShardingSphereEventBus(new EventBus("ShardingSphere-EventBus"), new DummyEventService());
     }
 }

@@ -88,7 +88,7 @@ public final class RegistryCenter {
         instance = GovernanceInstance.getInstance();
         lockNode = new LockNode();
         registryCacheManager = new RegistryCacheManager(registryRepository, node);
-        ShardingSphereEventBus.register(this);
+        ShardingSphereEventBus.getInstance().register(this);
     }
     
     /**
@@ -441,7 +441,7 @@ public final class RegistryCenter {
                 repository.get(node.getMetadataDataSourcePath(event.getSchemaName())),
                 repository.get(node.getRulePath(event.getSchemaName())),
                 registryCacheManager.loadCache(node.getRulePath(event.getSchemaName()), event.getCacheId()), event.getCacheId());
-        ShardingSphereEventBus.postEvent(startScalingEvent);
+        ShardingSphereEventBus.getInstance().post(startScalingEvent);
     }
     
     /**

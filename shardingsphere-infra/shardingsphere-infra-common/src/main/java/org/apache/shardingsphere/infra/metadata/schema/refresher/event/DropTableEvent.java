@@ -19,14 +19,13 @@ package org.apache.shardingsphere.infra.metadata.schema.refresher.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 
 /**
  * Drop table event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropTableEvent extends CompletableEvent {
+public final class DropTableEvent {
     
     private final String tableName;
 }

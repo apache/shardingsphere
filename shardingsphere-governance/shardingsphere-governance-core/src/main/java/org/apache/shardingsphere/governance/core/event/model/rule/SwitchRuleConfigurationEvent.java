@@ -19,14 +19,13 @@ package org.apache.shardingsphere.governance.core.event.model.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 
 /**
  * Switch rule configuration event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SwitchRuleConfigurationEvent extends CompletableEvent {
+public final class SwitchRuleConfigurationEvent {
     
     private final String schemaName;
     

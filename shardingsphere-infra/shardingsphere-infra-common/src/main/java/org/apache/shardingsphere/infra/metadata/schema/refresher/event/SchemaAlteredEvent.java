@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.metadata.schema.refresher.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.eventbus.CompletableEvent;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 
 /**
@@ -27,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
  */
 @RequiredArgsConstructor
 @Getter
-public final class SchemaAlteredEvent extends CompletableEvent {
+public final class SchemaAlteredEvent {
     
     private final String schemaName;
     
