@@ -169,10 +169,10 @@ public final class MySQLPrivilegeLoader implements PrivilegeLoader {
                 return PrivilegeType.DROP;
             case "Grant":
                 return PrivilegeType.GRANT;
-            case "References":
-                return PrivilegeType.REFERENCES;
             case "Index":
                 return PrivilegeType.INDEX;
+            case "References":
+                return PrivilegeType.REFERENCES;
             case "Create View":
                 return PrivilegeType.CREATE_VIEW;
             case "Show view":
