@@ -53,70 +53,69 @@ public final class PrivilegeBuilder {
     /**
      * Build privileges.
      *
-     * @param metaDatas metadatas
+     * @param metaDataList meta data list
      * @param users users
-     * @param props props
+     * @param props configuration properties
      * @return privileges
      */
-    public static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final Collection<ShardingSphereMetaData> metaDatas,
+    public static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final Collection<ShardingSphereMetaData> metaDataList,
                                                                          final Collection<ShardingSphereUser> users, final ConfigurationProperties props) {
-        if (metaDatas.isEmpty()) {
-            return getDefaultShardingSpherePrivileges(users);
+        if (metaDataList.isEmpty()) {
+            return createDefaultPrivileges(users);
         }
-        Optional<PrivilegeLoader> loader = PrivilegeLoaderEngine.getPrivilegeLoader(metaDatas.iterator().next().getResource().getDatabaseType());
-        return loader.map(privilegeLoader -> build(metaDatas, users, props, privilegeLoader)).orElseGet(() -> getDefaultShardingSpherePrivileges(users));
+        Optional<PrivilegeLoader> loader = PrivilegeLoaderEngine.findPrivilegeLoader(metaDataList.iterator().next().getResource().getDatabaseType());
+        return loader.map(optional -> build(metaDataList, users, props, optional)).orElseGet(() -> createDefaultPrivileges(users));
     }
     
-    private static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final Collection<ShardingSphereMetaData> metaDatas,
+    private static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final Collection<ShardingSphereMetaData> metaDataList,
                                                                           final Collection<ShardingSphereUser> users, final ConfigurationProperties props, final PrivilegeLoader loader) {
         Map<ShardingSphereUser, ShardingSpherePrivilege> result = new LinkedHashMap<>();
-        for (ShardingSphereMetaData each : metaDatas) {
-            result.putAll(build0(each, users, loader, props));
+        for (ShardingSphereMetaData each : metaDataList) {
+            result.putAll(build(each, users, props, loader));
         }
         return result;
     }
     
-    private static Map<ShardingSphereUser, ShardingSpherePrivilege> getDefaultShardingSpherePrivileges(final Collection<ShardingSphereUser> users) {
-        Map<ShardingSphereUser, ShardingSpherePrivilege> result = new LinkedHashMap<>();
-        ShardingSpherePrivilege privilege = new ShardingSpherePrivilege();
-        privilege.setSuperPrivilege();
-        users.forEach(each -> result.put(each, privilege));
-        return result;
-    }
-    
-    private static Map<ShardingSphereUser, ShardingSpherePrivilege> build0(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users,
-                                                                                final PrivilegeLoader loader, final ConfigurationProperties props) {
-        Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> result =
-                build0(metaData.getResource().getDataSources(), users, loader, props.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY));
+    private static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users,
+                                                                          final ConfigurationProperties props, final PrivilegeLoader loader) {
+        int maxConnectionsSizePerQuery = props.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> result = build(metaData.getResource().getDataSources().values(), users, loader, maxConnectionsSizePerQuery);
         return PrivilegeMerger.merge(result, metaData.getName(), metaData.getRuleMetaData().getRules());
     }
     
-    private static Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> build0(final Map<String, DataSource> dataSources, final Collection<ShardingSphereUser> users,
-                                                                   final PrivilegeLoader loader, final int maxConnectionsSizePerQuery) {
-        Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> result = new LinkedHashMap<>();
+    private static Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> build(final Collection<DataSource> dataSources, final Collection<ShardingSphereUser> users,
+                                                                                      final PrivilegeLoader loader, final int maxConnectionsSizePerQuery) {
+        Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> result = new LinkedHashMap<>(users.size(), 1);
         for (ShardingSphereUser each : users) {
-            Collection<ShardingSpherePrivilege> privileges = parallelLoadPrivileges(dataSources, each, loader, maxConnectionsSizePerQuery);
-            result.put(each, privileges);
+            result.put(each, load(dataSources, each, loader, maxConnectionsSizePerQuery));
         }
         return result;
     }
     
-    private static Collection<ShardingSpherePrivilege> parallelLoadPrivileges(final Map<String, DataSource> dataSources,
-                                                                       final ShardingSphereUser user, final PrivilegeLoader loader, final int maxConnectionsSizePerQuery) {
+    private static Collection<ShardingSpherePrivilege> load(final Collection<DataSource> dataSources,
+                                                            final ShardingSphereUser user, final PrivilegeLoader loader, final int maxConnectionsSizePerQuery) {
         Collection<ShardingSpherePrivilege> result = new LinkedHashSet<>(dataSources.size(), 1);
-        Collection<Future<Optional<ShardingSpherePrivilege>>> futures = new LinkedHashSet<>(dataSources.size(), 1);
         ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CPU_CORES * 2, dataSources.size() * maxConnectionsSizePerQuery));
-        for (DataSource each : dataSources.values()) {
+        Collection<Future<Optional<ShardingSpherePrivilege>>> futures = new LinkedHashSet<>(dataSources.size(), 1);
+        for (DataSource each : dataSources) {
             futures.add(executorService.submit(() -> loader.load(user, each)));
         }
         futures.forEach(each -> {
             try {
                 each.get(FUTURE_GET_TIME_OUT_SECOND, TimeUnit.SECONDS).ifPresent(result::add);
             } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
-                throw new IllegalStateException(String.format("Error while fetching privilege with %s", each), ex);
+                throw new IllegalStateException(String.format("Error while loading privilege with %s", each), ex);
             }
         });
         executorService.shutdownNow();
+        return result;
+    }
+    
+    private static Map<ShardingSphereUser, ShardingSpherePrivilege> createDefaultPrivileges(final Collection<ShardingSphereUser> users) {
+        Map<ShardingSphereUser, ShardingSpherePrivilege> result = new LinkedHashMap<>(users.size(), 1);
+        ShardingSpherePrivilege privilege = new ShardingSpherePrivilege();
+        privilege.setSuperPrivilege();
+        users.forEach(each -> result.put(each, privilege));
         return result;
     }
 }
