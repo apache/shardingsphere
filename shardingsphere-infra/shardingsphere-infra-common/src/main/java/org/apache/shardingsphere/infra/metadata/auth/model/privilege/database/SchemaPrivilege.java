@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.model.privilege.data;
+package org.apache.shardingsphere.infra.metadata.auth.model.privilege.database;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,19 +23,24 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
- * Table privilege.
+ * Schema privilege.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class TablePrivilege {
+public final class SchemaPrivilege {
     
-    private final String tableName;
+    private final String name;
     
-    private final Collection<PrivilegeType> privileges = new LinkedHashSet<>();
+    private final Collection<PrivilegeType> globalPrivileges = new LinkedHashSet<>();
+    
+    private final Map<String, TablePrivilege> specificPrivileges = new LinkedHashMap<>();
     
     /**
      * Has privileges.
@@ -44,6 +49,25 @@ public final class TablePrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return this.privileges.containsAll(privileges);
+        return globalPrivileges.containsAll(privileges);
+    }
+    
+    /**
+     * Has privileges.
+     *
+     * @param table table
+     * @param privileges privileges
+     * @return has privileges or not
+     */
+    public boolean hasPrivileges(final String table, final Collection<PrivilegeType> privileges) {
+        return hasPrivileges(privileges) || hasSpecificPrivileges(table, privileges);
+    }
+    
+    private boolean hasSpecificPrivileges(final String table, final Collection<PrivilegeType> privileges) {
+        return specificPrivileges.containsKey(table) && specificPrivileges.get(table).hasPrivileges(getSpecificPrivileges(privileges));
+    }
+    
+    private Collection<PrivilegeType> getSpecificPrivileges(final Collection<PrivilegeType> privileges) {
+        return privileges.stream().filter(each -> !globalPrivileges.contains(each)).collect(Collectors.toList());
     }
 }
