@@ -38,6 +38,6 @@ public final class ExecuteProcessStrategyEvaluator {
      */
     public static boolean evaluate(final SQLStatementContext<?> context, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         // TODO : Add more conditions to evaluate whether to submit this process task or not
-        return true;
+        return false;
     }
 }

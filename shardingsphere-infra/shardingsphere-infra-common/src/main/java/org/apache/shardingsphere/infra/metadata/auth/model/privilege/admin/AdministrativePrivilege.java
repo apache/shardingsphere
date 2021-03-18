@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.model.privilege.data;
+package org.apache.shardingsphere.infra.metadata.auth.model.privilege.admin;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
 /**
- * Table privilege.
+ * Administrative privilege.
  */
-@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class TablePrivilege {
-    
-    private final String tableName;
+public final class AdministrativePrivilege {
     
     private final Collection<PrivilegeType> privileges = new LinkedHashSet<>();
     
@@ -44,6 +40,13 @@ public final class TablePrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return this.privileges.containsAll(privileges);
+        return this.privileges.contains(PrivilegeType.SUPER) || this.privileges.containsAll(privileges);
+    }
+    
+    /**
+     * Set super privilege.
+     */
+    public void setSuperPrivilege() {
+        privileges.add(PrivilegeType.SUPER);
     }
 }
