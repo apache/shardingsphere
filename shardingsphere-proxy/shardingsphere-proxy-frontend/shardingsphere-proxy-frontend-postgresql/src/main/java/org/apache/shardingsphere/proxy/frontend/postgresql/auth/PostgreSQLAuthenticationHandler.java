@@ -57,7 +57,7 @@ public final class PostgreSQLAuthenticationHandler {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, String.format("password authentication failed for user \"%s\"", username));
         }
         // TODO : privilege.hasPrivileges(schema, xxx) (xxx means the privileges needed here), rather than Collections.emptyList()
-        if (!ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getAuthentication().get(user.get()).getDataPrivilege().hasPrivileges(databaseName, Collections.emptyList())) {
+        if (!ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getAuthentication().get(user.get()).hasPrivileges(databaseName, Collections.emptyList())) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.PRIVILEGE_NOT_GRANTED, String.format("Access denied for user '%s' to database '%s'", username, databaseName));
         }
         return new PostgreSQLLoginResult(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION, null);
