@@ -51,7 +51,6 @@ public final class MySQLPrivilegeLoader implements PrivilegeLoader {
     
     private void fillGlobalPrivilege(final ShardingSpherePrivilege privilege, final DataSource dataSource, final ShardingSphereUser user) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(true);
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM mysql.user WHERE user=? AND host=?");
             preparedStatement.setString(1, user.getGrantee().getUsername());
             preparedStatement.setString(2, user.getGrantee().getHostname());
@@ -111,7 +110,6 @@ public final class MySQLPrivilegeLoader implements PrivilegeLoader {
     
     private void fillSchemaPrivilege(final ShardingSpherePrivilege privilege, final DataSource dataSource, final ShardingSphereUser user) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(true);
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM mysql.db WHERE user=? AND host=?");
             preparedStatement.setString(1, user.getGrantee().getUsername());
             preparedStatement.setString(2, user.getGrantee().getHostname());
@@ -128,7 +126,6 @@ public final class MySQLPrivilegeLoader implements PrivilegeLoader {
     
     private void fillTablePrivilege(final ShardingSpherePrivilege privilege, final DataSource dataSource, final ShardingSphereUser user) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(true);
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT Db, Table_name, Table_priv FROM mysql.tables_priv WHERE user=? AND host=?");
             preparedStatement.setString(1, user.getGrantee().getUsername());
             preparedStatement.setString(2, user.getGrantee().getHostname());
