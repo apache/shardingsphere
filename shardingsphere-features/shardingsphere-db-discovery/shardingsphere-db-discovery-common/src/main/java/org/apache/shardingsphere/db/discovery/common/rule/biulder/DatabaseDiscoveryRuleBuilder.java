@@ -46,7 +46,7 @@ public final class DatabaseDiscoveryRuleBuilder implements ShardingSphereRuleBui
     public DatabaseDiscoveryRule build(final DatabaseDiscoveryRuleConfiguration ruleConfig) {
         Map<String, DataSource> realDataSourceMap = new HashMap<>();
         for (DatabaseDiscoveryDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
-            for(String datasourceName : each.getDataSourceNames()) {
+            for (String datasourceName : each.getDataSourceNames()) {
                 realDataSourceMap.put(datasourceName, dataSourceMap.get(datasourceName));
             }
         }
@@ -62,8 +62,5 @@ public final class DatabaseDiscoveryRuleBuilder implements ShardingSphereRuleBui
     public Class<DatabaseDiscoveryRuleConfiguration> getTypeClass() {
         return DatabaseDiscoveryRuleConfiguration.class;
     }
-    
-    
-    
     
 }
