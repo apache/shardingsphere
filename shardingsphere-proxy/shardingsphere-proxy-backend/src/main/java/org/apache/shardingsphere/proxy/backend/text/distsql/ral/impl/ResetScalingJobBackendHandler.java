@@ -44,7 +44,7 @@ public final class ResetScalingJobBackendHandler extends AbstractBackendHandler<
             scalingAPI.reset(sqlStatement.getJobId());
             return new UpdateResponseHeader(sqlStatement);
         } catch (final SQLException ex) {
-            throw new ScalingJobOperateException(ex);
+            throw new ScalingJobOperateException(ex.getMessage());
         }
     }
 }

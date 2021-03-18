@@ -49,7 +49,7 @@ public final class AddResourceBackendHandler extends AbstractBackendHandler<AddR
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
         if (!DataSourceValidator.validate(dataSources)) {
-            throw new ResourceNotExistedException((dataSources.keySet());
+            throw new ResourceNotExistedException(dataSources.keySet());
         }
         post(schemaName, dataSources);
         return new UpdateResponseHeader(sqlStatement);
