@@ -38,7 +38,7 @@ public abstract class CompletableEventService<T> {
         this.target = target;
         this.targetMethods = Arrays.stream(target.getClass().getDeclaredMethods()).filter(method -> {
             Class<?>[] parameterTypes = method.getParameterTypes();
-            return parameterTypes.length == 1 && CompletableEvent.class.isAssignableFrom(parameterTypes[0]) && null != method.getDeclaredAnnotation(Subscribe.class);
+            return parameterTypes.length == 1 && null != method.getDeclaredAnnotation(Subscribe.class);
         }).collect(Collectors.toMap(method -> {
             Class<?>[] parameterTypes = method.getParameterTypes();
             return parameterTypes[0];
@@ -55,7 +55,7 @@ public abstract class CompletableEventService<T> {
         try {
             Method handler = targetMethods.get(completableEvent.getTarget().getClass());
             if (null != handler) {
-                handler.invoke(this.target, completableEvent);
+                handler.invoke(target, completableEvent.getTarget());
             }
             completableEvent.getCompletableFuture().complete(true);
         } catch (IllegalAccessException | InvocationTargetException e) {
