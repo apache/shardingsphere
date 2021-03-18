@@ -20,9 +20,12 @@
         <column name="single_id"/>
         <column name="id" />
         <column name="status"/>
+        <column name="order_id" />
+        <column name="user_id" />
+        <column name="status" />
     </metadata>
-    <row values="1, 1000, init" />
-    <row values="2, 1101, init" />
-    <row values="3, 2300, init" />
-    <row values="4, 2401, init" />
+    <row values="1, 1000, init, 1000, 10, init" />
+    <row values="2, 1101, init, 1101, 11, init" />
+    <row values="3, 2300, init, 2300, 23, init" />
+    <row values="4, 2401, init, 2401, 24, init" />
 </dataset>
