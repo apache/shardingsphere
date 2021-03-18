@@ -24,10 +24,6 @@ import com.google.common.eventbus.Subscribe;
  */
 public final class DummyEventService {
 
-    public DummyEventService() {
-        ShardingSphereEventBus.getInstance().register(this);
-    }
-
     /**
      * Handle event.
      *

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.text;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.exception.DistSQLExecuteException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -40,13 +39,7 @@ public abstract class AbstractBackendHandler<T extends SQLStatement> implements 
 
     @Override
     public ResponseHeader execute() {
-        try {
-            return execute(getSchemaName(schemaName, sqlStatement), sqlStatement);
-            //CHECKSTYLE:OFF
-        } catch (final Throwable e) {
-            throw new DistSQLExecuteException(e);
-            //CHECKSTYLE:ON
-        }
+        return execute(getSchemaName(schemaName, sqlStatement), sqlStatement);
     }
 
     protected abstract ResponseHeader execute(String schemaName, T sqlStatement);

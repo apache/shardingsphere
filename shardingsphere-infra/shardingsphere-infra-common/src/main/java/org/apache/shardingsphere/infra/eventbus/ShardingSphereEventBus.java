@@ -34,11 +34,9 @@ public final class ShardingSphereEventBus {
     
     private EventBus eventBus;
     
-    private DummyEventService dummyEventService;
-    
     private ShardingSphereEventBus(final EventBus eventBus, final DummyEventService dummyEventService) {
         this.eventBus = eventBus;
-        this.dummyEventService = dummyEventService;
+        this.eventBus.register(dummyEventService);
     }
     
     /**
@@ -69,7 +67,7 @@ public final class ShardingSphereEventBus {
      * @return T The value returned after the event is consumed
      */
     public <T> T post(final Object event) {
-        return post(event, 60);
+        return post(event, 120);
     }
 
     /**

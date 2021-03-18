@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.proxy.backend.exception.ResourceCheckedException;
+import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.AbstractBackendHandler;
@@ -49,7 +49,7 @@ public final class AddResourceBackendHandler extends AbstractBackendHandler<AddR
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
         if (!DataSourceValidator.validate(dataSources)) {
-            throw new ResourceCheckedException(dataSources.keySet());
+            throw new ResourceNotExistedException((dataSources.keySet());
         }
         post(schemaName, dataSources);
         return new UpdateResponseHeader(sqlStatement);
