@@ -516,7 +516,7 @@
     </test-case>
 
     <!--fixme! issue #9719-->
-    <!--    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_order o ON s.id = o.order_id" db-types="MySQL,Oracle,SQLServer" scenario-types="db">-->
-    <!--        <assertion expected-data-file="select_from_single_join_order.xml"/>-->
-    <!--    </test-case>-->
+<!--<test-case sql="SELECT * FROM t_single_table s INNER JOIN t_order o ON s.id = o.order_id" db-types="MySQL,Oracle,SQLServer" scenario-types="db">-->
+<!--   <assertion expected-data-file="select_from_single_join_order.xml"/>-->
+<!--</test-case>-->
 </integration-test-cases>
