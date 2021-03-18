@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.auth.model.privilege.data;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 public final class SchemaPrivilege {
     
     private final String name;
@@ -72,30 +74,8 @@ public final class SchemaPrivilege {
     
     /**
      * Set super privilege.
-     *
      */
-    public void setSuper() {
-        for (PrivilegeType each : PrivilegeType.values()) {
-            if (!each.equals(PrivilegeType.GRANT)) {
-                globalPrivileges.add(each);
-            }
-        }
-    }
-    
-    @Override
-    public boolean equals(final Object o) {
-        if (!(o instanceof SchemaPrivilege)) {
-            return false;
-        }
-        if (name != ((SchemaPrivilege) o).name) {
-            return false;
-        }
-        if (!globalPrivileges.equals(((SchemaPrivilege) o).getGlobalPrivileges())) {
-            return false;
-        }
-        if (!specificPrivileges.equals(((SchemaPrivilege) o).getSpecificPrivileges())) {
-            return false;
-        }
-        return true;
+    public void setSuperPrivilege() {
+        globalPrivileges.add(PrivilegeType.SUPER);
     }
 }

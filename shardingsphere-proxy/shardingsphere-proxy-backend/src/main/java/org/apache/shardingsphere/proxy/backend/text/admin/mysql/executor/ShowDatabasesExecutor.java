@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -54,7 +55,8 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
         }
         Collection<Object> result = new LinkedList<>();
         for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
-            if (privilege.get().getDataPrivilege().hasPrivileges(each, Collections.emptyList())) {
+            // TODO : Need to check whether PrivilegeType.SHOW_DB is correct or enough?
+            if (privilege.get().getDataPrivilege().hasPrivileges(each, Collections.singletonList(PrivilegeType.SHOW_DB))) {
                 result.add(each);
             }
         }

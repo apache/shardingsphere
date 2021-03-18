@@ -17,18 +17,23 @@
 
 package org.apache.shardingsphere.governance.core.lock;
 
+import com.google.common.base.Joiner;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.governance.core.event.model.lock.LockNotificationEvent;
 import org.apache.shardingsphere.governance.core.event.model.lock.LockReleasedEvent;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.lock.AbstractShardingSphereLock;
+import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Governance lock.
  */
-public final class GovernanceLock extends AbstractShardingSphereLock {
+public final class GovernanceLock implements ShardingSphereLock {
     
     private final RegistryCenter registryCenter;
     
@@ -39,12 +44,34 @@ public final class GovernanceLock extends AbstractShardingSphereLock {
     
     @Override
     public boolean tryLock(final String schemaName, final String tableName, final long timeoutMilliseconds) {
-        return registryCenter.tryLock(schemaName, tableName, timeoutMilliseconds);
+        boolean result = registryCenter.tryLock(timeoutMilliseconds);
+        if (result) {
+            registryCenter.addLockedResources(Arrays.asList(Joiner.on(".").join(schemaName, tableName)));
+        }
+        return result;
+    }
+    
+    @Override
+    public boolean tryLock(final String schemaName, final Collection<String> tableNames, final long timeoutMilliseconds) {
+        boolean result = registryCenter.tryLock(timeoutMilliseconds);
+        if (result) {
+            registryCenter.addLockedResources(tableNames.stream()
+                    .map(each -> Joiner.on(".").join(schemaName, each)).collect(Collectors.toList()));
+        }
+        return result;
     }
     
     @Override
     public void releaseLock(final String schemaName, final String tableName) {
-        registryCenter.releaseLock(schemaName, tableName);
+        registryCenter.releaseLock();
+        registryCenter.deleteLockedResources(Arrays.asList(Joiner.on(".").join(schemaName, tableName)));
+    }
+    
+    @Override
+    public void releaseLock(final String schemaName, final Collection<String> tableNames) {
+        registryCenter.releaseLock();
+        registryCenter.deleteLockedResources(tableNames.stream()
+                .map(each -> Joiner.on(".").join(schemaName, each)).collect(Collectors.toList()));
     }
     
     /**
