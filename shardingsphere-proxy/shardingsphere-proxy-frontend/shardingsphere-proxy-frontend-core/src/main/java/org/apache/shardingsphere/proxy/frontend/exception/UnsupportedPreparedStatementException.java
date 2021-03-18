@@ -23,7 +23,4 @@ package org.apache.shardingsphere.proxy.frontend.exception;
 public final class UnsupportedPreparedStatementException extends FrontendException {
     
     private static final long serialVersionUID = 2185290474191327830L;
-
-    public UnsupportedPreparedStatementException() {
-    }
 }

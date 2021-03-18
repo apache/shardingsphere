@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.mysql;
 
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
@@ -43,6 +44,7 @@ import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class MySQLErrPacketFactoryTest {
     
@@ -93,7 +95,7 @@ public final class MySQLErrPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithTableModifyInTransactionException() {
-        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new TableModifyInTransactionException("unknown_table"));
+        MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new TableModifyInTransactionException(mock(SQLStatementContext.class)));
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getErrorCode(), is(3176));
         assertThat(actual.getSqlState(), is("HY000"));

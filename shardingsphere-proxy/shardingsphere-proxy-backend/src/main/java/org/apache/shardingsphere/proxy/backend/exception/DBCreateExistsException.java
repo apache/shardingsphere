@@ -18,18 +18,16 @@
 package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * DB create exists exception.
  */
+@RequiredArgsConstructor
 @Getter
 public final class DBCreateExistsException extends BackendException {
     
     private static final long serialVersionUID = 779787160167652641L;
     
     private final String databaseName;
-
-    public DBCreateExistsException(final String databaseName) {
-        this.databaseName = databaseName;
-    }
 }

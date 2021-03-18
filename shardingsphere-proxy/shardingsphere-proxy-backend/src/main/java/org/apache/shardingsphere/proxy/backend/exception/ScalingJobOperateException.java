@@ -18,18 +18,16 @@
 package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
-
-import java.sql.SQLException;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Scaling job operate exception.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ScalingJobOperateException extends BackendException {
     
     private static final long serialVersionUID = 7598088400647370901L;
     
-    public ScalingJobOperateException(final SQLException cause) {
-        super(cause);
-    }
+    private final String message;
 }

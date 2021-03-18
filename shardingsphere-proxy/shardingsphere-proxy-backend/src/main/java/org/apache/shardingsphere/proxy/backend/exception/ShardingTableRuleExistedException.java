@@ -18,22 +18,18 @@
 package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 
 /**
  * Sharding table rule existed exception.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ShardingTableRuleExistedException extends BackendException {
     
     private static final long serialVersionUID = 258686465701003401L;
     
     private final Collection<String> tableNames;
-
-    public ShardingTableRuleExistedException(final Collection<String> tableNames) {
-        super(CommonErrorCode.SHARDING_TABLE_RULE_EXIST, tableNames);
-        this.tableNames = tableNames;
-    }
 }

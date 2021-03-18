@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.sctl.exception;
 
-import org.apache.shardingsphere.proxy.backend.text.sctl.ShardingCTLErrorCode;
-
 /**
  * Invalid sharding CTL exception.
  */
@@ -27,6 +25,6 @@ public final class InvalidShardingCTLFormatException extends ShardingCTLExceptio
     private static final long serialVersionUID = -339768032160731248L;
     
     public InvalidShardingCTLFormatException(final String shardingCTL) {
-        super(ShardingCTLErrorCode.INVALID_FORMAT, shardingCTL);
+        super(shardingCTL);
     }
 }

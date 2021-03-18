@@ -18,22 +18,18 @@
 package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
 
 /**
  * Tables in used exception.
  */
+@RequiredArgsConstructor
 @Getter
 public final class TablesInUsedException extends BackendException {
     
     private static final long serialVersionUID = -6958306664517015097L;
     
     private final Collection<String> tableNames;
-
-    public TablesInUsedException(final Collection<String> tableNames) {
-        super(CommonErrorCode.TABLES_IN_USED, tableNames);
-        this.tableNames = tableNames;
-    }
 }

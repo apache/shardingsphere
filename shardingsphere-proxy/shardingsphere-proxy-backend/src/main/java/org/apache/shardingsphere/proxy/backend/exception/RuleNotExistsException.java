@@ -23,7 +23,4 @@ package org.apache.shardingsphere.proxy.backend.exception;
 public final class RuleNotExistsException extends BackendException {
     
     private static final long serialVersionUID = -4150905802300104824L;
-
-    public RuleNotExistsException() {
-    }
 }

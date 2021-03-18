@@ -18,18 +18,16 @@
 package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Lock wait timeout exception.
  */
+@RequiredArgsConstructor
 @Getter
 public final class LockWaitTimeoutException extends BackendException {
     
     private static final long serialVersionUID = 2599713085782288003L;
     
     private final Long timeoutMilliseconds;
-
-    public LockWaitTimeoutException(final Long timeoutMilliseconds) {
-        this.timeoutMilliseconds = timeoutMilliseconds;
-    }
 }

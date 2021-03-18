@@ -18,17 +18,14 @@
 package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Sharding rule not existed exception.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ShardingRuleNotExistedException extends BackendException {
     
     private static final long serialVersionUID = -875932845262766838L;
-
-    public ShardingRuleNotExistedException() {
-        super(CommonErrorCode.SHARDING_RULE_NOT_EXIST);
-    }
 }
