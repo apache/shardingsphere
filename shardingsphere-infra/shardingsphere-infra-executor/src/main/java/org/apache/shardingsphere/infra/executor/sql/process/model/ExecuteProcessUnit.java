@@ -29,5 +29,5 @@ public final class ExecuteProcessUnit {
     
     private final String unitID;
     
-    private final ExecuteProcessStatus status;
+    private final ExecuteProcessConstants status;
 }

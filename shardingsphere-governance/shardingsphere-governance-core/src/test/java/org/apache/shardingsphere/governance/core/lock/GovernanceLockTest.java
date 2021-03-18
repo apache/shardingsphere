@@ -25,8 +25,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
+
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class GovernanceLockTest {
@@ -43,13 +46,16 @@ public final class GovernanceLockTest {
     
     @Test
     public void assertTryLock() {
+        when(registryCenter.tryLock(eq(50L))).thenReturn(Boolean.TRUE);
         lock.tryLock("sharding_db", "t_order", 50L);
-        verify(registryCenter).tryLock(eq("sharding_db"), eq("t_order"), eq(50L));
+        verify(registryCenter).tryLock(eq(50L));
+        verify(registryCenter).addLockedResources(eq(Arrays.asList("sharding_db.t_order")));
     }
     
     @Test
     public void assertReleaseLock() {
         lock.releaseLock("sharding_db", "t_order");
-        verify(registryCenter).releaseLock(eq("sharding_db"), eq("t_order"));
+        verify(registryCenter).releaseLock();
+        verify(registryCenter).deleteLockedResources(eq(Arrays.asList("sharding_db.t_order")));
     }
 }

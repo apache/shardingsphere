@@ -531,22 +531,40 @@ public final class RegistryCenter {
     
     /**
      * Try to get lock.
-     * 
-     * @param schemaName schema name
-     * @param tableName table name
+     *
      * @param timeout the maximum time in milliseconds to acquire lock
      * @return true if get the lock, false if not
      */
-    public boolean tryLock(final String schemaName, final String tableName, final long timeout) {
-        return repository.tryLock(lockNode.getTableLockNodePath(schemaName, tableName), timeout, TimeUnit.MILLISECONDS);
+    public boolean tryLock(final long timeout) {
+        return repository.tryLock(lockNode.getLockNodePath(), timeout, TimeUnit.MILLISECONDS);
     }
     
     /**
      * Release lock.
-     * @param schemaName schema name
-     * @param tableName table name
      */
-    public void releaseLock(final String schemaName, final String tableName) {
-        repository.releaseLock(lockNode.getTableLockNodePath(schemaName, tableName));
+    public void releaseLock() {
+        repository.releaseLock(lockNode.getLockNodePath());
+    }
+    
+    /**
+     * Add locked resources.
+     * 
+     * @param resources collection of resources
+     */
+    public void addLockedResources(final Collection<String> resources) {
+        List<String> lockedResources = Splitter.on(",").splitToList(repository.get(lockNode.getLockedResourcesNodePath()));
+        lockedResources.addAll(resources);
+        repository.persist(lockNode.getLockedResourcesNodePath(), Joiner.on(",").join(lockedResources));
+    }
+    
+    /**
+     * Delete locked resources.
+     *
+     * @param resources collection of resources
+     */
+    public void deleteLockedResources(final Collection<String> resources) {
+        List<String> lockedResources = Splitter.on(",").splitToList(repository.get(lockNode.getLockedResourcesNodePath()));
+        lockedResources.removeAll(resources);
+        repository.persist(lockNode.getLockedResourcesNodePath(), Joiner.on(",").join(lockedResources));
     }
 }

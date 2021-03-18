@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.executor.sql.process.model;
 
 /**
- * Execute process status.
+ * Execute process constants.
  */
-public enum ExecuteProcessStatus {
+public enum ExecuteProcessConstants {
     
-    DOING, DONE
+    EXECUTE_ID, EXECUTE_STATUS_START, EXECUTE_STATUS_DONE
 }

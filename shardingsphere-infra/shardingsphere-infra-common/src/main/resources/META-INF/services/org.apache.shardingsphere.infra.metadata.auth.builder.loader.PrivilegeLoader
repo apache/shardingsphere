@@ -15,15 +15,4 @@
 # limitations under the License.
 #
 
-# EMBEDDED, DOCKER, NATIVE
-it.env.type=${it.env}
-
-it.adapters=jdbc
-
-#it.scenarios=db,tbl,dbtbl_with_read_write_splitting,read_write_splitting,encrypt,dbtbl_with_read_write_splitting_and_encrypt,shadow
-it.scenarios=db,tbl,dbtbl_with_read_write_splitting,read_write_splitting,encrypt,dbtbl_with_read_write_splitting_and_encrypt
-
-#it.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
-it.databases=H2
-
-it.run.additional.cases=false
+org.apache.shardingsphere.infra.metadata.auth.builder.loader.dialect.MySQLPrivilegeLoader

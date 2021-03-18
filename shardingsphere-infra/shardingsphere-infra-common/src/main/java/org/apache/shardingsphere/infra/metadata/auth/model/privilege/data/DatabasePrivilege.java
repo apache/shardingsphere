@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.auth.model.privilege.data;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 
@@ -27,10 +28,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Data privilege.
+ * Database privilege.
  */
 @Getter
-public final class DataPrivilege {
+@EqualsAndHashCode
+public final class DatabasePrivilege {
     
     private final Collection<PrivilegeType> globalPrivileges = new LinkedHashSet<>();
     
@@ -60,28 +62,25 @@ public final class DataPrivilege {
     }
     
     private boolean hasGlobalPrivileges(final Collection<PrivilegeType> privileges) {
-        return globalPrivileges.contains(PrivilegeType.SUPER) || !globalPrivileges.isEmpty() && globalPrivileges.containsAll(privileges);
+        return globalPrivileges.contains(PrivilegeType.SUPER) || globalPrivileges.containsAll(privileges);
     }
     
     private boolean hasSpecificPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
-        Collection<PrivilegeType> targets = privileges.stream().filter(each -> !globalPrivileges.contains(each)).collect(Collectors.toList());
-        return specificPrivileges.containsKey(schema) && specificPrivileges.get(schema).hasPrivileges(targets);
+        return specificPrivileges.containsKey(schema) && specificPrivileges.get(schema).hasPrivileges(getSpecificPrivileges(privileges));
     }
     
     private boolean hasSpecificPrivileges(final String schema, final String table, final Collection<PrivilegeType> privileges) {
-        Collection<PrivilegeType> targets = privileges.stream().filter(each -> !globalPrivileges.contains(each)).collect(Collectors.toList());
-        return specificPrivileges.containsKey(schema) && specificPrivileges.get(schema).hasPrivileges(table, targets);
+        return specificPrivileges.containsKey(schema) && specificPrivileges.get(schema).hasPrivileges(table, getSpecificPrivileges(privileges));
+    }
+    
+    private Collection<PrivilegeType> getSpecificPrivileges(final Collection<PrivilegeType> privileges) {
+        return privileges.stream().filter(each -> !globalPrivileges.contains(each)).collect(Collectors.toList());
     }
     
     /**
      * Set super privilege.
-     *
      */
-    public void setSuper() {
-        for (PrivilegeType each : PrivilegeType.values()) {
-            if (!each.equals(PrivilegeType.GRANT)) {
-                globalPrivileges.add(each);
-            }
-        }
+    public void setSuperPrivilege() {
+        globalPrivileges.add(PrivilegeType.SUPER);
     }
 }

@@ -30,11 +30,11 @@ Therefore, we prefer to focus on its increment instead of a total overturn.
 
 Apache ShardingSphere begins to focus on pluggable architecture from version 5.x, features can be embedded into project flexibility.
 Currently, the features such as data sharding, replica query, data encrypt, shadow test, and SQL dialects / database protocols such as MySQL, PostgreSQL, SQLServer, Oracle supported are all weaved by plugins.
-Developers can customize their own ShardingSphere systems just like building lego blocks. There are lots of SPI extensions for Apache ShardingSphere now and increasing continuously.
+Developers can customize their own ShardingSphere systems just like building LEGO blocks. There are lots of SPI extensions for Apache ShardingSphere now and they are increasing continuously.
 
 ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top Level Project on April 16, 2020.
 
-Welcome communicate with community via [mail list](mailto:dev@shardingsphere.apache.org).
+You are welcome to communicate with the community via the [mailing list](mailto:dev@shardingsphere.apache.org).
 
 ![ShardingSphere Scope](https://shardingsphere.apache.org/document/current/img/shardingsphere-scope_en.png)
 

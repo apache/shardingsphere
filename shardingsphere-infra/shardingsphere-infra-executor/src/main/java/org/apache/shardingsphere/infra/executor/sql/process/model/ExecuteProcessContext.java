@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.process.event;
+package org.apache.shardingsphere.infra.executor.sql.process.model;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Execution process created event.
+ * Execute process context.
  */
 @Getter
-public final class ExecuteProcessCreatedEvent {
+public final class ExecuteProcessContext {
     
     private final String executionID;
     
     private final Collection<ExecuteProcessUnit> unitStatuses;
     
-    public ExecuteProcessCreatedEvent(final ExecutionGroupContext<SQLExecutionUnit> executionGroupContext) {
+    public ExecuteProcessContext(final ExecutionGroupContext<SQLExecutionUnit> executionGroupContext) {
         this.executionID = executionGroupContext.getExecutionID();
         unitStatuses = createExecutionUnitStatuses(executionGroupContext);
     }
@@ -46,7 +44,7 @@ public final class ExecuteProcessCreatedEvent {
         Collection<ExecuteProcessUnit> result = new LinkedList<>();
         for (ExecutionGroup<SQLExecutionUnit> group : executionGroupContext.getInputGroups()) {
             for (SQLExecutionUnit each : group.getInputs()) {
-                result.add(new ExecuteProcessUnit(String.valueOf(each.getExecutionUnit().hashCode()), ExecuteProcessStatus.DOING));
+                result.add(new ExecuteProcessUnit(String.valueOf(each.getExecutionUnit().hashCode()), ExecuteProcessConstants.EXECUTE_STATUS_START));
             }
         }
         return result;
