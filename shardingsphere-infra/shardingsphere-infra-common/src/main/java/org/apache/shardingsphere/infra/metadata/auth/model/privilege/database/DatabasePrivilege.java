@@ -22,9 +22,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 /**
@@ -34,9 +34,9 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 public final class DatabasePrivilege {
     
-    private final Collection<PrivilegeType> globalPrivileges = new LinkedHashSet<>();
+    private final Collection<PrivilegeType> globalPrivileges = new CopyOnWriteArraySet<>();
     
-    private final Map<String, SchemaPrivilege> specificPrivileges = new LinkedHashMap<>();
+    private final Map<String, SchemaPrivilege> specificPrivileges = new ConcurrentHashMap<>();
     
     /**
      * Has privileges.

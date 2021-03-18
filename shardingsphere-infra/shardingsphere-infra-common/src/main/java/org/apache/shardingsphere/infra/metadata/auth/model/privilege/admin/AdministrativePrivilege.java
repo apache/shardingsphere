@@ -22,7 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Administrative privilege.
@@ -31,7 +31,7 @@ import java.util.LinkedHashSet;
 @EqualsAndHashCode
 public final class AdministrativePrivilege {
     
-    private final Collection<PrivilegeType> privileges = new LinkedHashSet<>();
+    private final Collection<PrivilegeType> privileges = new CopyOnWriteArraySet<>();
     
     /**
      * Has privileges.
