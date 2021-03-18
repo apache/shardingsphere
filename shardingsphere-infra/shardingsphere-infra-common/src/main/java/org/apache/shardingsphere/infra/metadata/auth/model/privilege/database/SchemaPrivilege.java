@@ -49,7 +49,7 @@ public final class SchemaPrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return globalPrivileges.containsAll(privileges);
+        return hasGlobalPrivileges(privileges);
     }
     
     /**
@@ -60,7 +60,11 @@ public final class SchemaPrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final String table, final Collection<PrivilegeType> privileges) {
-        return hasPrivileges(privileges) || hasSpecificPrivileges(table, privileges);
+        return hasGlobalPrivileges(privileges) || hasSpecificPrivileges(table, privileges);
+    }
+    
+    private boolean hasGlobalPrivileges(final Collection<PrivilegeType> privileges) {
+        return globalPrivileges.containsAll(privileges);
     }
     
     private boolean hasSpecificPrivileges(final String table, final Collection<PrivilegeType> privileges) {

@@ -42,11 +42,4 @@ public final class AdministrativePrivilege {
     public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
         return this.privileges.contains(PrivilegeType.SUPER) || this.privileges.containsAll(privileges);
     }
-    
-    /**
-     * Set super privilege.
-     */
-    public void setSuperPrivilege() {
-        privileges.add(PrivilegeType.SUPER);
-    }
 }

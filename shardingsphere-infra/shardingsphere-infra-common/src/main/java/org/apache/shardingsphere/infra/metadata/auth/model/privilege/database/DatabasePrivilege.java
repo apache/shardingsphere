@@ -62,7 +62,7 @@ public final class DatabasePrivilege {
     }
     
     private boolean hasGlobalPrivileges(final Collection<PrivilegeType> privileges) {
-        return globalPrivileges.contains(PrivilegeType.SUPER) || globalPrivileges.containsAll(privileges);
+        return globalPrivileges.containsAll(privileges);
     }
     
     private boolean hasSpecificPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
@@ -75,12 +75,5 @@ public final class DatabasePrivilege {
     
     private Collection<PrivilegeType> getSpecificPrivileges(final Collection<PrivilegeType> privileges) {
         return privileges.stream().filter(each -> !globalPrivileges.contains(each)).collect(Collectors.toList());
-    }
-    
-    /**
-     * Set super privilege.
-     */
-    public void setSuperPrivilege() {
-        globalPrivileges.add(PrivilegeType.SUPER);
     }
 }
