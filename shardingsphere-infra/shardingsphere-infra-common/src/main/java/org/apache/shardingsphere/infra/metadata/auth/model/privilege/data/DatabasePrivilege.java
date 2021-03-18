@@ -28,11 +28,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Data privilege.
+ * Database privilege.
  */
 @Getter
 @EqualsAndHashCode
-public final class DataPrivilege {
+public final class DatabasePrivilege {
     
     private final Collection<PrivilegeType> globalPrivileges = new LinkedHashSet<>();
     

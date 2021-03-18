@@ -124,7 +124,7 @@ public final class MySQLAuthenticationHandlerTest {
         DefaultAuthentication authentication = new DefaultAuthentication();
         ShardingSpherePrivilege privilege = new ShardingSpherePrivilege();
         SchemaPrivilege schema = new SchemaPrivilege("db1");
-        privilege.getDataPrivilege().getSpecificPrivileges().put("db1", schema);
+        privilege.getDatabasePrivilege().getSpecificPrivileges().put("db1", schema);
         authentication.getAuthentication().put(user, privilege);
         initProxyContext(authentication);
     }
