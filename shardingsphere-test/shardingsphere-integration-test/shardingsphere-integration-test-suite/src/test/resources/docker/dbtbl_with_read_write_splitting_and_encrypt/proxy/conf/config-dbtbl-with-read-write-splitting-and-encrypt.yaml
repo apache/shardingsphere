@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: dbtbl-with-read-write-splitting-and-encrypt
+schemaName: dbtbl_with_read_write_splitting_and_encrypt
 
 dataSources:
   encrypt_write_ds_0:
@@ -239,7 +239,7 @@ rules:
       actualDataNodes: pr_ds_${0..9}.t_user_${0..9}
       databaseStrategy:
         standard:
-          shardingColumn: order_id
+          shardingColumn: address_id
           shardingAlgorithmName: standard_test
       tableStrategy:
         standard:
