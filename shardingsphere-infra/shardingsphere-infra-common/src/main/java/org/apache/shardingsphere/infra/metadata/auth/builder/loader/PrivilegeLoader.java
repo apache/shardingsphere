@@ -30,12 +30,12 @@ import java.util.Optional;
 public interface PrivilegeLoader {
     
     /**
-     * Load.
+     * Load privilege.
      *
      * @param user user
      * @param dataSource data source
-     * @return sharding sphere privilege
-     * @throws SQLException sql exception
+     * @return ShardingSphere privilege
+     * @throws SQLException SQL exception
      */
     Optional<ShardingSpherePrivilege> load(ShardingSphereUser user, DataSource dataSource) throws SQLException;
     
