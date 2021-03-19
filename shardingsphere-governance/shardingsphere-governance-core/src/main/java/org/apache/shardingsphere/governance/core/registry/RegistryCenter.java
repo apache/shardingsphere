@@ -86,6 +86,7 @@ public final class RegistryCenter {
         repository = registryRepository;
         instance = GovernanceInstance.getInstance();
         lockNode = new LockNode();
+        initLockNode();
         registryCacheManager = new RegistryCacheManager(registryRepository, node);
         ShardingSphereEventBus.getInstance().register(this);
     }
@@ -492,25 +493,6 @@ public final class RegistryCenter {
     }
     
     /**
-     * Load instance data.
-     * 
-     * @param instanceId instance id
-     * @return instance data
-     */
-    public String loadInstanceData(final String instanceId) {
-        return repository.get(node.getProxyNodePath(instanceId));
-    }
-    
-    /**
-     * Load all instances.
-     * 
-     * @return collection of all instances
-     */
-    public Collection<String> loadAllInstances() {
-        return repository.getChildrenKeys(node.getProxyNodesPath());
-    }
-    
-    /**
      * Load disabled data sources.
      * 
      * @param schemaName schema name
@@ -529,42 +511,27 @@ public final class RegistryCenter {
         return repository.get(node.getDataSourcePath(schemaName, dataSourceName));
     }
     
+    private void initLockNode() {
+        repository.persist(lockNode.getLockRootNodePath(), "");
+    }
+    
     /**
      * Try to get lock.
      *
+     * @param lockName lock name
      * @param timeout the maximum time in milliseconds to acquire lock
      * @return true if get the lock, false if not
      */
-    public boolean tryLock(final long timeout) {
-        return repository.tryLock(lockNode.getLockNodePath(), timeout, TimeUnit.MILLISECONDS);
+    public boolean tryLock(final String lockName, final long timeout) {
+        return repository.tryLock(lockNode.getLockNodePath(lockName), timeout, TimeUnit.MILLISECONDS);
     }
     
     /**
      * Release lock.
-     */
-    public void releaseLock() {
-        repository.releaseLock(lockNode.getLockNodePath());
-    }
-    
-    /**
-     * Add locked resources.
      * 
-     * @param resources collection of resources
+     * @param lockName lock name
      */
-    public void addLockedResources(final Collection<String> resources) {
-        List<String> lockedResources = Splitter.on(",").splitToList(repository.get(lockNode.getLockedResourcesNodePath()));
-        lockedResources.addAll(resources);
-        repository.persist(lockNode.getLockedResourcesNodePath(), Joiner.on(",").join(lockedResources));
-    }
-    
-    /**
-     * Delete locked resources.
-     *
-     * @param resources collection of resources
-     */
-    public void deleteLockedResources(final Collection<String> resources) {
-        List<String> lockedResources = Splitter.on(",").splitToList(repository.get(lockNode.getLockedResourcesNodePath()));
-        lockedResources.removeAll(resources);
-        repository.persist(lockNode.getLockedResourcesNodePath(), Joiner.on(",").join(lockedResources));
+    public void releaseLock(final String lockName) {
+        repository.releaseLock(lockNode.getLockNodePath(lockName));
     }
 }
