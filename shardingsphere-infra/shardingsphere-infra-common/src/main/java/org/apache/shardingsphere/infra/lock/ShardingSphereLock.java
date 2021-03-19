@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.lock;
 
-import java.util.Collection;
-
 /**
  * ShardingSphere lock.
  */
@@ -27,34 +25,32 @@ public interface ShardingSphereLock {
     /**
      * Try to lock.
      *
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param timeoutMilliseconds time out milliseconds to acquire lock
+     * @param lockName lock name
      * @return true if get the lock, false if not
      */
-    boolean tryLock(String schemaName, String tableName, long timeoutMilliseconds);
+    boolean tryLock(String lockName);
     
     /**
-     * Try to lock.
-     *
-     * @param schemaName schema name
-     * @param tableNames collections of table names
-     * @param timeoutMilliseconds time out milliseconds to acquire lock
+     * Try to lock with time out.
+     * 
+     * @param lockName lock name
+     * @param timeout the maximum time in milliseconds to acquire lock
      * @return true if get the lock, false if not
      */
-    boolean tryLock(String schemaName, Collection<String> tableNames, long timeoutMilliseconds);
+    boolean tryLock(String lockName, long timeout);
     
     /**
      * Release lock.
-     * @param schemaName schema name
-     * @param tableName table name
+     * 
+     * @param lockName lock name
      */
-    void releaseLock(String schemaName, String tableName);
+    void releaseLock(String lockName);
     
     /**
-     * Release lock.
-     * @param schemaName schema name
-     * @param tableNames collection of table names
+     * Check whether resource is locked.
+     * 
+     * @param lockName lock name
+     * @return true if locked ,false if not
      */
-    void releaseLock(String schemaName, Collection<String> tableNames);
+    boolean isLocked(String lockName);
 }

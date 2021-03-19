@@ -38,13 +38,13 @@ public final class LockChangedListener extends PostGovernanceRepositoryEventList
     private final LockNode lockNode;
     
     public LockChangedListener(final RegistryRepository registryRepository) {
-        super(registryRepository, Collections.singleton(new LockNode().getLockNodePath()));
+        super(registryRepository, Collections.singleton(new LockNode().getLockedResourcesNodePath()));
         lockNode = new LockNode();
     }
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        if (event.getKey().startsWith(Joiner.on("/").join(lockNode.getLockNodePath(), ""))) {
+        if (event.getKey().startsWith(Joiner.on("/").join(lockNode.getLockedResourcesNodePath(), ""))) {
             if (event.getType() == Type.ADDED) {
                 return Optional.of(new LockNotificationEvent());
             } else if (event.getType() == Type.DELETED) {
