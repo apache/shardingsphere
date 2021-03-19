@@ -31,7 +31,9 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Driver execution prepare engine.
@@ -40,6 +42,9 @@ import java.util.Properties;
  * @param <C> type of resource connection
  */
 public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>, C> extends AbstractExecutionPrepareEngine<T> {
+    
+    @SuppressWarnings("rawtypes")
+    private static final Map<String, SQLExecutionUnitBuilder> TYPE_TO_BUILDER_MAP = new ConcurrentHashMap<>(8, 1);
     
     private final ExecutorDriverManager<C, ?, ?> executorDriverManager;
     
@@ -57,7 +62,7 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
         super(maxConnectionsSizePerQuery, rules);
         this.executorDriverManager = executorDriverManager;
         this.option = option;
-        sqlExecutionUnitBuilder = TypedSPIRegistry.getRegisteredService(SQLExecutionUnitBuilder.class, type, new Properties());
+        sqlExecutionUnitBuilder = TYPE_TO_BUILDER_MAP.computeIfAbsent(type, key -> TypedSPIRegistry.getRegisteredService(SQLExecutionUnitBuilder.class, key, new Properties()));
     }
     
     @Override

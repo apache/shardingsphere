@@ -115,7 +115,6 @@
 #          - ds_0
 #          - ds_1
 #          - ds_2
-#        replicaQuery: false
 #        discoveryTypeName: mgr
 #    discoveryTypes:
 #      mgr:

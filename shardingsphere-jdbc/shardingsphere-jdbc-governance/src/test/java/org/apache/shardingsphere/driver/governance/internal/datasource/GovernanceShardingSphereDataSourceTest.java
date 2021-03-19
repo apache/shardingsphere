@@ -98,7 +98,7 @@ public final class GovernanceShardingSphereDataSourceTest {
     
     private ReadWriteSplittingRuleConfiguration getReadWriteSplittingRuleConfiguration() {
         ReadWriteSplittingDataSourceRuleConfiguration dataSourceConfig
-                = new ReadWriteSplittingDataSourceRuleConfiguration("pr_ds", "write_ds", Collections.singletonList("read_ds"), "roundRobin");
+                = new ReadWriteSplittingDataSourceRuleConfiguration("pr_ds", "", "write_ds", Collections.singletonList("read_ds"), "roundRobin");
         return new ReadWriteSplittingRuleConfiguration(
                 Collections.singleton(dataSourceConfig), ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties())));
     }

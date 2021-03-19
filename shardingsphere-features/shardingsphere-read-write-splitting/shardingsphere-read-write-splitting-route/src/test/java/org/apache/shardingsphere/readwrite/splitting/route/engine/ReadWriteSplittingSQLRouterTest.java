@@ -81,7 +81,7 @@ public final class ReadWriteSplittingSQLRouterTest {
     @Before
     public void setUp() {
         rule = new ReadWriteSplittingRule(new ReadWriteSplittingRuleConfiguration(Collections.singleton(
-                new ReadWriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, WRITE_DATASOURCE, Collections.singletonList(READ_DATASOURCE), null)), Collections.emptyMap()));
+                new ReadWriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, "", WRITE_DATASOURCE, Collections.singletonList(READ_DATASOURCE), null)), Collections.emptyMap()));
         sqlRouter = (ReadWriteSplittingSQLRouter) OrderedSPIRegistry.getRegisteredServices(Collections.singleton(rule), SQLRouter.class).get(rule);
     }
     
