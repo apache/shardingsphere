@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -48,7 +49,13 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     
     private boolean isAuthorizedSchema(final BackendConnection backendConnection, final String schema) {
         Optional<ShardingSpherePrivilege> privilege = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findPrivilege(backendConnection.getGrantee());
-        // TODO : Need to check whether PrivilegeType.USAGE is correct or enough?
-        return privilege.isPresent() && privilege.get().hasPrivileges(schema, Collections.emptyList());
+        if (!privilege.isPresent()) {
+            return false;
+        }
+        if (privilege.get().getAdministrativePrivilege().hasPrivileges(Collections.singletonList(PrivilegeType.SUPER))
+                || privilege.get().getDatabasePrivilege().getSpecificPrivileges().containsKey(schema) || !privilege.get().getDatabasePrivilege().getGlobalPrivileges().isEmpty()) {
+            return true;
+        }
+        return false;
     }
 }
