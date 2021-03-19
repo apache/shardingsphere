@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumn;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnsToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
 
@@ -52,24 +52,19 @@ public final class InsertCipherNameTokenGenerator extends BaseEncryptSQLTokenGen
     }
     
     @Override
-    public Collection<SubstitutableColumnNameToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
+    public Collection<SubstitutableColumnsToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
         Optional<InsertColumnsSegment> sqlSegment = insertStatementContext.getSqlStatement().getInsertColumns();
         Preconditions.checkState(sqlSegment.isPresent());
         Map<String, String> logicAndCipherColumns = getEncryptRule().getLogicAndCipherColumns(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue());
-        Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
+        Collection<SubstitutableColumnsToken> result = new LinkedList<>();
         for (ColumnSegment each : sqlSegment.get().getColumns()) {
-//            if (logicAndCipherColumns.containsKey(each.getIdentifier().getValue())) {
-//                result.add(new SubstitutableColumnNameToken(each.getStartIndex(), each.getStopIndex(), logicAndCipherColumns.get(each.getIdentifier().getValue())));
-//            }
-
             if (logicAndCipherColumns.containsKey(each.getIdentifier().getValue())) {
                 Optional<String> tableName = insertStatementContext.getTablesContext().findTableName(each, schema);
-                Optional<String> owner = each.getOwner().isPresent() ? Optional.ofNullable(each.getOwner().get().getIdentifier().getValue()) : Optional.empty();
-                SubstitutableColumnNameToken token = new SubstitutableColumnNameToken(each.getStartIndex(), each.getStopIndex(), Optional.empty());
-                token.put(tableName.get(), new SubstitutableColumn(tableName,owner,logicAndCipherColumns.get(each.getIdentifier().getValue()), each.getIdentifier().getQuoteCharacter(), Optional.empty()));
+                String owner = each.getOwner().isPresent() ? each.getOwner().get().getIdentifier().getValue() : "";
+                SubstitutableColumnsToken token = new SubstitutableColumnsToken(each.getStartIndex(), each.getStopIndex(),
+                        new SubstitutableColumn(tableName.get(), owner, logicAndCipherColumns.get(each.getIdentifier().getValue()), each.getIdentifier().getQuoteCharacter(), Optional.empty()));
                 result.add(token);
             }
-
         }
         return result;
     }

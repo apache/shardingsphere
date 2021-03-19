@@ -54,6 +54,6 @@ public final class ColumnProjectionSegment implements ProjectionSegment, AliasAv
     public int getStopIndex() {
 //        return column.getStopIndex();
         // TODO
-         return null == alias ? column.getStopIndex() : alias.getStopIndex();
+        return null == alias ? column.getStopIndex() : alias.getStopIndex();
     }
 }
