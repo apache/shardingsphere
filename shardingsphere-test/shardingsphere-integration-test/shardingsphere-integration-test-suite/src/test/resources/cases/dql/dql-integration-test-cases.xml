@@ -511,12 +511,12 @@
         <assertion expected-data-file="select_join_encrypt.xml"/>
     </test-case>
 
-    <test-case sql="SELECT * FROM t_single_table" db-types="MySQL,Oracle,SQLServer" scenario-types="db">
+    <test-case sql="SELECT * FROM t_single_table" db-types="MySQL,Oracle,SQLServer" scenario-types="db,tbl,dbtbl_with_read_write_splitting">
         <assertion expected-data-file="select_from_single.xml"/>
     </test-case>
 
     <!--fixme! issue #9719-->
-<!--<test-case sql="SELECT * FROM t_single_table s INNER JOIN t_order o ON s.id = o.order_id" db-types="MySQL,Oracle,SQLServer" scenario-types="db">-->
-<!--   <assertion expected-data-file="select_from_single_join_order.xml"/>-->
-<!--</test-case>-->
+<!--    <test-case sql="SELECT * FROM t_single_table s INNER JOIN t_order o ON s.id = o.order_id" db-types="MySQL,Oracle,SQLServer" scenario-types="db,tbl,dbtbl_with_read_write_splitting">-->
+<!--        <assertion expected-data-file="select_from_single_join_order.xml"/>-->
+<!--    </test-case>-->
 </integration-test-cases>
