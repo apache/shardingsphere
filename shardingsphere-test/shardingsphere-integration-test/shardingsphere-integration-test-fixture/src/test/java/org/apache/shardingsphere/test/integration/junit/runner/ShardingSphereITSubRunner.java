@@ -54,6 +54,10 @@ public class ShardingSphereITSubRunner extends BlockJUnit4ClassRunner {
     
     // execution before all case
     
+    public ShardingSphereITSubRunner copy() throws InitializationError {
+        return new ShardingSphereITSubRunner(getTestClass().getJavaClass(), context, resolver);
+    }
+    
     protected Object createTestInstance() throws Exception {
         return super.createTest();
     }
