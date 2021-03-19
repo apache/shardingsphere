@@ -52,7 +52,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.DistSQLStatementParser.T
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.FunctionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TableRuleSegment;
-import org.apache.shardingsphere.distsql.parser.segment.rdl.ReplicaQueryRuleSegment;
+import org.apache.shardingsphere.distsql.parser.segment.rdl.ReadWriteSplittingRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.CheckScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.DropScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ResetScalingJobStatement;
@@ -60,10 +60,10 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingJo
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.ShowScalingJobStatusStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.StartScalingJobStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.impl.StopScalingJobStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterReplicaQueryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterReadWriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.AlterShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReplicaQueryRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateReadWriteSplittingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.CreateShardingRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropReplicaQueryRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
@@ -184,16 +184,16 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitCreateReplicaQueryRule(final CreateReplicaQueryRuleContext ctx) {
-        Collection<ReplicaQueryRuleSegment> replicaQueryRules = new LinkedList<>();
+        Collection<ReadWriteSplittingRuleSegment> replicaQueryRules = new LinkedList<>();
         for (ReplicaQueryRuleDefinitionContext each : ctx.replicaQueryRuleDefinition()) {
-            replicaQueryRules.add((ReplicaQueryRuleSegment) visit(each));
+            replicaQueryRules.add((ReadWriteSplittingRuleSegment) visit(each));
         }
-        return new CreateReplicaQueryRuleStatement(replicaQueryRules);
+        return new CreateReadWriteSplittingRuleStatement(replicaQueryRules);
     }
     
     @Override
     public ASTNode visitReplicaQueryRuleDefinition(final ReplicaQueryRuleDefinitionContext ctx) {
-        ReplicaQueryRuleSegment result = new ReplicaQueryRuleSegment();
+        ReadWriteSplittingRuleSegment result = new ReadWriteSplittingRuleSegment();
         Collection<String> replicaDatasources = new LinkedList<>();
         for (SchemaNameContext each : ctx.schemaNames().schemaName()) {
             replicaDatasources.add(each.getText());
@@ -205,8 +205,8 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
             }
         }
         result.setName(ctx.ruleName.getText());
-        result.setPrimaryDataSource(ctx.primary.getText());
-        result.setReplicaDataSources(replicaDatasources);
+        result.setWriteDataSource(ctx.primary.getText());
+        result.setReadDataSources(replicaDatasources);
         result.setLoadBalancer(ctx.functionDefinition().functionName.getText());
         result.setProps(props);
         return result;
@@ -214,16 +214,16 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitAlterReplicaQueryRule(final AlterReplicaQueryRuleContext ctx) {
-        Collection<ReplicaQueryRuleSegment> modifyReplicaQueryRules = new LinkedList<>();
-        Collection<ReplicaQueryRuleSegment> addReplicaQueryRules = new LinkedList<>();
+        Collection<ReadWriteSplittingRuleSegment> modifyReplicaQueryRules = new LinkedList<>();
+        Collection<ReadWriteSplittingRuleSegment> addReplicaQueryRules = new LinkedList<>();
         for (AlterReplicaQueryRuleDefinitionContext each : ctx.alterReplicaQueryRuleDefinition()) {
             if (null != each.MODIFY()) {
-                modifyReplicaQueryRules.add((ReplicaQueryRuleSegment) visit(each));
+                modifyReplicaQueryRules.add((ReadWriteSplittingRuleSegment) visit(each));
             } else {
-                addReplicaQueryRules.add((ReplicaQueryRuleSegment) visit(each));
+                addReplicaQueryRules.add((ReadWriteSplittingRuleSegment) visit(each));
             }
         }
-        return new AlterReplicaQueryRuleStatement(modifyReplicaQueryRules, addReplicaQueryRules);
+        return new AlterReadWriteSplittingRuleStatement(modifyReplicaQueryRules, addReplicaQueryRules);
     }
     
     @Override
@@ -237,14 +237,14 @@ public final class DistSQLVisitor extends DistSQLStatementBaseVisitor<ASTNode> {
     
     @Override
     public ASTNode visitAlterReplicaQueryRuleDefinition(final AlterReplicaQueryRuleDefinitionContext ctx) {
-        ReplicaQueryRuleSegment result = new ReplicaQueryRuleSegment();
+        ReadWriteSplittingRuleSegment result = new ReadWriteSplittingRuleSegment();
         Collection<String> replicaDatasources = new LinkedList<>();
         for (SchemaNameContext each : ctx.schemaNames().schemaName()) {
             replicaDatasources.add(each.getText());
         }
         result.setName(ctx.ruleName.getText());
-        result.setPrimaryDataSource(ctx.primary.getText());
-        result.setReplicaDataSources(replicaDatasources);
+        result.setWriteDataSource(ctx.primary.getText());
+        result.setReadDataSources(replicaDatasources);
         if (null != ctx.functionDefinition()) {
             Properties props = new Properties();
             if (null != ctx.functionDefinition().algorithmProperties()) {

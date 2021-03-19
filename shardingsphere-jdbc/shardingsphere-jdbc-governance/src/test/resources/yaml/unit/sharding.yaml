@@ -23,16 +23,16 @@ governance:
   overwrite: true
 
 dataSources:
-  primary_ds:
+  write_ds:
     dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:primary_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:write_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password:
-  replica_ds:
+  read_ds:
     dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:replica_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
+    url: jdbc:h2:mem:read_ds;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL
     username: sa
     password:
 
@@ -94,11 +94,11 @@ rules:
       props:
           worker-id: 123
 
-- !REPLICA_QUERY
+- !READ_WRITE_SPLITTING
   dataSources:
     pr_ds:
-      primaryDataSourceName: primary_ds
-      replicaDataSourceNames:
-        - replica_ds
+      writeDataSourceName: write_ds
+      readDataSourceNames:
+        - read_ds
 props:
   sql-show: false

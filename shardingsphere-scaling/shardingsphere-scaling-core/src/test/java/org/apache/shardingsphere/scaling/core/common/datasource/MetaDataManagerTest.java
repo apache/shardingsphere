@@ -120,15 +120,14 @@ public final class MetaDataManagerTest {
     
     private void assertColumnMetaData(final TableMetaData actual) {
         assertThat(actual.getColumns().size(), is(3));
-        assertColumnMetaData(actual.getColumnMetaData(0), "id", Types.BIGINT, "BIGINT");
-        assertColumnMetaData(actual.getColumnMetaData(1), "name", Types.VARCHAR, "VARCHAR");
-        assertColumnMetaData(actual.getColumnMetaData(2), "age", Types.INTEGER, "INTEGER");
+        assertColumnMetaData(actual.getColumnMetaData(0), "id", Types.BIGINT);
+        assertColumnMetaData(actual.getColumnMetaData(1), "name", Types.VARCHAR);
+        assertColumnMetaData(actual.getColumnMetaData(2), "age", Types.INTEGER);
     }
     
-    private void assertColumnMetaData(final ColumnMetaData actual, final String expectedName, final int expectedType, final String expectedTypeName) {
+    private void assertColumnMetaData(final ColumnMetaData actual, final String expectedName, final int expectedType) {
         assertThat(actual.getName(), is(expectedName));
         assertThat(actual.getDataType(), is(expectedType));
-        assertThat(actual.getDataTypeName(), is(expectedTypeName));
     }
     
     @Test(expected = RuntimeException.class)

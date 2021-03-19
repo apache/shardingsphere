@@ -21,8 +21,7 @@ import com.google.common.primitives.Bytes;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.data.SchemaPrivilege;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.database.SchemaPrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
@@ -116,7 +115,7 @@ public final class MySQLAuthenticationHandlerTest {
     private void setAuthentication(final ShardingSphereUser user) {
         DefaultAuthentication authentication = new DefaultAuthentication();
         ShardingSpherePrivilege privilege = new ShardingSpherePrivilege();
-        privilege.setSuper();
+        privilege.setSuperPrivilege();
         authentication.getAuthentication().put(user, privilege);
         initProxyContext(authentication);
     }
@@ -125,8 +124,7 @@ public final class MySQLAuthenticationHandlerTest {
         DefaultAuthentication authentication = new DefaultAuthentication();
         ShardingSpherePrivilege privilege = new ShardingSpherePrivilege();
         SchemaPrivilege schema = new SchemaPrivilege("db1");
-        schema.getGlobalPrivileges().add(PrivilegeType.ALL);
-        privilege.getDataPrivilege().getSpecificPrivileges().put("db1", schema);
+        privilege.getDatabasePrivilege().getSpecificPrivileges().put("db1", schema);
         authentication.getAuthentication().put(user, privilege);
         initProxyContext(authentication);
     }

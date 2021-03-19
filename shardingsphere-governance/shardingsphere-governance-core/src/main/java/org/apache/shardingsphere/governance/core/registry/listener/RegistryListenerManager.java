@@ -32,7 +32,7 @@ public final class RegistryListenerManager {
     
     private final DataSourceStateChangedListener dataSourceStateChangedListener;
     
-    private final GlobalLockChangedListener globalLockChangedListener;
+    private final LockChangedListener lockChangedListener;
 
     private final MetaDataListener metaDataListener;
 
@@ -43,7 +43,7 @@ public final class RegistryListenerManager {
     public RegistryListenerManager(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
         terminalStateChangedListener = new TerminalStateChangedListener(registryRepository);
         dataSourceStateChangedListener = new DataSourceStateChangedListener(registryRepository, schemaNames);
-        globalLockChangedListener = new GlobalLockChangedListener(registryRepository);
+        lockChangedListener = new LockChangedListener(registryRepository);
         metaDataListener = new MetaDataListener(registryRepository, schemaNames);
         propertiesChangedListener = new PropertiesChangedListener(registryRepository);
         authenticationChangedListener = new AuthenticationChangedListener(registryRepository);
@@ -55,7 +55,7 @@ public final class RegistryListenerManager {
     public void initListeners() {
         terminalStateChangedListener.watch(Type.UPDATED);
         dataSourceStateChangedListener.watch(Type.UPDATED, Type.DELETED, Type.ADDED);
-        globalLockChangedListener.watch(Type.ADDED, Type.DELETED);
+        lockChangedListener.watch(Type.ADDED, Type.DELETED);
         metaDataListener.watch();
         propertiesChangedListener.watch(Type.UPDATED);
         authenticationChangedListener.watch(Type.UPDATED);

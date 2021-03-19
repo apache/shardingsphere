@@ -33,12 +33,12 @@ public final class LockNodeTest {
     }
     
     @Test
-    public void assertGetGlobalLockNodePath() {
-        assertThat(lockNode.getGlobalLockNodePath(), is("/lock/glock"));
+    public void assertGetLockNodePath() {
+        assertThat(lockNode.getLockNodePath(), is("/lock/glock"));
     }
     
     @Test
-    public void assertGetResourceNodePath() {
-        assertThat(lockNode.getResourceLockNodePath(), is("/lock/rlock"));
+    public void assertGetLockedResourceNodePath() {
+        assertThat(lockNode.getLockedResourcesNodePath(), is("/lock/locked_resources"));
     }
 }

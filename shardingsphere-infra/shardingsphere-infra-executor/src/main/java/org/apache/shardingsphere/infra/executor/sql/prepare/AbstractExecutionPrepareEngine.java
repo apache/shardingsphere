@@ -19,9 +19,10 @@ package org.apache.shardingsphere.infra.executor.sql.prepare;
 
 import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -34,6 +35,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract execution prepare engine.
@@ -46,6 +48,9 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
         ShardingSphereServiceLoader.register(ExecutionPrepareDecorator.class);
     }
     
+    @SuppressWarnings("rawtypes")
+    private static final Map<Collection<ShardingSphereRule>, Map<ShardingSphereRule, ExecutionPrepareDecorator>> RULES_TO_DECORATORS_MAP = new ConcurrentHashMap<>(32, 1);
+    
     private final int maxConnectionsSizePerQuery;
     
     @SuppressWarnings("rawtypes")
@@ -53,11 +58,11 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
     
     protected AbstractExecutionPrepareEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
         this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
-        decorators = OrderedSPIRegistry.getRegisteredServices(rules, ExecutionPrepareDecorator.class);
+        decorators = RULES_TO_DECORATORS_MAP.computeIfAbsent(rules, key -> OrderedSPIRegistry.getRegisteredServices(key, ExecutionPrepareDecorator.class));
     }
     
     @Override
-    public final Collection<ExecutionGroup<T>> prepare(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits) throws SQLException {
+    public final ExecutionGroupContext<T> prepare(final RouteContext routeContext, final Collection<ExecutionUnit> executionUnits) throws SQLException {
         Collection<ExecutionGroup<T>> result = new LinkedList<>();
         for (Entry<String, List<SQLUnit>> entry : aggregateSQLUnitGroups(executionUnits).entrySet()) {
             String dataSourceName = entry.getKey();
@@ -88,11 +93,11 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private Collection<ExecutionGroup<T>> decorate(final RouteContext routeContext, final Collection<ExecutionGroup<T>> executionGroups) {
+    private ExecutionGroupContext decorate(final RouteContext routeContext, final Collection<ExecutionGroup<T>> executionGroups) {
         Collection<ExecutionGroup<T>> result = executionGroups;
         for (Entry<ShardingSphereRule, ExecutionPrepareDecorator> each : decorators.entrySet()) {
             result = each.getValue().decorate(routeContext, each.getKey(), result);
         }
-        return result;
+        return new ExecutionGroupContext(result);
     }
 }

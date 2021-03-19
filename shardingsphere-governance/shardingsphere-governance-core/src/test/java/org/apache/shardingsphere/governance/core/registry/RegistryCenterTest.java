@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.governance.core.registry;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.db.discovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAlteredEvent;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.governance.core.yaml.config.YamlRuleConfigurati
 import org.apache.shardingsphere.governance.core.yaml.config.schema.YamlSchema;
 import org.apache.shardingsphere.governance.core.yaml.swapper.SchemaYamlSwapper;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
-import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -46,7 +46,7 @@ import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlt
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.replicaquery.api.config.ReplicaQueryRuleConfiguration;
+import org.apache.shardingsphere.readwrite.splitting.api.ReadWriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.junit.Before;
@@ -94,9 +94,9 @@ public final class RegistryCenterTest {
     
     private static final String SHARDING_AND_ENCRYPT_RULE_YAML = "yaml/registryCenter/data-sharding-encrypt-rule.yaml";
 
-    private static final String REPLICA_QUERY_RULE_YAML = "yaml/registryCenter/data-replica-query-rule.yaml";
+    private static final String READ_WRITE_SPLITTING_RULE_YAML = "yaml/registryCenter/data-read-write-splitting-rule.yaml";
     
-    private static final String HA_RULE_YAML = "yaml/registryCenter/data-ha-rule.yaml";
+    private static final String DB_DISCOVERY_RULE_YAML = "yaml/registryCenter/data-database-discovery-rule.yaml";
     
     private static final String ENCRYPT_RULE_YAML = "yaml/registryCenter/data-encrypt-rule.yaml";
     
@@ -160,15 +160,15 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertTryGlobalLock() {
-        registryCenter.tryGlobalLock(50L);
-        verify(registryRepository).tryLock(eq(new LockNode().getGlobalLockNodePath()), eq(50L), eq(TimeUnit.MILLISECONDS));
+    public void assertTryLock() {
+        registryCenter.tryLock(50L);
+        verify(registryRepository).tryLock(eq(new LockNode().getLockNodePath()), eq(50L), eq(TimeUnit.MILLISECONDS));
     }
     
     @Test
-    public void assertReleaseGlobalLock() {
-        registryCenter.releaseGlobalLock();
-        verify(registryRepository).releaseLock(eq(new LockNode().getGlobalLockNodePath()));
+    public void assertReleaseLock() {
+        registryCenter.releaseLock();
+        verify(registryRepository).releaseLock(eq(new LockNode().getLockNodePath()));
     }
     
     @Test
@@ -212,7 +212,7 @@ public final class RegistryCenterTest {
     @Test
     public void assertPersistConfigurationForReplicaQueryRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
-        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReplicaQueryRuleConfiguration(), false);
+        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReadWriteSplittingRuleConfiguration(), false);
         verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
         verify(registryRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
     }
@@ -220,25 +220,25 @@ public final class RegistryCenterTest {
     @Test
     public void assertPersistConfigurationForReplicaQueryRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
-        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReplicaQueryRuleConfiguration(), false);
+        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReadWriteSplittingRuleConfiguration(), false);
         verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
         verify(registryRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
     }
     
     @Test
-    public void assertPersistConfigurationForReplicaQueryRuleWithoutAuthenticationAndIsOverwrite() {
+    public void assertPersistConfigurationForReadWriteSplittingWithoutAuthenticationAndIsOverwrite() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
-        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReplicaQueryRuleConfiguration(), true);
+        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReadWriteSplittingRuleConfiguration(), true);
         verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(REPLICA_QUERY_RULE_YAML));
+        verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(READ_WRITE_SPLITTING_RULE_YAML));
     }
     
     @Test
-    public void assertPersistConfigurationForHARuleWithoutAuthenticationAndIsOverwrite() {
+    public void assertPersistConfigurationForDatabaseDiscoveryRuleWithoutAuthenticationAndIsOverwrite() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
-        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createHARuleConfiguration(), true);
+        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createDatabaseDiscoveryRuleConfiguration(), true);
         verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(HA_RULE_YAML));
+        verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(DB_DISCOVERY_RULE_YAML));
     }
     
     @Test
@@ -268,33 +268,33 @@ public final class RegistryCenterTest {
     @Test
     public void assertPersistConfigurationForReplicaQueryRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
-        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReplicaQueryRuleConfiguration(), false);
+        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReadWriteSplittingRuleConfiguration(), false);
         verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
         verify(registryRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
     }
     
     @Test
-    public void assertPersistConfigurationForReplicaQueryRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
+    public void assertPersistConfigurationForReadWriteSplittingRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
-        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReplicaQueryRuleConfiguration(), false);
+        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReadWriteSplittingRuleConfiguration(), false);
         verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
         verify(registryRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
     }
     
     @Test
-    public void assertPersistConfigurationForReplicaQueryRuleWithAuthenticationAndIsOverwrite() {
+    public void assertPersistConfigurationForReadWriteSplittingRuleWithAuthenticationAndIsOverwrite() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
-        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReplicaQueryRuleConfiguration(), true);
+        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReadWriteSplittingRuleConfiguration(), true);
         verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(REPLICA_QUERY_RULE_YAML));
+        verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(READ_WRITE_SPLITTING_RULE_YAML));
     }
     
     @Test
-    public void assertPersistConfigurationForHARuleWithAuthenticationAndIsOverwrite() {
+    public void assertPersistConfigurationForDatabaseDiscoveryRuleWithAuthenticationAndIsOverwrite() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
-        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createHARuleConfiguration(), true);
+        registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createDatabaseDiscoveryRuleConfiguration(), true);
         verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(HA_RULE_YAML));
+        verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(DB_DISCOVERY_RULE_YAML));
     }
     
     @Test
@@ -356,12 +356,12 @@ public final class RegistryCenterTest {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SHARDING_RULE_YAML), YamlRuleConfigurationWrap.class).getRules());
     }
     
-    private Collection<RuleConfiguration> createReplicaQueryRuleConfiguration() {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(REPLICA_QUERY_RULE_YAML), YamlRootRuleConfigurations.class).getRules());
+    private Collection<RuleConfiguration> createReadWriteSplittingRuleConfiguration() {
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(READ_WRITE_SPLITTING_RULE_YAML), YamlRootRuleConfigurations.class).getRules());
     }
     
-    private Collection<RuleConfiguration> createHARuleConfiguration() {
-        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(HA_RULE_YAML), YamlRootRuleConfigurations.class).getRules());
+    private Collection<RuleConfiguration> createDatabaseDiscoveryRuleConfiguration() {
+        return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(DB_DISCOVERY_RULE_YAML), YamlRootRuleConfigurations.class).getRules());
     }
     
     private Collection<RuleConfiguration> createEncryptRuleConfiguration() {
@@ -446,22 +446,22 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertLoadReplicaQueryRuleConfiguration() {
-        when(registryRepository.get("/metadata/sharding_db/rule")).thenReturn(readYAML(REPLICA_QUERY_RULE_YAML));
+    public void assertLoadReadWriteSplittingRuleConfiguration() {
+        when(registryRepository.get("/metadata/sharding_db/rule")).thenReturn(readYAML(READ_WRITE_SPLITTING_RULE_YAML));
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         Collection<RuleConfiguration> actual = registryCenter.loadRuleConfigurations("sharding_db");
-        ReplicaQueryRuleConfiguration config = (ReplicaQueryRuleConfiguration) actual.iterator().next();
+        ReadWriteSplittingRuleConfiguration config = (ReadWriteSplittingRuleConfiguration) actual.iterator().next();
         assertThat(config.getDataSources().size(), is(1));
-        assertThat(config.getDataSources().iterator().next().getPrimaryDataSourceName(), is("primary_ds"));
-        assertThat(config.getDataSources().iterator().next().getReplicaDataSourceNames().size(), is(2));
+        assertThat(config.getDataSources().iterator().next().getWriteDataSourceName(), is("write_ds"));
+        assertThat(config.getDataSources().iterator().next().getReadDataSourceNames().size(), is(2));
     }
     
     @Test
-    public void assertLoadHARuleConfiguration() {
-        when(registryRepository.get("/metadata/sharding_db/rule")).thenReturn(readYAML(HA_RULE_YAML));
+    public void assertLoadDatabaseDiscoveryRuleConfiguration() {
+        when(registryRepository.get("/metadata/sharding_db/rule")).thenReturn(readYAML(DB_DISCOVERY_RULE_YAML));
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         Collection<RuleConfiguration> actual = registryCenter.loadRuleConfigurations("sharding_db");
-        HARuleConfiguration config = (HARuleConfiguration) actual.iterator().next();
+        DatabaseDiscoveryRuleConfiguration config = (DatabaseDiscoveryRuleConfiguration) actual.iterator().next();
         assertThat(config.getDataSources().size(), is(1));
         assertThat(config.getDataSources().iterator().next().getDataSourceNames().size(), is(3));
     }

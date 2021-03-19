@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.UnexpandShorthandProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -78,7 +77,7 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             }
             if (isToGeneratedSQLToken(each, selectStatementContext, tableName)) {
                 ShorthandProjection shorthandProjection = getShorthandProjection((ShorthandProjectionSegment) each, selectStatementContext.getProjectionsContext());
-                if (!shorthandProjection.getActualColumns().isEmpty() || !shorthandProjection.getUnexpandShorthandProjections().isEmpty()) {
+                if (!shorthandProjection.getActualColumns().isEmpty()) {
                     result.add(generateSQLToken((ShorthandProjectionSegment) each, shorthandProjection, tableName, encryptTable, selectStatementContext.getDatabaseType()));
                 }
             }
@@ -114,9 +113,6 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             } else {
                 shorthandExtensionProjections.add(null == each.getOwner() ? quoteCharacter.wrap(each.getName()) : quoteCharacter.wrap(each.getOwner()) + "." + quoteCharacter.wrap(each.getName()));
             }
-        }
-        for (UnexpandShorthandProjection each : shorthandProjection.getUnexpandShorthandProjections()) {
-            shorthandExtensionProjections.add(each.getColumnLabel());
         }
         return new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), Joiner.on(", ").join(shorthandExtensionProjections));
     }

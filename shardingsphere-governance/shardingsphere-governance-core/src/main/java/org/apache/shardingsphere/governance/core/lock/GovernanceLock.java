@@ -17,20 +17,23 @@
 
 package org.apache.shardingsphere.governance.core.lock;
 
+import com.google.common.base.Joiner;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockAddedEvent;
-import org.apache.shardingsphere.governance.core.event.model.lock.GlobalLockReleasedEvent;
+import org.apache.shardingsphere.governance.core.event.model.lock.LockNotificationEvent;
+import org.apache.shardingsphere.governance.core.event.model.lock.LockReleasedEvent;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.lock.AbstractShardingSphereLock;
-import org.apache.shardingsphere.infra.state.StateEvent;
-import org.apache.shardingsphere.infra.state.StateType;
+import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Governance lock.
  */
-public final class GovernanceLock extends AbstractShardingSphereLock {
+public final class GovernanceLock implements ShardingSphereLock {
     
     private final RegistryCenter registryCenter;
     
@@ -40,35 +43,54 @@ public final class GovernanceLock extends AbstractShardingSphereLock {
     }
     
     @Override
-    public boolean tryGlobalLock(final long timeoutMilliseconds) {
-        return registryCenter.tryGlobalLock(timeoutMilliseconds);
+    public boolean tryLock(final String schemaName, final String tableName, final long timeoutMilliseconds) {
+        boolean result = registryCenter.tryLock(timeoutMilliseconds);
+        if (result) {
+            registryCenter.addLockedResources(Arrays.asList(Joiner.on(".").join(schemaName, tableName)));
+        }
+        return result;
     }
     
     @Override
-    public void releaseGlobalLock() {
-        registryCenter.releaseGlobalLock();
+    public boolean tryLock(final String schemaName, final Collection<String> tableNames, final long timeoutMilliseconds) {
+        boolean result = registryCenter.tryLock(timeoutMilliseconds);
+        if (result) {
+            registryCenter.addLockedResources(tableNames.stream()
+                    .map(each -> Joiner.on(".").join(schemaName, each)).collect(Collectors.toList()));
+        }
+        return result;
+    }
+    
+    @Override
+    public void releaseLock(final String schemaName, final String tableName) {
+        registryCenter.releaseLock();
+        registryCenter.deleteLockedResources(Arrays.asList(Joiner.on(".").join(schemaName, tableName)));
+    }
+    
+    @Override
+    public void releaseLock(final String schemaName, final Collection<String> tableNames) {
+        registryCenter.releaseLock();
+        registryCenter.deleteLockedResources(tableNames.stream()
+                .map(each -> Joiner.on(".").join(schemaName, each)).collect(Collectors.toList()));
     }
     
     /**
-     * Lock instance after global lock added.
+     * Lock instance.
      *
-     * @param event global lock added event
+     * @param event lock notification event
      */
     @Subscribe
-    public void doLock(final GlobalLockAddedEvent event) {
-        ShardingSphereEventBus.getInstance().post(new StateEvent(StateType.LOCK, true));
+    public void doLock(final LockNotificationEvent event) {
         registryCenter.persistInstanceData(RegistryCenterNodeStatus.LOCKED.toString());
     }
     
     /**
      * Unlock instance.
      *
-     * @param event global lock released event
+     * @param event lock released event
      */
     @Subscribe
-    public void unlock(final GlobalLockReleasedEvent event) {
-        ShardingSphereEventBus.getInstance().post(new StateEvent(StateType.LOCK, false));
+    public void unlock(final LockReleasedEvent event) {
         registryCenter.persistInstanceData("");
-        signalAll();
     }
 }

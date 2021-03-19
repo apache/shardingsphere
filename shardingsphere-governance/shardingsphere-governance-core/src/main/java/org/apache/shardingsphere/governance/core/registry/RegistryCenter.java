@@ -71,10 +71,6 @@ import java.util.stream.Collectors;
  */
 public final class RegistryCenter {
     
-    private static final int CHECK_RETRY_MAXIMUM = 5;
-    
-    private static final int CHECK_RETRY_INTERVAL_SECONDS = 3;
-    
     private final RegistryCenterNode node;
     
     private final RegistryRepository repository;
@@ -534,51 +530,41 @@ public final class RegistryCenter {
     }
     
     /**
-     * Try to get global lock.
+     * Try to get lock.
      *
      * @param timeout the maximum time in milliseconds to acquire lock
      * @return true if get the lock, false if not
      */
-    public boolean tryGlobalLock(final long timeout) {
-        return repository.tryLock(lockNode.getGlobalLockNodePath(), timeout, TimeUnit.MILLISECONDS) && checkLock();
+    public boolean tryLock(final long timeout) {
+        return repository.tryLock(lockNode.getLockNodePath(), timeout, TimeUnit.MILLISECONDS);
     }
     
     /**
-     * Release global lock.
+     * Release lock.
      */
-    public void releaseGlobalLock() {
-        repository.releaseLock(lockNode.getGlobalLockNodePath());
+    public void releaseLock() {
+        repository.releaseLock(lockNode.getLockNodePath());
     }
     
-    private boolean checkLock() {
-        boolean result = checkOrRetry(loadAllInstances());
-        if (!result) {
-            releaseGlobalLock();
-        }
-        return result;
+    /**
+     * Add locked resources.
+     * 
+     * @param resources collection of resources
+     */
+    public void addLockedResources(final Collection<String> resources) {
+        List<String> lockedResources = Splitter.on(",").splitToList(repository.get(lockNode.getLockedResourcesNodePath()));
+        lockedResources.addAll(resources);
+        repository.persist(lockNode.getLockedResourcesNodePath(), Joiner.on(",").join(lockedResources));
     }
     
-    private boolean checkOrRetry(final Collection<String> instanceIds) {
-        for (int i = 0; i < CHECK_RETRY_MAXIMUM; i++) {
-            if (check(instanceIds)) {
-                return true;
-            }
-            try {
-                Thread.sleep(CHECK_RETRY_INTERVAL_SECONDS * 1000L);
-                // CHECKSTYLE:OFF
-            } catch (final InterruptedException ex) {
-                // CHECKSTYLE:ON
-            }
-        }
-        return false;
-    }
-    
-    private boolean check(final Collection<String> instanceIds) {
-        for (String each : instanceIds) {
-            if (!RegistryCenterNodeStatus.LOCKED.toString().equalsIgnoreCase(loadInstanceData(each))) {
-                return false;
-            }
-        }
-        return true;
+    /**
+     * Delete locked resources.
+     *
+     * @param resources collection of resources
+     */
+    public void deleteLockedResources(final Collection<String> resources) {
+        List<String> lockedResources = Splitter.on(",").splitToList(repository.get(lockNode.getLockedResourcesNodePath()));
+        lockedResources.removeAll(resources);
+        repository.persist(lockNode.getLockedResourcesNodePath(), Joiner.on(",").join(lockedResources));
     }
 }

@@ -38,7 +38,7 @@ import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthenticati
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
-import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryRule;
+import org.apache.shardingsphere.readwrite.splitting.common.rule.ReadWriteSplittingRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,7 +84,7 @@ public final class GovernanceMetaDataContextsTest {
     private ShardingSphereMetaData metaData;
     
     @Mock
-    private ReplicaQueryRule replicaQueryRule;
+    private ReadWriteSplittingRule readWriteSplittingRule;
     
     private GovernanceMetaDataContexts governanceMetaDataContexts;
     
@@ -99,7 +99,7 @@ public final class GovernanceMetaDataContextsTest {
         when(metaData.getName()).thenReturn("schema");
         when(metaData.getResource()).thenReturn(mock(ShardingSphereResource.class));
         when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
-        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(replicaQueryRule));
+        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(readWriteSplittingRule));
         return Collections.singletonMap("schema", metaData);
     }
     
@@ -192,7 +192,7 @@ public final class GovernanceMetaDataContextsTest {
     public void assertDisableStateChanged() {
         DisabledStateChangedEvent event = new DisabledStateChangedEvent(new GovernanceSchema("schema.ds_0"), true);
         governanceMetaDataContexts.renew(event);
-        verify(replicaQueryRule, times(2)).updateRuleStatus(any(RuleChangedEvent.class));
+        verify(readWriteSplittingRule, times(2)).updateRuleStatus(any(RuleChangedEvent.class));
     }
     
     @Test

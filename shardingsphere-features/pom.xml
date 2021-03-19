@@ -31,8 +31,8 @@
     
     <modules>
         <module>shardingsphere-sharding</module>
-        <module>shardingsphere-replica-query</module>
-        <module>shardingsphere-ha</module>
+        <module>shardingsphere-read-write-splitting</module>
+        <module>shardingsphere-db-discovery</module>
         <module>shardingsphere-encrypt</module>
         <module>shardingsphere-shadow</module>
     </modules>
