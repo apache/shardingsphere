@@ -34,6 +34,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLCheckEngine {
     
+    private static final Collection<SQLChecker> AUDITORS = OrderedSPIRegistry.getRegisteredServices(SQLChecker.class);
+    
     static {
         ShardingSphereServiceLoader.register(SQLChecker.class);
     }
@@ -47,8 +49,7 @@ public final class SQLCheckEngine {
      * @param auth auth
      */
     public static void check(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingSphereMetaData metaData, final Authentication auth) {
-        Collection<SQLChecker> auditors = OrderedSPIRegistry.getRegisteredServices(SQLChecker.class);
-        for (SQLChecker each : auditors) {
+        for (SQLChecker each : AUDITORS) {
             SQLCheckResult auditResult = each.check(sqlStatement, parameters, metaData, auth);
             if (!auditResult.isPassed()) {
                 throw new SQLCheckException(each.getSQLCheckType(), auditResult.getErrorMessage());
