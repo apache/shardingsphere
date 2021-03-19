@@ -927,6 +927,14 @@ REJECT
     : R E J E C T
     ;
 
+EDITIONABLE
+    : E D I T I O N A B L E
+    ;
+
+NONEDITIONABLE
+    : N O N E D I T I O N A B L E
+    ;
+
 RETENTION
     : R E T E N T I O N
     ;
@@ -1217,7 +1225,7 @@ ROWDEPENDENCIES
 
 NOROWDEPENDENCIES
     : N O R O W D E P E N D E N C I E S
-    ; 
+    ;
 
 ARCHIVAL
     : A R C H I V A L

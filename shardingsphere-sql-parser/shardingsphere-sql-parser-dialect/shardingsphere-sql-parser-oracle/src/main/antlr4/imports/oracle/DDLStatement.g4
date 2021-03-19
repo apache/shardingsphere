@@ -561,9 +561,9 @@ ilmInmemoryPolicy
     ;
 
 organizationClause
-    : ORGANIZATION 
-    ( HEAP segmentAttributesClause? heapOrgTableClause 
-    | INDEX segmentAttributesClause? indexOrgTableClause 
+    : ORGANIZATION
+    ( HEAP segmentAttributesClause? heapOrgTableClause
+    | INDEX segmentAttributesClause? indexOrgTableClause
     | EXTERNAL externalTableClause)
     ;
 
@@ -621,7 +621,7 @@ tableProperties
     ;
 
 readOnlyClause
-    : READ ONLY | READ WRITE 
+    : READ ONLY | READ WRITE
     ;
 
 indexingClause
@@ -674,9 +674,9 @@ varrayColProperties
     ;
 
 nestedTableColProperties
-    : NESTED TABLE 
-    (nestedItem | COLUMN_VALUE) substitutableColumnClause? (LOCAL | GLOBAL)? STORE AS storageTable 
-    LP_ (LP_ objectProperties RP_ | physicalProperties | columnProperties) RP_ 
+    : NESTED TABLE
+    (nestedItem | COLUMN_VALUE) substitutableColumnClause? (LOCAL | GLOBAL)? STORE AS storageTable
+    LP_ (LP_ objectProperties RP_ | physicalProperties | columnProperties) RP_
     (RETURN AS? (LOCATOR | VALUE))?
     ;
 
@@ -704,7 +704,7 @@ lobParameters
         | lobDeduplicateClause
         | lobCompressionClause
         | (ENCRYPT encryptionSpecification | DECRYPT)
-        | (CACHE | NOCACHE | CACHE READS) loggingClause? 
+        | (CACHE | NOCACHE | CACHE READS) loggingClause?
       )+
     ;
 
@@ -779,9 +779,9 @@ lobPartitioningStorage
     ;
 
 compositeRangePartitions
-    : PARTITION BY RANGE columnNames 
+    : PARTITION BY RANGE columnNames
       (INTERVAL LP_ expr RP_ (STORE IN LP_? tablespaceName (COMMA_ tablespaceName)* RP_?)?)?
-      (subpartitionByRange | subpartitionByList | subpartitionByHash) 
+      (subpartitionByRange | subpartitionByList | subpartitionByHash)
       LP_? rangePartitionDesc (COMMA_ rangePartitionDesc)* RP_?
     ;
 
@@ -822,9 +822,9 @@ rangePartitionDesc
     ;
 
 compositeListPartitions
-    : PARTITION BY LIST columnNames 
+    : PARTITION BY LIST columnNames
       (AUTOMATIC (STORE IN LP_? tablespaceName (COMMA_ tablespaceName)* RP_?)?)?
-      (subpartitionByRange | subpartitionByList | subpartitionByHash) 
+      (subpartitionByRange | subpartitionByList | subpartitionByHash)
       LP_? listPartitionDesc (COMMA_ listPartitionDesc)* RP_?
     ;
 
@@ -914,4 +914,8 @@ rowMovementClause
 
 flashbackArchiveClause
     : FLASHBACK ARCHIVE flashbackArchiveName? | NO FLASHBACK ARCHIVE
+    ;
+
+alterSynonym
+    : ALTER PUBLIC? SYNONYM (schemaName DOT_)? synonymName (COMPILE | EDITIONABLE | NONEDITIONABLE)
     ;
