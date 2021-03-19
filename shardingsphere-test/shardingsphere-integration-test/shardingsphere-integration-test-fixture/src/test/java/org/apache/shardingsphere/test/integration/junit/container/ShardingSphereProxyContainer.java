@@ -79,6 +79,7 @@ public class ShardingSphereProxyContainer extends ShardingSphereAdapterContainer
     @Override
     protected void configure() {
         withConfMapping("/docker/" + getDescription().getScenario() + "/proxy/conf");
+        super.setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*ShardingSphere-Proxy start success.*"));
         super.configure();
     }
     
@@ -86,11 +87,6 @@ public class ShardingSphereProxyContainer extends ShardingSphereAdapterContainer
     protected void execute() {
         log.info("Mapped port 3307: {}", getMappedPort(3307));
         log.info("Mapped port 3308: {}", getMappedPort(3308));
-    }
-    
-    @Override
-    public void setWaitStrategy(final WaitStrategy waitStrategy) {
-        super.setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*start success\\."));
     }
     
     /**
