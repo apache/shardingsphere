@@ -186,7 +186,7 @@
         <assertion expected-data-file="delete_user_table.xml" />
     </test-case>
 
-    <test-case sql="DELETE FROM t_single_table WHERE single_id = 1" scenario-types="db">
+    <test-case sql="DELETE FROM t_single_table WHERE single_id = 1" db-types="MySQL,Oracle,SQLServer" scenario-types="db">
         <assertion expected-data-file="delete_single_table_by_id.xml" />
     </test-case>
     
