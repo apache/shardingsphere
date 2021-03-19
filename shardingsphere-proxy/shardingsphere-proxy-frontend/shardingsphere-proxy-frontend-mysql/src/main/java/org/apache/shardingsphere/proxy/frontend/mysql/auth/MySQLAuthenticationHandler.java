@@ -22,7 +22,6 @@ import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
@@ -57,13 +56,7 @@ public final class MySQLAuthenticationHandler {
         }
         ShardingSpherePrivilege privilege = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getAuthentication().get(user.get());
         if (null != privilege) {
-            if (privilege.getAdministrativePrivilege().getPrivileges().contains(PrivilegeType.SUPER)) {
-                return Optional.empty();
-            }
-            if (!privilege.getDatabasePrivilege().getGlobalPrivileges().isEmpty()) {
-                return Optional.empty();
-            }
-            if (privilege.getDatabasePrivilege().getSpecificPrivileges().containsKey(database)) {
+            if (privilege.hasPrivileges(database)) {
                 return Optional.empty();
             }
         }

@@ -59,7 +59,7 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
             result.addAll(ProxyContext.getInstance().getAllSchemaNames());
         } else {
             for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
-                if (privilege.get().getDatabasePrivilege().getSpecificPrivileges().containsKey(each)) {
+                if (privilege.get().hasPrivileges(each)) {
                     result.add(each);
                 }
             }

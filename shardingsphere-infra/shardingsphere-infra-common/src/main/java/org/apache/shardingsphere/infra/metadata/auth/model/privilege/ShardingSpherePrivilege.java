@@ -64,6 +64,25 @@ public final class ShardingSpherePrivilege {
     }
     
     /**
+     * Has privilege for login and use db.
+     *
+     * @param schema schema
+     * @return has or not
+     */
+    public boolean hasPrivileges(final String schema) {
+        if (administrativePrivilege.getPrivileges().contains(PrivilegeType.SUPER)) {
+            return true;
+        }
+        if (!databasePrivilege.getGlobalPrivileges().isEmpty()) {
+            return true;
+        }
+        if (databasePrivilege.getSpecificPrivileges().containsKey(schema)) {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
      * Has privileges.
      *
      * @param schema schema

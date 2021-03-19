@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdmin
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -49,12 +47,10 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     
     private boolean isAuthorizedSchema(final BackendConnection backendConnection, final String schema) {
         Optional<ShardingSpherePrivilege> privilege = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findPrivilege(backendConnection.getGrantee());
-        if (!privilege.isPresent()) {
-            return false;
-        }
-        if (privilege.get().getAdministrativePrivilege().hasPrivileges(Collections.singletonList(PrivilegeType.SUPER))
-                || privilege.get().getDatabasePrivilege().getSpecificPrivileges().containsKey(schema) || !privilege.get().getDatabasePrivilege().getGlobalPrivileges().isEmpty()) {
-            return true;
+        if (privilege.isPresent()) {
+            if (privilege.get().hasPrivileges(schema)) {
+                return true;
+            }
         }
         return false;
     }
