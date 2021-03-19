@@ -17,12 +17,19 @@
 
 package org.apache.shardingsphere.readwrite.splitting.route.engine.impl;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
+import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.readwrite.splitting.common.rule.ReadWriteSplittingDataSourceRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Data source router for read write splitting.
@@ -41,7 +48,23 @@ public final class ReadWriteSplittingDataSourceRouter {
     public String route(final SQLStatement sqlStatement) {
         if (isPrimaryRoute(sqlStatement)) {
             PrimaryVisitedManager.setPrimaryVisited();
-            return rule.getWriteDataSourceName();
+            String autoAwareDataSourceName = rule.getAutoAwareDataSourceName();
+            if (Strings.isNullOrEmpty(autoAwareDataSourceName)) {
+                return rule.getWriteDataSourceName();
+            }
+            Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
+            if (dataSourceNameAware.isPresent()) {
+                return dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName);
+            }
+        }
+        String autoAwareDataSourceName = rule.getAutoAwareDataSourceName();
+        if (Strings.isNullOrEmpty(autoAwareDataSourceName)) {
+            return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSourceName(), rule.getReadDataSourceNames());
+        }
+        Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
+        if (dataSourceNameAware.isPresent()) {
+            Collection<String> replicaDataSourceNames = dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName);
+            return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSourceName(), new ArrayList<>(replicaDataSourceNames));
         }
         return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSourceName(), rule.getReadDataSourceNames());
     }

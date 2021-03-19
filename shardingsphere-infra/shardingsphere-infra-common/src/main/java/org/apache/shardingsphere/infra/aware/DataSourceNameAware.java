@@ -5,7 +5,7 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -15,27 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwrite.splitting.api.rule;
+package org.apache.shardingsphere.infra.aware;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
- * Read write splitting data source rule configuration.
+ * Data source name aware.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ReadWriteSplittingDataSourceRuleConfiguration {
+public interface DataSourceNameAware extends TypedSPI {
     
-    private final String name;
+    /**
+     * Set rule.
+     *
+     * @param rule rule
+     */
+    void setRule(ShardingSphereRule rule);
     
-    private final String autoAwareDataSourceName;
+    /**
+     * Get primary data source name.
+     *
+     * @param dataSourceName data source name
+     * @return primary data source name
+     */
+    String getPrimaryDataSourceName(String dataSourceName);
     
-    private final String writeDataSourceName;
-    
-    private final List<String> readDataSourceNames;
-    
-    private final String loadBalancerName;
+    /**
+     * Get replica data source names.
+     *
+     * @param dataSourceName data source name
+     * @return replica data source names
+     */
+    Collection<String> getReplicaDataSourceNames(String dataSourceName);
 }

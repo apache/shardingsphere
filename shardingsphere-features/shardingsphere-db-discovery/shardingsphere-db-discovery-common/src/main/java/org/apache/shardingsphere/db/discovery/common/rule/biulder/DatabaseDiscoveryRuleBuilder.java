@@ -27,9 +27,8 @@ import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.aware.ResourceAware;
 
 import javax.sql.DataSource;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Data base discovery rule builder.
@@ -45,12 +44,13 @@ public final class DatabaseDiscoveryRuleBuilder implements ShardingSphereRuleBui
     
     @Override
     public DatabaseDiscoveryRule build(final DatabaseDiscoveryRuleConfiguration ruleConfig) {
-        Set<String> dataSourceSet = new HashSet<>(128, 1);
+        Map<String, DataSource> realDataSourceMap = new HashMap<>();
         for (DatabaseDiscoveryDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
-            dataSourceSet.addAll(each.getDataSourceNames());
+            for (String datasourceName : each.getDataSourceNames()) {
+                realDataSourceMap.put(datasourceName, dataSourceMap.get(datasourceName));
+            }
         }
-        dataSourceMap.entrySet().removeIf(entry -> !dataSourceSet.contains(entry.getKey()));
-        return new DatabaseDiscoveryRule(ruleConfig, databaseType, dataSourceMap, schemaName);
+        return new DatabaseDiscoveryRule(ruleConfig, databaseType, realDataSourceMap, schemaName);
     }
     
     @Override
@@ -62,4 +62,5 @@ public final class DatabaseDiscoveryRuleBuilder implements ShardingSphereRuleBui
     public Class<DatabaseDiscoveryRuleConfiguration> getTypeClass() {
         return DatabaseDiscoveryRuleConfiguration.class;
     }
+    
 }

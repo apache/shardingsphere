@@ -21,6 +21,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
+import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
 import org.apache.shardingsphere.readwrite.splitting.api.rule.ReadWriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwrite.splitting.spi.ReplicaLoadBalanceAlgorithm;
 
@@ -30,6 +32,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +42,8 @@ import java.util.stream.Collectors;
 public final class ReadWriteSplittingDataSourceRule {
     
     private final String name;
+    
+    private final String autoAwareDataSourceName;
     
     private final String writeDataSourceName;
     
@@ -52,6 +57,7 @@ public final class ReadWriteSplittingDataSourceRule {
     public ReadWriteSplittingDataSourceRule(final ReadWriteSplittingDataSourceRuleConfiguration config, final ReplicaLoadBalanceAlgorithm loadBalancer) {
         checkConfiguration(config);
         name = config.getName();
+        autoAwareDataSourceName = config.getAutoAwareDataSourceName();
         writeDataSourceName = config.getWriteDataSourceName();
         readDataSourceNames = config.getReadDataSourceNames();
         this.loadBalancer = loadBalancer;
@@ -59,8 +65,10 @@ public final class ReadWriteSplittingDataSourceRule {
     
     private void checkConfiguration(final ReadWriteSplittingDataSourceRuleConfiguration config) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getWriteDataSourceName()), "Write data source name is required.");
-        Preconditions.checkArgument(null != config.getReadDataSourceNames() && !config.getReadDataSourceNames().isEmpty(), "Read data source names are required.");
+        if (Strings.isNullOrEmpty(config.getAutoAwareDataSourceName())) {
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getWriteDataSourceName()), "Write data source name is required.");
+            Preconditions.checkArgument(null != config.getReadDataSourceNames() && !config.getReadDataSourceNames().isEmpty(), "Read data source names are required.");
+        }
     }
     
     /**
@@ -94,8 +102,16 @@ public final class ReadWriteSplittingDataSourceRule {
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>(1, 1);
         Collection<String> actualDataSourceNames = new LinkedList<>();
-        actualDataSourceNames.add(writeDataSourceName);
-        actualDataSourceNames.addAll(readDataSourceNames);
+        if (Strings.isNullOrEmpty(autoAwareDataSourceName)) {
+            actualDataSourceNames.add(writeDataSourceName);
+            actualDataSourceNames.addAll(readDataSourceNames);
+        } else {
+            Optional<DataSourceNameAware> dataSourceNameAware = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
+            if (dataSourceNameAware.isPresent()) {
+                actualDataSourceNames.add(dataSourceNameAware.get().getPrimaryDataSourceName(autoAwareDataSourceName));
+                actualDataSourceNames.addAll(dataSourceNameAware.get().getReplicaDataSourceNames(autoAwareDataSourceName));
+            }
+        }
         result.put(name, actualDataSourceNames);
         return result;
     }
