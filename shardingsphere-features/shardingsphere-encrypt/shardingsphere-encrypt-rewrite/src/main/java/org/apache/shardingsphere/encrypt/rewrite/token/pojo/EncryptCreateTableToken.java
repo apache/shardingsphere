@@ -20,17 +20,29 @@ package org.apache.shardingsphere.encrypt.rewrite.token.pojo;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 
 /**
  * Create table token for encrypt.
  */
 @Getter
-public abstract class EncryptCreateTableToken extends SQLToken implements Substitutable {
+public final class EncryptCreateTableToken extends SQLToken implements Substitutable {
 
     private final int stopIndex;
 
-    protected EncryptCreateTableToken(final int startIndex, final int stopIndex) {
+    private final String columnName;
+
+    private final String columnType;
+
+    @Override
+    public String toString() {
+        return String.format("`%s` %s, ", columnName, columnType);
+    }
+
+    public EncryptCreateTableToken(final int startIndex, final int stopIndex, String columnName, String columnType) {
         super(startIndex);
         this.stopIndex = stopIndex;
+        this.columnName = columnName;
+        this.columnType = columnType;
     }
 }
