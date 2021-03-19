@@ -143,6 +143,86 @@ name
     : identifier
     ;
 
+tablespaceName
+    : identifier
+    ;
+
+tablespaceSetName
+    : identifier
+    ;
+
+serviceName
+    : identifier
+    ;
+
+ilmPolicyName
+    : identifier
+    ;
+
+functionName
+    : identifier
+    ;
+
+directoryName
+    : identifier
+    ;
+
+opaqueFormatSpec
+    : identifier
+    ;
+
+accessDriverType
+    : identifier
+    ;
+
+partition
+    : identifier
+    ;
+
+type
+    : identifier
+    ;
+
+varrayItem
+    : identifier
+    ;
+
+nestedItem
+    : identifier
+    ;
+
+storageTable
+    : identifier
+    ;
+
+lobSegname
+    : identifier
+    ;
+
+locationSpecifier
+    : identifier
+    ;
+
+subpartitionName
+    : identifier
+    ;
+
+partitionName
+    : identifier
+    ;
+
+partitionSetName
+    : identifier
+    ;
+
+zonemapName
+    : identifier
+    ;
+
+flashbackArchiveName
+    : identifier
+    ;
+
 roleName
     : identifier
     ;
@@ -401,4 +481,8 @@ ignoredIdentifiers
 
 matchNone
     : 'Default does not match anything'
+    ;
+
+hashSubpartitionQuantity
+    : NUMBER
     ;
