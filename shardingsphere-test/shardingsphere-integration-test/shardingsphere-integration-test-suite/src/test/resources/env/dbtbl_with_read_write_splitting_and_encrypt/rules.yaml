@@ -35,7 +35,7 @@ rules:
       actualDataNodes: pr_ds_${0..9}.t_user_${0..9}
       databaseStrategy:
         standard:
-          shardingColumn: order_id
+          shardingColumn: address_id
           shardingAlgorithmName: standard_test
       tableStrategy:
         standard:
@@ -48,7 +48,7 @@ rules:
       actualDataNodes: pr_ds_${0..9}.t_user_details_${0..9}
       databaseStrategy:
         standard:
-          shardingColumn: order_id
+          shardingColumn: address_id
           shardingAlgorithmName: standard_test
       tableStrategy:
         standard:
@@ -136,9 +136,9 @@ rules:
           encryptorName: aes_encryptor
     t_user_details:
       columns:
-        pwd:
-          plainColumn: pwd_plain
-          cipherColumn: pwd_cipher
+        number:
+          plainColumn: number_plain
+          cipherColumn: number_cipher
           encryptorName: aes_encryptor
 props:
   query-with-cipher-column: true
