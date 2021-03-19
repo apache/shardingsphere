@@ -111,8 +111,13 @@ public class LogicalScan extends AbstractRelNode implements SSRel {
                     return  sortRexNode;
                 }).collect(Collectors.toList());
         int offset = logicalSort.offset != null ? RexLiteral.intValue(logicalSort.offset) : 0;
-        int fetch = logicalSort.fetch != null ? RexLiteral.intValue(logicalSort.fetch) : -1;
-        relBuilder.sortLimit(offset, fetch, sortRexNodes);
+        if(logicalSort.fetch instanceof RexLiteral) {
+            int fetch = logicalSort.fetch != null ? RexLiteral.intValue(logicalSort.fetch) : -1;
+            relBuilder.sortLimit(offset, fetch, sortRexNodes);
+        } else {
+            // TODO 
+        }
+        
         refreshRowType(logicalSort);
         return this;
     }

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,15 @@ public class TableAndRexShuttle extends RelShuttleImpl {
     
     public TableAndRexShuttle(ShardingRule shardingRule) {
         this.shardingRule = shardingRule;
+    }
+    
+    @Override
+    public RelNode visit(final TableScan scan) {
+        String tableName = RelNodeUtil.getTableName(scan);
+        if (!tableShardingConditions.containsKey(tableName)) {
+            tableShardingConditions.put(tableName, new ArrayList<>());
+        }
+        return super.visit(scan);
     }
     
     @Override
@@ -77,7 +87,7 @@ public class TableAndRexShuttle extends RelShuttleImpl {
                 collectShardingFilter(sqlKind, tableName, columnName, operandVal);
             }
         }
-        return filter;
+        return super.visit(filter);
     }
     
     private Comparable value(RexNode operand) {

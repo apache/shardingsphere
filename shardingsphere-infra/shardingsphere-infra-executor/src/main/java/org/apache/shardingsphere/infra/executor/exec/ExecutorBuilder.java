@@ -6,10 +6,12 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.shardingsphere.infra.optimize.rel.logical.LogicalScan;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSCalc;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSHashAggregate;
+import org.apache.shardingsphere.infra.optimize.rel.physical.SSLimitSort;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSMergeSort;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSNestedLoopJoin;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSProject;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSRel;
+import org.apache.shardingsphere.infra.optimize.rel.physical.SSSort;
 
 @Getter
 public class ExecutorBuilder {
@@ -34,6 +36,10 @@ public class ExecutorBuilder {
             executor = CalcExecutor.build((SSCalc) rel, this);
         } else if(rel instanceof SSHashAggregate) {
             executor = HashAggregateExecutor.build((SSHashAggregate)rel, this);
+        } else if(rel instanceof SSSort) {
+            executor = SortExecutor.build((SSSort) rel, this);
+        } else if(rel instanceof SSLimitSort) {
+            executor = LimitSortExecutor.build((SSLimitSort) rel, this);
         } else {
             throw new UnsupportedOperationException("unsupported physic operator " + rel.getClass().getName());
         }

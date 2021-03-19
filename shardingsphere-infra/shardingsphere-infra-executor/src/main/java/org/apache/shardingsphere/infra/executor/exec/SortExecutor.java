@@ -22,7 +22,7 @@ public class SortExecutor extends AbstractExector {
     
     protected final Comparator<Row> ordering;
     
-    Iterator<Row> inputRowIterator;
+    protected Iterator<Row> inputRowIterator;
     
     public SortExecutor(Executor executor, Comparator<Row> ordering, ExecContext execContext) {
         super(execContext);
@@ -52,6 +52,7 @@ public class SortExecutor extends AbstractExector {
     
     @Override
     public boolean moveNext() {
+        init();
         return inputRowIterator.hasNext();
     }
     

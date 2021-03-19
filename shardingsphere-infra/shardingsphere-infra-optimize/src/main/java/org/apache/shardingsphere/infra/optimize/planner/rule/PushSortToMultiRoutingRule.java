@@ -3,11 +3,14 @@ package org.apache.shardingsphere.infra.optimize.planner.rule;
 import org.apache.calcite.plan.RelOptRuleCall;
 import org.apache.calcite.rel.logical.LogicalSort;
 import org.apache.calcite.rex.RexBuilder;
+import org.apache.calcite.rex.RexDynamicParam;
+import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.shardingsphere.infra.optimize.rel.logical.LogicalScan;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSMergeSort;
 
+import java.math.BigDecimal;
 import java.util.function.Predicate;
 
 public class PushSortToMultiRoutingRule extends PushSortToScanRule {
@@ -32,8 +35,15 @@ public class PushSortToMultiRoutingRule extends PushSortToScanRule {
             LogicalScan logicalScan = pushdownSort(LogicalSort.create(scan, sort.getCollation(), null, null), scan);
             mergeSort = SSMergeSort.create(sort.getTraitSet(), logicalScan, sort.collation);
         } else {
-            RexNode fetch = rexBuilder.makeCall(SqlStdOperatorTable.PLUS, sort.offset, sort.fetch);
-            LogicalScan logicalScan = pushdownSort(LogicalSort.create(scan, sort.getCollation(), null, fetch), scan);
+            RexNode fetchRex;
+            if(sort.offset instanceof RexDynamicParam || sort.fetch instanceof RexDynamicParam) {
+                fetchRex = rexBuilder.makeCall(SqlStdOperatorTable.PLUS, sort.offset, sort.fetch);
+            } else {
+                int offset = sort.offset == null ? 0 : RexLiteral.intValue(sort.offset);
+                int fetch = sort.fetch == null ? 0 : RexLiteral.intValue(sort.fetch);
+                fetchRex = rexBuilder.makeBigintLiteral(new BigDecimal(offset + fetch)); 
+            }
+            LogicalScan logicalScan = pushdownSort(LogicalSort.create(scan, sort.getCollation(), null, fetchRex), scan);
             mergeSort = SSMergeSort.create(sort.getTraitSet(), logicalScan, sort.collation, sort.offset, sort.fetch);
         }
         call.transformTo(mergeSort);

@@ -5,8 +5,10 @@ import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.hep.HepMatchOrder;
 import org.apache.shardingsphere.infra.optimize.planner.rule.SSCalcConverterRule;
 import org.apache.shardingsphere.infra.optimize.planner.rule.SSHashAggregateConverterRule;
+import org.apache.shardingsphere.infra.optimize.planner.rule.SSLimitSortConverterRule;
 import org.apache.shardingsphere.infra.optimize.planner.rule.SSNestedLoopJoinConverterRule;
 import org.apache.shardingsphere.infra.optimize.planner.rule.SSProjectConverterRule;
+import org.apache.shardingsphere.infra.optimize.planner.rule.SSSortConverterRule;
 
 import java.util.Collection;
 
@@ -68,7 +70,8 @@ public final class PlannerRules {
 
     public static Collection<? extends RelOptRule> SHARDING_CONVERTER_RULES = ImmutableList.of(SSNestedLoopJoinConverterRule.DEFAULT_CONFIG.toRule(), 
             SSProjectConverterRule.DEFAULT_CONFIG.toRule(), SSCalcConverterRule.DEFAULT_CONFIG.toRule(), 
-            SSHashAggregateConverterRule.DEFAULT_CONFIG.toRule());
+            SSHashAggregateConverterRule.DEFAULT_CONFIG.toRule(), SSLimitSortConverterRule.Config.DEFAULT.toRule(),
+            SSSortConverterRule.DEFAULT_CONFIG.toRule());
     
     public static Collection<Collection<? extends RelOptRule>> CASCADES_RULES = ImmutableList.of(AGG_RULES, LIMIT_RULES, PROJECT_RULES,
             PROJECT_RULES, JOIN_RULES);
