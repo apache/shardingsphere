@@ -53,7 +53,6 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
             return;
         }
         for (String each : logicTableNames) {
-
             if (shardingRule.getBroadcastTables().contains(each)) {
                 routeContext.getRouteUnits().addAll(getBroadcastTableRouteUnits(shardingRule, each));
             } else {
