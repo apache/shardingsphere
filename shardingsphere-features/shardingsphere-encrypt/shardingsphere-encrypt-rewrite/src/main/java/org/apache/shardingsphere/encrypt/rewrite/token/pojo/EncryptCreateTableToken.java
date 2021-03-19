@@ -36,7 +36,7 @@ public final class EncryptCreateTableToken extends SQLToken implements Substitut
 
     @Override
     public String toString() {
-        return String.format("`%s` %s, ", columnName, columnType);
+        return String.format("`%s` %s", columnName, columnType);
     }
 
     public EncryptCreateTableToken(final int startIndex, final int stopIndex, String columnName, String columnType) {
