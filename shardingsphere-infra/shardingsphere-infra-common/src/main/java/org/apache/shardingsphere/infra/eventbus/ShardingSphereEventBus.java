@@ -55,8 +55,7 @@ public final class ShardingSphereEventBus {
      * @param <T> subscriber type.
      */
     public <T> void register(final T target) {
-        eventBus.register(new CompletableEventService<T>(target) {
-        });
+        eventBus.register(new CompletableEventService<T>(target));
     }
 
     /**
@@ -67,7 +66,7 @@ public final class ShardingSphereEventBus {
      * @return T The value returned after the event is consumed
      */
     public <T> T post(final Object event) {
-        return post(event, 120);
+        return post(event, 60);
     }
 
     /**

@@ -28,13 +28,13 @@ import java.util.stream.Collectors;
 /**
  * Completable event service.
  */
-public abstract class CompletableEventService<T> {
+public final class CompletableEventService<T> {
 
     private final T target;
 
     private final Map<Class<?>, Method> targetMethods;
 
-    protected CompletableEventService(final T target) {
+    public CompletableEventService(final T target) {
         this.target = target;
         this.targetMethods = Arrays.stream(target.getClass().getDeclaredMethods()).filter(method -> {
             Class<?>[] parameterTypes = method.getParameterTypes();
