@@ -55,10 +55,8 @@ public final class MySQLAuthenticationHandler {
             return Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR);
         }
         ShardingSpherePrivilege privilege = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getAuthentication().get(user.get());
-        if (null != privilege) {
-            if (privilege.hasPrivileges(database)) {
-                return Optional.empty();
-            }
+        if (null != privilege && privilege.hasPrivileges(database)) {
+            return Optional.empty();
         }
         return Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
     }
