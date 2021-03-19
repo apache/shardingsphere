@@ -351,10 +351,10 @@
     <row data-node="write_ds_7.t_broadcast_table" values="1, init" />
     <row data-node="write_ds_8.t_broadcast_table" values="1, init" />
     <row data-node="write_ds_9.t_broadcast_table" values="1, init" />
-    <row data-node="read_ds_0.t_single_table" values="1, 1000, init" />
-    <row data-node="read_ds_0.t_single_table" values="2, 1101, init" />
-    <row data-node="read_ds_0.t_single_table" values="3, 1202, init" />
-    <row data-node="read_ds_0.t_single_table" values="4, 1303, init" />
+    <row data-node="read_ds_0.t_single_table" values="1, 1000, init_read" />
+    <row data-node="read_ds_0.t_single_table" values="2, 1101, init_read" />
+    <row data-node="read_ds_0.t_single_table" values="3, 1202, init_read" />
+    <row data-node="read_ds_0.t_single_table" values="4, 1303, init_read" />
     <row data-node="read_ds_0.t_order_0" values="1000, 10, init_read" />
     <row data-node="read_ds_0.t_order_1" values="1001, 10, init_read" />
     <row data-node="read_ds_0.t_order_2" values="1002, 10, init_read" />
