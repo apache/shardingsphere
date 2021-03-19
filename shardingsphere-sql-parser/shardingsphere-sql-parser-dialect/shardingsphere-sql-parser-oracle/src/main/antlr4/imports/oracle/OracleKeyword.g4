@@ -926,3 +926,11 @@ ERRORS
 REJECT
     : R E J E C T
     ;
+
+EDITIONABLE
+    : E D I T I O N A B L E
+    ;
+
+NONEDITIONABLE
+    : N O N E D I T I O N A B L E
+    ;

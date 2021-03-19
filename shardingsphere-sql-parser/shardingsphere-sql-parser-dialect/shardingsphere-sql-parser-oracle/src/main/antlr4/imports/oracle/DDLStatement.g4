@@ -438,3 +438,7 @@ materializedViewLogClause
 storageClause
     : (DROP (ALL)? | REUSE) STORAGE
     ;
+
+alterSynonym
+    : ALTER PUBLIC? SYNONYM (schemaName DOT_)? synonymName (COMPILE | EDITIONABLE | NONEDITIONABLE)
+    ;
