@@ -34,27 +34,27 @@ import static org.junit.Assert.assertThat;
 public final class ReadWriteSplittingDataSourceRuleTest {
     
     private final ReadWriteSplittingDataSourceRule readWriteSplittingDataSourceRule = new ReadWriteSplittingDataSourceRule(
-            new ReadWriteSplittingDataSourceRuleConfiguration("test_pr", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random"), new RandomReplicaLoadBalanceAlgorithm());
+            new ReadWriteSplittingDataSourceRuleConfiguration("test_pr", "", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), "random"), new RandomReplicaLoadBalanceAlgorithm());
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewReadWriteSplittingDataSourceRuleWithoutName() {
-        new ReadWriteSplittingDataSourceRule(new ReadWriteSplittingDataSourceRuleConfiguration("", "write_ds", Collections.singletonList("read_ds"), null), 
+        new ReadWriteSplittingDataSourceRule(new ReadWriteSplittingDataSourceRuleConfiguration("", "", "write_ds", Collections.singletonList("read_ds"), null), 
                 new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewReadWriteSplittingDataSourceRuleWithoutPrimaryDataSourceName() {
-        new ReadWriteSplittingDataSourceRule(new ReadWriteSplittingDataSourceRuleConfiguration("ds", "", Collections.singletonList("read_ds"), null), new RoundRobinReplicaLoadBalanceAlgorithm());
+        new ReadWriteSplittingDataSourceRule(new ReadWriteSplittingDataSourceRuleConfiguration("ds", "", "", Collections.singletonList("read_ds"), null), new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewReadWriteSplittingDataSourceRuleWithNullReadDataSourceName() {
-        new ReadWriteSplittingDataSourceRule(new ReadWriteSplittingDataSourceRuleConfiguration("ds", "write_ds", null, null), new RoundRobinReplicaLoadBalanceAlgorithm());
+        new ReadWriteSplittingDataSourceRule(new ReadWriteSplittingDataSourceRuleConfiguration("ds", "", "write_ds", null, null), new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewReadWriteSplittingDataSourceRuleWithEmptyReadDataSourceName() {
-        new ReadWriteSplittingDataSourceRule(new ReadWriteSplittingDataSourceRuleConfiguration("ds", "write_ds", Collections.emptyList(), null), new RoundRobinReplicaLoadBalanceAlgorithm());
+        new ReadWriteSplittingDataSourceRule(new ReadWriteSplittingDataSourceRuleConfiguration("ds", "", "write_ds", Collections.emptyList(), null), new RoundRobinReplicaLoadBalanceAlgorithm());
     }
     
     @Test

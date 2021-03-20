@@ -34,11 +34,11 @@ public final class LockNodeTest {
     
     @Test
     public void assertGetLockNodePath() {
-        assertThat(lockNode.getLockNodePath(), is("/lock/glock"));
+        assertThat(lockNode.getLockNodePath("test"), is("/lock/test"));
     }
     
     @Test
-    public void assertGetTableLockNodePath() {
-        assertThat(lockNode.getTableLockNodePath("sharding_db", "t_order"), is("/lock/glock/sharding_db/t_order"));
+    public void assertGetLockedResourceNodePath() {
+        assertThat(lockNode.getLockedResourcesNodePath(), is("/lock/locked_resources"));
     }
 }
