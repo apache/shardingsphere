@@ -45,7 +45,6 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
 
     @Override
     public Collection<EncryptAlterTableToken> generateSQLTokens(final AlterTableStatementContext alterTableStatementContext) {
-        //add drop modify
         Collection<EncryptAlterTableToken> result = new LinkedList<>();
         String tableName = alterTableStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         addColumns(tableName, alterTableStatementContext.getSqlStatement().getAddColumnDefinitions(), "ADD COLUMN", result);
