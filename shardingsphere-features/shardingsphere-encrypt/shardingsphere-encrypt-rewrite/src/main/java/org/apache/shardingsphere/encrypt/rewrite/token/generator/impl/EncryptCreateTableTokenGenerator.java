@@ -48,7 +48,9 @@ public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenG
             String columnName = each.getColumnName().getIdentifier().getValue();
             Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
-                result.add(new EncryptCreateTableToken(each.getStartIndex() - 1, each.getStopIndex() + 1, ""));
+                if (result.isEmpty()) {
+                    result.add(new EncryptCreateTableToken(each.getStartIndex() - 1, each.getStopIndex() + 1, ""));
+                }
                 addPlainColumn(tableName, columnName, each).ifPresent(result::add);
                 addAssistedQueryColumn(tableName, columnName, each).ifPresent(result::add);
                 addCipherColumn(tableName, columnName, each).ifPresent(result::add);
@@ -82,6 +84,5 @@ public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenG
                 columnDefinitionSegment.getColumnName().getStopIndex(),
                 cipherColumn
         ));
-
     }
 }
