@@ -198,11 +198,11 @@ usingClause
     ;
 
 mergeUpdateClause
-    : WHEN MATCHED THEN UPDATE mergeSetAssignmentsClause whereClause? deleteWhereClause?
+    : WHEN MATCHED THEN UPDATE SET mergeSetAssignmentsClause whereClause? deleteWhereClause?
     ;
 
 mergeSetAssignmentsClause
-    : SET mergeAssignment (COMMA_ mergeAssignment)*
+    : mergeAssignment (COMMA_ mergeAssignment)*
     ;
 
 mergeAssignment

@@ -112,7 +112,7 @@
                 </right>
             </binary-operation-expression>
         </expr>
-        <set start-index="109" stop-index="191">
+        <set start-index="113" stop-index="191">
             <assignment start-index="113" stop-index="141">
                 <column name="first_name" start-index="113" stop-index="125">
                     <owner name="pt" start-index="113" stop-index="114" />
@@ -193,7 +193,7 @@
                 </right>
             </binary-operation-expression>
         </expr>
-        <set start-index="173" stop-index="208">
+        <set start-index="177" stop-index="208">
             <assignment start-index="177" stop-index="208">
                 <column name="bonus" start-index="177" stop-index="183">
                     <owner name="D" start-index="177" stop-index="177" />
