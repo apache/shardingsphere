@@ -48,6 +48,7 @@ public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenG
             String columnName = each.getColumnName().getIdentifier().getValue();
             Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
+                result.add(new EncryptCreateTableToken(each.getStartIndex() - 1, each.getStopIndex() + 1, ""));
                 addPlainColumn(tableName, columnName, each).ifPresent(result::add);
                 addAssistedQueryColumn(tableName, columnName, each).ifPresent(result::add);
                 addCipherColumn(tableName, columnName, each).ifPresent(result::add);
@@ -59,30 +60,28 @@ public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenG
     private Optional<EncryptCreateTableToken> addPlainColumn(final String tableName, final String columnName, final ColumnDefinitionSegment columnDefinitionSegment) {
         Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, columnName);
         return plainColumn.map(plainColumnName -> new EncryptCreateTableToken(
-                columnDefinitionSegment.getStartIndex(),
-                columnDefinitionSegment.getStopIndex(),
-                plainColumnName,
-                columnDefinitionSegment.getDataType().getDataTypeName()
+                columnDefinitionSegment.getStopIndex() + 2,
+                columnDefinitionSegment.getColumnName().getStopIndex(),
+                plainColumnName
         ));
     }
 
     private Optional<EncryptCreateTableToken> addAssistedQueryColumn(final String tableName, final String columnName, final ColumnDefinitionSegment columnDefinitionSegment) {
         Optional<String> assistedQueryColumn = getEncryptRule().findAssistedQueryColumn(tableName, columnName);
         return assistedQueryColumn.map(assistedQueryColumnName -> new EncryptCreateTableToken(
-                columnDefinitionSegment.getStartIndex(),
-                columnDefinitionSegment.getStopIndex(),
-                assistedQueryColumnName,
-                columnDefinitionSegment.getDataType().getDataTypeName()
+                columnDefinitionSegment.getStopIndex() + 2,
+                columnDefinitionSegment.getColumnName().getStopIndex(),
+                assistedQueryColumnName
         ));
     }
 
     private Optional<EncryptCreateTableToken> addCipherColumn(final String tableName, final String columnName, final ColumnDefinitionSegment columnDefinitionSegment) {
-        Optional<String> cipherColumn = getEncryptRule().findPlainColumn(tableName, columnName);
-        return cipherColumn.map(cipherColumnName -> new EncryptCreateTableToken(
-                columnDefinitionSegment.getStartIndex(),
-                columnDefinitionSegment.getStopIndex(),
-                cipherColumnName,
-                columnDefinitionSegment.getDataType().getDataTypeName()
+        String cipherColumn = getEncryptRule().getCipherColumn(tableName, columnName);
+        return Optional.of(new EncryptCreateTableToken(
+                columnDefinitionSegment.getStopIndex() + 2,
+                columnDefinitionSegment.getColumnName().getStopIndex(),
+                cipherColumn
         ));
+
     }
 }

@@ -31,17 +31,15 @@ public final class EncryptCreateTableToken extends SQLToken implements Substitut
 
     private final String columnName;
 
-    private final String columnType;
-
-    public EncryptCreateTableToken(final int startIndex, final int stopIndex, final String columnName, final String columnType) {
+    public EncryptCreateTableToken(final int startIndex, final int stopIndex, final String columnName) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.columnName = columnName;
-        this.columnType = columnType;
     }
 
     @Override
     public String toString() {
-        return String.format("`%s` %s", columnName, columnType);
+        return String.format("%s", columnName);
     }
+
 }
