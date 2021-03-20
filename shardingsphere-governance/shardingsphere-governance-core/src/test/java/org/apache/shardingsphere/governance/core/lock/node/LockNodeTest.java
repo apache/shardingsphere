@@ -34,7 +34,7 @@ public final class LockNodeTest {
     
     @Test
     public void assertGetLockNodePath() {
-        assertThat(lockNode.getLockNodePath(), is("/lock/glock"));
+        assertThat(lockNode.getLockNodePath("test"), is("/lock/test"));
     }
     
     @Test

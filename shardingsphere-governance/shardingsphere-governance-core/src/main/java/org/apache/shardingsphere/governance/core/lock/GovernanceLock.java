@@ -17,18 +17,13 @@
 
 package org.apache.shardingsphere.governance.core.lock;
 
-import com.google.common.base.Joiner;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.governance.core.event.model.lock.LockNotificationEvent;
-import org.apache.shardingsphere.governance.core.event.model.lock.LockReleasedEvent;
+import org.apache.shardingsphere.governance.core.event.model.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.governance.core.registry.RegistryCenterNodeStatus;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Governance lock.
@@ -37,60 +32,67 @@ public final class GovernanceLock implements ShardingSphereLock {
     
     private final RegistryCenter registryCenter;
     
-    public GovernanceLock(final RegistryCenter registryCenter) {
+    private long lockTimeoutMilliseconds;
+    
+    public GovernanceLock(final RegistryCenter registryCenter, final long lockTimeoutMilliseconds) {
         this.registryCenter = registryCenter;
+        this.lockTimeoutMilliseconds = lockTimeoutMilliseconds;
         ShardingSphereEventBus.getInstance().register(this);
     }
     
+    /**
+     * Try to get lock with default time out.
+     *
+     * @param lockName lock name
+     * @return true if get the lock, false if not
+     */
     @Override
-    public boolean tryLock(final String schemaName, final String tableName, final long timeoutMilliseconds) {
-        boolean result = registryCenter.tryLock(timeoutMilliseconds);
-        if (result) {
-            registryCenter.addLockedResources(Arrays.asList(Joiner.on(".").join(schemaName, tableName)));
-        }
-        return result;
-    }
-    
-    @Override
-    public boolean tryLock(final String schemaName, final Collection<String> tableNames, final long timeoutMilliseconds) {
-        boolean result = registryCenter.tryLock(timeoutMilliseconds);
-        if (result) {
-            registryCenter.addLockedResources(tableNames.stream()
-                    .map(each -> Joiner.on(".").join(schemaName, each)).collect(Collectors.toList()));
-        }
-        return result;
-    }
-    
-    @Override
-    public void releaseLock(final String schemaName, final String tableName) {
-        registryCenter.releaseLock();
-        registryCenter.deleteLockedResources(Arrays.asList(Joiner.on(".").join(schemaName, tableName)));
-    }
-    
-    @Override
-    public void releaseLock(final String schemaName, final Collection<String> tableNames) {
-        registryCenter.releaseLock();
-        registryCenter.deleteLockedResources(tableNames.stream()
-                .map(each -> Joiner.on(".").join(schemaName, each)).collect(Collectors.toList()));
+    public boolean tryLock(final String lockName) {
+        return registryCenter.tryLock(lockName, lockTimeoutMilliseconds);
     }
     
     /**
-     * Lock instance.
-     *
-     * @param event lock notification event
+     * Try to get lock.
+     * 
+     * @param lockName lock name
+     * @param timeoutMilliseconds time out milliseconds to acquire lock
+     * @return true if get the lock, false if not
      */
-    @Subscribe
-    public void doLock(final LockNotificationEvent event) {
-        registryCenter.persistInstanceData(RegistryCenterNodeStatus.LOCKED.toString());
+    @Override
+    public boolean tryLock(final String lockName, final long timeoutMilliseconds) {
+        return registryCenter.tryLock(lockName, timeoutMilliseconds);
     }
     
     /**
-     * Unlock instance.
+     * Release lock.
+     * 
+     * @param lockName lock name
+     */
+    @Override
+    public void releaseLock(final String lockName) {
+        registryCenter.releaseLock(lockName);
+    }
+    
+    /**
+     * Check if the lock is exist.
+     * 
+     * @param lockName lockName
+     * @return true if exist, false if not
+     */
+    @Override
+    public boolean isLocked(final String lockName) {
+        //TODO
+        return false;
+    }
+    
+    /**
+     * Renew lock time out.
      *
-     * @param event lock released event
+     * @param event properties changed event
      */
     @Subscribe
-    public void unlock(final LockReleasedEvent event) {
-        registryCenter.persistInstanceData("");
+    public void renew(final PropertiesChangedEvent event) {
+        ConfigurationProperties props = new ConfigurationProperties(event.getProps());
+        lockTimeoutMilliseconds = props.<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS);
     }
 }

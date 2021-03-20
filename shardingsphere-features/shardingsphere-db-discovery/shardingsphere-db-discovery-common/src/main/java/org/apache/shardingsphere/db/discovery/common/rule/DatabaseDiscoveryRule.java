@@ -19,8 +19,11 @@ package org.apache.shardingsphere.db.discovery.common.rule;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import lombok.Getter;
 import org.apache.shardingsphere.db.discovery.common.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.db.discovery.spi.DatabaseDiscoveryType;
+import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
+import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -50,10 +53,12 @@ public final class DatabaseDiscoveryRule implements DataSourceContainedRule, Sta
     
     static {
         ShardingSphereServiceLoader.register(DatabaseDiscoveryType.class);
+        ShardingSphereServiceLoader.register(DataSourceNameAware.class);
     }
     
     private final Map<String, DatabaseDiscoveryType> discoveryTypes = new LinkedHashMap<>();
     
+    @Getter
     private final Map<String, DatabaseDiscoveryDataSourceRule> dataSourceRules;
     
     public DatabaseDiscoveryRule(final DatabaseDiscoveryRuleConfiguration config, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String schemaName) {
@@ -84,6 +89,7 @@ public final class DatabaseDiscoveryRule implements DataSourceContainedRule, Sta
                 throw new ShardingSphereException(ex);
             }
         }
+        initAware();
     }
     
     public DatabaseDiscoveryRule(final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config, final DatabaseType databaseType, 
@@ -114,6 +120,12 @@ public final class DatabaseDiscoveryRule implements DataSourceContainedRule, Sta
                 throw new ShardingSphereException(ex);
             }
         }
+        initAware();
+    }
+    
+    private void initAware() {
+        Optional<DataSourceNameAware> awareOptional = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
+        awareOptional.ifPresent(dataSourceNameAware -> dataSourceNameAware.setRule(this));
     }
     
     /**

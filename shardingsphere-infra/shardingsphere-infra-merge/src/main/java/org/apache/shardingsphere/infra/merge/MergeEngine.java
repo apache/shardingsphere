@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Merge engine.
@@ -48,6 +49,9 @@ public final class MergeEngine {
     static {
         ShardingSphereServiceLoader.register(ResultProcessEngine.class);
     }
+    
+    @SuppressWarnings("rawtypes")
+    private static final Map<Collection<ShardingSphereRule>, Map<ShardingSphereRule, ResultProcessEngine>> RULES_TO_ENGINES_MAP = new ConcurrentHashMap<>(32, 1);
     
     private final DatabaseType databaseType;
     
@@ -62,7 +66,7 @@ public final class MergeEngine {
         this.databaseType = databaseType;
         this.schema = schema;
         this.props = props;
-        engines = OrderedSPIRegistry.getRegisteredServices(rules, ResultProcessEngine.class);
+        engines = RULES_TO_ENGINES_MAP.computeIfAbsent(rules, key -> OrderedSPIRegistry.getRegisteredServices(key, ResultProcessEngine.class));
     }
     
     /**
