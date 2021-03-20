@@ -58,7 +58,7 @@ public final class H2TableMetaDataLoaderTest {
 
         ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES, WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND PRIMARY_KEY = TRUE").executeQuery()).thenReturn(primaryKeys);
+                "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND PRIMARY_KEY = TRUE").executeQuery()).thenReturn(primaryKeys);
 
         ResultSet generatedInfo = mockGeneratedInfoResultSet();
         when(dataSource.getConnection().prepareStatement(
@@ -83,7 +83,7 @@ public final class H2TableMetaDataLoaderTest {
 
         ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES, WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND PRIMARY_KEY = TRUE AND TABLE_NAME NOT IN ('existed_tbl')")
+                "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND PRIMARY_KEY = TRUE AND TABLE_NAME NOT IN ('existed_tbl')")
                 .executeQuery())
                 .thenReturn(primaryKeys);
 
@@ -117,7 +117,7 @@ public final class H2TableMetaDataLoaderTest {
         when(result.next()).thenReturn(true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
         when(result.getString("COLUMN_NAME")).thenReturn("id", "name");
-        when(result.getString("DATA_TYPE")).thenReturn("int", "varchar");
+        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar");
         when(result.getString("COLUMN_KEY")).thenReturn("PRI", "");
         when(result.getString("EXTRA")).thenReturn("auto_increment", "");
         when(result.getString("COLLATION_NAME")).thenReturn("utf8_general_ci", "utf8");
