@@ -69,7 +69,7 @@ public class HashAggregateExecutor extends SingleExecutor {
     }
     
     @Override
-    protected void executeInitCurrent() {
+    protected void doInit() {
         while(executor.moveNext()) {
             Row row = executor.current();
             aggregate(row);

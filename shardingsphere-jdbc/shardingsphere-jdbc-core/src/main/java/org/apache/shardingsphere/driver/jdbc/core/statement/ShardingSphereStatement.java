@@ -154,7 +154,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                     .filter(rule -> rule instanceof ShardingRule).map(rule -> (ShardingRule)rule).findAny();
             OptimizerContext.create(shardingRule.get());
             ExecStmt execStmt = Compiler.compileQuery(shardingSphereMetaData.getName(), shardingSphereMetaData.getSchema(), logicSQL.getSqlStatementContext());
-            if(execStmt.isSuccess()) {
+            if (execStmt.isSuccess()) {
                 DatabaseType databaseType = metaDataContexts.getDefaultMetaData().getResource().getDatabaseType();
         
                 ExecContext execContext = new ExecContext(sql, shardingRule.get(),

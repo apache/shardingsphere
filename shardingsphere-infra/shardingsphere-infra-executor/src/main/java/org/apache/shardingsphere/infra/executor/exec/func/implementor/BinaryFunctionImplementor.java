@@ -50,12 +50,10 @@ public class BinaryFunctionImplementor extends AbstractFunctionImplementor<RexCa
             ImmutableList.of(
                     SqlStdOperatorTable.EQUALS,
                     SqlStdOperatorTable.NOT_EQUALS);
-    
-    public static final String METHOD_POSTFIX_FOR_ANY_TYPE = "Any";
 
     private final String backupMethodName;
     
-    public BinaryFunctionImplementor(NullPolicy nullPolicy, String backupMethodName) {
+    public BinaryFunctionImplementor(final NullPolicy nullPolicy, final String backupMethodName) {
         super(nullPolicy);
         this.backupMethodName = backupMethodName;
         
@@ -64,12 +62,13 @@ public class BinaryFunctionImplementor extends AbstractFunctionImplementor<RexCa
     }
     
     /**
-     * build function from {@link RexCall}
-     * @param rexCall
-     * @return
+     * build function from {@link RexCall}. 
+     * @param rexCall <code>RexCode</code> to be implemented
+     * @param argTypes argument type for <code>BinaryBuiltinFunction</code>  
+     * @return the <code>BinaryBuiltinFunction</code> instance
      */
-    public BinaryBuiltinFunction implement(RexCall rexCall, RelDataType[] argTypes) {
-        if(argTypes.length != 2) {
+    public BinaryBuiltinFunction implement(final RexCall rexCall, final RelDataType[] argTypes) {
+        if (argTypes.length != 2) {
             throw new IllegalArgumentException();
         }
         if (backupMethodName != null) {
@@ -107,8 +106,8 @@ public class BinaryFunctionImplementor extends AbstractFunctionImplementor<RexCa
             final Primitive boxPrimitive1 = Primitive.ofBox(type1);
             if (EQUALS_OPERATORS.contains(op)
                     && boxPrimitive0 != null && boxPrimitive1 != null) {
-                /*return Expressions.call(SqlFunctions.class, backupMethodName,
-                        argValueList);*/
+                // TODO 
+                return null;
             }
             return builtinFunction;
             // TODO set nullPolicy to Binary function 
@@ -119,7 +118,7 @@ public class BinaryFunctionImplementor extends AbstractFunctionImplementor<RexCa
     }
     
     /** Returns whether any of a call's operands have ANY type. */
-    private boolean anyAnyOperands(RexCall call) {
+    private boolean anyAnyOperands(final RexCall call) {
         for (RexNode operand : call.operands) {
             if (operand.getType().getSqlTypeName() == SqlTypeName.ANY) {
                 return true;

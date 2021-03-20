@@ -10,7 +10,7 @@ public class ResultColumnMetaData implements QueryResultMetaData {
     
     private final List<ColumnMetaData> columnMetaData;
     
-    public ResultColumnMetaData(List<ColumnMetaData> columnMetaData) {
+    public ResultColumnMetaData(final List<ColumnMetaData> columnMetaData) {
         this.columnMetaData = columnMetaData;
     }
     
@@ -71,7 +71,7 @@ public class ResultColumnMetaData implements QueryResultMetaData {
         return false;
     }
     
-    private ColumnMetaData getColumnMetaData(int columnIndex) {
-        return columnMetaData.get(columnIndex-1);
+    private ColumnMetaData getColumnMetaData(final int columnIndex) {
+        return columnMetaData.get(columnIndex - 1);
     }
 }

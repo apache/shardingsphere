@@ -19,7 +19,7 @@ public class SortExecutor extends IteratorExecutor {
     
     protected final Comparator<Row> ordering;
     
-    public SortExecutor(Executor executor, Comparator<Row> ordering, ExecContext execContext) {
+    public SortExecutor(final Executor executor, final Comparator<Row> ordering, final ExecContext execContext) {
         super(executor, execContext);
         this.ordering = ordering;
     }
@@ -35,16 +35,26 @@ public class SortExecutor extends IteratorExecutor {
         return inputRows.iterator();
     }
     
+    /**
+     * Sort rows of input Executor in memory.
+     * @return
+     */
     protected List<Row> memSort() {
         List<Row> inputRows = new ArrayList<>();
-        while(executor.moveNext()) {
+        while (executor.moveNext()) {
             inputRows.add(executor.current());
         }
         Collections.sort(inputRows, ordering);
         return inputRows;
     }
     
-    public static SortExecutor build(SSSort sort, ExecutorBuilder executorBuilder) {
+    /**
+     * Build <code>SortExecutor</code> instance.
+     * @param sort <code>SSSort</code>
+     * @param executorBuilder <code>ExecutorBuilder</code>
+     * @return <code>SortExecutor</code>
+     */
+    public static SortExecutor build(final SSSort sort, final ExecutorBuilder executorBuilder) {
         Executor input = executorBuilder.build(sort.getInput());
         Comparator<Row> ordering = RowComparatorUtil.convertCollationToRowComparator(sort.getCollation());
         return new SortExecutor(input, ordering, executorBuilder.getExecContext());

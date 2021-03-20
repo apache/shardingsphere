@@ -52,7 +52,14 @@ import java.util.stream.Collectors;
 
 public class JdbcReader {
     
-    public static Executor read(LogicalScan logicalScan, ExecContext execContext) throws SQLException {
+    /**
+     * Convert a <code>LogicalScan</code> operator to <code>Executor</code> instance.
+     * @param logicalScan rational operator
+     * @param execContext execution context
+     * @return <code>Executor</code> instance for <code>LogicalScan</code> 
+     * @throws SQLException SQLException
+     */
+    public static Executor read(final LogicalScan logicalScan, final ExecContext execContext) throws SQLException {
         ShardingRule shardingRule = execContext.getShardingRule();
         RouteContext routeContext = logicalScan.route();
     
@@ -73,7 +80,7 @@ public class JdbcReader {
             RouteMapper oneTableRout = routeUnit.getTableMappers().iterator().next();
             Map<String, String> routeTableMap = routeUnit.getTableMappers().stream().collect(Collectors.toMap(RouteMapper::getLogicName, RouteMapper::getActualName));
             tables.forEach(table -> {
-                if(routeTableMap.containsKey(table.getOriginal())) {
+                if (routeTableMap.containsKey(table.getOriginal())) {
                     table.setActual(routeTableMap.get(table.getOriginal()));
                 } else {
                     RouteMapper dbRoute = routeUnit.getDataSourceMapper();
@@ -90,13 +97,13 @@ public class JdbcReader {
         int maxConnectionsSizePerQuery = execContext.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         
         String stmtType = JDBCDriverType.PREPARED_STATEMENT;
-        if(parameters.isEmpty()) {
+        if (parameters.isEmpty()) {
             stmtType = JDBCDriverType.STATEMENT;
         }
     
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(stmtType,
                 maxConnectionsSizePerQuery, execContext.getExecutorDriverManager(), execContext.getOption(), Collections.singletonList(shardingRule));
-        ExecutionGroupContext<JDBCExecutionUnit> executionGroups =  prepareEngine.prepare(routeContext, executionUnits);
+        ExecutionGroupContext<JDBCExecutionUnit> executionGroups = prepareEngine.prepare(routeContext, executionUnits);
     
         ExecutorEngine executorEngine = new ExecutorEngine(execContext.getProps().<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
         JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, execContext.isHoldTransaction());
@@ -106,8 +113,8 @@ public class JdbcReader {
                 ResultSet resultSet;
                 if (statement instanceof PreparedStatement) {
                     PreparedStatement pstmt = (PreparedStatement) statement;
-                    for(int i = 0; i < parameters.size(); i++) {
-                        pstmt.setObject(i+1, parameters.get(i));
+                    for (int i = 0; i < parameters.size(); i++) {
+                        pstmt.setObject(i + 1, parameters.get(i));
                     }
                     resultSet = pstmt.executeQuery();
                 } else {
@@ -115,7 +122,7 @@ public class JdbcReader {
                 }
                 return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new JDBCStreamQueryResult(resultSet) : new JDBCMemoryQueryResult(resultSet);
             }
-    
+            
             @Override
             protected Optional<QueryResult> getSaneResult(final SQLStatement sqlStatement) {
                 return Optional.empty();
@@ -123,14 +130,14 @@ public class JdbcReader {
         });
         // wraper results to another queryResult
         QueryResultMetaData metaData = MetaDataConverter.buildMetaData(relNode);
-        if(results.isEmpty()) {
+        if (results.isEmpty()) {
             return SimpleExecutor.empty(execContext, metaData);
         }
         return wrapQueryResult(execContext, results);
     }
     
-    private static Executor wrapQueryResult(ExecContext execContext, List<QueryResult> queryResults) {
-        List<Executor> executors = queryResults.stream().map(queryResult -> new QueryResultExecutor(execContext, queryResult)).collect(Collectors.toList());
-        return new MultiExecutor(execContext, executors);
+    private static Executor wrapQueryResult(final ExecContext execContext, final List<QueryResult> queryResults) {
+        List<Executor> executors = queryResults.stream().map(queryResult -> new QueryResultExecutor(queryResult, execContext)).collect(Collectors.toList());
+        return new MultiExecutor(executors, execContext);
     }
 }

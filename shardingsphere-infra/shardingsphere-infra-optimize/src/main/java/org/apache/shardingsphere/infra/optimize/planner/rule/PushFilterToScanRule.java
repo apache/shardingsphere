@@ -7,7 +7,7 @@ import org.apache.calcite.rel.rules.TransformationRule;
 import org.apache.shardingsphere.infra.optimize.rel.logical.LogicalScan;
 
 /**
- * Pushdown LogicalFilter to LogicalScan
+ * Pushdown LogicalFilter to LogicalScan.
  */
 public class PushFilterToScanRule extends RelRule<PushFilterToScanRule.Config> implements TransformationRule {
     
@@ -22,7 +22,6 @@ public class PushFilterToScanRule extends RelRule<PushFilterToScanRule.Config> i
         logicalScan.pushdown(logicalFilter);
         call.transformTo(logicalScan);
     }
-    
     
     public interface Config extends RelRule.Config {
         Config DEFAULT = EMPTY.withOperandSupplier(b0 -> b0.operand(LogicalFilter.class).inputs(b1 -> b1.operand(LogicalScan.class).anyInputs())).as(Config.class);

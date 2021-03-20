@@ -10,11 +10,15 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 public abstract class AbstractJoinExecutor extends AbstractExecutor {
     
     protected final Executor outer;
+    
     protected final Executor inner;
+    
     protected final Evaluator joinEvaluator;
+    
     protected final JoinRelType joinType;
     
-    public AbstractJoinExecutor(Executor outer, Executor inner, JoinRelType joinType, Evaluator joinEvaluator, final ExecContext execContext) {
+    public AbstractJoinExecutor(final Executor outer, final Executor inner, final JoinRelType joinType, 
+                                final Evaluator joinEvaluator, final ExecContext execContext) {
         super(execContext);
         this.outer = outer;
         this.inner = inner;
@@ -28,11 +32,25 @@ public abstract class AbstractJoinExecutor extends AbstractExecutor {
         inner.init();
     }
     
-    protected <T> T left(T outer, T inner) {
+    /**
+     * return left parameter for join operator according to the join type
+     * @param outer
+     * @param inner
+     * @param <T>
+     * @return
+     */
+    protected <T> T left(final T outer, final T inner) {
         return this.joinType.generatesNullsOnLeft() ? outer : inner;
     }
     
-    protected <T> T right(T outer, T inner) {
+    /**
+     * return right parameter for join operator according to the join type
+     * @param outer
+     * @param inner
+     * @param <T>
+     * @return
+     */
+    protected <T> T right(final T outer, final T inner) {
         return this.joinType.generatesNullsOnLeft() ? inner : outer;
     }
     

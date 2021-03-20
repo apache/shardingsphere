@@ -27,7 +27,7 @@ public class CalcExecutor extends SingleExecutor {
     }
     
     @Override
-    protected void executeInitCurrent() {
+    protected void doInit() {
         
     }
     

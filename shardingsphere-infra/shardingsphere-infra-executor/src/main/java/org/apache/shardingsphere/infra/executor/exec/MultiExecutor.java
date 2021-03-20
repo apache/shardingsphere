@@ -17,7 +17,7 @@ public class MultiExecutor extends AbstractExecutor implements Executor {
     
     private List<Executor> executors;
     
-    public MultiExecutor(final ExecContext execContext, List<Executor> executors) {
+    public MultiExecutor(final List<Executor> executors, final ExecContext execContext) {
         super(execContext);
         Preconditions.checkArgument(!executors.isEmpty());
         this.executors = executors;

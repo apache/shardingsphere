@@ -14,7 +14,7 @@ import java.util.List;
 import static org.apache.shardingsphere.infra.executor.exec.tool.RowComparatorUtil.EMPTY;
 
 /**
- * Executor with offset and fetch, ordering is optional
+ * Executor with offset and fetch, ordering is optional.
  */
 public class LimitSortExecutor extends SortExecutor {
     
@@ -23,11 +23,12 @@ public class LimitSortExecutor extends SortExecutor {
     protected final int fetch;
     
     /**
-     * the number of rows that has been fetched
+     * the number of rows that has been fetched.
      */
     private int fetchedNum;
     
-    public LimitSortExecutor(Executor executor, Comparator<Row> ordering, int offset, int fetch, ExecContext execContext) {
+    public LimitSortExecutor(final Executor executor, final Comparator<Row> ordering, final int offset, final int fetch,
+                             final ExecContext execContext) {
         super(executor, ordering, execContext);
         this.offset = offset;
         this.fetch = fetch;

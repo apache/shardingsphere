@@ -10,10 +10,12 @@ import java.util.Map;
 public class JoinColumnMetaData implements QueryResultMetaData {
     
     private final QueryResultMetaData left;
+    
     private final QueryResultMetaData right;
+    
     private final JoinRelType joinRelType;
     
-    public JoinColumnMetaData(QueryResultMetaData left, QueryResultMetaData right, JoinRelType joinRelType) {
+    public JoinColumnMetaData(final QueryResultMetaData left, final QueryResultMetaData right, final JoinRelType joinRelType) {
         this.left = left;
         this.right = right;
         this.joinRelType = joinRelType;
@@ -84,8 +86,8 @@ public class JoinColumnMetaData implements QueryResultMetaData {
         return entry.getValue().isAutoIncrement(entry.getKey());
     }
     
-    private Map.Entry<Integer, QueryResultMetaData> getColumnMeta(int columnIndex) throws SQLException {
-        if(columnIndex <= left.getColumnCount()) {
+    private Map.Entry<Integer, QueryResultMetaData> getColumnMeta(final int columnIndex) throws SQLException {
+        if (columnIndex <= left.getColumnCount()) {
             return new SimpleEntry<>(columnIndex, left);
         }
         return new SimpleEntry<>(columnIndex - left.getColumnCount(), right);

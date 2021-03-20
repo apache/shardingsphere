@@ -1,6 +1,5 @@
 package org.apache.shardingsphere.infra.executor.exec;
 
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.exec.meta.Row;
 
 import java.util.Iterator;
@@ -11,7 +10,7 @@ import java.util.Iterator;
 public abstract class AbstractExecutor implements Executor {
     
     /**
-     * context for current {@link Executor}
+     * context for current {@link Executor}.
      */
     protected final ExecContext execContext;
     
@@ -19,10 +18,14 @@ public abstract class AbstractExecutor implements Executor {
     
     private Row current;
     
-    public AbstractExecutor(ExecContext execContext) {
+    public AbstractExecutor(final ExecContext execContext) {
         this.execContext = execContext;
     }
     
+    /**
+     * move to next row.
+     * @return true, if the next row exist, or false
+     */
     @Override
     public boolean moveNext() {
         init();
@@ -45,20 +48,20 @@ public abstract class AbstractExecutor implements Executor {
     }
     
     /**
-     * replace the current row reference, so sub-class do not need to override {@link #current()} method
-     * @param row
+     * replace the current row reference, so sub-class do not need to override {@link #current()} method.
+     * @param row the row to replace current.
      */
-    protected void replaceCurrent(Row row) {
+    protected void replaceCurrent(final Row row) {
         current = row;
     }
     
     /**
-     * execute initialization for this executor
+     * execute initialization for this executor.
      */
     protected abstract void executeInit();
     
     /**
-     * move to the next row of this executor
+     * move to the next row of this executor.
      * @return true if the next row exist, else false
      */
     protected abstract boolean executeMove();
@@ -83,19 +86,16 @@ public abstract class AbstractExecutor implements Executor {
         return inited;
     }
     
+    @Override
     public final void init() {
-        if(inited) {
+        if (inited) {
             return;
         }
         synchronized (this) {
-            if(inited) {
+            if (inited) {
                 return;
             }
-            try {
-                executeInit();
-            } catch (Exception t) {
-                throw new ShardingSphereException("execute init failed for executor: " + this.getClass().getName(), t);
-            }
+            executeInit();
             inited = true;
         }
        

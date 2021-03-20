@@ -1,6 +1,5 @@
 package org.apache.shardingsphere.infra.optimize.planner.rule;
 
-
 public interface Rules {
     
     PushJoinToScanRule JOIN_TO_SCAN_RULE = PushJoinToScanRule.Config.DEFAULT.toRule();

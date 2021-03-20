@@ -7,7 +7,7 @@ public class PushSortToSingleRoutingRule extends PushSortToScanRule {
     /**
      * Creates a RelRule.
      *
-     * @param config
+     * @param config config
      */
     protected PushSortToSingleRoutingRule(final Config config) {
         super(config);

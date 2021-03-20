@@ -18,13 +18,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RexEvaluatorConverter extends RexVisitorImpl<Evaluator> {
+public final class RexEvaluatorConverter extends RexVisitorImpl<Evaluator> {
     
     private final ExecContext execContext;
     
     private final RexProgram program;
     
-    private RexEvaluatorConverter(RexProgram program, ExecContext execContext) {
+    private RexEvaluatorConverter(final RexProgram program, final ExecContext execContext) {
         super(true);
         this.program = program;
         this.execContext = execContext;
@@ -57,8 +57,11 @@ public class RexEvaluatorConverter extends RexVisitorImpl<Evaluator> {
     }
     
     /** Dereferences an expression if it is a
-     * {@link org.apache.calcite.rex.RexLocalRef}. */
-    public RexNode deref(RexNode expr) {
+     * {@link org.apache.calcite.rex.RexLocalRef}.
+     * @param expr <code>RexNode</code> instance
+     * @return <code>RexNode</code> from expr
+     */
+    public RexNode deref(final RexNode expr) {
         if (expr instanceof RexLocalRef) {
             RexLocalRef ref = (RexLocalRef) expr;
             final RexNode e2 = program.getExprList().get(ref.getIndex());
@@ -69,25 +72,49 @@ public class RexEvaluatorConverter extends RexVisitorImpl<Evaluator> {
         }
     }
     
-    public static Evaluator translateCondition(RexNode rexNode, ExecContext execContext) {
-        // TODO 
+    /**
+     * translate condition RexNode.
+     * @param rexNode condition
+     * @param execContext execution context
+     * @return <code>Evaluator</code> instance that been translated.
+     */
+    public static Evaluator translateCondition(final RexNode rexNode, final ExecContext execContext) {
+        // TODO mock the program parameter
         return rexNode.accept(new RexEvaluatorConverter(null, execContext));
     }
     
-    public static RexEvaluatorConverter create(RexProgram program, ExecContext execContext) {
-        return new RexEvaluatorConverter(program, execContext);
-    }
-    
-    public static Evaluator translateCondition(RexProgram program, ExecContext execContext) {
-        if(program.getCondition() == null) {
+    /**
+     * translate condition from <code>RexProgram</code>.
+     * @param program program
+     * @param execContext execution context
+     * @return <code>Evaluator</code> instance
+     */
+    public static Evaluator translateCondition(final RexProgram program, final ExecContext execContext) {
+        if (program.getCondition() == null) {
             return null;
         }
         RexEvaluatorConverter converter = create(program, execContext);
         return program.getCondition().accept(converter);
     }
     
-    public static List<Evaluator> translateProjects(RexProgram program, ExecContext execContext) {
-        if(program.getProjectList() == null) {
+    /**
+     * Untility function for creating {@link RexEvaluatorConverter}.
+     * @param program program
+     * @param execContext execution context
+     * @return instance that convert <code>RexNode</code> to <code>Evaluator</code>.
+     */
+    public static RexEvaluatorConverter create(final RexProgram program, final ExecContext execContext) {
+        return new RexEvaluatorConverter(program, execContext);
+    }
+    
+    /**
+     * translate projects from <code>RexProgram</code>.
+     * @param program program
+     * @param execContext execution context
+     * @return <code>Evaluator</code> instance collection
+     */
+    public static List<Evaluator> translateProjects(final RexProgram program, final ExecContext execContext) {
+        if (program.getProjectList() == null) {
             return Collections.emptyList();
         }
         RexEvaluatorConverter converter = create(program, execContext);

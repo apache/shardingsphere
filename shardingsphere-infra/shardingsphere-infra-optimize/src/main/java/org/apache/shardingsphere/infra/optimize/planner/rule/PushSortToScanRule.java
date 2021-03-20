@@ -13,7 +13,7 @@ public abstract class PushSortToScanRule extends RelRule<PushSortToScanRule.Conf
     /**
      * Creates a RelRule.
      *
-     * @param config
+     * @param config config
      */
     protected PushSortToScanRule(final Config config) {
         super(config);
@@ -25,12 +25,21 @@ public abstract class PushSortToScanRule extends RelRule<PushSortToScanRule.Conf
         call.transformTo(logicalScan);
     }
     
-    protected LogicalScan pushdownSort(LogicalSort logicalSort, LogicalScan logicalScan) {
+    protected LogicalScan pushdownSort(final LogicalSort logicalSort, final LogicalScan logicalScan) {
         return logicalScan.pushdown(logicalSort);
     }
     
     public interface Config extends RelRule.Config {
     
+        /**
+         * Untility method.
+         * @param sort sort
+         * @param scan scan
+         * @param predicate predicate before using rule
+         * @param config config
+         * @param <T> config type
+         * @return Config
+         */
         default <T extends Config> T withOperandFor(Class<? extends LogicalSort> sort,
                                                          Class<? extends LogicalScan> scan,
                                                          Predicate<LogicalScan> predicate,

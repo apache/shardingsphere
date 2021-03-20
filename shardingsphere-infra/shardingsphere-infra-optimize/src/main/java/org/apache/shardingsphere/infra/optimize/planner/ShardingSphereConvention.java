@@ -31,12 +31,12 @@ public enum ShardingSphereConvention implements Convention {
     }
 
     @Override
-    public boolean satisfies(RelTrait trait) {
+    public boolean satisfies(final RelTrait trait) {
         return this == trait;
     }
 
     @Override
-    public void register(RelOptPlanner planner) {
+    public void register(final RelOptPlanner planner) {
         PlannerRules.SHARDING_CONVERTER_RULES.forEach(planner::addRule);
     }
 }

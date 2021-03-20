@@ -26,10 +26,11 @@ public class SSNestedLoopJoinConverterRule extends ConverterRule {
         LogicalJoin join = (LogicalJoin) rel;
         List<RelNode> newInputs = new ArrayList<>();
         for (RelNode input : join.getInputs()) {
+            RelNode newInput = input;
             if (!(input.getConvention() instanceof ShardingSphereConvention)) {
-                input = convert(input, input.getTraitSet().replace(ShardingSphereConvention.INSTANCE));
+                newInput = convert(input, input.getTraitSet().replace(ShardingSphereConvention.INSTANCE));
             }
-            newInputs.add(input);
+            newInputs.add(newInput);
         }
         final RelNode left = newInputs.get(0);
         final RelNode right = newInputs.get(1);

@@ -9,13 +9,13 @@ public class CountAggregateBuiltinFunction extends AbstractAggregateBuiltinFunct
     
     private long count;
     
-    public CountAggregateBuiltinFunction(List<Integer> aggColumnIdx, boolean distinct) {
+    public CountAggregateBuiltinFunction(final List<Integer> aggColumnIdx, final boolean distinct) {
         super(aggColumnIdx, distinct);
     }
     
     @Override
     public void accumulate(final Object[] args) {
-        if(args == null ) {
+        if (args == null) {
             // TODO handle nullable value
             return;
         }

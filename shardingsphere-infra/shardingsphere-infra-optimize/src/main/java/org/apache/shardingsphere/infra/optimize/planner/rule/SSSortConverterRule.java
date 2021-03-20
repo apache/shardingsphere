@@ -21,7 +21,7 @@ public class SSSortConverterRule extends ConverterRule {
     @Override
     public RelNode convert(final RelNode rel) {
         LogicalSort sort = (LogicalSort) rel;
-        if(sort.fetch != null || sort.offset != null) {
+        if (sort.fetch != null || sort.offset != null) {
             return null;
         }
         return SSSort.create(convert(sort.getInput(), out), sort.getCollation());

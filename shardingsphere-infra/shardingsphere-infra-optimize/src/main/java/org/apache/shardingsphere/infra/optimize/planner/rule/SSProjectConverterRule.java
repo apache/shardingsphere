@@ -14,7 +14,6 @@ public class SSProjectConverterRule extends ConverterRule {
                     ShardingSphereConvention.INSTANCE, SSProjectConverterRule.class.getName())
             .withRuleFactory(SSProjectConverterRule::new);
     
-    
     protected SSProjectConverterRule(final Config config) {
         super(config);
     }

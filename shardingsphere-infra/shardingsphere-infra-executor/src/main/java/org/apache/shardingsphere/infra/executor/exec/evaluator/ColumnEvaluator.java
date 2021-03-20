@@ -7,14 +7,13 @@ public class ColumnEvaluator extends AbstractEvaluator {
     
     private final int idx;
     
-    public ColumnEvaluator(int idx, RelDataType relDataType) {
+    public ColumnEvaluator(final int idx, final RelDataType relDataType) {
         super(relDataType);
         this.idx = idx;
     }
     
-    
     @Override
     public <T> T eval(final Row row) {
-        return row.getColumnValue(idx+1);
+        return row.getColumnValue(idx + 1);
     }
 }

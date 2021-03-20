@@ -3,22 +3,24 @@ package org.apache.shardingsphere.infra.executor.exec;
 import org.apache.shardingsphere.infra.executor.exec.meta.Row;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 
-public class SimpleExecutor extends AbstractExecutor {
+/**
+ * An simple Executor, if you need a mocked Executor, then this is.
+ */
+public final class SimpleExecutor extends AbstractExecutor {
     
     private final QueryResultMetaData metaData;
     
     private final Executor executor;
     
-    private SimpleExecutor(ExecContext execContext, QueryResultMetaData metaData) {
+    private SimpleExecutor(final ExecContext execContext, final QueryResultMetaData metaData) {
         this(execContext, metaData, null);
     }
     
-    private SimpleExecutor(ExecContext execContext, QueryResultMetaData metaData, Executor executor) {
+    private SimpleExecutor(final ExecContext execContext, final QueryResultMetaData metaData, final Executor executor) {
         super(execContext);
         this.metaData = metaData;
         this.executor = executor;
     }
-    
     
     @Override
     public QueryResultMetaData getMetaData() {
@@ -27,7 +29,7 @@ public class SimpleExecutor extends AbstractExecutor {
     
     @Override
     public boolean executeMove() {
-        if(executor != null) {
+        if (executor != null) {
             return executor.moveNext();
         }
         return false;
@@ -35,7 +37,7 @@ public class SimpleExecutor extends AbstractExecutor {
     
     @Override
     protected void executeInit() {
-        if(executor != null) {
+        if (executor != null) {
             executor.init();
         }
     }
@@ -48,7 +50,13 @@ public class SimpleExecutor extends AbstractExecutor {
         return null;
     }
     
-    public static SimpleExecutor empty(ExecContext execContext, QueryResultMetaData metaData) {
+    /**
+     * Build an mocked Executor.
+     * @param execContext execution context
+     * @param metaData metadata
+     * @return <code>SimpleExecutor</code>
+     */
+    public static SimpleExecutor empty(final ExecContext execContext, final QueryResultMetaData metaData) {
         return new SimpleExecutor(execContext, metaData);
     }
 }

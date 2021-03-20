@@ -33,23 +33,25 @@ import org.apache.shardingsphere.infra.optimize.schema.ShardingSphereCalciteSche
 import java.util.Properties;
 
 /**
- * convert calcite SqlNode to calcite RelNode
+ * convert calcite SqlNode to calcite RelNode.
  */
 public class RelNodeConverter {
 
     private static boolean topDownOpt = Boolean.parseBoolean(System.getProperty("calcite.planner.topdown.opt", "true"));
     
+    private static final RelDataTypeFactory TYPE_FACTORY = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
+    
     private final RelOptCostFactory costFactory = RelOptCostImpl.FACTORY;
-
-    private static final RelDataTypeFactory typeFactory = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
 
     private final SqlToRelConverter.Config converterConfig;
 
     private final SqlValidatorWithHints validator;
+    
     private final CalciteCatalogReader catalog;
+    
     private final ShardingSphereSchema shardingSphereSchema;
 
-    public RelNodeConverter(String schemaName, ShardingSphereSchema shardingSphereSchema) {
+    public RelNodeConverter(final String schemaName, final ShardingSphereSchema shardingSphereSchema) {
         this.shardingSphereSchema = shardingSphereSchema;
         this.converterConfig = SqlToRelConverter.config()
                 .withInSubQueryThreshold(Integer.MAX_VALUE)
@@ -60,18 +62,18 @@ public class RelNodeConverter {
                 new JavaTypeFactoryImpl(),
                 new CalciteConnectionConfigImpl(new Properties()));
 
-        validator = SqlValidatorUtil.newValidator(SqlStdOperatorTable.instance(), catalog, typeFactory, SqlValidator.Config.DEFAULT
+        validator = SqlValidatorUtil.newValidator(SqlStdOperatorTable.instance(), catalog, TYPE_FACTORY, SqlValidator.Config.DEFAULT
                 .withLenientOperatorLookup(false)
                 .withSqlConformance(SqlConformanceEnum.DEFAULT)
                 .withIdentifierExpansion(true));
     }
 
     /**
-     * validate calcite SqlNode and convert SqlNode to RelNode
+     * validate calcite SqlNode and convert SqlNode to RelNode.
      * @param sqlNode SqlNode to be validated and converted
      * @return relational algebra of sql
      */
-    public RelNode validateAndConvert(SqlNode sqlNode) {
+    public RelNode validateAndConvert(final SqlNode sqlNode) {
         final RelOptCluster cluster = createRelOptCluster();
         final SqlToRelConverter sqlToRelConverter = new SqlToRelConverter(null, validator, catalog, cluster,
                 StandardConvertletTable.INSTANCE, converterConfig);
@@ -81,22 +83,19 @@ public class RelNodeConverter {
         return root.rel;
     }
 
-    public RelOptCluster createRelOptCluster() {
-        RexBuilder rexBuilder = new RexBuilder(typeFactory);
+    private RelOptCluster createRelOptCluster() {
         VolcanoPlanner planner = new VolcanoPlanner(costFactory, Contexts.EMPTY_CONTEXT);
         planner.setTopDownOpt(topDownOpt);
         planner.clearRelTraitDefs();
         planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
         planner.addRelTraitDef(RelCollationTraitDef.INSTANCE);
-
+        RexBuilder rexBuilder = new RexBuilder(TYPE_FACTORY);
         return RelOptCluster.create(planner, rexBuilder);
     }
 
-    CalciteSchema createRootSchema(String schemaName) {
+    private CalciteSchema createRootSchema(final String schemaName) {
         SchemaPlus rootSchema = Frameworks.createRootSchema(true);
         rootSchema.add(schemaName, new ShardingSphereCalciteSchema(shardingSphereSchema));
         return CalciteSchema.from(rootSchema);
     }
-
-    
 }

@@ -12,9 +12,16 @@ import java.util.Optional;
 
 public class Compiler {
     
-    public static ExecStmt compileQuery(String schemaName, ShardingSphereSchema shardingSphereSchema, SQLStatementContext statementContext) {
+    /**
+     * compile ast to physical plan. 
+     * @param schemaName schema name
+     * @param shardingSphereSchema schema of logical db
+     * @param statementContext ast
+     * @return Wrapper class for Physical plan
+     */
+    public static ExecStmt compileQuery(final String schemaName, final ShardingSphereSchema shardingSphereSchema, final SQLStatementContext statementContext) {
         Optional<SqlNode> convertSqlStatement = SqlNodeConverter.convertSqlStatement(statementContext);
-        if(!convertSqlStatement.isPresent()) {
+        if (!convertSqlStatement.isPresent()) {
             return new ExecStmt();
         }
         SqlNode sqlNode = convertSqlStatement.get();

@@ -26,9 +26,9 @@ import static org.apache.calcite.sql.fun.SqlStdOperatorTable.PLUS;
 /**
  * Contains implementations of Rex operators as {@link BuiltinFunction}.
  */
-public class BuiltinFunctionTable {
+public final class BuiltinFunctionTable {
     
-    public static BuiltinFunctionTable INSTANCE = new BuiltinFunctionTable();
+    public static final BuiltinFunctionTable INSTANCE = new BuiltinFunctionTable();
     
     private final Map<SqlOperator, RexCallToFunctionImplementor> map = new HashMap<>();
     
@@ -53,17 +53,26 @@ public class BuiltinFunctionTable {
         aggMap.put(COUNT, new AggFunctionImplementor(NullPolicy.ANY));
     }
     
+    /**
+     * Get function implementor for {@link SqlOperator}.
+     * @param sqlOperator sqlOperator
+     * @return implementor
+     */
     public RexCallToFunctionImplementor get(final SqlOperator sqlOperator) {
         return map.get(sqlOperator);
     }
     
+    /**
+     * Get aggFunction function implementor for {@link SqlAggFunction}.
+     * @param sqlAggFunction sqlAggFunction
+     * @return aggFunction function implementor 
+     */
     public AggFunctionImplementor get(final SqlAggFunction sqlAggFunction) {
         return aggMap.get(sqlAggFunction);
     }
     
-    private void defineBinary(SqlOperator operator, NullPolicy nullPolicy, String backupMethodName) {
+    private void defineBinary(final SqlOperator operator, final NullPolicy nullPolicy, final String backupMethodName) {
         map.put(operator, new BinaryFunctionImplementor(nullPolicy, backupMethodName));
     }
-    
     
 }

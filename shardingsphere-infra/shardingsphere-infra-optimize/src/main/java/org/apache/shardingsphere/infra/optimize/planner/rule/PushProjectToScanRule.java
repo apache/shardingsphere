@@ -7,16 +7,16 @@ import org.apache.calcite.rel.rules.TransformationRule;
 import org.apache.shardingsphere.infra.optimize.rel.logical.LogicalScan;
 
 /**
- * Pushdown Project to LogicalScan
+ * Pushdown Project to LogicalScan.
  */
 public class PushProjectToScanRule extends RelRule<PushProjectToScanRule.Config> implements TransformationRule {
     
-    public static PushProjectToScanRule INSTANCE = Config.DEFAULT.toRule();
+    public static final PushProjectToScanRule INSTANCE = Config.DEFAULT.toRule();
     
     /**
      * Creates a RelRule.
      *
-     * @param config
+     * @param config config
      */
     protected PushProjectToScanRule(final Config config) {
         super(config);

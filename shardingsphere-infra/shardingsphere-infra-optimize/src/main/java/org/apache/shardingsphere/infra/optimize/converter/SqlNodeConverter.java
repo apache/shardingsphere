@@ -56,11 +56,16 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- *  convert shardingsphere ast to calcite ast
+ *  convert shardingsphere ast to calcite ast.
  */
 public class SqlNodeConverter {
-
-    public static Optional<SqlNode> convertSqlStatement(SQLStatementContext<?> statementContext) {
+    
+    /**
+     * convert shardingsphere ast to calcite ast.
+     * @param statementContext shardingsphere ast
+     * @return an Optional 
+     */
+    public static Optional<SqlNode> convertSqlStatement(final SQLStatementContext<?> statementContext) {
         try {
             SqlNode sqlNode = convertStatement(statementContext);
             return Optional.of(sqlNode);
@@ -69,14 +74,19 @@ public class SqlNodeConverter {
         }
     }
 
-    private static SqlNode convertStatement(SQLStatementContext<?> statementContext) {
-        if(statementContext instanceof SelectStatementContext) {
-            return convertSelectStatement((SelectStatementContext)statementContext);
+    private static SqlNode convertStatement(final SQLStatementContext<?> statementContext) {
+        if (statementContext instanceof SelectStatementContext) {
+            return convertSelectStatement((SelectStatementContext) statementContext);
         }
         return null;
     }
-
-    public static SqlNode convertSelectStatement(SelectStatementContext selectStatement) {
+    
+    /**
+     * convert select ast.
+     * @param selectStatement select ast
+     * @return calcite select ast
+     */
+    public static SqlNode convertSelectStatement(final SelectStatementContext selectStatement) {
         SqlNodeList keywordList = convertDistinct(selectStatement.getProjectionsContext());
         SqlNodeList projections = convertProjections(selectStatement.getProjectionsContext());
 
@@ -87,8 +97,7 @@ public class SqlNodeConverter {
         SqlNodeList groupBy = convertGroupBy(selectStatement.getGroupByContext());
 
         SqlNodeList orderBy = convertOrderBy(selectStatement.getOrderByContext());
-
-
+        
         Map.Entry<SqlNode, SqlNode> offsetRowCount = convertPagination(selectStatement.getPaginationContext());
 
         SqlNode offset = offsetRowCount.getKey();
@@ -97,21 +106,31 @@ public class SqlNodeConverter {
         return new SqlSelect(SqlParserPos.ZERO, keywordList, projections, from, where, groupBy, null,
                 null, orderBy, offset, rowCount, null);
     }
-
-    public static SqlNodeList convertDistinct(ProjectionsContext projections) {
-        if(projections.isDistinctRow()) {
+    
+    /**
+     * convert project ast.
+     * @param projections project ast
+     * @return calcite project ast
+     */
+    public static SqlNodeList convertDistinct(final ProjectionsContext projections) {
+        if (projections.isDistinctRow()) {
             return new SqlNodeList(Arrays.asList(SqlSelectKeyword.DISTINCT.symbol(SqlParserPos.ZERO)), SqlParserPos.ZERO);
         }
         return null;
     }
-
-    public static SqlNodeList convertProjections(ProjectionsContext projectionsContext) {
+    
+    /**
+     * convert project.
+     * @param projectionsContext project ast
+     * @return calcite project ast
+     */
+    public static SqlNodeList convertProjections(final ProjectionsContext projectionsContext) {
         Collection<Projection> projections = projectionsContext.getProjections();
         List<SqlNode> columnNodes = new ArrayList<>(projections.size());
-        for(Projection projection : projections) {
-            if(projection instanceof ColumnProjection) {
+        for (Projection projection : projections) {
+            if (projection instanceof ColumnProjection) {
                 columnNodes.add(convertColumnProjection((ColumnProjection) projection));
-            } else if(projection instanceof ExpressionProjection) {
+            } else if (projection instanceof ExpressionProjection) {
                 // TODO
                 // expression is not ast current.
                 // columnNodes.add(convertExpressionProjection((ExpressionProjectionSegment) projection));
@@ -120,20 +139,25 @@ public class SqlNodeConverter {
         }
         return new SqlNodeList(columnNodes, SqlParserPos.ZERO);
     }
-
-    public static SqlNode convertColumnProjection(ColumnProjection columnProjection) {
+    
+    /**
+     * convert column project.
+     * @param columnProjection column project
+     * @return calcite <code>SqlNode</code>
+     */
+    public static SqlNode convertColumnProjection(final ColumnProjection columnProjection) {
         String columnName = columnProjection.getName();
         String owner = columnProjection.getOwner();
         return new SqlIdentifier(Arrays.asList(owner == null ? "" : owner, columnName), SqlParserPos.ZERO);
     }
 
-    public static SqlNode convertExpressionProjection(ExpressionProjectionSegment expressionProjection) {
+    private static SqlNode convertExpressionProjection(final ExpressionProjectionSegment expressionProjection) {
         String expression = expressionProjection.getText();
         return SqlCharStringLiteral.createCharString(expression, SqlParserPos.ZERO);
     }
 
 
-    public static SqlNode convertWhere(WhereSegment where) {
+    public static SqlNode convertWhere(final WhereSegment where) {
         ExpressionSegment whereExpr = where.getExpr();
         return convertExpression(whereExpr);
         // TODO or

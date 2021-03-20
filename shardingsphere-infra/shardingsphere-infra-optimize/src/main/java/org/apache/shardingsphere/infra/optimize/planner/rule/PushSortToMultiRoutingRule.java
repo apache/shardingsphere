@@ -16,10 +16,11 @@ import java.util.function.Predicate;
 public class PushSortToMultiRoutingRule extends PushSortToScanRule {
     
     private static final Predicate<LogicalScan> NOT_SINGLE_ROUTING_PREDICATE = logicalScan -> !logicalScan.isSingleRouting();
+    
     /**
      * Creates a RelRule.
      *
-     * @param config
+     * @param config config
      */
     protected PushSortToMultiRoutingRule(final Config config) {
         super(config);
@@ -31,12 +32,12 @@ public class PushSortToMultiRoutingRule extends PushSortToScanRule {
         LogicalScan scan = call.rel(1);
         RexBuilder rexBuilder = sort.getCluster().getRexBuilder();
         SSMergeSort mergeSort;
-        if(sort.fetch == null) {
+        if (sort.fetch == null) {
             LogicalScan logicalScan = pushdownSort(LogicalSort.create(scan, sort.getCollation(), null, null), scan);
             mergeSort = SSMergeSort.create(sort.getTraitSet(), logicalScan, sort.collation);
         } else {
             RexNode fetchRex;
-            if(sort.offset instanceof RexDynamicParam || sort.fetch instanceof RexDynamicParam) {
+            if (sort.offset instanceof RexDynamicParam || sort.fetch instanceof RexDynamicParam) {
                 fetchRex = rexBuilder.makeCall(SqlStdOperatorTable.PLUS, sort.offset, sort.fetch);
             } else {
                 int offset = sort.offset == null ? 0 : RexLiteral.intValue(sort.offset);
@@ -51,7 +52,7 @@ public class PushSortToMultiRoutingRule extends PushSortToScanRule {
     
     public interface Config extends PushSortToScanRule.Config {
     
-        Config DEFAULT = EMPTY.as(Config.class).withOperandFor(LogicalSort.class, LogicalScan.class, NOT_SINGLE_ROUTING_PREDICATE, Config.class);;
+        Config DEFAULT = EMPTY.as(Config.class).withOperandFor(LogicalSort.class, LogicalScan.class, NOT_SINGLE_ROUTING_PREDICATE, Config.class);
     
         @Override
         default PushSortToMultiRoutingRule toRule() {

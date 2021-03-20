@@ -13,12 +13,12 @@ import org.apache.shardingsphere.infra.optimize.rel.CustomLogicalRelConverter;
 @Slf4j
 public abstract class AbstractPlanner implements Planner {
     
-    protected RelNode rewrite(RelNode logicalRelNode) {
-        
-        logicalRelNode = CustomLogicalRelConverter.convert(logicalRelNode);
+    protected RelNode rewrite(final RelNode relnode) {
+    
+        RelNode logicalRelNode = CustomLogicalRelConverter.convert(relnode);
         
         HepProgramBuilder hepProgramBuilder = HepProgram.builder();
-        for(HEP_RULE hepRules : HEP_RULE.values()) {
+        for (HEP_RULE hepRules : HEP_RULE.values()) {
             hepProgramBuilder.addMatchOrder(hepRules.getMatchOrder());
             hepProgramBuilder.addGroupBegin();
             hepProgramBuilder.addRuleCollection(ImmutableList.copyOf(hepRules.getRules()));

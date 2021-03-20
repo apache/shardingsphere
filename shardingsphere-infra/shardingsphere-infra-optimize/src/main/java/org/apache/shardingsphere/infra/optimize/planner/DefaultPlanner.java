@@ -11,14 +11,14 @@ import org.apache.calcite.sql.SqlExplainFormat;
 import org.apache.calcite.sql.SqlExplainLevel;
 
 @Slf4j
-public class DefaultPlanner extends AbstractPlanner implements Planner{
+public class DefaultPlanner extends AbstractPlanner implements Planner {
 
     @Override
-    public RelNode getPhysicPlan(final RelNode logicalPlan) {
+    public final RelNode getPhysicPlan(final RelNode logicalPlan) {
         RelOptCluster cluster = logicalPlan.getCluster();
         RelOptPlanner volcanoPlanner = cluster.getPlanner();
         assert volcanoPlanner instanceof VolcanoPlanner;
-        assert ((VolcanoPlanner)volcanoPlanner).isLogical(logicalPlan);
+        assert ((VolcanoPlanner) volcanoPlanner).isLogical(logicalPlan);
         
         RelNode rewritedRelNode = rewrite(logicalPlan);
         
@@ -28,24 +28,23 @@ public class DefaultPlanner extends AbstractPlanner implements Planner{
         
     }
     
-    private RelNode optimize(RelNode rewritedRelNode) {
-        if(rewritedRelNode.getTraitSet().contains(ShardingSphereConvention.INSTANCE)) {
+    private RelNode optimize(final RelNode rewritedRelNode) {
+        if (rewritedRelNode.getTraitSet().contains(ShardingSphereConvention.INSTANCE)) {
             return rewritedRelNode;
         }
-        RelOptPlanner volcanoPlanner =  rewritedRelNode.getCluster().getPlanner();
+        RelOptPlanner volcanoPlanner = rewritedRelNode.getCluster().getPlanner();
         RelNode root2 = changeTraits(volcanoPlanner, rewritedRelNode, ShardingSphereConvention.INSTANCE);
         volcanoPlanner.setRoot(root2);
         return volcanoPlanner.findBestExp();
     }
 
-    private RelNode changeTraits(RelOptPlanner volcanoPlanner, RelNode logicalRelNode, Convention convention) {
+    private RelNode changeTraits(final RelOptPlanner volcanoPlanner, final RelNode logicalRelNode, final Convention convention) {
         return volcanoPlanner.changeTraits(logicalRelNode, logicalRelNode.getCluster().traitSetOf(convention));
     }
     
-    
     @Override
-    protected void log(String desc, RelNode relNode) {
-        if(log.isDebugEnabled()) {
+    protected final void log(final String desc, final RelNode relNode) {
+        if (log.isDebugEnabled()) {
             log.debug(RelOptUtil.dumpPlan(desc, relNode, SqlExplainFormat.TEXT, SqlExplainLevel.EXPPLAN_ATTRIBUTES));
         }
         

@@ -11,7 +11,7 @@ import org.apache.shardingsphere.infra.executor.exec.func.aggregate.AggregateBui
 import org.apache.shardingsphere.infra.executor.exec.func.aggregate.CountAggregateBuiltinFunction;
 import org.apache.shardingsphere.infra.executor.exec.func.aggregate.MaxAggregateBuiltinFunction;
 
-public class AggFunctionImplementor extends AbstractFunctionImplementor<AggregateCall, AggregateBuiltinFunction>{
+public class AggFunctionImplementor extends AbstractFunctionImplementor<AggregateCall, AggregateBuiltinFunction> {
     
     public AggFunctionImplementor(final NullPolicy nullPolicy) {
         super(nullPolicy);
@@ -20,16 +20,15 @@ public class AggFunctionImplementor extends AbstractFunctionImplementor<Aggregat
     @Override
     public AggregateBuiltinFunction implement(final AggregateCall aggCall, final RelDataType[] argTypes) {
         SqlAggFunction sqlAggFunction = aggCall.getAggregation();
-        if(sqlAggFunction instanceof SqlCountAggFunction) {
+        if (sqlAggFunction instanceof SqlCountAggFunction) {
             return new CountAggregateBuiltinFunction(aggCall.getArgList(), aggCall.isDistinct());
-        } else if(sqlAggFunction instanceof SqlMinMaxAggFunction) {
-            if(sqlAggFunction.kind == SqlKind.MAX) {
+        } else if (sqlAggFunction instanceof SqlMinMaxAggFunction) {
+            if (sqlAggFunction.kind == SqlKind.MAX) {
                 return new MaxAggregateBuiltinFunction(aggCall.getArgList(), aggCall.isDistinct());
-            } else {
-                // TODO 
             }
+            // TODO
         }
-        
+        // TODO 
         throw new UnsupportedOperationException("unsupported aggregate call function: " + aggCall.getAggregation().getKind().name());
     }
 }

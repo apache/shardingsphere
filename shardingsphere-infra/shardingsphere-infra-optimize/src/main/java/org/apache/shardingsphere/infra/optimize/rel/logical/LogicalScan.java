@@ -50,7 +50,7 @@ public class LogicalScan extends AbstractRelNode implements SSRel {
     
     private RouteContext routeContext;
     
-    protected LogicalScan(TableScan tableScan) {
+    protected LogicalScan(final TableScan tableScan) {
         super(tableScan.getCluster(), tableScan.getTraitSet());
         this.traitSet = this.getTraitSet().replace(ShardingSphereConvention.INSTANCE);
         relBuilder = PushdownRelBuilder.create(tableScan);
@@ -59,14 +59,19 @@ public class LogicalScan extends AbstractRelNode implements SSRel {
         resetRouteContext();
     }
     
-    public LogicalScan pushdown(LogicalFilter logicalFilter) {
+    /**
+     * push down filter
+     * @param logicalFilter filter to pushdown
+     * @return
+     */
+    public final LogicalScan pushdown(final LogicalFilter logicalFilter) {
         relBuilder.filter(logicalFilter.getVariablesSet(), logicalFilter.getCondition());
         refreshRowType(logicalFilter);
         resetRouteContext();
         return this;
     }
     
-    public LogicalScan pushdown(LogicalProject logicalProject) {
+    public final LogicalScan pushdown(LogicalProject logicalProject) {
         relBuilder.project(logicalProject.getProjects(), logicalProject.getRowType().getFieldNames());
         refreshRowType(logicalProject);
         return this;
@@ -78,7 +83,7 @@ public class LogicalScan extends AbstractRelNode implements SSRel {
      * @param right
      * @return
      */
-    public LogicalScan pushdown(LogicalJoin join, RelNode right) {
+    public final LogicalScan pushdown(LogicalJoin join, RelNode right) {
         relBuilder.push(right);
         relBuilder.join(join.getJoinType(), join.getCondition(), join.getVariablesSet());
         refreshRowType(join);
@@ -86,14 +91,14 @@ public class LogicalScan extends AbstractRelNode implements SSRel {
         return this;
     }
     
-    public LogicalScan pushdown(LogicalAggregate logicalAgg) {
+    public final LogicalScan pushdown(LogicalAggregate logicalAgg) {
         GroupKey groupKey = relBuilder.groupKey(logicalAgg.getGroupSet(), logicalAgg.getGroupSets());
         relBuilder.aggregate(groupKey, logicalAgg.getAggCallList());
         refreshRowType(logicalAgg);
         return this;
     }
     
-    public LogicalScan pushdown(LogicalSort logicalSort) {
+    public final LogicalScan pushdown(LogicalSort logicalSort) {
         List<RelFieldCollation> fieldCollations = logicalSort.getCollation().getFieldCollations();
         List<RexNode> sortRexNodes = fieldCollations.stream()
                 .filter(collation -> collation.direction == Direction.ASCENDING || collation.direction == Direction.DESCENDING)
@@ -118,7 +123,7 @@ public class LogicalScan extends AbstractRelNode implements SSRel {
      * get all tables of this pushdown algebra expression
      * @return
      */
-    public Set<RelOptTable> getTables() {
+    public final Set<RelOptTable> getTables() {
         Set<RelOptTable> tables = Sets.newHashSet();
         RelNode relNode = relBuilder.peek();
         relNode.accept(new RelShuttleImpl() {

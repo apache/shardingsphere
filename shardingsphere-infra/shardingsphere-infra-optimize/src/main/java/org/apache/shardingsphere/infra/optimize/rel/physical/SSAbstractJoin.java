@@ -14,7 +14,9 @@ import java.util.Set;
 
 public abstract class SSAbstractJoin extends Join {
     
-    protected SSAbstractJoin(final RelOptCluster cluster, final RelTraitSet traitSet, final List<RelHint> hints, final RelNode left, final RelNode right, final RexNode condition, final Set<CorrelationId> variablesSet, final JoinRelType joinType) {
+    protected SSAbstractJoin(final RelOptCluster cluster, final RelTraitSet traitSet, final List<RelHint> hints, 
+                             final RelNode left, final RelNode right, final RexNode condition, 
+                             final Set<CorrelationId> variablesSet, final JoinRelType joinType) {
         super(cluster, traitSet, hints, left, right, condition, variablesSet, joinType);
     }
     

@@ -9,13 +9,13 @@ public class ConstantEvaluator extends AbstractEvaluator {
     
     private Class<?> clazz;
     
-    protected ConstantEvaluator(Object value, final RelDataType retType) {
+    protected ConstantEvaluator(final Object value, final RelDataType retType) {
         super(retType);
         this.value = value;
     }
     
     @Override
     public <T> T eval(final Row row) {
-        return (T)value;
+        return (T) value;
     }
 }

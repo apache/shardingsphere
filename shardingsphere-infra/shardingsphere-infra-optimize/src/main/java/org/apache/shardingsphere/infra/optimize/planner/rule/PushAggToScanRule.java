@@ -12,7 +12,7 @@ public class PushAggToScanRule extends RelRule<PushAggToScanRule.Config> impleme
     /**
      * Creates a RelRule.
      *
-     * @param config
+     * @param config config
      */
     protected PushAggToScanRule(final Config config) {
         super(config);
@@ -21,7 +21,7 @@ public class PushAggToScanRule extends RelRule<PushAggToScanRule.Config> impleme
     @Override
     public void onMatch(final RelOptRuleCall call) {
         LogicalAggregate logicalAgg = call.rel(0);
-        if(pushAgg(logicalAgg)) {
+        if (pushAgg(logicalAgg)) {
             return;
         }
         LogicalScan logicalScan = call.rel(1);
@@ -29,7 +29,7 @@ public class PushAggToScanRule extends RelRule<PushAggToScanRule.Config> impleme
         call.transformTo(logicalScan);
     }
     
-    private boolean pushAgg(LogicalAggregate logicalAgg) {
+    private boolean pushAgg(final LogicalAggregate logicalAgg) {
         boolean containSingleValue = logicalAgg.getAggCallList().stream().anyMatch(aggCall -> aggCall.getAggregation().getKind() == SqlKind.SINGLE_VALUE);
         return !containSingleValue;
     }

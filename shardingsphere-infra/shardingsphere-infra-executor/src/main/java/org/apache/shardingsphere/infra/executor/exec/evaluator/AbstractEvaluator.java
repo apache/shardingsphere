@@ -6,7 +6,7 @@ public abstract class AbstractEvaluator implements Evaluator {
     
     private RelDataType retType;
     
-    protected AbstractEvaluator(RelDataType retType) {
+    protected AbstractEvaluator(final RelDataType retType) {
         this.retType = retType;
     }
     

@@ -6,7 +6,6 @@ import java.util.List;
 
 public class MaxAggregateBuiltinFunction extends AbstractAggregateBuiltinFunction {
     
-    
     public MaxAggregateBuiltinFunction(final List aggColumnIdx, final boolean distinct) {
         super(aggColumnIdx, distinct);
     }

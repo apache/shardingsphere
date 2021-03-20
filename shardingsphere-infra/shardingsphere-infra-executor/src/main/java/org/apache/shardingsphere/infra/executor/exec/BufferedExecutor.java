@@ -16,13 +16,13 @@ public class BufferedExecutor extends SingleExecutor {
     
     private final List<Row> rows;
     
-    public BufferedExecutor(Executor executor, ExecContext execContext) {
+    public BufferedExecutor(final Executor executor, final ExecContext execContext) {
         super(executor, execContext);
         rows = new ArrayList<>();
     }
     
     @Override
-    protected void executeInitCurrent() {
+    protected void doInit() {
         bufferRows();
     }
     

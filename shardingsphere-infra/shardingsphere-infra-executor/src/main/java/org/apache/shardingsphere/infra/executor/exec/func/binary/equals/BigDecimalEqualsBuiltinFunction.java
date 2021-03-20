@@ -21,6 +21,7 @@ public class BigDecimalEqualsBuiltinFunction extends BinaryBuiltinFunction<BigDe
         return SqlKind.EQUALS.name();
     }
     
+    @Override
     public List<String[]> getArgTypeNames() {
         String typeName = BigDecimal.class.getTypeName();
         return Collections.singletonList(new String[]{typeName, typeName});

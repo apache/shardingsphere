@@ -12,7 +12,7 @@ public class ShardingSqlImplementor extends RelToSqlConverter {
     /**
      * Creates a RelToSqlConverter.
      *
-     * @param dialect
+     * @param dialect sql dialect, see {@link SqlDialect}
      */
     public ShardingSqlImplementor(final SqlDialect dialect) {
         super(dialect);

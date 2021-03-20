@@ -4,7 +4,7 @@ import org.apache.calcite.sql.SqlBinaryOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 
 /**
- * binary sql operator
+ * binary sql operator.
  */
 public enum BinarySqlOperator {
 
@@ -26,18 +26,27 @@ public enum BinarySqlOperator {
 
     private final SqlBinaryOperator sqlBinaryOperator;
 
-    BinarySqlOperator(String operator, SqlBinaryOperator sqlBinaryOperator) {
+    BinarySqlOperator(final String operator, final SqlBinaryOperator sqlBinaryOperator) {
         this.operator = operator;
         this.sqlBinaryOperator = sqlBinaryOperator;
     }
-
+    
+    /**
+     * Get binary operator. 
+     * @return sql binary operator
+     */
     public SqlBinaryOperator getSqlBinaryOperator() {
         return sqlBinaryOperator;
     }
-
-    public static BinarySqlOperator value(String sqlOperator) {
-        for(BinarySqlOperator val : values()) {
-            if(val.operator.equalsIgnoreCase(sqlOperator)) {
+    
+    /**
+     * convert string to BinarySqlOperator.
+     * @param sqlOperator string type of sqlOperator
+     * @return <code>BinarySqlOperator</code>
+     */
+    public static BinarySqlOperator value(final String sqlOperator) {
+        for (BinarySqlOperator val : values()) {
+            if (val.operator.equalsIgnoreCase(sqlOperator)) {
                 return val;
             }
         }

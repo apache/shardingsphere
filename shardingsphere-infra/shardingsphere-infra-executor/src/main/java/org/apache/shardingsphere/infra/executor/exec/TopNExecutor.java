@@ -6,6 +6,9 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.PriorityQueue;
 
+/**
+ * Executor that keep only top n elements in the heap.
+ */
 public class TopNExecutor extends LimitSortExecutor {
     
     private final PriorityQueue<Row> heap;
@@ -18,8 +21,8 @@ public class TopNExecutor extends LimitSortExecutor {
     
     @Override
     protected Iterator<Row> initInputRowIterator() {
-        while(executor.moveNext()) {
-            if(heap.size() > (fetch + offset)) {
+        while (executor.moveNext()) {
+            if (heap.size() > (fetch + offset)) {
                 heap.poll();
             }
             Row row = executor.current();

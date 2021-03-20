@@ -7,11 +7,14 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 
 import java.sql.SQLException;
 
-public class QueryResultExecutor extends AbstractExecutor implements Executor {
+/**
+ * Wrapper <code>QueryResult</code> as <code>Executor</code>.
+ */
+public class QueryResultExecutor extends AbstractExecutor {
     
     private QueryResult queryResult;
     
-    public QueryResultExecutor(final ExecContext execContext, QueryResult queryResult) {
+    public QueryResultExecutor(final QueryResult queryResult, final ExecContext execContext) {
         super(execContext);
         this.queryResult = queryResult;
     }
@@ -30,16 +33,17 @@ public class QueryResultExecutor extends AbstractExecutor implements Executor {
         }
     }
     
+    @Override
     public Row current() {
         QueryResultMetaData metaData = this.getMetaData();
         try {
             int columnCount = metaData.getColumnCount();
             Object[] rowVal = new Object[columnCount];
-            for(int i = 0; i < rowVal.length; i++) {
-                rowVal[i] = queryResult.getValue(i+1, Object.class);
+            for (int i = 0; i < rowVal.length; i++) {
+                rowVal[i] = queryResult.getValue(i + 1, Object.class);
             }
             return new Row(rowVal);
-        } catch (Exception t) {
+        } catch (SQLException t) {
             throw new ShardingSphereException("load row error", t);
         }
     }
