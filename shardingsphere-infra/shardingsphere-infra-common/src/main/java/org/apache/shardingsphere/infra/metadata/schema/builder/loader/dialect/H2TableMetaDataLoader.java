@@ -50,7 +50,7 @@ public class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
     private static final String INDEX_META_DATA_SQL = "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES"
             + " WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND TABLE_NAME IN (%s)";
 
-    private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES, WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND PRIMARY_KEY = TRUE";
+    private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND PRIMARY_KEY = TRUE";
 
     private static final String PRIMARY_KEY_META_DATA_SQL_WITH_EXISTED_TABLES = PRIMARY_KEY_META_DATA_SQL + " AND TABLE_NAME NOT IN (%s)";
 
@@ -105,11 +105,11 @@ public class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet, final Collection<String> primaryKeys,
                                               final Map<String, Boolean> tableGenerated) throws SQLException {
         String columnName = resultSet.getString("COLUMN_NAME");
-        String dataType = resultSet.getString("DATA_TYPE");
+        String typeName = resultSet.getString("TYPE_NAME");
         boolean primaryKey = primaryKeys.contains(columnName);
         boolean generated = tableGenerated.getOrDefault(columnName, Boolean.FALSE);
         // H2 database case sensitive is always true
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, true);
+        return new ColumnMetaData(columnName, dataTypeMap.get(typeName), primaryKey, generated, true);
     }
 
     private String getTableMetaDataSQL(final Collection<String> existedTables) {
