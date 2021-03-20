@@ -10,24 +10,25 @@ import org.apache.shardingsphere.infra.optimize.rel.physical.SSCalc;
 
 import java.util.List;
 
-public class CalcExecutor extends AbstractExector {
+public class CalcExecutor extends SingleExecutor {
     
     private Evaluator conditionEvaluator;
     
     private List<Evaluator> projectEvaluators;
     
-    private Executor executor;
-    
     private QueryResultMetaData metaData;
-    
     
     public CalcExecutor(Executor input, QueryResultMetaData metaData, List<Evaluator> projectEvaluators, 
                         Evaluator conditionEvaluator, final ExecContext execContext) {
-        super(execContext);
-        this.executor = input;
+        super(input, execContext);
         this.metaData = metaData;
         this.projectEvaluators = projectEvaluators;
         this.conditionEvaluator = conditionEvaluator;
+    }
+    
+    @Override
+    protected void executeInitCurrent() {
+        
     }
     
     @Override
@@ -36,12 +37,7 @@ public class CalcExecutor extends AbstractExector {
     }
     
     @Override
-    protected void executeInit() {
-        executor.init();
-    }
-    
-    @Override
-    public boolean moveNext() {
+    public boolean executeMove() {
         if(conditionEvaluator != null) {
             while(true) {
                 if(!executor.moveNext()) {

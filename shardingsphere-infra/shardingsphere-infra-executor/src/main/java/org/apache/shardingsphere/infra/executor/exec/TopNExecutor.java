@@ -3,6 +3,7 @@ package org.apache.shardingsphere.infra.executor.exec;
 import org.apache.shardingsphere.infra.executor.exec.meta.Row;
 
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.PriorityQueue;
 
 public class TopNExecutor extends LimitSortExecutor {
@@ -16,8 +17,7 @@ public class TopNExecutor extends LimitSortExecutor {
     }
     
     @Override
-    protected void executeInit() {
-        executor.init();
+    protected Iterator<Row> initInputRowIterator() {
         while(executor.moveNext()) {
             if(heap.size() > (fetch + offset)) {
                 heap.poll();
@@ -25,14 +25,8 @@ public class TopNExecutor extends LimitSortExecutor {
             Row row = executor.current();
             heap.add(row);
         }
-        inputRowIterator = heap.iterator();
-        skipOffsetRows();
+        Iterator<Row> inputRowIterator = heap.iterator();
+        skipOffsetRows(inputRowIterator);
+        return inputRowIterator;
     }
-    
-    @Override
-    public boolean moveNext() {
-        this.init();
-        return inputRowIterator.hasNext();
-    }
-    
 }

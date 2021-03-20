@@ -15,7 +15,6 @@ import org.apache.calcite.rel.logical.LogicalJoin;
 import org.apache.calcite.rel.logical.LogicalProject;
 import org.apache.calcite.rel.logical.LogicalSort;
 import org.apache.calcite.rex.RexInputRef;
-import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.tools.RelBuilder.GroupKey;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -110,14 +109,7 @@ public class LogicalScan extends AbstractRelNode implements SSRel {
                     }
                     return  sortRexNode;
                 }).collect(Collectors.toList());
-        int offset = logicalSort.offset != null ? RexLiteral.intValue(logicalSort.offset) : 0;
-        if(logicalSort.fetch instanceof RexLiteral) {
-            int fetch = logicalSort.fetch != null ? RexLiteral.intValue(logicalSort.fetch) : -1;
-            relBuilder.sortLimit(offset, fetch, sortRexNodes);
-        } else {
-            // TODO 
-        }
-        
+        relBuilder.sortLimit(logicalSort.offset, logicalSort.fetch, sortRexNodes);
         refreshRowType(logicalSort);
         return this;
     }

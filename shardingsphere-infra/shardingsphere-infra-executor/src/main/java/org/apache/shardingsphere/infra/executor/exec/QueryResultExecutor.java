@@ -7,7 +7,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 
 import java.sql.SQLException;
 
-public class QueryResultExecutor extends AbstractExector implements Executor {
+public class QueryResultExecutor extends AbstractExecutor implements Executor {
     
     private QueryResult queryResult;
     
@@ -17,10 +17,12 @@ public class QueryResultExecutor extends AbstractExector implements Executor {
     }
     
     @Override
-    public boolean moveNext() {
-        if(!isInited()) {
-            init();
-        }
+    protected void executeInit() {
+        
+    }
+    
+    @Override
+    public boolean executeMove() {
         try {
             return queryResult.next();
         } catch (SQLException sqlException) {

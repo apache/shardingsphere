@@ -1,7 +1,6 @@
 package org.apache.shardingsphere.infra.executor.exec;
 
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.executor.exec.meta.Row;
 import org.apache.shardingsphere.infra.executor.exec.storage.JdbcReader;
 import org.apache.shardingsphere.infra.optimize.rel.logical.LogicalScan;
 
@@ -15,9 +14,8 @@ public class LogicalScanExecutor extends MultiExecutor {
      */
     private LogicalScan logicalScan;
     
-    public LogicalScanExecutor(LogicalScan logicalScan, ExecContext execContext, List<Executor> executors) {
+    public LogicalScanExecutor( ExecContext execContext, List<Executor> executors) {
         super(execContext, executors);
-        this.logicalScan = logicalScan;
     }
     
     public static Executor build(LogicalScan rel, ExecutorBuilder executorBuilder) {
@@ -25,28 +23,13 @@ public class LogicalScanExecutor extends MultiExecutor {
         try {
             Executor executor = JdbcReader.read(rel, execContext);
             if(executor instanceof MultiExecutor) {
-                return new LogicalScanExecutor(rel, execContext, ((MultiExecutor)executor).getExecutors());
+                return new LogicalScanExecutor(execContext, ((MultiExecutor)executor).getExecutors());
             } else {
-                return new LogicalScanExecutor(rel, execContext, Collections.singletonList(executor));
+                return new LogicalScanExecutor(execContext, Collections.singletonList(executor));
             }
         } catch (Exception t) {
             throw new ShardingSphereException("execute error", t);
         }
         
     }
-    
-    @Override
-    public Row current() {
-        return super.current();
-    }
-    
-    @Override
-    public boolean moveNext() {
-        if(!isInited()) {
-            init();
-        }
-        return super.moveNext();
-    }
-    
-    
 }

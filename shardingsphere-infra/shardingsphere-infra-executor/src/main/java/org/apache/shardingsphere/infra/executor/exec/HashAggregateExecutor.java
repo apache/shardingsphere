@@ -19,9 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class HashAggregateExecutor extends AbstractExector {
-    
-    private Executor executor;
+/**
+ * Aggregate operator implementation Executor using hash .
+ */
+public class HashAggregateExecutor extends SingleExecutor {
     
     private List<Integer> groupByColumnIdx;
     
@@ -35,13 +36,11 @@ public class HashAggregateExecutor extends AbstractExector {
     
     private Iterator<Entry<GroupByKey, List<AggregateBuiltinFunction>>> lookup;
     
-    
     public HashAggregateExecutor(Executor input, QueryResultMetaData metaData, List<Integer> groupByColumnIdx, 
                                  List<AggregateBuiltinFunction> aggFuncs, ExecContext execContext) {
-        super(execContext);
+        super(input, execContext);
         this.metaData = metaData;
         this.groupByColumnIdx = groupByColumnIdx;
-        this.executor = input;
         this.aggFuncs = aggFuncs;
         this.columnNum = groupByColumnIdx.size() + aggFuncs.size();
     }
@@ -52,7 +51,10 @@ public class HashAggregateExecutor extends AbstractExector {
     }
     
     @Override
-    public Row current() {
+    public boolean executeMove() {
+        if(!lookup.hasNext()) {
+            return false;
+        }
         Entry<GroupByKey, List<AggregateBuiltinFunction>> entry = lookup.next();
         Object[] rowVals = new Object[columnNum];
         GroupByKey groupByKey = entry.getKey();
@@ -62,18 +64,12 @@ public class HashAggregateExecutor extends AbstractExector {
         for(AggregateBuiltinFunction aggFunc : aggFuncs) {
             rowVals[idx++] = aggFunc.getResult();
         }
-        return new Row(rowVals);
+        replaceCurrent(new Row(rowVals));
+        return true;
     }
     
     @Override
-    public boolean moveNext() {
-        init();
-        return lookup.hasNext();
-    }
-    
-    @Override
-    protected void executeInit() {
-        executor.init();
+    protected void executeInitCurrent() {
         while(executor.moveNext()) {
             Row row = executor.current();
             aggregate(row);

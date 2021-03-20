@@ -8,7 +8,6 @@ import org.apache.calcite.plan.ConventionTraitDef;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptCostFactory;
 import org.apache.calcite.plan.RelOptCostImpl;
-import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.volcano.VolcanoPlanner;
 import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.RelCollationTraitDef;
@@ -38,9 +37,7 @@ import java.util.Properties;
  */
 public class RelNodeConverter {
 
-    static {
-        System.setProperty("calcite.planner.topdown.opt", "true");
-    }
+    private static boolean topDownOpt = Boolean.parseBoolean(System.getProperty("calcite.planner.topdown.opt", "true"));
     
     private final RelOptCostFactory costFactory = RelOptCostImpl.FACTORY;
 
@@ -86,7 +83,8 @@ public class RelNodeConverter {
 
     public RelOptCluster createRelOptCluster() {
         RexBuilder rexBuilder = new RexBuilder(typeFactory);
-        RelOptPlanner planner = new VolcanoPlanner(costFactory, Contexts.EMPTY_CONTEXT);
+        VolcanoPlanner planner = new VolcanoPlanner(costFactory, Contexts.EMPTY_CONTEXT);
+        planner.setTopDownOpt(topDownOpt);
         planner.clearRelTraitDefs();
         planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
         planner.addRelTraitDef(RelCollationTraitDef.INSTANCE);

@@ -7,8 +7,11 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 
 import java.util.List;
 
+/**
+ * Executor with multi input Executor instance.
+ */
 @Getter
-public class MultiExecutor extends AbstractExector implements Executor {
+public class MultiExecutor extends AbstractExecutor implements Executor {
     
     private int queryResultIdx = 0;
     
@@ -21,7 +24,7 @@ public class MultiExecutor extends AbstractExector implements Executor {
     }
     
     @Override
-    public boolean moveNext() {
+    public boolean executeMove() {
         if(queryResultIdx >= executors.size()) {
             return false;
         }

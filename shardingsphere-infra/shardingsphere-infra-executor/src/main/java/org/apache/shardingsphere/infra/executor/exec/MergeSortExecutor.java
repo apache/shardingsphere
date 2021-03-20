@@ -13,11 +13,12 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-public class MergeSortExecutor extends AbstractExector implements Executor{
+/**
+ * Executor with multi input Executors and read rows from these Executors useing merge sort algorithm.
+ */
+public class MergeSortExecutor extends AbstractExecutor implements Executor{
     
     private List<Executor> executors;
-    
-    private SSMergeSort mergeSort;
     
     private long offset;
     
@@ -29,22 +30,12 @@ public class MergeSortExecutor extends AbstractExector implements Executor{
     
     private long count;
     
-    public MergeSortExecutor(final ExecContext execContext, List<Executor> executors, SSMergeSort ssMergeSort) {
+    public MergeSortExecutor(final ExecContext execContext, List<Executor> executors, Comparator<Row> ordering, int offset, int fetch) {
         super(execContext);
         this.executors = executors;
-        this.mergeSort = ssMergeSort;
-        ordering = RowComparatorUtil.convertCollationToRowComparator(this.mergeSort.collation);
-    
-        this.offset = resolveRexNodeValue(this.mergeSort.offset, 0L, Long.class);
-        this.fetch = resolveRexNodeValue(this.mergeSort.fetch, Long.MAX_VALUE, Long.class);
-    }
-    
-    public static Executor build(SSMergeSort rel, ExecutorBuilder executorBuilder) {
-        Executor executor = executorBuilder.build(rel.getInput());
-        if(executor instanceof MultiExecutor) {
-            return new MergeSortExecutor(executorBuilder.getExecContext(), ((MultiExecutor)executor).getExecutors(), rel);
-        }
-        return executor;
+        this.ordering = ordering;
+        this.offset = offset;
+        this.fetch = fetch;
     }
     
     @Override
@@ -56,26 +47,22 @@ public class MergeSortExecutor extends AbstractExector implements Executor{
             if(!moveNext()) {
                 break;
             }
-            current();
         }
         
     }
     
     @Override
-    public boolean moveNext() {
-        if(!isInited()) {
-            init();
-        }
-        if(count > fetch) {
+    public boolean executeMove() {
+        if(count >= fetch) {
             return false;
         }
-        return mergeSortIterator.hasNext();
-    }
-    
-    @Override
-    public Row current() {
-        count++;
-        return mergeSortIterator.next();
+        if(mergeSortIterator.hasNext()) {
+            count++;
+            replaceCurrent(mergeSortIterator.next());
+            return true;
+        } else {
+            return false;
+        }
     }
     
     @Override
@@ -83,7 +70,20 @@ public class MergeSortExecutor extends AbstractExector implements Executor{
         return executors.get(0).getMetaData();
     }
     
-    private <T> T resolveRexNodeValue(RexNode rexNode, T defaultValue, Class<T> clazz) {
+    
+    public static Executor build(SSMergeSort rel, ExecutorBuilder executorBuilder) {
+        Executor executor = executorBuilder.build(rel.getInput());
+        Comparator<Row> ordering = RowComparatorUtil.convertCollationToRowComparator(rel.collation);
+        if(executor instanceof MultiExecutor) {
+            ExecContext execContext = executorBuilder.getExecContext();
+            int offset = resolveRexNodeValue(rel.offset, 0, execContext.getParameters(), Integer.class);
+            int fetch = resolveRexNodeValue(rel.fetch, Integer.MAX_VALUE, execContext.getParameters(), Integer.class);
+            return new MergeSortExecutor(execContext, ((MultiExecutor)executor).getExecutors(), ordering, offset, fetch);
+        }
+        return executor;
+    }
+    
+    private static <T> T resolveRexNodeValue(RexNode rexNode, T defaultValue, List<Object> parameters, Class<T> clazz) {
         if(rexNode == null) {
             return defaultValue;
         }
@@ -92,7 +92,6 @@ public class MergeSortExecutor extends AbstractExector implements Executor{
         } else if(rexNode instanceof RexDynamicParam) {
             RexDynamicParam rexDynamicParam = (RexDynamicParam)rexNode;
             int idx = rexDynamicParam.getIndex();
-            List<Object> parameters = execContext.getParameters();
             Object val = parameters.get(idx);
             // TODO using a Data type conveter
             return clazz.cast(val);

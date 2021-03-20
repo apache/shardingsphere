@@ -5,19 +5,28 @@ import org.apache.shardingsphere.infra.executor.exec.meta.Row;
 
 import java.util.Iterator;
 
-public abstract class AbstractExector implements Executor {
+/**
+ * Base class for {@link Executor} of rational operator.
+ */
+public abstract class AbstractExecutor implements Executor {
     
+    /**
+     * context for current {@link Executor}
+     */
     protected final ExecContext execContext;
     
     private volatile boolean inited;
     
-    public AbstractExector(ExecContext execContext) {
+    private Row current;
+    
+    public AbstractExecutor(ExecContext execContext) {
         this.execContext = execContext;
     }
     
     @Override
     public boolean moveNext() {
-        return false;
+        init();
+        return executeMove();
     }
     
     @Override
@@ -30,21 +39,41 @@ public abstract class AbstractExector implements Executor {
         
     }
     
-    protected void executeInit() {
-        
+    @Override
+    public Row current() {
+        return current;
     }
+    
+    /**
+     * replace the current row reference, so sub-class do not need to override {@link #current()} method
+     * @param row
+     */
+    protected void replaceCurrent(Row row) {
+        current = row;
+    }
+    
+    /**
+     * execute initialization for this executor
+     */
+    protected abstract void executeInit();
+    
+    /**
+     * move to the next row of this executor
+     * @return true if the next row exist, else false
+     */
+    protected abstract boolean executeMove();
     
     @Override
     public Iterator<Row> iterator() {
         return new Iterator<Row>() {
             @Override
             public boolean hasNext() {
-                return AbstractExector.this.moveNext();
+                return AbstractExecutor.this.moveNext();
             }
     
             @Override
             public Row next() {
-                return AbstractExector.this.current();
+                return AbstractExecutor.this.current();
             }
         };
     }

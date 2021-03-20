@@ -9,7 +9,7 @@ import org.apache.shardingsphere.infra.optimize.rel.physical.SSRel;
 
 /**
  * Family of calling conventions that return results as an
- *  {@link org.apache.calcite.linq4j.Enumerable}.
+ *  {@link SSRel}.
  */
 public enum ShardingSphereConvention implements Convention {
 

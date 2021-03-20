@@ -9,7 +9,6 @@ import org.apache.shardingsphere.infra.optimize.rel.physical.SSHashAggregate;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSLimitSort;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSMergeSort;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSNestedLoopJoin;
-import org.apache.shardingsphere.infra.optimize.rel.physical.SSProject;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSRel;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSSort;
 
@@ -30,8 +29,6 @@ public class ExecutorBuilder {
             executor = MergeSortExecutor.build((SSMergeSort) rel, this);
         } else if(rel instanceof SSNestedLoopJoin) {
             executor = NestedLoopJoinExecutor.build((SSNestedLoopJoin)rel, this);
-        } else if(rel instanceof SSProject) {
-            executor = ProjectExecutor.build((SSProject) rel, this);
         } else if(rel instanceof SSCalc) {
             executor = CalcExecutor.build((SSCalc) rel, this);
         } else if(rel instanceof SSHashAggregate) {

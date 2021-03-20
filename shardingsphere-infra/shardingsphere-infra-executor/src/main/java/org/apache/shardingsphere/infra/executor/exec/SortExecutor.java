@@ -12,21 +12,15 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * TODO to be refactor to extend a single executor 
- * executor to sort rows from input executor without offset and fetch. 
- * @see {@link LimitSortExecutor}
+ * Executor to sort rows from input executor without offset and fetch. 
+ * For sort with offset and fetch, @see {@link LimitSortExecutor}
  */
-public class SortExecutor extends AbstractExector {
-    
-    protected final Executor executor;
+public class SortExecutor extends IteratorExecutor {
     
     protected final Comparator<Row> ordering;
     
-    protected Iterator<Row> inputRowIterator;
-    
     public SortExecutor(Executor executor, Comparator<Row> ordering, ExecContext execContext) {
-        super(execContext);
-        this.executor = executor;
+        super(executor, execContext);
         this.ordering = ordering;
     }
     
@@ -36,29 +30,18 @@ public class SortExecutor extends AbstractExector {
     }
     
     @Override
-    protected void executeInit() {
-        executor.init();
-        memSort();
+    protected Iterator<Row> initInputRowIterator() {
+        List<Row> inputRows = memSort();
+        return inputRows.iterator();
     }
     
-    protected void memSort() {
+    protected List<Row> memSort() {
         List<Row> inputRows = new ArrayList<>();
         while(executor.moveNext()) {
             inputRows.add(executor.current());
         }
         Collections.sort(inputRows, ordering);
-        inputRowIterator = inputRows.iterator();
-    }
-    
-    @Override
-    public boolean moveNext() {
-        init();
-        return inputRowIterator.hasNext();
-    }
-    
-    @Override
-    public Row current() {
-        return inputRowIterator.next();
+        return inputRows;
     }
     
     public static SortExecutor build(SSSort sort, ExecutorBuilder executorBuilder) {

@@ -34,8 +34,8 @@ public class RowComparatorUtil {
     }
     
     private static int comparator(Row r1, Row r2, int fieldIdx, int nullComparison) {
-        Comparable<?> c1 = r1.getColumnValue(fieldIdx);
-        Comparable<?> c2 = r2.getColumnValue(fieldIdx);
+        Comparable<?> c1 = r1.getColumnValue(fieldIdx + 1);
+        Comparable<?> c2 = r2.getColumnValue(fieldIdx + 1);
         return RelFieldCollation.compare(c1, c2, nullComparison);
     }
 }

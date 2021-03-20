@@ -3,7 +3,7 @@ package org.apache.shardingsphere.infra.executor.exec;
 import org.apache.shardingsphere.infra.executor.exec.meta.Row;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 
-public class SimpleExecutor extends AbstractExector {
+public class SimpleExecutor extends AbstractExecutor {
     
     private final QueryResultMetaData metaData;
     
@@ -26,7 +26,7 @@ public class SimpleExecutor extends AbstractExector {
     }
     
     @Override
-    public boolean moveNext() {
+    public boolean executeMove() {
         if(executor != null) {
             return executor.moveNext();
         }

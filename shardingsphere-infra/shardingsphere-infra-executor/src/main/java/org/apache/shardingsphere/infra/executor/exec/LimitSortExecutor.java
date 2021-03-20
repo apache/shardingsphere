@@ -34,10 +34,10 @@ public class LimitSortExecutor extends SortExecutor {
     }
     
     @Override
-    protected void executeInit() {
-        executor.init();
+    protected Iterator<Row> initInputRowIterator() {
+        Iterator<Row> inputRowIterator;
         if(ordering == EMPTY) {
-            memSort();
+            inputRowIterator = super.initInputRowIterator();
         } else {
             inputRowIterator = new Iterator<Row>() {
                 @Override
@@ -51,10 +51,11 @@ public class LimitSortExecutor extends SortExecutor {
                 }
             };
         }
-        skipOffsetRows();
+        skipOffsetRows(inputRowIterator);
+        return inputRowIterator;
     }
     
-    protected void skipOffsetRows() {
+    protected void skipOffsetRows(Iterator<Row> inputRowIterator) {
         int skipNum = 0;
         while(inputRowIterator.hasNext() && skipNum < offset) {
             inputRowIterator.next();
@@ -63,18 +64,12 @@ public class LimitSortExecutor extends SortExecutor {
     }
     
     @Override
-    public boolean moveNext() {
-        init();
-        if(fetchedNum < fetch && super.moveNext()) {
+    public boolean executeMove() {
+        if(super.moveNext() && fetchedNum < fetch) {
             fetchedNum++;
             return true;
         }
         return false;
-    }
-    
-    @Override
-    public Row current() {
-        return inputRowIterator.next();
     }
     
     public static LimitSortExecutor build(SSLimitSort limitSort, ExecutorBuilder executorBuilder) {

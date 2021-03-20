@@ -7,7 +7,7 @@ import org.apache.shardingsphere.infra.executor.exec.meta.JoinRow;
 import org.apache.shardingsphere.infra.executor.exec.meta.Row;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 
-public abstract class AbstractJoinExecutor extends AbstractExector {
+public abstract class AbstractJoinExecutor extends AbstractExecutor {
     
     protected final Executor outer;
     protected final Executor inner;

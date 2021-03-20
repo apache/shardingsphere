@@ -10,23 +10,19 @@ import java.util.List;
  * This <code>Executor</code> is designed to buffer all rows from another Executor instance. This can be used in 
  * nested loop join, see {@link NestedLoopJoinExecutor}
  */
-public class BufferedExecutor extends AbstractExector {
+public class BufferedExecutor extends SingleExecutor {
     
     private int idx;
     
-    private final Executor executor;
-    
     private final List<Row> rows;
     
-    public BufferedExecutor(final ExecContext execContext, Executor executor) {
-        super(execContext);
-        this.executor = executor;
+    public BufferedExecutor(Executor executor, ExecContext execContext) {
+        super(executor, execContext);
         rows = new ArrayList<>();
     }
     
     @Override
-    protected void executeInit() {
-        this.executor.init();
+    protected void executeInitCurrent() {
         bufferRows();
     }
     
@@ -37,7 +33,7 @@ public class BufferedExecutor extends AbstractExector {
     
     @Override
     public Row current() {
-        return rows.get(idx++);
+        return rows.get(idx-1);
     }
     
     @Override
@@ -46,8 +42,8 @@ public class BufferedExecutor extends AbstractExector {
     }
     
     @Override
-    public boolean moveNext() {
-        return idx < rows.size();
+    public boolean executeMove() {
+        return idx++ < rows.size();
     }
     
     private void bufferRows() {

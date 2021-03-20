@@ -3,6 +3,7 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationResultSet;
 import org.apache.shardingsphere.infra.executor.exec.ExecContext;
 import org.apache.shardingsphere.infra.executor.exec.Executor;
+import org.apache.shardingsphere.infra.executor.exec.meta.Row;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 
 import java.io.InputStream;
@@ -37,6 +38,8 @@ public class SSResultSet extends AbstractUnsupportedOperationResultSet {
     
     private final Map<String, Integer> columnLabelAndIndexMap;
     
+    private Row current;
+    
     public SSResultSet(Executor executor, QueryResultMetaData metaData, Statement statement, ExecContext execContext) throws SQLException {
         this.executor = executor;
         this.metaData = metaData;
@@ -55,7 +58,12 @@ public class SSResultSet extends AbstractUnsupportedOperationResultSet {
     
     @Override
     public boolean next() throws SQLException {
-        return executor.moveNext();
+        if (executor.moveNext()) {
+            current = executor.current();
+            return true;
+        } else {
+            return false;
+        }
     }
     
     @Override
@@ -405,8 +413,11 @@ public class SSResultSet extends AbstractUnsupportedOperationResultSet {
     }
     
     
-    private <T> T getColumnValue(final int i) {
-        return executor.current().getColumnValue(i);
+    private <T> T getColumnValue(final int i) throws SQLException {
+        if(current == null) {
+            throw new SQLException();
+        }
+        return current.getColumnValue(i);
     }
     
     private Integer getIndexFromColumnLabelAndIndexMap(final String columnLabel) throws SQLFeatureNotSupportedException {

@@ -29,8 +29,7 @@ public class NestedLoopJoinExecutor extends AbstractJoinExecutor {
     }
     
     @Override
-    public boolean moveNext() {
-        init();
+    public boolean executeMove() {
         while (true) {
             switch (state) {
                 case 0:
@@ -77,9 +76,7 @@ public class NestedLoopJoinExecutor extends AbstractJoinExecutor {
     @Override
     protected void executeInit() {
         super.executeInit();
-        
-        innerBuffer = new BufferedExecutor(execContext, inner);
-        innerBuffer.init();
+        innerBuffer = new BufferedExecutor(inner, execContext);
     }
     
     @Override
