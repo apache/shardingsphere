@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Privilege merger.
@@ -36,7 +37,7 @@ import java.util.Map;
 public final class PrivilegeMerger {
     
     /**
-     * Merge.
+     * Merge privilege.
      * 
      * @param authentication authentication
      * @param schemaName schema name
@@ -44,10 +45,10 @@ public final class PrivilegeMerger {
      * @return privileges
      */
     public static Map<ShardingSphereUser, ShardingSpherePrivilege> merge(final Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> authentication,
-                                                                            final String schemaName, final Collection<ShardingSphereRule> rules) {
-        Map<ShardingSphereUser, ShardingSpherePrivilege> result = new HashMap<>();
-        for (ShardingSphereUser each : authentication.keySet()) {
-            result.put(each, merge(each, authentication.get(each)));
+                                                                         final String schemaName, final Collection<ShardingSphereRule> rules) {
+        Map<ShardingSphereUser, ShardingSpherePrivilege> result = new HashMap<>(authentication.size(), 1);
+        for (Entry<ShardingSphereUser, Collection<ShardingSpherePrivilege>> entry : authentication.entrySet()) {
+            result.put(entry.getKey(), merge(entry.getKey(), entry.getValue()));
         }
         return result;
     }
