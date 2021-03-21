@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
  * @author totalo
  * @date 20210316
  */
-public class SQLServerTableMetaDataLoaderTest {
+public final class SQLServerTableMetaDataLoaderTest {
 
     @BeforeClass
     public static void setUp() {
