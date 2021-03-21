@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 /**
  * Table meta data loader for H2.
  * @author zhujun
- * @date 2021/03/19
  */
 public class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
 
@@ -107,7 +106,8 @@ public class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
         String columnName = resultSet.getString("COLUMN_NAME");
         String typeName = resultSet.getString("TYPE_NAME");
         boolean primaryKey = primaryKeys.contains(columnName);
-        boolean generated = tableGenerated.getOrDefault(columnName, Boolean.FALSE);
+        //tableGenerated.getOrDefault(columnName, Boolean.FALSE);
+        boolean generated = false;
         // H2 database case sensitive is always true
         return new ColumnMetaData(columnName, dataTypeMap.get(typeName), primaryKey, generated, true);
     }

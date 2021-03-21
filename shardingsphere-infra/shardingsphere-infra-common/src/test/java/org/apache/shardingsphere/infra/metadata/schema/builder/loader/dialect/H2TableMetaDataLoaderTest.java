@@ -137,7 +137,7 @@ public final class H2TableMetaDataLoaderTest {
         when(result.next()).thenReturn(true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
         when(result.getString("COLUMN_NAME")).thenReturn("id");
-        when(result.getBoolean("IS_GENERATED")).thenReturn(true);
+        when(result.getBoolean("IS_GENERATED")).thenReturn(false);
         return result;
     }
 
@@ -161,7 +161,7 @@ public final class H2TableMetaDataLoaderTest {
     private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {
         assertThat(actual.size(), is(1));
         assertThat(actual.get("tbl").getColumns().size(), is(2));
-        assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, true, true)));
+        assertThat(actual.get("tbl").getColumnMetaData(0), is(new ColumnMetaData("id", 4, true, false, true)));
         assertThat(actual.get("tbl").getColumnMetaData(1), is(new ColumnMetaData("name", 12, false, false, true)));
         assertThat(actual.get("tbl").getIndexes().size(), is(1));
         assertThat(actual.get("tbl").getIndexes().get("id"), is(new IndexMetaData("id")));
