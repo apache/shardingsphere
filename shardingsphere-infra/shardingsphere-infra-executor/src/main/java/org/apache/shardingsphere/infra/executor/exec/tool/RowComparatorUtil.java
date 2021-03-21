@@ -12,10 +12,17 @@ import java.util.List;
 
 public class RowComparatorUtil {
     
-    public static final Comparator<Row> EMPTY = (t1, t2) -> {throw new UnsupportedOperationException();};
+    public static final Comparator<Row> EMPTY = (t1, t2) -> {
+        throw new UnsupportedOperationException();
+    };
     
-    public static Comparator<Row> convertCollationToRowComparator(RelCollation collation) {
-        if(collation == null) {
+    /**
+     * Convert sort specifications to <code>Comparator</code>.
+     * @param collation sort specifications
+     * @return <code>Comparator</code>
+     */
+    public static Comparator<Row> convertCollationToRowComparator(final RelCollation collation) {
+        if (collation == null) {
             return EMPTY;
         }
         List<RelFieldCollation> fieldCollations = collation.getFieldCollations();
@@ -23,17 +30,17 @@ public class RowComparatorUtil {
         return Ordering.compound(comparators);
     }
     
-    public static Comparator<Row> comparator(RelFieldCollation fieldCollation) {
+    private static Comparator<Row> comparator(final RelFieldCollation fieldCollation) {
         int nullComparison = fieldCollation.nullDirection.nullComparison;
         int fieldIdx = fieldCollation.getFieldIndex();
-        if(fieldCollation.direction == Direction.ASCENDING) {
+        if (fieldCollation.direction == Direction.ASCENDING) {
             return (o1, o2) -> comparator(o1, o2, fieldIdx, nullComparison);
         } else {
             return (o1, o2) -> comparator(o2, o1, fieldIdx, nullComparison);
         }
     }
     
-    private static int comparator(Row r1, Row r2, int fieldIdx, int nullComparison) {
+    private static int comparator(final Row r1, final Row r2, final int fieldIdx, final int nullComparison) {
         Comparable<?> c1 = r1.getColumnValue(fieldIdx + 1);
         Comparable<?> c2 = r2.getColumnValue(fieldIdx + 1);
         return RelFieldCollation.compare(c1, c2, nullComparison);

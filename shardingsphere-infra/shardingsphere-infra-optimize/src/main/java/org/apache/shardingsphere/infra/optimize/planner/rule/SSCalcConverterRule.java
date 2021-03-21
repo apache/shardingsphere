@@ -7,7 +7,7 @@ import org.apache.calcite.rel.logical.LogicalCalc;
 import org.apache.shardingsphere.infra.optimize.planner.ShardingSphereConvention;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSCalc;
 
-public class SSCalcConverterRule extends ConverterRule {
+public final class SSCalcConverterRule extends ConverterRule {
     
     public static final Config DEFAULT_CONFIG = Config.INSTANCE
             .withConversion(LogicalCalc.class, Convention.NONE,

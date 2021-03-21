@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * But partition-aware optimization will be applied in the future according to paper
  * [Query Optimization Techniques for Partitioned Tables].
  */
-public class PushJoinToScanRule extends RelRule<PushJoinToScanRule.Config> implements TransformationRule {
+public final class PushJoinToScanRule extends RelRule<PushJoinToScanRule.Config> implements TransformationRule {
 
     /**
      * Creates a RelRule.
@@ -98,7 +98,7 @@ public class PushJoinToScanRule extends RelRule<PushJoinToScanRule.Config> imple
             return true;
         }
     
-         return allSingleTableInSameDataNode(tablesWithoutBroadcast, shardingRule.getSingleTableRules());
+        return allSingleTableInSameDataNode(tablesWithoutBroadcast, shardingRule.getSingleTableRules());
     }
     
     private boolean allBindingTables(final List<String> tablesNotBroadcase, final Collection<BindingTableRule> bindingTableRules) {
@@ -162,7 +162,7 @@ public class PushJoinToScanRule extends RelRule<PushJoinToScanRule.Config> imple
 
     public interface Config extends RelRule.Config {
         Config DEFAULT = EMPTY.withOperandSupplier(b0 -> b0.operand(LogicalJoin.class).inputs(b1 -> b1.operand(LogicalScan.class).anyInputs(), 
-                b2 -> b2.operand(LogicalScan.class).anyInputs())).as(Config.class);
+            b2 -> b2.operand(LogicalScan.class).anyInputs())).as(Config.class);
         
         @Override
         default PushJoinToScanRule toRule() {

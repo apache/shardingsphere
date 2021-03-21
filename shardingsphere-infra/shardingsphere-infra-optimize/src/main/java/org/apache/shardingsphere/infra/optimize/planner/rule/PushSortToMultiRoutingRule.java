@@ -13,7 +13,7 @@ import org.apache.shardingsphere.infra.optimize.rel.physical.SSMergeSort;
 import java.math.BigDecimal;
 import java.util.function.Predicate;
 
-public class PushSortToMultiRoutingRule extends PushSortToScanRule {
+public final class PushSortToMultiRoutingRule extends PushSortToScanRule {
     
     private static final Predicate<LogicalScan> NOT_SINGLE_ROUTING_PREDICATE = logicalScan -> !logicalScan.isSingleRouting();
     

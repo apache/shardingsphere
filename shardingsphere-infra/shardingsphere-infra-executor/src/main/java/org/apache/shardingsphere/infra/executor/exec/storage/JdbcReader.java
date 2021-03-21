@@ -50,6 +50,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Read rows from sharding database through jdbc.
+ * TODO this class should be refacor. 
+ */
 public class JdbcReader {
     
     /**
@@ -113,9 +117,7 @@ public class JdbcReader {
                 ResultSet resultSet;
                 if (statement instanceof PreparedStatement) {
                     PreparedStatement pstmt = (PreparedStatement) statement;
-                    for (int i = 0; i < parameters.size(); i++) {
-                        pstmt.setObject(i + 1, parameters.get(i));
-                    }
+                    setParameters(pstmt, parameters);
                     resultSet = pstmt.executeQuery();
                 } else {
                     resultSet = statement.executeQuery(sql);
@@ -134,6 +136,12 @@ public class JdbcReader {
             return SimpleExecutor.empty(execContext, metaData);
         }
         return wrapQueryResult(execContext, results);
+    }
+    
+    private static void setParameters(final PreparedStatement pstmt, final List<Object> parameters) throws SQLException {
+        for (int i = 0; i < parameters.size(); i++) {
+            pstmt.setObject(i + 1, parameters.get(i));
+        }
     }
     
     private static Executor wrapQueryResult(final ExecContext execContext, final List<QueryResult> queryResults) {

@@ -10,7 +10,7 @@ import java.util.List;
  * This <code>Executor</code> is designed to buffer all rows from another Executor instance. This can be used in 
  * nested loop join, see {@link NestedLoopJoinExecutor}
  */
-public class BufferedExecutor extends SingleExecutor {
+public final class BufferedExecutor extends SingleExecutor {
     
     private int idx;
     
@@ -33,7 +33,7 @@ public class BufferedExecutor extends SingleExecutor {
     
     @Override
     public Row current() {
-        return rows.get(idx-1);
+        return rows.get(idx - 1);
     }
     
     @Override
@@ -47,7 +47,7 @@ public class BufferedExecutor extends SingleExecutor {
     }
     
     private void bufferRows() {
-        while(executor.moveNext()) {
+        while (executor.moveNext()) {
             Row row = executor.current();
             rows.add(row);
         }

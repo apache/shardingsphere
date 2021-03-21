@@ -7,7 +7,7 @@ import org.apache.calcite.plan.hep.HepPlanner;
 import org.apache.calcite.plan.hep.HepProgram;
 import org.apache.calcite.plan.hep.HepProgramBuilder;
 import org.apache.calcite.rel.RelNode;
-import org.apache.shardingsphere.infra.optimize.planner.PlannerRules.HEP_RULE;
+import org.apache.shardingsphere.infra.optimize.planner.PlannerRules.HepRules;
 import org.apache.shardingsphere.infra.optimize.rel.CustomLogicalRelConverter;
 
 @Slf4j
@@ -23,7 +23,7 @@ public abstract class AbstractPlanner implements Planner {
         RelNode logicalRelNode = CustomLogicalRelConverter.convert(relnode);
         
         HepProgramBuilder hepProgramBuilder = HepProgram.builder();
-        for (HEP_RULE hepRules : HEP_RULE.values()) {
+        for (HepRules hepRules : HepRules.values()) {
             hepProgramBuilder.addMatchOrder(hepRules.getMatchOrder());
             hepProgramBuilder.addGroupBegin();
             hepProgramBuilder.addRuleCollection(ImmutableList.copyOf(hepRules.getRules()));

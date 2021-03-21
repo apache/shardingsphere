@@ -11,7 +11,7 @@ public abstract class AbstractEvaluator implements Evaluator {
     }
     
     @Override
-    public RelDataType getRetType() {
+    public final RelDataType getRetType() {
         return retType;
     }
 }

@@ -10,7 +10,7 @@ import org.apache.shardingsphere.infra.optimize.rel.physical.SSNestedLoopJoin;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SSNestedLoopJoinConverterRule extends ConverterRule {
+public final class SSNestedLoopJoinConverterRule extends ConverterRule {
     
     public static final Config DEFAULT_CONFIG = Config.INSTANCE
             .withConversion(LogicalJoin.class, Convention.NONE,

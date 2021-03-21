@@ -10,7 +10,7 @@ import org.apache.shardingsphere.infra.optimize.rel.physical.SSCalc;
 
 import java.util.List;
 
-public class CalcExecutor extends SingleExecutor {
+public final class CalcExecutor extends SingleExecutor {
     
     private Evaluator conditionEvaluator;
     
@@ -18,8 +18,8 @@ public class CalcExecutor extends SingleExecutor {
     
     private QueryResultMetaData metaData;
     
-    public CalcExecutor(Executor input, QueryResultMetaData metaData, List<Evaluator> projectEvaluators, 
-                        Evaluator conditionEvaluator, final ExecContext execContext) {
+    public CalcExecutor(final Executor input, final QueryResultMetaData metaData, final List<Evaluator> projectEvaluators,
+                        final Evaluator conditionEvaluator, final ExecContext execContext) {
         super(input, execContext);
         this.metaData = metaData;
         this.projectEvaluators = projectEvaluators;
@@ -38,13 +38,13 @@ public class CalcExecutor extends SingleExecutor {
     
     @Override
     public boolean executeMove() {
-        if(conditionEvaluator != null) {
-            while(true) {
-                if(!executor.moveNext()) {
+        if (conditionEvaluator != null) {
+            while (true) {
+                if (!executor.moveNext()) {
                     return false;
                 }
                 Row row = executor.current();
-                if(conditionEvaluator.eval(row)) {
+                if (conditionEvaluator.eval(row)) {
                     return true;
                 }
             }
@@ -58,13 +58,19 @@ public class CalcExecutor extends SingleExecutor {
         Row row = executor.current();
         Object[] vals = new Object[projectEvaluators.size()];
         int idx = 0;
-        for(Evaluator evaluator : projectEvaluators) {
+        for (Evaluator evaluator : projectEvaluators) {
             vals[idx++] = evaluator.eval(row);
         }
         return new Row(vals);
     }
     
-    public static CalcExecutor build(SSCalc calc, ExecutorBuilder executorBuilder) {
+    /**
+     * Build Executor from <code>SSCalc</code>.
+     * @param calc <code>SSCalc</code> physical operator
+     * @param executorBuilder executorBuilder
+     * @return <code>CalcExecutor</code>
+     */
+    public static CalcExecutor build(final SSCalc calc, final ExecutorBuilder executorBuilder) {
         Executor input = executorBuilder.build(calc.getInput());
         RexProgram program = calc.getProgram();
         Evaluator conditionEvaluator = RexEvaluatorConverter.translateCondition(program, executorBuilder.getExecContext());

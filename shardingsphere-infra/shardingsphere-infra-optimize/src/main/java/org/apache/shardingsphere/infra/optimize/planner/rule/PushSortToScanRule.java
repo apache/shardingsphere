@@ -19,13 +19,17 @@ public abstract class PushSortToScanRule extends RelRule<PushSortToScanRule.Conf
         super(config);
     }
     
+    /**
+     * matched rule, then to execute rule.
+     * @param call rule call
+     */
     @Override
     public void onMatch(final RelOptRuleCall call) {
         LogicalScan logicalScan = pushdownSort(call.rel(0), call.rel(1));
         call.transformTo(logicalScan);
     }
     
-    protected LogicalScan pushdownSort(final LogicalSort logicalSort, final LogicalScan logicalScan) {
+    protected final LogicalScan pushdownSort(final LogicalSort logicalSort, final LogicalScan logicalScan) {
         return logicalScan.pushdown(logicalSort);
     }
     

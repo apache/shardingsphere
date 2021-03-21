@@ -18,7 +18,7 @@ public class FunctionIdentity {
     }
     
     @Override
-    public boolean equals(final Object o) {
+    public final boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -30,7 +30,7 @@ public class FunctionIdentity {
     }
     
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return Objects.hash(funcName, argTypeNames);
     }
 }

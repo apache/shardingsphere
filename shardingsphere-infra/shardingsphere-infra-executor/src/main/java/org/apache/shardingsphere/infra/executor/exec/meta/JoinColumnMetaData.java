@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map;
 
-public class JoinColumnMetaData implements QueryResultMetaData {
+public final class JoinColumnMetaData implements QueryResultMetaData {
     
     private final QueryResultMetaData left;
     

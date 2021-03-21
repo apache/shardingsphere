@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 public class MultiExecutor extends AbstractExecutor implements Executor {
     
-    private int queryResultIdx = 0;
+    private int queryResultIdx;
     
     private List<Executor> executors;
     
@@ -24,11 +24,11 @@ public class MultiExecutor extends AbstractExecutor implements Executor {
     }
     
     @Override
-    public boolean executeMove() {
-        if(queryResultIdx >= executors.size()) {
+    public final boolean executeMove() {
+        if (queryResultIdx >= executors.size()) {
             return false;
         }
-        while(true) {
+        while (true) {
             Executor queryResult = executors.get(queryResultIdx);
             if (queryResult.moveNext()) {
                 return true;
@@ -41,18 +41,18 @@ public class MultiExecutor extends AbstractExecutor implements Executor {
     }
     
     @Override
-    protected void executeInit() {
+    protected final void executeInit() {
         executors.forEach(Executor::init);
     }
     
     @Override
-    public QueryResultMetaData getMetaData() {
+    public final QueryResultMetaData getMetaData() {
         return executors.get(0).getMetaData();
     }
     
     @Override
-    public Row current() {
-        if(queryResultIdx >= executors.size()) {
+    public final Row current() {
+        if (queryResultIdx >= executors.size()) {
             return null;
         }
         return executors.get(queryResultIdx).current();

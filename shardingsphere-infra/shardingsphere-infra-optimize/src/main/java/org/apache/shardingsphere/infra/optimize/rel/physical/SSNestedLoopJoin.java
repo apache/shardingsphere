@@ -43,8 +43,8 @@ public class SSNestedLoopJoin extends SSAbstractJoin implements SSRel {
         final RelMetadataQuery mq = cluster.getMetadataQuery();
         final RelTraitSet traitSet =
                 cluster.traitSetOf(ShardingSphereConvention.INSTANCE)
-                        .replaceIfs(RelCollationTraitDef.INSTANCE,
-                                () -> RelMdCollation.enumerableNestedLoopJoin(mq, left, right, joinType));
+                        .replaceIfs(RelCollationTraitDef.INSTANCE, 
+                            () -> RelMdCollation.enumerableNestedLoopJoin(mq, left, right, joinType));
         return new SSNestedLoopJoin(cluster, traitSet, Collections.emptyList(), left, right, condition, variablesSet, joinType);
     }
     

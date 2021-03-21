@@ -19,6 +19,10 @@ public class TopNExecutor extends LimitSortExecutor {
         heap = new PriorityQueue<>(fetch, ordering);
     }
     
+    /**
+     * initialize input interator.
+     * @return initialized iterator.
+     */
     @Override
     protected final Iterator<Row> initInputRowIterator() {
         while (executor.moveNext()) {

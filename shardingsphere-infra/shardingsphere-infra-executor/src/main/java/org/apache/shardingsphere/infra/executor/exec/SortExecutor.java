@@ -25,10 +25,14 @@ public class SortExecutor extends IteratorExecutor {
     }
     
     @Override
-    public QueryResultMetaData getMetaData() {
+    public final QueryResultMetaData getMetaData() {
         return executor.getMetaData();
     }
     
+    /**
+     * initialize input interator.
+     * @return initialized iterator.
+     */
     @Override
     protected Iterator<Row> initInputRowIterator() {
         List<Row> inputRows = memSort();

@@ -18,7 +18,7 @@ public abstract class AbstractFunctionImplementor<T, R extends BuiltinFunction> 
         this.nullPolicy = nullPolicy;
     }
     
-    protected void registerFunction(final BuiltinFunction builtinFunction) {
+    protected final void registerFunction(final BuiltinFunction builtinFunction) {
         List<FunctionIdentity> functionIdentities = builtinFunction.getFunctionIdentities();
         for (FunctionIdentity functionIdentity : functionIdentities) {
             functionMap.put(functionIdentity, builtinFunction);

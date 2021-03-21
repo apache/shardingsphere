@@ -18,7 +18,7 @@ public class AggFunctionImplementor extends AbstractFunctionImplementor<Aggregat
     }
     
     @Override
-    public AggregateBuiltinFunction implement(final AggregateCall aggCall, final RelDataType[] argTypes) {
+    public final AggregateBuiltinFunction implement(final AggregateCall aggCall, final RelDataType[] argTypes) {
         SqlAggFunction sqlAggFunction = aggCall.getAggregation();
         if (sqlAggFunction instanceof SqlCountAggFunction) {
             return new CountAggregateBuiltinFunction(aggCall.getArgList(), aggCall.isDistinct());

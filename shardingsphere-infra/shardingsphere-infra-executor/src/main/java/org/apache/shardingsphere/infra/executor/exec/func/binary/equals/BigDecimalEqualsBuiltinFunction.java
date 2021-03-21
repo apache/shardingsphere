@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
-public class BigDecimalEqualsBuiltinFunction extends BinaryBuiltinFunction<BigDecimal, Boolean> {
+public final class BigDecimalEqualsBuiltinFunction extends BinaryBuiltinFunction<BigDecimal, Boolean> {
     
     public static final BigDecimalEqualsBuiltinFunction INSTANCE = new BigDecimalEqualsBuiltinFunction();
     

@@ -6,7 +6,7 @@ import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import java.sql.SQLException;
 import java.util.List;
 
-public class ResultColumnMetaData implements QueryResultMetaData {
+public final class ResultColumnMetaData implements QueryResultMetaData {
     
     private final List<ColumnMetaData> columnMetaData;
     

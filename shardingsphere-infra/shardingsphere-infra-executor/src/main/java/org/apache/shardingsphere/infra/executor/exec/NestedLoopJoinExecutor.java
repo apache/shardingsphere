@@ -9,7 +9,7 @@ import org.apache.shardingsphere.infra.optimize.rel.physical.SSNestedLoopJoin;
 /**
  * Nested loop join implementation, reference to the <code>EnumerableDefaults#nestedLoopJoinOptimized</code> of calcite.
  */
-public class NestedLoopJoinExecutor extends AbstractJoinExecutor {
+public final class NestedLoopJoinExecutor extends AbstractJoinExecutor {
     
     private Executor innerBuffer;
     
@@ -47,6 +47,7 @@ public class NestedLoopJoinExecutor extends AbstractJoinExecutor {
                     state = 1; 
                     continue;
                 case 1:
+                default:
                     // move inner
                     if (innerBuffer.moveNext()) {
                         innerValue = innerBuffer.current();
@@ -65,6 +66,8 @@ public class NestedLoopJoinExecutor extends AbstractJoinExecutor {
                                 // INNER and LEFT just return result
                                 case LEFT: 
                                     return true;
+                                default:
+                                    
                             }
                         } 
                     } else { 
@@ -76,6 +79,7 @@ public class NestedLoopJoinExecutor extends AbstractJoinExecutor {
                             return true;
                         }
                     }
+    
             }
         }
     }

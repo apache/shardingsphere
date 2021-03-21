@@ -8,8 +8,13 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 
 public class SqlDialects {
     
-    public static SqlDialect toSqlDialect(DatabaseType databaseType) {
-        if(databaseType instanceof MySQLDatabaseType) {
+    /**
+     * Convert <code>DatabaseType</code> to Calcite <code>SqlDialect</code>.
+     * @param databaseType databaseType
+     * @return <code>SqlDialect</code>
+     */
+    public static SqlDialect toSqlDialect(final DatabaseType databaseType) {
+        if (databaseType instanceof MySQLDatabaseType) {
             return MysqlSqlDialect.DEFAULT;
         } else {
             return AnsiSqlDialect.DEFAULT;

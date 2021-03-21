@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class EqualsBuiltInFunction extends BinaryBuiltinFunction<Object, Boolean> {
+public final class EqualsBuiltInFunction extends BinaryBuiltinFunction<Object, Boolean> {
     
     public static final EqualsBuiltInFunction INSTANCE = new EqualsBuiltInFunction();
     

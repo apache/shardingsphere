@@ -41,44 +41,41 @@ import static org.apache.shardingsphere.infra.optimize.planner.rule.Rules.PUSH_S
 
 public final class PlannerRules {
     
-    public static Collection<? extends RelOptRule> PRE_RULES = ImmutableList.of();
+    public static final Collection<? extends RelOptRule> PRE_RULES = ImmutableList.of();
     
-    public static Collection<? extends RelOptRule> SUB_QUERY_RULES = ImmutableList.of(FILTER_SUB_QUERY_TO_CORRELATE,
+    public static final Collection<? extends RelOptRule> SUB_QUERY_RULES = ImmutableList.of(FILTER_SUB_QUERY_TO_CORRELATE,
                             PROJECT_SUB_QUERY_TO_CORRELATE, JOIN_SUB_QUERY_TO_CORRELATE);
     
-    public static Collection<? extends RelOptRule> FILTER_RULES = ImmutableList.of(FILTER_INTO_JOIN, JOIN_CONDITION_PUSH,
+    public static final Collection<? extends RelOptRule> FILTER_RULES = ImmutableList.of(FILTER_INTO_JOIN, JOIN_CONDITION_PUSH,
             FILTER_PROJECT_TRANSPOSE, FILTER_AGGREGATE_TRANSPOSE, FILTER_SET_OP_TRANSPOSE, FILTER_MERGE);
     
-    public static Collection<? extends RelOptRule> PROJECT_RULES = ImmutableList.of(PROJECT_REMOVE, PROJECT_MERGE,
+    public static final Collection<? extends RelOptRule> PROJECT_RULES = ImmutableList.of(PROJECT_REMOVE, PROJECT_MERGE,
             PROJECT_JOIN_REMOVE, PROJECT_JOIN_REMOVE);
     
-    public static Collection<? extends RelOptRule> PUSH_TO_SCAN_HEP_RULES = ImmutableList.of(PUSH_FILTER_TO_SCAN_RULE, PUSH_PROJECT_TO_SCAN_RULE);
+    public static final Collection<? extends RelOptRule> PUSH_TO_SCAN_HEP_RULES = ImmutableList.of(PUSH_FILTER_TO_SCAN_RULE, PUSH_PROJECT_TO_SCAN_RULE);
     
-    public static Collection<? extends RelOptRule> CALC_RULES = ImmutableList.of(FILTER_TO_CALC, PROJECT_TO_CALC, FILTER_CALC_MERGE, PROJECT_CALC_MERGE);
+    public static final Collection<? extends RelOptRule> CALC_RULES = ImmutableList.of(FILTER_TO_CALC, PROJECT_TO_CALC, FILTER_CALC_MERGE, PROJECT_CALC_MERGE);
     
-    public static Collection<? extends RelOptRule> PARTITION_PUSHDOWN_HEP_RULES = ImmutableList.of(JOIN_TO_SCAN_RULE, 
+    public static final Collection<? extends RelOptRule> PARTITION_PUSHDOWN_HEP_RULES = ImmutableList.of(JOIN_TO_SCAN_RULE, 
             PUSH_FILTER_TO_SCAN_RULE, PUSH_PROJECT_TO_SCAN_RULE, PUSH_AGG_TO_SCAN_RULE, PUSH_SORT_TO_SINGLE_ROUTING_RULE, 
             PUSH_SORT_TO_MULTI_ROUTING_RULE);
     
-    public static Collection<? extends RelOptRule> AGG_RULES = ImmutableList.of(AGGREGATE_PROJECT_MERGE, AGGREGATE_JOIN_REMOVE,
+    public static final Collection<? extends RelOptRule> AGG_RULES = ImmutableList.of(AGGREGATE_PROJECT_MERGE, AGGREGATE_JOIN_REMOVE,
             AGGREGATE_JOIN_TRANSPOSE, AGGREGATE_CASE_TO_FILTER);
 
-    public static Collection<? extends RelOptRule> LIMIT_RULES = ImmutableList.of();
+    public static final Collection<? extends RelOptRule> LIMIT_RULES = ImmutableList.of();
     
+    public static final Collection<? extends RelOptRule> JOIN_RULES = ImmutableList.of();
 
-    public static Collection<? extends RelOptRule> JOIN_RULES = ImmutableList.of();
-
-    public static Collection<? extends RelOptRule> SHARDING_CONVERTER_RULES = ImmutableList.of(SSNestedLoopJoinConverterRule.DEFAULT_CONFIG.toRule(), 
+    public static final Collection<? extends RelOptRule> SHARDING_CONVERTER_RULES = ImmutableList.of(SSNestedLoopJoinConverterRule.DEFAULT_CONFIG.toRule(), 
             SSProjectConverterRule.DEFAULT_CONFIG.toRule(), SSCalcConverterRule.DEFAULT_CONFIG.toRule(), 
             SSHashAggregateConverterRule.DEFAULT_CONFIG.toRule(), SSLimitSortConverterRule.Config.DEFAULT.toRule(),
             SSSortConverterRule.DEFAULT_CONFIG.toRule());
     
-    public static Collection<Collection<? extends RelOptRule>> CASCADES_RULES = ImmutableList.of(AGG_RULES, LIMIT_RULES, PROJECT_RULES,
+    public static final Collection<Collection<? extends RelOptRule>> CASCADES_RULES = ImmutableList.of(AGG_RULES, LIMIT_RULES, PROJECT_RULES,
             PROJECT_RULES, JOIN_RULES);
     
-    
-    enum HEP_RULE {
-        
+    enum HepRules {
         PRE(PRE_RULES),
         
         FILTER(FILTER_RULES),
@@ -89,18 +86,21 @@ public final class PlannerRules {
         
         PARTITION_PUSHDOWN(HepMatchOrder.BOTTOM_UP, PARTITION_PUSHDOWN_HEP_RULES),
     
-        CALC(CALC_RULES),
-        ;
+        CALC(CALC_RULES);
         
-    
         private HepMatchOrder matchOrder;
         
         private Collection<? extends RelOptRule> rules;
         
-        HEP_RULE(Collection<? extends RelOptRule> rules) {
+        HepRules(final Collection<? extends RelOptRule> rules) {
             this(HepMatchOrder.ARBITRARY, rules);
         }
     
+        HepRules(final HepMatchOrder matchOrder, final Collection<? extends RelOptRule> rules) {
+            this.matchOrder = matchOrder;
+            this.rules = rules;
+        }
+        
         public HepMatchOrder getMatchOrder() {
             return matchOrder;
         }
@@ -108,12 +108,6 @@ public final class PlannerRules {
         public Collection<? extends RelOptRule> getRules() {
             return rules;
         }
-    
-        HEP_RULE(HepMatchOrder matchOrder, Collection<? extends RelOptRule> rules) {
-            this.matchOrder = matchOrder;
-            this.rules = rules;
-        }
-        
         
     }
 }

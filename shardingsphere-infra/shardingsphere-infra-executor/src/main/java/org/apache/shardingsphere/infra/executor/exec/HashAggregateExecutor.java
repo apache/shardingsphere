@@ -22,7 +22,7 @@ import java.util.Map.Entry;
 /**
  * Aggregate operator implementation Executor using hash .
  */
-public class HashAggregateExecutor extends SingleExecutor {
+public final class HashAggregateExecutor extends SingleExecutor {
     
     private List<Integer> groupByColumnIdx;
     
@@ -36,8 +36,8 @@ public class HashAggregateExecutor extends SingleExecutor {
     
     private Iterator<Entry<GroupByKey, List<AggregateBuiltinFunction>>> lookup;
     
-    public HashAggregateExecutor(Executor input, QueryResultMetaData metaData, List<Integer> groupByColumnIdx, 
-                                 List<AggregateBuiltinFunction> aggFuncs, ExecContext execContext) {
+    public HashAggregateExecutor(final Executor input, final QueryResultMetaData metaData, final List<Integer> groupByColumnIdx,
+                                 final List<AggregateBuiltinFunction> aggFuncs, final ExecContext execContext) {
         super(input, execContext);
         this.metaData = metaData;
         this.groupByColumnIdx = groupByColumnIdx;
@@ -52,7 +52,7 @@ public class HashAggregateExecutor extends SingleExecutor {
     
     @Override
     public boolean executeMove() {
-        if(!lookup.hasNext()) {
+        if (!lookup.hasNext()) {
             return false;
         }
         Entry<GroupByKey, List<AggregateBuiltinFunction>> entry = lookup.next();
@@ -61,7 +61,7 @@ public class HashAggregateExecutor extends SingleExecutor {
         System.arraycopy(groupByKey.getGroupByVals(), 0, rowVals, 0, groupByKey.length());
         int idx = groupByKey.length();
         List<AggregateBuiltinFunction> aggFuncs = entry.getValue();
-        for(AggregateBuiltinFunction aggFunc : aggFuncs) {
+        for (AggregateBuiltinFunction aggFunc : aggFuncs) {
             rowVals[idx++] = aggFunc.getResult();
         }
         replaceCurrent(new Row(rowVals));
@@ -70,42 +70,48 @@ public class HashAggregateExecutor extends SingleExecutor {
     
     @Override
     protected void doInit() {
-        while(executor.moveNext()) {
+        while (executor.moveNext()) {
             Row row = executor.current();
             aggregate(row);
         }
         lookup = groupByKeyAccumulators.entrySet().iterator();
     }
     
-    private void aggregate(Row row) {
+    private void aggregate(final Row row) {
         Object[] groupByVals = new Object[groupByColumnIdx.size()];
         int idx = 0;
-        for(Integer groupByIdx : groupByColumnIdx) {
-            groupByVals[idx++] = row.getColumnValue(groupByIdx+1);
+        for (Integer groupByIdx : groupByColumnIdx) {
+            groupByVals[idx++] = row.getColumnValue(groupByIdx + 1);
         }
         GroupByKey groupByKey = new GroupByKey(groupByColumnIdx, groupByVals);
-        if(!groupByKeyAccumulators.containsKey(groupByKey)) {
+        if (!groupByKeyAccumulators.containsKey(groupByKey)) {
             List<AggregateBuiltinFunction> newAggFuncs = new ArrayList<>(aggFuncs.size());
-            for(AggregateBuiltinFunction aggFunc : aggFuncs) {
+            for (AggregateBuiltinFunction aggFunc : aggFuncs) {
                 newAggFuncs.add(aggFunc.newFunc());
             }
             groupByKeyAccumulators.put(groupByKey, newAggFuncs);
         }
         
         List<AggregateBuiltinFunction> groupAggFuncs = groupByKeyAccumulators.get(groupByKey);
-        for(AggregateBuiltinFunction aggFunc : groupAggFuncs) {
+        for (AggregateBuiltinFunction aggFunc : groupAggFuncs) {
             aggFunc.aggregate(row);
         }
         
     }
     
-    public static HashAggregateExecutor build(SSHashAggregate aggregate, ExecutorBuilder executorBuilder) {
+    /**
+     * Build Executor from <code>SSHashAggregate</code>.
+     * @param aggregate <code>SSHashAggregate</code> physical operator
+     * @param executorBuilder executorBuilder
+     * @return <code>HashAggregateExecutor</code>
+     */
+    public static HashAggregateExecutor build(final SSHashAggregate aggregate, final ExecutorBuilder executorBuilder) {
         Executor input = executorBuilder.build(aggregate.getInput());
         ImmutableBitSet groupBy = aggregate.getGroupSet();
     
         List<AggregateCall> aggCalls = aggregate.getAggCallList();
         List<AggregateBuiltinFunction> aggFuncs = new ArrayList<>();
-        for(AggregateCall aggCall : aggCalls) {
+        for (AggregateCall aggCall : aggCalls) {
             AggFunctionImplementor aggImp = BuiltinFunctionTable.INSTANCE.get(aggCall.getAggregation());
             AggregateBuiltinFunction aggFunction = aggImp.implement(aggCall, new RelDataType[]{aggCall.getType()});
             aggFunction.setGroupByColumns(groupBy.asList());

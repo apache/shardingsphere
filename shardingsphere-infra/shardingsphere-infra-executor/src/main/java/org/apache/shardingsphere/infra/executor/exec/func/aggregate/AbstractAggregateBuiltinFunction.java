@@ -18,8 +18,7 @@ public abstract class AbstractAggregateBuiltinFunction<R> implements AggregateBu
     }
     
     @Override
-    public void aggregate(final Row row) {
-        
+    public final void aggregate(final Row row) {
         Object[] values = getColumnVals(row, aggColumnIdx);
         accumulate(values);
     }
@@ -31,7 +30,7 @@ public abstract class AbstractAggregateBuiltinFunction<R> implements AggregateBu
     public abstract void accumulate(Object[] args);
     
     @Override
-    public void setGroupByColumns(final List<Integer> groupByColumns) {
+    public final void setGroupByColumns(final List<Integer> groupByColumns) {
         this.groupByColumnIdx = groupByColumns;
     }
     

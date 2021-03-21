@@ -22,6 +22,15 @@ public class SSSort extends Sort implements SSRel {
         super(cluster, traits, child, collation, offset, fetch);
     }
     
+    /**
+     * Clone another Sort instance.
+     * @param traitSet relTraitSet represents an ordered set of {@link org.apache.calcite.plan.RelTrait}s.
+     * @param input Input of this operator 
+     * @param newCollation Array of sort specifications
+     * @param offset    Expression for number of rows to discard before returning first row
+     * @param fetch     Expression for number of rows to fetch
+     * @return new Sort instance
+     */
     @Override
     public Sort copy(final RelTraitSet traitSet, final RelNode input, final RelCollation newCollation, final RexNode offset, final RexNode fetch) {
         return new SSSort(input.getCluster(), traitSet, input, newCollation, offset, fetch);

@@ -26,6 +26,9 @@ public abstract class AbstractJoinExecutor extends AbstractExecutor {
         this.joinEvaluator = joinEvaluator;
     }
     
+    /**
+     * init outer and inner Executor.
+     */
     @Override
     protected void executeInit() {
         outer.init();
@@ -33,33 +36,33 @@ public abstract class AbstractJoinExecutor extends AbstractExecutor {
     }
     
     /**
-     * return left parameter for join operator according to the join type
-     * @param outer
-     * @param inner
-     * @param <T>
-     * @return
+     * return left parameter for join operator according to the join type.
+     * @param outer outer
+     * @param inner inner
+     * @param <T> parameter type
+     * @return left according joinType
      */
     protected <T> T left(final T outer, final T inner) {
         return this.joinType.generatesNullsOnLeft() ? outer : inner;
     }
     
     /**
-     * return right parameter for join operator according to the join type
-     * @param outer
-     * @param inner
-     * @param <T>
-     * @return
+     * return right parameter for join operator according to the join type.
+     * @param outer outer
+     * @param inner inner
+     * @param <T> parameter type
+     * @return right according joinType
      */
     protected <T> T right(final T outer, final T inner) {
         return this.joinType.generatesNullsOnLeft() ? inner : outer;
     }
     
     @Override
-    public QueryResultMetaData getMetaData() {
+    public final QueryResultMetaData getMetaData() {
         return new JoinColumnMetaData(left(outer.getMetaData(), inner.getMetaData()), right(outer.getMetaData(), inner.getMetaData()), joinType);
     }
     
-    protected JoinRow newJoinRow(Row outerRow, Row innerRow) {
+    protected final JoinRow newJoinRow(final Row outerRow, final Row innerRow) {
         return new JoinRow(left(outerRow, innerRow), right(outerRow, innerRow));
     }
 }

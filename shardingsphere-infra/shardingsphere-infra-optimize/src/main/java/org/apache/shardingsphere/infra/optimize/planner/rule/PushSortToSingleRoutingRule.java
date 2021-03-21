@@ -3,7 +3,7 @@ package org.apache.shardingsphere.infra.optimize.planner.rule;
 import org.apache.calcite.rel.logical.LogicalSort;
 import org.apache.shardingsphere.infra.optimize.rel.logical.LogicalScan;
 
-public class PushSortToSingleRoutingRule extends PushSortToScanRule {
+public final class PushSortToSingleRoutingRule extends PushSortToScanRule {
     /**
      * Creates a RelRule.
      *

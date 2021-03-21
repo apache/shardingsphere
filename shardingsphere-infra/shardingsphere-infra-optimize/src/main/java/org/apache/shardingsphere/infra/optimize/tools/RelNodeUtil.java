@@ -6,7 +6,7 @@ import org.apache.calcite.util.Util;
 import java.util.List;
 
 /**
- * Untility function for {@link org.apache.calcite.rel.RelNode}
+ * Untility function for {@link org.apache.calcite.rel.RelNode}.
  */
 public class RelNodeUtil {
     

@@ -155,8 +155,7 @@ public class SqlNodeConverter {
         String expression = expressionProjection.getText();
         return SqlCharStringLiteral.createCharString(expression, SqlParserPos.ZERO);
     }
-
-
+    
     public static SqlNode convertWhere(final WhereSegment where) {
         ExpressionSegment whereExpr = where.getExpr();
         return convertExpression(whereExpr);
@@ -165,23 +164,23 @@ public class SqlNodeConverter {
         // TODO not in
     }
 
-    public static SqlNodeList convertGroupBy(GroupByContext groupBy) {
+    public static SqlNodeList convertGroupBy(final GroupByContext groupBy) {
         Collection<OrderByItem> groupByItems = groupBy.getItems();
-        if(groupByItems == null || groupByItems.size() == 0) {
+        if (groupByItems == null || groupByItems.size() == 0) {
             return null;
         }
         List<SqlNode> groupBySqlNodes = convertOrderByItems(groupByItems);
         return new SqlNodeList(groupBySqlNodes, SqlParserPos.ZERO);
     }
 
-    public static SqlNodeList convertOrderBy(OrderByContext orderBy) {
+    public static SqlNodeList convertOrderBy(final OrderByContext orderBy) {
         Collection<OrderByItem> orderByItems = orderBy.getItems();
         List<SqlNode> orderBySqlNodes = convertOrderByItems(orderByItems);
         return new SqlNodeList(orderBySqlNodes, SqlParserPos.ZERO);
     }
 
-    public static Map.Entry<SqlNode, SqlNode> convertPagination(PaginationContext pagination) {
-        if(pagination == null || !pagination.isHasPagination()) {
+    public static Map.Entry<SqlNode, SqlNode> convertPagination(final PaginationContext pagination) {
+        if (pagination == null || !pagination.isHasPagination()) {
             return new SimpleEntry<>(null, null);
         }
         // TODO fixme
@@ -189,138 +188,133 @@ public class SqlNodeConverter {
 
         Optional<Long> rowCountOptional = pagination.getActualRowCount();
         SqlNode rowCount = null;
-        if(rowCountOptional.isPresent()) {
+        if (rowCountOptional.isPresent()) {
             rowCount = SqlLiteral.createExactNumeric(String.valueOf(rowCountOptional.get()), SqlParserPos.ZERO);
         }
         return new SimpleEntry<>(offSet, rowCount);
     }
 
-    public static List<SqlNode> convertOrderByItems(Collection<OrderByItem> orderByItems) {
+    public static List<SqlNode> convertOrderByItems(final Collection<OrderByItem> orderByItems) {
         List<SqlNode> sqlNodes = Lists.newArrayList();
-        for(OrderByItem orderByItem : orderByItems) {
+        for (OrderByItem orderByItem : orderByItems) {
             OrderByItemSegment orderByItemSegment = orderByItem.getSegment();
-            if(orderByItemSegment instanceof ColumnOrderByItemSegment) {
-                sqlNodes.add(convertColumnOrderByToSqlNode((ColumnOrderByItemSegment)orderByItemSegment));
-            } else if(orderByItemSegment instanceof ExpressionOrderByItemSegment) {
+            if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
+                sqlNodes.add(convertColumnOrderByToSqlNode((ColumnOrderByItemSegment) orderByItemSegment));
+            } else if (orderByItemSegment instanceof ExpressionOrderByItemSegment) {
                 // sqlNodes.add(convertToSqlNode((ExpressionOrderByItemSegment)orderByItemSegment));
-            } else if(orderByItemSegment instanceof IndexOrderByItemSegment) {
+            } else if (orderByItemSegment instanceof IndexOrderByItemSegment) {
                 // sqlNodes.add(convertToSqlNode((IndexOrderByItemSegment)orderByItemSegment));
-            } else if(orderByItemSegment instanceof TextOrderByItemSegment) {
+            } else if (orderByItemSegment instanceof TextOrderByItemSegment) {
                 // sqlNodes.add(convertToSqlNode((TextOrderByItemSegment)orderByItemSegment));
             }
         }
         return sqlNodes;
     }
 
-    public static SqlNode convertColumnOrderByToSqlNode(ColumnOrderByItemSegment columnOrderBy) {
+    public static SqlNode convertColumnOrderByToSqlNode(final ColumnOrderByItemSegment columnOrderBy) {
         SqlNode sqlNode = convertToSqlNode(columnOrderBy.getColumn());
-        if(Objects.equals(OrderDirection.DESC, columnOrderBy.getOrderDirection())) {
-            sqlNode = new SqlBasicCall(SqlStdOperatorTable.DESC, new SqlNode[] { sqlNode }, SqlParserPos.ZERO);
+        if (Objects.equals(OrderDirection.DESC, columnOrderBy.getOrderDirection())) {
+            sqlNode = new SqlBasicCall(SqlStdOperatorTable.DESC, new SqlNode[] {sqlNode}, SqlParserPos.ZERO);
         }
         return sqlNode;
     }
 
-    public static SqlNode convertTableSegment(TableSegment table) {
-        if(table instanceof SimpleTableSegment) {
-            TableNameSegment tableName = ((SimpleTableSegment)table).getTableName();
+    public static SqlNode convertTableSegment(final TableSegment table) {
+        if (table instanceof SimpleTableSegment) {
+            TableNameSegment tableName = ((SimpleTableSegment) table).getTableName();
             SqlNode tableNameSqlNode = new SqlIdentifier(tableName.getIdentifier().getValue(), SqlParserPos.ZERO);
-            if(table.getAlias().isPresent()) {
+            if (table.getAlias().isPresent()) {
                 SqlNode aliasIdentifier = new SqlIdentifier(table.getAlias().get(), SqlParserPos.ZERO);
-                SqlNode tableAsSqlNode = new SqlBasicCall(SqlStdOperatorTable.AS, new SqlNode[] { tableNameSqlNode,
-                        aliasIdentifier }, SqlParserPos.ZERO);
+                SqlNode tableAsSqlNode = new SqlBasicCall(SqlStdOperatorTable.AS, new SqlNode[] {tableNameSqlNode, aliasIdentifier}, SqlParserPos.ZERO);
                 return tableAsSqlNode;
             } else {
                 return tableNameSqlNode;
             }
-        } else if(table instanceof SubqueryTableSegment) {
+        } else if (table instanceof SubqueryTableSegment) {
             // TODO
-        } else if(table instanceof JoinTableSegment) {
-            JoinTableSegment join = (JoinTableSegment)table;
+        } else if (table instanceof JoinTableSegment) {
+            JoinTableSegment join = (JoinTableSegment) table;
             String joinType = join.getJoinType();
             SqlNode left = convertTableSegment(join.getLeft());
             SqlNode right = convertTableSegment(join.getRight());
             ExpressionSegment expressionSegment = join.getCondition();
             SqlNode condition = convertExpression(expressionSegment);
 
-            SqlLiteral conditionType = condition == null?
-                    JoinConditionType.NONE.symbol(SqlParserPos.ZERO)
+            SqlLiteral conditionType = condition == null ? JoinConditionType.NONE.symbol(SqlParserPos.ZERO)
                     : JoinConditionType.ON.symbol(SqlParserPos.ZERO);
-
-
-            if(joinType == null) {
-                return new SqlJoin(SqlParserPos.ZERO, left
-                        , SqlLiteral.createBoolean(false, SqlParserPos.ZERO)
-                        , JoinType.INNER.symbol(SqlParserPos.ZERO), right
-                        , conditionType
-                        , condition);
-            } else if(joinType == "INNER") {
+            
+            if (joinType == null) {
+                return new SqlJoin(SqlParserPos.ZERO, left, 
+                        SqlLiteral.createBoolean(false, SqlParserPos.ZERO), 
+                        JoinType.INNER.symbol(SqlParserPos.ZERO), right, conditionType, condition);
+            } else if ("INNER".equals(joinType)) {
 
             }
         }
         throw new UnsupportedOperationException("unsupportd TableSegment type: " + table.getClass());
     }
 
-    public static SqlNode convertBinaryOperationExpression(BinaryOperationExpression binaryOperationExpression) {
+    public static SqlNode convertBinaryOperationExpression(final BinaryOperationExpression binaryOperationExpression) {
         SqlNode left = convertExpression(binaryOperationExpression.getLeft());
         SqlNode right = convertExpression(binaryOperationExpression.getRight());
         String operator = binaryOperationExpression.getOperator();
         BinarySqlOperator binarySqlOperator = BinarySqlOperator.value(operator);
-        return new SqlBasicCall(binarySqlOperator.getSqlBinaryOperator(), new SqlNode[] { left, right },
+        return new SqlBasicCall(binarySqlOperator.getSqlBinaryOperator(), new SqlNode[] {left, right},
                 SqlParserPos.ZERO);
     }
 
-    public static SqlNode convertToSqlNode(ColumnSegment column) {
-        String columnName = column.getIdentifier().getValue();
-        Optional<OwnerSegment> ownerOptional = column.getOwner();
-        String ownernName = "";
-        if(ownerOptional.isPresent()) {
-            ownernName = ownerOptional.get().getIdentifier().getValue();
-        }
-        return new SqlIdentifier(Arrays.asList(ownernName, columnName), SqlParserPos.ZERO);
-    }
-
-    public static SqlNode convertExpression(ExpressionSegment expression) {
-        if(expression instanceof LiteralExpressionSegment) {
-            return convertToSqlNode((LiteralExpressionSegment)expression);
-        } else if(expression instanceof CommonExpressionSegment) {
+    public static SqlNode convertExpression(final ExpressionSegment expression) {
+        if (expression instanceof LiteralExpressionSegment) {
+            return convertToSqlNode((LiteralExpressionSegment) expression);
+        } else if (expression instanceof CommonExpressionSegment) {
             // TODO return convertToSqlNode((CommonExpressionSegment)expression);
         } else if (expression instanceof ListExpression) {
-            List<ExpressionSegment> items = ((ListExpression)expression).getItems();
+            List<ExpressionSegment> items = ((ListExpression) expression).getItems();
             SqlNode left = null;
-            for(ExpressionSegment item : items) {
+            for (ExpressionSegment item : items) {
                 SqlNode sqlNode = convertExpression(item);
-                if(sqlNode == null) {
+                if (sqlNode == null) {
                     continue;
                 }
-                if(left == null) {
+                if (left == null) {
                     left = sqlNode;
                     continue;
                 }
                 left = new SqlBasicCall(SqlStdOperatorTable.OR, new SqlNode[] {left, sqlNode}, SqlParserPos.ZERO);
             }
             return left;
-        } else if(expression instanceof BinaryOperationExpression) {
-            return convertBinaryOperationExpression((BinaryOperationExpression)expression);
-        } else if(expression instanceof ColumnSegment) {
-            return convertColumnSegment((ColumnSegment)expression);
+        } else if (expression instanceof BinaryOperationExpression) {
+            return convertBinaryOperationExpression((BinaryOperationExpression) expression);
+        } else if (expression instanceof ColumnSegment) {
+            return convertColumnSegment((ColumnSegment) expression);
         }
         throw new UnsupportedOperationException("unsupportd TableSegment type: " + expression.getClass());
     }
 
-    private static SqlNode convertColumnSegment(ColumnSegment columnSegment) {
+    private static SqlNode convertColumnSegment(final ColumnSegment columnSegment) {
         String columnName = columnSegment.getIdentifier().getValue();
         Optional<OwnerSegment> owner = columnSegment.getOwner();
-        return new SqlIdentifier(Arrays.asList(owner.isPresent() ? owner.get().getIdentifier().getValue(): "", columnName), SqlParserPos.ZERO);
+        return new SqlIdentifier(Arrays.asList(owner.isPresent() ? owner.get().getIdentifier().getValue() : "", columnName), SqlParserPos.ZERO);
     }
 
-    public static SqlNode convertToSqlNode(LiteralExpressionSegment literalExpression) {
+    public static SqlNode convertToSqlNode(final LiteralExpressionSegment literalExpression) {
         Object literals = literalExpression.getLiterals();
-        if(literals.getClass() == Integer.class) {
+        if (literals.getClass() == Integer.class) {
             return SqlLiteral.createExactNumeric(String.valueOf(literalExpression.getLiterals()), SqlParserPos.ZERO);
-        } else if(literals.getClass() == String.class) {
-            return SqlLiteral.createCharString((String)literalExpression.getLiterals(), SqlParserPos.ZERO);
+        } else if (literals.getClass() == String.class) {
+            return SqlLiteral.createCharString((String) literalExpression.getLiterals(), SqlParserPos.ZERO);
         }
         return null;
+    }
+    
+    public static SqlNode convertToSqlNode(final ColumnSegment column) {
+        String columnName = column.getIdentifier().getValue();
+        Optional<OwnerSegment> ownerOptional = column.getOwner();
+        String ownernName = "";
+        if (ownerOptional.isPresent()) {
+            ownernName = ownerOptional.get().getIdentifier().getValue();
+        }
+        return new SqlIdentifier(Arrays.asList(ownernName, columnName), SqlParserPos.ZERO);
     }
 
 }

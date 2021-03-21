@@ -32,16 +32,26 @@ public abstract class AbstractExecutor implements Executor {
         return executeMove();
     }
     
+    /**
+     * default implementation for {@link Executor#reset()}.
+     */
     @Override
     public void reset() {
         throw new UnsupportedOperationException();
     }
     
+    /**
+     * default implementation for {@link Executor#close()}.
+     */
     @Override
     public void close() {
         
     }
     
+    /**
+     * Get current Row.
+     * @return current Row.
+     */
     @Override
     public Row current() {
         return current;
@@ -66,6 +76,10 @@ public abstract class AbstractExecutor implements Executor {
      */
     protected abstract boolean executeMove();
     
+    /**
+     * Decorate this Executor to Iterator.
+     * @return Iterator.
+     */
     @Override
     public Iterator<Row> iterator() {
         return new Iterator<Row>() {
@@ -82,7 +96,7 @@ public abstract class AbstractExecutor implements Executor {
     }
     
     @Override
-    public boolean isInited() {
+    public final boolean isInited() {
         return inited;
     }
     

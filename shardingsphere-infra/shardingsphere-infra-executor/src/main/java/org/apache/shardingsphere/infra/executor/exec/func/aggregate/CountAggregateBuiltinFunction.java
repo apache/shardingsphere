@@ -5,7 +5,7 @@ import org.apache.calcite.sql.SqlKind;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CountAggregateBuiltinFunction extends AbstractAggregateBuiltinFunction<Long> {
+public final class CountAggregateBuiltinFunction extends AbstractAggregateBuiltinFunction<Long> {
     
     private long count;
     

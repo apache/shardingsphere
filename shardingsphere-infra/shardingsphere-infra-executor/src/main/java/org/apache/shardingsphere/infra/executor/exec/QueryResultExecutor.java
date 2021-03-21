@@ -10,7 +10,7 @@ import java.sql.SQLException;
 /**
  * Wrapper <code>QueryResult</code> as <code>Executor</code>.
  */
-public class QueryResultExecutor extends AbstractExecutor {
+public final class QueryResultExecutor extends AbstractExecutor {
     
     private QueryResult queryResult;
     

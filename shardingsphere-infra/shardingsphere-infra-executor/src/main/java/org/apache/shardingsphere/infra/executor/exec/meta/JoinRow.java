@@ -2,7 +2,7 @@ package org.apache.shardingsphere.infra.executor.exec.meta;
 
 import java.util.Objects;
 
-public class JoinRow extends Row {
+public final class JoinRow extends Row {
     
     private Row left;
     

@@ -13,7 +13,7 @@ public class ColumnEvaluator extends AbstractEvaluator {
     }
     
     @Override
-    public <T> T eval(final Row row) {
+    public final <T> T eval(final Row row) {
         return row.getColumnValue(idx + 1);
     }
 }

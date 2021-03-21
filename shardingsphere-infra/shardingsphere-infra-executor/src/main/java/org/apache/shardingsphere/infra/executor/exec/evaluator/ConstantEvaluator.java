@@ -15,7 +15,7 @@ public class ConstantEvaluator extends AbstractEvaluator {
     }
     
     @Override
-    public <T> T eval(final Row row) {
+    public final <T> T eval(final Row row) {
         return (T) value;
     }
 }

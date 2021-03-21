@@ -1,6 +1,5 @@
 package org.apache.shardingsphere.infra.executor.exec;
 
-
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.shardingsphere.infra.executor.exec.meta.Row;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
@@ -12,8 +11,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 public interface Executor extends Enumerator<Row>, Iterable<Row> {
     
     /**
-     * get the meta data of this <code>Executor</code>
-     * @return
+     * get the meta data of this <code>Executor</code>.
+     * @return meta data instance.
      */
     QueryResultMetaData getMetaData();
     

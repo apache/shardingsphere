@@ -9,7 +9,7 @@ import org.apache.shardingsphere.infra.optimize.rel.logical.LogicalScan;
 /**
  * Pushdown Project to LogicalScan.
  */
-public class PushProjectToScanRule extends RelRule<PushProjectToScanRule.Config> implements TransformationRule {
+public final class PushProjectToScanRule extends RelRule<PushProjectToScanRule.Config> implements TransformationRule {
     
     public static final PushProjectToScanRule INSTANCE = Config.DEFAULT.toRule();
     

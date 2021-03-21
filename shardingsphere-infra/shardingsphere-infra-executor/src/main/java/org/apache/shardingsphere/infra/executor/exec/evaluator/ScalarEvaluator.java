@@ -5,7 +5,7 @@ import org.apache.shardingsphere.infra.executor.exec.func.BuiltinFunction;
 import org.apache.shardingsphere.infra.executor.exec.func.EvalBuiltinFunction;
 import org.apache.shardingsphere.infra.executor.exec.meta.Row;
 
-public class ScalarEvaluator extends AbstractEvaluator implements Evaluator {
+public final class ScalarEvaluator extends AbstractEvaluator implements Evaluator {
     
     private Evaluator[] evaluatorArgs;
     

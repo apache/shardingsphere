@@ -9,9 +9,14 @@ import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MetaDataConverter {
+public final class MetaDataConverter {
     
-    public static List<ColumnMetaData> convertFrom(RelDataType relDataType) {
+    /**
+     * Convert <code>RelDataType</code> to <code>ColumnMetaData</code>.
+     * @param relDataType relDataType
+     * @return <code>ColumnMetaData</code> list
+     */
+    public static List<ColumnMetaData> convertFrom(final RelDataType relDataType) {
         return relDataType.getFieldList().stream().map(relDataTypeField -> {
             String columnName = relDataTypeField.getName();
             RelDataType fieldDataType = relDataTypeField.getType();
@@ -20,7 +25,13 @@ public class MetaDataConverter {
         }).collect(Collectors.toList());
     }
     
-    public static QueryResultMetaData buildMetaData(RelNode relNode) {
+    /**
+     * Build <code>QueryResultMetaData</code> from <code>RelNode</code>, this function depends 
+     * on {@link #convertFrom(RelDataType)}.
+     * @param relNode relNode
+     * @return <code>QueryResultMetaData</code> 
+     */
+    public static QueryResultMetaData buildMetaData(final RelNode relNode) {
         return new ResultColumnMetaData(convertFrom(relNode.getRowType()));
     }
 }

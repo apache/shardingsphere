@@ -8,7 +8,7 @@ import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.util.Util;
 
-public class ShardingSqlImplementor extends RelToSqlConverter {
+public final class ShardingSqlImplementor extends RelToSqlConverter {
     /**
      * Creates a RelToSqlConverter.
      *

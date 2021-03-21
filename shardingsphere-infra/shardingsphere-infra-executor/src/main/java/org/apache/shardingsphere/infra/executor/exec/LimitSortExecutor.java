@@ -11,8 +11,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.apache.shardingsphere.infra.executor.exec.tool.RowComparatorUtil.EMPTY;
-
 /**
  * Executor with offset and fetch, ordering is optional.
  */
@@ -34,10 +32,14 @@ public class LimitSortExecutor extends SortExecutor {
         this.fetch = fetch;
     }
     
+    /**
+     * initialize input interator.
+     * @return initialized iterator.
+     */
     @Override
     protected Iterator<Row> initInputRowIterator() {
         Iterator<Row> inputRowIterator;
-        if(ordering == EMPTY) {
+        if (ordering == RowComparatorUtil.EMPTY) {
             inputRowIterator = super.initInputRowIterator();
         } else {
             inputRowIterator = new Iterator<Row>() {
@@ -56,24 +58,30 @@ public class LimitSortExecutor extends SortExecutor {
         return inputRowIterator;
     }
     
-    protected void skipOffsetRows(Iterator<Row> inputRowIterator) {
+    protected final void skipOffsetRows(final Iterator<Row> inputRowIterator) {
         int skipNum = 0;
-        while(inputRowIterator.hasNext() && skipNum < offset) {
+        while (inputRowIterator.hasNext() && skipNum < offset) {
             inputRowIterator.next();
             skipNum++;
         }
     }
     
     @Override
-    public boolean executeMove() {
-        if(super.moveNext() && fetchedNum < fetch) {
+    public final boolean executeMove() {
+        if (super.moveNext() && fetchedNum < fetch) {
             fetchedNum++;
             return true;
         }
         return false;
     }
     
-    public static LimitSortExecutor build(SSLimitSort limitSort, ExecutorBuilder executorBuilder) {
+    /**
+     * Build Executor from <code>LimitSortExecutor</code>.
+     * @param limitSort <code>SSLimitSort</code> physical operator
+     * @param executorBuilder executorBuilder
+     * @return <code>LimitSortExecutor</code>
+     */
+    public static LimitSortExecutor build(final SSLimitSort limitSort, final ExecutorBuilder executorBuilder) {
         Executor input = executorBuilder.build(limitSort.getInput());
         Comparator<Row> ordering = RowComparatorUtil.convertCollationToRowComparator(limitSort.getCollation());
         int offset = 0;
@@ -81,20 +89,20 @@ public class LimitSortExecutor extends SortExecutor {
         if (limitSort.offset != null) {
             offset = parseIntValueFromRexNode(limitSort.offset, executorBuilder.getExecContext().getParameters());
         }
-        if(limitSort.fetch != null) {
+        if (limitSort.fetch != null) {
             fetch = parseIntValueFromRexNode(limitSort.fetch, executorBuilder.getExecContext().getParameters());
         }
         int topNOffset = 0;
-        if(ordering != EMPTY && offset <= topNOffset) {
+        if (ordering != RowComparatorUtil.EMPTY && offset <= topNOffset) {
             return new TopNExecutor(input, ordering, offset, fetch, executorBuilder.getExecContext());
         }
         return new LimitSortExecutor(input, ordering, offset, fetch, executorBuilder.getExecContext());
     }
     
-    private static int parseIntValueFromRexNode(RexNode rexNode, List<Object> parameters) {
-        if(rexNode instanceof RexDynamicParam) {
+    private static int parseIntValueFromRexNode(final RexNode rexNode, final List<Object> parameters) {
+        if (rexNode instanceof RexDynamicParam) {
             RexDynamicParam param = (RexDynamicParam) rexNode;
-            return (int)parameters.get(param.getIndex());
+            return (int) parameters.get(param.getIndex());
         } else {
             return RexLiteral.intValue(rexNode);
         }

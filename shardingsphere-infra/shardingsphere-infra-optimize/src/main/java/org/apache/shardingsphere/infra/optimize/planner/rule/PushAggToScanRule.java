@@ -7,7 +7,7 @@ import org.apache.calcite.rel.rules.TransformationRule;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.shardingsphere.infra.optimize.rel.logical.LogicalScan;
 
-public class PushAggToScanRule extends RelRule<PushAggToScanRule.Config> implements TransformationRule {
+public final class PushAggToScanRule extends RelRule<PushAggToScanRule.Config> implements TransformationRule {
     
     /**
      * Creates a RelRule.

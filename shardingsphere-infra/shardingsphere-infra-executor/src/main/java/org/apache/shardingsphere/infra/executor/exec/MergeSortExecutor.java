@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Executor with multi input Executors and read rows from these Executors useing merge sort algorithm.
  */
-public class MergeSortExecutor extends AbstractExecutor {
+public final class MergeSortExecutor extends AbstractExecutor {
     
     private List<Executor> executors;
     
