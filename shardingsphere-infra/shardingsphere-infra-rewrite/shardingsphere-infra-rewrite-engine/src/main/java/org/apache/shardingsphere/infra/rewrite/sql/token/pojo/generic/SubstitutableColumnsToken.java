@@ -27,10 +27,11 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -63,7 +64,8 @@ public final class SubstitutableColumnsToken extends SQLToken implements Substit
         List<String> actualColumnNames = new ArrayList<>();
         Map<String, List<SubstitutableColumn>> tableColumns = substitutableColumns.stream().collect(Collectors.groupingBy(SubstitutableColumn::getTableName));
         for (Map.Entry<String, List<SubstitutableColumn>> each : tableColumns.entrySet()) {
-            String actualTableName = routeUnit.getActualTableNames(each.getKey()).iterator().next();
+            Set<String> actualTableNames = routeUnit.getActualTableNames(each.getKey());
+            String actualTableName = actualTableNames.isEmpty() ? each.getKey().toLowerCase() : actualTableNames.iterator().next();
             List<String> tableActualColumns = each.getValue().stream().map(column -> {
                 String actualColumnName = column.getQuoteCharacter().wrap(column.getName());
                 if (column.getAlias().isPresent()) {
