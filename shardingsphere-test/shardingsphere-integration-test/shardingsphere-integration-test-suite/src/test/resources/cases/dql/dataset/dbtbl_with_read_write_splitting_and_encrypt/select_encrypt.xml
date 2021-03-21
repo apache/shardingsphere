@@ -20,12 +20,13 @@
         <column name="user_id" />
         <column name="address_id"/>
         <column name="pwd" />
+        <column name="status" />
     </metadata>
-    <row values="0, 10000, a00" />
-    <row values="1, 11000, b01" />
-    <row values="2, 12000, c02" />
-    <row values="3, 13000, d03" />
-    <row values="4, 14000, e04" />
+    <row values="0, 10000, a00, init_read" />
+    <row values="1, 11000, b01, init_read" />
+    <row values="2, 12000, c02, init_read" />
+    <row values="3, 13000, d03, init_read" />
+    <row values="4, 14000, e04, init_read" />
     <row values="5, 15000, f05" />
     <row values="6, 16000, g06" />
     <row values="7, 17000, h07" />

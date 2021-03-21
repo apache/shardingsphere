@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * SQL rewrite entry.
@@ -42,6 +43,9 @@ public final class SQLRewriteEntry {
     static {
         ShardingSphereServiceLoader.register(SQLRewriteContextDecorator.class);
     }
+    
+    @SuppressWarnings("rawtypes")
+    private static final Map<Collection<ShardingSphereRule>, Map<ShardingSphereRule, SQLRewriteContextDecorator>> RULES_TO_DECORATORS_MAP = new ConcurrentHashMap<>(32, 1);
     
     private final ShardingSphereSchema schema;
     
@@ -53,7 +57,7 @@ public final class SQLRewriteEntry {
     public SQLRewriteEntry(final ShardingSphereSchema schema, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
         this.schema = schema;
         this.props = props;
-        decorators = OrderedSPIRegistry.getRegisteredServices(rules, SQLRewriteContextDecorator.class);
+        decorators = RULES_TO_DECORATORS_MAP.computeIfAbsent(rules, key -> OrderedSPIRegistry.getRegisteredServices(key, SQLRewriteContextDecorator.class));
     }
     
     /**
