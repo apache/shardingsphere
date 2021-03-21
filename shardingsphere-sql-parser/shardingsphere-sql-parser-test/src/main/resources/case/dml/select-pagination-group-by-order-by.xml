@@ -1750,20 +1750,20 @@
                             <shorthand-projection start-index="22" stop-index="27">
                                 <owner start-index="22" stop-index="25" name="row_"/>
                             </shorthand-projection>
-                            <column-projection start-index="30" stop-index="35" name="rownum" alias="rownum_"/>
+                            <column-projection start-index="30" stop-index="43" name="rownum" alias="rownum_"/>
                         </projections>
                         <from>
                             <subquery-table alias="row_">
                                 <subquery>
                                     <select>
                                         <projections start-index="58" stop-index="139">
-                                            <column-projection start-index="58" stop-index="73" name="order_id" alias="order_id">
+                                            <column-projection start-index="58" stop-index="85" name="order_id" alias="order_id">
                                                 <owner start-index="58" stop-index="64" name="order0_"/>
                                             </column-projection>
-                                            <column-projection start-index="88" stop-index="101" name="status" alias="status">
+                                            <column-projection start-index="88" stop-index="111" name="status" alias="status">
                                                 <owner start-index="88" stop-index="94" name="order0_"/>
                                             </column-projection>
-                                            <column-projection start-index="114" stop-index="128" name="user_id" alias="user_id">
+                                            <column-projection start-index="114" stop-index="139" name="user_id" alias="user_id">
                                                 <owner start-index="114" stop-index="120" name="order0_"/>
                                             </column-projection>
                                         </projections>
@@ -1921,20 +1921,20 @@
                             <shorthand-projection start-index="22" stop-index="27">
                                 <owner start-index="22" stop-index="25" name="row_"/>
                             </shorthand-projection>
-                            <column-projection start-index="30" stop-index="35" name="rownum" alias="rownum_"/>
+                            <column-projection start-index="30" stop-index="43" name="rownum" alias="rownum_"/>
                         </projections>
                         <from>
                             <subquery-table alias="row_">
                                 <subquery>
                                     <select>
                                         <projections start-index="58" stop-index="139">
-                                            <column-projection start-index="58" stop-index="73" name="order_id" alias="order_id">
+                                            <column-projection start-index="58" stop-index="85" name="order_id" alias="order_id">
                                                 <owner start-index="58" stop-index="64" name="order0_"/>
                                             </column-projection>
-                                            <column-projection start-index="88" stop-index="101" name="status" alias="status">
+                                            <column-projection start-index="88" stop-index="111" name="status" alias="status">
                                                 <owner start-index="88" stop-index="94" name="order0_"/>
                                             </column-projection>
-                                            <column-projection start-index="114" stop-index="128" name="user_id" alias="user_id">
+                                            <column-projection start-index="114" stop-index="139" name="user_id" alias="user_id">
                                                 <owner start-index="114" stop-index="120" name="order0_"/>
                                             </column-projection>
                                         </projections>
