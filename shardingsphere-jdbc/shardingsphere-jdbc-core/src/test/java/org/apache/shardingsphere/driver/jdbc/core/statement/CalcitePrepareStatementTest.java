@@ -61,7 +61,7 @@ public final class CalcitePrepareStatementTest extends AbstractShardingSphereDat
 
     private static final String SELECT_SQL_BY_ID_ACROSS_TWO_SHARDING_TABLES =
             "select o.order_id_sharding, i.order_id from t_order_calcite_sharding o, t_order_item_calcite_sharding i "
-                    + "where o.order_id_sharding = i.item_id and i.order_id = ?";
+                    + "where o.order_id_sharding = i.item_id and i.order_id > ?";
 
     @Test
     public void assertQueryWithCalciteInSingleTables() throws SQLException {
@@ -179,11 +179,15 @@ public final class CalcitePrepareStatementTest extends AbstractShardingSphereDat
     public void assertQueryWithCalciteBetweenTwoShardingTables() throws SQLException {
         ShardingSpherePreparedStatement preparedStatement = (ShardingSpherePreparedStatement) getShardingSphereDataSource()
                 .getConnection().prepareStatement(SELECT_SQL_BY_ID_ACROSS_TWO_SHARDING_TABLES);
-        preparedStatement.setInt(1, 10001);
+        preparedStatement.setInt(1, 10000);
         ResultSet resultSet = preparedStatement.executeQuery();
         assertNotNull(resultSet);
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(1010));
         assertThat(resultSet.getInt(2), is(10001));
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(1011));
+        assertThat(resultSet.getInt(2), is(10001));
+        assertFalse(resultSet.next());
     }
 }

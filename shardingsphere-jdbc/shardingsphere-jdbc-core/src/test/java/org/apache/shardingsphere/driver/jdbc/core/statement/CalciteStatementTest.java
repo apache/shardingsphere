@@ -214,5 +214,9 @@ public final class CalciteStatementTest extends AbstractShardingSphereDataSource
         assertTrue(resultSet.next());
         assertThat(resultSet.getInt(1), is(1010));
         assertThat(resultSet.getInt(2), is(10001));
+        assertTrue(resultSet.next());
+        assertThat(resultSet.getInt(1), is(1011));
+        assertThat(resultSet.getInt(2), is(10001));
+        assertFalse(resultSet.next());
     }
 }
