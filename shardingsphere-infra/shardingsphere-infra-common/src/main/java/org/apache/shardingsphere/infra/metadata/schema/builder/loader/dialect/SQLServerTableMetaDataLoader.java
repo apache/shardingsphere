@@ -29,7 +29,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -39,13 +43,14 @@ import java.util.stream.Collectors;
  */
 public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataLoader {
 
-    private static final String BASIC_TABLE_META_DATA_SQL = "SELECT obj.name AS TABLE_NAME,col.name AS COLUMN_NAME,t.name AS DATA_TYPE," +
-            "col.collation_name AS COLLATION_NAME, is_identity AS IS_IDENTITY, " +
-            "(SELECT top 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id=ind.object_id " +
-            "AND ic.index_id=ind.index_id AND ind.name LIKE 'PK_%' where ic.object_id=obj.object_id AND ic.column_id=col.column_id) AS IS_PRIMARY_KEY" +
-            "FROM sys.objects obj inner join sys.columns col ON obj.object_id=col.object_id LEFT JOIN sys.types t ON t.user_type_id=col.user_type_id";
+    private static final String BASIC_TABLE_META_DATA_SQL = "SELECT obj.name AS TABLE_NAME,col.name AS COLUMN_NAME,t.name AS DATA_TYPE,"
+            + "col.collation_name AS COLLATION_NAME, is_identity AS IS_IDENTITY, "
+            + "(SELECT top 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id=ind.object_id "
+            + "AND ic.index_id=ind.index_id AND ind.name LIKE 'PK_%' where ic.object_id=obj.object_id AND ic.column_id=col.column_id) AS IS_PRIMARY_KEY"
+            + "FROM sys.objects obj inner join sys.columns col ON obj.object_id=col.object_id LEFT JOIN sys.types t ON t.user_type_id=col.user_type_id";
 
-    private static final String BASIC_INDEX_META_DATA_SQL = "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sysindexes a JOIN sysobjects c ON a.id=c.id WHERE a.indid NOT IN (0, 255) AND c.name IN (%s)";
+    private static final String BASIC_INDEX_META_DATA_SQL = "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sysindexes a "
+            + "JOIN sysobjects c ON a.id=c.id WHERE a.indid NOT IN (0, 255) AND c.name IN (%s)";
 
     private static final String SQL_WITH_EXISTED_TABLES = " AND c.name NOT IN (%s)";
 

@@ -24,15 +24,17 @@ import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -52,15 +54,17 @@ public class SQLServerTableMetaDataLoaderTest {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT obj.name AS TABLE_NAME,col.name AS COLUMN_NAME,t.name AS DATA_TYPE," +
-                        "col.collation_name AS COLLATION_NAME, is_identity AS IS_IDENTITY, " +
-                        "(SELECT top 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id=ind.object_id " +
-                        "AND ic.index_id=ind.index_id AND ind.name LIKE 'PK_%' where ic.object_id=obj.object_id AND ic.column_id=col.column_id) AS IS_PRIMARY_KEY" +
-                        "FROM sys.objects obj inner join sys.columns col ON obj.object_id=col.object_id LEFT JOIN sys.types t ON t.user_type_id=col.user_type_id")
+                "SELECT obj.name AS TABLE_NAME,col.name AS COLUMN_NAME,t.name AS DATA_TYPE,"
+                        + "col.collation_name AS COLLATION_NAME, is_identity AS IS_IDENTITY, "
+                        + "(SELECT top 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id=ind.object_id "
+                        + "AND ic.index_id=ind.index_id AND ind.name LIKE 'PK_%' where ic.object_id=obj.object_id AND ic.column_id=col.column_id) AS IS_PRIMARY_KEY"
+                        + "FROM sys.objects obj inner join sys.columns col ON obj.object_id=col.object_id LEFT JOIN sys.types t ON t.user_type_id=col.user_type_id")
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sysindexes a JOIN sysobjects c ON a.id=c.id WHERE a.indid NOT IN (0, 255) AND c.name IN ('tbl')").executeQuery()).thenReturn(indexResultSet);
+                "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sysindexes a "
+                        + "JOIN sysobjects c ON a.id=c.id WHERE a.indid NOT IN (0, 255) AND c.name IN ('tbl')")
+                .executeQuery()).thenReturn(indexResultSet);
         assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList()));
     }
 
@@ -69,21 +73,22 @@ public class SQLServerTableMetaDataLoaderTest {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT obj.name AS TABLE_NAME,col.name AS COLUMN_NAME,t.name AS DATA_TYPE," +
-                        "col.collation_name AS COLLATION_NAME, is_identity AS IS_IDENTITY, " +
-                        "(SELECT top 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id=ind.object_id " +
-                        "AND ic.index_id=ind.index_id AND ind.name LIKE 'PK_%' where ic.object_id=obj.object_id AND ic.column_id=col.column_id) AS IS_PRIMARY_KEY" +
-                        "FROM sys.objects obj inner join sys.columns col ON obj.object_id=col.object_id LEFT JOIN sys.types t ON t.user_type_id=col.user_type_id WHERE c.name NOT IN ('existed_tbl')")
+                "SELECT obj.name AS TABLE_NAME,col.name AS COLUMN_NAME,t.name AS DATA_TYPE,"
+                        + "col.collation_name AS COLLATION_NAME, is_identity AS IS_IDENTITY, "
+                        + "(SELECT top 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id=ind.object_id "
+                        + "AND ic.index_id=ind.index_id AND ind.name LIKE 'PK_%' where ic.object_id=obj.object_id AND ic.column_id=col.column_id) AS IS_PRIMARY_KEY"
+                        + "FROM sys.objects obj inner join sys.columns col ON obj.object_id=col.object_id LEFT JOIN sys.types t ON t.user_type_id=col.user_type_id WHERE c.name NOT IN ('existed_tbl')")
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sysindexes a JOIN sysobjects c ON a.id=c.id WHERE a.indid NOT IN (0, 255) AND c.name IN ('tbl') AND c.name NOT IN ('existed_tbl')")
+                "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sysindexes a "
+                        + "JOIN sysobjects c ON a.id=c.id WHERE a.indid NOT IN (0, 255) AND c.name IN ('tbl') AND c.name NOT IN ('existed_tbl')")
                 .executeQuery()).thenReturn(indexResultSet);
         assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl")));
     }
 
     private DataSource mockDataSource() throws SQLException {
-        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        DataSource result = mock(DataSource.class, Mockito.RETURNS_DEEP_STUBS);
         ResultSet typeInfoResultSet = mockTypeInfoResultSet();
         when(result.getConnection().getMetaData().getTypeInfo()).thenReturn(typeInfoResultSet);
         return result;
