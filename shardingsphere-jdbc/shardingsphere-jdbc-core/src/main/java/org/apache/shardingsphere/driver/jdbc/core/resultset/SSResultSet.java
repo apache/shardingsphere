@@ -26,7 +26,7 @@ import java.util.Calendar;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class SSResultSet extends AbstractUnsupportedOperationResultSet {
+public final class SSResultSet extends AbstractUnsupportedOperationResultSet {
     
     private final QueryResultMetaData metaData;
     
@@ -40,7 +40,8 @@ public class SSResultSet extends AbstractUnsupportedOperationResultSet {
     
     private Row current;
     
-    public SSResultSet(Executor executor, QueryResultMetaData metaData, Statement statement, ExecContext execContext) throws SQLException {
+    public SSResultSet(final Executor executor, final QueryResultMetaData metaData, final Statement statement, 
+                       final ExecContext execContext) throws SQLException {
         this.executor = executor;
         this.metaData = metaData;
         this.statement = statement;
@@ -75,6 +76,11 @@ public class SSResultSet extends AbstractUnsupportedOperationResultSet {
     public boolean wasNull() throws SQLException {
         // TODO 
         return false;
+    }
+    
+    @Override
+    public String getString(final String s) throws SQLException {
+        return null;
     }
     
     @Override
@@ -118,67 +124,12 @@ public class SSResultSet extends AbstractUnsupportedOperationResultSet {
     }
     
     @Override
-    public long getLong(final int i) throws SQLException {
-        return 0;
-    }
-    
-    @Override
-    public float getFloat(final int i) throws SQLException {
-        return 0;
-    }
-    
-    @Override
-    public double getDouble(final int i) throws SQLException {
-        return 0;
-    }
-    
-    @Override
-    public BigDecimal getBigDecimal(final int i, final int i1) throws SQLException {
-        return null;
-    }
-    
-    @Override
-    public byte[] getBytes(final int i) throws SQLException {
-        return new byte[0];
-    }
-    
-    @Override
-    public Date getDate(final int i) throws SQLException {
-        return null;
-    }
-    
-    @Override
-    public Time getTime(final int i) throws SQLException {
-        return null;
-    }
-    
-    @Override
-    public Timestamp getTimestamp(final int i) throws SQLException {
-        return null;
-    }
-    
-    @Override
-    public InputStream getAsciiStream(final int i) throws SQLException {
-        return null;
-    }
-    
-    @Override
-    public InputStream getUnicodeStream(final int i) throws SQLException {
-        return null;
-    }
-    
-    @Override
-    public InputStream getBinaryStream(final int i) throws SQLException {
-        return null;
-    }
-    
-    @Override
-    public String getString(final String s) throws SQLException {
-        return null;
-    }
-    
-    @Override
     public int getInt(final String s) throws SQLException {
+        return 0;
+    }
+    
+    @Override
+    public long getLong(final int i) throws SQLException {
         return 0;
     }
     
@@ -188,7 +139,17 @@ public class SSResultSet extends AbstractUnsupportedOperationResultSet {
     }
     
     @Override
+    public float getFloat(final int i) throws SQLException {
+        return 0;
+    }
+    
+    @Override
     public float getFloat(final String s) throws SQLException {
+        return 0;
+    }
+    
+    @Override
+    public double getDouble(final int i) throws SQLException {
         return 0;
     }
     
@@ -198,8 +159,8 @@ public class SSResultSet extends AbstractUnsupportedOperationResultSet {
     }
     
     @Override
-    public BigDecimal getBigDecimal(final String s, final int i) throws SQLException {
-        return null;
+    public byte[] getBytes(final int i) throws SQLException {
+        return new byte[0];
     }
     
     @Override
@@ -208,7 +169,27 @@ public class SSResultSet extends AbstractUnsupportedOperationResultSet {
     }
     
     @Override
+    public Date getDate(final int i) throws SQLException {
+        return null;
+    }
+    
+    @Override
     public Date getDate(final String s) throws SQLException {
+        return null;
+    }
+    
+    @Override
+    public Date getDate(final int i, final Calendar calendar) throws SQLException {
+        return null;
+    }
+    
+    @Override
+    public Date getDate(final String s, final Calendar calendar) throws SQLException {
+        return null;
+    }
+    
+    @Override
+    public Time getTime(final int i) throws SQLException {
         return null;
     }
     
@@ -218,7 +199,17 @@ public class SSResultSet extends AbstractUnsupportedOperationResultSet {
     }
     
     @Override
-    public Timestamp getTimestamp(final String s) throws SQLException {
+    public Time getTime(final int i, final Calendar calendar) throws SQLException {
+        return null;
+    }
+    
+    @Override
+    public Time getTime(final String s, final Calendar calendar) throws SQLException {
+        return null;
+    }
+    
+    @Override
+    public InputStream getAsciiStream(final int i) throws SQLException {
         return null;
     }
     
@@ -228,7 +219,17 @@ public class SSResultSet extends AbstractUnsupportedOperationResultSet {
     }
     
     @Override
+    public InputStream getUnicodeStream(final int i) throws SQLException {
+        return null;
+    }
+    
+    @Override
     public InputStream getUnicodeStream(final String s) throws SQLException {
+        return null;
+    }
+    
+    @Override
+    public InputStream getBinaryStream(final int i) throws SQLException {
         return null;
     }
     
@@ -278,7 +279,17 @@ public class SSResultSet extends AbstractUnsupportedOperationResultSet {
     }
     
     @Override
+    public BigDecimal getBigDecimal(final int i, final int i1) throws SQLException {
+        return null;
+    }
+    
+    @Override
     public BigDecimal getBigDecimal(final String s) throws SQLException {
+        return null;
+    }
+    
+    @Override
+    public BigDecimal getBigDecimal(final String s, final int i) throws SQLException {
         return null;
     }
     
@@ -323,17 +334,12 @@ public class SSResultSet extends AbstractUnsupportedOperationResultSet {
     }
     
     @Override
-    public Clob getClob(final int i) throws SQLException {
-        return null;
-    }
-    
-    @Override
-    public Array getArray(final int i) throws SQLException {
-        return null;
-    }
-    
-    @Override
     public Blob getBlob(final String s) throws SQLException {
+        return null;
+    }
+    
+    @Override
+    public Clob getClob(final int i) throws SQLException {
         return null;
     }
     
@@ -343,27 +349,22 @@ public class SSResultSet extends AbstractUnsupportedOperationResultSet {
     }
     
     @Override
+    public Array getArray(final int i) throws SQLException {
+        return null;
+    }
+    
+    @Override
     public Array getArray(final String s) throws SQLException {
         return null;
     }
     
     @Override
-    public Date getDate(final int i, final Calendar calendar) throws SQLException {
+    public Timestamp getTimestamp(final int i) throws SQLException {
         return null;
     }
     
     @Override
-    public Date getDate(final String s, final Calendar calendar) throws SQLException {
-        return null;
-    }
-    
-    @Override
-    public Time getTime(final int i, final Calendar calendar) throws SQLException {
-        return null;
-    }
-    
-    @Override
-    public Time getTime(final String s, final Calendar calendar) throws SQLException {
+    public Timestamp getTimestamp(final String s) throws SQLException {
         return null;
     }
     
@@ -412,9 +413,8 @@ public class SSResultSet extends AbstractUnsupportedOperationResultSet {
         return null;
     }
     
-    
     private <T> T getColumnValue(final int i) throws SQLException {
-        if(current == null) {
+        if (current == null) {
             throw new SQLException();
         }
         return current.getColumnValue(i);
@@ -427,7 +427,6 @@ public class SSResultSet extends AbstractUnsupportedOperationResultSet {
         }
         return columnIndex;
     }
-    
     
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {

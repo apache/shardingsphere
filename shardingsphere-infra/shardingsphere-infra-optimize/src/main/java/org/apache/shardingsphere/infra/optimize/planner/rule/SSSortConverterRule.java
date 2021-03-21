@@ -19,7 +19,7 @@ public class SSSortConverterRule extends ConverterRule {
     }
     
     @Override
-    public RelNode convert(final RelNode rel) {
+    public final RelNode convert(final RelNode rel) {
         LogicalSort sort = (LogicalSort) rel;
         if (sort.fetch != null || sort.offset != null) {
             return null;

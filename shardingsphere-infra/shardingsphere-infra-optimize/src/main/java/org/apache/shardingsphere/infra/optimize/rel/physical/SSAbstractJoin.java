@@ -20,10 +20,18 @@ public abstract class SSAbstractJoin extends Join {
         super(cluster, traitSet, hints, left, right, condition, variablesSet, joinType);
     }
     
+    /**
+     * Get outer input relnode.
+     * @return outer of this join
+     */
     public RelNode getOuter() {
         return this.joinType.generatesNullsOnLeft() ? left : right;
     }
     
+    /**
+     * Get inner input relnode.
+     * @return inner of this join 
+     */
     public RelNode getInner() {
         return this.joinType.generatesNullsOnLeft() ? right : left;
     }

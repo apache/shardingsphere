@@ -6,11 +6,11 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
-public class SSResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
+public final class SSResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
     
     private final QueryResultMetaData metaData;
     
-    public SSResultSetMetaData(QueryResultMetaData metaData) {
+    public SSResultSetMetaData(final QueryResultMetaData metaData) {
         this.metaData = metaData;
     }
     

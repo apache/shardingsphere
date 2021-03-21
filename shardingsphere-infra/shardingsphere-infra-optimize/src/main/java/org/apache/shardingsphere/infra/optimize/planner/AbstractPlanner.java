@@ -13,6 +13,11 @@ import org.apache.shardingsphere.infra.optimize.rel.CustomLogicalRelConverter;
 @Slf4j
 public abstract class AbstractPlanner implements Planner {
     
+    /**
+     * Rewrite(optimize) relational operator(sql) base on RBO rules.
+     * @param relnode rational operator
+     * @return rewrited rational operator 
+     */
     protected RelNode rewrite(final RelNode relnode) {
     
         RelNode logicalRelNode = CustomLogicalRelConverter.convert(relnode);

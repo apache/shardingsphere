@@ -2,6 +2,9 @@ package org.apache.shardingsphere.infra.optimize.planner;
 
 import org.apache.calcite.rel.RelNode;
 
+/**
+ * Optimizer for relational operator.
+ */
 public interface Planner {
     
     /**

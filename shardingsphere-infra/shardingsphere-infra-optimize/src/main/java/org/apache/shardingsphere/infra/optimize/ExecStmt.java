@@ -25,12 +25,10 @@ public class ExecStmt {
         this.resultColumns = null;
     }
     
-    public ExecStmt(SqlNode sqlNode, RelNode physicalPlan, List<ColumnMetaData> resultColumns) {
+    public ExecStmt(final SqlNode sqlNode, final RelNode physicalPlan, final List<ColumnMetaData> resultColumns) {
         this.success = true;
         this.sqlNode = sqlNode;
         this.physicalPlan = physicalPlan;
         this.resultColumns = resultColumns;
     }
-    
-    
 }

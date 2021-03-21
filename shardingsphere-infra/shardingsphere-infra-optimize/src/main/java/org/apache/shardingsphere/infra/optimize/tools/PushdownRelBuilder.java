@@ -11,15 +11,25 @@ import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.tools.RelBuilder;
 
-public class PushdownRelBuilder extends RelBuilder {
+/**
+ * Pushdown RelNode builder.
+ */
+public final class PushdownRelBuilder extends RelBuilder {
     
-    private PushdownRelBuilder(RelOptCluster cluster, RelOptSchema relOptSchema) {
+    private PushdownRelBuilder(final RelOptCluster cluster, final RelOptSchema relOptSchema) {
         super(Contexts.of(RelFactories.DEFAULT_STRUCT), cluster, relOptSchema);
     }
     
-    public PushdownRelBuilder sortLimit(RexNode offsetRex, RexNode fetchRex, Iterable<? extends RexNode> nodes) {
+    /**
+     * Push down sort limit.
+     * @param offsetRex Expression for number of rows to discard before returning first row
+     * @param fetchRex Expression for number of rows to fetch
+     * @param nodes Array of sort specifications
+     * @return <code>PushdownRelBuilder</code>
+     */
+    public PushdownRelBuilder sortLimit(final RexNode offsetRex, final RexNode fetchRex, final Iterable<? extends RexNode> nodes) {
         int offset = offsetRex == null ? 0 : RexLiteral.intValue(offsetRex);
-        if(fetchRex instanceof RexLiteral) {
+        if (fetchRex instanceof RexLiteral) {
             int fetch = fetchRex == null ? -1 : RexLiteral.intValue(fetchRex);
             super.sortLimit(offset, fetch, nodes);
         } else {
@@ -31,7 +41,7 @@ public class PushdownRelBuilder extends RelBuilder {
         return this;
     }
     
-    private void replaceTop(RelNode node) {
+    private void replaceTop(final RelNode node) {
         this.pop();
         super.push(node);
     }
@@ -40,9 +50,12 @@ public class PushdownRelBuilder extends RelBuilder {
         return super.build();
     }
     
-    
-    
-    public static PushdownRelBuilder create(TableScan tableScan) {
+    /**
+     * Create <code>PushdownRelBuilder</code> with a <code>TableScan</code> operator.
+     * @param tableScan table scan
+     * @return <code>PushdownRelBuilder</code> 
+     */
+    public static PushdownRelBuilder create(final TableScan tableScan) {
         return new PushdownRelBuilder(tableScan.getCluster(), tableScan.getTable().getRelOptSchema());
     }
 }

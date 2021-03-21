@@ -32,14 +32,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class TableAndRexShuttle extends RelShuttleImpl {
+public final class TableAndRexShuttle extends RelShuttleImpl {
     
     private ShardingRule shardingRule;
     
     @Getter
     private Map<String, List<ShardingConditionValue>> tableShardingConditions = Maps.newHashMap();
     
-    public TableAndRexShuttle(ShardingRule shardingRule) {
+    public TableAndRexShuttle(final ShardingRule shardingRule) {
         this.shardingRule = shardingRule;
     }
     
@@ -54,15 +54,15 @@ public class TableAndRexShuttle extends RelShuttleImpl {
     
     @Override
     public RelNode visit(final LogicalFilter filter) {
-        if(filter.getInput() instanceof LogicalTableScan) {
+        if (filter.getInput() instanceof LogicalTableScan) {
             String tableName = RelNodeUtil.getTableName((TableScan) filter.getInput());
             List<RexNode> rexNodes = RelOptUtil.conjunctions(filter.getCondition());
     
             TableRule tableRule = shardingRule.getTableRule(tableName);
             // TODO only sharding table 
             
-            for(RexNode rexNode : rexNodes) {
-                if(!(rexNode instanceof RexCall)) {
+            for (RexNode rexNode : rexNodes) {
+                if (!(rexNode instanceof RexCall)) {
                     continue;
                 }
                 
@@ -75,23 +75,21 @@ public class TableAndRexShuttle extends RelShuttleImpl {
                 String columnName;
     
                 SqlKind sqlKind = rexCall.getKind();
-                if(operand0 instanceof RexInputRef) {
+                if (operand0 instanceof RexInputRef) {
                     operandVal = value(operand1);
-                    columnName = getColumnName((RexInputRef)operand0, filter.getRowType());
-                }
-                // TODO if operand1 is RexInputRef instead of operand0  sqlKind.reverse();
-                else {
+                    columnName = getColumnName((RexInputRef) operand0, filter.getRowType());
+                    // TODO if operand1 is RexInputRef instead of operand0  sqlKind.reverse();
+                } else {
                     continue;
                 }
-                
                 collectShardingFilter(sqlKind, tableName, columnName, operandVal);
             }
         }
         return super.visit(filter);
     }
     
-    private Comparable value(RexNode operand) {
-        if(operand instanceof RexLiteral) {
+    private Comparable value(final RexNode operand) {
+        if (operand instanceof RexLiteral) {
             RexLiteral rexLiteral = (RexLiteral) operand;
             RelDataType type = rexLiteral.getType();
             SqlTypeName sqlTypeName = type.getSqlTypeName();
@@ -106,19 +104,21 @@ public class TableAndRexShuttle extends RelShuttleImpl {
                 default:
                     return rexLiteral.getValue4();
             }
-        } else if(operand instanceof RexDynamicParam) {
+        } else if (operand instanceof RexDynamicParam) {
             // TODO 
+            throw new UnsupportedOperationException();
         }
         // TODO 
         return null;
     }
     
-    private String getColumnName(RexInputRef rexInputRef, RelDataType relDataType) {
+    private String getColumnName(final RexInputRef rexInputRef, final RelDataType relDataType) {
         RelDataTypeField relDataTypeField = relDataType.getFieldList().get(rexInputRef.getIndex());
         return relDataTypeField.getName();
     }
     
-    private void collectShardingFilter(SqlKind sqlKind, String tableName, String columnName, Comparable operandVal) {
+    private void collectShardingFilter(final SqlKind sqlKind, final String tableName, final String columnName, 
+                                       final Comparable operandVal) {
         ShardingConditionValue shardingConditionValue = null;
         switch (sqlKind) {
             case IN:
@@ -144,8 +144,10 @@ public class TableAndRexShuttle extends RelShuttleImpl {
             case NOT_EQUALS:
                 // TODO 
                 break;
+            default:
+                throw new UnsupportedOperationException();
         }
-        if(shardingConditionValue == null) {
+        if (shardingConditionValue == null) {
             return;
         }
         
@@ -154,7 +156,13 @@ public class TableAndRexShuttle extends RelShuttleImpl {
         tableShardingConditions.putIfAbsent(tableName, shardingConditionValues);
     }
     
-    public static Map<String, List<ShardingConditionValue>> getTableAndShardingCondition(RelNode relNode, ShardingRule shardingRule) {
+    /**
+     * Get table with condition.
+     * @param relNode relnode
+     * @param shardingRule shardingRule
+     * @return table with condition mapping.
+     */
+    public static Map<String, List<ShardingConditionValue>> getTableAndShardingCondition(final RelNode relNode, final ShardingRule shardingRule) {
         TableAndRexShuttle shuttle = new TableAndRexShuttle(shardingRule);
         relNode.accept(shuttle);
         return shuttle.getTableShardingConditions();

@@ -4,13 +4,13 @@ import org.apache.calcite.sql.SqlDynamicParam;
 import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.parser.SqlParserPos;
 
-public class SqlDynamicValueParam<T> extends SqlDynamicParam {
+public final class SqlDynamicValueParam<T> extends SqlDynamicParam {
     
     private final T original;
     
     private T actual;
     
-    public SqlDynamicValueParam(T original, final int index, final SqlParserPos pos) {
+    public SqlDynamicValueParam(final T original, final int index, final SqlParserPos pos) {
         super(index, pos);
         this.original = original;
         this.actual = original;
@@ -22,10 +22,18 @@ public class SqlDynamicValueParam<T> extends SqlDynamicParam {
         writer.setNeedWhitespace(true);
     }
     
-    public void setActual(T value) {
+    /**
+     * Set the actual value.
+     * @param value actual value to use
+     */
+    public void setActual(final T value) {
         this.actual = value;
     }
     
+    /**
+     * Get the original value.
+     * @return original value
+     */
     public T getOriginal() {
         return this.original;
     }

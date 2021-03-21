@@ -10,13 +10,18 @@ import org.apache.calcite.sql.util.SqlShuttle;
 
 public abstract class ExtendedSqlShuttle extends SqlShuttle {
     
+    /**
+     * Visit {@link SqlCall}.
+     * @param call sqlCall
+     * @return result of sqlCall
+     */
     @Override
     public SqlNode visit(final SqlCall call) {
-        if(call.getKind() == SqlKind.SELECT) {
-            return visit((SqlSelect)call);
-        } else if(call.getKind() == SqlKind.JOIN) {
-            return visit((SqlJoin)call);
-        } else if(call.getKind() == SqlKind.ORDER_BY) {
+        if (call.getKind() == SqlKind.SELECT) {
+            return visit((SqlSelect) call);
+        } else if (call.getKind() == SqlKind.JOIN) {
+            return visit((SqlJoin) call);
+        } else if (call.getKind() == SqlKind.ORDER_BY) {
             return visit((SqlOrderBy) call);
         }
         

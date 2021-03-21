@@ -60,9 +60,9 @@ public class LogicalScan extends AbstractRelNode implements SSRel {
     }
     
     /**
-     * push down filter
+     * push down filter.
      * @param logicalFilter filter to pushdown
-     * @return
+     * @return current <code>LogicalScan</code> instance
      */
     public final LogicalScan pushdown(final LogicalFilter logicalFilter) {
         relBuilder.filter(logicalFilter.getVariablesSet(), logicalFilter.getCondition());
@@ -71,19 +71,24 @@ public class LogicalScan extends AbstractRelNode implements SSRel {
         return this;
     }
     
-    public final LogicalScan pushdown(LogicalProject logicalProject) {
+    /**
+     * push down project.
+     * @param logicalProject project operator to pushdown
+     * @return current <code>LogicalScan</code> instance
+     */
+    public final LogicalScan pushdown(final LogicalProject logicalProject) {
         relBuilder.project(logicalProject.getProjects(), logicalProject.getRowType().getFieldNames());
         refreshRowType(logicalProject);
         return this;
     }
     
     /**
-     * pushdown join 
-     * @param join
-     * @param right
-     * @return
+     * pushdown join.
+     * @param join join operator to pushdown
+     * @param right right input of join
+     * @return current <code>LogicalScan</code> instance
      */
-    public final LogicalScan pushdown(LogicalJoin join, RelNode right) {
+    public final LogicalScan pushdown(final LogicalJoin join, final RelNode right) {
         relBuilder.push(right);
         relBuilder.join(join.getJoinType(), join.getCondition(), join.getVariablesSet());
         refreshRowType(join);
@@ -91,28 +96,38 @@ public class LogicalScan extends AbstractRelNode implements SSRel {
         return this;
     }
     
-    public final LogicalScan pushdown(LogicalAggregate logicalAgg) {
+    /**
+     * pushdown aggregation.
+     * @param logicalAgg aggregate operator
+     * @return @return current <code>LogicalScan</code> instance
+     */
+    public final LogicalScan pushdown(final LogicalAggregate logicalAgg) {
         GroupKey groupKey = relBuilder.groupKey(logicalAgg.getGroupSet(), logicalAgg.getGroupSets());
         relBuilder.aggregate(groupKey, logicalAgg.getAggCallList());
         refreshRowType(logicalAgg);
         return this;
     }
     
-    public final LogicalScan pushdown(LogicalSort logicalSort) {
+    /**
+     * push down sort.
+     * @param logicalSort sort operator to pushdown
+     * @return current <code>LogicalScan</code> instance
+     */
+    public final LogicalScan pushdown(final LogicalSort logicalSort) {
         List<RelFieldCollation> fieldCollations = logicalSort.getCollation().getFieldCollations();
         List<RexNode> sortRexNodes = fieldCollations.stream()
                 .filter(collation -> collation.direction == Direction.ASCENDING || collation.direction == Direction.DESCENDING)
                 .map(collation -> {
                     RexNode sortRexNode = RexInputRef.of(collation.getFieldIndex(), logicalSort.getRowType());
-                    if(collation.direction == Direction.DESCENDING) {
+                    if (collation.direction == Direction.DESCENDING) {
                         sortRexNode = relBuilder.desc(sortRexNode);
                     }
-                    if(collation.nullDirection == NullDirection.FIRST) {
+                    if (collation.nullDirection == NullDirection.FIRST) {
                         sortRexNode = relBuilder.nullsFirst(sortRexNode);
-                    } else if(collation.nullDirection == NullDirection.LAST) {
+                    } else if (collation.nullDirection == NullDirection.LAST) {
                         sortRexNode = relBuilder.nullsLast(sortRexNode);
                     }
-                    return  sortRexNode;
+                    return sortRexNode;
                 }).collect(Collectors.toList());
         relBuilder.sortLimit(logicalSort.offset, logicalSort.fetch, sortRexNodes);
         refreshRowType(logicalSort);
@@ -120,8 +135,8 @@ public class LogicalScan extends AbstractRelNode implements SSRel {
     }
     
     /**
-     * get all tables of this pushdown algebra expression
-     * @return
+     * Get all tables of this pushdown algebra expression.
+     * @return table of this <code>LogicalScan</code> instance
      */
     public final Set<RelOptTable> getTables() {
         Set<RelOptTable> tables = Sets.newHashSet();
@@ -136,13 +151,17 @@ public class LogicalScan extends AbstractRelNode implements SSRel {
         return tables;
     }
     
-    protected void refreshRowType(RelNode relNode) {
+    /**
+     * refresh <code>RelDataType</code> of this <code>LogicalScan</code>.
+     * @param relNode relNode to privide <code>RelDataType</code>
+     */
+    protected void refreshRowType(final RelNode relNode) {
         this.rowType = relNode.getRowType();
     }
     
     /**
-     * 获取下推完成的逻辑表达式，用于后续的下推 SQL 生成或者
-     * @return
+     * Generate the whole rational operator that have been pushed down.
+     * @return rational operator
      */
     public RelNode build() {
         return relBuilder.build();    
@@ -152,15 +171,23 @@ public class LogicalScan extends AbstractRelNode implements SSRel {
         routeContext = null;
     }
     
+    /**
+     * If this <code>LogicalScan</code> will be executed in a single sharding.
+     * @return true if this <code>LogicalScan</code> only route to a single sharding.
+     */
     public boolean isSingleRouting() {
-        if(routeContext == null) {
+        if (routeContext == null) {
             this.route();
         }
         return routeContext.isSingleRouting();
     }
     
+    /**
+     * Route this <code>LogicalScan</code>. 
+     * @return route context
+     */
     public RouteContext route() {
-        if(routeContext != null) {
+        if (routeContext != null) {
             return this.routeContext;
         }
         ShardingRule shardingRule = OptimizerContext.getCurrentOptimizerContext().get().getShardingRule();
@@ -179,16 +206,21 @@ public class LogicalScan extends AbstractRelNode implements SSRel {
         return this.routeContext;
     }
     
-    private ShardingRouteEngine getShardingRouteEngine(ShardingRule shardingRule, ShardingConditions shardingConditions,
-                                                              Collection<String> tableNames, ConfigurationProperties props) {
+    private ShardingRouteEngine getShardingRouteEngine(final ShardingRule shardingRule, final ShardingConditions shardingConditions,
+                                                       final Collection<String> tableNames, final ConfigurationProperties props) {
         Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
-        if(shardingTableNames.size() == 1 || shardingRule.isAllBindingTables(shardingTableNames)) {
+        if (shardingTableNames.size() == 1 || shardingRule.isAllBindingTables(shardingTableNames)) {
             return new ShardingStandardRoutingEngine(shardingTableNames.iterator().next(), shardingConditions, props);
         }
         return new ShardingComplexRoutingEngine(tableNames, shardingConditions, props);
     }
     
-    public static LogicalScan create(TableScan tableScan) {
+    /**
+     * convert a <code>TableScan</code> operator to <code>LogicalScan</code>.
+     * @param tableScan table scan operator
+     * @return <code>LogicalScan</code> operator
+     */
+    public static LogicalScan create(final TableScan tableScan) {
         return new LogicalScan(tableScan);
     }
 }

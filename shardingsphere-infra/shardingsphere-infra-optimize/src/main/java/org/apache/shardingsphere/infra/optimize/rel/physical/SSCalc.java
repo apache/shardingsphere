@@ -22,11 +22,17 @@ public class SSCalc extends Calc implements SSRel {
     }
     
     @Override
-    public Calc copy(final RelTraitSet traitSet, final RelNode child, final RexProgram program) {
+    public final Calc copy(final RelTraitSet traitSet, final RelNode child, final RexProgram program) {
         return new SSCalc(this.getCluster(), traitSet, Collections.emptyList(), child, program);
     }
     
-    public static SSCalc create(RelNode input, RexProgram program) {
+    /**
+     * create <code>SSCalc</code> instance.
+     * @param input input of <code>SSCalc</code>
+     * @param program contains project or condition
+     * @return <code>SSCalc</code>
+     */
+    public static SSCalc create(final RelNode input, final RexProgram program) {
         RelOptCluster cluster = input.getCluster();
         RelMetadataQuery mq = cluster.getMetadataQuery();
         RelTraitSet traitSet = cluster.traitSet()

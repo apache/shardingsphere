@@ -11,13 +11,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * calcite schema for optimizing sql using calcite optimizing framework
+ * Calcite schema for optimizing sql using calcite optimizing framework.
  */
-public class ShardingSphereCalciteSchema extends AbstractSchema {
+public final class ShardingSphereCalciteSchema extends AbstractSchema {
 
     private final ShardingSphereSchema schema;
 
-    public ShardingSphereCalciteSchema(ShardingSphereSchema schema) {
+    public ShardingSphereCalciteSchema(final ShardingSphereSchema schema) {
         this.schema = schema;
     }
 

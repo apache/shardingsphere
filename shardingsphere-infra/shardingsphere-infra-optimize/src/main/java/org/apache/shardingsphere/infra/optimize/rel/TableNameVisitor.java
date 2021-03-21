@@ -10,24 +10,31 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Gather all table names in the reltional expression 
+ * Gather all table names in the reltional expression.
  */
 public final class TableNameVisitor extends RelHomogeneousShuttle {
     
     private Set<String> tableNames = new HashSet<>();
     
     @Override
-    public RelNode visit(TableScan scan) {
+    public RelNode visit(final TableScan scan) {
         final RelOptTable scanTable = scan.getTable();
         final List<String> qualifiedName = scanTable.getQualifiedName();
         tableNames.add(qualifiedName.get(qualifiedName.size() - 1));
         return super.visit(scan);
     }
     
+    /**
+     * Reset this visitor.
+     */
     public void reset() {
         tableNames.clear();
     }
     
+    /**
+     * Get table names.
+     * @return collection of table names. 
+     */
     public Set<String> getTableNames() {
         return tableNames;
     }

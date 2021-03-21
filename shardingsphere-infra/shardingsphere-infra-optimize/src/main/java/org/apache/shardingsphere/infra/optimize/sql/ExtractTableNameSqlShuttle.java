@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.optimize.tools.SqlNodeUtil;
 
 import java.util.List;
 
-public class ExtractTableNameSqlShuttle extends ExtendedSqlShuttle {
+public final class ExtractTableNameSqlShuttle extends ExtendedSqlShuttle {
     
     @Getter
     private List<SqlDynamicValueParam<String>> tableNames;
@@ -65,30 +65,30 @@ public class ExtractTableNameSqlShuttle extends ExtendedSqlShuttle {
     public SqlSelect visit(final SqlSelect sqlSelect) {
         SqlSelect newSqlSelect = SqlNode.clone(sqlSelect);
         
-        if(newSqlSelect.getSelectList() != null) {
+        if (newSqlSelect.getSelectList() != null) {
             newSqlSelect.setSelectList((SqlNodeList) sqlSelect.getSelectList().accept(this));
         }
         
-        if(newSqlSelect.getFrom() != null) {
+        if (newSqlSelect.getFrom() != null) {
             SqlNode from = newSqlSelect.getFrom();
             SqlKind fromKind = from.getKind();
             
             SqlNode convertedFrom = null;
             if (fromKind == SqlKind.IDENTIFIER) {
-                convertedFrom = rebuildFromWithIdentifier((SqlIdentifier)from);
-            } else if(fromKind == SqlKind.AS) {
-                convertedFrom = rebuildFromWithAsBasicCall((SqlBasicCall)from);
-            } else if(fromKind == SqlKind.JOIN) {
+                convertedFrom = rebuildFromWithIdentifier((SqlIdentifier) from);
+            } else if (fromKind == SqlKind.AS) {
+                convertedFrom = rebuildFromWithAsBasicCall((SqlBasicCall) from);
+            } else if (fromKind == SqlKind.JOIN) {
                 convertedFrom = visit((SqlJoin) from);
             }
             newSqlSelect.setFrom(convertedFrom);
         }
         
-        if(newSqlSelect.getWhere() != null) {
+        if (newSqlSelect.getWhere() != null) {
             newSqlSelect.setWhere(newSqlSelect.getWhere().accept(this));
         }
         
-        if(newSqlSelect.getHaving() != null) {
+        if (newSqlSelect.getHaving() != null) {
             newSqlSelect.setHaving(newSqlSelect.getHaving().accept(this));
         }
         
@@ -112,22 +112,22 @@ public class ExtractTableNameSqlShuttle extends ExtendedSqlShuttle {
     @Override
     SqlOrderBy visit(final SqlOrderBy sqlOrderBy) {
         SqlOrderBy newSqlOrderBy = SqlNode.clone(sqlOrderBy);
-        return (SqlOrderBy)SqlOrderBy.OPERATOR.createCall(null,
+        return (SqlOrderBy) SqlOrderBy.OPERATOR.createCall(null,
                 newSqlOrderBy.getParserPosition(), visit((SqlSelect) newSqlOrderBy.query), 
                 SqlNodeUtil.clone(newSqlOrderBy.orderList), SqlNodeUtil.clone(newSqlOrderBy.offset), SqlNodeUtil.clone(newSqlOrderBy.fetch));
     }
     
-    private SqlNode clone(SqlNode sqlNode) {
+    private SqlNode clone(final SqlNode sqlNode) {
         return SqlNodeUtil.clone(sqlNode);
     }
     
-    private SqlNode rebuildJoinOperand(SqlNode joinOperand) {
-        if(joinOperand.getKind() == SqlKind.IDENTIFIER) {
-            return rebuildFromWithIdentifier((SqlIdentifier)joinOperand);
-        } else if(joinOperand instanceof SqlCall) {
+    private SqlNode rebuildJoinOperand(final SqlNode joinOperand) {
+        if (joinOperand.getKind() == SqlKind.IDENTIFIER) {
+            return rebuildFromWithIdentifier((SqlIdentifier) joinOperand);
+        } else if (joinOperand instanceof SqlCall) {
             SqlCall operand = (SqlCall) joinOperand;
-            if(operand.getKind() == SqlKind.AS) {
-                return rebuildFromWithAsBasicCall((SqlBasicCall)operand);
+            if (operand.getKind() == SqlKind.AS) {
+                return rebuildFromWithAsBasicCall((SqlBasicCall) operand);
             } else {
                 return visit(operand);
             }
@@ -136,7 +136,7 @@ public class ExtractTableNameSqlShuttle extends ExtendedSqlShuttle {
         throw new UnsupportedOperationException("unsupported join operand " + joinOperand.getKind());
     }
     
-    private SqlNode rebuildFromWithIdentifier(SqlIdentifier from) {
+    private SqlNode rebuildFromWithIdentifier(final SqlIdentifier from) {
         String tableName = tableName(from.names);
         SqlDynamicValueParam<String> tableParamNode = new SqlDynamicValueParam<>(tableName, Integer.MAX_VALUE, SqlParserPos.ZERO);
         this.tableNames.add(tableParamNode);
@@ -144,28 +144,28 @@ public class ExtractTableNameSqlShuttle extends ExtendedSqlShuttle {
         return SqlStdOperatorTable.AS.createCall(from.getParserPosition(), tableParamNode, asName);
     }
     
-    private SqlNode rebuildFromWithAsBasicCall(SqlBasicCall from) {
+    private SqlNode rebuildFromWithAsBasicCall(final SqlBasicCall from) {
         List<SqlNode> operands = from.getOperandList();
         SqlNode operand = operands.get(0);
         SqlNode as = operands.get(1);
         
-        if(as.getKind() != SqlKind.IDENTIFIER) {
+        if (as.getKind() != SqlKind.IDENTIFIER) {
             throw new IllegalArgumentException("sql kind is not SqlKind.IDENTIFIER");
         }
         
-        if(operand.getKind() == SqlKind.IDENTIFIER) {
-            String tableName = tableName(((SqlIdentifier)operand).names);
+        if (operand.getKind() == SqlKind.IDENTIFIER) {
+            String tableName = tableName(((SqlIdentifier) operand).names);
             SqlDynamicValueParam tableParamNode = new SqlDynamicValueParam(tableName, Integer.MAX_VALUE, SqlParserPos.ZERO);
             tableNames.add(tableParamNode);
             operand = tableParamNode;
-        } else if(operand instanceof SqlCall) {
+        } else if (operand instanceof SqlCall) {
             operand = visit((SqlCall) operand);
         }
-        SqlIdentifier asIdentifier = new SqlIdentifier(((SqlIdentifier)as).getSimple(), as.getParserPosition());
+        SqlIdentifier asIdentifier = new SqlIdentifier(((SqlIdentifier) as).getSimple(), as.getParserPosition());
         return SqlStdOperatorTable.AS.createCall(SqlParserPos.ZERO, operand, asIdentifier);
     }
     
-    private String tableName(List<String> qualifiedName) {
+    private String tableName(final List<String> qualifiedName) {
         return Util.last(qualifiedName);
     }
 }
