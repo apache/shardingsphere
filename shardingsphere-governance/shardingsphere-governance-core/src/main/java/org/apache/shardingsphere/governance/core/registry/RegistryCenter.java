@@ -71,10 +71,6 @@ import java.util.stream.Collectors;
  */
 public final class RegistryCenter {
     
-    private static final int CHECK_RETRY_MAXIMUM = 5;
-    
-    private static final int CHECK_RETRY_INTERVAL_SECONDS = 3;
-    
     private final RegistryCenterNode node;
     
     private final RegistryRepository repository;
@@ -90,6 +86,7 @@ public final class RegistryCenter {
         repository = registryRepository;
         instance = GovernanceInstance.getInstance();
         lockNode = new LockNode();
+        initLockNode();
         registryCacheManager = new RegistryCacheManager(registryRepository, node);
         ShardingSphereEventBus.getInstance().register(this);
     }
@@ -496,25 +493,6 @@ public final class RegistryCenter {
     }
     
     /**
-     * Load instance data.
-     * 
-     * @param instanceId instance id
-     * @return instance data
-     */
-    public String loadInstanceData(final String instanceId) {
-        return repository.get(node.getProxyNodePath(instanceId));
-    }
-    
-    /**
-     * Load all instances.
-     * 
-     * @return collection of all instances
-     */
-    public Collection<String> loadAllInstances() {
-        return repository.getChildrenKeys(node.getProxyNodesPath());
-    }
-    
-    /**
      * Load disabled data sources.
      * 
      * @param schemaName schema name
@@ -533,52 +511,27 @@ public final class RegistryCenter {
         return repository.get(node.getDataSourcePath(schemaName, dataSourceName));
     }
     
+    private void initLockNode() {
+        repository.persist(lockNode.getLockRootNodePath(), "");
+    }
+    
     /**
      * Try to get lock.
      *
+     * @param lockName lock name
      * @param timeout the maximum time in milliseconds to acquire lock
      * @return true if get the lock, false if not
      */
-    public boolean tryLock(final long timeout) {
-        return repository.tryLock(lockNode.getLockNodePath(), timeout, TimeUnit.MILLISECONDS) && checkLock();
+    public boolean tryLock(final String lockName, final long timeout) {
+        return repository.tryLock(lockNode.getLockNodePath(lockName), timeout, TimeUnit.MILLISECONDS);
     }
     
     /**
      * Release lock.
+     * 
+     * @param lockName lock name
      */
-    public void releaseLock() {
-        repository.releaseLock(lockNode.getLockNodePath());
-    }
-    
-    private boolean checkLock() {
-        boolean result = checkOrRetry(loadAllInstances());
-        if (!result) {
-            releaseLock();
-        }
-        return result;
-    }
-    
-    private boolean checkOrRetry(final Collection<String> instanceIds) {
-        for (int i = 0; i < CHECK_RETRY_MAXIMUM; i++) {
-            if (check(instanceIds)) {
-                return true;
-            }
-            try {
-                Thread.sleep(CHECK_RETRY_INTERVAL_SECONDS * 1000L);
-                // CHECKSTYLE:OFF
-            } catch (final InterruptedException ex) {
-                // CHECKSTYLE:ON
-            }
-        }
-        return false;
-    }
-    
-    private boolean check(final Collection<String> instanceIds) {
-        for (String each : instanceIds) {
-            if (!RegistryCenterNodeStatus.LOCKED.toString().equalsIgnoreCase(loadInstanceData(each))) {
-                return false;
-            }
-        }
-        return true;
+    public void releaseLock(final String lockName) {
+        repository.releaseLock(lockNode.getLockNodePath(lockName));
     }
 }

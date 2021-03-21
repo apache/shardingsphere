@@ -46,7 +46,7 @@ public final class DefaultAuthentication implements Authentication {
     
     private ShardingSpherePrivilege createShardingSpherePrivilege() {
         ShardingSpherePrivilege result = new ShardingSpherePrivilege();
-        result.setSuper();
+        result.setSuperPrivilege();
         return result;
     }
     

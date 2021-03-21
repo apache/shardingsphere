@@ -34,6 +34,8 @@ public final class YamlReadWriteSplittingDataSourceRuleConfiguration implements 
     
     private String name;
     
+    private String autoAwareDataSourceName;
+    
     private String writeDataSourceName;
     
     private List<String> readDataSourceNames = new ArrayList<>();

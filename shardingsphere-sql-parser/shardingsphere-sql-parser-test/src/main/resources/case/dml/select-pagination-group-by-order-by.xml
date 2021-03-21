@@ -1737,4 +1737,347 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_pagination_with_row_number_and_group_by_and_order_by_oracle" parameters="1, 2, 9, 7, 5, 3">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from>
+            <subquery-table start-index="14" stop-index="382" alias="tt">
+                <subquery>
+                    <select>
+                        <projections start-index="22" stop-index="43">
+                            <shorthand-projection start-index="22" stop-index="27">
+                                <owner start-index="22" stop-index="25" name="row_"/>
+                            </shorthand-projection>
+                            <column-projection start-index="30" stop-index="35" name="rownum" alias="rownum_"/>
+                        </projections>
+                        <from>
+                            <subquery-table alias="row_">
+                                <subquery>
+                                    <select>
+                                        <projections start-index="58" stop-index="139">
+                                            <column-projection start-index="58" stop-index="73" name="order_id" alias="order_id">
+                                                <owner start-index="58" stop-index="64" name="order0_"/>
+                                            </column-projection>
+                                            <column-projection start-index="88" stop-index="101" name="status" alias="status">
+                                                <owner start-index="88" stop-index="94" name="order0_"/>
+                                            </column-projection>
+                                            <column-projection start-index="114" stop-index="128" name="user_id" alias="user_id">
+                                                <owner start-index="114" stop-index="120" name="order0_"/>
+                                            </column-projection>
+                                        </projections>
+                                        <from>
+                                            <join-table>
+                                                <left>
+                                                    <simple-table start-index="146" stop-index="160" name="t_order" alias="order0_"/>
+                                                </left>
+                                                <right>
+                                                    <simple-table start-index="167" stop-index="180" name="t_order_item" alias="i"/>
+                                                </right>
+                                                <on-condition>
+                                                    <binary-operation-expression start-index="185" stop-index="245">
+                                                        <left>
+                                                            <binary-operation-expression start-index="185" stop-index="211">
+                                                                <left>
+                                                                    <column name="user_id" start-index="185" stop-index="199">
+                                                                        <owner name="order0_" start-index="185" stop-index="191" />
+                                                                    </column>
+                                                                </left>
+                                                                <operator>=</operator>
+                                                                <right>
+                                                                    <column name="user_id" start-index="203" stop-index="211">
+                                                                        <owner name="i" start-index="203" stop-index="203" />
+                                                                    </column>
+                                                                </right>
+                                                            </binary-operation-expression>
+                                                        </left>
+                                                        <operator>AND</operator>
+                                                        <right>
+                                                            <binary-operation-expression start-index="217" stop-index="245">
+                                                                <left>
+                                                                    <column name="order_id" start-index="217" stop-index="232">
+                                                                        <owner name="order0_" start-index="217" stop-index="223" />
+                                                                    </column>
+                                                                </left>
+                                                                <operator>=</operator>
+                                                                <right>
+                                                                    <column name="order_id" start-index="236" stop-index="245">
+                                                                        <owner name="i" start-index="236" stop-index="236" />
+                                                                    </column>
+                                                                </right>
+                                                            </binary-operation-expression>
+                                                        </right>
+                                                    </binary-operation-expression>
+                                                </on-condition>
+                                            </join-table>
+                                        </from>
+                                        <where start-index="247" stop-index="314">
+                                            <expr>
+                                                <binary-operation-expression start-index="253" stop-index="314">
+                                                    <left>
+                                                        <in-expression start-index="253" stop-index="277">
+                                                            <not>false</not>
+                                                            <left>
+                                                                <column name="user_id" start-index="253" stop-index="267">
+                                                                    <owner name="order0_" start-index="253" stop-index="259" />
+                                                                </column>
+                                                            </left>
+                                                            <right>
+                                                                <list-expression start-index="272" stop-index="277">
+                                                                    <items>
+                                                                        <literal-expression value="1" start-index="273" stop-index="273" />
+                                                                        <parameter-marker-expression value="0" start-index="273" stop-index="273" />
+                                                                    </items>
+                                                                    <items>
+                                                                        <literal-expression value="2" start-index="276" stop-index="276" />
+                                                                        <parameter-marker-expression value="1" start-index="276" stop-index="276" />
+                                                                    </items>
+                                                                </list-expression>
+                                                            </right>
+                                                        </in-expression>
+                                                    </left>
+                                                    <operator>AND</operator>
+                                                    <right>
+                                                        <between-expression start-index="283" stop-index="314">
+                                                            <not>false</not>
+                                                            <left>
+                                                                <column name="order_id" start-index="283" stop-index="298">
+                                                                    <owner name="order0_" start-index="283" stop-index="289" />
+                                                                </column>
+                                                            </left>
+                                                            <between-expr>
+                                                                <literal-expression value="9" start-index="308" stop-index="308" />
+                                                                <parameter-marker-expression value="2" start-index="308" stop-index="308" />
+                                                            </between-expr>
+                                                            <and-expr>
+                                                                <literal-expression value="7" start-index="314" stop-index="314" />
+                                                                <parameter-marker-expression value="3" start-index="314" stop-index="314" />
+                                                            </and-expr>
+                                                        </between-expression>
+                                                    </right>
+                                                </binary-operation-expression>
+                                            </expr>
+                                        </where>
+                                        <group-by>
+                                            <column-item start-index="325" stop-index="333" name="item_id">
+                                                <owner start-index="325" stop-index="325" name="i"/>
+                                            </column-item>
+                                        </group-by>
+                                        <order-by>
+                                            <column-item start-index="344" stop-index="352" name="item_id" order-direction="DESC">
+                                                <owner start-index="344" stop-index="344" name="i"/>
+                                            </column-item>
+                                        </order-by>
+                                    </select>
+                                </subquery>
+                            </subquery-table>
+                        </from>
+                        <where start-index="365" stop-index="381">
+                            <expr>
+                                <binary-operation-expression start-index="371" stop-index="381">
+                                    <left>
+                                        <column name="rownum" start-index="371" stop-index="376" />
+                                    </left>
+                                    <operator>&lt;=</operator>
+                                    <right>
+                                        <literal-expression value="5" start-index="381" stop-index="381" />
+                                        <parameter-marker-expression value="4" start-index="381" stop-index="381" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+        <where start-index="387" stop-index="406">
+            <expr>
+                <binary-operation-expression start-index="393" stop-index="406">
+                    <left>
+                        <column name="rownum_" start-index="393" stop-index="402">
+                            <owner name="tt" start-index="393" stop-index="394" />
+                        </column>
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <literal-expression value="3" start-index="406" stop-index="406" />
+                        <parameter-marker-expression value="5" start-index="406" stop-index="406" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_pagination_with_row_number_and_diff_group_by_and_order_by_oracle" parameters="1, 2, 9, 7, 5, 3">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from>
+            <subquery-table start-index="14" stop-index="382" alias="t">
+                <subquery>
+                    <select>
+                        <projections start-index="22" stop-index="43">
+                            <shorthand-projection start-index="22" stop-index="27">
+                                <owner start-index="22" stop-index="25" name="row_"/>
+                            </shorthand-projection>
+                            <column-projection start-index="30" stop-index="35" name="rownum" alias="rownum_"/>
+                        </projections>
+                        <from>
+                            <subquery-table alias="row_">
+                                <subquery>
+                                    <select>
+                                        <projections start-index="58" stop-index="139">
+                                            <column-projection start-index="58" stop-index="73" name="order_id" alias="order_id">
+                                                <owner start-index="58" stop-index="64" name="order0_"/>
+                                            </column-projection>
+                                            <column-projection start-index="88" stop-index="101" name="status" alias="status">
+                                                <owner start-index="88" stop-index="94" name="order0_"/>
+                                            </column-projection>
+                                            <column-projection start-index="114" stop-index="128" name="user_id" alias="user_id">
+                                                <owner start-index="114" stop-index="120" name="order0_"/>
+                                            </column-projection>
+                                        </projections>
+                                        <from>
+                                            <join-table>
+                                                <left>
+                                                    <simple-table start-index="146" stop-index="160" name="t_order" alias="order0_"/>
+                                                </left>
+                                                <right>
+                                                    <simple-table start-index="167" stop-index="180" name="t_order_item" alias="i"/>
+                                                </right>
+                                                <on-condition>
+                                                    <binary-operation-expression start-index="185" stop-index="245">
+                                                        <left>
+                                                            <binary-operation-expression start-index="185" stop-index="211">
+                                                                <left>
+                                                                    <column name="user_id" start-index="185" stop-index="199">
+                                                                        <owner name="order0_" start-index="185" stop-index="191" />
+                                                                    </column>
+                                                                </left>
+                                                                <operator>=</operator>
+                                                                <right>
+                                                                    <column name="user_id" start-index="203" stop-index="211">
+                                                                        <owner name="i" start-index="203" stop-index="203" />
+                                                                    </column>
+                                                                </right>
+                                                            </binary-operation-expression>
+                                                        </left>
+                                                        <operator>AND</operator>
+                                                        <right>
+                                                            <binary-operation-expression start-index="217" stop-index="245">
+                                                                <left>
+                                                                    <column name="order_id" start-index="217" stop-index="232">
+                                                                        <owner name="order0_" start-index="217" stop-index="223" />
+                                                                    </column>
+                                                                </left>
+                                                                <operator>=</operator>
+                                                                <right>
+                                                                    <column name="order_id" start-index="236" stop-index="245">
+                                                                        <owner name="i" start-index="236" stop-index="236" />
+                                                                    </column>
+                                                                </right>
+                                                            </binary-operation-expression>
+                                                        </right>
+                                                    </binary-operation-expression>
+                                                </on-condition>
+                                            </join-table>
+                                        </from>
+                                        <where start-index="247" stop-index="314">
+                                            <expr>
+                                                <binary-operation-expression start-index="253" stop-index="314">
+                                                    <left>
+                                                        <in-expression start-index="253" stop-index="277">
+                                                            <not>false</not>
+                                                            <left>
+                                                                <column name="user_id" start-index="253" stop-index="267">
+                                                                    <owner name="order0_" start-index="253" stop-index="259" />
+                                                                </column>
+                                                            </left>
+                                                            <right>
+                                                                <list-expression start-index="272" stop-index="277">
+                                                                    <items>
+                                                                        <literal-expression value="1" start-index="273" stop-index="273" />
+                                                                        <parameter-marker-expression value="0" start-index="273" stop-index="273" />
+                                                                    </items>
+                                                                    <items>
+                                                                        <literal-expression value="2" start-index="276" stop-index="276" />
+                                                                        <parameter-marker-expression value="1" start-index="276" stop-index="276" />
+                                                                    </items>
+                                                                </list-expression>
+                                                            </right>
+                                                        </in-expression>
+                                                    </left>
+                                                    <operator>AND</operator>
+                                                    <right>
+                                                        <between-expression start-index="283" stop-index="314">
+                                                            <not>false</not>
+                                                            <left>
+                                                                <column name="order_id" start-index="283" stop-index="298">
+                                                                    <owner name="order0_" start-index="283" stop-index="289" />
+                                                                </column>
+                                                            </left>
+                                                            <between-expr>
+                                                                <literal-expression value="9" start-index="308" stop-index="308" />
+                                                                <parameter-marker-expression value="2" start-index="308" stop-index="308" />
+                                                            </between-expr>
+                                                            <and-expr>
+                                                                <literal-expression value="7" start-index="314" stop-index="314" />
+                                                                <parameter-marker-expression value="3" start-index="314" stop-index="314" />
+                                                            </and-expr>
+                                                        </between-expression>
+                                                    </right>
+                                                </binary-operation-expression>
+                                            </expr>
+                                        </where>
+                                        <group-by>
+                                            <column-item start-index="325" stop-index="333" name="user_id">
+                                                <owner start-index="325" stop-index="325" name="i"/>
+                                            </column-item>
+                                        </group-by>
+                                        <order-by>
+                                            <column-item start-index="344" stop-index="352" name="item_id" order-direction="DESC">
+                                                <owner start-index="344" stop-index="344" name="i"/>
+                                            </column-item>
+                                        </order-by>
+                                    </select>
+                                </subquery>
+                            </subquery-table>
+                        </from>
+                        <where start-index="365" stop-index="381">
+                            <expr>
+                                <binary-operation-expression start-index="371" stop-index="381">
+                                    <left>
+                                        <column name="rownum" start-index="371" stop-index="376" />
+                                    </left>
+                                    <operator>&lt;=</operator>
+                                    <right>
+                                        <literal-expression value="5" start-index="381" stop-index="381" />
+                                        <parameter-marker-expression value="4" start-index="381" stop-index="381" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+        <where start-index="386" stop-index="404">
+            <expr>
+                <binary-operation-expression start-index="392" stop-index="404">
+                    <left>
+                        <column name="rownum_" start-index="392" stop-index="400">
+                            <owner name="t" start-index="392" stop-index="392" />
+                        </column>
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <literal-expression value="3" start-index="404" stop-index="404" />
+                        <parameter-marker-expression value="5" start-index="404" stop-index="404" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
 </sql-parser-test-cases>

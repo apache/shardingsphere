@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 
 /**
- * Schema persist event.
+ * Schema altered event.
  */
 @RequiredArgsConstructor
 @Getter
