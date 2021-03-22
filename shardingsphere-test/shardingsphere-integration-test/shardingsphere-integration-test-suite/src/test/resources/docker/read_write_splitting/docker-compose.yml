@@ -37,7 +37,7 @@ services:
   
   shardingsphere-proxy:
     image: apache/shardingsphere-proxy-test
-    container_name: rread-write-splitting-shardingsphere-proxy
+    container_name: read-write-splitting-shardingsphere-proxy
     ports:
       - "33270:3307"
       - "33280:3308"
