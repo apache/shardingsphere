@@ -58,7 +58,7 @@ public final class CompletableEventService<T> {
                 handler.invoke(target, completableEvent.getTarget());
             }
             completableEvent.getCompletableFuture().complete(true);
-        } catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (final IllegalAccessException | InvocationTargetException e) {
             completableEvent.getCompletableFuture().completeExceptionally(e);
         }
     }
