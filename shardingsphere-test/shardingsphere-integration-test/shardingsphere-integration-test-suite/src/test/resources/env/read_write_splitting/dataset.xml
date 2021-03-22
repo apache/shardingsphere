@@ -32,6 +32,15 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
+    <metadata data-nodes="write_ds.t_single_table,read_${0..1}.t_single_table">
+        <column name="single_id" type="numeric" />
+        <column name="id" type="numeric" />
+        <column name="status" type="varchar" />
+    </metadata>
+    <row data-node="write_ds.t_single_table" values="1, 1000, init" />
+    <row data-node="write_ds.t_single_table" values="2, 1100, init" />
+    <row data-node="write_ds.t_single_table" values="3, 1200, init" />
+    <row data-node="write_ds.t_single_table" values="4, 1300, init" />
     <row data-node="write_ds.t_order" values="1000, 10, init" />
     <row data-node="write_ds.t_order" values="1001, 10, init" />
     <row data-node="write_ds.t_order" values="1100, 11, init" />
@@ -152,7 +161,11 @@
     <row data-node="write_ds.t_order_item" values="290002, 2900, 29, init, 2017-08-08" />
     <row data-node="write_ds.t_order_item" values="290101, 2901, 29, init, 2017-08-08" />
     <row data-node="write_ds.t_order_item" values="290102, 2901, 29, init, 2017-08-08" />
-    <row data-node="write_ds.t_broadcast_table" values="1, init" />
+    <row data-node="write_ds.t_broadcast_table" values="1, init_read" />
+    <row data-node="read_0.t_single_table" values="1, 1000, init_read" />
+    <row data-node="read_0.t_single_table" values="2, 1100, init_read" />
+    <row data-node="read_0.t_single_table" values="3, 1200, init_read" />
+    <row data-node="read_0.t_single_table" values="4, 1300, init_read" />
     <row data-node="read_0.t_order" values="1000, 10, init_read" />
     <row data-node="read_0.t_order" values="1001, 10, init_read" />
     <row data-node="read_0.t_order" values="1100, 11, init_read" />
@@ -274,6 +287,10 @@
     <row data-node="read_0.t_order_item" values="290101, 2901, 29, init_read, 2017-08-08" />
     <row data-node="read_0.t_order_item" values="290102, 2901, 29, init_read, 2017-08-08" />
     <row data-node="read_0.t_broadcast_table" values="1, init_read" />
+    <row data-node="read_1.t_single_table" values="1, 1000, init_read" />
+    <row data-node="read_1.t_single_table" values="2, 1100, init_read" />
+    <row data-node="read_1.t_single_table" values="3, 1200, init_read" />
+    <row data-node="read_1.t_single_table" values="4, 1300, init_read" />
     <row data-node="read_1.t_order" values="1000, 10, init_read" />
     <row data-node="read_1.t_order" values="1001, 10, init_read" />
     <row data-node="read_1.t_order" values="1100, 11, init_read" />

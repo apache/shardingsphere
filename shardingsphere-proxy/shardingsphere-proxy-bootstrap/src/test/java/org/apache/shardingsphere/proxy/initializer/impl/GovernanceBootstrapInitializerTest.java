@@ -203,7 +203,8 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     @Test
     public void assertDecorateMetaDataContexts() {
-        StandardMetaDataContexts metaDataContexts = mockStandardMetaDataContexts();
+        StandardMetaDataContexts metaDataContexts = mock(StandardMetaDataContexts.class);
+        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         MetaDataContexts actualMetaDataContexts = getInitializer().decorateMetaDataContexts(metaDataContexts);
         assertNotNull(actualMetaDataContexts);
         assertThat(actualMetaDataContexts, instanceOf(GovernanceMetaDataContexts.class));
