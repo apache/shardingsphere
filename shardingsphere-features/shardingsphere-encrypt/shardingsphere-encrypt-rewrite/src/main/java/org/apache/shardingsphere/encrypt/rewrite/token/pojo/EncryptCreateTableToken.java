@@ -26,20 +26,19 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
  */
 @Getter
 public final class EncryptCreateTableToken extends SQLToken implements Substitutable {
-
+    
     private final int stopIndex;
-
+    
     private final String columnName;
-
+    
     public EncryptCreateTableToken(final int startIndex, final int stopIndex, final String columnName) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.columnName = columnName;
     }
-
+    
     @Override
     public String toString() {
-        return String.format("%s", columnName);
+        return columnName;
     }
-
 }
