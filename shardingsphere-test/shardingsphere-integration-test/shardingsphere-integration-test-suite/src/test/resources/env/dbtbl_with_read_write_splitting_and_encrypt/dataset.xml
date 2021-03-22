@@ -29,6 +29,15 @@
         <column name="status" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
+    <metadata data-nodes="encrypt_write_ds_0.t_single_table,encrypt_read_ds_0.t_single_table">
+        <column name="single_id" type="numeric" />
+        <column name="id" type="numeric" />
+        <column name="status" type="varchar" />
+    </metadata>
+    <row data-node="encrypt_write_ds_0.t_single_table" values="1, 0, init" />
+    <row data-node="encrypt_write_ds_0.t_single_table" values="2, 11, init" />
+    <row data-node="encrypt_write_ds_0.t_single_table" values="3, 22, init" />
+    <row data-node="encrypt_write_ds_0.t_single_table" values="4, 33, init" />
     <row data-node="encrypt_write_ds_0.t_user_0" values="0, 10000, null, dL/JAiR/3cVG8lt6DMDa/A==, init" />
     <row data-node="encrypt_write_ds_0.t_user_1" values="1, 11000, null, wPc6WYJBzQIt4i4T0KhqXA==, init" />
     <row data-node="encrypt_write_ds_0.t_user_2" values="2, 12000, null, HbV7OHLF4nBuOMVCLV5Cbg==, init" />
@@ -229,6 +238,10 @@
     <row data-node="encrypt_write_ds_9.t_user_item_7" values="190007, 79, init, 2017-08-08" />
     <row data-node="encrypt_write_ds_9.t_user_item_8" values="190008, 89, init, 2017-08-08" />
     <row data-node="encrypt_write_ds_9.t_user_item_9" values="190009, 99, init, 2017-08-08" />
+    <row data-node="encrypt_read_ds_0.t_single_table" values="1, 0, init_read" />
+    <row data-node="encrypt_read_ds_0.t_single_table" values="2, 11, init_read" />
+    <row data-node="encrypt_read_ds_0.t_single_table" values="3, 22, init_read" />
+    <row data-node="encrypt_read_ds_0.t_single_table" values="4, 33, init_read" />
     <row data-node="encrypt_read_ds_0.t_user_0" values="0, 10000, null, dL/JAiR/3cVG8lt6DMDa/A==, init_read" />
     <row data-node="encrypt_read_ds_0.t_user_1" values="1, 11000, null, wPc6WYJBzQIt4i4T0KhqXA==, init_read" />
     <row data-node="encrypt_read_ds_0.t_user_2" values="2, 12000, null, HbV7OHLF4nBuOMVCLV5Cbg==, init_read" />
