@@ -63,9 +63,9 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
                     if (result.isEmpty()) {
                         result.add(new EncryptAlterTableToken(addColumnDefinitionSegment.getStartIndex() - 1, each.getStopIndex() + 1, "", ""));
                     }
-                    addPlainColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, each).ifPresent(result::add);
-                    addAssistedQueryColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, each).ifPresent(result::add);
                     addCipherColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, each).ifPresent(result::add);
+                    addAssistedQueryColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, each).ifPresent(result::add);
+                    addPlainColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, each).ifPresent(result::add);
                 }
             }
         }
@@ -81,9 +81,9 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
                 if (result.isEmpty()) {
                     result.add(new EncryptAlterTableToken(modifyColumnDefinitionSegment.getStartIndex() - 1, modifyColumnDefinitionSegment.getStopIndex(), "", ""));
                 }
-                addPlainColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, modifyColumnDefinitionSegment, segment).ifPresent(result::add);
-                addAssistedQueryColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, modifyColumnDefinitionSegment, segment).ifPresent(result::add);
                 addCipherColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, modifyColumnDefinitionSegment, segment).ifPresent(result::add);
+                addAssistedQueryColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, modifyColumnDefinitionSegment, segment).ifPresent(result::add);
+                addPlainColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, modifyColumnDefinitionSegment, segment).ifPresent(result::add);
             }
         }
     }
@@ -98,9 +98,9 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
                     if (result.isEmpty()) {
                         result.add(new EncryptAlterTableToken(dropColumnDefinitionSegment.getStartIndex() - 1, each.getStopIndex() + 1, "", ""));
                     }
-                    addPlainColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, each).ifPresent(result::add);
-                    addAssistedQueryColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, each).ifPresent(result::add);
                     addCipherColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, each).ifPresent(result::add);
+                    addAssistedQueryColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, each).ifPresent(result::add);
+                    addPlainColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, each).ifPresent(result::add);
                 }
             }
         }
