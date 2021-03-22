@@ -70,11 +70,8 @@ public final class ShardingSpherePrivilege {
      * @return has or not
      */
     public boolean hasPrivileges(final String schema) {
-        if (administrativePrivilege.getPrivileges().contains(PrivilegeType.SUPER) || !databasePrivilege.getGlobalPrivileges().isEmpty()
-                || databasePrivilege.getSpecificPrivileges().containsKey(schema)) {
-            return true;
-        }
-        return false;
+        return administrativePrivilege.getPrivileges().contains(PrivilegeType.SUPER) || !databasePrivilege.getGlobalPrivileges().isEmpty()
+                || databasePrivilege.getSpecificPrivileges().containsKey(schema);
     }
     
     /**
