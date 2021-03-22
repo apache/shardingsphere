@@ -141,7 +141,7 @@ public final class RegistryCenterTest {
     @Test
     public void assertPersistInstanceData() {
         registryCenter.persistInstanceData("test");
-        verify(registryRepository).persist(anyString(), anyString());
+        verify(registryRepository).persist(anyString(), eq("test"));
     }
     
     @Test
@@ -161,14 +161,14 @@ public final class RegistryCenterTest {
     
     @Test
     public void assertTryLock() {
-        registryCenter.tryLock(50L);
-        verify(registryRepository).tryLock(eq(new LockNode().getLockNodePath()), eq(50L), eq(TimeUnit.MILLISECONDS));
+        registryCenter.tryLock("test", 50L);
+        verify(registryRepository).tryLock(eq(new LockNode().getLockNodePath("test")), eq(50L), eq(TimeUnit.MILLISECONDS));
     }
     
     @Test
     public void assertReleaseLock() {
-        registryCenter.releaseLock();
-        verify(registryRepository).releaseLock(eq(new LockNode().getLockNodePath()));
+        registryCenter.releaseLock("test");
+        verify(registryRepository).releaseLock(eq(new LockNode().getLockNodePath("test")));
     }
     
     @Test

@@ -29,10 +29,10 @@ public final class DatabaseDiscoveryOrder {
     /**
      * Data base discovery order.
      */
-    public static final int ORDER = 2;
+    public static final int ORDER = 20;
     
     /**
      * Algorithm provider data base discovery order.
      */
-    public static final int ALGORITHM_PROVIDER_DB_DISCOVERY_ORDER = 3;
+    public static final int ALGORITHM_PROVIDER_DB_DISCOVERY_ORDER = 21;
 }
