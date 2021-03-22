@@ -20,18 +20,15 @@ package org.apache.shardingsphere.test.integration.junit.runner;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.compose.ContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.resolver.ConditionResolver;
-import org.junit.rules.TestRule;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
 import java.lang.reflect.Field;
-import java.util.List;
 
 @Slf4j
 public class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
@@ -83,6 +80,7 @@ public class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
     
     @Override
     protected Statement withBeforeClasses(final Statement statement) {
+        // skip @BeforeClass
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
@@ -92,12 +90,8 @@ public class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
     }
     
     @Override
-    protected List<TestRule> getTestRules(Object target) {
-        return super.getTestRules(target);
-    }
-    
-    @Override
     protected Statement withAfterClasses(final Statement statement) {
+        // skip @AfterClass
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
@@ -109,15 +103,7 @@ public class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
     
     @Override
     protected String getName() {
-//        return parameterized.toString();
-        TestCaseDescription description = context.getBean(TestCaseDescription.class);
-        return String.format("[%s: %s -> %s -> %s -> %s]",
-                description.getAdapter(),
-                description.getScenario(),
-                description.getDatabase(),
-                context.getBean(SQLExecuteType.class),
-                context.getBeanByName("statement")
-        );
+        return parameterized.toString();
     }
     
 }

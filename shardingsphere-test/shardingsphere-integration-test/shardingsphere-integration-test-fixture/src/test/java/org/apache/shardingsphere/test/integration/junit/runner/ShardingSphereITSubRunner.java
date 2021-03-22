@@ -52,9 +52,13 @@ public class ShardingSphereITSubRunner extends BlockJUnit4ClassRunner {
         return testInstance;
     }
     
-    // execution before all case
-    
-    public ShardingSphereITSubRunner copy() throws InitializationError {
+    /**
+     * Clone and return.
+     *
+     * @return self
+     * @throws InitializationError ex
+     */
+    public ShardingSphereITSubRunner copySelf() throws InitializationError {
         return new ShardingSphereITSubRunner(getTestClass().getJavaClass(), context, resolver);
     }
     
@@ -62,7 +66,7 @@ public class ShardingSphereITSubRunner extends BlockJUnit4ClassRunner {
         return super.createTest();
     }
     
-    protected void autowired(Object testInstance) {
+    protected void autowired(final Object testInstance) {
         getTestClass().getAnnotatedFields(ShardingSphereITInject.class)
                 .forEach(e -> {
                     try {
@@ -83,8 +87,8 @@ public class ShardingSphereITSubRunner extends BlockJUnit4ClassRunner {
             try {
                 e.getField().setAccessible(true);
                 e.getField().set(testInstance, c);
-            } catch (IllegalAccessException illegalAccessException) {
-                illegalAccessException.printStackTrace();
+            } catch (IllegalAccessException ex) {
+                throw new RuntimeException(ex);
             }
         });
     }

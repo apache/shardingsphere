@@ -39,7 +39,6 @@ import java.util.Optional;
 /**
  * Actual data source builder.
  */
-@Deprecated
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ActualDataSourceBuilder {
     

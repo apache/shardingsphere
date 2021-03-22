@@ -36,7 +36,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -75,9 +74,8 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     private static RemoteDockerImage convertToDockerImage(final String dockerImageName, final boolean isFakeContainer) {
         if (isFakeContainer) {
             return new RemoteDockerImage(DockerImageName.parse(dockerImageName)).withImagePullPolicy(dockerName -> false);
-        } else {
-          return new RemoteDockerImage(DockerImageName.parse(dockerImageName));
         }
+        return new RemoteDockerImage(DockerImageName.parse(dockerImageName));
     }
     
     @Override
@@ -160,11 +158,6 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     @SneakyThrows
     private String invoke(final Method method) {
         return String.valueOf(method.invoke(description));
-    }
-    
-    
-    protected void configure() {
-    
     }
     
     protected void execute() {

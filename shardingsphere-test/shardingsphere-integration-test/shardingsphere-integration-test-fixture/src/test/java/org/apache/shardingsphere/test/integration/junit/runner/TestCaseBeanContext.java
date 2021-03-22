@@ -32,7 +32,7 @@ public class TestCaseBeanContext {
         parent = null;
     }
     
-    private TestCaseBeanContext(Map<Object, Object> parent) {
+    private TestCaseBeanContext(final Map<Object, Object> parent) {
         this.parent = parent;
     }
     
@@ -53,7 +53,7 @@ public class TestCaseBeanContext {
      * Put the value with key into context.
      *
      * @param quality key
-     * @param value   value
+     * @param value value
      */
     public void registerBeanByName(final String quality, final Object value) {
         classObjectMap.putIfAbsent(quality, value);

@@ -49,7 +49,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -104,15 +103,6 @@ public class ShardingSphereRunner extends Suite {
                 .collect(Collectors.toList());
     }
     
-    private void register(final TestCaseParameters parameters, final TestCaseBeanContext context) {
-        context.registerBean(TestCaseParameters.class, parameters);
-        context.registerBeanByName("statement", parameters.getStatement());
-        context.registerBeanByName("parentPath", parameters.getParentPath());
-        context.registerBean(SQLExecuteType.class, parameters.getExecuteType());
-        context.registerBean(IntegrationTestCase.class, parameters.getTestCase());
-        context.registerBean(IntegrationTestCaseAssertion.class, parameters.getAssertion());
-    }
-    
     private List<Runner> createCIRunners(final TestCaseSpec testCaseSpec) {
         ParallelRuntimeStrategy parallelRuntimeStrategy = getTestClass().getAnnotation(ParallelRuntimeStrategy.class);
         if (null != parallelRuntimeStrategy) {
@@ -136,15 +126,8 @@ public class ShardingSphereRunner extends Suite {
                                 SQLExecuteType executeType = (e instanceof AssertionParameterizedArray)
                                         ? ((AssertionParameterizedArray) e).getSqlExecuteType()
                                         : null;
-                                TestCaseParameters testCaseParameters = new TestCaseParameters(
-                                        e.toString(),
-                                        e.getTestCaseContext().getParentPath(),
-                                        testCase.getSql(),
-                                        executeType,
-                                        getTestClass().getJavaClass(),
-                                        testCase,
-                                        ee
-                                );
+                                TestCaseParameters testCaseParameters = new TestCaseParameters(e.toString(), e.getTestCaseContext().getParentPath(),
+                                        testCase.getSql(), executeType, getTestClass().getJavaClass(), testCase, ee);
                                 TestCaseBeanContext context = beanContext.subContext();
                                 context.registerBean(ParameterizedArray.class, e);
                                 context.registerBean(TestCaseDescription.class, description);
@@ -161,6 +144,15 @@ public class ShardingSphereRunner extends Suite {
                     }
                 })
                 .collect(Collectors.toList());
+    }
+    
+    private void register(final TestCaseParameters parameters, final TestCaseBeanContext context) {
+        context.registerBean(TestCaseParameters.class, parameters);
+        context.registerBeanByName("statement", parameters.getStatement());
+        context.registerBeanByName("parentPath", parameters.getParentPath());
+        context.registerBean(SQLExecuteType.class, parameters.getExecuteType());
+        context.registerBean(IntegrationTestCase.class, parameters.getTestCase());
+        context.registerBean(IntegrationTestCaseAssertion.class, parameters.getAssertion());
     }
     
     private Predicate<TestCaseBeanContext> createTestCaseParametersPredicate() {
@@ -250,43 +242,48 @@ public class ShardingSphereRunner extends Suite {
         return runners;
     }
     
-    public Statement withBeforeClasses(final Statement statement) {
+    protected Statement withBeforeClasses(final Statement statement) {
         if (getChildren().isEmpty()) {
             return super.withBeforeClasses(statement);
         }
         return super.withBeforeClasses(new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                // for execution beforeAllClasses
-                List<FrameworkMethod> methods = getTestClass().getAnnotatedMethods(BeforeAllCases.class);
-                List<Runner> children = getChildren();
-                if (!children.isEmpty()) {
-                    Runner runner = children.get(0);
-                    Object test;
-                    if (runner instanceof ShardingSphereITSubRunner) {
-                        runner = new ShardingSphereITSubRunner(getTestClass().getJavaClass(), ((ShardingSphereITSubRunner) runner).getContext(), resolver);
-                        test = ((ShardingSphereITSubRunner) runner).createTestInstance();
-                        compose.setInstance(test);
-                        compose.createContainers();
-                        ((ShardingSphereITSubRunner) runner).autowired(test);
-                        compose.createInitializerAndExecute(() -> test);
-                        compose.start();
-                        compose.waitUntilReady();
-                    } else {
-                        test = ((ShardingSphereCISubRunner) runner).createTest();
-                    }
-                    methods.forEach(e -> {
-                        e.getMethod().setAccessible(true);
-                        try {
-                            e.invokeExplosively(test);
-                        } catch (Throwable throwable) {
-                            throwable.printStackTrace();
-                        }
-                    });
-                }
+                beforeAllClasses();
                 statement.evaluate();
             }
         });
+    }
+    
+    private void beforeAllClasses() throws Exception {
+        List<FrameworkMethod> methods = getTestClass().getAnnotatedMethods(BeforeAllCases.class);
+        List<Runner> children = getChildren();
+        if (!children.isEmpty()) {
+            final Runner runner = children.get(0);
+            final Object testInstance;
+            if (runner instanceof ShardingSphereITSubRunner) {
+                ShardingSphereITSubRunner itRunner = ((ShardingSphereITSubRunner) runner).copySelf();
+                testInstance = itRunner.createTestInstance();
+                compose.setInstance(testInstance);
+                compose.createContainers();
+                ((ShardingSphereITSubRunner) runner).autowired(testInstance);
+                compose.createInitializerAndExecute(() -> testInstance);
+                compose.start();
+                compose.waitUntilReady();
+            } else {
+                testInstance = ((ShardingSphereCISubRunner) runner).createTest();
+            }
+            methods.forEach(e -> {
+                e.getMethod().setAccessible(true);
+                try {
+                    e.invokeExplosively(testInstance);
+                    // CHECKSTYLE:OFF
+                } catch (Throwable throwable) {
+                    // CHECKSTYLE:ON
+                    throw new RuntimeException(throwable);
+                }
+            });
+        }
     }
     
     @Override
@@ -302,10 +299,6 @@ public class ShardingSphereRunner extends Suite {
                 // missing @AfterAllCases
             }
         });
-    }
-    
-    private boolean isIgnoredCase() {
-        return !resolver.filter(getTestClass());
     }
     
 }

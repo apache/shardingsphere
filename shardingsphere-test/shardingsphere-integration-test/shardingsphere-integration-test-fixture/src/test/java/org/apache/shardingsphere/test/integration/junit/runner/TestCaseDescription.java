@@ -65,7 +65,13 @@ public class TestCaseDescription {
     public DatabaseType getDatabaseType() {
         return DatabaseTypeRegistry.getActualDatabaseType(database);
     }
-   
+    
+    /**
+     * Create a instance builder from System properties.
+     *
+     * @param testCaseSpec test csae specification
+     * @return test instance
+     */
     public static TestCaseDescriptionBuilder fromSystemProps(final TestCaseSpec testCaseSpec) {
         return TestCaseDescription.builder()
                 .adapter(System.getProperty("it.adapter"))

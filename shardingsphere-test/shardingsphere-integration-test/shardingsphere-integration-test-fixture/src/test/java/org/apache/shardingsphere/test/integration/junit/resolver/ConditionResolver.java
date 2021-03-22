@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.integration.junit.resolver;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITConditional;
 import org.junit.runners.model.Annotatable;
-import org.junit.runners.model.TestClass;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;

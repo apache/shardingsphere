@@ -23,11 +23,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 /**
  * Data source environment.
- * @deprecated deprecated
  */
 @RequiredArgsConstructor
 @Getter
-@Deprecated
 public final class DataSourceEnvironment {
     
     private final DatabaseType databaseType;

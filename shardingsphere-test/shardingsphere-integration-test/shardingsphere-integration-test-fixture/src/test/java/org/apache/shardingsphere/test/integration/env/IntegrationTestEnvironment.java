@@ -45,10 +45,8 @@ import java.util.stream.Collectors;
 
 /**
  * Integration test running environment.
- * @deprecated deprecated
  */
 @Getter
-@Deprecated
 public final class IntegrationTestEnvironment {
     
     private static final IntegrationTestEnvironment INSTANCE = new IntegrationTestEnvironment();

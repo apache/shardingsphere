@@ -76,16 +76,6 @@ public class ContainerCompose implements Closeable {
     private Object instance;
     
     /**
-     * Startup all containers.
-     */
-    @SneakyThrows
-    public void startup(final Supplier<Object> supplier) {
-        createContainers();
-        createInitializerAndExecute(supplier);
-        containers.stream().filter(c -> !c.isCreated()).forEach(GenericContainer::start);
-    }
-    
-    /**
      * Create container and then autowired to test-case.
      */
     public void createContainers() {
@@ -118,7 +108,6 @@ public class ContainerCompose implements Closeable {
             field.getField().setAccessible(true);
             field.getField().set(instance, container);
             beanContext.registerBeanByName(metadata.name(), container);
-            
             log.info("container {} is activated.", metadata.name());
             return container;
             // CHECKSTYLE:OFF
@@ -215,7 +204,9 @@ public class ContainerCompose implements Closeable {
                         method.getMethod().setAccessible(true);
                         method.invokeExplosively(instance);
                     }
+                    // CHECKSTYLE:OFF
                 } catch (Throwable throwable) {
+                    // CHECKSTYLE:ON
                     throwable.printStackTrace();
                 }
             });

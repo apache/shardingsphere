@@ -52,20 +52,7 @@ public final class ParameterizedArrayFactory {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
-    /**
-     * Get assertion parameterized array.
-     * 
-     * @param sqlCommandType SQL command type
-     * @return assertion parameterized array
-     */
-    public static Collection<Object[]> getAssertionParameterizedArray(final SQLCommandType sqlCommandType) {
-        Collection<ParameterizedArray> result = new LinkedList<>();
-        for (IntegrationTestCaseContext each : TEST_CASES_LOADER.getTestCaseContexts(sqlCommandType)) {
-            result.addAll(getAssertionParameterizedArray(each, sqlCommandType));
-        }
-        return toArrays(result);
-    }
-    
+   
     /**
      * Get assertion parameterized array.
      *
@@ -124,20 +111,6 @@ public final class ParameterizedArrayFactory {
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
         return ENV.getScenarios().stream().filter(each -> scenarios.isEmpty() || scenarios.contains(each))
                 .map(each -> new AssertionParameterizedArray(testCaseContext, assertion, adapter, each, databaseType, sqlExecuteType, sqlCommandType)).collect(Collectors.toList());
-    }
-    
-    /**
-     * Get case parameterized array.
-     *
-     * @param sqlCommandType SQL command type
-     * @return case parameterized array
-     */
-    public static Collection<Object[]> getCaseParameterizedArray(final SQLCommandType sqlCommandType) {
-        Collection<ParameterizedArray> result = new LinkedList<>();
-        for (IntegrationTestCaseContext each : TEST_CASES_LOADER.getTestCaseContexts(sqlCommandType)) {
-            result.addAll(getCaseParameterizedArray(each, sqlCommandType));
-        }
-        return toArrays(result);
     }
     
     /**

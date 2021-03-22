@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.junit.runner.parallel;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.integration.junit.runner.ShardingSphereCISubRunner;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.junit.param.RunnerParameters;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
