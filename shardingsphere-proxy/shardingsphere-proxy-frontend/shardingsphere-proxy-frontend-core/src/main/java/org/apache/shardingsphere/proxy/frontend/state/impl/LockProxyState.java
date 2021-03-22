@@ -29,6 +29,6 @@ public final class LockProxyState implements ProxyState {
     
     @Override
     public void execute(final ChannelHandlerContext context, final Object message, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final BackendConnection backendConnection) {
-        // TODO
+        throw new UnsupportedOperationException("LockProxyState");
     }
 }
