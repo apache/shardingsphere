@@ -23,6 +23,8 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
@@ -44,25 +46,23 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
     }
     
     @Override
-    public Collection<EncryptAlterTableToken> generateSQLTokens(final AlterTableStatementContext alterTableStatementContext) {
-        Collection<EncryptAlterTableToken> result = new LinkedList<>();
+    public Collection<SQLToken> generateSQLTokens(final AlterTableStatementContext alterTableStatementContext) {
+        Collection<SQLToken> result = new LinkedList<>();
         String tableName = alterTableStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
-        addColumns(tableName, alterTableStatementContext.getSqlStatement().getAddColumnDefinitions(), "ADD COLUMN", result);
-        modifyColumns(tableName, alterTableStatementContext.getSqlStatement().getModifyColumnDefinitions(), "MODIFY COLUMN", result);
-        dropColumns(tableName, alterTableStatementContext.getSqlStatement().getDropColumnDefinitions(), "DROP COLUMN", result);
+        addColumns(tableName, alterTableStatementContext.getSqlStatement().getAddColumnDefinitions(), result);
+        modifyColumns(tableName, alterTableStatementContext.getSqlStatement().getModifyColumnDefinitions(), result);
+        dropColumns(tableName, alterTableStatementContext.getSqlStatement().getDropColumnDefinitions(), result);
         return result;
     }
     
-    private void addColumns(final String tableName, final Collection<AddColumnDefinitionSegment> columnDefinitionSegments,
-                            final String operationType, final Collection<EncryptAlterTableToken> result) {
+    private void addColumns(final String tableName, final Collection<AddColumnDefinitionSegment> columnDefinitionSegments, final Collection<SQLToken> result) {
+        String operationType = "ADD COLUMN";
         for (AddColumnDefinitionSegment addColumnDefinitionSegment : columnDefinitionSegments) {
             for (ColumnDefinitionSegment each : addColumnDefinitionSegment.getColumnDefinitions()) {
                 String columnName = each.getColumnName().getIdentifier().getValue();
                 Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
                 if (encryptor.isPresent()) {
-                    if (result.isEmpty()) {
-                        result.add(new EncryptAlterTableToken(addColumnDefinitionSegment.getStartIndex() - 1, each.getStopIndex() + 1, "", ""));
-                    }
+                    result.add(new RemoveToken(addColumnDefinitionSegment.getStartIndex() - 1, each.getStopIndex() + 1));
                     addCipherColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, each).ifPresent(result::add);
                     addAssistedQueryColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, each).ifPresent(result::add);
                     addPlainColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, each).ifPresent(result::add);
@@ -71,16 +71,14 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         }
     }
     
-    private void modifyColumns(final String tableName, final Collection<ModifyColumnDefinitionSegment> columnDefinitionSegments,
-                               final String operationType, final Collection<EncryptAlterTableToken> result) {
+    private void modifyColumns(final String tableName, final Collection<ModifyColumnDefinitionSegment> columnDefinitionSegments, final Collection<SQLToken> result) {
+        String operationType = "MODIFY COLUMN";
         for (ModifyColumnDefinitionSegment modifyColumnDefinitionSegment : columnDefinitionSegments) {
             ColumnDefinitionSegment segment = modifyColumnDefinitionSegment.getColumnDefinition();
             String columnName = segment.getColumnName().getIdentifier().getValue();
             Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
-                if (result.isEmpty()) {
-                    result.add(new EncryptAlterTableToken(modifyColumnDefinitionSegment.getStartIndex() - 1, modifyColumnDefinitionSegment.getStopIndex(), "", ""));
-                }
+                result.add(new RemoveToken(modifyColumnDefinitionSegment.getStartIndex() - 1, modifyColumnDefinitionSegment.getStopIndex()));
                 addCipherColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, modifyColumnDefinitionSegment, segment).ifPresent(result::add);
                 addAssistedQueryColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, modifyColumnDefinitionSegment, segment).ifPresent(result::add);
                 addPlainColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, modifyColumnDefinitionSegment, segment).ifPresent(result::add);
@@ -88,16 +86,14 @@ public final class EncryptAlterTableTokenGenerator extends BaseEncryptSQLTokenGe
         }
     }
     
-    private void dropColumns(final String tableName, final Collection<DropColumnDefinitionSegment> columnDefinitionSegments,
-                             final String operationType, final Collection<EncryptAlterTableToken> result) {
+    private void dropColumns(final String tableName, final Collection<DropColumnDefinitionSegment> columnDefinitionSegments, final Collection<SQLToken> result) {
+        String operationType = "DROP COLUMN";
         for (DropColumnDefinitionSegment dropColumnDefinitionSegment : columnDefinitionSegments) {
             for (ColumnSegment each : dropColumnDefinitionSegment.getColumns()) {
                 String columnName = each.getQualifiedName();
                 Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
                 if (encryptor.isPresent()) {
-                    if (result.isEmpty()) {
-                        result.add(new EncryptAlterTableToken(dropColumnDefinitionSegment.getStartIndex() - 1, each.getStopIndex() + 1, "", ""));
-                    }
+                    result.add(new RemoveToken(dropColumnDefinitionSegment.getStartIndex() - 1, each.getStopIndex() + 1));
                     addCipherColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, each).ifPresent(result::add);
                     addAssistedQueryColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, each).ifPresent(result::add);
                     addPlainColumn(tableName, columnName, result.size() == 1 ? operationType : ", " + operationType, each).ifPresent(result::add);
