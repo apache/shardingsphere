@@ -42,6 +42,6 @@ public final class EncryptAlterTableToken extends SQLToken implements Substituta
     
     @Override
     public String toString() {
-        return operationType.isEmpty() ? "" : String.format(" %s %s ", operationType, columnName);
+        return String.format(" %s %s ", operationType, columnName);
     }
 }
