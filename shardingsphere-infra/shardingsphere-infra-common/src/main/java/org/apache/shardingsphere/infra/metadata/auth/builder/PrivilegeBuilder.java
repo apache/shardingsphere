@@ -48,7 +48,7 @@ public final class PrivilegeBuilder {
     
     private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
     
-    private static final int FUTURE_GET_TIME_OUT_SECOND = 5;
+    private static final long FUTURE_GET_TIME_OUT_MILLISECONDS = 5000L;
     
     /**
      * Build privileges.
@@ -102,7 +102,7 @@ public final class PrivilegeBuilder {
         }
         futures.forEach(each -> {
             try {
-                each.get(FUTURE_GET_TIME_OUT_SECOND, TimeUnit.SECONDS).ifPresent(result::add);
+                each.get(FUTURE_GET_TIME_OUT_MILLISECONDS, TimeUnit.MILLISECONDS).ifPresent(result::add);
             } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
                 throw new IllegalStateException(String.format("Error while loading privilege with %s", each), ex);
             }
