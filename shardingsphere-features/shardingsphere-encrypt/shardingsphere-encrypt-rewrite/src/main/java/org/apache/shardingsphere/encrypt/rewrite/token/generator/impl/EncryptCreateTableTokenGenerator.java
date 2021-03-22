@@ -55,7 +55,7 @@ public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenG
         }
         return result;
     }
-
+    
     private Collection<SQLToken> getColumnTokens(final String tableName, final String columnName, final ColumnDefinitionSegment columnDefinitionSegment) {
         Collection<SQLToken> result = new LinkedList<>();
         result.add(new RemoveToken(columnDefinitionSegment.getStartIndex() - 1, columnDefinitionSegment.getStopIndex() + 1));
@@ -64,7 +64,7 @@ public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenG
         getPlainColumnToken(tableName, columnName, columnDefinitionSegment).ifPresent(result::add);
         return result;
     }
-
+    
     private SubstitutableColumnNameToken getCipherColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment columnDefinitionSegment) {
         String cipherColumn = getEncryptRule().getCipherColumn(tableName, columnName);
         return new SubstitutableColumnNameToken(columnDefinitionSegment.getStopIndex() + 2, columnDefinitionSegment.getColumnName().getStopIndex(), cipherColumn);
