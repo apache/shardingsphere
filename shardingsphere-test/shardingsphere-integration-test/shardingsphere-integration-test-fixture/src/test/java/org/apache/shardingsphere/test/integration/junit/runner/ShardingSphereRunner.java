@@ -71,7 +71,6 @@ public class ShardingSphereRunner extends Suite {
         TestCaseSpec testCaseSpec = getTestClass().getAnnotation(TestCaseSpec.class);
         caseName = Strings.isNullOrEmpty(testCaseSpec.name()) ? klass.getSimpleName() : testCaseSpec.name();
         resolver = new ConditionResolver();
-        
         if (Boolean.getBoolean("it.enable")) {
             // it process
             runners = createITRunners(testCaseSpec);
@@ -106,12 +105,11 @@ public class ShardingSphereRunner extends Suite {
     private List<Runner> createCIRunners(final TestCaseSpec testCaseSpec) {
         ParallelRuntimeStrategy parallelRuntimeStrategy = getTestClass().getAnnotation(ParallelRuntimeStrategy.class);
         if (null != parallelRuntimeStrategy) {
-            setScheduler(new ParallelRunnerScheduler(parallelRuntimeStrategy.value()));
+            ParallelRunnerScheduler scheduler = new ParallelRunnerScheduler(parallelRuntimeStrategy.value());
+//            setScheduler(null);
         }
-        
         final Predicate<TestCaseBeanContext> predicate = createTestCaseParametersPredicate();
         return allCIParameters(testCaseSpec).stream()
-                .peek(System.out::println)
                 .flatMap(e -> {
                     final TestCaseDescription description = TestCaseDescription.builder()
                             .sqlCommandType(testCaseSpec.sqlCommandType())

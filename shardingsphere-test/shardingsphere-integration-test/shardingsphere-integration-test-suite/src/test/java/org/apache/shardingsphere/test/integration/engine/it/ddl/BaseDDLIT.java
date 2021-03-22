@@ -55,7 +55,6 @@ public abstract class BaseDDLIT extends SingleITCase {
     @Before
     @SneakyThrows
     public final void initTables() {
-        // TODO make sure whether we need them?
         assertNotNull("Expected affected table is required", getAssertion().getInitialSQL());
         assertNotNull("Expected affected table is required", getAssertion().getInitialSQL().getAffectedTable());
         dataSetEnvironmentManager = new DataSetEnvironmentManager(
@@ -66,7 +65,7 @@ public abstract class BaseDDLIT extends SingleITCase {
         try (Connection connection = getTargetDataSource().getConnection()) {
             executeInitSQLs(connection);
         }
-//        resetTargetDataSource(); fixme
+//        resetTargetDataSource();
     }
     
     @After

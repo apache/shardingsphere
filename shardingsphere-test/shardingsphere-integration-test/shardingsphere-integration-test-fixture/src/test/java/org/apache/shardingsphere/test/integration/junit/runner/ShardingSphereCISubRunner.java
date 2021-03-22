@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.junit.runner;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.compose.ContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
@@ -103,7 +104,15 @@ public class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
     
     @Override
     protected String getName() {
-        return parameterized.toString();
+        // {2}: {3} -> {4} -> {5} -> {6}
+        TestCaseDescription description = context.getBean(TestCaseDescription.class);
+        return String.format("[%s: %s -> %s -> %s -> %s]",
+                description.getAdapter(),
+                description.getScenario(),
+                description.getDatabase(),
+                context.getBean(SQLExecuteType.class),
+                context.getBeanByName("statement")
+        );
     }
     
 }
