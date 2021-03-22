@@ -17,34 +17,30 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
-
-import java.util.Objects;
-import java.util.Optional;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 
 /**
- * Substitutable column .
+ * Substitutable column name token.
  */
-@RequiredArgsConstructor
-@Getter
-public final class SubstitutableColumn {
-    private final String tableName;
-
-    private final String owner;
-
-    private final String name;
-
-    private final QuoteCharacter quoteCharacter;
-
-    private final Optional<String> alias;
-
-    /**
-     * get QuoteCharacter.
-     * @return column QuoteCharacter
-     */
-    public QuoteCharacter getQuoteCharacter() {
-        return Objects.nonNull(quoteCharacter) ? quoteCharacter : QuoteCharacter.NONE;
+@EqualsAndHashCode
+public final class SubstitutableColumnNameToken extends SQLToken implements Substitutable {
+    
+    @Getter
+    private final int stopIndex;
+    
+    private final String columnName;
+    
+    public SubstitutableColumnNameToken(final int startIndex, final int stopIndex, final String columnName) {
+        super(startIndex);
+        this.stopIndex = stopIndex;
+        this.columnName = columnName;
+    }
+    
+    @Override
+    public String toString() {
+        return columnName;
     }
 }
