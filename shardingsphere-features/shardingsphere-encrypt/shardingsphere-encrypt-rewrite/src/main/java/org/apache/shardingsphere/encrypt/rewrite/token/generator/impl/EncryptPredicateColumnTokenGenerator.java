@@ -22,17 +22,18 @@ import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.QueryWithCipherColumnAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumn;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnsToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionBuilder;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -55,9 +56,9 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
     }
     
     @Override
-    public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<SubstitutableColumnsToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Preconditions.checkState(((WhereAvailable) sqlStatementContext).getWhere().isPresent());
-        Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
+        Collection<SubstitutableColumnsToken> result = new LinkedHashSet<>();
         ExpressionSegment expression = ((WhereAvailable) sqlStatementContext).getWhere().get().getExpr();
         ExpressionBuilder expressionBuilder = new ExpressionBuilder(expression);
         Collection<AndPredicate> andPredicates = new LinkedList<>(expressionBuilder.extractAndPredicates().getAndPredicates());
@@ -67,8 +68,8 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
         return result;
     }
     
-    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final AndPredicate andPredicate) {
-        Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
+    private Collection<SubstitutableColumnsToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final AndPredicate andPredicate) {
+        Collection<SubstitutableColumnsToken> result = new LinkedList<>();
         for (ExpressionSegment each : andPredicate.getPredicates()) {
             Optional<ColumnSegment> column = ColumnExtractor.extract(each);
             if (!column.isPresent()) {
@@ -78,18 +79,23 @@ public final class EncryptPredicateColumnTokenGenerator extends BaseEncryptSQLTo
             if (!encryptTable.isPresent() || !encryptTable.get().findEncryptorName(column.get().getIdentifier().getValue()).isPresent()) {
                 continue;
             }
-            int startIndex = column.get().getOwner().isPresent() ? column.get().getOwner().get().getStopIndex() + 2 : column.get().getStartIndex();
+            int startIndex = column.get().getOwner().isPresent() ? column.get().getOwner().get().getStartIndex() : column.get().getStartIndex();
             int stopIndex = column.get().getStopIndex();
+            Optional<String> tableName = sqlStatementContext.getTablesContext().findTableName(column.get(), schema);
+            String owner = column.get().getOwner().isPresent() ? column.get().getOwner().get().getIdentifier().getValue() : "";
             if (!queryWithCipherColumn) {
                 Optional<String> plainColumn = encryptTable.get().findPlainColumn(column.get().getIdentifier().getValue());
                 if (plainColumn.isPresent()) {
-                    result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, plainColumn.get()));
+                    result.add(new SubstitutableColumnsToken(startIndex, stopIndex,
+                            new SubstitutableColumn(tableName.get(), owner, plainColumn.get(), column.get().getIdentifier().getQuoteCharacter(), Optional.empty())));
                     continue;
                 }
             }
             Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(column.get().getIdentifier().getValue());
-            SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(columnName -> new SubstitutableColumnNameToken(startIndex, stopIndex, columnName))
-                    .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex, encryptTable.get().getCipherColumn(column.get().getIdentifier().getValue())));
+            SubstitutableColumnsToken encryptColumnNameToken = assistedQueryColumn.map(columnName -> new SubstitutableColumnsToken(startIndex, stopIndex,
+                    new SubstitutableColumn(tableName.get(), owner, columnName, column.get().getIdentifier().getQuoteCharacter(), Optional.empty())))
+                .orElseGet(() -> new SubstitutableColumnsToken(startIndex, stopIndex, new SubstitutableColumn(tableName.get(), owner,
+                        encryptTable.get().getCipherColumn(column.get().getIdentifier().getValue()), column.get().getIdentifier().getQuoteCharacter(), Optional.empty())));
             result.add(encryptColumnNameToken);
         }
         return result;

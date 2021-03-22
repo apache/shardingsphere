@@ -96,7 +96,7 @@
             <simple-table name="t_order" alias="o" start-index="40" stop-index="48" />
         </from>
         <projections start-index="7" stop-index="33">
-            <column-projection name="order_id" alias="gen_order_id_" start-index="7" stop-index="16">
+            <column-projection name="order_id" alias="gen_order_id_" start-index="7" stop-index="33">
                 <owner name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
@@ -177,7 +177,7 @@
             <simple-table name="t_order" alias="o" start-index="40" stop-index="48" />
         </from>
         <projections start-index="7" stop-index="33">
-            <column-projection name="order_id" alias="gen_order_id_" start-index="7" stop-index="16">
+            <column-projection name="order_id" alias="gen_order_id_" start-index="7" stop-index="33">
                 <owner name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
@@ -194,7 +194,7 @@
             <simple-table name="t_order" alias="o" start-index="40" stop-index="48" />
         </from>
         <projections start-index="7" stop-index="33">
-            <column-projection name="order_id" alias="gen_order_id_" start-index="7" stop-index="16">
+            <column-projection name="order_id" alias="gen_order_id_" start-index="7" stop-index="33">
                 <owner name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>

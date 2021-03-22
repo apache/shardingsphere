@@ -258,7 +258,7 @@
             <simple-table name="t_order" alias="o" start-index="26" stop-index="34" />
         </from>
         <projections start-index="7" stop-index="19">
-            <column-projection name="user_id" alias="uid" start-index="7" stop-index="15">
+            <column-projection name="user_id" alias="uid" start-index="7" stop-index="19">
                 <owner name="o" start-index="7" stop-index="7" />
             </column-projection>
         </projections>
@@ -315,7 +315,7 @@
         </from>
         <projections start-index="7" stop-index="51">
             <aggregation-projection type="SUM" inner-expression="(order_id)" alias="orders_sum" start-index="7" stop-index="19" />
-            <column-projection name="user_id" alias="key" start-index="36" stop-index="42" />
+            <column-projection name="user_id" alias="key" start-index="36" stop-index="51" />
         </projections>
         <group-by>
             <column-item name="key" start-delimiter="`" end-delimiter="`" start-index="75" stop-index="79" />

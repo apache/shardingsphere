@@ -15,12 +15,17 @@
   ~ limitations under the License.
   -->
 
-<dataset update-count="2">
-    <metadata data-nodes="write_ds.t_broadcast_table">
-        <column name="id" type="numeric" />
-        <column name="status" type="varchar" />
+<dataset>
+    <metadata>
+        <column name="single_id"/>
+        <column name="id" />
+        <column name="status"/>
+        <column name="order_id" />
+        <column name="user_id" />
+        <column name="status" />
     </metadata>
-    <row data-node="write_ds.t_broadcast_table" values="1, init_read" />
-    <row data-node="write_ds.t_broadcast_table" values="2, insert" />
-    <row data-node="write_ds.t_broadcast_table" values="3, insert" />
+    <row values="1, 1000, init_read, 1000, 10, init_read" />
+    <row values="2, 1100, init_read, 1100, 11, init_read" />
+    <row values="3, 1200, init_read, 1200, 12, init_read" />
+    <row values="4, 1300, init_read, 1300, 13, init_read" />
 </dataset>
