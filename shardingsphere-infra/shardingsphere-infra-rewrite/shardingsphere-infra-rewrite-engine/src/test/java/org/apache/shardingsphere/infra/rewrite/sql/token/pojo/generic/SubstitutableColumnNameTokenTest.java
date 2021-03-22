@@ -19,6 +19,8 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -26,6 +28,7 @@ public final class SubstitutableColumnNameTokenTest {
     
     @Test
     public void assertToString() {
-        assertThat(new SubstitutableColumnNameToken(0, 1, "id").toString(), is("id"));
+        SubstitutableColumnsToken token = new SubstitutableColumnsToken(0, 1, new SubstitutableColumn("", "", "id", null, Optional.empty()));
+        assertThat(token.toString(), is("id"));
     }
 }
