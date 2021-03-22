@@ -38,8 +38,6 @@ import java.util.stream.Collectors;
 
 /**
  * Table meta data loader for SQLServer.
- * @author totalo
- * @date 20210316
  */
 public final class SQLServerTableMetaDataLoader implements DialectTableMetaDataLoader {
 

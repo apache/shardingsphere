@@ -39,8 +39,6 @@ import static org.mockito.Mockito.when;
 
 /**
  * Table meta data loader for SQLServer.
- * @author totalo
- * @date 20210316
  */
 public final class SQLServerTableMetaDataLoaderTest {
 
