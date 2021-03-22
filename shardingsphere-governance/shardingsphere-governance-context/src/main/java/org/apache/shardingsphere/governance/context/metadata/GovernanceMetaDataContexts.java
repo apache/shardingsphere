@@ -87,8 +87,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         ShardingSphereEventBus.getInstance().register(this);
         disableDataSources();
         persistMetaData();
-        lock = new GovernanceLock(governanceFacade.getRegistryCenter(), 
-                metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
+        lock = new GovernanceLock(governanceFacade.getRegistryCenter(), getDefaultLockTimeOut());
     }
     
     private void disableDataSources() {
@@ -107,6 +106,12 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private void persistMetaData() {
         metaDataContexts.getMetaDataMap().forEach((key, value) -> governanceFacade.getRegistryCenter().persistSchema(key, value.getSchema()));
+    }
+    
+    private long getDefaultLockTimeOut() {
+        return metaDataContexts.getProps() == null
+                ? Long.valueOf(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS.getDefaultValue()) 
+                : metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS);
     }
     
     @Override
