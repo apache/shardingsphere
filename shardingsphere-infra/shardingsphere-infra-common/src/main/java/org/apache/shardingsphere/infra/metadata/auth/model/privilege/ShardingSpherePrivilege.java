@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.auth.model.privilege;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.admin.AdministrativePrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.data.DatabasePrivilege;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.database.DatabasePrivilege;
 
 import java.util.Collection;
 
@@ -39,8 +39,7 @@ public final class ShardingSpherePrivilege {
      * Set super privilege.
      */
     public void setSuperPrivilege() {
-        administrativePrivilege.setSuperPrivilege();
-        databasePrivilege.setSuperPrivilege();
+        administrativePrivilege.getPrivileges().add(PrivilegeType.SUPER);
     }
     
     /**
@@ -61,7 +60,7 @@ public final class ShardingSpherePrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
-        return databasePrivilege.hasPrivileges(schema, privileges);
+        return hasPrivileges(privileges) || databasePrivilege.hasPrivileges(schema, privileges);
     }
     
     /**
@@ -73,6 +72,6 @@ public final class ShardingSpherePrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final String schema, final String table, final Collection<PrivilegeType> privileges) {
-        return databasePrivilege.hasPrivileges(schema, table, privileges);
+        return hasPrivileges(privileges) || databasePrivilege.hasPrivileges(schema, table, privileges);
     }
 }

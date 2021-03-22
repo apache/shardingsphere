@@ -43,7 +43,7 @@ public final class ReadWriteSplittingRuleBuilderTest {
     public void assertBuild() {
         ReadWriteSplittingRuleConfiguration ruleConfig = mock(ReadWriteSplittingRuleConfiguration.class);
         ReadWriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadWriteSplittingDataSourceRuleConfiguration(
-                "name", "writeDataSourceName", Collections.singletonList("name"), "loadBalancerName");
+                "name", "pr_ds", "writeDataSourceName", Collections.singletonList("name"), "loadBalancerName");
         when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(dataSourceRuleConfig));
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
         assertThat(builder.build(ruleConfig), instanceOf(ReadWriteSplittingRule.class));

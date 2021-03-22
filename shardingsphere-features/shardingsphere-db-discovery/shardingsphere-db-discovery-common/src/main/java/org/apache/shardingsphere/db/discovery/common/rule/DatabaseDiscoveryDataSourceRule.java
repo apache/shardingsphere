@@ -71,6 +71,15 @@ public final class DatabaseDiscoveryDataSourceRule {
     }
     
     /**
+     * Get replica data source names.
+     *
+     * @return available replica data source names
+     */
+    public List<String> getReplicaDataSourceNames() {
+        return dataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each) && !primaryDataSourceName.equals(each)).collect(Collectors.toList());
+    }
+    
+    /**
      * Update disabled data source names.
      *
      * @param dataSourceName data source name

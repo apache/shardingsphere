@@ -124,7 +124,7 @@ rules:
         worker-id: 123
 ```
 
-#### Replica Query Configuration
+#### Read Write Splitting Configuration
 
 ```yaml
 schemaName: sharding_db
@@ -147,12 +147,12 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 200
 rules:
-- !REPLICA_QUERY
+- !READ_WRITE_SPLITTING
   dataSources:
     pr_ds:
       name: pr_ds
-      primaryDataSourceName: primary_ds
-      replicaDataSourceNames:
+      writeDataSourceName: primary_ds
+      readDataSourceNames:
         - replica_ds_0
 ```
 
@@ -261,26 +261,26 @@ rules:
       type: SNOWFLAKE
       props:
           worker-id: 123
-- !REPLICA_QUERY
+- !READ_WRITE_SPLITTING
   dataSources:
     pr_ds_0:
-      primaryDataSourceName: primary_ds_0
-      replicaDataSourceNames:
+      writeyDataSourceName: primary_ds_0
+      readDataSourceNames:
         - replica_ds_0
       loadBalancerName: round_robin
     pr_ds_1:
-      primaryDataSourceName: primary_ds_1
-      replicaDataSourceNames:
+      writeyDataSourceName: primary_ds_1
+      readDataSourceNames:
         - replica_ds_1
       loadBalancerName: round_robin
     pr_ds_2:
-      primaryDataSourceName: primary_ds_2
-      replicaDataSourceNames:
+      writeyDataSourceName: primary_ds_2
+      readDataSourceNames:
         - replica_ds_2
       loadBalancerName: round_robin
     pr_ds_3:
-      primaryDataSourceName: primary_ds_3
-      replicaDataSourceNames:
+      writeyDataSourceName: primary_ds_3
+      readDataSourceNames:
         - replica_ds_3
       loadBalancerName: round_robin
   loadBalancers:

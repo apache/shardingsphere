@@ -35,6 +35,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract execution prepare engine.
@@ -47,6 +48,9 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
         ShardingSphereServiceLoader.register(ExecutionPrepareDecorator.class);
     }
     
+    @SuppressWarnings("rawtypes")
+    private static final Map<Collection<ShardingSphereRule>, Map<ShardingSphereRule, ExecutionPrepareDecorator>> RULES_TO_DECORATORS_MAP = new ConcurrentHashMap<>(32, 1);
+    
     private final int maxConnectionsSizePerQuery;
     
     @SuppressWarnings("rawtypes")
@@ -54,7 +58,7 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
     
     protected AbstractExecutionPrepareEngine(final int maxConnectionsSizePerQuery, final Collection<ShardingSphereRule> rules) {
         this.maxConnectionsSizePerQuery = maxConnectionsSizePerQuery;
-        decorators = OrderedSPIRegistry.getRegisteredServices(rules, ExecutionPrepareDecorator.class);
+        decorators = RULES_TO_DECORATORS_MAP.computeIfAbsent(rules, key -> OrderedSPIRegistry.getRegisteredServices(key, ExecutionPrepareDecorator.class));
     }
     
     @Override
