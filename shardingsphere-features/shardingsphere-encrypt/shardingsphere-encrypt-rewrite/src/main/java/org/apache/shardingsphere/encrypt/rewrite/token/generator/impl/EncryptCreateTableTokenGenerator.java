@@ -18,30 +18,30 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.impl;
 
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.BaseEncryptSQLTokenGenerator;
-import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptCreateTableToken;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 
-import java.util.LinkedList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
  * Create table token generator for encrypt.
  */
 public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenGenerator implements CollectionSQLTokenGenerator<CreateTableStatementContext> {
-
+    
     @Override
     protected boolean isGenerateSQLTokenForEncrypt(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof CreateTableStatementContext && !(((CreateTableStatementContext) sqlStatementContext).getSqlStatement()).getColumnDefinitions().isEmpty();
     }
-
+    
     @Override
-    public Collection<EncryptCreateTableToken> generateSQLTokens(final CreateTableStatementContext createTableStatementContext) {
-        Collection<EncryptCreateTableToken> result = new LinkedList<>();
+    public Collection<SubstitutableColumnNameToken> generateSQLTokens(final CreateTableStatementContext createTableStatementContext) {
+        Collection<SubstitutableColumnNameToken> result = new LinkedList<>();
         String tableName = createTableStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         Collection<ColumnDefinitionSegment> columnDefinitionSegments = createTableStatementContext.getSqlStatement().getColumnDefinitions();
         for (ColumnDefinitionSegment each : columnDefinitionSegments) {
@@ -49,40 +49,28 @@ public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenG
             Optional<EncryptAlgorithm> encryptor = getEncryptRule().findEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
                 if (result.isEmpty()) {
-                    result.add(new EncryptCreateTableToken(each.getStartIndex() - 1, each.getStopIndex() + 1, ""));
+                    result.add(new SubstitutableColumnNameToken(each.getStartIndex() - 1, each.getStopIndex() + 1, ""));
                 }
-                addPlainColumn(tableName, columnName, each).ifPresent(result::add);
-                addAssistedQueryColumn(tableName, columnName, each).ifPresent(result::add);
-                addCipherColumn(tableName, columnName, each).ifPresent(result::add);
+                getPlainColumn(tableName, columnName, each).ifPresent(result::add);
+                getAssistedQueryColumn(tableName, columnName, each).ifPresent(result::add);
+                result.add(getCipherColumn(tableName, columnName, each));
             }
         }
         return result;
     }
-
-    private Optional<EncryptCreateTableToken> addPlainColumn(final String tableName, final String columnName, final ColumnDefinitionSegment columnDefinitionSegment) {
+    
+    private Optional<SubstitutableColumnNameToken> getPlainColumn(final String tableName, final String columnName, final ColumnDefinitionSegment columnDefinitionSegment) {
         Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, columnName);
-        return plainColumn.map(plainColumnName -> new EncryptCreateTableToken(
-                columnDefinitionSegment.getStopIndex() + 2,
-                columnDefinitionSegment.getColumnName().getStopIndex(),
-                plainColumnName
-        ));
+        return plainColumn.map(optional -> new SubstitutableColumnNameToken(columnDefinitionSegment.getStopIndex() + 2, columnDefinitionSegment.getColumnName().getStopIndex(), optional));
     }
-
-    private Optional<EncryptCreateTableToken> addAssistedQueryColumn(final String tableName, final String columnName, final ColumnDefinitionSegment columnDefinitionSegment) {
+    
+    private Optional<SubstitutableColumnNameToken> getAssistedQueryColumn(final String tableName, final String columnName, final ColumnDefinitionSegment columnDefinitionSegment) {
         Optional<String> assistedQueryColumn = getEncryptRule().findAssistedQueryColumn(tableName, columnName);
-        return assistedQueryColumn.map(assistedQueryColumnName -> new EncryptCreateTableToken(
-                columnDefinitionSegment.getStopIndex() + 2,
-                columnDefinitionSegment.getColumnName().getStopIndex(),
-                assistedQueryColumnName
-        ));
+        return assistedQueryColumn.map(optional -> new SubstitutableColumnNameToken(columnDefinitionSegment.getStopIndex() + 2, columnDefinitionSegment.getColumnName().getStopIndex(), optional));
     }
-
-    private Optional<EncryptCreateTableToken> addCipherColumn(final String tableName, final String columnName, final ColumnDefinitionSegment columnDefinitionSegment) {
+    
+    private SubstitutableColumnNameToken getCipherColumn(final String tableName, final String columnName, final ColumnDefinitionSegment columnDefinitionSegment) {
         String cipherColumn = getEncryptRule().getCipherColumn(tableName, columnName);
-        return Optional.of(new EncryptCreateTableToken(
-                columnDefinitionSegment.getStopIndex() + 2,
-                columnDefinitionSegment.getColumnName().getStopIndex(),
-                cipherColumn
-        ));
+        return new SubstitutableColumnNameToken(columnDefinitionSegment.getStopIndex() + 2, columnDefinitionSegment.getColumnName().getStopIndex(), cipherColumn);
     }
 }
