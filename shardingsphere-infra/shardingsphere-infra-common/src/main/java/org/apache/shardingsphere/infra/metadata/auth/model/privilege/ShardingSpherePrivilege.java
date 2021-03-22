@@ -43,6 +43,16 @@ public final class ShardingSpherePrivilege {
     }
     
     /**
+     * Is empty.
+     *
+     * @return is empty or not
+     */
+    public boolean isEmpty() {
+        return administrativePrivilege.getPrivileges().isEmpty()
+                && databasePrivilege.getGlobalPrivileges().isEmpty() && databasePrivilege.getSpecificPrivileges().isEmpty();
+    }
+    
+    /**
      * Has privileges.
      *
      * @param privileges privileges
