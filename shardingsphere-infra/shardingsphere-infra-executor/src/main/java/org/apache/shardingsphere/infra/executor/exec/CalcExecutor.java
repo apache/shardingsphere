@@ -40,22 +40,22 @@ public final class CalcExecutor extends SingleExecutor {
     public boolean executeMove() {
         if (conditionEvaluator != null) {
             while (true) {
-                if (!executor.moveNext()) {
+                if (!getExecutor().moveNext()) {
                     return false;
                 }
-                Row row = executor.current();
+                Row row = getExecutor().current();
                 if (conditionEvaluator.eval(row)) {
                     return true;
                 }
             }
         } else {
-            return executor.moveNext();
+            return getExecutor().moveNext();
         }
     }
     
     @Override
     public Row current() {
-        Row row = executor.current();
+        Row row = getExecutor().current();
         Object[] vals = new Object[projectEvaluators.size()];
         int idx = 0;
         for (Evaluator evaluator : projectEvaluators) {

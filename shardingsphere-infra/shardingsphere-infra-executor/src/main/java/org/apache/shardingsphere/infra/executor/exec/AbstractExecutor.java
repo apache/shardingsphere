@@ -1,5 +1,7 @@
 package org.apache.shardingsphere.infra.executor.exec;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.exec.meta.Row;
 
 import java.util.Iterator;
@@ -12,7 +14,8 @@ public abstract class AbstractExecutor implements Executor {
     /**
      * context for current {@link Executor}.
      */
-    protected final ExecContext execContext;
+    @Getter(AccessLevel.PROTECTED)
+    private final ExecContext execContext;
     
     private volatile boolean inited;
     
@@ -27,7 +30,7 @@ public abstract class AbstractExecutor implements Executor {
      * @return true, if the next row exist, or false
      */
     @Override
-    public boolean moveNext() {
+    public final boolean moveNext() {
         init();
         return executeMove();
     }

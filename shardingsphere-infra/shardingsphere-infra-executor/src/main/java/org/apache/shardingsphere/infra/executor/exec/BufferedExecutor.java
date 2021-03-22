@@ -28,7 +28,7 @@ public final class BufferedExecutor extends SingleExecutor {
     
     @Override
     public QueryResultMetaData getMetaData() {
-        return executor.getMetaData();
+        return getExecutor().getMetaData();
     }
     
     @Override
@@ -47,8 +47,8 @@ public final class BufferedExecutor extends SingleExecutor {
     }
     
     private void bufferRows() {
-        while (executor.moveNext()) {
-            Row row = executor.current();
+        while (getExecutor().moveNext()) {
+            Row row = getExecutor().current();
             rows.add(row);
         }
     }

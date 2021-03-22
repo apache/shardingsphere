@@ -24,7 +24,7 @@ public final class CountAggregateBuiltinFunction extends AbstractAggregateBuilti
     
     @Override
     public AggregateBuiltinFunction newFunc() {
-        return new CountAggregateBuiltinFunction(aggColumnIdx, distinct);
+        return new CountAggregateBuiltinFunction(getAggColumnIdx(), isDistinct());
     }
     
     @Override

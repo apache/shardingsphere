@@ -29,7 +29,7 @@ public final class PushdownRelBuilder extends RelBuilder {
      */
     public PushdownRelBuilder sortLimit(final RexNode offsetRex, final RexNode fetchRex, final Iterable<? extends RexNode> nodes) {
         int offset = offsetRex == null ? 0 : RexLiteral.intValue(offsetRex);
-        if (fetchRex instanceof RexLiteral) {
+        if (fetchRex == null || fetchRex instanceof RexLiteral) {
             int fetch = fetchRex == null ? -1 : RexLiteral.intValue(fetchRex);
             super.sortLimit(offset, fetch, nodes);
         } else {

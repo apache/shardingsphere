@@ -1,5 +1,7 @@
 package org.apache.shardingsphere.infra.executor.exec.func.implementor;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.calcite.adapter.enumerable.NullPolicy;
 import org.apache.shardingsphere.infra.executor.exec.func.BuiltinFunction;
 import org.apache.shardingsphere.infra.executor.exec.func.FunctionIdentity;
@@ -10,9 +12,11 @@ import java.util.Map;
 
 public abstract class AbstractFunctionImplementor<T, R extends BuiltinFunction> implements RexCallToFunctionImplementor<T, R> {
     
-    protected final Map<FunctionIdentity, BuiltinFunction> functionMap = new HashMap<>();
+    @Getter(AccessLevel.PROTECTED)
+    private final Map<FunctionIdentity, BuiltinFunction> functionMap = new HashMap<>();
     
-    protected final NullPolicy nullPolicy;
+    @Getter(AccessLevel.PROTECTED)
+    private final NullPolicy nullPolicy;
     
     protected AbstractFunctionImplementor(final NullPolicy nullPolicy) {
         this.nullPolicy = nullPolicy;

@@ -20,12 +20,6 @@ public interface AggregateBuiltinFunction<R> extends BuiltinFunction<Object, R> 
     void aggregate(Row row);
     
     /**
-     * set column list from  group by operator.
-     * @param groupByColumns columns
-     */
-    void setGroupByColumns(List<Integer> groupByColumns);
-    
-    /**
      * copy this function instance.
      * @return a new aggregation BuiltinFunction.
      */

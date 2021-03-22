@@ -1,12 +1,13 @@
 package org.apache.shardingsphere.infra.executor.exec;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.exec.meta.Row;
 import org.apache.shardingsphere.infra.executor.exec.tool.RowComparatorUtil;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSSort;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -17,7 +18,8 @@ import java.util.List;
  */
 public class SortExecutor extends IteratorExecutor {
     
-    protected final Comparator<Row> ordering;
+    @Getter(AccessLevel.PROTECTED)
+    private final Comparator<Row> ordering;
     
     public SortExecutor(final Executor executor, final Comparator<Row> ordering, final ExecContext execContext) {
         super(executor, execContext);
@@ -26,7 +28,7 @@ public class SortExecutor extends IteratorExecutor {
     
     @Override
     public final QueryResultMetaData getMetaData() {
-        return executor.getMetaData();
+        return getExecutor().getMetaData();
     }
     
     /**
@@ -41,14 +43,14 @@ public class SortExecutor extends IteratorExecutor {
     
     /**
      * Sort rows of input Executor in memory.
-     * @return
+     * @return sorted list
      */
     protected List<Row> memSort() {
         List<Row> inputRows = new ArrayList<>();
-        while (executor.moveNext()) {
-            inputRows.add(executor.current());
+        while (getExecutor().moveNext()) {
+            inputRows.add(getExecutor().current());
         }
-        Collections.sort(inputRows, ordering);
+        inputRows.sort(ordering);
         return inputRows;
     }
     

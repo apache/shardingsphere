@@ -38,10 +38,10 @@ public final class NestedLoopJoinExecutor extends AbstractJoinExecutor {
             switch (state) {
                 case 0:
                     // move outer
-                    if (!outer.moveNext()) {
+                    if (!getOuter().moveNext()) {
                         return false;
                     }
-                    outerValue = outer.current(); 
+                    outerValue = getOuter().current(); 
                     innerBuffer.reset();
                     outerMatch = false; 
                     state = 1; 
@@ -51,9 +51,9 @@ public final class NestedLoopJoinExecutor extends AbstractJoinExecutor {
                     // move inner
                     if (innerBuffer.moveNext()) {
                         innerValue = innerBuffer.current();
-                        if (joinEvaluator.eval(newJoinRow(outerValue, innerValue))) {
+                        if (getJoinEvaluator().eval(newJoinRow(outerValue, innerValue))) {
                             outerMatch = true; 
-                            switch (joinType) {
+                            switch (getJoinType()) {
                                 // try next outer row
                                 case ANTI: 
                                     state = 0; 
@@ -74,7 +74,7 @@ public final class NestedLoopJoinExecutor extends AbstractJoinExecutor {
                         // innerEnumerator is over
                         state = 0; 
                         innerValue = null;
-                        if (!outerMatch && (joinType == JoinRelType.LEFT || joinType == JoinRelType.ANTI)) {
+                        if (!outerMatch && (getJoinType() == JoinRelType.LEFT || getJoinType() == JoinRelType.ANTI)) {
                             // No match detected: outerValue is a result for LEFT / ANTI join
                             return true;
                         }
@@ -87,7 +87,7 @@ public final class NestedLoopJoinExecutor extends AbstractJoinExecutor {
     @Override
     protected void executeInit() {
         super.executeInit();
-        innerBuffer = new BufferedExecutor(inner, execContext);
+        innerBuffer = new BufferedExecutor(getInner(), getExecContext());
     }
     
     @Override

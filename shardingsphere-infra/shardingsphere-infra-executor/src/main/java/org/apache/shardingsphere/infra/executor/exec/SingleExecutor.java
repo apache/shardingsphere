@@ -1,5 +1,8 @@
 package org.apache.shardingsphere.infra.executor.exec;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+
 /**
  * Abstract base class for <code>Executor</code> with a single input .
  *
@@ -9,7 +12,8 @@ package org.apache.shardingsphere.infra.executor.exec;
  */
 public abstract class SingleExecutor extends AbstractExecutor {
     
-    protected final Executor executor;
+    @Getter(AccessLevel.PROTECTED)
+    private final Executor executor;
     
     public SingleExecutor(final Executor executor, final ExecContext execContext) {
         super(execContext);

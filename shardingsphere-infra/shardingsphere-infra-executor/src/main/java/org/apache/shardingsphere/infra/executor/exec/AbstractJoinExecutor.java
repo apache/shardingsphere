@@ -1,5 +1,7 @@
 package org.apache.shardingsphere.infra.executor.exec;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.calcite.rel.core.JoinRelType;
 import org.apache.shardingsphere.infra.executor.exec.evaluator.Evaluator;
 import org.apache.shardingsphere.infra.executor.exec.meta.JoinColumnMetaData;
@@ -9,13 +11,17 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 
 public abstract class AbstractJoinExecutor extends AbstractExecutor {
     
-    protected final Executor outer;
+    @Getter(AccessLevel.PROTECTED)
+    private final Executor outer;
     
-    protected final Executor inner;
+    @Getter(AccessLevel.PROTECTED)
+    private final Executor inner;
     
-    protected final Evaluator joinEvaluator;
+    @Getter(AccessLevel.PROTECTED)
+    private final Evaluator joinEvaluator;
     
-    protected final JoinRelType joinType;
+    @Getter(AccessLevel.PROTECTED)
+    private final JoinRelType joinType;
     
     public AbstractJoinExecutor(final Executor outer, final Executor inner, final JoinRelType joinType, 
                                 final Evaluator joinEvaluator, final ExecContext execContext) {

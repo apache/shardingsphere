@@ -85,7 +85,7 @@ public class BinaryFunctionImplementor extends AbstractFunctionImplementor<RexCa
             final RelDataType relDataType0 = rexCall.getOperands().get(0).getType();
     
             FunctionIdentity functionIdentity = new FunctionIdentity(op.getKind().name(), Arrays.asList(type0.getTypeName(), type1.getTypeName()));
-            BinaryBuiltinFunction builtinFunction = (BinaryBuiltinFunction) functionMap.get(functionIdentity);
+            BinaryBuiltinFunction builtinFunction = (BinaryBuiltinFunction) getFunctionMap().get(functionIdentity);
             
             /*final Expression fieldComparator = generateCollatorExpression(relDataType0.getCollation());
             if (fieldComparator != null) {

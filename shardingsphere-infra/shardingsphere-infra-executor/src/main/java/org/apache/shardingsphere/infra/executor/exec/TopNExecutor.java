@@ -25,11 +25,11 @@ public class TopNExecutor extends LimitSortExecutor {
      */
     @Override
     protected final Iterator<Row> initInputRowIterator() {
-        while (executor.moveNext()) {
-            if (heap.size() > (fetch + offset)) {
+        while (getExecutor().moveNext()) {
+            if (heap.size() > (getFetch() + getOffset())) {
                 heap.poll();
             }
-            Row row = executor.current();
+            Row row = getExecutor().current();
             heap.add(row);
         }
         Iterator<Row> inputRowIterator = heap.iterator();

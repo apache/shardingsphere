@@ -1,5 +1,7 @@
 package org.apache.shardingsphere.infra.executor.exec;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.calcite.rex.RexDynamicParam;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
@@ -16,9 +18,11 @@ import java.util.List;
  */
 public class LimitSortExecutor extends SortExecutor {
     
-    protected final int offset;
+    @Getter(AccessLevel.PROTECTED)
+    private final int offset;
     
-    protected final int fetch;
+    @Getter(AccessLevel.PROTECTED)
+    private final int fetch;
     
     /**
      * the number of rows that has been fetched.
@@ -39,18 +43,18 @@ public class LimitSortExecutor extends SortExecutor {
     @Override
     protected Iterator<Row> initInputRowIterator() {
         Iterator<Row> inputRowIterator;
-        if (ordering == RowComparatorUtil.EMPTY) {
+        if (getOrdering() == RowComparatorUtil.EMPTY) {
             inputRowIterator = super.initInputRowIterator();
         } else {
             inputRowIterator = new Iterator<Row>() {
                 @Override
                 public boolean hasNext() {
-                    return executor.moveNext();
+                    return getExecutor().moveNext();
                 }
     
                 @Override
                 public Row next() {
-                    return executor.current();
+                    return getExecutor().current();
                 }
             };
         }

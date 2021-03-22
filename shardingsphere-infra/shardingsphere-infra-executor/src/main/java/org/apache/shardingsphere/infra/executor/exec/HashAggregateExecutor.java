@@ -70,8 +70,8 @@ public final class HashAggregateExecutor extends SingleExecutor {
     
     @Override
     protected void doInit() {
-        while (executor.moveNext()) {
-            Row row = executor.current();
+        while (getExecutor().moveNext()) {
+            Row row = getExecutor().current();
             aggregate(row);
         }
         lookup = groupByKeyAccumulators.entrySet().iterator();
@@ -114,7 +114,6 @@ public final class HashAggregateExecutor extends SingleExecutor {
         for (AggregateCall aggCall : aggCalls) {
             AggFunctionImplementor aggImp = BuiltinFunctionTable.INSTANCE.get(aggCall.getAggregation());
             AggregateBuiltinFunction aggFunction = aggImp.implement(aggCall, new RelDataType[]{aggCall.getType()});
-            aggFunction.setGroupByColumns(groupBy.asList());
             aggFuncs.add(aggFunction);
         }
         

@@ -1,16 +1,18 @@
 package org.apache.shardingsphere.infra.executor.exec.func.aggregate;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.exec.meta.Row;
 
 import java.util.List;
 
 public abstract class AbstractAggregateBuiltinFunction<R> implements AggregateBuiltinFunction<R> {
     
-    protected final List<Integer> aggColumnIdx;
+    @Getter(AccessLevel.PROTECTED)
+    private final List<Integer> aggColumnIdx;
     
-    protected final boolean distinct;
-    
-    private List<Integer> groupByColumnIdx;
+    @Getter(AccessLevel.PROTECTED)
+    private final boolean distinct;
     
     public AbstractAggregateBuiltinFunction(final List<Integer> aggColumnIdx, final boolean distinct) {
         this.aggColumnIdx = aggColumnIdx;
@@ -28,11 +30,6 @@ public abstract class AbstractAggregateBuiltinFunction<R> implements AggregateBu
      * @param args args for accumulating.
      */
     public abstract void accumulate(Object[] args);
-    
-    @Override
-    public final void setGroupByColumns(final List<Integer> groupByColumns) {
-        this.groupByColumnIdx = groupByColumns;
-    }
     
     private Object[] getColumnVals(final Row row, final List<Integer> columnIdx) {
         Object[] columnVals = new Object[columnIdx.size()];
