@@ -2,7 +2,6 @@ package org.apache.shardingsphere.infra.optimize.rel.logical;
 
 import com.google.common.collect.Sets;
 import org.apache.calcite.plan.RelOptTable;
-import org.apache.calcite.rel.AbstractRelNode;
 import org.apache.calcite.rel.RelFieldCollation;
 import org.apache.calcite.rel.RelFieldCollation.Direction;
 import org.apache.calcite.rel.RelFieldCollation.NullDirection;
@@ -17,25 +16,11 @@ import org.apache.calcite.rel.logical.LogicalSort;
 import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.tools.RelBuilder.GroupKey;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.optimize.planner.ShardingSphereConvention;
-import org.apache.shardingsphere.infra.optimize.rel.TableAndRexShuttle;
-import org.apache.shardingsphere.infra.optimize.rel.physical.SSRel;
-import org.apache.shardingsphere.infra.optimize.tools.OptimizerContext;
+import org.apache.shardingsphere.infra.optimize.rel.AbstractScan;
 import org.apache.shardingsphere.infra.optimize.tools.PushdownRelBuilder;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
-import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
-import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
-import org.apache.shardingsphere.sharding.route.engine.type.complex.ShardingComplexRoutingEngine;
-import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
-import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,15 +29,12 @@ import java.util.stream.Collectors;
  * pushdown table scan with filter, project, sort and so on. We can also pushdown join that can be executed in the 
  * sharding database.  
  */
-public class LogicalScan extends AbstractRelNode implements SSRel {
+public final class LogicalScan extends AbstractScan {
     
     private PushdownRelBuilder relBuilder;
     
-    private RouteContext routeContext;
-    
     protected LogicalScan(final TableScan tableScan) {
         super(tableScan.getCluster(), tableScan.getTraitSet());
-        this.traitSet = this.getTraitSet().replace(ShardingSphereConvention.INSTANCE);
         relBuilder = PushdownRelBuilder.create(tableScan);
         relBuilder.scan(tableScan.getTable().getQualifiedName());
         refreshRowType(tableScan);
@@ -167,52 +149,18 @@ public class LogicalScan extends AbstractRelNode implements SSRel {
         return relBuilder.build();    
     }
     
-    private void resetRouteContext() {
-        routeContext = null;
+    /**
+     * Get the first rational operator.
+     * @return rational operator
+     */
+    public RelNode peek() {
+        return relBuilder.peek();
     }
     
-    /**
-     * If this <code>LogicalScan</code> will be executed in a single sharding.
-     * @return true if this <code>LogicalScan</code> only route to a single sharding.
-     */
-    public boolean isSingleRouting() {
-        if (routeContext == null) {
-            this.route();
-        }
-        return routeContext.isSingleRouting();
-    }
     
-    /**
-     * Route this <code>LogicalScan</code>. 
-     * @return route context
-     */
+    @Override
     public RouteContext route() {
-        if (routeContext != null) {
-            return this.routeContext;
-        }
-        ShardingRule shardingRule = OptimizerContext.getCurrentOptimizerContext().get().getShardingRule();
-        Map<String, List<ShardingConditionValue>> map = TableAndRexShuttle.getTableAndShardingCondition(relBuilder.peek(), shardingRule);
-        List<ShardingCondition> shardingConditions = map.values().stream().map(item -> {
-            ShardingCondition result = new ShardingCondition();
-            result.getValues().addAll(item);
-            return result;
-        }).collect(Collectors.toList());
-        ShardingRouteEngine shardingRouteEngine = getShardingRouteEngine(shardingRule,
-                new ShardingConditions(shardingConditions), map.keySet(),
-                new ConfigurationProperties(new Properties()));
-        RouteContext routeContext = new RouteContext();
-        shardingRouteEngine.route(routeContext, shardingRule);
-        this.routeContext = routeContext;
-        return this.routeContext;
-    }
-    
-    private ShardingRouteEngine getShardingRouteEngine(final ShardingRule shardingRule, final ShardingConditions shardingConditions,
-                                                       final Collection<String> tableNames, final ConfigurationProperties props) {
-        Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
-        if (shardingTableNames.size() == 1 || shardingRule.isAllBindingTables(shardingTableNames)) {
-            return new ShardingStandardRoutingEngine(shardingTableNames.iterator().next(), shardingConditions, props);
-        }
-        return new ShardingComplexRoutingEngine(tableNames, shardingConditions, props);
+        return route(relBuilder.peek());
     }
     
     /**

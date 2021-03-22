@@ -9,6 +9,7 @@ import org.apache.shardingsphere.infra.optimize.rel.physical.SSLimitSort;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSMergeSort;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSNestedLoopJoin;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSRel;
+import org.apache.shardingsphere.infra.optimize.rel.physical.SSScan;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSSort;
 
 @Getter
@@ -27,8 +28,8 @@ public class ExecutorBuilder {
      */
     public final Executor build(final RelNode rel) {
         Executor executor;
-        if (rel instanceof LogicalScan) {
-            executor = LogicalScanExecutor.build((LogicalScan) rel, this);
+        if (rel instanceof SSScan) {
+            executor = ScanExecutor.build((SSScan) rel, this);
         } else if (rel instanceof SSMergeSort) {
             executor = MergeSortExecutor.build((SSMergeSort) rel, this);
         } else if (rel instanceof SSNestedLoopJoin) {

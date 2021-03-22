@@ -9,9 +9,9 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.optimize.converter.RelNodeConverter;
-import org.apache.shardingsphere.infra.optimize.rel.logical.LogicalScan;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSCalc;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSMergeSort;
+import org.apache.shardingsphere.infra.optimize.rel.physical.SSScan;
 import org.apache.shardingsphere.infra.optimize.schema.AbstractSchemaTest;
 import org.apache.shardingsphere.infra.optimize.tools.OptimizerContext;
 import org.apache.shardingsphere.infra.optimize.util.ShardingRuleConfigUtil;
@@ -93,6 +93,6 @@ public class DefaultPlannerTest extends AbstractSchemaTest {
         
         RelNode physicalRelNode = defaultPlanner.getPhysicPlan(relNode);
         Assert.assertTrue(physicalRelNode instanceof SSMergeSort);
-        Assert.assertTrue(((SSMergeSort) physicalRelNode).getInput() instanceof LogicalScan);
+        Assert.assertTrue(((SSMergeSort) physicalRelNode).getInput() instanceof SSScan);
     }
 }

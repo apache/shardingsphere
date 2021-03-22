@@ -29,10 +29,8 @@ public class DefaultPlanner extends AbstractPlanner implements Planner {
     }
     
     private RelNode optimize(final RelNode rewritedRelNode) {
-        if (rewritedRelNode.getTraitSet().contains(ShardingSphereConvention.INSTANCE)) {
-            return rewritedRelNode;
-        }
         RelOptPlanner volcanoPlanner = rewritedRelNode.getCluster().getPlanner();
+        ShardingSphereConvention.INSTANCE.register(volcanoPlanner);
         RelNode root2 = changeTraits(volcanoPlanner, rewritedRelNode, ShardingSphereConvention.INSTANCE);
         volcanoPlanner.setRoot(root2);
         return volcanoPlanner.findBestExp();

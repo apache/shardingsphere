@@ -85,7 +85,7 @@ public final class JDBCQueryExecutor extends AbstractExecutor {
     
     @Override
     public QueryResultMetaData getMetaData() {
-        return executor.getMetaData();
+        return MetaDataConverter.buildMetaData(relNode);
     }
     
     private Executor executeQuery(final ExecutionGroupContext<JDBCExecutionUnit> executionGroups) throws SQLException {
