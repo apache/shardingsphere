@@ -38,9 +38,8 @@ import java.util.stream.Collectors;
 
 /**
  * Table meta data loader for H2.
- * @author zhujun
  */
-public class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
+public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
 
     private static final String TABLE_META_DATA_SQL = "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TYPE_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=?";
 
@@ -79,10 +78,8 @@ public class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(existedTables))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
-
             Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(dataSource, existedTables);
             Map<String, Map<String, Boolean>> tableGenerated = loadTableGenerated(dataSource, existedTables);
-
             preparedStatement.setString(1, connection.getCatalog());
             preparedStatement.setString(2, "PUBLIC");
 
@@ -106,7 +103,7 @@ public class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
         String columnName = resultSet.getString("COLUMN_NAME");
         String typeName = resultSet.getString("TYPE_NAME");
         boolean primaryKey = primaryKeys.contains(columnName);
-        //tableGenerated.getOrDefault(columnName, Boolean.FALSE);
+        // tableGenerated.getOrDefault(columnName, Boolean.FALSE);
         boolean generated = false;
         // H2 database case sensitive is always true
         return new ColumnMetaData(columnName, dataTypeMap.get(typeName), primaryKey, generated, true);
