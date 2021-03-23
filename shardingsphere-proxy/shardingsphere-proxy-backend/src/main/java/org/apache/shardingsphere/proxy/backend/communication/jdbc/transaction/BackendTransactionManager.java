@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.ShardingTransactionManagerEngine;
+import org.apache.shardingsphere.infra.transaction.TransactionHolder;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
@@ -50,6 +51,7 @@ public final class BackendTransactionManager implements TransactionManager {
     public void begin() {
         if (!connection.getTransactionStatus().isInTransaction()) {
             connection.getTransactionStatus().setInTransaction(true);
+            TransactionHolder.setInTransaction();
             connection.closeConnections(false);
         }
         if (TransactionType.LOCAL == transactionType || null == shardingTransactionManager) {
@@ -70,6 +72,7 @@ public final class BackendTransactionManager implements TransactionManager {
                 }
             } finally {
                 connection.getTransactionStatus().setInTransaction(false);
+                TransactionHolder.clear();
             }
         }
     }
@@ -85,6 +88,7 @@ public final class BackendTransactionManager implements TransactionManager {
                 }
             } finally {
                 connection.getTransactionStatus().setInTransaction(false);
+                TransactionHolder.clear();
             }
         }
     }
