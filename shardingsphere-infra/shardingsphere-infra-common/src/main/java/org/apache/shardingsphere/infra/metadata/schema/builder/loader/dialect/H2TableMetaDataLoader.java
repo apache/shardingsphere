@@ -82,7 +82,6 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
             Map<String, Map<String, Boolean>> tableGenerated = loadTableGenerated(dataSource, existedTables);
             preparedStatement.setString(1, connection.getCatalog());
             preparedStatement.setString(2, "PUBLIC");
-
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String tableName = resultSet.getString("TABLE_NAME");
@@ -125,7 +124,6 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
                 while (resultSet.next()) {
                     String indexName = resultSet.getString("INDEX_NAME");
                     String tableName = resultSet.getString("TABLE_NAME");
-
                     if (!result.containsKey(tableName)) {
                         result.put(tableName, new LinkedList<>());
                     }
@@ -155,10 +153,8 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyMetaDataSQL(tableNames))) {
-
             preparedStatement.setString(1, connection.getCatalog());
             preparedStatement.setString(2, "PUBLIC");
-
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String columnName = resultSet.getString("COLUMN_NAME");
@@ -181,10 +177,8 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getGeneratedInfoSQL(tableNames))) {
-
             preparedStatement.setString(1, connection.getCatalog());
             preparedStatement.setString(2, "PUBLIC");
-
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String columnName = resultSet.getString("COLUMN_NAME");
