@@ -20,7 +20,10 @@ package org.apache.shardingsphere.scaling.web;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import org.apache.shardingsphere.scaling.util.ServerConfigurationInitializer;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.scaling.core.config.ScalingContext;
+import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
+import org.apache.shardingsphere.scaling.core.util.ReflectionUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,8 +45,9 @@ public final class HttpServerInitializerTest {
     private ChannelPipeline channelPipeline;
     
     @Before
+    @SneakyThrows(ReflectiveOperationException.class)
     public void setUp() {
-        ServerConfigurationInitializer.init();
+        ReflectionUtil.setFieldValue(ScalingContext.getInstance(), "serverConfig", new ServerConfiguration());
     }
     
     @Test
