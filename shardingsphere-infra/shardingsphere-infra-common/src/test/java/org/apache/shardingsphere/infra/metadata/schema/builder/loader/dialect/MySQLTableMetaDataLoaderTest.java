@@ -106,7 +106,7 @@ public final class MySQLTableMetaDataLoaderTest {
     }
     
     private DialectTableMetaDataLoader getTableMetaDataLoader() {
-        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.newServiceInstances(DialectTableMetaDataLoader.class)) {
+        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(DialectTableMetaDataLoader.class)) {
             if ("MySQL".equals(each.getDatabaseType())) {
                 return each;
             }

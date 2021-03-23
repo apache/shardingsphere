@@ -36,7 +36,7 @@ public final class DataSourcePropertiesSetterHolder {
     
     static {
         ShardingSphereServiceLoader.register(DataSourcePropertiesSetter.class);
-        for (DataSourcePropertiesSetter each : ShardingSphereServiceLoader.newServiceInstances(DataSourcePropertiesSetter.class)) {
+        for (DataSourcePropertiesSetter each : ShardingSphereServiceLoader.getSingletonServiceInstances(DataSourcePropertiesSetter.class)) {
             DATA_SOURCE_PROPERTIES_SETTER_MAP.put(each.getType(), each);
         }
     }
