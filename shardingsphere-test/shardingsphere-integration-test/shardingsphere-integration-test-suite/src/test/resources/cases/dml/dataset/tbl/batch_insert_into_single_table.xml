@@ -16,11 +16,15 @@
   -->
 
 <dataset update-count="2">
-    <metadata data-nodes="write_ds.t_broadcast_table">
+    <metadata data-nodes="tbl.t_single_table">
+        <column name="single_id" type="numeric" />
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <row data-node="write_ds.t_broadcast_table" values="1, init" />
-    <row data-node="write_ds.t_broadcast_table" values="2, insert" />
-    <row data-node="write_ds.t_broadcast_table" values="3, insert" />
+    <row data-node="tbl.t_single_table" values="1, 1000, init" />
+    <row data-node="tbl.t_single_table" values="2, 1001, init" />
+    <row data-node="tbl.t_single_table" values="3, 1002, init" />
+    <row data-node="tbl.t_single_table" values="4, 1003, init" />
+    <row data-node="tbl.t_single_table" values="5, 5000, insert" />
+    <row data-node="tbl.t_single_table" values="6, 6000, insert" />
 </dataset>

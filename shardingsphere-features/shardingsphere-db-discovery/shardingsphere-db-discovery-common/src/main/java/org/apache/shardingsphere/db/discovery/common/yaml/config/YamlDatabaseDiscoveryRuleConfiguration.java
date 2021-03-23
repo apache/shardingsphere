@@ -28,7 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Data base discovery rule configuration for YAML.
+ * Database discovery rule configuration for YAML.
  */
 @Getter
 @Setter

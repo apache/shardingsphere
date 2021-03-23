@@ -26,7 +26,6 @@ import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdmin
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -48,7 +47,6 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     
     private boolean isAuthorizedSchema(final BackendConnection backendConnection, final String schema) {
         Optional<ShardingSpherePrivilege> privilege = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findPrivilege(backendConnection.getGrantee());
-        // TODO : Need to check whether PrivilegeType.USAGE is correct or enough?
-        return privilege.isPresent() && privilege.get().hasPrivileges(schema, Collections.emptyList());
+        return privilege.isPresent() && privilege.get().hasPrivileges(schema);
     }
 }

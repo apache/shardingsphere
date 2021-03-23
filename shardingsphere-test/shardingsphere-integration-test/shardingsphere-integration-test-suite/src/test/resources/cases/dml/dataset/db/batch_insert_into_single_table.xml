@@ -25,6 +25,6 @@
     <row data-node="db_0.t_single_table" values="2, 1101, init" />
     <row data-node="db_0.t_single_table" values="3, 2300, init" />
     <row data-node="db_0.t_single_table" values="4, 2401, init" />
-    <row data-node="db_0.t_single_table" values="5, 1001, insert" />
-    <row data-node="db_0.t_single_table" values="6, 2000, insert" />
+    <row data-node="db_0.t_single_table" values="5, 5000, insert" />
+    <row data-node="db_0.t_single_table" values="6, 6000, insert" />
 </dataset>
