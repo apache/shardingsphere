@@ -5,7 +5,7 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *
+ *  
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -15,37 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.aware;
+package org.apache.shardingsphere.infra.transaction;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-
-import javax.sql.DataSource;
-import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Resource aware.
+ * Transaction holder.
+ * 
+ * <p>is transaction or not in current thread.</p>
  */
-public interface ResourceAware {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TransactionHolder {
+    
+    private static final ThreadLocal<Boolean> TRANSACTION = ThreadLocal.withInitial(() -> false);
     
     /**
-     * Set database type.
+     * Judge is transaction in current thread.
      * 
-     * @param databaseType database type
+     * @return is transaction in current thread.
      */
-    void setDatabaseType(DatabaseType databaseType);
+    public static boolean isTransaction() {
+        return TRANSACTION.get();
+    }
     
     /**
-     * Set data source map.
-     * 
-     * @param dataSourceMap data source map
+     * Set transaction in current thread.
      */
-    void setDataSourceMap(Map<String, DataSource> dataSourceMap);
+    public static void setInTransaction() {
+        TRANSACTION.set(true);
+    }
     
     /**
-     * Set schema name.
-     *
-     * @param schemaName schema name
+     * Clear transaction.
      */
-    default void setSchemaName(String schemaName) {
+    public static void clear() {
+        TRANSACTION.remove();
     }
 }

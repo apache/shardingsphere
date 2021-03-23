@@ -98,6 +98,6 @@ public final class TextProtocolBackendHandlerFactory {
     }
     
     private static Optional<ExtraTextProtocolBackendHandler> findExtraTextProtocolBackendHandler(final SQLStatement sqlStatement) {
-        return ShardingSphereServiceLoader.newServiceInstances(ExtraTextProtocolBackendHandler.class).stream().filter(each -> each.accept(sqlStatement)).findFirst();
+        return ShardingSphereServiceLoader.getSingletonServiceInstances(ExtraTextProtocolBackendHandler.class).stream().filter(each -> each.accept(sqlStatement)).findFirst();
     }
 }
