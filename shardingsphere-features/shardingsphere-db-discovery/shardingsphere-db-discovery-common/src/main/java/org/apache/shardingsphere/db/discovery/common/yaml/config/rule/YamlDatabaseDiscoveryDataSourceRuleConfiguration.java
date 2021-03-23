@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Data base discovery data source rule configuration for YAML.
+ * Database discovery data source rule configuration for YAML.
  */
 @Getter
 @Setter

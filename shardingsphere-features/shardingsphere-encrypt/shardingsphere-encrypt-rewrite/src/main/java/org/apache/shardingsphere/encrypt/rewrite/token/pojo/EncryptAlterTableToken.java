@@ -5,7 +5,7 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -15,23 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.discovery.api.config.rule;
+package org.apache.shardingsphere.encrypt.rewrite.token.pojo;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.List;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 
 /**
- * Database discovery data source rule configuration.
+ * Create table token for encrypt.
  */
-@RequiredArgsConstructor
 @Getter
-public final class DatabaseDiscoveryDataSourceRuleConfiguration {
+public final class EncryptAlterTableToken extends SQLToken implements Substitutable {
     
-    private final String name;
+    private final int stopIndex;
     
-    private final List<String> dataSourceNames;
+    private final String columnName;
     
-    private final String discoveryTypeName;
+    private final String operationType;
+    
+    public EncryptAlterTableToken(final int startIndex, final int stopIndex, final String columnName, final String operationType) {
+        super(startIndex);
+        this.stopIndex = stopIndex;
+        this.columnName = columnName;
+        this.operationType = operationType;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format(" %s %s ", operationType, columnName);
+    }
 }
