@@ -23,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -54,12 +55,19 @@ public final class CompletableEventService<T> {
     public void handle(final CompletableEvent completableEvent) {
         try {
             Method handler = targetMethods.get(completableEvent.getTarget().getClass());
-            if (null != handler) {
-                handler.invoke(target, completableEvent.getTarget());
+            if (null == handler) {
+                return;
             }
-            completableEvent.getCompletableFuture().complete(true);
+            Object result;
+            if (handler.getReturnType().equals(Void.TYPE)) {
+                handler.invoke(target, completableEvent.getTarget());
+                result = null;
+            } else {
+                result = handler.invoke(target, completableEvent.getTarget());
+            }
+            ((CompletableFuture) completableEvent.getCompletableFutures().get(target)).complete(result);
         } catch (final IllegalAccessException | InvocationTargetException e) {
-            completableEvent.getCompletableFuture().completeExceptionally(e);
+            ((CompletableFuture) completableEvent.getCompletableFutures().get(target)).completeExceptionally(e);
         }
     }
 }

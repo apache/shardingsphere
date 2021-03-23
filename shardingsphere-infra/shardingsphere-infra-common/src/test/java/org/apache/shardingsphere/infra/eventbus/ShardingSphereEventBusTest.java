@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.infra.eventbus;
 
+import com.google.common.eventbus.Subscribe;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public final class ShardingSphereEventBusTest {
@@ -27,5 +29,45 @@ public final class ShardingSphereEventBusTest {
     @Test
     public void assertInstance() {
         assertThat(ShardingSphereEventBus.getInstance(), is(ShardingSphereEventBus.getInstance()));
+    }
+    
+    @Test
+    public void assertResult() {
+        new SubscriberWithoutReturn();
+        new Subscriber();
+        new Subscriber();
+        CompletableEventResult result = ShardingSphereEventBus.getInstance().post(new Event());
+        assertEquals(3, result.getResult().size());
+        result = ShardingSphereEventBus.getInstance().post(new EventWithoutSubscriber());
+        assertEquals(1, result.getResult().size());
+    }
+    
+    private static final class Event {
+    }
+    
+    private static final class EventWithoutSubscriber {
+    }
+    
+    private static final class SubscriberWithoutReturn {
+        
+        SubscriberWithoutReturn() {
+            ShardingSphereEventBus.getInstance().register(this);
+        }
+        
+        @Subscribe
+        public void handler(final Event event) {
+        }
+    }
+    
+    private static final class Subscriber {
+        
+        Subscriber() {
+            ShardingSphereEventBus.getInstance().register(this);
+        }
+        
+        @Subscribe
+        public boolean handler(final Event event) {
+            return true;
+        }
     }
 }

@@ -17,20 +17,23 @@
 
 package org.apache.shardingsphere.infra.eventbus;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import com.google.common.eventbus.DeadEvent;
+import com.google.common.eventbus.Subscribe;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Completable event.
+ * Dead event service for event bus dead event.
  */
-@Getter
-@RequiredArgsConstructor
-public final class CompletableEvent<E> {
+@Slf4j
+public final class DeadEventService {
     
-    private final E target;
-    
-    private final Map<Object, CompletableFuture> completableFutures;
+    /**
+     * Handle dead event.
+     *
+     * @param deadEvent completable event
+     */
+    @Subscribe
+    public void handle(final DeadEvent deadEvent) {
+        log.warn("The dead event was found! class: {}", deadEvent.getEvent().getClass().getCanonicalName());
+    }
 }

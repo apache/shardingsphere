@@ -17,19 +17,17 @@
 
 package org.apache.shardingsphere.infra.eventbus;
 
-import com.google.common.eventbus.Subscribe;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
 
 /**
- * Dummy event service.
+ * Completable event result.
  */
-public final class DummyEventService {
+@Getter
+@RequiredArgsConstructor
+public final class CompletableEventResult {
 
-    /**
-     * Handle event.
-     *
-     * @param completableEvent completable event
-     */
-    @Subscribe
-    public void handle(final CompletableEvent completableEvent) {
-    }
+    private final Map<Object, Object> result;
 }

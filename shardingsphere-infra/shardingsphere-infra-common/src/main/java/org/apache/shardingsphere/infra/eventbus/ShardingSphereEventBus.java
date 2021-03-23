@@ -17,26 +17,56 @@
 
 package org.apache.shardingsphere.infra.eventbus;
 
+import com.google.common.eventbus.AsyncEventBus;
+import com.google.common.eventbus.DeadEvent;
 import com.google.common.eventbus.EventBus;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * ShardingSphere event bus.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereEventBus {
     
-    private EventBus eventBus;
+    private static final String EVENT_BUS_NAME = "ShardingSphere-EventBus";
     
-    private ShardingSphereEventBus(final EventBus eventBus, final DummyEventService dummyEventService) {
-        this.eventBus = eventBus;
-        this.eventBus.register(dummyEventService);
+    private final Map<Class<?>, Collection<Object>> targetSubscribers = new ConcurrentHashMap<>();
+    
+    private final Lock lock = new ReentrantLock();
+    
+    private final ListeningExecutorService executorService;
+    
+    private final EventBus eventBus;
+    
+    private ShardingSphereEventBus() {
+        executorService = MoreExecutors.listeningDecorator(getExecutorService());
+        MoreExecutors.addDelayedShutdownHook(executorService, 60, TimeUnit.SECONDS);
+        eventBus = new AsyncEventBus(EVENT_BUS_NAME, getExecutorService());
+        register(new DeadEventService());
+    }
+    
+    private ExecutorService getExecutorService() {
+        ThreadFactory threadFactory = new ThreadFactoryBuilder().setDaemon(true).setNameFormat(EVENT_BUS_NAME + "-%d").build();
+        return Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), threadFactory);
     }
     
     /**
@@ -55,17 +85,32 @@ public final class ShardingSphereEventBus {
      * @param <T> subscriber type.
      */
     public <T> void register(final T target) {
-        eventBus.register(new CompletableEventService<T>(target));
+        try {
+            lock.lock();
+            Arrays.stream(target.getClass().getDeclaredMethods()).filter(method -> {
+                Class<?>[] parameterTypes = method.getParameterTypes();
+                return parameterTypes.length == 1 && null != method.getDeclaredAnnotation(Subscribe.class);
+            }).forEach(method -> {
+                Class<?>[] parameterTypes = method.getParameterTypes();
+                Class<?> eventType = parameterTypes[0];
+                if (!targetSubscribers.containsKey(eventType)) {
+                    targetSubscribers.put(eventType, new LinkedHashSet<>());
+                }
+                targetSubscribers.get(eventType).add(target);
+            });
+            eventBus.register(new CompletableEventService<T>(target));
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
      * Post the event, blocking waiting for the result, default timeout 60 seconds.
      *
      * @param event eventbus event
-     * @param <T> The value type returned after the event is consumed
-     * @return T The value returned after the event is consumed
+     * @return completable event results.
      */
-    public <T> T post(final Object event) {
+    public CompletableEventResult post(final Object event) {
         return post(event, 60);
     }
 
@@ -74,21 +119,36 @@ public final class ShardingSphereEventBus {
      *
      * @param event eventbus event
      * @param timeout SECONDS
-     * @param <T> The value type returned after the event is consumed
-     * @return T The value returned after the event is consumed
+     * @return completable event results.
      */
-    public <T> T post(final Object event, final long timeout) {
+    public CompletableEventResult post(final Object event, final long timeout) {
         try {
-            CompletableEvent completableEvent = new CompletableEvent<>(event);
-            eventBus.post(completableEvent);
-            return (T) completableEvent.getCompletableFuture().get(timeout, TimeUnit.SECONDS);
+            lock.lock();
+            CompletableEventResult result = new CompletableEventResult(new HashMap<>());
+            Collection<Object> subscribers = targetSubscribers.get(event.getClass());
+            if (null != subscribers && !subscribers.isEmpty()) {
+                Map<Object, CompletableFuture> completableFutures = new HashMap<>(subscribers.size());
+                for (Object each : subscribers) {
+                    completableFutures.put(each, new CompletableFuture());
+                }
+                CompletableEvent completableEvent = new CompletableEvent(event, completableFutures);
+                eventBus.post(completableEvent);
+                for (Map.Entry<Object, CompletableFuture> entry : completableFutures.entrySet()) {
+                    result.getResult().put(entry.getKey(), entry.getValue().get(timeout, TimeUnit.SECONDS));
+                }
+            } else if (!(event instanceof DeadEvent)) {
+                return post(new DeadEvent(eventBus, event));
+            }
+            return result;
         } catch (final InterruptedException | ExecutionException | TimeoutException e) {
             throw new ShardingSphereException(e);
+        } finally {
+            lock.unlock();
         }
     }
 
     private static final class ShardingSphereEventBusHolder {
         
-        private static final ShardingSphereEventBus INSTANCE = new ShardingSphereEventBus(new EventBus("ShardingSphere-EventBus"), new DummyEventService());
+        private static final ShardingSphereEventBus INSTANCE = new ShardingSphereEventBus();
     }
 }

@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.db.discovery.mgr;
 
-import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -84,7 +81,6 @@ public final class MGRDatabaseDiscoveryTypeTest {
     
     @Test
     public void updatePrimaryDataSource() {
-        ShardingSphereEventBus.getInstance().register(this);
         List<DataSource> dataSources = new LinkedList<>();
         List<Connection> connections = new LinkedList<>();
         List<Statement> statements = new LinkedList<>();
@@ -120,14 +116,5 @@ public final class MGRDatabaseDiscoveryTypeTest {
         mgrHaType.getProps().setProperty("groupName", "group_name");
         mgrHaType.updatePrimaryDataSource(dataSourceMap, "discovery_db", Collections.emptySet(), "group_name", null);
         assertThat(mgrHaType.getPrimaryDataSource(), is("ds_2"));
-    }
-    
-    /**
-     * Persist primary data source state.
-     *
-     * @param event primary data source event
-     */
-    @Subscribe
-    public synchronized void renew(final PrimaryDataSourceEvent event) {
     }
 }
