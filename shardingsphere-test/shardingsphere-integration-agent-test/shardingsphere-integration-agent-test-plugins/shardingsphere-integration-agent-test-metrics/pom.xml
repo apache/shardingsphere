@@ -71,6 +71,7 @@
             <id>it.env.metrics</id>
             <properties>
                 <it.env>metrics</it.env>
+                <dockerfile.skip.build>false</dockerfile.skip.build>
             </properties>
             <build>
                 <plugins>
@@ -98,6 +99,7 @@
                         <executions>
                             <execution>
                                 <id>shardingsphere-proxy-bin</id>
+                                <phase>package</phase>
                                 <goals>
                                     <goal>build</goal>
                                 </goals>

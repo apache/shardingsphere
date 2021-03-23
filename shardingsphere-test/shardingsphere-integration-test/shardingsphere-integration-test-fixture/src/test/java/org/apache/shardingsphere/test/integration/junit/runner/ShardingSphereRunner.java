@@ -25,6 +25,7 @@ import org.apache.shardingsphere.test.integration.cases.IntegrationTestCasesLoad
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.env.EnvironmentType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.junit.annotation.BeforeAllCases;
 import org.apache.shardingsphere.test.integration.junit.annotation.ParameterFilter;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.test.integration.junit.compose.NotSupportedExce
 import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.junit.param.TestCaseParameters;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.param.model.CaseParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.ParallelRunnerScheduler;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
@@ -67,14 +69,14 @@ public class ShardingSphereRunner extends Suite {
         super(klass, Collections.emptyList());
         TestCaseSpec testCaseSpec = getTestClass().getAnnotation(TestCaseSpec.class);
         caseName = Strings.isNullOrEmpty(testCaseSpec.name()) ? klass.getSimpleName() : testCaseSpec.name();
-        if (Boolean.getBoolean("it.enable")) {
-            runners = createITRunners(testCaseSpec);
-        } else {
+        if (EnvironmentType.NATIVE == IntegrationTestEnvironment.getInstance().getEnvType()) {
             ParallelRuntimeStrategy parallelRuntimeStrategy = getTestClass().getAnnotation(ParallelRuntimeStrategy.class);
             if (null != parallelRuntimeStrategy) {
                 setScheduler(new ParallelRunnerScheduler(parallelRuntimeStrategy.value()));
             }
             runners = createCIRunners(testCaseSpec);
+        } else {
+            runners = createITRunners(testCaseSpec);
         }
     }
     
@@ -103,7 +105,7 @@ public class ShardingSphereRunner extends Suite {
     private List<Runner> createCIRunners(final TestCaseSpec testCaseSpec) {
         final Predicate<TestCaseBeanContext> predicate = createTestCaseParametersPredicate();
         return allCIParameters(testCaseSpec).stream()
-                .flatMap(e -> {
+                .map(e -> {
                     final TestCaseDescription description = TestCaseDescription.builder()
                             .sqlCommandType(testCaseSpec.sqlCommandType())
                             .executionMode(testCaseSpec.executionMode())
@@ -112,19 +114,23 @@ public class ShardingSphereRunner extends Suite {
                             .scenario(e.getScenario())
                             .build();
                     IntegrationTestCase testCase = e.getTestCaseContext().getTestCase();
-                    return testCase.getAssertions().stream()
-                            .map(ee -> {
-                                SQLExecuteType executeType = (e instanceof AssertionParameterizedArray)
-                                        ? ((AssertionParameterizedArray) e).getSqlExecuteType()
-                                        : null;
-                                TestCaseParameters testCaseParameters = new TestCaseParameters(e.toString(), e.getTestCaseContext().getParentPath(),
-                                        testCase.getSql(), executeType, getTestClass().getJavaClass(), testCase, ee);
-                                TestCaseBeanContext context = beanContext.subContext();
-                                context.registerBean(ParameterizedArray.class, e);
-                                context.registerBean(TestCaseDescription.class, description);
-                                register(testCaseParameters, context);
-                                return context;
-                            });
+                    final TestCaseBeanContext context = beanContext.subContext();
+                    context.registerBean(ParameterizedArray.class, e);
+                    context.registerBean(TestCaseDescription.class, description);
+                    TestCaseParameters testCaseParameters;
+                    if (e instanceof CaseParameterizedArray) {
+                        testCaseParameters = new TestCaseParameters(e.toString(), e.getTestCaseContext().getParentPath(),
+                                testCase.getSql(), null, getTestClass().getJavaClass(), testCase, null);
+                        context.registerBean(CaseParameterizedArray.class, (CaseParameterizedArray) e);
+                    } else {
+                        AssertionParameterizedArray assertion = (AssertionParameterizedArray) e;
+                        SQLExecuteType executeType = assertion.getSqlExecuteType();
+                        testCaseParameters = new TestCaseParameters(e.toString(), e.getTestCaseContext().getParentPath(),
+                                testCase.getSql(), executeType, getTestClass().getJavaClass(), testCase, assertion.getAssertion());
+                        context.registerBean(AssertionParameterizedArray.class, assertion);
+                    }
+                    register(testCaseParameters, context);
+                    return context;
                 })
                 .filter(predicate)
                 .map(e -> {

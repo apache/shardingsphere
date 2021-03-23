@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
+import org.apache.shardingsphere.test.integration.env.EnvironmentType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
@@ -49,8 +50,7 @@ public abstract class BaseDQLIT extends SingleITCase {
     @BeforeAllCases
     @SneakyThrows
     protected void fillData() {
-        boolean isIT = Boolean.getBoolean("it.enable");
-        if (isIT) {
+        if (EnvironmentType.DOCKER == IntegrationTestEnvironment.getInstance().getEnvType()) {
             new DataSetEnvironmentManager(
                     EnvironmentPath.getDataSetFile(getDescription().getScenario()),
                     getStorage().getDataSourceMap()
