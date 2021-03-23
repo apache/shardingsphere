@@ -17,19 +17,27 @@
 
 package org.apache.shardingsphere.infra.metadata.auth.builder.loader.dialect;
 
+import com.google.common.base.Joiner;
 import org.apache.shardingsphere.infra.metadata.auth.builder.loader.PrivilegeLoader;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.database.SchemaPrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.database.TablePrivilege;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * MySQL privilege loader.
@@ -37,318 +45,185 @@ import java.util.Optional;
 public final class MySQLPrivilegeLoader implements PrivilegeLoader {
     
     @Override
-    public Optional<ShardingSpherePrivilege> load(final ShardingSphereUser user, final DataSource dataSource) throws SQLException {
-        ShardingSpherePrivilege result = new ShardingSpherePrivilege();
-        fillGlobalPrivilege(result, dataSource, user);
-        fillSchemaPrivilege(result, dataSource, user);
-        fillTablePrivilege(result, dataSource, user);
-        return Optional.of(result);
+    public Map<ShardingSphereUser, ShardingSpherePrivilege> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+        Map<ShardingSphereUser, ShardingSpherePrivilege> result = new LinkedHashMap<>();
+        fillGlobalPrivilege(result, dataSource, users);
+        fillSchemaPrivilege(result, dataSource, users);
+        fillTablePrivilege(result, dataSource, users);
+        return result;
     }
     
-    private void fillGlobalPrivilege(final ShardingSpherePrivilege privilege, final DataSource dataSource, final ShardingSphereUser user) throws SQLException {
+    private void fillGlobalPrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(true);
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM mysql.user WHERE user=? and host=?");
-            statement.setString(1, user.getGrantee().getUsername());
-            statement.setString(2, user.getGrantee().getHostname());
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.first()) {
-                boolean selectPriv = resultSet.getBoolean("Select_priv");
-                if (selectPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.SELECT);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.SELECT);
+            Statement statement = connection.createStatement();
+            try (ResultSet resultSet = statement.executeQuery(getGlobalPrivilegeSQL(users))) {
+                while (resultSet.next()) {
+                    fillGlobalPrivilege(privileges, resultSet);
                 }
-                boolean insertPriv = resultSet.getBoolean("Insert_priv");
-                if (insertPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.INSERT);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.INSERT);
-                }
-                boolean updatePriv = resultSet.getBoolean("Update_priv");
-                if (updatePriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.UPDATE);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.UPDATE);
-                }
-                boolean deletePriv = resultSet.getBoolean("Delete_priv");
-                if (deletePriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.DELETE);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.DELETE);
-                }
-                boolean createPriv = resultSet.getBoolean("Create_priv");
-                if (createPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.CREATE);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.CREATE);
-                }
-                boolean dropPriv = resultSet.getBoolean("Drop_priv");
-                if (dropPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.DROP);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.DROP);
-                }
-                boolean reloadPriv = resultSet.getBoolean("Reload_priv");
-                if (reloadPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.RELOAD);
-                }
-                boolean shutdownPriv = resultSet.getBoolean("Shutdown_priv");
-                if (shutdownPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.SHUTDOWN);
-                }
-                boolean processPriv = resultSet.getBoolean("Process_priv");
-                if (processPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.PROCESS);
-                }
-                boolean filePriv = resultSet.getBoolean("File_priv");
-                if (filePriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.FILE);
-                }
-                boolean grantPriv = resultSet.getBoolean("Grant_priv");
-                if (grantPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.GRANT);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.GRANT);
-                }
-                boolean referencesPriv = resultSet.getBoolean("References_priv");
-                if (referencesPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.REFERENCES);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.REFERENCES);
-                }
-                boolean indexPriv = resultSet.getBoolean("Index_priv");
-                if (indexPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.INDEX);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.INDEX);
-                }
-                boolean alterPriv = resultSet.getBoolean("Alter_priv");
-                if (alterPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.ALTER);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.ALTER);
-                }
-                boolean showDbPriv = resultSet.getBoolean("Show_db_priv");
-                if (showDbPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.SHOW_DB);
-                }
-                boolean superPriv = resultSet.getBoolean("Super_priv");
-                if (superPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.SUPER);
-                }
-                boolean createTmpTablePriv = resultSet.getBoolean("Create_tmp_table_priv");
-                if (createTmpTablePriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.CREATE_TMP);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.CREATE_TMP);
-                }
-                boolean lockTablesPriv = resultSet.getBoolean("Lock_tables_priv");
-                if (lockTablesPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.LOCK_TABLES);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.LOCK_TABLES);
-                }
-                boolean executePriv = resultSet.getBoolean("Execute_priv");
-                if (executePriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.EXECUTE);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.EXECUTE);
-                }
-                boolean replSlavePriv = resultSet.getBoolean("Repl_slave_priv");
-                if (replSlavePriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.REPL_SLAVE);
-                }
-                boolean replClientPriv = resultSet.getBoolean("Repl_client_priv");
-                if (replClientPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.REPL_CLIENT);
-                }
-                boolean createViewPriv = resultSet.getBoolean("Create_view_priv");
-                if (createViewPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.CREATE_VIEW);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.CREATE_VIEW);
-                }
-                boolean showViewPriv = resultSet.getBoolean("Show_view_priv");
-                if (showViewPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.SHOW_VIEW);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.SHOW_VIEW);
-                }
-                boolean createRoutinePriv = resultSet.getBoolean("Create_routine_priv");
-                if (createRoutinePriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.CREATE_PROC);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.CREATE_PROC);
-                }
-                boolean alterRoutinePriv = resultSet.getBoolean("Alter_routine_priv");
-                if (alterRoutinePriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.ALTER_PROC);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.ALTER_PROC);
-                }
-                boolean createUserPriv = resultSet.getBoolean("Create_user_priv");
-                if (createUserPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.CREATE_USER);
-                }
-                boolean eventPriv = resultSet.getBoolean("Event_priv");
-                if (eventPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.EVENT);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.EVENT);
-                }
-                boolean triggerPriv = resultSet.getBoolean("Trigger_priv");
-                if (triggerPriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.TRIGGER);
-                    privilege.getDatabasePrivilege().getGlobalPrivileges().add(PrivilegeType.TRIGGER);
-                }
-                boolean createTablespacePriv = resultSet.getBoolean("Create_tablespace_priv");
-                if (createTablespacePriv) {
-                    privilege.getAdministrativePrivilege().getPrivileges().add(PrivilegeType.CREATE_TABLESPACE);
-                }
-            }
-        }
-        
-    }
-    
-    private void fillSchemaPrivilege(final ShardingSpherePrivilege privilege, final DataSource dataSource, final ShardingSphereUser user) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(true);
-            PreparedStatement statement = connection.prepareStatement("select * from mysql.db where user=? and host=?");
-            statement.setString(1, user.getGrantee().getUsername());
-            statement.setString(2, user.getGrantee().getHostname());
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.first()) {
-                String schema = resultSet.getString("Db");
-                SchemaPrivilege schemaPrivilege = new SchemaPrivilege(schema);
-                boolean selectPriv = resultSet.getBoolean("Select_priv");
-                if (selectPriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.SELECT);
-                }
-                boolean insertPriv = resultSet.getBoolean("Insert_priv");
-                if (insertPriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.INSERT);
-                }
-                boolean updatePriv = resultSet.getBoolean("Update_priv");
-                if (updatePriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.UPDATE);
-                }
-                boolean deletePriv = resultSet.getBoolean("Delete_priv");
-                if (deletePriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.DELETE);
-                }
-                boolean createPriv = resultSet.getBoolean("Create_priv");
-                if (createPriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.CREATE);
-                }
-                boolean dropPriv = resultSet.getBoolean("Drop_priv");
-                if (dropPriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.DROP);
-                }
-                boolean grantPriv = resultSet.getBoolean("Grant_priv");
-                if (grantPriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.GRANT);
-                }
-                boolean referencesPriv = resultSet.getBoolean("References_priv");
-                if (referencesPriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.REFERENCES);
-                }
-                boolean indexPriv = resultSet.getBoolean("Index_priv");
-                if (indexPriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.INDEX);
-                }
-                boolean alterPriv = resultSet.getBoolean("Alter_priv");
-                if (alterPriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.ALTER);
-                }
-                boolean createTmpTablePriv = resultSet.getBoolean("Create_tmp_table_priv");
-                if (createTmpTablePriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.CREATE_TMP);
-                }
-                boolean lockTablesPriv = resultSet.getBoolean("Lock_tables_priv");
-                if (lockTablesPriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.LOCK_TABLES);
-                }
-                boolean executePriv = resultSet.getBoolean("Execute_priv");
-                if (executePriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.EXECUTE);
-                }
-                boolean createViewPriv = resultSet.getBoolean("Create_view_priv");
-                if (createViewPriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.CREATE_VIEW);
-                }
-                boolean showViewPriv = resultSet.getBoolean("Show_view_priv");
-                if (showViewPriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.SHOW_VIEW);
-                }
-                boolean createRoutinePriv = resultSet.getBoolean("Create_routine_priv");
-                if (createRoutinePriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.CREATE_PROC);
-                }
-                boolean alterRoutinePriv = resultSet.getBoolean("Alter_routine_priv");
-                if (alterRoutinePriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.ALTER_PROC);
-                }
-                boolean eventPriv = resultSet.getBoolean("Event_priv");
-                if (eventPriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.EVENT);
-                }
-                boolean triggerPriv = resultSet.getBoolean("Trigger_priv");
-                if (triggerPriv) {
-                    schemaPrivilege.getGlobalPrivileges().add(PrivilegeType.TRIGGER);
-                }
-                privilege.getDatabasePrivilege().getSpecificPrivileges().put(schema, schemaPrivilege);
             }
         }
     }
     
-    private void fillTablePrivilege(final ShardingSpherePrivilege privilege, final DataSource dataSource, final ShardingSphereUser user) throws SQLException {
+    private void fillGlobalPrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final ResultSet resultSet) throws SQLException {
+        Optional<ShardingSphereUser> user = getShardingSphereUser(privileges, resultSet);
+        if (user.isPresent()) {
+            privileges.get(user.get()).getAdministrativePrivilege().getPrivileges().addAll(loadAdministrativePrivileges(resultSet));
+            privileges.get(user.get()).getDatabasePrivilege().getGlobalPrivileges().addAll(loadDatabaseGlobalPrivileges(resultSet));
+        }
+    }
+    
+    private void fillSchemaPrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(true);
-            PreparedStatement statement = connection.prepareStatement("select * from mysql.tables_priv where user=? and host=?");
-            statement.setString(1, user.getGrantee().getUsername());
-            statement.setString(2, user.getGrantee().getHostname());
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                String schema = resultSet.getString("Db");
-                String tableName = resultSet.getString("Table_name");
-                TablePrivilege tablePrivilege = new TablePrivilege(tableName);
-                String[] privs = (String[]) resultSet.getArray("Table_priv").getArray();
-                for (String each : privs) {
-                    switch (each) {
-                        case "Select":
-                            tablePrivilege.getPrivileges().add(PrivilegeType.SELECT);
-                            break;
-                        case "Insert":
-                            tablePrivilege.getPrivileges().add(PrivilegeType.INSERT);
-                            break;
-                        case "Update":
-                            tablePrivilege.getPrivileges().add(PrivilegeType.UPDATE);
-                            break;
-                        case "Delete":
-                            tablePrivilege.getPrivileges().add(PrivilegeType.DELETE);
-                            break;
-                        case "Create":
-                            tablePrivilege.getPrivileges().add(PrivilegeType.CREATE);
-                            break;
-                        case "Drop":
-                            tablePrivilege.getPrivileges().add(PrivilegeType.DROP);
-                            break;
-                        case "Grant":
-                            tablePrivilege.getPrivileges().add(PrivilegeType.GRANT);
-                            break;
-                        case "References":
-                            tablePrivilege.getPrivileges().add(PrivilegeType.REFERENCES);
-                            break;
-                        case "Index":
-                            tablePrivilege.getPrivileges().add(PrivilegeType.INDEX);
-                            break;
-                        case "Alter":
-                            tablePrivilege.getPrivileges().add(PrivilegeType.ALTER);
-                            break;
-                        case "Create View":
-                            tablePrivilege.getPrivileges().add(PrivilegeType.CREATE_VIEW);
-                            break;
-                        case "Show view":
-                            tablePrivilege.getPrivileges().add(PrivilegeType.SHOW_VIEW);
-                            break;
-                        case "Trigger":
-                            tablePrivilege.getPrivileges().add(PrivilegeType.TRIGGER);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                if (privilege.getDatabasePrivilege().getSpecificPrivileges().containsKey(schema)) {
-                    privilege.getDatabasePrivilege().getSpecificPrivileges().get(schema).getSpecificPrivileges().put(tableName, tablePrivilege);
-                } else {
-                    SchemaPrivilege schemaPrivilege = new SchemaPrivilege(schema);
-                    schemaPrivilege.getSpecificPrivileges().put(tableName, tablePrivilege);
-                    privilege.getDatabasePrivilege().getSpecificPrivileges().put(schema, schemaPrivilege);
+            Statement statement = connection.createStatement();
+            try (ResultSet resultSet = statement.executeQuery(getSchemaPrivilegeSQL(users))) {
+                while (resultSet.next()) {
+                    fillSchemaPrivilege(privileges, resultSet);
                 }
             }
+        }
+    }
+    
+    private void fillSchemaPrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final ResultSet resultSet) throws SQLException {
+        Optional<ShardingSphereUser> user = getShardingSphereUser(privileges, resultSet);
+        if (user.isPresent()) {
+            String db = resultSet.getString("Db");
+            SchemaPrivilege schemaPrivilege = new SchemaPrivilege(db);
+            schemaPrivilege.getGlobalPrivileges().addAll(loadDatabaseGlobalPrivileges(resultSet));
+            privileges.get(user.get()).getDatabasePrivilege().getSpecificPrivileges().put(db, schemaPrivilege);
+        }
+    }
+    
+    private void fillTablePrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            Statement statement = connection.createStatement();
+            try (ResultSet resultSet = statement.executeQuery(getTablePrivilegeSQL(users))) {
+                while (resultSet.next()) {
+                    fillTablePrivilege(privileges, resultSet);
+                }
+            }
+        }
+    }
+    
+    private void fillTablePrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final ResultSet resultSet) throws SQLException {
+        Optional<ShardingSphereUser> user = getShardingSphereUser(privileges, resultSet);
+        if (user.isPresent()) {
+            String db = resultSet.getString("Db");
+            String tableName = resultSet.getString("Table_name");
+            String[] tablePrivileges = (String[]) resultSet.getArray("Table_priv").getArray();
+            TablePrivilege tablePrivilege = new TablePrivilege(tableName, getPrivileges(tablePrivileges));
+            ShardingSpherePrivilege privilege = privileges.get(user.get());
+            if (!privilege.getDatabasePrivilege().getSpecificPrivileges().containsKey(db)) {
+                privilege.getDatabasePrivilege().getSpecificPrivileges().put(db, new SchemaPrivilege(db));
+            }
+            privilege.getDatabasePrivilege().getSpecificPrivileges().get(db).getSpecificPrivileges().put(tableName, tablePrivilege);
+        }
+    }
+    
+    private String getGlobalPrivilegeSQL(final Collection<ShardingSphereUser> users) {
+        Collection<String> result = new LinkedList<>();
+        StringBuilder builder = new StringBuilder("SELECT * FROM mysql.user WHERE (user, host) in ( ");
+        users.forEach(each -> builder.append("(").append(each.getGrantee().getUsername()).append(", ").append(each.getGrantee().getHostname()).append(")"));
+        return builder.append(Joiner.on(", ").join(result)).append(" )").toString();
+    }
+    
+    private String getSchemaPrivilegeSQL(final Collection<ShardingSphereUser> users) {
+        Collection<String> result = new LinkedList<>();
+        StringBuilder builder = new StringBuilder("SELECT * FROM mysql.db WHERE (user, host) in ( ");
+        users.forEach(each -> builder.append("(").append(each.getGrantee().getUsername()).append(", ").append(each.getGrantee().getHostname()).append(")"));
+        return builder.append(Joiner.on(", ").join(result)).append(" )").toString();
+    }
+    
+    private String getTablePrivilegeSQL(final Collection<ShardingSphereUser> users) {
+        Collection<String> result = new LinkedList<>();
+        StringBuilder builder = new StringBuilder("SELECT Db, Table_name, Table_priv FROM mysql.tables_priv WHERE (user, host) in ( ");
+        users.forEach(each -> builder.append("(").append(each.getGrantee().getUsername()).append(", ").append(each.getGrantee().getHostname()).append(")"));
+        return builder.append(Joiner.on(", ").join(result)).append(" )").toString();
+    }
+    
+    private Optional<ShardingSphereUser> getShardingSphereUser(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final ResultSet resultSet) throws SQLException {
+        Grantee grantee = new Grantee(resultSet.getString("user"), resultSet.getString("host"));
+        return privileges.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst();
+    }
+    
+    private Collection<PrivilegeType> getPrivileges(final String[] privileges) {
+        return Arrays.stream(privileges).map(this::getPrivilegeType).collect(Collectors.toSet());
+    }
+    
+    private PrivilegeType getPrivilegeType(final String privilege) {
+        switch (privilege) {
+            case "Select":
+                return PrivilegeType.SELECT;
+            case "Insert":
+                return PrivilegeType.INSERT;
+            case "Update":
+                return PrivilegeType.UPDATE;
+            case "Delete":
+                return PrivilegeType.DELETE;
+            case "Create":
+                return PrivilegeType.CREATE;
+            case "Alter":
+                return PrivilegeType.ALTER;
+            case "Drop":
+                return PrivilegeType.DROP;
+            case "Grant":
+                return PrivilegeType.GRANT;
+            case "Index":
+                return PrivilegeType.INDEX;
+            case "References":
+                return PrivilegeType.REFERENCES;
+            case "Create View":
+                return PrivilegeType.CREATE_VIEW;
+            case "Show view":
+                return PrivilegeType.SHOW_VIEW;
+            case "Trigger":
+                return PrivilegeType.TRIGGER;
+            default:
+                throw new UnsupportedOperationException(privilege);
+        }
+    }
+    
+    private Collection<PrivilegeType> loadAdministrativePrivileges(final ResultSet resultSet) throws SQLException {
+        Collection<PrivilegeType> result = new LinkedList<>();
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Super_priv"), PrivilegeType.SUPER, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Reload_priv"), PrivilegeType.RELOAD, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Shutdown_priv"), PrivilegeType.SHUTDOWN, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Process_priv"), PrivilegeType.PROCESS, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("File_priv"), PrivilegeType.FILE, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Show_db_priv"), PrivilegeType.SHOW_DB, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Repl_slave_priv"), PrivilegeType.REPL_SLAVE, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Repl_client_priv"), PrivilegeType.REPL_CLIENT, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Create_user_priv"), PrivilegeType.CREATE_USER, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Create_tablespace_priv"), PrivilegeType.CREATE_TABLESPACE, result);
+        return result;
+    }
+    
+    private Collection<PrivilegeType> loadDatabaseGlobalPrivileges(final ResultSet resultSet) throws SQLException {
+        Collection<PrivilegeType> result = new LinkedList<>();
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Select_priv"), PrivilegeType.SELECT, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Insert_priv"), PrivilegeType.INSERT, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Update_priv"), PrivilegeType.UPDATE, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Delete_priv"), PrivilegeType.DELETE, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Create_priv"), PrivilegeType.CREATE, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Alter_priv"), PrivilegeType.ALTER, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Drop_priv"), PrivilegeType.DROP, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Grant_priv"), PrivilegeType.GRANT, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Index_priv"), PrivilegeType.INDEX, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("References_priv"), PrivilegeType.REFERENCES, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Create_tmp_table_priv"), PrivilegeType.CREATE_TMP, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Lock_tables_priv"), PrivilegeType.LOCK_TABLES, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Execute_priv"), PrivilegeType.EXECUTE, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Create_view_priv"), PrivilegeType.CREATE_VIEW, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Show_view_priv"), PrivilegeType.SHOW_VIEW, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Create_routine_priv"), PrivilegeType.CREATE_PROC, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Alter_routine_priv"), PrivilegeType.ALTER_PROC, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Event_priv"), PrivilegeType.EVENT, result);
+        addToPrivilegeTypesIfPresent(resultSet.getBoolean("Trigger_priv"), PrivilegeType.TRIGGER, result);
+        return result;
+    }
+    
+    private void addToPrivilegeTypesIfPresent(final boolean hasPrivilege, final PrivilegeType privilegeType, final Collection<PrivilegeType> target) {
+        if (hasPrivilege) {
+            target.add(privilegeType);
         }
     }
     

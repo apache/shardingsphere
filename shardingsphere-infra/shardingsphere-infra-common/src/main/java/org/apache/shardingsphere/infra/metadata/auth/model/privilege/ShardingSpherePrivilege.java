@@ -39,8 +39,17 @@ public final class ShardingSpherePrivilege {
      * Set super privilege.
      */
     public void setSuperPrivilege() {
-        administrativePrivilege.setSuperPrivilege();
-        databasePrivilege.setSuperPrivilege();
+        administrativePrivilege.getPrivileges().add(PrivilegeType.SUPER);
+    }
+    
+    /**
+     * Is empty.
+     *
+     * @return is empty or not
+     */
+    public boolean isEmpty() {
+        return administrativePrivilege.getPrivileges().isEmpty()
+                && databasePrivilege.getGlobalPrivileges().isEmpty() && databasePrivilege.getSpecificPrivileges().isEmpty();
     }
     
     /**
@@ -61,7 +70,18 @@ public final class ShardingSpherePrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
-        return databasePrivilege.hasPrivileges(schema, privileges);
+        return hasPrivileges(privileges) || databasePrivilege.hasPrivileges(schema, privileges);
+    }
+    
+    /**
+     * Has privilege for login and use db.
+     *
+     * @param schema schema
+     * @return has or not
+     */
+    public boolean hasPrivileges(final String schema) {
+        return administrativePrivilege.getPrivileges().contains(PrivilegeType.SUPER) || !databasePrivilege.getGlobalPrivileges().isEmpty()
+                || databasePrivilege.getSpecificPrivileges().containsKey(schema);
     }
     
     /**
@@ -73,6 +93,6 @@ public final class ShardingSpherePrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final String schema, final String table, final Collection<PrivilegeType> privileges) {
-        return databasePrivilege.hasPrivileges(schema, table, privileges);
+        return hasPrivileges(privileges) || databasePrivilege.hasPrivileges(schema, table, privileges);
     }
 }

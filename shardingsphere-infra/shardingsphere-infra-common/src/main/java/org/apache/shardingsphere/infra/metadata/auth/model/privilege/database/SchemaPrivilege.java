@@ -23,9 +23,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 /**
@@ -38,9 +38,9 @@ public final class SchemaPrivilege {
     
     private final String name;
     
-    private final Collection<PrivilegeType> globalPrivileges = new LinkedHashSet<>();
+    private final Collection<PrivilegeType> globalPrivileges = new CopyOnWriteArraySet<>();
     
-    private final Map<String, TablePrivilege> specificPrivileges = new LinkedHashMap<>();
+    private final Map<String, TablePrivilege> specificPrivileges = new ConcurrentHashMap<>();
     
     /**
      * Has privileges.
@@ -49,7 +49,7 @@ public final class SchemaPrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return globalPrivileges.containsAll(privileges);
+        return hasGlobalPrivileges(privileges);
     }
     
     /**
@@ -60,7 +60,11 @@ public final class SchemaPrivilege {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final String table, final Collection<PrivilegeType> privileges) {
-        return hasPrivileges(privileges) || hasSpecificPrivileges(table, privileges);
+        return hasGlobalPrivileges(privileges) || hasSpecificPrivileges(table, privileges);
+    }
+    
+    private boolean hasGlobalPrivileges(final Collection<PrivilegeType> privileges) {
+        return globalPrivileges.containsAll(privileges);
     }
     
     private boolean hasSpecificPrivileges(final String table, final Collection<PrivilegeType> privileges) {

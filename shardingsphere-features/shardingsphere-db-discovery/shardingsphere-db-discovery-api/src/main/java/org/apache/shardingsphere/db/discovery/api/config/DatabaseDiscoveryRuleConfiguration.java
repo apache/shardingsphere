@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Data base discovery rule configuration.
+ * Database discovery rule configuration.
  */
 @RequiredArgsConstructor
 @Getter

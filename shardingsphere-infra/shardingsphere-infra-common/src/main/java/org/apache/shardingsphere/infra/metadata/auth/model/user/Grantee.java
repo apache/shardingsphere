@@ -54,4 +54,9 @@ public final class Grantee {
     public int hashCode() {
         return isUnlimitedHost() ? Objects.hashCode(username.toUpperCase()) : Objects.hashCode(username.toUpperCase(), hostname.toUpperCase());
     }
+    
+    @Override
+    public String toString() {
+        return String.format("%s@%s", username, hostname);
+    }
 }

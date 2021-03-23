@@ -22,9 +22,9 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 /**
@@ -34,9 +34,9 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 public final class DatabasePrivilege {
     
-    private final Collection<PrivilegeType> globalPrivileges = new LinkedHashSet<>();
+    private final Collection<PrivilegeType> globalPrivileges = new CopyOnWriteArraySet<>();
     
-    private final Map<String, SchemaPrivilege> specificPrivileges = new LinkedHashMap<>();
+    private final Map<String, SchemaPrivilege> specificPrivileges = new ConcurrentHashMap<>();
     
     /**
      * Has privileges.
@@ -62,7 +62,7 @@ public final class DatabasePrivilege {
     }
     
     private boolean hasGlobalPrivileges(final Collection<PrivilegeType> privileges) {
-        return globalPrivileges.contains(PrivilegeType.SUPER) || globalPrivileges.containsAll(privileges);
+        return globalPrivileges.containsAll(privileges);
     }
     
     private boolean hasSpecificPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
@@ -75,12 +75,5 @@ public final class DatabasePrivilege {
     
     private Collection<PrivilegeType> getSpecificPrivileges(final Collection<PrivilegeType> privileges) {
         return privileges.stream().filter(each -> !globalPrivileges.contains(each)).collect(Collectors.toList());
-    }
-    
-    /**
-     * Set super privilege.
-     */
-    public void setSuperPrivilege() {
-        globalPrivileges.add(PrivilegeType.SUPER);
     }
 }
