@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
@@ -29,6 +30,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 public final class SubstitutableColumn {
     private final String tableName;
 

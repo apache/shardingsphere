@@ -24,7 +24,8 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatement
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumn;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnsToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 
 import java.util.Collection;
@@ -65,18 +66,21 @@ public final class EncryptCreateTableTokenGenerator extends BaseEncryptSQLTokenG
         return result;
     }
     
-    private SubstitutableColumnNameToken getCipherColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment columnDefinitionSegment) {
+    private SubstitutableColumnsToken getCipherColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment columnDefinitionSegment) {
         String cipherColumn = getEncryptRule().getCipherColumn(tableName, columnName);
-        return new SubstitutableColumnNameToken(columnDefinitionSegment.getStopIndex() + 2, columnDefinitionSegment.getColumnName().getStopIndex(), cipherColumn);
+        return new SubstitutableColumnsToken(columnDefinitionSegment.getStopIndex() + 2, columnDefinitionSegment.getColumnName().getStopIndex(),
+                new SubstitutableColumn(tableName, "", cipherColumn, columnDefinitionSegment.getColumnName().getIdentifier().getQuoteCharacter(), Optional.empty()));
     }
     
-    private Optional<SubstitutableColumnNameToken> getAssistedQueryColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment columnDefinitionSegment) {
+    private Optional<SubstitutableColumnsToken> getAssistedQueryColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment columnDefinitionSegment) {
         Optional<String> assistedQueryColumn = getEncryptRule().findAssistedQueryColumn(tableName, columnName);
-        return assistedQueryColumn.map(optional -> new SubstitutableColumnNameToken(columnDefinitionSegment.getStopIndex() + 2, columnDefinitionSegment.getColumnName().getStopIndex(), optional));
+        return assistedQueryColumn.map(optional -> new SubstitutableColumnsToken(columnDefinitionSegment.getStopIndex() + 2, columnDefinitionSegment.getColumnName().getStopIndex(),
+                new SubstitutableColumn(tableName, "", optional, columnDefinitionSegment.getColumnName().getIdentifier().getQuoteCharacter(), Optional.empty())));
     }
     
-    private Optional<SubstitutableColumnNameToken> getPlainColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment columnDefinitionSegment) {
+    private Optional<SubstitutableColumnsToken> getPlainColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment columnDefinitionSegment) {
         Optional<String> plainColumn = getEncryptRule().findPlainColumn(tableName, columnName);
-        return plainColumn.map(optional -> new SubstitutableColumnNameToken(columnDefinitionSegment.getStopIndex() + 2, columnDefinitionSegment.getColumnName().getStopIndex(), optional));
+        return plainColumn.map(optional -> new SubstitutableColumnsToken(columnDefinitionSegment.getStopIndex() + 2, columnDefinitionSegment.getColumnName().getStopIndex(),
+                new SubstitutableColumn(tableName, "", optional, columnDefinitionSegment.getColumnName().getIdentifier().getQuoteCharacter(), Optional.empty())));
     }
 }

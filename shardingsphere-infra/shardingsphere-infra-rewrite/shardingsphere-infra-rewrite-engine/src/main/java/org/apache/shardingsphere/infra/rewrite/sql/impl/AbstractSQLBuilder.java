@@ -80,7 +80,8 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
     }
 
     private boolean isSubstitutableNeedIgnore(final SQLToken currentSqlToken, final SQLToken nextSqlToken) {
-        if (isAllOfSubstitutable(currentSqlToken, nextSqlToken) && currentSqlToken.getStartIndex() == nextSqlToken.getStartIndex()) {
+        if (isAllOfSubstitutable(currentSqlToken, nextSqlToken) && currentSqlToken.getStartIndex() == nextSqlToken.getStartIndex()
+            && ((Substitutable) currentSqlToken).getStopIndex() != ((Substitutable) nextSqlToken).getStopIndex()) {
             return true;
         }
         return false;
