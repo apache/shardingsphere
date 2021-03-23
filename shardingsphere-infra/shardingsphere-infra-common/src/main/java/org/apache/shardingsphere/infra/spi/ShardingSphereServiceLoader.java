@@ -57,6 +57,18 @@ public final class ShardingSphereServiceLoader {
     }
     
     /**
+     * Get singleton service instances.
+     *
+     * @param service service class
+     * @param <T> type of service
+     * @return service instances
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Collection<T> getSingletonServiceInstances(final Class<T> service) {
+        return (Collection<T>) SERVICES.getOrDefault(service, Collections.emptyList());
+    }
+    
+    /**
      * New service instances.
      *
      * @param service service class
