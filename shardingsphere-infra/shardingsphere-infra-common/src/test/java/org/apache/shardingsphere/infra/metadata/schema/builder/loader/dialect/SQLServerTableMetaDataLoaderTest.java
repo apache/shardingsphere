@@ -37,16 +37,13 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- * Table meta data loader for SQLServer.
- */
 public final class SQLServerTableMetaDataLoaderTest {
-
+    
     @BeforeClass
     public static void setUp() {
         ShardingSphereServiceLoader.register(DialectTableMetaDataLoader.class);
     }
-
+    
     @Test
     public void assertLoadWithoutExistedTables() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -60,12 +57,11 @@ public final class SQLServerTableMetaDataLoaderTest {
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sysindexes a "
-                        + "JOIN sysobjects c ON a.id=c.id WHERE a.indid NOT IN (0, 255) AND c.name IN ('tbl')")
+                "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sysindexes a JOIN sysobjects c ON a.id=c.id WHERE a.indid NOT IN (0, 255) AND c.name IN ('tbl')")
                 .executeQuery()).thenReturn(indexResultSet);
         assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList()));
     }
-
+    
     @Test
     public void assertLoadWithExistedTables() throws SQLException {
         DataSource dataSource = mockDataSource();
@@ -80,18 +76,18 @@ public final class SQLServerTableMetaDataLoaderTest {
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
                 "SELECT a.name AS INDEX_NAME, c.name AS TABLE_NAME FROM sysindexes a "
-                        + "JOIN sysobjects c ON a.id=c.id WHERE a.indid NOT IN (0, 255) AND c.name IN ('tbl') AND c.name NOT IN ('existed_tbl')")
+                        + "JOIN sysobjects c ON a.id=c.id WHERE a.indid NOT IN (0, 255) AND c.name IN ('tbl')")
                 .executeQuery()).thenReturn(indexResultSet);
         assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl")));
     }
-
+    
     private DataSource mockDataSource() throws SQLException {
         DataSource result = mock(DataSource.class, Mockito.RETURNS_DEEP_STUBS);
         ResultSet typeInfoResultSet = mockTypeInfoResultSet();
         when(result.getConnection().getMetaData().getTypeInfo()).thenReturn(typeInfoResultSet);
         return result;
     }
-
+    
     private ResultSet mockTypeInfoResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, false);
@@ -99,7 +95,7 @@ public final class SQLServerTableMetaDataLoaderTest {
         when(result.getInt("DATA_TYPE")).thenReturn(4, 12);
         return result;
     }
-
+    
     private ResultSet mockTableMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, false);
@@ -111,7 +107,7 @@ public final class SQLServerTableMetaDataLoaderTest {
         when(result.getString("COLLATION_NAME")).thenReturn("SQL_Latin1_General_CP1_CS_AS", "utf8");
         return result;
     }
-
+    
     private ResultSet mockIndexMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
@@ -119,7 +115,7 @@ public final class SQLServerTableMetaDataLoaderTest {
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
         return result;
     }
-
+    
     private DialectTableMetaDataLoader getTableMetaDataLoader() {
         for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.newServiceInstances(DialectTableMetaDataLoader.class)) {
             if ("SQLServer".equals(each.getDatabaseType())) {
@@ -128,7 +124,7 @@ public final class SQLServerTableMetaDataLoaderTest {
         }
         throw new IllegalStateException("Can not find SQLServerTableMetaDataLoader");
     }
-
+    
     private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {
         assertThat(actual.size(), is(1));
         assertThat(actual.get("tbl").getColumns().size(), is(2));
