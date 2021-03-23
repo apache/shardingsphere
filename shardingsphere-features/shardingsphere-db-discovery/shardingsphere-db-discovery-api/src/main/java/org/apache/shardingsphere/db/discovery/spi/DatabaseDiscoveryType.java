@@ -25,12 +25,12 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Data base discovery type.
+ * Database discovery type.
  */
 public interface DatabaseDiscoveryType extends ShardingSphereAlgorithm {
     
     /**
-     * Check data base discovery config.
+     * Check database discovery config.
      *
      * @param dataSourceMap data source map
      * @param schemaName schema name

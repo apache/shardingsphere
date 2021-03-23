@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Data base discovery data source rule.
+ * Database discovery data source rule.
  */
 @Getter
 @Slf4j
