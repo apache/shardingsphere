@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.db.discovery.common.rule.biulder;
 
 import org.apache.shardingsphere.db.discovery.common.rule.DatabaseDiscoveryRule;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
@@ -47,6 +48,6 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilderTest {
         when(algorithmProvidedRuleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfig));
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(
                 Collections.singletonList(algorithmProvidedRuleConfig), ShardingSphereRuleBuilder.class).get(algorithmProvidedRuleConfig);
-        assertThat(builder.build(algorithmProvidedRuleConfig), instanceOf(DatabaseDiscoveryRule.class));
+        assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), algorithmProvidedRuleConfig), instanceOf(DatabaseDiscoveryRule.class));
     }
 }

@@ -18,8 +18,12 @@
 package org.apache.shardingsphere.infra.rule.builder;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
+
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
  * ShardingSphere rule builder.
@@ -32,8 +36,11 @@ public interface ShardingSphereRuleBuilder<R extends ShardingSphereRule, T exten
     /**
      * Build ShardingSphere rule.
      *
+     * @param schemaName schema name
+     * @param dataSourceMap dataSource map
+     * @param databaseType database type
      * @param ruleConfig rule configuration
      * @return ShardingSphere rule
      */
-    R build(T ruleConfig);
+    R build(String schemaName, Map<String, DataSource> dataSourceMap, DatabaseType databaseType, T ruleConfig);
 }
