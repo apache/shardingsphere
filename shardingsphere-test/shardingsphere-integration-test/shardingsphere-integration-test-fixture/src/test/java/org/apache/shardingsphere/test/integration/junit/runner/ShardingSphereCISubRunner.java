@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.test.integration.junit.runner;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.compose.ContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
-import org.apache.shardingsphere.test.integration.junit.resolver.ConditionResolver;
 import org.junit.runners.BlockJUnit4ClassRunner;
+import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
@@ -43,15 +42,11 @@ public class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
     @Getter
     private final ParameterizedArray parameterized;
     
-    @NonNull
-    private final ConditionResolver resolver;
-    
-    public ShardingSphereCISubRunner(final Class<?> testClass, final TestCaseBeanContext context, final ConditionResolver resolver) throws InitializationError {
+    public ShardingSphereCISubRunner(final Class<?> testClass, final TestCaseBeanContext context) throws InitializationError {
         super(testClass);
         this.context = context;
-        this.resolver = resolver;
         this.parameterized = context.getBean(ParameterizedArray.class);
-        this.compose = new ContainerCompose(getTestClass().getName(), getTestClass(), context.getBean(TestCaseDescription.class), resolver, context);
+        this.compose = new ContainerCompose(getTestClass().getName(), getTestClass(), context.getBean(TestCaseDescription.class), context);
     }
     
     @Override
@@ -73,10 +68,15 @@ public class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
                         throw new RuntimeException(ex.getMessage(), ex);
                     }
                 });
-        compose.createInitializerAndExecute(() -> testInstance);
+        compose.createInitializerAndExecute();
         compose.start();
         compose.waitUntilReady();
         return testInstance;
+    }
+    
+    @Override
+    protected String testName(final FrameworkMethod method) {
+        return method.getName() + getName();
     }
     
     @Override

@@ -114,7 +114,8 @@ public class ShardingSphereProxyContainer extends ShardingSphereAdapterContainer
     }
     
     protected String getURL() {
-        return String.format("jdbc:mysql://%s:%s/db?useServerPrepStmts=true&serverTimezone=UTC&useSSL=false&useLocalSessionState=true&characterEncoding=utf-8", getHost(), getMappedPort(3307));
+        return String.format("jdbc:mysql://%s:%s/%s?useServerPrepStmts=true&serverTimezone=UTC&useSSL=false&useLocalSessionState=true&characterEncoding=utf-8",
+                getHost(), getMappedPort(3307), getDescription().getScenario());
     }
     
 }

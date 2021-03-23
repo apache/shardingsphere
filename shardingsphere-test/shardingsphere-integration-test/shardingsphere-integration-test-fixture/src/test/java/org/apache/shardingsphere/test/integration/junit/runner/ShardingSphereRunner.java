@@ -35,7 +35,6 @@ import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArray
 import org.apache.shardingsphere.test.integration.junit.param.TestCaseParameters;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
-import org.apache.shardingsphere.test.integration.junit.resolver.ConditionResolver;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.ParallelRunnerScheduler;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
 import org.junit.runner.Runner;
@@ -64,18 +63,17 @@ public class ShardingSphereRunner extends Suite {
     
     private final TestCaseBeanContext beanContext = new TestCaseBeanContext();
     
-    private final ConditionResolver resolver;
-    
     public ShardingSphereRunner(final Class<?> klass) throws InitializationError {
         super(klass, Collections.emptyList());
         TestCaseSpec testCaseSpec = getTestClass().getAnnotation(TestCaseSpec.class);
         caseName = Strings.isNullOrEmpty(testCaseSpec.name()) ? klass.getSimpleName() : testCaseSpec.name();
-        resolver = new ConditionResolver();
         if (Boolean.getBoolean("it.enable")) {
-            // it process
             runners = createITRunners(testCaseSpec);
         } else {
-            // ci process
+            ParallelRuntimeStrategy parallelRuntimeStrategy = getTestClass().getAnnotation(ParallelRuntimeStrategy.class);
+            if (null != parallelRuntimeStrategy) {
+                setScheduler(new ParallelRunnerScheduler(parallelRuntimeStrategy.value()));
+            }
             runners = createCIRunners(testCaseSpec);
         }
     }
@@ -84,7 +82,7 @@ public class ShardingSphereRunner extends Suite {
         final Predicate<TestCaseBeanContext> predicate = createTestCaseParametersPredicate();
         TestCaseDescription description = TestCaseDescription.fromSystemProps(testCaseSpec).build();
         beanContext.registerBean(TestCaseDescription.class, description);
-        compose = new ContainerCompose(caseName, getTestClass(), description, resolver, beanContext);
+        compose = new ContainerCompose(caseName, getTestClass(), description, beanContext);
         return allParameters(description).stream()
                 .map(e -> {
                     TestCaseBeanContext context = beanContext.subContext();
@@ -94,7 +92,7 @@ public class ShardingSphereRunner extends Suite {
                 .filter(predicate)
                 .map(e -> {
                     try {
-                        return new ShardingSphereITSubRunner(getTestClass().getJavaClass(), e, resolver);
+                        return new ShardingSphereITSubRunner(getTestClass().getJavaClass(), e);
                     } catch (InitializationError ex) {
                         throw new RuntimeException("Initialization Error", ex);
                     }
@@ -103,11 +101,6 @@ public class ShardingSphereRunner extends Suite {
     }
     
     private List<Runner> createCIRunners(final TestCaseSpec testCaseSpec) {
-        ParallelRuntimeStrategy parallelRuntimeStrategy = getTestClass().getAnnotation(ParallelRuntimeStrategy.class);
-        if (null != parallelRuntimeStrategy) {
-            ParallelRunnerScheduler scheduler = new ParallelRunnerScheduler(parallelRuntimeStrategy.value());
-//            setScheduler(null);
-        }
         final Predicate<TestCaseBeanContext> predicate = createTestCaseParametersPredicate();
         return allCIParameters(testCaseSpec).stream()
                 .flatMap(e -> {
@@ -136,7 +129,7 @@ public class ShardingSphereRunner extends Suite {
                 .filter(predicate)
                 .map(e -> {
                     try {
-                        return new ShardingSphereCISubRunner(getTestClass().getJavaClass(), e, resolver);
+                        return new ShardingSphereCISubRunner(getTestClass().getJavaClass(), e);
                     } catch (InitializationError initializationError) {
                         throw new RuntimeException(initializationError);
                     }
@@ -265,7 +258,7 @@ public class ShardingSphereRunner extends Suite {
                 compose.setInstance(testInstance);
                 compose.createContainers();
                 ((ShardingSphereITSubRunner) runner).autowired(testInstance);
-                compose.createInitializerAndExecute(() -> testInstance);
+                compose.createInitializerAndExecute();
                 compose.start();
                 compose.waitUntilReady();
             } else {

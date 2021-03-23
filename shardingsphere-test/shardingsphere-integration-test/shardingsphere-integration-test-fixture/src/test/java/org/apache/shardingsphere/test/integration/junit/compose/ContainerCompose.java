@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.junit.compose;
 
 import com.google.common.base.Strings;
-import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
@@ -36,11 +35,9 @@ import org.apache.shardingsphere.test.integration.junit.container.ShardingSphere
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereProxyContainer;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.logging.ContainerLogs;
-import org.apache.shardingsphere.test.integration.junit.resolver.ConditionResolver;
 import org.apache.shardingsphere.test.integration.junit.runner.TestCaseBeanContext;
 import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
 import org.junit.runners.model.FrameworkField;
-import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.TestClass;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
@@ -52,7 +49,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -65,8 +61,6 @@ public class ContainerCompose implements Closeable {
     private final TestClass testClass;
     
     private final TestCaseDescription description;
-    
-    private final ConditionResolver conditionResolver;
     
     private final TestCaseBeanContext beanContext;
     
@@ -92,7 +86,7 @@ public class ContainerCompose implements Closeable {
     private ShardingSphereContainer createContainer(final FrameworkField field) {
         final OnContainer metadata = field.getAnnotation(OnContainer.class);
         try {
-            final ShardingSphereContainer container = createContainer(field, metadata);
+            final ShardingSphereContainer container = createContainer(metadata);
             if (Objects.isNull(container)) {
                 log.warn("container {} is not activated.", metadata.name());
                 return null;
@@ -119,22 +113,17 @@ public class ContainerCompose implements Closeable {
     }
     
     @SneakyThrows
-    private ShardingSphereContainer createContainer(final FrameworkField field, final OnContainer metadata) {
-        if (conditionResolver.filter(field)) {
-            switch (metadata.type()) {
-                case ADAPTER:
-                    return createAdapterContainer();
-                case STORAGE:
-                    return createStorageContainer();
-                case COORDINATOR:
-                    throw new NotSupportedException();
-                default:
-                    return null;
-            }
-        } else {
-            log.warn("Container[{}] was ignored.", metadata.name());
+    private ShardingSphereContainer createContainer(final OnContainer metadata) {
+        switch (metadata.type()) {
+            case ADAPTER:
+                return createAdapterContainer();
+            case STORAGE:
+                return createStorageContainer();
+            case COORDINATOR:
+                throw new NotSupportedException();
+            default:
+                return null;
         }
-        return null;
     }
     
     private ShardingSphereAdapterContainer createAdapterContainer() {
@@ -183,34 +172,24 @@ public class ContainerCompose implements Closeable {
     
     /**
      * Create the initializer and execute.
-     *
-     * @param supplier supplier
      */
     @SneakyThrows
-    public void createInitializerAndExecute(final Supplier<Object> supplier) {
-        List<FrameworkMethod> methods = testClass.getAnnotatedMethods(ContainerInitializer.class).stream()
-                .filter(conditionResolver::filter)
-                .collect(Collectors.toList());
-        if (methods.size() > 1) {
-            throw new RuntimeException("Only support to have one or zero initializer.");
-        }
-        if (!methods.isEmpty()) {
-            methods.forEach(method -> {
-                try {
-                    if (method.isStatic()) {
-                        method.getMethod().setAccessible(true);
-                        method.invokeExplosively(null);
-                    } else {
-                        method.getMethod().setAccessible(true);
-                        method.invokeExplosively(instance);
-                    }
-                    // CHECKSTYLE:OFF
-                } catch (Throwable throwable) {
-                    // CHECKSTYLE:ON
-                    throwable.printStackTrace();
+    public void createInitializerAndExecute() {
+        testClass.getAnnotatedMethods(ContainerInitializer.class).forEach(method -> {
+            try {
+                if (method.isStatic()) {
+                    method.getMethod().setAccessible(true);
+                    method.invokeExplosively(null);
+                } else {
+                    method.getMethod().setAccessible(true);
+                    method.invokeExplosively(instance);
                 }
-            });
-        }
+                // CHECKSTYLE:OFF
+            } catch (Throwable throwable) {
+                // CHECKSTYLE:ON
+                throwable.printStackTrace();
+            }
+        });
     }
     
     /**

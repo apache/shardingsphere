@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.test.integration.junit.runner;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.junit.annotation.OnContainer;
 import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
-import org.apache.shardingsphere.test.integration.junit.resolver.ConditionResolver;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
@@ -36,13 +34,9 @@ public class ShardingSphereITSubRunner extends BlockJUnit4ClassRunner {
     @Getter
     private final TestCaseBeanContext context;
     
-    @NonNull
-    private final ConditionResolver resolver;
-    
-    public ShardingSphereITSubRunner(final Class<?> testClass, final TestCaseBeanContext context, final ConditionResolver resolver) throws InitializationError {
+    public ShardingSphereITSubRunner(final Class<?> testClass, final TestCaseBeanContext context) throws InitializationError {
         super(testClass);
         this.context = context;
-        this.resolver = resolver;
     }
     
     @Override
@@ -59,7 +53,7 @@ public class ShardingSphereITSubRunner extends BlockJUnit4ClassRunner {
      * @throws InitializationError ex
      */
     public ShardingSphereITSubRunner copySelf() throws InitializationError {
-        return new ShardingSphereITSubRunner(getTestClass().getJavaClass(), context, resolver);
+        return new ShardingSphereITSubRunner(getTestClass().getJavaClass(), context);
     }
     
     protected Object createTestInstance() throws Exception {
