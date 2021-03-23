@@ -44,7 +44,7 @@ public final class OrderedSPIRegistry {
         Collection<T> registeredServices = getRegisteredServices(orderedSPIClass);
         Map<Class<?>, T> result = new LinkedHashMap<>(registeredServices.size(), 1);
         for (T each : registeredServices) {
-            types.stream().filter(type -> ((OrderedSPI<?>) each).getTypeClass() == type).forEach(type -> result.put(type, each));
+            types.stream().filter(type -> each.getTypeClass() == type).forEach(type -> result.put(type, each));
         }
         return result;
     }
@@ -76,7 +76,7 @@ public final class OrderedSPIRegistry {
      */
     public static <T extends OrderedSPI<?>> Collection<T> getRegisteredServices(final Class<T> orderedSPIClass) {
         Map<Integer, T> result = new TreeMap<>();
-        for (T each : ShardingSphereServiceLoader.newServiceInstances(orderedSPIClass)) {
+        for (T each : ShardingSphereServiceLoader.getSingletonServiceInstances(orderedSPIClass)) {
             result.put(each.getOrder(), each);
         }
         return result.values();
