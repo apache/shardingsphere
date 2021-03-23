@@ -47,6 +47,6 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     
     private boolean isAuthorizedSchema(final BackendConnection backendConnection, final String schema) {
         Optional<ShardingSpherePrivilege> privilege = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findPrivilege(backendConnection.getGrantee());
-        return privilege.isPresent() && privilege.get().hasPrivileges(schema) ? true : false;
+        return privilege.isPresent() && privilege.get().hasPrivileges(schema);
     }
 }
