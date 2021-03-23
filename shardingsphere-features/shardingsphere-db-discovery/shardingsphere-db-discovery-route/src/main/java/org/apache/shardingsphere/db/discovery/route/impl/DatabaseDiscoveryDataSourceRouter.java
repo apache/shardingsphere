@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.discovery.common.rule.DatabaseDiscoveryDataSourceRule;
 
 /**
- * Data source router for Data base discovery.
+ * Data source router for database discovery.
  */
 @RequiredArgsConstructor
 public final class DatabaseDiscoveryDataSourceRouter {

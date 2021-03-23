@@ -44,9 +44,9 @@ public class DatabaseDiscoveryRuleSpringbootConfiguration {
     private final YamlDatabaseDiscoveryRuleSpringBootConfiguration yamlConfig;
     
     /**
-     * Data base discovery rule configuration for spring boot.
+     * Database discovery rule configuration for spring boot.
      *
-     * @return data base discovery rule configuration
+     * @return database discovery rule configuration
      */
     @Bean
     public RuleConfiguration databaseDiscoveryRuleConfiguration() {

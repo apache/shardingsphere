@@ -32,7 +32,7 @@ import org.w3c.dom.Element;
 import java.util.List;
 
 /**
- * Data base discovery rule bean definition parser.
+ * Database discovery rule bean definition parser.
  */
 public final class DatabaseDiscoveryRuleBeanDefinitionParser extends AbstractBeanDefinitionParser {
     
