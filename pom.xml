@@ -44,8 +44,8 @@
         <module>shardingsphere-transaction</module>
         <module>shardingsphere-governance</module>
         
-        <module>shardingsphere-distribution</module>
         <module>shardingsphere-test</module>
+        <module>shardingsphere-distribution</module>
     </modules>
     
     <properties>
