@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Data base discovery rule bean definition tag.
+ * Database discovery rule bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseDiscoveryRuleBeanDefinitionTag {

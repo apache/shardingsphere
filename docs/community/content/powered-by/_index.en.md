@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/issues/234) with
 
 ## Who are using ShardingSphere?
 
-Total: 163 companies.
+Total: 165 companies.
 
 ### Financial Industry
 <ul>
@@ -195,6 +195,10 @@ Total: 163 companies.
     <li><a href=" http://tcslwxwl.cn.b2b168.com/" rel="nofollow">Shenzhou Shanglong Technology Co.,Ltd </a></li>
 </ul>
 
+### Manufacturing
+<ul>
+    <li><a href="https://www.lixiang.com" rel="nofollow">LiXiang</a></li>
+</ul>
 
 ### Software Development Services
 <ul>
@@ -216,7 +220,6 @@ Total: 163 companies.
     <li><a href="https://www.raycloud.com/" rel="nofollow">RayCloud</a></li>
     <li><a href="https://innoways.com/" rel="nofollow">Innoways</a></li>
     <li><a href="http://www.itaojin.cn/" rel="nofollow">ITaoJin</a></li>
-    <li><a href="https://www.elelive.net/" rel="nofollow">Elelive</a></li>
     <li><a href="https://www.cloudm.com/" rel="nofollow">CloudM</a></li>
     <li><a href="http://tigosoft.com/" rel="nofollow">TIGO</a></li>
     <li><a href="https://www.can-dao.com/" rel="nofollow">can-dao</a></li>

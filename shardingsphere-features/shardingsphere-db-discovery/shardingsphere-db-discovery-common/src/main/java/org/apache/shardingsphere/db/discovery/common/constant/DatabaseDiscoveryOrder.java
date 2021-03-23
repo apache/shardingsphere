@@ -21,18 +21,18 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Data base discovery order.
+ * Database discovery order.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseDiscoveryOrder {
     
     /**
-     * Data base discovery order.
+     * Database discovery order.
      */
     public static final int ORDER = 20;
     
     /**
-     * Algorithm provider data base discovery order.
+     * Algorithm provider database discovery order.
      */
     public static final int ALGORITHM_PROVIDER_DB_DISCOVERY_ORDER = 21;
 }

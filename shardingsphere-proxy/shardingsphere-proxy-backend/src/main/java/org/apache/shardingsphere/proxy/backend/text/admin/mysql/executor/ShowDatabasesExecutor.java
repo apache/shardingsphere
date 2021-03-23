@@ -54,10 +54,13 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
             return Collections.emptyList();
         }
         Collection<Object> result = new LinkedList<>();
-        for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
-            // TODO : Need to check whether PrivilegeType.SHOW_DB is correct or enough?
-            if (privilege.get().hasPrivileges(each, Collections.singletonList(PrivilegeType.SHOW_DB))) {
-                result.add(each);
+        if (privilege.get().hasPrivileges(Collections.singletonList(PrivilegeType.SHOW_DB))) {
+            result.addAll(ProxyContext.getInstance().getAllSchemaNames());
+        } else {
+            for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
+                if (privilege.get().hasPrivileges(each)) {
+                    result.add(each);
+                }
             }
         }
         return result;

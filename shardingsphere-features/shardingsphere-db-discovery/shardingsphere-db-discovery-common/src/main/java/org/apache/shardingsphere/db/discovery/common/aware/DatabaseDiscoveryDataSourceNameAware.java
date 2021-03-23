@@ -24,9 +24,9 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import java.util.Collection;
 
 /**
- * Data base discovery data source name aware.
+ * Database discovery data source name aware.
  */
-public class DatabaseDiscoveryDataSourceNameAware implements DataSourceNameAware {
+public final class DatabaseDiscoveryDataSourceNameAware implements DataSourceNameAware {
     
     private DatabaseDiscoveryRule rule;
     

@@ -57,7 +57,7 @@
 #    maintenanceIntervalMilliseconds: 30000
 #
 #rules:
-#- !REPLICA_QUERY
+#- !READ_WRITE_SPLITTING
 #  dataSources:
 #    pr_ds:
 #      name: pr_ds
