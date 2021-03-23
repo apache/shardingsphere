@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Data base discovery rule builder.
+ * Database discovery rule builder.
  */
 @Setter
 public final class DatabaseDiscoveryRuleBuilder implements ShardingSphereRuleBuilder<DatabaseDiscoveryRule, DatabaseDiscoveryRuleConfiguration>, ResourceAware {

@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 /**
- * Data base discovery data source rule configuration.
+ * Database discovery data source rule configuration.
  */
 @RequiredArgsConstructor
 @Getter
