@@ -127,7 +127,7 @@ public final class DataSourceConfiguration {
     
     @SuppressWarnings("rawtypes")
     private Optional<JDBCParameterDecorator> findJDBCParameterDecorator(final DataSource dataSource) {
-        return ShardingSphereServiceLoader.newServiceInstances(JDBCParameterDecorator.class).stream().filter(each -> each.getType() == dataSource.getClass()).findFirst();
+        return ShardingSphereServiceLoader.getSingletonServiceInstances(JDBCParameterDecorator.class).stream().filter(each -> each.getType() == dataSource.getClass()).findFirst();
     }
     
     private Optional<Method> findSetterMethod(final Method[] methods, final String property) {

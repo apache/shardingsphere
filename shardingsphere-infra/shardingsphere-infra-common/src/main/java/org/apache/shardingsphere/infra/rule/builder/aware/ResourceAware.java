@@ -46,6 +46,6 @@ public interface ResourceAware {
      *
      * @param schemaName schema name
      */
-    default void setSchemaName(String schemaName) {
+    default void setSchemaName(final String schemaName) {
     }
 }

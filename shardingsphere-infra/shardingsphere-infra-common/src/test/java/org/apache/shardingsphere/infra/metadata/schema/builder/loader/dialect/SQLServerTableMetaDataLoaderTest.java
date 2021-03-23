@@ -117,7 +117,7 @@ public final class SQLServerTableMetaDataLoaderTest {
     }
     
     private DialectTableMetaDataLoader getTableMetaDataLoader() {
-        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.newServiceInstances(DialectTableMetaDataLoader.class)) {
+        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(DialectTableMetaDataLoader.class)) {
             if ("SQLServer".equals(each.getDatabaseType())) {
                 return each;
             }
