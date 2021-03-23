@@ -24,7 +24,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Spring boot condition for Data base discovery.
+ * Spring boot condition for database discovery.
  */
 public final class DatabaseDiscoverySpringBootCondition extends SpringBootCondition {
     
