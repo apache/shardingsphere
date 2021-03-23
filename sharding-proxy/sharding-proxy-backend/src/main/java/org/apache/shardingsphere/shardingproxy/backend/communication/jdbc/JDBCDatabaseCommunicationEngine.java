@@ -20,6 +20,7 @@ package org.apache.shardingsphere.shardingproxy.backend.communication.jdbc;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.strategy.spi.Encryptor;
+import org.apache.shardingsphere.masterslave.route.engine.impl.MasterVisitedManager;
 import org.apache.shardingsphere.shardingproxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.shardingproxy.backend.communication.jdbc.connection.ConnectionStatus;
@@ -71,6 +72,11 @@ public final class JDBCDatabaseCommunicationEngine implements DatabaseCommunicat
     @Override
     public BackendResponse execute() {
         try {
+            if (!MasterVisitedManager.isMasterVisited()
+                    && executeEngine.getBackendConnection().getStateHandler().isInTransaction()
+            ) {
+                MasterVisitedManager.setMasterVisited();
+            }
             ExecutionContext executionContext = executeEngine.getJdbcExecutorWrapper().route(sql);
             return execute(executionContext);
         } catch (final SQLException ex) {
