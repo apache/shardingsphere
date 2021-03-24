@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.engine.it;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
 import org.apache.shardingsphere.test.integration.engine.junit.ITWatcher;
@@ -35,7 +34,6 @@ public abstract class SingleITCase extends BaseITCase {
     private DataSet dataSet;
     
     @Before
-    @SneakyThrows
     public void setup() {
         dataSet = null == getAssertion() ? null : DataSetLoader.load(getParentPath(), getDescription().getScenario(), getDescription().getDatabaseType(), getAssertion().getExpectedDataFile());
     }
