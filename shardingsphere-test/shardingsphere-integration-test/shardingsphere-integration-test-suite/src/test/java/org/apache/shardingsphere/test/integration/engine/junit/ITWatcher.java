@@ -48,7 +48,7 @@ public final class ITWatcher extends TestWatcher {
             //CHECKSTYLE:OFF
         } catch (final Exception ignored) {
             //CHECKSTYLE:ON
+            return "";
         }
-        return "";
     }
 }
