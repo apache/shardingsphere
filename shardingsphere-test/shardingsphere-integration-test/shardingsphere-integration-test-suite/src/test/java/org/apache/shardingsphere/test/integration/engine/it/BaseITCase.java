@@ -111,7 +111,7 @@ public abstract class BaseITCase {
     }
     
     protected String getLiteralSQL(final String sql) throws ParseException {
-        List<Object> parameters = null == getAssertion() ? Collections.emptyList() : getAssertion().getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
+        List<Object> parameters = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
         return parameters.isEmpty() ? sql : String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%").replace("%%", "%").replace("'%'", "'%%'");
     }
     
@@ -124,8 +124,8 @@ public abstract class BaseITCase {
     
     @After
     public final void tearDown() {
-        if (getTargetDataSource() instanceof ShardingSphereDataSource) {
-            ((ShardingSphereDataSource) getTargetDataSource()).getMetaDataContexts().getExecutorEngine().close();
+        if (dataSource instanceof ShardingSphereDataSource) {
+            ((ShardingSphereDataSource) dataSource).getMetaDataContexts().getExecutorEngine().close();
         }
     }
 }

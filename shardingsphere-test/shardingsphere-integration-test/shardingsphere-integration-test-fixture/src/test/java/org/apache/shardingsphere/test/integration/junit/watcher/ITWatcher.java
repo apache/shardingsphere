@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit;
+package org.apache.shardingsphere.test.integration.junit.watcher;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.rules.TestWatcher;
@@ -31,12 +31,12 @@ import java.io.PrintStream;
 public final class ITWatcher extends TestWatcher {
     
     @Override
-    protected void failed(final Throwable ex, final Description description) {
-        log.error("Error case: {}, message: {}", description.getMethodName(), stackTrace(ex));
-        super.failed(ex, description);
+    protected void failed(final Throwable cause, final Description description) {
+        log.error("Error case: {}, message: {}", description.getMethodName(), getStackTrace(cause));
+        super.failed(cause, description);
     }
     
-    private String stackTrace(final Throwable cause) {
+    private String getStackTrace(final Throwable cause) {
         if (null == cause) {
             return "";
         }
@@ -48,7 +48,7 @@ public final class ITWatcher extends TestWatcher {
             //CHECKSTYLE:OFF
         } catch (final Exception ignored) {
             //CHECKSTYLE:ON
+            return "";
         }
-        return "";
     }
 }
