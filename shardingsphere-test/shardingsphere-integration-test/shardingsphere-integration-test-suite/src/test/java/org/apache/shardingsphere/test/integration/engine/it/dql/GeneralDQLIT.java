@@ -18,42 +18,25 @@
 package org.apache.shardingsphere.test.integration.engine.it.dql;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelRuntimeStrategy;
-import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
 import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.util.Collection;
 
 import static org.junit.Assert.assertTrue;
 
+@TestCaseSpec(name = "GeneralDQLIT", sqlCommandType = SQLCommandType.DQL)
 @ParallelRuntimeStrategy(ParallelLevel.CASE)
 public final class GeneralDQLIT extends BaseDQLIT {
-    
-    private final IntegrationTestCaseAssertion assertion;
-    
-    public GeneralDQLIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
-        super(parameterizedArray);
-        assertion = parameterizedArray.getAssertion();
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> getParameters() {
-        return ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DQL);
-    }
     
     @Test
     public void assertExecuteQuery() throws SQLException, ParseException {
@@ -66,17 +49,17 @@ public final class GeneralDQLIT extends BaseDQLIT {
         }
     }
     
-    private void assertExecuteQueryForStatement(final Connection connection) throws SQLException {
+    private void assertExecuteQueryForStatement(final Connection connection) throws SQLException, ParseException {
         try (
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getSql())) {
+                ResultSet resultSet = statement.executeQuery(getStatement())) {
             assertResultSet(resultSet);
         }
     }
     
     private void assertExecuteQueryForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
-            for (SQLValue each : assertion.getSQLValues()) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getStatement())) {
+            for (SQLValue each : getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -96,9 +79,9 @@ public final class GeneralDQLIT extends BaseDQLIT {
         }
     }
     
-    private void assertExecuteForStatement(final Connection connection) throws SQLException {
+    private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            assertTrue("Not a query statement.", statement.execute(getSql()));
+            assertTrue("Not a query statement.", statement.execute(getStatement()));
             try (ResultSet resultSet = statement.getResultSet()) {
                 assertResultSet(resultSet);
             }
@@ -106,8 +89,8 @@ public final class GeneralDQLIT extends BaseDQLIT {
     }
     
     private void assertExecuteForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getSql())) {
-            for (SQLValue each : assertion.getSQLValues()) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getStatement())) {
+            for (SQLValue each : getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
             assertTrue("Not a query statement.", preparedStatement.execute());

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import com.google.common.base.Preconditions;
-import java.sql.Array;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
@@ -29,11 +28,13 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.transaction.TransactionHolder;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.spi.ShardingTransactionManager;
 
 import javax.sql.DataSource;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -233,6 +234,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
             this.autoCommit = autoCommit;
             recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{autoCommit});
             getForceExecuteTemplate().execute(getCachedConnections().values(), connection -> connection.setAutoCommit(autoCommit));
+            TransactionHolder.setInTransaction();
             return;
         }
         if (autoCommit != shardingTransactionManager.isInTransaction()) {
@@ -245,6 +247,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
         if (!autoCommit && !shardingTransactionManager.isInTransaction()) {
             closeCachedConnections();
             shardingTransactionManager.begin();
+            TransactionHolder.setInTransaction();
         }
     }
     
@@ -255,19 +258,27 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter im
     
     @Override
     public void commit() throws SQLException {
-        if (TransactionType.LOCAL == transactionType) {
-            getForceExecuteTemplate().execute(getCachedConnections().values(), Connection::commit);
-        } else {
-            shardingTransactionManager.commit();
+        try {
+            if (TransactionType.LOCAL == transactionType) {
+                getForceExecuteTemplate().execute(getCachedConnections().values(), Connection::commit);
+            } else {
+                shardingTransactionManager.commit();
+            }
+        } finally {
+            TransactionHolder.clear();
         }
     }
     
     @Override
     public void rollback() throws SQLException {
-        if (TransactionType.LOCAL == transactionType) {
-            getForceExecuteTemplate().execute(getCachedConnections().values(), Connection::rollback);
-        } else {
-            shardingTransactionManager.rollback();
+        try {
+            if (TransactionType.LOCAL == transactionType) {
+                getForceExecuteTemplate().execute(getCachedConnections().values(), Connection::rollback);
+            } else {
+                shardingTransactionManager.rollback();
+            }
+        } finally {
+            TransactionHolder.clear();
         }
     }
     

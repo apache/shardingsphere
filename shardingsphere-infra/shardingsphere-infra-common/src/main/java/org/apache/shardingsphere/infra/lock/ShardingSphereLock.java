@@ -25,30 +25,32 @@ public interface ShardingSphereLock {
     /**
      * Try to lock.
      *
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param timeoutMilliseconds time out milliseconds to acquire lock
+     * @param lockName lock name
      * @return true if get the lock, false if not
      */
-    boolean tryLock(String schemaName, String tableName, long timeoutMilliseconds);
+    boolean tryLock(String lockName);
+    
+    /**
+     * Try to lock with time out.
+     * 
+     * @param lockName lock name
+     * @param timeout the maximum time in milliseconds to acquire lock
+     * @return true if get the lock, false if not
+     */
+    boolean tryLock(String lockName, long timeout);
     
     /**
      * Release lock.
-     * @param schemaName schema name
-     * @param tableName table name
-     */
-    void releaseLock(String schemaName, String tableName);
-    
-    /**
-     * Await lock.
      * 
-     * @param timeoutMilliseconds time out milliseconds to await lock
-     * @return true if no exception
+     * @param lockName lock name
      */
-    boolean await(Long timeoutMilliseconds);
+    void releaseLock(String lockName);
     
     /**
-     * Signal all.
+     * Check whether resource is locked.
+     * 
+     * @param lockName lock name
+     * @return true if locked ,false if not
      */
-    void signalAll();
+    boolean isLocked(String lockName);
 }

@@ -34,7 +34,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Data base discovery rule configuration YAML swapper.
+ * Database discovery rule configuration YAML swapper.
  */
 public final class DatabaseDiscoveryRuleConfigurationYamlSwapper
         implements YamlRuleConfigurationSwapper<YamlDatabaseDiscoveryRuleConfiguration, DatabaseDiscoveryRuleConfiguration> {

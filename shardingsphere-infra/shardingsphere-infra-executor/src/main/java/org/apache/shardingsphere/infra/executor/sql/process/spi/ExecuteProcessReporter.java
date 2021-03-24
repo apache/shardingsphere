@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.process.spi;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 
 /**
  * Execute process report.
@@ -31,15 +31,15 @@ public interface ExecuteProcessReporter {
      * Report the summary of this task.
      * @param context context
      * @param executionGroupContext execution group context
-     * @param status status
+     * @param constants constants
      */
-    void report(SQLStatementContext<?> context, ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, ExecuteProcessStatus status);
+    void report(SQLStatementContext<?> context, ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, ExecuteProcessConstants constants);
     
     /**
      * Report a unit of this task.
      * @param executionID execution ID
      * @param executionUnit execution unit
-     * @param status status
+     * @param constants constants
      */
-    void report(String executionID, SQLExecutionUnit executionUnit, ExecuteProcessStatus status);
+    void report(String executionID, SQLExecutionUnit executionUnit, ExecuteProcessConstants constants);
 }

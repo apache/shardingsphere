@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.db.discovery.api.config.DatabaseDiscoveryRuleConfiguration;
 
 /**
- * Data base discovery rule configuration checker.
+ * Database discovery rule configuration checker.
  */
 public final class DatabaseDiscoveryRuleConfigurationChecker implements RuleConfigurationChecker<DatabaseDiscoveryRuleConfiguration> {
     

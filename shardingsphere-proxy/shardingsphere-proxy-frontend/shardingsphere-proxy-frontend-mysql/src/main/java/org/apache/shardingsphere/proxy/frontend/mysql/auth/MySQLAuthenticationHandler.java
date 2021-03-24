@@ -22,12 +22,12 @@ import lombok.Getter;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -54,10 +54,11 @@ public final class MySQLAuthenticationHandler {
         if (!user.isPresent() || !isPasswordRight(user.get().getPassword(), authResponse)) {
             return Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR);
         }
-        if (!ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getAuthentication().get(user.get()).getDataPrivilege().hasPrivileges(database, Collections.emptyList())) {
-            return Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
+        ShardingSpherePrivilege privilege = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getAuthentication().get(user.get());
+        if (null != privilege && privilege.hasPrivileges(database)) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        return Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
     }
     
     private boolean isPasswordRight(final String password, final byte[] authResponse) {

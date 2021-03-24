@@ -26,25 +26,33 @@ public final class LockNode {
     
     private static final String LOCK_NODE_ROOT = "lock";
     
-    private static final String LOCK_NODE = "glock";
+    private static final String LOCKED_RESOURCES_NODE = "locked_resources";
+    
+    /**
+     * Get lock root node path.
+     * 
+     * @return lock root node path
+     */
+    public String getLockRootNodePath() {
+        return Joiner.on("/").join("", LOCK_NODE_ROOT);
+    }
     
     /**
      * Get lock node path.
      * 
+     * @param lockName lock name
      * @return lock node path
      */
-    public String getLockNodePath() {
-        return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCK_NODE);
+    public String getLockNodePath(final String lockName) {
+        return Joiner.on("/").join("", LOCK_NODE_ROOT, lockName);
     }
     
     /**
-     * Get table lock node path.
-     * 
-     * @param schemaName schema name
-     * @param tableName table name
-     * @return table lock node path
+     * Get locked resources node path.
+     *
+     * @return locked resources node path
      */
-    public String getTableLockNodePath(final String schemaName, final String tableName) {
-        return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCK_NODE, schemaName, tableName);
+    public String getLockedResourcesNodePath() {
+        return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCKED_RESOURCES_NODE);
     }
 }

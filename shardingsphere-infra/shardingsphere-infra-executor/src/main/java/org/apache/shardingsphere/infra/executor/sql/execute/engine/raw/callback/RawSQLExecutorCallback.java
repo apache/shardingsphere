@@ -42,7 +42,7 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
     private final Collection<RawExecutorCallback> callbacks;
     
     public RawSQLExecutorCallback() {
-        callbacks = ShardingSphereServiceLoader.newServiceInstances(RawExecutorCallback.class);
+        callbacks = ShardingSphereServiceLoader.getSingletonServiceInstances(RawExecutorCallback.class);
         Preconditions.checkState(!callbacks.isEmpty(), "No raw executor callback implementation found.");
     }
     

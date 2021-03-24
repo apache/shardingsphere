@@ -18,51 +18,38 @@
 package org.apache.shardingsphere.test.integration.engine.it.dcl;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelRuntimeStrategy;
-import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
 import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Collection;
 
+@TestCaseSpec(sqlCommandType = SQLCommandType.DCL)
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDCLIT extends BaseDCLIT {
     
-    public GeneralDCLIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
-        super(parameterizedArray);
-    }
-    
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> getParameters() {
-        return ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DCL);
-    }
-    
     @Test
-    public void assertExecuteUpdate() throws SQLException {
+    public void assertExecuteUpdate() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                connection.createStatement().executeUpdate(getSql());
+                connection.createStatement().executeUpdate(getStatement());
             } else {
-                connection.prepareStatement(getSql()).executeUpdate();
+                connection.prepareStatement(getStatement()).executeUpdate();
             }
         }
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    public void assertExecute() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                connection.createStatement().execute(getSql());
+                connection.createStatement().execute(getStatement());
             } else {
-                connection.prepareStatement(getSql()).execute();
+                connection.prepareStatement(getStatement()).execute();
             }
         }
     }

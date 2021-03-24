@@ -36,7 +36,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Data base discovery SQL router.
+ * Database discovery SQL router.
  */
 public final class DatabaseDiscoverySQLRouter implements SQLRouter<DatabaseDiscoveryRule> {
     

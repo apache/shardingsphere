@@ -17,40 +17,32 @@
 
 package org.apache.shardingsphere.db.discovery.common.rule.biulder;
 
-import lombok.Setter;
 import org.apache.shardingsphere.db.discovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.db.discovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.db.discovery.common.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.db.discovery.common.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.aware.ResourceAware;
 
 import javax.sql.DataSource;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
- * Data base discovery rule builder.
+ * Database discovery rule builder.
  */
-@Setter
-public final class DatabaseDiscoveryRuleBuilder implements ShardingSphereRuleBuilder<DatabaseDiscoveryRule, DatabaseDiscoveryRuleConfiguration>, ResourceAware {
-    
-    private DatabaseType databaseType;
-    
-    private Map<String, DataSource> dataSourceMap;
-    
-    private String schemaName;
+public final class DatabaseDiscoveryRuleBuilder implements ShardingSphereRuleBuilder<DatabaseDiscoveryRule, DatabaseDiscoveryRuleConfiguration> {
     
     @Override
-    public DatabaseDiscoveryRule build(final DatabaseDiscoveryRuleConfiguration ruleConfig) {
-        Set<String> dataSourceSet = new HashSet<>(128, 1);
+    public DatabaseDiscoveryRule build(final String schemaName,
+                                       final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final DatabaseDiscoveryRuleConfiguration ruleConfig) {
+        Map<String, DataSource> realDataSourceMap = new HashMap<>();
         for (DatabaseDiscoveryDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
-            dataSourceSet.addAll(each.getDataSourceNames());
+            for (String datasourceName : each.getDataSourceNames()) {
+                realDataSourceMap.put(datasourceName, dataSourceMap.get(datasourceName));
+            }
         }
-        dataSourceMap.entrySet().removeIf(entry -> !dataSourceSet.contains(entry.getKey()));
-        return new DatabaseDiscoveryRule(ruleConfig, databaseType, dataSourceMap, schemaName);
+        return new DatabaseDiscoveryRule(ruleConfig, databaseType, realDataSourceMap, schemaName);
     }
     
     @Override
@@ -62,4 +54,5 @@ public final class DatabaseDiscoveryRuleBuilder implements ShardingSphereRuleBui
     public Class<DatabaseDiscoveryRuleConfiguration> getTypeClass() {
         return DatabaseDiscoveryRuleConfiguration.class;
     }
+    
 }

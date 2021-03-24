@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Data base discovery data source rule.
+ * Database discovery data source rule.
  */
 @Getter
 @Slf4j
@@ -68,6 +68,15 @@ public final class DatabaseDiscoveryDataSourceRule {
      */
     public List<String> getDataSourceNames() {
         return dataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each)).collect(Collectors.toList());
+    }
+    
+    /**
+     * Get replica data source names.
+     *
+     * @return available replica data source names
+     */
+    public List<String> getReplicaDataSourceNames() {
+        return dataSourceNames.stream().filter(each -> !disabledDataSourceNames.contains(each) && !primaryDataSourceName.equals(each)).collect(Collectors.toList());
     }
     
     /**

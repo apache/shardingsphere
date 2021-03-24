@@ -86,6 +86,7 @@ public final class RegistryCenter {
         repository = registryRepository;
         instance = GovernanceInstance.getInstance();
         lockNode = new LockNode();
+        initLockNode();
         registryCacheManager = new RegistryCacheManager(registryRepository, node);
         ShardingSphereEventBus.getInstance().register(this);
     }
@@ -492,25 +493,6 @@ public final class RegistryCenter {
     }
     
     /**
-     * Load instance data.
-     * 
-     * @param instanceId instance id
-     * @return instance data
-     */
-    public String loadInstanceData(final String instanceId) {
-        return repository.get(node.getProxyNodePath(instanceId));
-    }
-    
-    /**
-     * Load all instances.
-     * 
-     * @return collection of all instances
-     */
-    public Collection<String> loadAllInstances() {
-        return repository.getChildrenKeys(node.getProxyNodesPath());
-    }
-    
-    /**
      * Load disabled data sources.
      * 
      * @param schemaName schema name
@@ -529,24 +511,27 @@ public final class RegistryCenter {
         return repository.get(node.getDataSourcePath(schemaName, dataSourceName));
     }
     
+    private void initLockNode() {
+        repository.persist(lockNode.getLockRootNodePath(), "");
+    }
+    
     /**
      * Try to get lock.
-     * 
-     * @param schemaName schema name
-     * @param tableName table name
+     *
+     * @param lockName lock name
      * @param timeout the maximum time in milliseconds to acquire lock
      * @return true if get the lock, false if not
      */
-    public boolean tryLock(final String schemaName, final String tableName, final long timeout) {
-        return repository.tryLock(lockNode.getTableLockNodePath(schemaName, tableName), timeout, TimeUnit.MILLISECONDS);
+    public boolean tryLock(final String lockName, final long timeout) {
+        return repository.tryLock(lockNode.getLockNodePath(lockName), timeout, TimeUnit.MILLISECONDS);
     }
     
     /**
      * Release lock.
-     * @param schemaName schema name
-     * @param tableName table name
+     * 
+     * @param lockName lock name
      */
-    public void releaseLock(final String schemaName, final String tableName) {
-        repository.releaseLock(lockNode.getTableLockNodePath(schemaName, tableName));
+    public void releaseLock(final String lockName) {
+        repository.releaseLock(lockNode.getLockNodePath(lockName));
     }
 }
