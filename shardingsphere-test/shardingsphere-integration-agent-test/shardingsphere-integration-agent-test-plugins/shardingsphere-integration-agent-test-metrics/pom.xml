@@ -71,7 +71,6 @@
             <id>it.env.metrics</id>
             <properties>
                 <it.env>metrics</it.env>
-                <dockerfile.skip.build>false</dockerfile.skip.build>
             </properties>
             <build>
                 <plugins>
@@ -106,6 +105,7 @@
                             </execution>
                         </executions>
                         <configuration>
+                            <skip>false</skip>
                             <repository>apache/shardingsphere-proxy-agent-metrics-test</repository>
                             <tag>${project.version}</tag>
                             <tag>latest</tag>
