@@ -64,22 +64,22 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
 
     private Map<String, TableMetaData> loadTableMetaDataMap(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
-        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, existedTables);
-        Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(dataSource, columnMetaDataMap.keySet());
-        for (Map.Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
-            result.put(entry.getKey(), new TableMetaData(entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList())));
+        try (Connection connection = dataSource.getConnection()) {
+            Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(connection, existedTables);
+            Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(connection, columnMetaDataMap.keySet());
+            for (Map.Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
+                result.put(entry.getKey(), new TableMetaData(entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList())));
+            }
         }
         return result;
     }
 
-    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
+    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> existedTables) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>();
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(existedTables))) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(existedTables))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
-            Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(dataSource, existedTables);
-            Map<String, Map<String, Boolean>> tableGenerated = loadTableGenerated(dataSource, existedTables);
+            Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(connection, existedTables);
+            Map<String, Map<String, Boolean>> tableGenerated = loadTableGenerated(connection, existedTables);
             preparedStatement.setString(1, connection.getCatalog());
             preparedStatement.setString(2, "PUBLIC");
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -113,11 +113,9 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
                 : String.format(TABLE_META_DATA_SQL_WITH_EXISTED_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
 
-    private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
+    private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final Connection connection, final Collection<String> tableNames) throws SQLException {
         Map<String, Collection<IndexMetaData>> result = new HashMap<>();
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
             preparedStatement.setString(1, connection.getCatalog());
             preparedStatement.setString(2, "PUBLIC");
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -148,11 +146,9 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
                 : String.format(PRIMARY_KEY_META_DATA_SQL_WITH_EXISTED_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
 
-    private Map<String, Collection<String>> loadTablePrimaryKeys(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
+    private Map<String, Collection<String>> loadTablePrimaryKeys(final Connection connection, final Collection<String> tableNames) throws SQLException {
         Map<String, Collection<String>> result = new HashMap<>();
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyMetaDataSQL(tableNames))) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyMetaDataSQL(tableNames))) {
             preparedStatement.setString(1, connection.getCatalog());
             preparedStatement.setString(2, "PUBLIC");
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -171,12 +167,9 @@ public final class H2TableMetaDataLoader implements DialectTableMetaDataLoader {
                 : String.format(GENERATED_INFO_SQL_WITH_EXISTED_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
 
-    private Map<String, Map<String, Boolean>> loadTableGenerated(final DataSource dataSource, final Collection<String> tableNames) throws SQLException {
-
+    private Map<String, Map<String, Boolean>> loadTableGenerated(final Connection connection, final Collection<String> tableNames) throws SQLException {
         Map<String, Map<String, Boolean>> result = new HashMap<>();
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(getGeneratedInfoSQL(tableNames))) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getGeneratedInfoSQL(tableNames))) {
             preparedStatement.setString(1, connection.getCatalog());
             preparedStatement.setString(2, "PUBLIC");
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
