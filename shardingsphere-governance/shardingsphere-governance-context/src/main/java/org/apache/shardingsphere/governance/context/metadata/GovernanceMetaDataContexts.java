@@ -19,6 +19,7 @@ package org.apache.shardingsphere.governance.context.metadata;
 
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
+import org.apache.shardingsphere.governance.core.event.model.auth.PrivilegeChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangeCompletedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
@@ -47,6 +48,10 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.auth.Authentication;
+import org.apache.shardingsphere.infra.metadata.auth.builder.PrivilegeBuilder;
+import org.apache.shardingsphere.infra.metadata.auth.builder.PrivilegeMerger;
+import org.apache.shardingsphere.infra.metadata.auth.builder.loader.PrivilegeLoader;
+import org.apache.shardingsphere.infra.metadata.auth.builder.loader.PrivilegeLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
@@ -212,6 +217,37 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         DefaultAuthentication authentication = new DefaultAuthentication(getNewUsers(users));
         authentication.getAuthentication().putAll(getModifiedUsers(users));
         metaDataContexts = new StandardMetaDataContexts(metaDataContexts.getMetaDataMap(), metaDataContexts.getExecutorEngine(), authentication, metaDataContexts.getProps());
+    }
+    
+    /**
+     * Renew privilege.
+     *
+     * @param event privilege changed event
+     */
+    @Subscribe
+    public synchronized void renew(final PrivilegeChangedEvent event) {
+        Collection<ShardingSphereUser> users = event.getUsers();
+        Optional<PrivilegeLoader> loader = PrivilegeLoaderEngine.findPrivilegeLoader(metaDataContexts.getDefaultMetaData().getResource().getDatabaseType());
+        int maxConnectionsSizePerQuery = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
+        if (!loader.isPresent()) {
+            return;
+        }
+        Map<ShardingSphereUser, ShardingSpherePrivilege> result = new LinkedHashMap<>();
+        for (ShardingSphereMetaData each : metaDataContexts.getMetaDataMap().values()) {
+            Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> privileges = PrivilegeBuilder
+                    .build(each.getResource().getAllInstanceDataSources(), users, loader.get(), maxConnectionsSizePerQuery);
+            result.putAll(PrivilegeMerger.merge(privileges, each.getName(), each.getRuleMetaData().getRules()));
+        }
+        for (Entry<ShardingSphereUser, ShardingSpherePrivilege> each : result.entrySet()) {
+            Optional<ShardingSphereUser> user = metaDataContexts.getAuthentication().getAuthentication().keySet().stream().filter(t -> t.getGrantee().equals(t.getGrantee())).findFirst();
+            if (user.isPresent() && null == result.get(each.getKey())) {
+                metaDataContexts.getAuthentication().getAuthentication().remove(user.get());
+            } else if (user.isPresent() && null != result.get(each.getKey())) {
+                metaDataContexts.getAuthentication().getAuthentication().put(user.get(), each.getValue());
+            } else if (!user.isPresent() && null != result.get(each.getKey())) {
+                metaDataContexts.getAuthentication().getAuthentication().put(each.getKey(), each.getValue());
+            }
+        }
     }
     
     /**

@@ -86,7 +86,16 @@ public final class PrivilegeBuilder {
         return PrivilegeMerger.merge(result, metaData.getName(), metaData.getRuleMetaData().getRules());
     }
     
-    private static Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> build(final Collection<DataSource> dataSources,
+    /**
+     * Build privileges.
+     *
+     * @param dataSources data sources
+     * @param users users
+     * @param loader loader
+     * @param maxConnectionsSizePerQuery max connections size per query
+     * @return privilege map
+     */
+    public static Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> build(final Collection<DataSource> dataSources,
                                                                                       final Collection<ShardingSphereUser> users, final PrivilegeLoader loader, final int maxConnectionsSizePerQuery) {
         Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> result = new LinkedHashMap<>(users.size(), 1);
         ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CPU_CORES * 2, dataSources.size() * maxConnectionsSizePerQuery));

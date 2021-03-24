@@ -44,6 +44,7 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.auth.refresher.event.CreateUserEvent;
+import org.apache.shardingsphere.infra.metadata.auth.refresher.event.GrantEvent;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
@@ -187,6 +188,13 @@ public final class RegistryCenter {
     private void persistAuthentication(final Collection<ShardingSphereUser> users, final boolean isOverwrite) {
         if (!users.isEmpty() && (isOverwrite || !hasAuthentication())) {
             repository.persist(node.getAuthenticationPath(),
+                    YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
+        }
+    }
+    
+    private void persistChangedAuthentication(final Collection<ShardingSphereUser> users, final boolean isOverwrite) {
+        if (!users.isEmpty() && (isOverwrite || !hasAuthentication())) {
+            repository.persist(node.getAuthenticationNodesPath(),
                     YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
         }
     }
@@ -451,6 +459,17 @@ public final class RegistryCenter {
     @Subscribe
     public synchronized void renew(final CreateUserEvent event) {
         persistAuthentication(event.getUsers(), true);
+        persistChangedAuthentication(event.getUsers(), true);
+    }
+    
+    /**
+     * User with changed privilege cached event.
+     *
+     * @param event grant event
+     */
+    @Subscribe
+    public synchronized void renew(final GrantEvent event) {
+        persistChangedAuthentication(event.getUsers(), true);
     }
     
     /**
