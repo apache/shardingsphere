@@ -7,8 +7,8 @@ import org.apache.calcite.rex.RexDynamicParam;
 import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.shardingsphere.infra.optimize.rel.logical.LogicalMergeSort;
 import org.apache.shardingsphere.infra.optimize.rel.logical.LogicalScan;
-import org.apache.shardingsphere.infra.optimize.rel.physical.SSMergeSort;
 
 import java.math.BigDecimal;
 import java.util.function.Predicate;
@@ -31,10 +31,10 @@ public final class PushSortToMultiRoutingRule extends PushSortToScanRule {
         LogicalSort sort = call.rel(0);
         LogicalScan scan = call.rel(1);
         RexBuilder rexBuilder = sort.getCluster().getRexBuilder();
-        SSMergeSort mergeSort;
+        LogicalMergeSort mergeSort;
         if (sort.fetch == null) {
             LogicalScan logicalScan = pushdownSort(LogicalSort.create(scan, sort.getCollation(), null, null), scan);
-            mergeSort = SSMergeSort.create(sort.getTraitSet(), logicalScan, sort.collation);
+            mergeSort = LogicalMergeSort.create(sort.getTraitSet(), logicalScan, sort.collation);
         } else {
             RexNode fetchRex;
             if (sort.offset instanceof RexDynamicParam || sort.fetch instanceof RexDynamicParam) {
@@ -45,7 +45,7 @@ public final class PushSortToMultiRoutingRule extends PushSortToScanRule {
                 fetchRex = rexBuilder.makeBigintLiteral(new BigDecimal(offset + fetch)); 
             }
             LogicalScan logicalScan = pushdownSort(LogicalSort.create(scan, sort.getCollation(), null, fetchRex), scan);
-            mergeSort = SSMergeSort.create(sort.getTraitSet(), logicalScan, sort.collation, sort.offset, sort.fetch);
+            mergeSort = LogicalMergeSort.create(sort.getTraitSet(), logicalScan, sort.collation, sort.offset, sort.fetch);
         }
         call.transformTo(mergeSort);
     }
