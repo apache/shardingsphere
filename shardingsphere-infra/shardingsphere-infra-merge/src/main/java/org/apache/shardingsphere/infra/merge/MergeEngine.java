@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.merge;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -27,11 +28,10 @@ import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMergerEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Merge engine.
@@ -49,9 +48,6 @@ public final class MergeEngine {
     static {
         ShardingSphereServiceLoader.register(ResultProcessEngine.class);
     }
-    
-    @SuppressWarnings("rawtypes")
-    private static final Map<Collection<ShardingSphereRule>, Map<ShardingSphereRule, ResultProcessEngine>> RULES_TO_ENGINES_MAP = new ConcurrentHashMap<>(32, 1);
     
     private final DatabaseType databaseType;
     
@@ -66,7 +62,7 @@ public final class MergeEngine {
         this.databaseType = databaseType;
         this.schema = schema;
         this.props = props;
-        engines = RULES_TO_ENGINES_MAP.computeIfAbsent(rules, key -> OrderedSPIRegistry.getRegisteredServices(key, ResultProcessEngine.class));
+        engines = OrderedSPIRegistry.getRegisteredServices(rules, ResultProcessEngine.class);
     }
     
     /**

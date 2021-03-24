@@ -19,7 +19,7 @@ schemaName: encrypt
 
 dataSources:
   encrypt:
-    url: jdbc:mysql://mysql.encrypt.host:3306/encrypt?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.db.host:3306/encrypt?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000

@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.aware.ResourceAware;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 
@@ -54,18 +53,6 @@ public final class ShardingSphereRulesBuilder {
     public static Collection<ShardingSphereRule> build(final Collection<RuleConfiguration> ruleConfigurations, final DatabaseType databaseType,
                                                        final Map<String, DataSource> dataSourceMap, final String schemaName) {
         Map<RuleConfiguration, ShardingSphereRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(ruleConfigurations, ShardingSphereRuleBuilder.class);
-        setResources(builders.values(), databaseType, dataSourceMap, schemaName);
-        return builders.entrySet().stream().map(entry -> entry.getValue().build(entry.getKey())).collect(Collectors.toList());
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private static void setResources(final Collection<ShardingSphereRuleBuilder> builders, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final String schemaName) {
-        for (ShardingSphereRuleBuilder each : builders) {
-            if (each instanceof ResourceAware) {
-                ((ResourceAware) each).setDatabaseType(databaseType);
-                ((ResourceAware) each).setDataSourceMap(dataSourceMap);
-                ((ResourceAware) each).setSchemaName(schemaName);
-            }
-        }
+        return builders.entrySet().stream().map(entry -> entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey())).collect(Collectors.toList());
     }
 }

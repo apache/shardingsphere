@@ -26,23 +26,40 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class ShardingSphereServiceLoaderTest {
     
     @Test
+    public void assertGetSingletonServiceInstanceWhenIsNotExist() {
+        ShardingSphereServiceLoader.register(Collection.class);
+        Collection<?> collection = ShardingSphereServiceLoader.getSingletonServiceInstances(Collection.class);
+        assertTrue(collection.isEmpty());
+    }
+    
+    @Test
+    public void assertGetSingletonServiceInstanceWhenIsExist() {
+        ShardingSphereServiceLoader.register(TypedSPIFixture.class);
+        Collection<?> collection = ShardingSphereServiceLoader.getSingletonServiceInstances(TypedSPIFixture.class);
+        assertThat(collection.size(), is(1));
+        assertThat(collection.iterator().next(), is(ShardingSphereServiceLoader.getSingletonServiceInstances(TypedSPIFixture.class).iterator().next()));
+    }
+    
+    @Test
     public void assertNewServiceInstanceWhenIsNotExist() {
         ShardingSphereServiceLoader.register(Collection.class);
-        Collection collection = ShardingSphereServiceLoader.newServiceInstances(Collection.class);
+        Collection<?> collection = ShardingSphereServiceLoader.newServiceInstances(Collection.class);
         assertTrue(collection.isEmpty());
     }
     
     @Test
     public void assertNewServiceInstanceWhenIsExist() {
         ShardingSphereServiceLoader.register(TypedSPIFixture.class);
-        Collection collection = ShardingSphereServiceLoader.newServiceInstances(TypedSPIFixture.class);
+        Collection<?> collection = ShardingSphereServiceLoader.newServiceInstances(TypedSPIFixture.class);
         assertThat(collection.size(), is(1));
+        assertThat(collection.iterator().next(), not(ShardingSphereServiceLoader.getSingletonServiceInstances(TypedSPIFixture.class).iterator().next()));
     }
     
     @Test
@@ -65,6 +82,6 @@ public final class ShardingSphereServiceLoaderTest {
         } catch (final InvocationTargetException ex) {
             targetException = ex.getTargetException();
         }
-        assertTrue("expected throw ServiceLoaderInstantiationException", targetException instanceof ServiceLoaderInstantiationException);
+        assertTrue(targetException instanceof ServiceLoaderInstantiationException);
     }
 }

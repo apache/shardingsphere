@@ -41,7 +41,7 @@ public final class PrivilegeLoaderEngine {
      * @return privilege loader
      */
     public static Optional<PrivilegeLoader> findPrivilegeLoader(final DatabaseType databaseType) {
-        for (PrivilegeLoader each : ShardingSphereServiceLoader.newServiceInstances(PrivilegeLoader.class)) {
+        for (PrivilegeLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(PrivilegeLoader.class)) {
             if (each.getDatabaseType().equals(databaseType.getName())) {
                 return Optional.of(each);
             }
