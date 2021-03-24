@@ -25,25 +25,15 @@
     </parent>
     <artifactId>shardingsphere-integration-test-suite</artifactId>
     <name>${project.artifactId}</name>
-    
+
     <dependencies>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-jdbc-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-proxy-bootstrap</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-integration-test-fixture</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>
-        
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -75,201 +65,11 @@
             <artifactId>commons-dbcp2</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+        </dependency>
     </dependencies>
-    
-    <profiles>
-        <profile>
-            <id>it.env.docker</id>
-            <properties>
-                <it.env>DOCKER</it.env>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <configuration>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <descriptors>
-                                <descriptor>src/test/assembly/shardingsphere-proxy-assembly.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>assembly</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>com.spotify</groupId>
-                        <artifactId>dockerfile-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>shardingsphere-proxy-bin</id>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <repository>apache/shardingsphere-proxy-test</repository>
-                            <tag>${project.version}</tag>
-                            <tag>latest</tag>
-                            <buildArgs>
-                                <APP_NAME>${project.build.finalName}</APP_NAME>
-                            </buildArgs>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>com.dkanejs.maven.plugins</groupId>
-                        <artifactId>docker-compose-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>db-up</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>up</goal>
-                                </goals>
-                                <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/db/docker-compose.yml</composeFile>
-                                    <detachedMode>true</detachedMode>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>db-down</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>down</goal>
-                                </goals>
-                                <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/db/docker-compose.yml</composeFile>
-                                    <removeVolumes>true</removeVolumes>
-                                </configuration>
-                            </execution>
-                            
-                            <execution>
-                                <id>tbl-up</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>up</goal>
-                                </goals>
-                                <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/tbl/docker-compose.yml</composeFile>
-                                    <detachedMode>true</detachedMode>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>tbl-down</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>down</goal>
-                                </goals>
-                                <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/tbl/docker-compose.yml</composeFile>
-                                    <removeVolumes>true</removeVolumes>
-                                </configuration>
-                            </execution>
-                            
-                            <execution>
-                                <id>read-write-splitting-up</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>up</goal>
-                                </goals>
-                                <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/read_write_splitting/docker-compose.yml</composeFile>
-                                    <detachedMode>true</detachedMode>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>read-write-splitting-down</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>down</goal>
-                                </goals>
-                                <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/read_write_splitting/docker-compose.yml</composeFile>
-                                    <removeVolumes>true</removeVolumes>
-                                </configuration>
-                            </execution>
-                            
-                            <execution>
-                                <id>dbtbl-with-read-write-splitting-up</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>up</goal>
-                                </goals>
-                                <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/dbtbl_with_read_write_splitting/docker-compose.yml</composeFile>
-                                    <detachedMode>true</detachedMode>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>dbtbl-with-read-write-splitting-down</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>down</goal>
-                                </goals>
-                                <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/dbtbl_with_read_write_splitting/docker-compose.yml</composeFile>
-                                    <removeVolumes>true</removeVolumes>
-                                </configuration>
-                            </execution>
-
-                            <execution>
-                                <id>encrypt-up</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>up</goal>
-                                </goals>
-                                <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/encrypt/docker-compose.yml</composeFile>
-                                    <detachedMode>true</detachedMode>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>encrypt-down</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>down</goal>
-                                </goals>
-                                <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/encrypt/docker-compose.yml</composeFile>
-                                    <removeVolumes>true</removeVolumes>
-                                </configuration>
-                            </execution>
-
-                            <execution>
-                                <id>dbtbl-with-read-write-splitting-and-encrypt-up</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>up</goal>
-                                </goals>
-                                <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/dbtbl_with_read_write_splitting_and_encrypt/docker-compose.yml</composeFile>
-                                    <detachedMode>true</detachedMode>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>dbtbl-with-read-write-splitting-and-encrypt-down</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>down</goal>
-                                </goals>
-                                <configuration>
-                                    <composeFile>${project.basedir}/src/test/resources/docker/dbtbl_with_read_write_splitting_and_encrypt/docker-compose.yml</composeFile>
-                                    <removeVolumes>true</removeVolumes>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
     
     <build>
         <plugins>
