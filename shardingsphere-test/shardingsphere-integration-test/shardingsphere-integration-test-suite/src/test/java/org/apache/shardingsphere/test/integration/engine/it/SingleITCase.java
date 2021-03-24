@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
-import org.apache.shardingsphere.test.integration.engine.junit.ITWatcher;
+import org.apache.shardingsphere.test.integration.junit.watcher.ITWatcher;
 import org.junit.Before;
 import org.junit.Rule;
 
