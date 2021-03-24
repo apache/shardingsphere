@@ -38,8 +38,8 @@ import java.util.Optional;
  */
 public abstract class ShardingSphereStorageContainer extends ShardingSphereContainer {
     
-    @Getter
     @XmlResource(file = "/env/{scenario}/databases.xml", processor = DatabaseProcessor.class)
+    @Getter
     private Collection<String> databases;
     
     private ImmutableMap<String, DataSource> dataSourceMap;

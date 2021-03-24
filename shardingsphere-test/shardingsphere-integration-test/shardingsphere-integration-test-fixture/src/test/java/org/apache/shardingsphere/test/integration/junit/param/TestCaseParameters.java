@@ -24,10 +24,13 @@ import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTes
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
 
+/**
+ * Test case parameters.
+ */
+@RequiredArgsConstructor
 @Getter
 @ToString
-@RequiredArgsConstructor
-public class TestCaseParameters {
+public final class TestCaseParameters {
     
     private final String name;
     
@@ -42,5 +45,4 @@ public class TestCaseParameters {
     private final IntegrationTestCase testCase;
     
     private final IntegrationTestCaseAssertion assertion;
-    
 }

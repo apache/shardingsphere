@@ -26,8 +26,11 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.LinkedList;
 
+/**
+ * Database processor.
+ */
 @XmlRootElement(name = "databases")
-public class DatabaseProcessor implements Processor<Collection<String>> {
+public final class DatabaseProcessor implements Processor<Collection<String>> {
     
     @XmlElement(name = "database")
     private final Collection<String> databases = new LinkedList<>();
@@ -37,5 +40,4 @@ public class DatabaseProcessor implements Processor<Collection<String>> {
     public Collection<String> process(final InputStream stream) {
         return ((DatabaseProcessor) JAXBContext.newInstance(DatabaseProcessor.class).createUnmarshaller().unmarshal(stream)).databases;
     }
-    
 }

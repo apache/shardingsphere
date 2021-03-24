@@ -28,8 +28,11 @@ import org.junit.runners.model.Statement;
 
 import java.lang.reflect.Field;
 
+/**
+ * ShardingSphere IT sub runner.
+ */
 @Slf4j
-public class ShardingSphereITSubRunner extends BlockJUnit4ClassRunner {
+public final class ShardingSphereITSubRunner extends BlockJUnit4ClassRunner {
     
     @Getter
     private final TestCaseBeanContext context;
@@ -41,7 +44,7 @@ public class ShardingSphereITSubRunner extends BlockJUnit4ClassRunner {
     
     @Override
     protected Object createTest() throws Exception {
-        final Object testInstance = super.createTest();
+        Object testInstance = super.createTest();
         autowired(testInstance);
         return testInstance;
     }
@@ -71,7 +74,7 @@ public class ShardingSphereITSubRunner extends BlockJUnit4ClassRunner {
                         } else {
                             field.set(testInstance, context.getBean(e.getType()));
                         }
-                    } catch (IllegalAccessException ex) {
+                    } catch (final IllegalAccessException ex) {
                         throw new RuntimeException(ex.getMessage(), ex);
                     }
                 });
@@ -81,7 +84,7 @@ public class ShardingSphereITSubRunner extends BlockJUnit4ClassRunner {
             try {
                 e.getField().setAccessible(true);
                 e.getField().set(testInstance, c);
-            } catch (IllegalAccessException ex) {
+            } catch (final IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
         });
@@ -111,5 +114,4 @@ public class ShardingSphereITSubRunner extends BlockJUnit4ClassRunner {
                 context.getBeanByName("statement")
         );
     }
-    
 }

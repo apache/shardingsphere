@@ -30,8 +30,11 @@ import org.junit.runners.model.Statement;
 
 import java.lang.reflect.Field;
 
+/**
+ * ShardingSphere CI sub runner.
+ */
 @Slf4j
-public class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
+public final class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
     
     private final TestCaseBeanContext context;
     
@@ -45,8 +48,8 @@ public class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
     public ShardingSphereCISubRunner(final Class<?> testClass, final TestCaseBeanContext context) throws InitializationError {
         super(testClass);
         this.context = context;
-        this.parameterized = context.getBean(ParameterizedArray.class);
-        this.compose = new ContainerCompose(getTestClass().getName(), getTestClass(), context.getBean(TestCaseDescription.class), context);
+        parameterized = context.getBean(ParameterizedArray.class);
+        compose = new ContainerCompose(getTestClass().getName(), getTestClass(), context.getBean(TestCaseDescription.class), context);
     }
     
     @Override
@@ -64,7 +67,7 @@ public class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
                         } else {
                             field.set(testInstance, context.getBean(e.getType()));
                         }
-                    } catch (IllegalAccessException ex) {
+                    } catch (final IllegalAccessException ex) {
                         throw new RuntimeException(ex.getMessage(), ex);
                     }
                 });
@@ -114,5 +117,4 @@ public class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
                 context.getBeanByName("statement")
         );
     }
-    
 }

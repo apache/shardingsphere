@@ -31,7 +31,6 @@ import org.apache.shardingsphere.test.integration.junit.annotation.BeforeAllCase
 import org.apache.shardingsphere.test.integration.junit.annotation.ParameterFilter;
 import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
 import org.apache.shardingsphere.test.integration.junit.compose.ContainerCompose;
-import org.apache.shardingsphere.test.integration.junit.compose.NotSupportedException;
 import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.junit.param.TestCaseParameters;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
@@ -54,7 +53,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class ShardingSphereRunner extends Suite {
+public final class ShardingSphereRunner extends Suite {
     
     private final List<Runner> runners;
     
@@ -81,7 +80,7 @@ public class ShardingSphereRunner extends Suite {
     }
     
     private List<Runner> createITRunners(final TestCaseSpec testCaseSpec) {
-        final Predicate<TestCaseBeanContext> predicate = createTestCaseParametersPredicate();
+        Predicate<TestCaseBeanContext> predicate = createTestCaseParametersPredicate();
         TestCaseDescription description = TestCaseDescription.fromSystemProps(testCaseSpec).build();
         beanContext.registerBean(TestCaseDescription.class, description);
         compose = new ContainerCompose(caseName, getTestClass(), description, beanContext);
@@ -95,7 +94,7 @@ public class ShardingSphereRunner extends Suite {
                 .map(e -> {
                     try {
                         return new ShardingSphereITSubRunner(getTestClass().getJavaClass(), e);
-                    } catch (InitializationError ex) {
+                    } catch (final InitializationError ex) {
                         throw new RuntimeException("Initialization Error", ex);
                     }
                 })
@@ -103,10 +102,10 @@ public class ShardingSphereRunner extends Suite {
     }
     
     private List<Runner> createCIRunners(final TestCaseSpec testCaseSpec) {
-        final Predicate<TestCaseBeanContext> predicate = createTestCaseParametersPredicate();
+        Predicate<TestCaseBeanContext> predicate = createTestCaseParametersPredicate();
         return allCIParameters(testCaseSpec).stream()
                 .map(e -> {
-                    final TestCaseDescription description = TestCaseDescription.builder()
+                    TestCaseDescription description = TestCaseDescription.builder()
                             .sqlCommandType(testCaseSpec.sqlCommandType())
                             .executionMode(testCaseSpec.executionMode())
                             .adapter(e.getAdapter())
@@ -114,7 +113,7 @@ public class ShardingSphereRunner extends Suite {
                             .scenario(e.getScenario())
                             .build();
                     IntegrationTestCase testCase = e.getTestCaseContext().getTestCase();
-                    final TestCaseBeanContext context = beanContext.subContext();
+                    TestCaseBeanContext context = beanContext.subContext();
                     context.registerBean(ParameterizedArray.class, e);
                     context.registerBean(TestCaseDescription.class, description);
                     TestCaseParameters testCaseParameters;
@@ -136,7 +135,7 @@ public class ShardingSphereRunner extends Suite {
                 .map(e -> {
                     try {
                         return new ShardingSphereCISubRunner(getTestClass().getJavaClass(), e);
-                    } catch (InitializationError initializationError) {
+                    } catch (final InitializationError initializationError) {
                         throw new RuntimeException(initializationError);
                     }
                 })
@@ -154,11 +153,11 @@ public class ShardingSphereRunner extends Suite {
     
     private Predicate<TestCaseBeanContext> createTestCaseParametersPredicate() {
         ParameterFilter filter = getTestClass().getAnnotation(ParameterFilter.class);
-        final Predicate<TestCaseBeanContext> predicate;
+        Predicate<TestCaseBeanContext> predicate;
         if (Objects.nonNull(filter)) {
             Class<? extends ParameterFilter.Filter> filtered = filter.filter();
             try {
-                final ParameterFilter.Filter instance = filtered.newInstance();
+                ParameterFilter.Filter instance = filtered.newInstance();
                 predicate = instance::filter;
             } catch (InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
@@ -194,12 +193,12 @@ public class ShardingSphereRunner extends Suite {
             case SINGLE:
                 return getAssertionParameters(getTestClass().getJavaClass(), description);
             default:
-                throw new NotSupportedException();
+                throw new UnsupportedOperationException("");
         }
     }
     
     private Collection<TestCaseParameters> getAssertionParameters(final Class<?> klass, final TestCaseDescription description) {
-        final IntegrationTestCasesLoader testCasesLoader = IntegrationTestCasesLoader.getInstance();
+        IntegrationTestCasesLoader testCasesLoader = IntegrationTestCasesLoader.getInstance();
         return testCasesLoader.getTestCaseContexts(description.getSqlCommandType()).stream()
                 .filter(e -> assertThan(e.getTestCase().getDbTypes(), description.getDatabase()))
                 .filter(e -> assertThan(e.getTestCase().getScenarioTypes(), description.getScenario()))
@@ -256,8 +255,8 @@ public class ShardingSphereRunner extends Suite {
         List<FrameworkMethod> methods = getTestClass().getAnnotatedMethods(BeforeAllCases.class);
         List<Runner> children = getChildren();
         if (!children.isEmpty()) {
-            final Runner runner = children.get(0);
-            final Object testInstance;
+            Runner runner = children.get(0);
+            Object testInstance;
             if (runner instanceof ShardingSphereITSubRunner) {
                 ShardingSphereITSubRunner itRunner = ((ShardingSphereITSubRunner) runner).copySelf();
                 testInstance = itRunner.createTestInstance();
@@ -275,7 +274,7 @@ public class ShardingSphereRunner extends Suite {
                 try {
                     e.invokeExplosively(testInstance);
                     // CHECKSTYLE:OFF
-                } catch (Throwable throwable) {
+                } catch (final Throwable throwable) {
                     // CHECKSTYLE:ON
                     throw new RuntimeException(throwable);
                 }
@@ -297,5 +296,4 @@ public class ShardingSphereRunner extends Suite {
             }
         });
     }
-    
 }

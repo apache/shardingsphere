@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.test.integration.junit.annotation;
 
+/**
+ * Container type.
+ */
 public enum ContainerType {
     
-    ADAPTER,
-    
-    STORAGE,
-    
-    COORDINATOR
+    ADAPTER, STORAGE, COORDINATOR
 }

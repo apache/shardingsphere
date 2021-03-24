@@ -28,10 +28,13 @@ import org.apache.shardingsphere.test.integration.common.ExecutionMode;
 import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITStorageType;
 import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
 
-@Getter
-@Builder
+/**
+ * Test case description.
+ */
 @RequiredArgsConstructor
-public class TestCaseDescription {
+@Builder
+@Getter
+public final class TestCaseDescription {
     
     @NonNull
     private final String database;
@@ -73,12 +76,11 @@ public class TestCaseDescription {
      * @return test instance
      */
     public static TestCaseDescriptionBuilder fromSystemProps(final TestCaseSpec testCaseSpec) {
-        return TestCaseDescription.builder()
+        return builder()
                 .adapter(System.getProperty("it.adapter"))
                 .database(System.getProperty("it.database"))
                 .scenario(System.getProperty("it.scenario"))
                 .executionMode(testCaseSpec.executionMode())
                 .sqlCommandType(testCaseSpec.sqlCommandType());
     }
-    
 }

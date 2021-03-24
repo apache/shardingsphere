@@ -25,6 +25,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Test case specification.
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TestCaseSpec {
@@ -49,5 +52,4 @@ public @interface TestCaseSpec {
      * @return execution mode
      */
     ExecutionMode executionMode() default ExecutionMode.SINGLE;
-    
 }

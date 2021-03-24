@@ -50,9 +50,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-@Slf4j
+/**
+ * Container compose.
+ */
 @RequiredArgsConstructor
-public class ContainerCompose implements Closeable {
+@Slf4j
+public final class ContainerCompose implements Closeable {
     
     private final Network network = Network.newNetwork();
     
@@ -84,9 +87,9 @@ public class ContainerCompose implements Closeable {
     
     @SneakyThrows
     private ShardingSphereContainer createContainer(final FrameworkField field) {
-        final OnContainer metadata = field.getAnnotation(OnContainer.class);
+        OnContainer metadata = field.getAnnotation(OnContainer.class);
         try {
-            final ShardingSphereContainer container = createContainer(metadata);
+            ShardingSphereContainer container = createContainer(metadata);
             if (Objects.isNull(container)) {
                 log.warn("container {} is not activated.", metadata.name());
                 return null;
@@ -105,9 +108,9 @@ public class ContainerCompose implements Closeable {
             log.info("container {} is activated.", metadata.name());
             return container;
             // CHECKSTYLE:OFF
-        } catch (Exception e) {
+        } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            log.error("Failed to instantiate container {}.", metadata.name(), e);
+            log.error("Failed to instantiate container {}.", metadata.name(), ex);
         }
         return null;
     }
@@ -120,7 +123,7 @@ public class ContainerCompose implements Closeable {
             case STORAGE:
                 return createStorageContainer();
             case COORDINATOR:
-                throw new NotSupportedException();
+                throw new UnsupportedOperationException("");
             default:
                 return null;
         }
@@ -149,7 +152,7 @@ public class ContainerCompose implements Closeable {
     }
     
     private void inject(final ShardingSphereContainer container) {
-        final List<Field> fields = Lists.newArrayList();
+        List<Field> fields = Lists.newArrayList();
         for (Class<?> klass = container.getClass(); Objects.nonNull(klass); klass = klass.getSuperclass()) {
             fields.addAll(Arrays.asList(klass.getDeclaredFields()));
         }
@@ -164,7 +167,7 @@ public class ContainerCompose implements Closeable {
                         } else {
                             e.set(container, beanContext.getBean(type));
                         }
-                    } catch (IllegalAccessException illegalAccessException) {
+                    } catch (final IllegalAccessException illegalAccessException) {
                         log.error("Failed to auto inject {}.{}.", container.getContainerName(), e.getName());
                     }
                 });
@@ -185,7 +188,7 @@ public class ContainerCompose implements Closeable {
                     method.invokeExplosively(instance);
                 }
                 // CHECKSTYLE:OFF
-            } catch (Throwable throwable) {
+            } catch (final Throwable throwable) {
                 // CHECKSTYLE:ON
                 throwable.printStackTrace();
             }
@@ -208,7 +211,7 @@ public class ContainerCompose implements Closeable {
                     try {
                         return !c.isHealthy();
                         // CHECKSTYLE:OFF
-                    } catch (Exception e) {
+                    } catch (final Exception ex) {
                         // CHECKSTYLE:ON
                         return false;
                     }
@@ -217,7 +220,7 @@ public class ContainerCompose implements Closeable {
                     while (!(c.isRunning() && c.isHealthy())) {
                         try {
                             TimeUnit.MILLISECONDS.sleep(200L);
-                        } catch (InterruptedException ignore) {
+                        } catch (final InterruptedException ignored) {
                         
                         }
                     }
@@ -229,5 +232,4 @@ public class ContainerCompose implements Closeable {
     public void close() {
         containers.forEach(Startable::close);
     }
-    
 }
