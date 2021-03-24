@@ -21,7 +21,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.it.SingleIT;
-import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;

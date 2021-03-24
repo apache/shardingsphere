@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit.parallel;
+package org.apache.shardingsphere.test.integration.junit.runner.parallel;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.CaseParallelRunnerExecutor;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.impl.ScenarioParallelRunnerExecutor;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.impl.CaseParallelRunnerExecutor;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.impl.ScenarioParallelRunnerExecutor;
 
 import java.util.Collection;
 import java.util.Map;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.param;
+package org.apache.shardingsphere.test.integration.junit.param;
 
 /**
  * SQL execute type.

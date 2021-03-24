@@ -15,49 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.param.model;
+package org.apache.shardingsphere.test.integration.junit.param.model;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 
 /**
- * Parameterized array.
+ * Parameterized array of case based integration test.
  */
-public interface ParameterizedArray {
+@RequiredArgsConstructor
+@Getter
+public final class CaseParameterizedArray implements ParameterizedArray {
     
-    /**
-     * Get test case context.
-     * 
-     * @return test case context
-     */
-    IntegrationTestCaseContext getTestCaseContext();
+    private final IntegrationTestCaseContext testCaseContext;
     
-    /**
-     * Get adapter.
-     * 
-     * @return adapter
-     */
-    String getAdapter();
+    private final String adapter;
     
-    /**
-     * Get scenario.
-     * 
-     * @return scenario
-     */
-    String getScenario();
+    private final String scenario;
     
-    /**
-     * Get database type.
-     *
-     * @return database type
-     */
-    DatabaseType getDatabaseType();
+    private final DatabaseType databaseType;
     
-    /**
-     * Get SQL command type.
-     *
-     * @return SQL command type
-     */
-    SQLCommandType getSqlCommandType();
+    private final SQLCommandType sqlCommandType;
+    
+    @Override
+    public String toString() {
+        return String.format("%s: %s -> %s -> %s", adapter, scenario, databaseType.getName(), testCaseContext.getTestCase().getSql());
+    }
 }

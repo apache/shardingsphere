@@ -22,10 +22,10 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.it.BatchIT;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelRuntimeStrategy;
-import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.engine.param.model.CaseParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
+import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.junit.param.model.CaseParameterizedArray;
 import org.junit.Test;
 import org.junit.runners.Parameterized.Parameters;
 

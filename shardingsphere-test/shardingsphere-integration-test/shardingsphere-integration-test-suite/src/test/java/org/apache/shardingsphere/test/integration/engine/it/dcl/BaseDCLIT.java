@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.engine.it.dcl;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.MemorizedDataSourceMetaData;
 import org.apache.shardingsphere.test.integration.engine.it.SingleIT;
-import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.authority.AuthorityEnvironmentManager;
 import org.junit.After;

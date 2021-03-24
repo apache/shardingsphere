@@ -15,28 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion;
+package org.apache.shardingsphere.test.integration.junit.runner.parallel;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 
 /**
- * Parallel runtime strategy.
+ * Parallel runner executor.
  */
-@Documented
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-public @interface ParallelRuntimeStrategy {
+public interface ParallelRunnerExecutor {
     
     /**
-     * Get parallel level.
-     * 
-     * @return value parallel level
+     * Execute child statement.
+     *
+     * @param parameterizedArray parameterized array
+     * @param childStatement child statement
      */
-    ParallelLevel value();
+    void execute(ParameterizedArray parameterizedArray, Runnable childStatement);
+    
+    /**
+     * Override to implement any behavior that must occur after all children have been scheduled (for example, waiting for them all to finish).
+     */
+    void finished();
 }

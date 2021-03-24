@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.engine.junit;
-
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelRuntimeStrategy;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.ParallelRunnerScheduler;
-import org.junit.runners.Parameterized;
+package org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion;
 
 /**
- * IT parameterized.
+ * Parallel level.
  */
-public final class ITParameterized extends Parameterized {
+public enum ParallelLevel {
     
-    //CHECKSTYLE:OFF
-    public ITParameterized(final Class<?> klass) throws Throwable {
-        //CHECKSTYLE:ON
-        super(klass);
-        ParallelRuntimeStrategy parallelRuntimeStrategy = klass.getAnnotation(ParallelRuntimeStrategy.class);
-        if (null != parallelRuntimeStrategy) {
-            setScheduler(new ParallelRunnerScheduler(parallelRuntimeStrategy.value()));
-        }
-    }
+    CASE, SCENARIO
 }

@@ -20,12 +20,12 @@ package org.apache.shardingsphere.test.integration.engine.it;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.junit.param.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
-import org.apache.shardingsphere.test.integration.engine.junit.ITWatcher;
-import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.runner.ITWatcher;
+import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 import org.junit.Rule;
 
 import javax.xml.bind.JAXBException;
