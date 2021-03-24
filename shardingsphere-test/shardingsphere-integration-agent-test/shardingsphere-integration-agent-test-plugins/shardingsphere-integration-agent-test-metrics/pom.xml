@@ -98,14 +98,12 @@
                         <executions>
                             <execution>
                                 <id>shardingsphere-proxy-bin</id>
-                                <phase>package</phase>
                                 <goals>
                                     <goal>build</goal>
                                 </goals>
                             </execution>
                         </executions>
                         <configuration>
-                            <skip>false</skip>
                             <repository>apache/shardingsphere-proxy-agent-metrics-test</repository>
                             <tag>${project.version}</tag>
                             <tag>latest</tag>
