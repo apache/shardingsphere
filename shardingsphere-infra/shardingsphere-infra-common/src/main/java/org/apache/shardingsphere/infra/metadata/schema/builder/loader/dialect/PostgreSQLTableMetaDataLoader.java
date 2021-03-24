@@ -109,7 +109,7 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final Set<String> primaryKeys, final ResultSet resultSet) throws SQLException {
         String tableName = resultSet.getString("table_name");
         String columnName = resultSet.getString("column_name");
-        String dataType = resultSet.getString("data_type");
+        String dataType = resultSet.getString("udt_name");
         boolean isPrimaryKey = primaryKeys.contains(tableName + "," + columnName);
         String columnDefault = resultSet.getString("column_default");
         boolean generated = null != columnDefault && columnDefault.startsWith("nextval(");
