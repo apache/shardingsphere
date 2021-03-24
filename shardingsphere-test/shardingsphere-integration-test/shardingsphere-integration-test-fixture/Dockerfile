@@ -22,13 +22,8 @@ ARG APP_NAME
 ADD target/${APP_NAME}.tar.gz /opt
 RUN mv /opt/${APP_NAME} /opt/shardingsphere-proxy
 
-# ADD ./target/shardingsphere-agent.tar.gz /opt/shardingsphere-proxy/shardingsphere-agent
-
 EXPOSE 3307
 EXPOSE 3308
-
-#HEALTHCHECK --interval=1ms --timeout=60s --retries=1 \
-#    CMD (tail -f -n200 /opt/shardingsphere-proxy/logs/stdout.log |grep -q "ShardingSphere-Proxy start success")
 
 WORKDIR /opt/shardingsphere-proxy
 
