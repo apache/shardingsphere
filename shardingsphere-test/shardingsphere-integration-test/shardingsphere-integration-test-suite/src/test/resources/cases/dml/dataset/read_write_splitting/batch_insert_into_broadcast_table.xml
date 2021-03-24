@@ -20,7 +20,7 @@
         <column name="id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
-    <row data-node="write_ds.t_broadcast_table" values="1, init_read" />
+    <row data-node="write_ds.t_broadcast_table" values="1, init" />
     <row data-node="write_ds.t_broadcast_table" values="2, insert" />
     <row data-node="write_ds.t_broadcast_table" values="3, insert" />
 </dataset>

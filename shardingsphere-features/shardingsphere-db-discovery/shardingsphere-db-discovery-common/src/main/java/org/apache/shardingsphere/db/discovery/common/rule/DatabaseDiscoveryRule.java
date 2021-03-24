@@ -105,13 +105,13 @@ public final class DatabaseDiscoveryRule implements DataSourceContainedRule, Sta
         }
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
             String groupName = entry.getKey();
-            DatabaseDiscoveryDataSourceRule databaseDiscoveryDataSourceRule = entry.getValue();
-            DatabaseDiscoveryType databaseDiscoveryType = databaseDiscoveryDataSourceRule.getDatabaseDiscoveryType();
+            DatabaseDiscoveryDataSourceRule dbDiscoveryDataSourceRule = entry.getValue();
+            DatabaseDiscoveryType databaseDiscoveryType = dbDiscoveryDataSourceRule.getDatabaseDiscoveryType();
             Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
-            Collection<String> disabledDataSourceNames = databaseDiscoveryDataSourceRule.getDisabledDataSourceNames();
-            String primaryDataSourceName = databaseDiscoveryDataSourceRule.getPrimaryDataSourceName();
+            Collection<String> disabledDataSourceNames = dbDiscoveryDataSourceRule.getDisabledDataSourceNames();
+            String primaryDataSourceName = dbDiscoveryDataSourceRule.getPrimaryDataSourceName();
             databaseDiscoveryType.updatePrimaryDataSource(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
-            databaseDiscoveryDataSourceRule.updatePrimaryDataSourceName(databaseDiscoveryType.getPrimaryDataSource());
+            dbDiscoveryDataSourceRule.updatePrimaryDataSourceName(databaseDiscoveryType.getPrimaryDataSource());
             databaseDiscoveryType.updateMemberState(originalDataSourceMap, schemaName, disabledDataSourceNames);
             try {
                 databaseDiscoveryType.checkDatabaseDiscoveryConfig(dataSourceMap, schemaName);

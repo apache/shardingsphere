@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
 import org.apache.shardingsphere.infra.hint.HintManager;
+import org.apache.shardingsphere.infra.transaction.TransactionHolder;
 import org.apache.shardingsphere.readwrite.splitting.common.rule.ReadWriteSplittingDataSourceRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
@@ -70,7 +71,8 @@ public final class ReadWriteSplittingDataSourceRouter {
     }
     
     private boolean isPrimaryRoute(final SQLStatement sqlStatement) {
-        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement) || PrimaryVisitedManager.getPrimaryVisited() || HintManager.isWriteRouteOnly();
+        return containsLockSegment(sqlStatement) || !(sqlStatement instanceof SelectStatement)
+                || PrimaryVisitedManager.getPrimaryVisited() || HintManager.isWriteRouteOnly() || TransactionHolder.isTransaction();
     }
     
     private boolean containsLockSegment(final SQLStatement sqlStatement) {

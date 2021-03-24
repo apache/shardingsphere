@@ -15,37 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.aware;
+package org.apache.shardingsphere.infra.spi.ordered.cache;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.Map;
 
 /**
- * Resource aware.
+ * Cached ordered services.
  */
-public interface ResourceAware {
+@RequiredArgsConstructor
+@Getter
+public final class CachedOrderedServices {
     
-    /**
-     * Set database type.
-     * 
-     * @param databaseType database type
-     */
-    void setDatabaseType(DatabaseType databaseType);
+    private final Collection<?> types;
     
-    /**
-     * Set data source map.
-     * 
-     * @param dataSourceMap data source map
-     */
-    void setDataSourceMap(Map<String, DataSource> dataSourceMap);
-    
-    /**
-     * Set schema name.
-     *
-     * @param schemaName schema name
-     */
-    default void setSchemaName(String schemaName) {
-    }
+    private final Map<?, ?> services;
 }

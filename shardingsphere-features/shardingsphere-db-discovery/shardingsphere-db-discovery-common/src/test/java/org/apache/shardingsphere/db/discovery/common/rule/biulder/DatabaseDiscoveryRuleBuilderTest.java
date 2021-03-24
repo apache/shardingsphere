@@ -20,6 +20,7 @@ package org.apache.shardingsphere.db.discovery.common.rule.biulder;
 import org.apache.shardingsphere.db.discovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.db.discovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.db.discovery.common.rule.DatabaseDiscoveryRule;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
@@ -42,16 +43,14 @@ public final class DatabaseDiscoveryRuleBuilderTest {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void assertBuild() {
         DatabaseDiscoveryRuleConfiguration ruleConfig = mock(DatabaseDiscoveryRuleConfiguration.class);
-        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration(
-                "name", Collections.singletonList("name"), "discoveryTypeName");
+        DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "discoveryTypeName");
         when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(dataSourceRuleConfig));
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
+        Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("primaryDataSourceName", mock(DataSource.class));
-        ((DatabaseDiscoveryRuleBuilder) builder).setDataSourceMap(dataSourceMap);
-        assertThat(builder.build(ruleConfig), instanceOf(DatabaseDiscoveryRule.class));
+        assertThat(builder.build("test_schema", dataSourceMap, mock(DatabaseType.class), ruleConfig), instanceOf(DatabaseDiscoveryRule.class));
     }
 }
