@@ -19,6 +19,11 @@ package org.apache.shardingsphere.test.integration.junit.processor;
 
 import java.io.InputStream;
 
+/**
+ * Processor.
+ * 
+ * @param <T> type of configuration bean
+ */
 public interface Processor<T> {
     
     /**
@@ -28,5 +33,4 @@ public interface Processor<T> {
      * @return configuration bean
      */
     T process(InputStream stream);
-    
 }

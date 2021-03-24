@@ -52,7 +52,6 @@ public final class ParameterizedArrayFactory {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
-   
     /**
      * Get assertion parameterized array.
      *

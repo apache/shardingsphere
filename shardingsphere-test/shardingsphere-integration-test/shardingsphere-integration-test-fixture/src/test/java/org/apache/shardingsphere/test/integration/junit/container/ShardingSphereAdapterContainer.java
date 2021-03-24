@@ -26,6 +26,9 @@ import org.apache.shardingsphere.test.integration.junit.processor.Authentication
 
 import javax.sql.DataSource;
 
+/**
+ * ShardingSphere adapter container.
+ */
 @Slf4j
 public abstract class ShardingSphereAdapterContainer extends ShardingSphereContainer {
     
@@ -51,5 +54,4 @@ public abstract class ShardingSphereAdapterContainer extends ShardingSphereConta
      * @return DataSource
      */
     public abstract DataSource getDataSource();
-    
 }

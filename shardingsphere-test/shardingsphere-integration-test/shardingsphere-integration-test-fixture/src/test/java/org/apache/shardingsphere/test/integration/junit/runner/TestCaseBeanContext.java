@@ -22,7 +22,10 @@ import org.apache.curator.shaded.com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Objects;
 
-public class TestCaseBeanContext {
+/**
+ * Test case bean context.
+ */
+public final class TestCaseBeanContext {
     
     private final Map<Object, Object> classObjectMap = Maps.newConcurrentMap();
     

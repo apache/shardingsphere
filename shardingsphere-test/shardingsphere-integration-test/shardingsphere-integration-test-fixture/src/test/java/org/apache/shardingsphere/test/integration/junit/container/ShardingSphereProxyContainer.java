@@ -28,8 +28,11 @@ import javax.sql.DataSource;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * ShardingSphere proxy container.
+ */
 @Slf4j
-public class ShardingSphereProxyContainer extends ShardingSphereAdapterContainer {
+public final class ShardingSphereProxyContainer extends ShardingSphereAdapterContainer {
     
     private static final String AGENT_HOME_IN_CONTAINER = "/usr/local/shardingsphere-agent";
     
@@ -78,7 +81,7 @@ public class ShardingSphereProxyContainer extends ShardingSphereAdapterContainer
     @Override
     protected void configure() {
         withConfMapping("/docker/" + getDescription().getScenario() + "/proxy/conf");
-        super.setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*ShardingSphere-Proxy start success.*"));
+        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*ShardingSphere-Proxy start success.*"));
         super.configure();
     }
     
@@ -117,5 +120,4 @@ public class ShardingSphereProxyContainer extends ShardingSphereAdapterContainer
         return String.format("jdbc:mysql://%s:%s/%s?useServerPrepStmts=true&serverTimezone=UTC&useSSL=false&useLocalSessionState=true&characterEncoding=utf-8",
                 getHost(), getMappedPort(3307), getDescription().getScenario());
     }
-    
 }

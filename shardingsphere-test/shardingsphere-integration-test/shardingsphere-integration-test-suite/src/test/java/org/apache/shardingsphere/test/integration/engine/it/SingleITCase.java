@@ -39,5 +39,4 @@ public abstract class SingleITCase extends BaseITCase {
     public void setup() {
         dataSet = null == getAssertion() ? null : DataSetLoader.load(getParentPath(), getDescription().getScenario(), getDescription().getDatabaseType(), getAssertion().getExpectedDataFile());
     }
-    
 }

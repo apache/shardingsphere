@@ -36,18 +36,17 @@ public final class ITWatcher extends TestWatcher {
         super.failed(ex, description);
     }
     
-    private String stackTrace(final Throwable t) {
-        if (t == null) {
+    private String stackTrace(final Throwable cause) {
+        if (null == cause) {
             return "";
         }
-        //CHECKSTYLE:OFF
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
-             PrintStream ps = new PrintStream(out)) {
-            t.printStackTrace(ps);
-            ps.flush();
+             PrintStream printStream = new PrintStream(out)) {
+            cause.printStackTrace(printStream);
+            printStream.flush();
             return new String(out.toByteArray());
-        } catch (Exception ignored) {
-            // ignored
+            //CHECKSTYLE:OFF
+        } catch (final Exception ignored) {
             //CHECKSTYLE:ON
         }
         return "";

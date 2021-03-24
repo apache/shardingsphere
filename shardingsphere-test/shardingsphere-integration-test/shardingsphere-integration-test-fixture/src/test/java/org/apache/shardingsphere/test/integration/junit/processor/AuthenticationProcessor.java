@@ -27,7 +27,10 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 
 import java.io.InputStream;
 
-public class AuthenticationProcessor implements Processor<AuthenticationProcessor.Authentication> {
+/**
+ * Authentication processor.
+ */
+public final class AuthenticationProcessor implements Processor<AuthenticationProcessor.Authentication> {
     
     @Override
     @SneakyThrows
@@ -37,13 +40,12 @@ public class AuthenticationProcessor implements Processor<AuthenticationProcesso
         return new Authentication("root", user.getPassword());
     }
     
-    @Getter
     @RequiredArgsConstructor
+    @Getter
     public static class Authentication {
         
         private final String user;
         
         private final String password;
-    
     }
 }

@@ -24,6 +24,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Parameter filter.
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ParameterFilter {
@@ -44,6 +47,5 @@ public @interface ParameterFilter {
          * @return false if ignore
          */
         boolean filter(TestCaseBeanContext context);
-        
     }
 }

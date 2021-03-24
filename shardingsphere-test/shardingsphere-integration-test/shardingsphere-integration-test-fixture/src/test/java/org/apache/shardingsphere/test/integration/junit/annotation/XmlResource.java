@@ -24,6 +24,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * XML resource.
+ */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface XmlResource {
@@ -38,8 +41,7 @@ public @interface XmlResource {
     /**
      * Specify the processor of resource.
      *
-     * @return prceossor
+     * @return processor
      */
     Class<? extends Processor> processor();
-    
 }

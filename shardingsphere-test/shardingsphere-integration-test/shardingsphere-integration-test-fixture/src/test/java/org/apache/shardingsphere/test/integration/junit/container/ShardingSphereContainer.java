@@ -50,6 +50,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * ShardingSphere container.
+ */
 @Slf4j
 public abstract class ShardingSphereContainer extends GenericContainer<ShardingSphereContainer> {
     
@@ -80,7 +83,7 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     
     @Override
     public void start() {
-        resolveXmlResource(this.getClass());
+        resolveXmlResource(getClass());
         configure();
         startDependencies();
         if (!isFakeContainer) {
@@ -90,7 +93,7 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     }
     
     private void startDependencies() {
-        final List<ShardingSphereContainer> dependencies = getDependencies().stream()
+        List<ShardingSphereContainer> dependencies = getDependencies().stream()
                 .map(e -> (ShardingSphereContainer) e)
                 .collect(Collectors.toList());
         dependencies.stream()
@@ -101,9 +104,9 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
                     try {
                         return !c.isHealthy();
                         // CHECKSTYLE:OFF
-                    } catch (Exception e) {
+                    } catch (final Exception ex) {
                         // CHECKSTYLE:ON
-                        log.warn("Failed to check container {} healthy.", c.getDockerName(), e);
+                        log.warn("Failed to check container {} healthy.", c.getDockerName(), ex);
                         return false;
                     }
                 })
@@ -161,6 +164,5 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     }
     
     protected void execute() {
-    
     }
 }

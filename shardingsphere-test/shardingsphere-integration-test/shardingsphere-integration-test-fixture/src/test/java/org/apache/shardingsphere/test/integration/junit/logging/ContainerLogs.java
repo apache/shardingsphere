@@ -28,8 +28,11 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.output.BaseConsumer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 
+/**
+ * Container logs.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ContainerLogs {
+public final class ContainerLogs {
     
     /**
      * Create new log consumer.
@@ -38,22 +41,18 @@ public class ContainerLogs {
      * @return log consumer
      */
     public static BaseConsumer<?> newConsumer(final String serviceName) {
-        final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         PatternLayoutEncoder encoder = new PatternLayoutEncoder();
         encoder.setContext(context);
         encoder.setPattern("%d{yyyy-MM-dd HH:mm:ss.SSS} %msg%n");
         encoder.start();
-        
-        final ConsoleAppender<ILoggingEvent> fileAppender = new ConsoleAppender<>();
+        ConsoleAppender<ILoggingEvent> fileAppender = new ConsoleAppender<>();
         fileAppender.setEncoder(encoder);
         fileAppender.start();
-        
-        final ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(serviceName);
+        ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(serviceName);
         logger.addAppender(fileAppender);
         logger.setLevel(Level.DEBUG);
         logger.setAdditive(false);
-        
         Slf4jLogConsumer consumer = new Slf4jLogConsumer(logger, true);
         consumer.withPrefix(serviceName);
         return consumer;

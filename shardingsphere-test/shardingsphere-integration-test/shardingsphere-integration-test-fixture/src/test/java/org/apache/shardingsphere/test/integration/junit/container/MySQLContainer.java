@@ -24,9 +24,9 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import java.util.Optional;
 
 /**
- * MySQL Server Container.
+ * MySQL Container.
  */
-public class MySQLContainer extends ShardingSphereStorageContainer {
+public final class MySQLContainer extends ShardingSphereStorageContainer {
     
     public MySQLContainer() {
         super("mysql/mysql-server:5.7", new MySQLDatabaseType());

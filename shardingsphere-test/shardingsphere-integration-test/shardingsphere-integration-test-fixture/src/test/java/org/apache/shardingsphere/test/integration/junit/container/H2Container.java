@@ -24,7 +24,10 @@ import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualD
 import javax.sql.DataSource;
 import java.util.Map;
 
-public class H2Container extends ShardingSphereStorageContainer {
+/**
+ * H2 container.
+ */
+public final class H2Container extends ShardingSphereStorageContainer {
     
     private volatile Map<String, DataSource> actualDataSources;
     

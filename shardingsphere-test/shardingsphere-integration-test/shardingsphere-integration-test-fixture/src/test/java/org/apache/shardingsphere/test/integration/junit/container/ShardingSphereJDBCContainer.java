@@ -33,8 +33,11 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+/**
+ * ShardingSphere JDBC container.
+ */
 @Slf4j
-public class ShardingSphereJDBCContainer extends ShardingSphereAdapterContainer {
+public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterContainer {
     
     private final AtomicBoolean isHealthy = new AtomicBoolean();
     
@@ -56,16 +59,13 @@ public class ShardingSphereJDBCContainer extends ShardingSphereAdapterContainer 
     }
     
     /**
-     * Get DataSource.
+     * Get data source.
      *
-     * @return DataSource
+     * @return data source
      */
     public DataSource getDataSource() {
         try {
-            return YamlShardingSphereDataSourceFactory.createDataSource(
-                    dataSourceMap,
-                    new File(EnvironmentPath.getRulesConfigurationFile(getDescription().getScenario()))
-            );
+            return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(getDescription().getScenario())));
         } catch (SQLException | IOException ex) {
             throw new RuntimeException(ex);
         }

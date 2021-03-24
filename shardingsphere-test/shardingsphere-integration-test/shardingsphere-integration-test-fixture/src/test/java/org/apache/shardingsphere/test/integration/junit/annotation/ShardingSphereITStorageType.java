@@ -22,6 +22,9 @@ import org.apache.shardingsphere.test.integration.junit.container.H2Container;
 import org.apache.shardingsphere.test.integration.junit.container.MySQLContainer;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereStorageContainer;
 
+/**
+ * ShardingSphere IT storage type.
+ */
 public enum ShardingSphereITStorageType {
     
     MySQL(MySQLContainer.class),
