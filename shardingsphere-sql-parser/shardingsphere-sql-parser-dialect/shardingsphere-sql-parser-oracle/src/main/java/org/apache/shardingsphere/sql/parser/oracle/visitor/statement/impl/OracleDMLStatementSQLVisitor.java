@@ -498,7 +498,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
                 result.getUpdate().setWhere((WhereSegment) visit(ctx.mergeUpdateClause().whereClause()));
             }
             if (null != ctx.mergeUpdateClause().deleteWhereClause()) {
-                result.getUpdate().setWhere((WhereSegment) visit(ctx.mergeUpdateClause().deleteWhereClause()));
+                result.getDelete().setWhere((WhereSegment) visit(ctx.mergeUpdateClause().deleteWhereClause()));
             }
         }
         return result;
@@ -547,13 +547,13 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     
     @Override
     public ASTNode visitMergeUpdateClause(final MergeUpdateClauseContext ctx) {
-        OracleUpdateStatement result = new OracleUpdateStatement();
-        result.setSetAssignment((SetAssignmentSegment) visit(ctx.mergeSetAssignmentsClause()));
+        OracleMergeStatement result = new OracleMergeStatement();
+        result.getUpdate().setSetAssignment((SetAssignmentSegment) visit(ctx.mergeSetAssignmentsClause()));
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.getUpdate().setWhere((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.deleteWhereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.deleteWhereClause()));
+            result.getDelete().setWhere((WhereSegment) visit(ctx.deleteWhereClause()));
         }
         return result;
     }

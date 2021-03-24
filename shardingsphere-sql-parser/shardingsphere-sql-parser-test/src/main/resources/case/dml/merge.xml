@@ -112,38 +112,40 @@
                 </right>
             </binary-operation-expression>
         </expr>
-        <set start-index="113" stop-index="191">
-            <assignment start-index="113" stop-index="141">
-                <column name="first_name" start-index="113" stop-index="125">
-                    <owner name="pt" start-index="113" stop-index="114" />
-                </column>
-                <assignment-value>
-                    <column name="first_name" start-index="129" stop-index="141">
-                        <owner name="ps" start-index="129" stop-index="130" />
+        <update>
+            <set start-index="113" stop-index="191">
+                <assignment start-index="113" stop-index="141">
+                    <column name="first_name" start-index="113" stop-index="125">
+                        <owner name="pt" start-index="113" stop-index="114" />
                     </column>
-                </assignment-value>
-            </assignment>
-            <assignment start-index="144" stop-index="170">
-                <column name="last_name" start-index="144" stop-index="155">
-                    <owner name="pt" start-index="144" stop-index="145" />
-                </column>
-                <assignment-value>
-                    <column name="last_name" start-index="159" stop-index="170">
-                        <owner name="ps" start-index="159" stop-index="160" />
+                    <assignment-value>
+                        <column name="first_name" start-index="129" stop-index="141">
+                            <owner name="ps" start-index="129" stop-index="130" />
+                        </column>
+                    </assignment-value>
+                </assignment>
+                <assignment start-index="144" stop-index="170">
+                    <column name="last_name" start-index="144" stop-index="155">
+                        <owner name="pt" start-index="144" stop-index="145" />
                     </column>
-                </assignment-value>
-            </assignment>
-            <assignment start-index="173" stop-index="191">
-                <column name="title" start-index="173" stop-index="180">
-                    <owner name="pt" start-index="173" stop-index="174" />
-                </column>
-                <assignment-value>
-                    <column name="title" start-index="184" stop-index="191">
-                        <owner name="ps" start-index="184" stop-index="185" />
+                    <assignment-value>
+                        <column name="last_name" start-index="159" stop-index="170">
+                            <owner name="ps" start-index="159" stop-index="160" />
+                        </column>
+                    </assignment-value>
+                </assignment>
+                <assignment start-index="173" stop-index="191">
+                    <column name="title" start-index="173" stop-index="180">
+                        <owner name="pt" start-index="173" stop-index="174" />
                     </column>
-                </assignment-value>
-            </assignment>
-        </set>
+                    <assignment-value>
+                        <column name="title" start-index="184" stop-index="191">
+                            <owner name="ps" start-index="184" stop-index="185" />
+                        </column>
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
     </merge>
     <merge sql-case-id="merge_update_table_with_delete">
         <target>
@@ -193,30 +195,34 @@
                 </right>
             </binary-operation-expression>
         </expr>
-        <set start-index="177" stop-index="208">
-            <assignment start-index="177" stop-index="208">
-                <column name="bonus" start-index="177" stop-index="183">
-                    <owner name="D" start-index="177" stop-index="177" />
-                </column>
-                <assignment-value>
-                    <literal-expression value="D.bonus + S.salary*.01" start-index="187" stop-index="208" />
-                </assignment-value>
-            </assignment>
-        </set>
-        <where start-index="210" stop-index="239">
-            <expr>
-                <binary-operation-expression start-index="224" stop-index="238">
-                    <left>
-                        <column name="salary" start-index="224" stop-index="231">
-                            <owner name="S" start-index="224" stop-index="224" />
-                        </column>
-                    </left>
-                    <operator>&gt;</operator>
-                    <right>
-                        <literal-expression value="8000" start-index="235" stop-index="238" />
-                    </right>
-                </binary-operation-expression>
-            </expr>
-        </where>
+        <update>
+            <set start-index="177" stop-index="208">
+                <assignment start-index="177" stop-index="208">
+                    <column name="bonus" start-index="177" stop-index="183">
+                        <owner name="D" start-index="177" stop-index="177" />
+                    </column>
+                    <assignment-value>
+                        <literal-expression value="D.bonus + S.salary*.01" start-index="187" stop-index="208" />
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+        <delete>
+            <where start-index="210" stop-index="239">
+                <expr>
+                    <binary-operation-expression start-index="224" stop-index="238">
+                        <left>
+                            <column name="salary" start-index="224" stop-index="231">
+                                <owner name="S" start-index="224" stop-index="224" />
+                            </column>
+                        </left>
+                        <operator>&gt;</operator>
+                        <right>
+                            <literal-expression value="8000" start-index="235" stop-index="238" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </delete>
     </merge>
 </sql-parser-test-cases>
