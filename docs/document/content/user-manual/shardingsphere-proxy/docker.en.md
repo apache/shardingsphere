@@ -28,16 +28,16 @@ Please refer to [Example](https://github.com/apache/shardingsphere/tree/master/s
 ## Run Docker
 
 ```bash
-docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e PORT=3308 -p13308:3308 apache/shardingsphere-proxy:latest
+docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf -e PORT=3308 -p13308:3308 apache/shardingsphere-proxy:latest
 ```
 
 **Notice**
 
 * You can define port `3308` and `13308` by yourself. `3308` refers to docker port; `13308` refers to the host port.
-* You have to volume conf dir to /opt/shardingsphere-proxy/conf.
+* You have to volume conf dir to /opt/sharding-proxy/conf.
 
 ```bash
-docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e JVM_OPTS="-Djava.awt.headless=true" -e PORT=3308 -p13308:3308 apache/shardingsphere-proxy:latest
+docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf -e JVM_OPTS="-Djava.awt.headless=true" -e PORT=3308 -p13308:3308 apache/shardingsphere-proxy:latest
 ```
 
 **Notice**
@@ -45,12 +45,12 @@ docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e JVM_OP
 * You can define JVM related parameters to environment variable `JVM_OPTS`.
 
 ```bash
-docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -v /${your_work_dir}/ext-lib:/opt/shardingsphere-proxy/ext-lib -p13308:3308 apache/shardingsphere-proxy:latest
+docker run -d -v /${your_work_dir}/conf:/opt/sharding-proxy/conf -v /${your_work_dir}/ext-lib:/opt/sharding-proxy/ext-lib -p13308:3308 apache/shardingsphere-proxy:latest
 ```
 
 **Notice**
 
-* If you want to import external jar packages, whose directory is supposed to volume to /opt/shardingsphere-proxy/ext-lib.
+* If you want to import external jar packages, whose directory is supposed to volume to /opt/sharding-proxy/ext-lib.
 
 ## Access ShardingSphere-Proxy
 
@@ -72,8 +72,8 @@ Answer: please make sure designated PostgreSQL  IP in `/${your_work_dir}/conf/co
 
 Question 3：How to start ShardingProxy whose backend databases are MySQL.
 
-Answer：Volume the directory where `mysql-connector.jar` stores to /opt/shardingsphere-proxy/ext-lib.
+Answer：Volume the directory where `mysql-connector.jar` stores to /opt/sharding-proxy/ext-lib.
 
 Question 4：How to import user-defined sharding strategy？
 
-Answer: Volume the directory where `shardingsphere-strategy.jar` stores to /opt/shardingsphere-proxy/ext-lib.
+Answer: Volume the directory where `shardingsphere-strategy.jar` stores to /opt/sharding-proxy/ext-lib.
