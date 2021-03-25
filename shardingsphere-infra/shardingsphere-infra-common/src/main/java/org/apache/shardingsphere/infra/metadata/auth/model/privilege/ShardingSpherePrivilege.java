@@ -48,8 +48,7 @@ public final class ShardingSpherePrivilege {
      * @return is empty or not
      */
     public boolean isEmpty() {
-        return administrativePrivilege.getPrivileges().isEmpty()
-                && databasePrivilege.getGlobalPrivileges().isEmpty() && databasePrivilege.getSpecificPrivileges().isEmpty();
+        return administrativePrivilege.getPrivileges().isEmpty() && databasePrivilege.getGlobalPrivileges().isEmpty() && databasePrivilege.getSpecificPrivileges().isEmpty();
     }
     
     /**

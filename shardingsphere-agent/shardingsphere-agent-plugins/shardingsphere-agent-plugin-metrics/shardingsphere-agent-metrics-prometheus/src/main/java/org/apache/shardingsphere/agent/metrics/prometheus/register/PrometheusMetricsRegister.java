@@ -20,15 +20,14 @@ package org.apache.shardingsphere.agent.metrics.prometheus.register;
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 import io.prometheus.client.Histogram;
+import org.apache.shardingsphere.agent.metrics.api.MetricsRegister;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.agent.metrics.api.MetricsRegister;
 
 /**
  * Prometheus metrics register.
  */
-@Slf4j
 public final class PrometheusMetricsRegister implements MetricsRegister {
     
     private static final Map<String, Counter> COUNTER_MAP = new ConcurrentHashMap<>();

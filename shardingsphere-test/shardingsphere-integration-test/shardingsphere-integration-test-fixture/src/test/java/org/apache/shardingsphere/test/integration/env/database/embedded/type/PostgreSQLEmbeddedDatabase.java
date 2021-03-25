@@ -25,9 +25,7 @@ import de.flapdoodle.embed.process.distribution.Platform;
 import de.flapdoodle.embed.process.io.directories.FixedPath;
 import de.flapdoodle.embed.process.runtime.ICommandLinePostProcessor;
 import de.flapdoodle.embed.process.store.PostgresArtifactStoreBuilder;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.env.database.embedded.EmbeddedDatabase;
@@ -48,8 +46,6 @@ import java.util.stream.Collectors;
 /**
  * Embedded database for PostgreSQL.
  */
-@Slf4j
-@RequiredArgsConstructor
 public final class PostgreSQLEmbeddedDatabase implements EmbeddedDatabase {
     
     private volatile EmbeddedPostgres embeddedPostgres;
@@ -61,7 +57,7 @@ public final class PostgreSQLEmbeddedDatabase implements EmbeddedDatabase {
         DatabaseType databaseType = DatabaseTypeRegistry.getActualDatabaseType(getType());
         Version version = detectVersion(embeddedDatabaseProps.getVersion(databaseType));
         String extractedDir = new File(cacheDir, "extracted").getPath();
-        String instanceDir = new File(cacheDir, "runtime" + File.separator + "PostgreSQL-" + version.name() + File.separator + UUID.randomUUID().toString()).getPath();
+        String instanceDir = new File(cacheDir, "runtime" + File.separator + "PostgreSQL-" + version.name() + File.separator + UUID.randomUUID()).getPath();
         embeddedPostgres = new EmbeddedPostgres(version, new File(instanceDir).getPath());
         Command cmd = Command.Postgres;
         FixedPath extractedCache = new FixedPath(extractedDir);
@@ -118,9 +114,9 @@ public final class PostgreSQLEmbeddedDatabase implements EmbeddedDatabase {
     
     @SneakyThrows
     private ICommandLinePostProcessor privilegedWindowsRunasPostprocessor() {
-        if (Platform.detect().equals(Platform.Windows)) {
+        if (Platform.detect() == Platform.Windows) {
             // Based on https://stackoverflow.com/a/11995662
-            final int adminCommandResult = Runtime.getRuntime().exec("net session").waitFor();
+            int adminCommandResult = Runtime.getRuntime().exec("net session").waitFor();
             if (adminCommandResult == 0) {
                 return runWithoutPrivileges();
             }
@@ -130,7 +126,7 @@ public final class PostgreSQLEmbeddedDatabase implements EmbeddedDatabase {
     
     private ICommandLinePostProcessor runWithoutPrivileges() {
         return (distribution, args) -> {
-            if (args.size() > 0 && args.get(0).endsWith("postgres.exe")) {
+            if (!args.isEmpty() && args.get(0).endsWith("postgres.exe")) {
                 return Arrays.asList("runas", "/trustlevel:0x20000", String.format("\"%s\"", String.join(" ", args)));
             }
             return args;

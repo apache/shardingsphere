@@ -34,4 +34,19 @@
         <module>shardingsphere-integration-test</module>
         <module>shardingsphere-integration-agent-test</module>
     </modules>
+    
+    <properties>
+        <testcontainers.version>1.15.2</testcontainers.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>
