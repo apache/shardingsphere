@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.container;
+package org.apache.shardingsphere.test.integration.junit.container.adapter;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.junit.annotation.XmlResource;
+import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.junit.processor.AuthenticationProcessor;
 import org.apache.shardingsphere.test.integration.junit.processor.AuthenticationProcessor.Authentication;
 

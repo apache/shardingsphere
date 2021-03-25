@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.container;
+package org.apache.shardingsphere.test.integration.junit.container.storage.impl;
 
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 
 /**
  * PostgreSQL container.

@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.container;
+package org.apache.shardingsphere.test.integration.junit.container.adapter.impl;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.utility.MountableFile;
