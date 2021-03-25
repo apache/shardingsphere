@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.junit.container.adapter.impl;
 
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
@@ -39,7 +37,6 @@ import java.util.stream.Collectors;
 /**
  * ShardingSphere JDBC container.
  */
-@Slf4j
 public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterContainer {
     
     private final AtomicBoolean isHealthy = new AtomicBoolean();
@@ -80,7 +77,7 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
     }
     
     @Override
-    public ShardingSphereContainer waitingFor(final @NonNull WaitStrategy waitStrategy) {
+    public ShardingSphereContainer waitingFor(final WaitStrategy waitStrategy) {
         return super.waitingFor(waitStrategy);
     }
     

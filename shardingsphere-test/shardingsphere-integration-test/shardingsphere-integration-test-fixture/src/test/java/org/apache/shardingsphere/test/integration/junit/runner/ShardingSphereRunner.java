@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.integration.junit.runner;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCasesLoader;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
@@ -52,7 +51,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@Slf4j
 public final class ShardingSphereRunner extends Suite {
     
     private final List<Runner> runners;
@@ -153,19 +151,19 @@ public final class ShardingSphereRunner extends Suite {
     
     private Predicate<TestCaseBeanContext> createTestCaseParametersPredicate() {
         ParameterFilter filter = getTestClass().getAnnotation(ParameterFilter.class);
-        Predicate<TestCaseBeanContext> predicate;
+        Predicate<TestCaseBeanContext> result;
         if (Objects.nonNull(filter)) {
             Class<? extends ParameterFilter.Filter> filtered = filter.filter();
             try {
                 ParameterFilter.Filter instance = filtered.newInstance();
-                predicate = instance::filter;
+                result = instance::filter;
             } catch (InstantiationException | IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
         } else {
-            predicate = parameters -> true;
+            result = parameters -> true;
         }
-        return predicate;
+        return result;
     }
     
     private Collection<ParameterizedArray> allCIParameters(final TestCaseSpec testCaseSpec) {
@@ -200,10 +198,10 @@ public final class ShardingSphereRunner extends Suite {
     private Collection<TestCaseParameters> getAssertionParameters(final Class<?> klass, final TestCaseDescription description) {
         IntegrationTestCasesLoader testCasesLoader = IntegrationTestCasesLoader.getInstance();
         return testCasesLoader.getTestCaseContexts(description.getSqlCommandType()).stream()
-                .filter(e -> assertThan(e.getTestCase().getDbTypes(), description.getDatabase()))
-                .filter(e -> assertThan(e.getTestCase().getScenarioTypes(), description.getScenario()))
-                .flatMap(e -> Arrays.stream(SQLExecuteType.values()).flatMap(type -> e.getTestCase().getAssertions().stream()
-                        .map(a -> new TestCaseParameters(getCaseName(), e.getParentPath(), e.getTestCase().getSql(), type, klass, e.getTestCase(), a)))
+                .filter(each -> assertThan(each.getTestCase().getDbTypes(), description.getDatabase()))
+                .filter(each -> assertThan(each.getTestCase().getScenarioTypes(), description.getScenario()))
+                .flatMap(each -> Arrays.stream(SQLExecuteType.values()).flatMap(type -> each.getTestCase().getAssertions().stream()
+                        .map(a -> new TestCaseParameters(caseName, each.getParentPath(), each.getTestCase().getSql(), type, klass, each.getTestCase(), a)))
                 ).collect(Collectors.toList());
     }
     
@@ -226,10 +224,10 @@ public final class ShardingSphereRunner extends Suite {
     private Collection<TestCaseParameters> getCaseParameters(final Class<?> klass, final TestCaseDescription description) {
         IntegrationTestCasesLoader testCasesLoader = IntegrationTestCasesLoader.getInstance();
         return testCasesLoader.getTestCaseContexts(description.getSqlCommandType()).stream()
-                .filter(e -> assertThan(e.getTestCase().getDbTypes(), description.getDatabase()))
-                .filter(e -> assertThan(e.getTestCase().getScenarioTypes(), description.getScenario()))
-                .flatMap(e -> Arrays.stream(SQLExecuteType.values())
-                        .map(type -> new TestCaseParameters(getCaseName(), e.getParentPath(), e.getTestCase().getSql(), type, klass, e.getTestCase(), null)))
+                .filter(each -> assertThan(each.getTestCase().getDbTypes(), description.getDatabase()))
+                .filter(each -> assertThan(each.getTestCase().getScenarioTypes(), description.getScenario()))
+                .flatMap(each -> Arrays.stream(SQLExecuteType.values())
+                        .map(type -> new TestCaseParameters(caseName, each.getParentPath(), each.getTestCase().getSql(), type, klass, each.getTestCase(), null)))
                 .collect(Collectors.toList());
     }
     
@@ -239,7 +237,7 @@ public final class ShardingSphereRunner extends Suite {
     }
     
     protected Statement withBeforeClasses(final Statement statement) {
-        if (getChildren().isEmpty()) {
+        if (runners.isEmpty()) {
             return super.withBeforeClasses(statement);
         }
         return super.withBeforeClasses(new Statement() {
@@ -253,7 +251,7 @@ public final class ShardingSphereRunner extends Suite {
     
     private void beforeAllClasses() throws Exception {
         List<FrameworkMethod> methods = getTestClass().getAnnotatedMethods(BeforeAllCases.class);
-        List<Runner> children = getChildren();
+        List<Runner> children = runners;
         if (!children.isEmpty()) {
             Runner runner = children.get(0);
             Object testInstance;
@@ -269,10 +267,10 @@ public final class ShardingSphereRunner extends Suite {
             } else {
                 testInstance = ((ShardingSphereCISubRunner) runner).createTest();
             }
-            methods.forEach(e -> {
-                e.getMethod().setAccessible(true);
+            methods.forEach(each -> {
+                each.getMethod().setAccessible(true);
                 try {
-                    e.invokeExplosively(testInstance);
+                    each.invokeExplosively(testInstance);
                     // CHECKSTYLE:OFF
                 } catch (final Throwable throwable) {
                     // CHECKSTYLE:ON

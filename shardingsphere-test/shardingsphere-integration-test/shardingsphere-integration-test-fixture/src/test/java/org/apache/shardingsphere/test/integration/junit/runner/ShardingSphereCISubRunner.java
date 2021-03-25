@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.junit.runner;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.compose.ContainerCompose;
@@ -33,7 +32,6 @@ import java.lang.reflect.Field;
 /**
  * ShardingSphere CI sub runner.
  */
-@Slf4j
 public final class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
     
     private final TestCaseBeanContext context;
@@ -58,14 +56,14 @@ public final class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
         compose.setInstance(testInstance);
         compose.createContainers();
         getTestClass().getAnnotatedFields(ShardingSphereITInject.class)
-                .forEach(e -> {
+                .forEach(each -> {
                     try {
-                        Field field = e.getField();
+                        Field field = each.getField();
                         field.setAccessible(true);
                         if (field.getType() == String.class) {
                             field.set(testInstance, context.getBeanByName(field.getName()));
                         } else {
-                            field.set(testInstance, context.getBean(e.getType()));
+                            field.set(testInstance, context.getBean(each.getType()));
                         }
                     } catch (final IllegalAccessException ex) {
                         throw new RuntimeException(ex.getMessage(), ex);
