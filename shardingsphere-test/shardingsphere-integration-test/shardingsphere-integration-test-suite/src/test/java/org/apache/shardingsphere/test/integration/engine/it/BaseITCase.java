@@ -31,8 +31,8 @@ import org.apache.shardingsphere.test.integration.junit.annotation.ContainerInit
 import org.apache.shardingsphere.test.integration.junit.annotation.ContainerType;
 import org.apache.shardingsphere.test.integration.junit.annotation.OnContainer;
 import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
-import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereAdapterContainer;
-import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereStorageContainer;
+import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
+import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.runner.ShardingSphereRunner;
 import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
 import org.junit.After;

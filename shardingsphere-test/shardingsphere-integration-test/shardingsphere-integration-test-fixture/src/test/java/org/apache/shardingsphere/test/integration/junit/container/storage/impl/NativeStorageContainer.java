@@ -15,39 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.container;
+package org.apache.shardingsphere.test.integration.junit.container.storage.impl;
 
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
-
-import javax.sql.DataSource;
-import java.util.Map;
+import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 
 /**
- * H2 container.
+ * Native storage container.
  */
-public final class H2Container extends ShardingSphereStorageContainer {
+public final class NativeStorageContainer extends ShardingSphereStorageContainer {
     
-    private volatile Map<String, DataSource> actualDataSources;
-    
-    private volatile boolean isHealthy;
-    
-    public H2Container() {
-        super("h2:fake", new H2DatabaseType(), true);
-    }
-    
-    @Override
-    @SneakyThrows
-    protected void configure() {
-        super.configure();
-        actualDataSources = ActualDataSourceBuilder.createActualDataSources(getDescription().getScenario(), getDescription().getDatabaseType());
-        isHealthy = true;
-    }
-    
-    @Override
-    public boolean isHealthy() {
-        return isHealthy;
+    public NativeStorageContainer() {
+        super("native-storage", null);
     }
     
     @Override
@@ -68,11 +46,5 @@ public final class H2Container extends ShardingSphereStorageContainer {
     @Override
     protected String getPassword() {
         return null;
-    }
-    
-    @Override
-    @SneakyThrows
-    public synchronized Map<String, DataSource> getDataSourceMap() {
-        return actualDataSources;
     }
 }
