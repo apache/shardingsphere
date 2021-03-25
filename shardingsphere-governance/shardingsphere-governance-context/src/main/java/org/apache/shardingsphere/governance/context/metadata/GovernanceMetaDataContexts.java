@@ -49,7 +49,6 @@ import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.metadata.auth.builder.PrivilegeBuilder;
-import org.apache.shardingsphere.infra.metadata.auth.builder.PrivilegeMerger;
 import org.apache.shardingsphere.infra.metadata.auth.builder.loader.PrivilegeLoader;
 import org.apache.shardingsphere.infra.metadata.auth.builder.loader.PrivilegeLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
@@ -418,21 +417,13 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private void reloadPrivilege(final Collection<ShardingSphereUser> users) {
         Optional<PrivilegeLoader> loader = PrivilegeLoaderEngine.findPrivilegeLoader(metaDataContexts.getMetaDataMap().values().iterator().next().getResource().getDatabaseType());
-        int maxConnectionsSizePerQuery = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         if (!loader.isPresent()) {
             return;
         }
-        Map<ShardingSphereUser, ShardingSpherePrivilege> result = new LinkedHashMap<>();
-        for (ShardingSphereMetaData each : metaDataContexts.getMetaDataMap().values()) {
-            Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> privileges = PrivilegeBuilder
-                    .build(each.getResource().getAllInstanceDataSources(), users, loader.get(), maxConnectionsSizePerQuery);
-            result.putAll(PrivilegeMerger.merge(privileges, each.getName(), each.getRuleMetaData().getRules()));
-        }
+        Map<ShardingSphereUser, ShardingSpherePrivilege> result = PrivilegeBuilder.build(metaDataContexts.getMetaDataMap().values(), users, metaDataContexts.getProps());
         for (Entry<ShardingSphereUser, ShardingSpherePrivilege> each : result.entrySet()) {
             Optional<ShardingSphereUser> user = metaDataContexts.getAuthentication().getAuthentication().keySet().stream().filter(t -> t.getGrantee().equals(t.getGrantee())).findFirst();
-            if (user.isPresent() && null == result.get(each.getKey())) {
-                metaDataContexts.getAuthentication().getAuthentication().remove(user.get());
-            } else if (user.isPresent() && null != result.get(each.getKey())) {
+            if (user.isPresent() && null != result.get(each.getKey())) {
                 metaDataContexts.getAuthentication().getAuthentication().put(user.get(), each.getValue());
             } else if (!user.isPresent() && null != result.get(each.getKey())) {
                 metaDataContexts.getAuthentication().getAuthentication().put(each.getKey(), each.getValue());
