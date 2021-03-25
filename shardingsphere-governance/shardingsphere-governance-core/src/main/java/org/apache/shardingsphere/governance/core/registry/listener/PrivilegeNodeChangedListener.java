@@ -31,9 +31,9 @@ import java.util.Optional;
 /**
  * Authentication changed listener.
  */
-public final class AuthenticationNodesChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
+public final class PrivilegeNodeChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
-    public AuthenticationNodesChangedListener(final RegistryRepository registryRepository) {
+    public PrivilegeNodeChangedListener(final RegistryRepository registryRepository) {
         super(registryRepository, Collections.singletonList(new RegistryCenterNode().getPrivilegeNodePath()));
     }
     

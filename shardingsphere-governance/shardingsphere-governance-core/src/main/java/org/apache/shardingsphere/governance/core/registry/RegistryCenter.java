@@ -192,8 +192,8 @@ public final class RegistryCenter {
         }
     }
     
-    private void persistChangedAuthentication(final Collection<ShardingSphereUser> users, final boolean isOverwrite) {
-        if (!users.isEmpty() && isOverwrite) {
+    private void persistChangedPrivilege(final Collection<ShardingSphereUser> users) {
+        if (!users.isEmpty()) {
             repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
         }
     }
@@ -458,7 +458,6 @@ public final class RegistryCenter {
     @Subscribe
     public synchronized void renew(final CreateUserEvent event) {
         persistAuthentication(event.getUsers(), true);
-        persistChangedAuthentication(event.getUsers(), true);
     }
     
     /**
@@ -468,7 +467,7 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final GrantEvent event) {
-        persistChangedAuthentication(event.getUsers(), true);
+        persistChangedPrivilege(event.getUsers());
     }
     
     /**
