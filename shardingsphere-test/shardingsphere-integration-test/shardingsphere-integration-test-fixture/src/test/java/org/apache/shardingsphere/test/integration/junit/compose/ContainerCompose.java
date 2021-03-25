@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.junit.compose;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -38,6 +37,7 @@ import org.apache.shardingsphere.test.integration.junit.logging.ContainerLogs;
 import org.apache.shardingsphere.test.integration.junit.runner.TestCaseBeanContext;
 import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
 import org.junit.runners.model.FrameworkField;
+import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.TestClass;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
@@ -46,7 +46,8 @@ import org.testcontainers.lifecycle.Startable;
 import java.io.Closeable;
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -89,24 +90,24 @@ public final class ContainerCompose implements Closeable {
     private ShardingSphereContainer createContainer(final FrameworkField field) {
         OnContainer metadata = field.getAnnotation(OnContainer.class);
         try {
-            ShardingSphereContainer container = createContainer(metadata);
-            if (Objects.isNull(container)) {
+            ShardingSphereContainer result = createContainer(metadata);
+            if (Objects.isNull(result)) {
                 log.warn("container {} is not activated.", metadata.name());
                 return null;
             }
-            container.setDockerName(metadata.name());
+            result.setDockerName(metadata.name());
             String hostName = metadata.hostName();
             if (Strings.isNullOrEmpty(hostName)) {
                 hostName = metadata.name();
             }
-            container.withNetworkAliases(hostName);
-            container.setNetwork(network);
-            container.withLogConsumer(ContainerLogs.newConsumer(clusterName + "_" + metadata.name()));
+            result.withNetworkAliases(hostName);
+            result.setNetwork(network);
+            result.withLogConsumer(ContainerLogs.newConsumer(clusterName + "_" + metadata.name()));
             field.getField().setAccessible(true);
-            field.getField().set(instance, container);
-            beanContext.registerBeanByName(metadata.name(), container);
+            field.getField().set(instance, result);
+            beanContext.registerBeanByName(metadata.name(), result);
             log.info("container {} is activated.", metadata.name());
-            return container;
+            return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -152,25 +153,25 @@ public final class ContainerCompose implements Closeable {
     }
     
     private void inject(final ShardingSphereContainer container) {
-        List<Field> fields = Lists.newArrayList();
+        Collection<Field> fields = new LinkedList<>();
         for (Class<?> klass = container.getClass(); Objects.nonNull(klass); klass = klass.getSuperclass()) {
             fields.addAll(Arrays.asList(klass.getDeclaredFields()));
         }
-        fields.stream()
-                .filter(e -> e.isAnnotationPresent(ShardingSphereITInject.class))
-                .forEach(e -> {
-                    Class<?> type = e.getType();
-                    e.setAccessible(true);
-                    try {
-                        if (type.isPrimitive() || String.class == type) {
-                            e.set(container, beanContext.getBeanByName(e.getName()));
-                        } else {
-                            e.set(container, beanContext.getBean(type));
-                        }
-                    } catch (final IllegalAccessException illegalAccessException) {
-                        log.error("Failed to auto inject {}.{}.", container.getContainerName(), e.getName());
-                    }
-                });
+        fields.stream().filter(each -> each.isAnnotationPresent(ShardingSphereITInject.class)).forEach(each -> setFieldValue(each, container));
+    }
+    
+    private void setFieldValue(final Field field, final ShardingSphereContainer container) {
+        Class<?> type = field.getType();
+        field.setAccessible(true);
+        try {
+            if (type.isPrimitive() || String.class == type) {
+                field.set(container, beanContext.getBeanByName(field.getName()));
+            } else {
+                field.set(container, beanContext.getBean(type));
+            }
+        } catch (final IllegalAccessException ex) {
+            log.error("Failed to auto inject {}.{}.", container.getContainerName(), field.getName());
+        }
     }
     
     /**
@@ -178,28 +179,30 @@ public final class ContainerCompose implements Closeable {
      */
     @SneakyThrows
     public void createInitializerAndExecute() {
-        testClass.getAnnotatedMethods(ContainerInitializer.class).forEach(method -> {
-            try {
-                if (method.isStatic()) {
-                    method.getMethod().setAccessible(true);
-                    method.invokeExplosively(null);
-                } else {
-                    method.getMethod().setAccessible(true);
-                    method.invokeExplosively(instance);
-                }
-                // CHECKSTYLE:OFF
-            } catch (final Throwable throwable) {
-                // CHECKSTYLE:ON
-                throwable.printStackTrace();
+        testClass.getAnnotatedMethods(ContainerInitializer.class).forEach(this::invokeExplosively);
+    }
+    
+    private void invokeExplosively(final FrameworkMethod frameworkMethod) {
+        try {
+            if (frameworkMethod.isStatic()) {
+                frameworkMethod.getMethod().setAccessible(true);
+                frameworkMethod.invokeExplosively(null);
+            } else {
+                frameworkMethod.getMethod().setAccessible(true);
+                frameworkMethod.invokeExplosively(instance);
             }
-        });
+            // CHECKSTYLE:OFF
+        } catch (final Throwable ex) {
+            // CHECKSTYLE:ON
+            throw new RuntimeException(ex);
+        }
     }
     
     /**
      * Startup.
      */
     public void start() {
-        containers.stream().filter(c -> !c.isCreated()).forEach(GenericContainer::start);
+        containers.stream().filter(each -> !each.isCreated()).forEach(GenericContainer::start);
     }
     
     /**
@@ -207,21 +210,20 @@ public final class ContainerCompose implements Closeable {
      */
     public void waitUntilReady() {
         containers.stream()
-                .filter(c -> {
+                .filter(each -> {
                     try {
-                        return !c.isHealthy();
+                        return !each.isHealthy();
                         // CHECKSTYLE:OFF
-                    } catch (final Exception ex) {
+                    } catch (final RuntimeException ex) {
                         // CHECKSTYLE:ON
                         return false;
                     }
                 })
-                .forEach(c -> {
-                    while (!(c.isRunning() && c.isHealthy())) {
+                .forEach(each -> {
+                    while (!(each.isRunning() && each.isHealthy())) {
                         try {
                             TimeUnit.MILLISECONDS.sleep(200L);
                         } catch (final InterruptedException ignored) {
-                        
                         }
                     }
                 });

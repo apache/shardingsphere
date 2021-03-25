@@ -114,7 +114,7 @@ public final class ShardingSphereCISubRunner extends BlockJUnit4ClassRunner {
                 description.getScenario(),
                 description.getDatabase(),
                 context.getBean(SQLExecuteType.class),
-                context.getBeanByName("statement")
+                context.getBeanByName("sql")
         );
     }
 }

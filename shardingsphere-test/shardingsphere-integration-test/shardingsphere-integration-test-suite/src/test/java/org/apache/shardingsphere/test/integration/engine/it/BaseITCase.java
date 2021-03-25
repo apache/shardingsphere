@@ -29,8 +29,8 @@ import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironme
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.annotation.ContainerInitializer;
 import org.apache.shardingsphere.test.integration.junit.annotation.ContainerType;
-import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.annotation.OnContainer;
+import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.runner.ShardingSphereRunner;
@@ -70,7 +70,7 @@ public abstract class BaseITCase {
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
     @ShardingSphereITInject
-    private String statement;
+    private String sql;
    
     @ShardingSphereITInject
     private TestCaseDescription description;
@@ -88,24 +88,10 @@ public abstract class BaseITCase {
     }
     
     @ContainerInitializer
-    protected void initialize() {
+    protected final void initialize() {
         if (Objects.nonNull(proxy) && Objects.nonNull(storage)) {
             proxy.dependsOn(storage);
         }
-    }
-    
-    @Before
-    public void createDataSource() {
-        targetDataSource = proxy.getDataSource();
-    }
-    
-    protected String getStatement() throws ParseException {
-        return sqlExecuteType == SQLExecuteType.Literal ? getLiteralSQL(statement) : statement;
-    }
-    
-    protected String getLiteralSQL(final String sql) throws ParseException {
-        List<Object> parameters = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
-        return parameters.isEmpty() ? sql : String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%").replace("%%", "%").replace("'%'", "'%%'");
     }
     
     @BeforeClass
@@ -113,6 +99,20 @@ public abstract class BaseITCase {
         if (EnvironmentType.DOCKER != IntegrationTestEnvironment.getInstance().getEnvType()) {
             DatabaseEnvironmentManager.executeInitSQLs();
         }
+    }
+    
+    @Before
+    public final void createDataSource() {
+        targetDataSource = proxy.getDataSource();
+    }
+    
+    protected final String getSQL() throws ParseException {
+        return sqlExecuteType == SQLExecuteType.Literal ? getLiteralSQL(sql) : sql;
+    }
+    
+    protected final String getLiteralSQL(final String sql) throws ParseException {
+        List<Object> parameters = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
+        return parameters.isEmpty() ? sql : String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%").replace("%%", "%").replace("'%'", "'%%'");
     }
     
     @After

@@ -36,9 +36,9 @@ public final class GeneralDDLIT extends BaseDDLIT {
     public void assertExecuteUpdate() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                connection.createStatement().executeUpdate(getStatement());
+                connection.createStatement().executeUpdate(getSQL());
             } else {
-                connection.prepareStatement(getStatement()).executeUpdate();
+                connection.prepareStatement(getSQL()).executeUpdate();
             }
             assertTableMetaData();
         }
@@ -48,9 +48,9 @@ public final class GeneralDDLIT extends BaseDDLIT {
     public void assertExecute() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                connection.createStatement().execute(getStatement());
+                connection.createStatement().execute(getSQL());
             } else {
-                connection.prepareStatement(getStatement()).execute();
+                connection.prepareStatement(getSQL()).execute();
             }
             assertTableMetaData();
         }
