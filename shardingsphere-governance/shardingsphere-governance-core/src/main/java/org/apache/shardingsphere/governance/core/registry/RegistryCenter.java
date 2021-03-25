@@ -29,6 +29,7 @@ import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurat
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.event.model.scaling.StartScalingEvent;
+import org.apache.shardingsphere.governance.core.lock.node.LockAck;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationCheckerFactory;
@@ -70,6 +71,10 @@ import java.util.stream.Collectors;
  * Registry center.
  */
 public final class RegistryCenter {
+    
+    private static final int CHECK_ACK_MAXIMUM = 5;
+    
+    private static final int CHECK_ACK_INTERVAL_SECONDS = 1;
     
     private final RegistryCenterNode node;
     
@@ -493,6 +498,15 @@ public final class RegistryCenter {
     }
     
     /**
+     * Load all instances.
+     *
+     * @return collection of all instances
+     */
+    public Collection<String> loadAllInstances() {
+        return repository.getChildrenKeys(node.getProxyNodesPath());
+    }
+    
+    /**
      * Load disabled data sources.
      * 
      * @param schemaName schema name
@@ -533,5 +547,75 @@ public final class RegistryCenter {
      */
     public void releaseLock(final String lockName) {
         repository.releaseLock(lockNode.getLockNodePath(lockName));
+    }
+    
+    /**
+     * Ack lock.
+     * 
+     * @param lockName lock name
+     */
+    public void ackLock(final String lockName) {
+        repository.persistEphemeral(lockNode.getLockedAckNodePath(Joiner.on("-").join(instance.getInstanceId(), lockName)), LockAck.LOCKED.getValue());
+    }
+    
+    /**
+     * ack unlock.
+     * 
+     * @param lockName lock name
+     */
+    public void ackUnlock(final String lockName) {
+        repository.delete(lockNode.getLockedAckNodePath(Joiner.on("-").join(instance.getInstanceId(), lockName)));
+    }
+    
+    /**
+     * Check lock ack.
+     * 
+     * @param lockName lock name
+     * @return true if all instances ack lock, false if not
+     */
+    public boolean checkLockAck(final String lockName) {
+        boolean result = checkAck(loadAllInstances(), lockName, LockAck.LOCKED.getValue());
+        if (!result) {
+            releaseLock(lockName);
+        }
+        return result;
+    }
+    
+    /**
+     * Check unlock ack.
+     * 
+     * @param lockName lock name
+     * @return true if all instances ack unlock, false if not
+     */
+    public boolean checkUnlockAck(final String lockName) {
+        return checkAck(loadAllInstances(), lockName, LockAck.UNLOCKED.getValue());
+    }
+    
+    private boolean checkAck(final Collection<String> instanceIds, final String lockName, final String ackValue) {
+        for (int i = 0; i < CHECK_ACK_MAXIMUM; i++) {
+            if (check(instanceIds, lockName, ackValue)) {
+                return true;
+            }
+            try {
+                Thread.sleep(CHECK_ACK_INTERVAL_SECONDS * 1000L);
+                // CHECKSTYLE:OFF
+            } catch (final InterruptedException ex) {
+                // CHECKSTYLE:ON
+            }
+        }
+        return false;
+    }
+    
+    private boolean check(final Collection<String> instanceIds, final String lockName, final String ackValue) {
+        for (String each : instanceIds) {
+            if (!ackValue.equalsIgnoreCase(loadLockAck(each, lockName))) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private String loadLockAck(final String instanceId, final String lockName) {
+        return Strings.nullToEmpty(repository.get(lockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName))));
     }
 }

@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.db.discovery.mgr;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.db.discovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
-import org.apache.shardingsphere.db.discovery.spi.DatabaseDiscoveryType;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -31,7 +30,6 @@ import java.util.Map;
  * MGR heartbeat job.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class MGRHeartbeatJob implements SimpleJob {
     
     private final DatabaseDiscoveryType databaseDiscoveryType;

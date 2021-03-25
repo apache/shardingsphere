@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.container;
+package org.apache.shardingsphere.test.integration.junit.container.storage.impl;
 
 import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 
 import java.util.Optional;
 

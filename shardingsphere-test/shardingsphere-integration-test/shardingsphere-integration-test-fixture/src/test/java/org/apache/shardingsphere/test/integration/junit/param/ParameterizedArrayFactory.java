@@ -21,7 +21,6 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
@@ -29,10 +28,10 @@ import org.apache.shardingsphere.test.integration.cases.IntegrationTestCasesLoad
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.param.model.CaseParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
-import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,7 +44,6 @@ import java.util.stream.Collectors;
  * Parameterized array factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Slf4j
 public final class ParameterizedArrayFactory {
     
     private static final IntegrationTestCasesLoader TEST_CASES_LOADER = IntegrationTestCasesLoader.getInstance();

@@ -15,34 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.container;
+package org.apache.shardingsphere.infra.lock;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
- * Native storage container.
+ * Inner lock released event.
  */
-public final class NativeStorageContainer extends ShardingSphereStorageContainer {
+@AllArgsConstructor
+@Getter
+public final class InnerLockReleasedEvent {
     
-    public NativeStorageContainer() {
-        super("native-storage", null);
-    }
-    
-    @Override
-    protected String getUrl(final String dataSourceName) {
-        return null;
-    }
-    
-    @Override
-    protected int getPort() {
-        return 0;
-    }
-    
-    @Override
-    protected String getUsername() {
-        return null;
-    }
-    
-    @Override
-    protected String getPassword() {
-        return null;
-    }
+    private String lockName;
 }

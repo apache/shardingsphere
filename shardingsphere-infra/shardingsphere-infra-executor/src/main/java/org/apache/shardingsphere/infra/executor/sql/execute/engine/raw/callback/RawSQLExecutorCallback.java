@@ -31,7 +31,6 @@ import java.util.Map;
 /**
  * Raw SQL executor callback.
  */
-@Slf4j
 public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExecutionUnit, ExecuteResult> {
     
     static {
