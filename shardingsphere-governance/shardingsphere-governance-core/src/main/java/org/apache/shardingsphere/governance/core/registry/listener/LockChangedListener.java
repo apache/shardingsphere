@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.registry.listener;
 
-import com.google.common.base.Joiner;
 import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 import org.apache.shardingsphere.governance.core.event.model.lock.LockNotificationEvent;
@@ -38,17 +37,17 @@ public final class LockChangedListener extends PostGovernanceRepositoryEventList
     private final LockNode lockNode;
     
     public LockChangedListener(final RegistryRepository registryRepository) {
-        super(registryRepository, Collections.singleton(new LockNode().getLockedResourcesNodePath()));
+        super(registryRepository, Collections.singleton(new LockNode().getLockRootNodePath()));
         lockNode = new LockNode();
     }
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        if (event.getKey().startsWith(Joiner.on("/").join(lockNode.getLockedResourcesNodePath(), ""))) {
+        if (lockNode.getLockName(event.getKey()).isPresent()) {
             if (event.getType() == Type.ADDED) {
-                return Optional.of(new LockNotificationEvent());
+                return Optional.of(new LockNotificationEvent(lockNode.getLockName(event.getKey()).get()));
             } else if (event.getType() == Type.DELETED) {
-                return Optional.of(new LockReleasedEvent());
+                return Optional.of(new LockReleasedEvent(lockNode.getLockName(event.getKey()).get()));
             }
         }
         return Optional.empty();
