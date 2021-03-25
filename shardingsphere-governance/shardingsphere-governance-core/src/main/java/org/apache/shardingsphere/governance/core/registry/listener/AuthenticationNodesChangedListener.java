@@ -34,7 +34,7 @@ import java.util.Optional;
 public final class AuthenticationNodesChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
     public AuthenticationNodesChangedListener(final RegistryRepository registryRepository) {
-        super(registryRepository, Collections.singletonList(new RegistryCenterNode().getAuthenticationNodesPath()));
+        super(registryRepository, Collections.singletonList(new RegistryCenterNode().getPrivilegeNodePath()));
     }
     
     @Override
