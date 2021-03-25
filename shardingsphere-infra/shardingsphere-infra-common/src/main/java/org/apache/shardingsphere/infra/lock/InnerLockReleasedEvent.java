@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.event.model.lock;
+package org.apache.shardingsphere.infra.lock;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 
 /**
- * Lock notification event.
+ * Inner lock released event.
  */
 @AllArgsConstructor
 @Getter
-public final class LockNotificationEvent implements GovernanceEvent {
+public final class InnerLockReleasedEvent {
     
     private String lockName;
 }
