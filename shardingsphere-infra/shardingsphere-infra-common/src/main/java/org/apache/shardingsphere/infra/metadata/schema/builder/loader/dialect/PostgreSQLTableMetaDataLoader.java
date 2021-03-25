@@ -17,6 +17,13 @@
 
 package org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect;
 
+import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DataTypeLoader;
+import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,12 +38,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.sql.DataSource;
-import org.apache.shardingsphere.infra.metadata.schema.builder.loader.DataTypeLoader;
-import org.apache.shardingsphere.infra.metadata.schema.builder.spi.DialectTableMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
 
 /**
  * Table meta data loader for PostgreSQL.
@@ -56,10 +57,6 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
     
     @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
-        return loadTableMetaDataMap(dataSource, existedTables);
-    }
-    
-    private Map<String, TableMetaData> loadTableMetaDataMap(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         Map<String, TableMetaData> result = new LinkedHashMap<>();
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = loadIndexMetaDataMap(dataSource);
         for (Entry<String, Collection<ColumnMetaData>> entry : loadColumnMetaDataMap(dataSource, existedTables).entrySet()) {
@@ -82,7 +79,7 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String tableName = resultSet.getString("table_name");
-                    Collection<ColumnMetaData> columns = result.computeIfAbsent(tableName, k -> new LinkedList<>());
+                    Collection<ColumnMetaData> columns = result.computeIfAbsent(tableName, key -> new LinkedList<>());
                     ColumnMetaData columnMetaData = loadColumnMetaData(dataTypes, primaryKeys, resultSet);
                     columns.add(columnMetaData);
                 }
@@ -92,18 +89,18 @@ public final class PostgreSQLTableMetaDataLoader implements DialectTableMetaData
     }
     
     private Set<String> loadPrimaryKeys(final Connection connection) throws SQLException {
-        Set<String> primaryKeys = new HashSet<>();
+        Set<String> result = new HashSet<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(PRIMARY_KEY_META_DATA_SQL)) {
             preparedStatement.setString(1, connection.getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String tableName = resultSet.getString("table_name");
                     String columnName = resultSet.getString("column_name");
-                    primaryKeys.add(tableName + "," + columnName);
+                    result.add(tableName + "," + columnName);
                 }
             }
         }
-        return primaryKeys;
+        return result;
     }
     
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final Set<String> primaryKeys, final ResultSet resultSet) throws SQLException {
