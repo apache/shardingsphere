@@ -48,9 +48,9 @@ jobs:
         with:
           java-version: 8
       - name: Build Project
-        run: ./mvnw -B clean install -Pit.env.docker -DskipTests -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite
+        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true
       - name: Run Integration Test
-        run: ./mvnw -B -Pit.env.docker -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.adapter=${{ matrix.adapter }} -Dit.database=MySQL -Dit.scenario=${{ matrix.scenario }} verify
+        run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Pit.env.docker -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -Dit.adapter=${{ matrix.adapter }} -Dit.database=MySQL -Dit.scenario=${{ matrix.scenario }}
 
   mysql-proxy-agent-metrics:
     name: MySQL-Proxy with Agent Metrics
