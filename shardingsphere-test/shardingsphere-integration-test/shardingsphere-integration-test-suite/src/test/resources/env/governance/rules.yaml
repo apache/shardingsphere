@@ -15,15 +15,24 @@
 # limitations under the License.
 #
 
-# EMBEDDED, DOCKER, NATIVE
-it.env.type=${it.env}
+rules:
+- !SHARDING
+  tables:
+    t_order:
+      actualDataNodes: governance.t_order_${0..9}
+      tableStrategy:
+        none:
+  bindingTables:
+    - t_order,t_order_details
 
-it.adapters=jdbc
-
-#it.scenarios=db,tbl,dbtbl_with_read_write_splitting,read_write_splitting,encrypt,dbtbl_with_read_write_splitting_and_encrypt,governance,shadow
-it.scenarios=db,tbl,dbtbl_with_read_write_splitting,read_write_splitting,encrypt,dbtbl_with_read_write_splitting_and_encrypt,governance
-
-#it.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
-it.databases=H2
-
-it.run.additional.cases=false
+governance:
+  name: governance_ds
+  registryCenter:
+    type: ZooKeeper
+    serverLists: zk:2181
+    props:
+      retryIntervalMilliseconds: 500
+      timeToLiveSeconds: 60
+      maxRetries: 3
+      operationTimeoutMilliseconds: 500
+  overwrite: true
