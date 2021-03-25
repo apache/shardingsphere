@@ -51,7 +51,7 @@ public enum CommonErrorCode implements SQLErrorCode {
     
     SCALING_JOB_NOT_EXIST(1201, "C1201", "Scaling job %s does not exist."),
     
-    SCALING_OPERATE_FAILED(12009, "C1209", "Scaling Operate Failed: [%s]"),
+    SCALING_OPERATE_FAILED(1209, "C1209", "Scaling Operate Failed: [%s]"),
     
     UNSUPPORTED_COMMAND(1998, "C1998", "Unsupported command: [%s]"),
     
