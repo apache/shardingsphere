@@ -15,15 +15,29 @@
 # limitations under the License.
 #
 
-# EMBEDDED, DOCKER, NATIVE
-it.env.type=${it.env}
+governance:
+  name: governance_ds
+  registryCenter:
+    type: ZooKeeper
+    serverLists: zk:2181
+    props:
+      retryIntervalMilliseconds: 500
+      timeToLiveSeconds: 60
+      maxRetries: 3
+      operationTimeoutMilliseconds: 500
+  overwrite: true
 
-it.adapters=jdbc
+authentication:
+  users:
+    root:
+      password: root
 
-#it.scenarios=db,tbl,dbtbl_with_read_write_splitting,read_write_splitting,encrypt,dbtbl_with_read_write_splitting_and_encrypt,sharding_governance,shadow
-it.scenarios=db,tbl,dbtbl_with_read_write_splitting,read_write_splitting,encrypt,dbtbl_with_read_write_splitting_and_encrypt,sharding_governance
-
-#it.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
-it.databases=H2
-
-it.run.additional.cases=false
+props:
+  max-connections-size-per-query: 1
+  executor-size: 16  # Infinite by default.
+  proxy-frontend-flush-threshold: 128  # The default value is 128.
+  proxy-transaction-type: LOCAL
+  proxy-opentracing-enabled: false
+  proxy-hint-enabled: false
+  query-with-cipher-column: true
+  sql-show: false

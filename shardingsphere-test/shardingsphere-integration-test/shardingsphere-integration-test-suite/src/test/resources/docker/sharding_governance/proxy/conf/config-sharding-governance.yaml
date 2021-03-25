@@ -15,15 +15,30 @@
 # limitations under the License.
 #
 
-# EMBEDDED, DOCKER, NATIVE
-it.env.type=${it.env}
+schemaName: sharding-governance
 
-it.adapters=jdbc
+dataSources:
+  governance:
+    url: jdbc:mysql://mysql.sharding-governance.host:3306/governance_db?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+    maintenanceIntervalMilliseconds: 30000
 
-#it.scenarios=db,tbl,dbtbl_with_read_write_splitting,read_write_splitting,encrypt,dbtbl_with_read_write_splitting_and_encrypt,sharding_governance,shadow
-it.scenarios=db,tbl,dbtbl_with_read_write_splitting,read_write_splitting,encrypt,dbtbl_with_read_write_splitting_and_encrypt,sharding_governance
-
-#it.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
-it.databases=H2
-
-it.run.additional.cases=false
+rules:
+- !SHARDING
+  tables:
+    t_order:
+      actualDataNodes: governance_db.t_order
+      tableStrategy:
+        none:
+    t_order_details:
+      actualDataNodes: governance_db.t_order_details
+      tableStrategy:
+        none:
+  bindingTables:
+    - t_order,t_order_details
