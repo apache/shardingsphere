@@ -57,11 +57,9 @@ public abstract class BaseITCase {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
-    @Getter
     @OnContainer(name = "adapter")
     private ShardingSphereAdapterContainer proxy;
     
-    @Getter
     @OnContainer(name = "storage", type = ContainerType.STORAGE, hostName = "mysql.db.host")
     private ShardingSphereStorageContainer storage;
     
@@ -74,7 +72,6 @@ public abstract class BaseITCase {
     @ShardingSphereITInject
     private String statement;
    
-    @Getter
     @ShardingSphereITInject
     private TestCaseDescription description;
     
@@ -84,7 +81,7 @@ public abstract class BaseITCase {
     @ShardingSphereITInject
     private String parentPath;
     
-    private DataSource dataSource;
+    private DataSource targetDataSource;
     
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -99,11 +96,7 @@ public abstract class BaseITCase {
     
     @Before
     public void createDataSource() {
-        dataSource = proxy.getDataSource();
-    }
-    
-    protected DataSource getTargetDataSource() {
-        return dataSource;
+        targetDataSource = proxy.getDataSource();
     }
     
     protected String getStatement() throws ParseException {
@@ -124,8 +117,8 @@ public abstract class BaseITCase {
     
     @After
     public final void tearDown() {
-        if (dataSource instanceof ShardingSphereDataSource) {
-            ((ShardingSphereDataSource) dataSource).getMetaDataContexts().getExecutorEngine().close();
+        if (targetDataSource instanceof ShardingSphereDataSource) {
+            ((ShardingSphereDataSource) targetDataSource).getMetaDataContexts().getExecutorEngine().close();
         }
     }
 }
