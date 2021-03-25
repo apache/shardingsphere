@@ -15,19 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.audit;
+package org.apache.shardingsphere.infra.check.audit;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.check.SQLChecker;
 
 /**
- * SQL check result.
+ * Authentication SQL checker.
  */
-@RequiredArgsConstructor
-@Getter
-public final class SQLCheckResult {
+public abstract class AuditSQLChecker implements SQLChecker {
     
-    private final boolean isPassed;
+    private static final int ORDER = 1;
     
-    private final String errorMessage;
+    private static final String CHECK_TYPE = "AUDIT";
+    
+    @Override
+    public final int getOrder() {
+        return ORDER;
+    }
+    
+    @Override
+    public final String getSQLCheckType() {
+        return CHECK_TYPE;
+    }
 }

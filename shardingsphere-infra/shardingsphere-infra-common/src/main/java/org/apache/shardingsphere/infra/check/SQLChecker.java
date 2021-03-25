@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.audit;
+package org.apache.shardingsphere.infra.check;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.auth.Authentication;
@@ -35,7 +35,7 @@ public interface SQLChecker extends OrderedSPI {
      *
      * @return sql check type
      */
-    SQLCheckType getSQLCheckType();
+    String getSQLCheckType();
     
     /**
      * Check SQL.

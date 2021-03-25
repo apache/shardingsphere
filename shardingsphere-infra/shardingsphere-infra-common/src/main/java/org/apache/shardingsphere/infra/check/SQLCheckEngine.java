@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.audit;
+package org.apache.shardingsphere.infra.check;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -34,7 +34,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLCheckEngine {
     
-    private static final Collection<SQLChecker> AUDITORS = OrderedSPIRegistry.getRegisteredServices(SQLChecker.class);
+    private static final Collection<SQLChecker> CHECKERS = OrderedSPIRegistry.getRegisteredServices(SQLChecker.class);
     
     static {
         ShardingSphereServiceLoader.register(SQLChecker.class);
@@ -49,7 +49,7 @@ public final class SQLCheckEngine {
      * @param auth auth
      */
     public static void check(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingSphereMetaData metaData, final Authentication auth) {
-        for (SQLChecker each : AUDITORS) {
+        for (SQLChecker each : CHECKERS) {
             SQLCheckResult auditResult = each.check(sqlStatement, parameters, metaData, auth);
             if (!auditResult.isPassed()) {
                 throw new SQLCheckException(each.getSQLCheckType(), auditResult.getErrorMessage());

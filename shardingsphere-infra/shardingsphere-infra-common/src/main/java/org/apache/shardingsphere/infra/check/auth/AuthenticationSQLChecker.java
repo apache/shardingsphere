@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.audit;
+package org.apache.shardingsphere.infra.check.auth;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.check.SQLChecker;
 
 /**
- * SQL check exception.
+ * Authentication SQL checker.
  */
-@Getter
-public final class SQLCheckException extends ShardingSphereException {
+public abstract class AuthenticationSQLChecker implements SQLChecker {
     
-    private static final long serialVersionUID = 4183020614721058122L;
+    private static final int ORDER = 0;
     
-    private final SQLCheckType sqlCheckType;
+    private static final String CHECK_TYPE = "AUTHENTICATION";
     
-    public SQLCheckException(final SQLCheckType state, final String errorMessage) {
-        super(String.format("SQL %s checking failed. Error message: %s.", state.name(), errorMessage));
-        this.sqlCheckType = state;
+    @Override
+    public final int getOrder() {
+        return ORDER;
+    }
+    
+    @Override
+    public final String getSQLCheckType() {
+        return CHECK_TYPE;
     }
 }
