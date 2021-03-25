@@ -19,7 +19,7 @@ rules:
 - !SHARDING
   tables:
     t_order:
-      actualDataNodes: governance.t_order_${0..9}
+      actualDataNodes: governance_db.t_order
       tableStrategy:
         none:
   bindingTables:
