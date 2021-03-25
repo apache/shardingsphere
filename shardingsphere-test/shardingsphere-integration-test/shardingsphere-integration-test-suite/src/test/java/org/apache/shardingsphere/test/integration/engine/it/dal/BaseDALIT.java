@@ -20,16 +20,12 @@ package org.apache.shardingsphere.test.integration.engine.it.dal;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.integration.engine.it.SingleIT;
-import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -39,11 +35,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public abstract class BaseDALIT extends SingleIT {
-    
-    protected BaseDALIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
-        super(parameterizedArray);
-    }
+public abstract class BaseDALIT extends SingleITCase {
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {
         assertMetaData(resultSet.getMetaData(), getExpectedColumns());
@@ -60,7 +52,7 @@ public abstract class BaseDALIT extends SingleIT {
     
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
         // TODO Fix shadow
-        if ("shadow".equals(getScenario())) {
+        if ("shadow".equals(getDescription().getScenario())) {
             return;
         }
         assertThat(actual.getColumnCount(), is(expected.size()));
