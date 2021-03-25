@@ -193,9 +193,8 @@ public final class RegistryCenter {
     }
     
     private void persistChangedAuthentication(final Collection<ShardingSphereUser> users, final boolean isOverwrite) {
-        if (!users.isEmpty() && (isOverwrite || !hasAuthentication())) {
-            repository.persist(node.getAuthenticationNodesPath(),
-                    YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
+        if (!users.isEmpty() && isOverwrite) {
+            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
         }
     }
 

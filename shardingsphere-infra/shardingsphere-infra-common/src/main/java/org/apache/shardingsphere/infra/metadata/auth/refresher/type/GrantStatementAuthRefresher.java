@@ -41,5 +41,6 @@ public final class GrantStatementAuthRefresher implements AuthenticationRefreshe
                     .map(each -> new ShardingSphereUser(each.getUser(), each.getAuth(), each.getHost())).collect(Collectors.toList());
             ShardingSphereEventBus.getInstance().post(new GrantEvent(users));
         }
+        // TODO support other db
     }
 }

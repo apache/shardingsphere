@@ -55,7 +55,7 @@ public final class RegistryCenterNode {
     
     private static final String AUTHENTICATION_NODE = "authentication";
     
-    private static final String AUTHENTICATION_NODES = "authenticationnodes";
+    private static final String PRIVILEGE_NODE = "privilegenode";
     
     private static final String PROPS_NODE = "props";
     
@@ -259,8 +259,8 @@ public final class RegistryCenterNode {
      *
      * @return authenticationnodes path
      */
-    public String getAuthenticationNodesPath() {
-        return Joiner.on(PATH_SEPARATOR).join(ROOT, AUTHENTICATION_NODES);
+    public String getPrivilegeNodePath() {
+        return Joiner.on(PATH_SEPARATOR).join(ROOT, PRIVILEGE_NODE);
     }
     
     /**
