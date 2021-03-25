@@ -17,8 +17,10 @@ import org.apache.calcite.rex.RexInputRef;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.tools.RelBuilder.GroupKey;
 import org.apache.shardingsphere.infra.optimize.rel.AbstractScan;
+import org.apache.shardingsphere.infra.optimize.tools.OptimizerContext;
 import org.apache.shardingsphere.infra.optimize.tools.PushdownRelBuilder;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.List;
 import java.util.Set;
@@ -46,7 +48,7 @@ public final class LogicalScan extends AbstractScan {
      * @param logicalFilter filter to pushdown
      * @return current <code>LogicalScan</code> instance
      */
-    public final LogicalScan pushdown(final LogicalFilter logicalFilter) {
+    public LogicalScan pushdown(final LogicalFilter logicalFilter) {
         relBuilder.filter(logicalFilter.getVariablesSet(), logicalFilter.getCondition());
         refreshRowType(logicalFilter);
         resetRouteContext();
@@ -58,7 +60,7 @@ public final class LogicalScan extends AbstractScan {
      * @param logicalProject project operator to pushdown
      * @return current <code>LogicalScan</code> instance
      */
-    public final LogicalScan pushdown(final LogicalProject logicalProject) {
+    public LogicalScan pushdown(final LogicalProject logicalProject) {
         relBuilder.project(logicalProject.getProjects(), logicalProject.getRowType().getFieldNames());
         refreshRowType(logicalProject);
         return this;
@@ -70,7 +72,7 @@ public final class LogicalScan extends AbstractScan {
      * @param right right input of join
      * @return current <code>LogicalScan</code> instance
      */
-    public final LogicalScan pushdown(final LogicalJoin join, final RelNode right) {
+    public LogicalScan pushdown(final LogicalJoin join, final RelNode right) {
         relBuilder.push(right);
         relBuilder.join(join.getJoinType(), join.getCondition(), join.getVariablesSet());
         refreshRowType(join);
@@ -83,7 +85,7 @@ public final class LogicalScan extends AbstractScan {
      * @param logicalAgg aggregate operator
      * @return @return current <code>LogicalScan</code> instance
      */
-    public final LogicalScan pushdown(final LogicalAggregate logicalAgg) {
+    public LogicalScan pushdown(final LogicalAggregate logicalAgg) {
         GroupKey groupKey = relBuilder.groupKey(logicalAgg.getGroupSet(), logicalAgg.getGroupSets());
         relBuilder.aggregate(groupKey, logicalAgg.getAggCallList());
         refreshRowType(logicalAgg);
@@ -95,7 +97,7 @@ public final class LogicalScan extends AbstractScan {
      * @param logicalSort sort operator to pushdown
      * @return current <code>LogicalScan</code> instance
      */
-    public final LogicalScan pushdown(final LogicalSort logicalSort) {
+    public LogicalScan pushdown(final LogicalSort logicalSort) {
         List<RelFieldCollation> fieldCollations = logicalSort.getCollation().getFieldCollations();
         List<RexNode> sortRexNodes = fieldCollations.stream()
                 .filter(collation -> collation.direction == Direction.ASCENDING || collation.direction == Direction.DESCENDING)
@@ -120,7 +122,7 @@ public final class LogicalScan extends AbstractScan {
      * Get all tables of this pushdown algebra expression.
      * @return table of this <code>LogicalScan</code> instance
      */
-    public final Set<RelOptTable> getTables() {
+    public Set<RelOptTable> getTables() {
         Set<RelOptTable> tables = Sets.newHashSet();
         RelNode relNode = relBuilder.peek();
         relNode.accept(new RelShuttleImpl() {
@@ -157,10 +159,20 @@ public final class LogicalScan extends AbstractScan {
         return relBuilder.peek();
     }
     
+    /**
+     * If this <code>LogicalScan</code> will be executed in a single sharding.
+     * @return true if this <code>LogicalScan</code> only route to a single sharding.
+     */
+    public boolean isSingleRouting() {
+        if (getRouteContext() == null) {
+            this.route(OptimizerContext.getCurrentOptimizerContext().get().getShardingRule());
+        }
+        return getRouteContext().isSingleRouting();
+    }
     
     @Override
-    public RouteContext route() {
-        return route(relBuilder.peek());
+    public RouteContext route(final ShardingRule shardingRule) {
+        return route(relBuilder.peek(), shardingRule);
     }
     
     /**

@@ -28,7 +28,7 @@ public final class ScanExecutor extends SingleExecutor {
      */
     public static Executor build(final SSScan scan, final ExecutorBuilder executorBuilder) {
         ExecContext execContext = executorBuilder.getExecContext();
-        RouteContext routeContext = scan.route();
+        RouteContext routeContext = scan.route(execContext.getShardingRule());
         RelNode relNode = scan.getPushdownRelNode();
         Executor executor = new JDBCQueryExecutor(relNode, routeContext, execContext);
         return new ScanExecutor(executor, execContext);

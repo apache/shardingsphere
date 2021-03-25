@@ -15,5 +15,11 @@
  * limitations under the License.
  */
 
-CREATE TABLE IF NOT EXISTS t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
-CREATE TABLE IF NOT EXISTS t_user (user_id INT NOT NULL,  information VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE IF NOT EXISTS t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+CREATE TABLE IF NOT EXISTS t_order_1 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
+
+CREATE TABLE IF NOT EXISTS t_user(user_id INT NOT NULL, plain_pwd VARCHAR(45) NULL, user_name VARCHAR(45) NULL, PRIMARY KEY (user_id));
+
+CREATE TABLE IF NOT EXISTS t_order_item_0 (order_item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (order_item_id));
+CREATE TABLE IF NOT EXISTS t_order_item_1 (order_item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, remarks VARCHAR(45) NULL, PRIMARY KEY (order_item_id));
+

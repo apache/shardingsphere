@@ -3,6 +3,8 @@ package org.apache.shardingsphere.infra.optimize.planner;
 import com.google.common.collect.ImmutableList;
 import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.hep.HepMatchOrder;
+import org.apache.calcite.rel.rules.CoreRules;
+import org.apache.shardingsphere.infra.optimize.planner.rule.Rules;
 import org.apache.shardingsphere.infra.optimize.planner.rule.SSCalcConverterRule;
 import org.apache.shardingsphere.infra.optimize.planner.rule.SSHashAggregateConverterRule;
 import org.apache.shardingsphere.infra.optimize.planner.rule.SSLimitSortConverterRule;
@@ -14,56 +16,29 @@ import org.apache.shardingsphere.infra.optimize.planner.rule.SSSortConverterRule
 
 import java.util.Collection;
 
-import static org.apache.calcite.rel.rules.CoreRules.AGGREGATE_CASE_TO_FILTER;
-import static org.apache.calcite.rel.rules.CoreRules.AGGREGATE_JOIN_REMOVE;
-import static org.apache.calcite.rel.rules.CoreRules.AGGREGATE_JOIN_TRANSPOSE;
-import static org.apache.calcite.rel.rules.CoreRules.AGGREGATE_PROJECT_MERGE;
-import static org.apache.calcite.rel.rules.CoreRules.FILTER_AGGREGATE_TRANSPOSE;
-import static org.apache.calcite.rel.rules.CoreRules.FILTER_CALC_MERGE;
-import static org.apache.calcite.rel.rules.CoreRules.FILTER_INTO_JOIN;
-import static org.apache.calcite.rel.rules.CoreRules.FILTER_MERGE;
-import static org.apache.calcite.rel.rules.CoreRules.FILTER_PROJECT_TRANSPOSE;
-import static org.apache.calcite.rel.rules.CoreRules.FILTER_SET_OP_TRANSPOSE;
-import static org.apache.calcite.rel.rules.CoreRules.FILTER_SUB_QUERY_TO_CORRELATE;
-import static org.apache.calcite.rel.rules.CoreRules.FILTER_TO_CALC;
-import static org.apache.calcite.rel.rules.CoreRules.JOIN_CONDITION_PUSH;
-import static org.apache.calcite.rel.rules.CoreRules.JOIN_SUB_QUERY_TO_CORRELATE;
-import static org.apache.calcite.rel.rules.CoreRules.PROJECT_CALC_MERGE;
-import static org.apache.calcite.rel.rules.CoreRules.PROJECT_JOIN_REMOVE;
-import static org.apache.calcite.rel.rules.CoreRules.PROJECT_MERGE;
-import static org.apache.calcite.rel.rules.CoreRules.PROJECT_REMOVE;
-import static org.apache.calcite.rel.rules.CoreRules.PROJECT_SUB_QUERY_TO_CORRELATE;
-import static org.apache.calcite.rel.rules.CoreRules.PROJECT_TO_CALC;
-import static org.apache.shardingsphere.infra.optimize.planner.rule.Rules.JOIN_TO_SCAN_RULE;
-import static org.apache.shardingsphere.infra.optimize.planner.rule.Rules.PUSH_AGG_TO_SCAN_RULE;
-import static org.apache.shardingsphere.infra.optimize.planner.rule.Rules.PUSH_FILTER_TO_SCAN_RULE;
-import static org.apache.shardingsphere.infra.optimize.planner.rule.Rules.PUSH_PROJECT_TO_SCAN_RULE;
-import static org.apache.shardingsphere.infra.optimize.planner.rule.Rules.PUSH_SORT_TO_MULTI_ROUTING_RULE;
-import static org.apache.shardingsphere.infra.optimize.planner.rule.Rules.PUSH_SORT_TO_SINGLE_ROUTING_RULE;
-
 public final class PlannerRules {
     
     public static final Collection<? extends RelOptRule> PRE_RULES = ImmutableList.of();
     
-    public static final Collection<? extends RelOptRule> SUB_QUERY_RULES = ImmutableList.of(FILTER_SUB_QUERY_TO_CORRELATE,
-                            PROJECT_SUB_QUERY_TO_CORRELATE, JOIN_SUB_QUERY_TO_CORRELATE);
+    public static final Collection<? extends RelOptRule> SUB_QUERY_RULES = ImmutableList.of(CoreRules.FILTER_SUB_QUERY_TO_CORRELATE,
+            CoreRules.PROJECT_SUB_QUERY_TO_CORRELATE, CoreRules.JOIN_SUB_QUERY_TO_CORRELATE);
     
-    public static final Collection<? extends RelOptRule> FILTER_RULES = ImmutableList.of(FILTER_INTO_JOIN, JOIN_CONDITION_PUSH,
-            FILTER_PROJECT_TRANSPOSE, FILTER_AGGREGATE_TRANSPOSE, FILTER_SET_OP_TRANSPOSE, FILTER_MERGE);
+    public static final Collection<? extends RelOptRule> FILTER_RULES = ImmutableList.of(CoreRules.FILTER_INTO_JOIN, CoreRules.JOIN_CONDITION_PUSH,
+            CoreRules.FILTER_PROJECT_TRANSPOSE, CoreRules.FILTER_AGGREGATE_TRANSPOSE, CoreRules.FILTER_SET_OP_TRANSPOSE, CoreRules.FILTER_MERGE);
     
-    public static final Collection<? extends RelOptRule> PROJECT_RULES = ImmutableList.of(PROJECT_REMOVE, PROJECT_MERGE,
-            PROJECT_JOIN_REMOVE, PROJECT_JOIN_REMOVE);
+    public static final Collection<? extends RelOptRule> PROJECT_RULES = ImmutableList.of(CoreRules.PROJECT_REMOVE, CoreRules.PROJECT_MERGE,
+            CoreRules.PROJECT_JOIN_REMOVE, CoreRules.PROJECT_JOIN_REMOVE);
     
-    public static final Collection<? extends RelOptRule> PUSH_TO_SCAN_HEP_RULES = ImmutableList.of(PUSH_FILTER_TO_SCAN_RULE, PUSH_PROJECT_TO_SCAN_RULE);
+    public static final Collection<? extends RelOptRule> PUSH_TO_SCAN_HEP_RULES = ImmutableList.of(Rules.PUSH_FILTER_TO_SCAN_RULE, Rules.PUSH_PROJECT_TO_SCAN_RULE);
     
-    public static final Collection<? extends RelOptRule> CALC_RULES = ImmutableList.of(FILTER_TO_CALC, PROJECT_TO_CALC, FILTER_CALC_MERGE, PROJECT_CALC_MERGE);
+    public static final Collection<? extends RelOptRule> CALC_RULES = ImmutableList.of(CoreRules.FILTER_TO_CALC, CoreRules.PROJECT_TO_CALC, CoreRules.FILTER_CALC_MERGE, CoreRules.PROJECT_CALC_MERGE);
     
-    public static final Collection<? extends RelOptRule> PARTITION_PUSHDOWN_HEP_RULES = ImmutableList.of(JOIN_TO_SCAN_RULE, 
-            PUSH_FILTER_TO_SCAN_RULE, PUSH_PROJECT_TO_SCAN_RULE, PUSH_AGG_TO_SCAN_RULE, PUSH_SORT_TO_SINGLE_ROUTING_RULE, 
-            PUSH_SORT_TO_MULTI_ROUTING_RULE);
+    public static final Collection<? extends RelOptRule> PARTITION_PUSHDOWN_HEP_RULES = ImmutableList.of(Rules.JOIN_TO_SCAN_RULE,
+            Rules.PUSH_FILTER_TO_SCAN_RULE, Rules.PUSH_PROJECT_TO_SCAN_RULE, Rules.PUSH_AGG_TO_SCAN_RULE, Rules.PUSH_SORT_TO_SINGLE_ROUTING_RULE,
+            Rules.PUSH_SORT_TO_MULTI_ROUTING_RULE);
     
-    public static final Collection<? extends RelOptRule> AGG_RULES = ImmutableList.of(AGGREGATE_PROJECT_MERGE, AGGREGATE_JOIN_REMOVE,
-            AGGREGATE_JOIN_TRANSPOSE, AGGREGATE_CASE_TO_FILTER);
+    public static final Collection<? extends RelOptRule> AGG_RULES = ImmutableList.of(CoreRules.AGGREGATE_PROJECT_MERGE, CoreRules.AGGREGATE_JOIN_REMOVE,
+            CoreRules.AGGREGATE_JOIN_TRANSPOSE, CoreRules.AGGREGATE_CASE_TO_FILTER);
 
     public static final Collection<? extends RelOptRule> LIMIT_RULES = ImmutableList.of();
     

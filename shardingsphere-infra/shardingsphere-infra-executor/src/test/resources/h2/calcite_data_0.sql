@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-DELETE FROM t_order;
+DELETE FROM t_order_0;
+DELETE FROM t_order_1;
 DELETE FROM t_user;
 
-INSERT INTO t_order VALUES(1000, 10, 'init');
-INSERT INTO t_order VALUES(1001, 11, 'init');
+INSERT INTO t_order_0 VALUES(1000, 10, 'init');
 
-INSERT INTO t_user VALUES(0, 'description0');
-INSERT INTO t_user VALUES(1, 'description1');
-INSERT INTO t_user VALUES(2, 'description2');
-INSERT INTO t_user VALUES(3, 'description3');
+INSERT INTO t_order_item_0 VALUES(1000, 10000, 10, 'init', 't_order_item_calcite_sharding');
+INSERT INTO t_order_item_1 VALUES(1010, 10000, 10, 'init', 't_order_item_calcite_sharding');
+
+INSERT INTO t_user VALUES(0, 'plain passwordA', 'Rachel');
+INSERT INTO t_user VALUES(2, 'plain passwordC', 'Phoebe');
+INSERT INTO t_user VALUES(4, 'plain passwordE', 'Chandler');

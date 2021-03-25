@@ -15,6 +15,20 @@
 # limitations under the License.
 #
 
+dataSources:
+  ds_0:
+    dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:ds_0;DATABASE_TO_UPPER=false;MODE=MySQL
+    username: sa
+    password:
+  ds_1:
+    dataSourceClassName: org.apache.commons.dbcp2.BasicDataSource
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:ds_1;DATABASE_TO_UPPER=false;MODE=MySQL
+    username: sa
+    password:
+
 rules:
   - !SHARDING
     tables:
@@ -36,15 +50,15 @@ rules:
         keyGenerateStrategy:
           column: order_item_id
           keyGeneratorName: snowflake
-        t_user:
-          actualDataNodes: ds_${0..1}.t_user_${0..1}
-          tableStrategy:
-            standard:
-              shardingColumn: user_id
-              shardingAlgorithmName: t_user_inline
-          keyGenerateStrategy:
-            column: user_id
-            keyGeneratorName: snowflake
+      t_user:
+        actualDataNodes: ds_${0..1}.t_user
+        #tableStrategy:
+        #  standard:
+        #    shardingColumn: user_id
+        #    shardingAlgorithmName: t_user_inline
+        keyGenerateStrategy:
+          column: user_id
+          keyGeneratorName: snowflake
     bindingTables:
       - t_order,t_order_item
     broadcastTables:

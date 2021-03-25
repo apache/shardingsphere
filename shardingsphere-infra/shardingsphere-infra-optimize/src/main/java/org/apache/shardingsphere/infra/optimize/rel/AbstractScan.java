@@ -1,11 +1,12 @@
 package org.apache.shardingsphere.infra.optimize.rel;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.AbstractRelNode;
 import org.apache.calcite.rel.RelNode;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
-import org.apache.shardingsphere.infra.optimize.tools.OptimizerContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractScan extends AbstractRelNode {
     
+    @Getter(AccessLevel.PROTECTED)
     private RouteContext routeContext;
 
     public AbstractScan(final RelOptCluster cluster, final RelTraitSet traitSet) {
@@ -37,31 +39,20 @@ public abstract class AbstractScan extends AbstractRelNode {
     }
     
     /**
-     * If this <code>LogicalScan</code> will be executed in a single sharding.
-     * @return true if this <code>LogicalScan</code> only route to a single sharding.
-     */
-    public boolean isSingleRouting() {
-        if (routeContext == null) {
-            this.route();
-        }
-        return routeContext.isSingleRouting();
-    }
-    
-    /**
      * Route current <code>RelNode</code>.
+     * @param shardingRule table sharding rule.
      * @return <code>RouteContext</code>
      */
-    public abstract RouteContext route();
+    public abstract RouteContext route(ShardingRule shardingRule);
     
     /**
      * Route this <code>LogicalScan</code>. 
      * @return route context
      */
-    protected RouteContext route(final RelNode relNode) {
+    protected RouteContext route(final RelNode relNode, final ShardingRule shardingRule) {
         if (routeContext != null) {
             return this.routeContext;
         }
-        ShardingRule shardingRule = OptimizerContext.getCurrentOptimizerContext().get().getShardingRule();
         Map<String, List<ShardingConditionValue>> map = TableAndRexShuttle.getTableAndShardingCondition(relNode, shardingRule);
         List<ShardingCondition> shardingConditions = map.values().stream().map(item -> {
             ShardingCondition result = new ShardingCondition();

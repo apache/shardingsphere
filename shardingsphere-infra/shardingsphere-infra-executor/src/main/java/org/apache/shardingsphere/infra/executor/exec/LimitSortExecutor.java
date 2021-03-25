@@ -43,7 +43,7 @@ public class LimitSortExecutor extends SortExecutor {
     @Override
     protected Iterator<Row> initInputRowIterator() {
         Iterator<Row> inputRowIterator;
-        if (getOrdering() == RowComparatorUtil.EMPTY) {
+        if (getOrdering() != RowComparatorUtil.EMPTY) {
             inputRowIterator = super.initInputRowIterator();
         } else {
             inputRowIterator = new Iterator<Row>() {
