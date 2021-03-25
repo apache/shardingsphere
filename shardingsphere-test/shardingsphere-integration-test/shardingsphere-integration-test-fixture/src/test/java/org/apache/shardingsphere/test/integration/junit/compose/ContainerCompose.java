@@ -90,24 +90,24 @@ public final class ContainerCompose implements Closeable {
     private ShardingSphereContainer createContainer(final FrameworkField field) {
         OnContainer metadata = field.getAnnotation(OnContainer.class);
         try {
-            ShardingSphereContainer container = createContainer(metadata);
-            if (Objects.isNull(container)) {
+            ShardingSphereContainer result = createContainer(metadata);
+            if (Objects.isNull(result)) {
                 log.warn("container {} is not activated.", metadata.name());
                 return null;
             }
-            container.setDockerName(metadata.name());
+            result.setDockerName(metadata.name());
             String hostName = metadata.hostName();
             if (Strings.isNullOrEmpty(hostName)) {
                 hostName = metadata.name();
             }
-            container.withNetworkAliases(hostName);
-            container.setNetwork(network);
-            container.withLogConsumer(ContainerLogs.newConsumer(clusterName + "_" + metadata.name()));
+            result.withNetworkAliases(hostName);
+            result.setNetwork(network);
+            result.withLogConsumer(ContainerLogs.newConsumer(clusterName + "_" + metadata.name()));
             field.getField().setAccessible(true);
-            field.getField().set(instance, container);
-            beanContext.registerBeanByName(metadata.name(), container);
+            field.getField().set(instance, result);
+            beanContext.registerBeanByName(metadata.name(), result);
             log.info("container {} is activated.", metadata.name());
-            return container;
+            return result;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
