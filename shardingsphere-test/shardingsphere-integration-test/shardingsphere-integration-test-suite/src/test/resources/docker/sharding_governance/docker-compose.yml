@@ -20,10 +20,10 @@ version: "2.1"
 services:
   mysql:
     image: "mysql/mysql-server:5.7"
-    container_name: governance-mysql
+    container_name: sharding-governance-mysql
     command: ['--sql_mode=', '--default-authentication-plugin=mysql_native_password']
     volumes:
-      - ../../env/governance/init-sql/mysql:/docker-entrypoint-initdb.d/
+      - ../../env/sharding_governance/init-sql/mysql:/docker-entrypoint-initdb.d/
     ports:
       - "33660:3306"
     environment:
@@ -31,18 +31,18 @@ services:
   
   zookeeper:
     image: "zookeeper:3.6.2"
-    container_name: governance-register-center
+    container_name: sharding-governance-register-center
     ports:
       - "26810:2181"
   
-  shardingsphere-proxy:
+  shardingsphere-proxy_1:
     image: apache/shardingsphere-proxy-test
-    container_name: governance-shardingsphere-proxy
+    container_name: sharding-governance-1-shardingsphere-proxy
     ports:
       - "33670:3307"
       - "33680:3308"
     links:
-      - "mysql:mysql.governance.host"
+      - "mysql:mysql.sharding-governance.host"
       - "zookeeper:zk"
     volumes:
       - ./proxy/conf:/opt/shardingsphere-proxy/conf
@@ -54,14 +54,14 @@ services:
       - WAIT_SLEEP_INTERVAL=5
       - WAIT_HOST_CONNECT_TIMEOUT=30
 
-  shardingsphere-proxy-standby:
+  shardingsphere-proxy_2:
     image: apache/shardingsphere-proxy-test
-    container_name: governance-standby-shardingsphere-proxy
+    container_name: sharding-governance-2-shardingsphere-proxy
     ports:
       - "33770:3307"
       - "33780:3308"
     links:
-      - "mysql:mysql.governance.host"
+      - "mysql:mysql.sharding-governance.host"
       - "zookeeper:zk"
     volumes:
       - ./proxy/conf:/opt/shardingsphere-proxy/conf
