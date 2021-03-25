@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.agent.api.advice.ClassStaticMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 
 import java.lang.reflect.Method;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Compose class static method around advice.
@@ -31,20 +30,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class ComposeClassStaticMethodAroundAdvice implements ClassStaticMethodAroundAdvice {
     
-    private final @NonNull List<ClassStaticMethodAroundAdvice> adviceList;
+    private final Collection<ClassStaticMethodAroundAdvice> advices;
     
     @Override
     public void beforeMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        adviceList.forEach(each -> each.beforeMethod(clazz, method, args, result));
+        advices.forEach(each -> each.beforeMethod(clazz, method, args, result));
     }
     
     @Override
     public void afterMethod(final Class<?> clazz, final Method method, final Object[] args, final MethodInvocationResult result) {
-        adviceList.forEach(each -> each.afterMethod(clazz, method, args, result));
+        advices.forEach(each -> each.afterMethod(clazz, method, args, result));
     }
     
     @Override
     public void onThrowing(final Class<?> clazz, final Method method, final Object[] args, final Throwable throwable) {
-        adviceList.forEach(each -> each.onThrowing(clazz, method, args, throwable));
+        advices.forEach(each -> each.onThrowing(clazz, method, args, throwable));
     }
 }
