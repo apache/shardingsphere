@@ -36,5 +36,9 @@ rules:
       actualDataNodes: governance_db.t_order
       tableStrategy:
         none:
+    t_order_details:
+      actualDataNodes: governance_db.t_order_details
+      tableStrategy:
+        none:
   bindingTables:
     - t_order,t_order_details
