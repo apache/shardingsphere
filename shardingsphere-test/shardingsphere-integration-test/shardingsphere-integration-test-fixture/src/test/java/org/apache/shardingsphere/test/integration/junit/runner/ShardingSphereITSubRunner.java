@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.integration.junit.runner;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.junit.annotation.OnContainer;
 import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
@@ -31,7 +30,6 @@ import java.lang.reflect.Field;
 /**
  * ShardingSphere IT sub runner.
  */
-@Slf4j
 public final class ShardingSphereITSubRunner extends BlockJUnit4ClassRunner {
     
     @Getter
@@ -65,25 +63,25 @@ public final class ShardingSphereITSubRunner extends BlockJUnit4ClassRunner {
     
     protected void autowired(final Object testInstance) {
         getTestClass().getAnnotatedFields(ShardingSphereITInject.class)
-                .forEach(e -> {
+                .forEach(each -> {
                     try {
-                        Field field = e.getField();
+                        Field field = each.getField();
                         field.setAccessible(true);
                         if (field.getType() == String.class) {
                             field.set(testInstance, context.getBeanByName(field.getName()));
                         } else {
-                            field.set(testInstance, context.getBean(e.getType()));
+                            field.set(testInstance, context.getBean(each.getType()));
                         }
                     } catch (final IllegalAccessException ex) {
                         throw new RuntimeException(ex.getMessage(), ex);
                     }
                 });
-        getTestClass().getAnnotatedFields(OnContainer.class).forEach(e -> {
-            OnContainer container = e.getAnnotation(OnContainer.class);
-            Object c = context.getBeanByName(container.name());
+        getTestClass().getAnnotatedFields(OnContainer.class).forEach(each -> {
+            OnContainer onContainer = each.getAnnotation(OnContainer.class);
+            Object container = context.getBeanByName(onContainer.name());
             try {
-                e.getField().setAccessible(true);
-                e.getField().set(testInstance, c);
+                each.getField().setAccessible(true);
+                each.getField().set(testInstance, container);
             } catch (final IllegalAccessException ex) {
                 throw new RuntimeException(ex);
             }
