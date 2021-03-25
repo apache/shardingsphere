@@ -15,16 +15,6 @@
 # limitations under the License.
 #
 
-rules:
-- !SHARDING
-  tables:
-    t_order:
-      actualDataNodes: governance_db.t_order
-      tableStrategy:
-        none:
-  bindingTables:
-    - t_order,t_order_details
-
 governance:
   name: governance_ds
   registryCenter:
@@ -36,3 +26,14 @@ governance:
       maxRetries: 3
       operationTimeoutMilliseconds: 500
   overwrite: true
+
+
+rules:
+- !SHARDING
+  tables:
+    t_order:
+      actualDataNodes: governance_db.t_order
+      tableStrategy:
+        none:
+  bindingTables:
+    - t_order,t_order_details
