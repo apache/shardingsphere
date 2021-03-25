@@ -16,5 +16,5 @@
 #
 
 org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.MySQLTableMetaDataLoader
-org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.SQLServerTableMetaDataLoader
 org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.PostgreSQLTableMetaDataLoader
+org.apache.shardingsphere.infra.metadata.schema.builder.loader.dialect.SQLServerTableMetaDataLoader
