@@ -144,7 +144,7 @@ public final class ShardingSphereRunner extends Suite {
     
     private void register(final TestCaseParameters parameters, final TestCaseBeanContext context) {
         context.registerBean(TestCaseParameters.class, parameters);
-        context.registerBeanByName("statement", parameters.getStatement());
+        context.registerBeanByName("sql", parameters.getSql());
         context.registerBeanByName("parentPath", parameters.getParentPath());
         context.registerBean(SQLExecuteType.class, parameters.getExecuteType());
         context.registerBean(IntegrationTestCase.class, parameters.getTestCase());

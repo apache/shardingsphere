@@ -51,7 +51,7 @@ public final class GeneralDALIT extends BaseDALIT {
     
     private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            boolean isQuery = statement.execute(getStatement());
+            boolean isQuery = statement.execute(getSQL());
             if (isQuery) {
                 try (ResultSet resultSet = statement.getResultSet()) {
                     assertResultSet(resultSet);
