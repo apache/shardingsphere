@@ -19,7 +19,7 @@ schemaName: read_write_splitting
 
 dataSources:
   write_ds:
-    url: jdbc:mysql://mysql.read-write-splitting.host:3306/write_ds?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.db.host:3306/write_ds?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -29,7 +29,7 @@ dataSources:
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   read_0:
-    url: jdbc:mysql://mysql.read-write-splitting.host:3306/read_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.db.host:3306/read_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -39,7 +39,7 @@ dataSources:
     minPoolSize: 2
     maintenanceIntervalMilliseconds: 30000
   read_1:
-    url: jdbc:mysql://mysql.read-write-splitting.host:3306/read_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.db.host:3306/read_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
