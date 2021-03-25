@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.spi.fixture.OrderedSPIFixtureImpl;
 import org.apache.shardingsphere.infra.spi.ordered.cache.CachedOrderedServices;
 import org.apache.shardingsphere.infra.spi.ordered.cache.OrderedServicesCache;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
