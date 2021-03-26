@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSph
 import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,9 +33,10 @@ public interface Authentication {
     /**
      * Initialize authentication.
      * 
-     * @param props properties
+     * @param initializedUsers initialized users
+     * @param loadedPrivileges loaded privileges
      */
-    void init(Map<String, Object> props);
+    void init(Collection<ShardingSphereUser> initializedUsers, Map<ShardingSphereUser, ShardingSpherePrivilege> loadedPrivileges);
     
     /**
      * Get authentication.

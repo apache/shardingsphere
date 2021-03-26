@@ -158,9 +158,7 @@ public final class MetaDataContextsBuilder {
     
     private Authentication buildAuthentication(final Collection<ShardingSphereUser> users, final Map<String, ShardingSphereMetaData> metaDataMap) {
         DefaultAuthentication result = new DefaultAuthentication();
-        Map<String, Object> props = new HashMap<>(1, 1);
-        props.put("privileges", PrivilegeBuilder.build(metaDataMap.values(), users, this.props));
-        result.init(props);
+        result.init(Collections.emptyList(), PrivilegeBuilder.build(metaDataMap.values(), users, props));
         return result;
     }
 }

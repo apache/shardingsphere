@@ -44,19 +44,12 @@ public final class DefaultAuthentication implements Authentication {
         }
     }
     
-    @SuppressWarnings("unchecked")
     @Override
-    public void init(final Map<String, Object> props) {
-        Collection<ShardingSphereUser> users = (Collection<ShardingSphereUser>) props.get("users");
-        if (null != users) {
-            for (ShardingSphereUser each : users) {
-                authentication.put(each, createShardingSpherePrivilege());
-            }
+    public void init(final Collection<ShardingSphereUser> initializedUsers, final Map<ShardingSphereUser, ShardingSpherePrivilege> loadedPrivileges) {
+        for (ShardingSphereUser each : initializedUsers) {
+            authentication.put(each, createShardingSpherePrivilege());
         }
-        Map<ShardingSphereUser, ShardingSpherePrivilege> privileges = (Map<ShardingSphereUser, ShardingSpherePrivilege>) props.get("privileges");
-        if (null != privileges) {
-            authentication.putAll(privileges);
-        }
+        authentication.putAll(loadedPrivileges);
     }
     
     private ShardingSpherePrivilege createShardingSpherePrivilege() {
