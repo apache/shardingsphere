@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.spi.ordered.cache;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterface;
 import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterfaceImpl;
-import org.apache.shardingsphere.infra.spi.fixture.OrderedSPIFixture;
-import org.apache.shardingsphere.infra.spi.fixture.OrderedSPIFixtureImpl;
+import org.apache.shardingsphere.infra.spi.fixture.ordered.OrderedSPIFixture;
+import org.apache.shardingsphere.infra.spi.fixture.ordered.OrderedSPIFixtureImpl;
 import org.junit.After;
 import org.junit.Test;
 
