@@ -51,6 +51,11 @@ public final class DefaultAuthentication implements Authentication {
     }
     
     @Override
+    public Collection<ShardingSphereUser> getAllUsers() {
+        return authentication.keySet();
+    }
+    
+    @Override
     public Optional<ShardingSphereUser> findUser(final Grantee grantee) {
         return authentication.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst();
     }
