@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
+import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -24,11 +25,15 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class SubstitutableColumnNameTokenTest {
-    
+public final class SubstitutableColumnTest {
+
     @Test
-    public void assertToString() {
-        SubstitutableColumnsToken token = new SubstitutableColumnsToken(0, 1, new SubstitutableColumn("", "", "id", null, Optional.empty()));
-        assertThat(token.toString(), is("id"));
+    public void assertSubstitutableColumn() {
+        SubstitutableColumn column = new SubstitutableColumn("t_user", "", "column_1", null, Optional.empty());
+        assertThat(column.getTableName(), is("t_user"));
+        assertThat(column.getOwner(), is(""));
+        assertThat(column.getName(), is("column_1"));
+        assertThat(column.getQuoteCharacter(), is(QuoteCharacter.NONE));
+        assertThat(column.getAlias(), is(Optional.empty()));
     }
 }
