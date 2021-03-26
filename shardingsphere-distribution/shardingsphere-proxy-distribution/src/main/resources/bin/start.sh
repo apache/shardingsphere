@@ -21,7 +21,7 @@ SERVER_NAME=ShardingSphere-Proxy
 cd `dirname $0`
 cd ..
 DEPLOY_DIR=`pwd`
-echo $DEPLOY_DIR
+
 LOGS_DIR=${DEPLOY_DIR}/logs
 if [ ! -d ${LOGS_DIR} ]; then
     mkdir ${LOGS_DIR}
