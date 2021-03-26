@@ -54,6 +54,15 @@ public final class LockNode {
     }
     
     /**
+     * Get locked ack root node path.
+     * 
+     * @return locked ack root node path
+     */
+    public String getLockedAckRootNodePah() {
+        return Joiner.on("/").join("", LOCK_NODE_ROOT, LOCKED_ACK_NODE);
+    }
+    
+    /**
      * Get locked ack node path.
      * 
      * @param ackLockName ack lock name
