@@ -420,7 +420,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         }
         Map<ShardingSphereUser, ShardingSpherePrivilege> result = PrivilegeBuilder.build(metaDataContexts.getMetaDataMap().values(), users, metaDataContexts.getProps());
         for (Entry<ShardingSphereUser, ShardingSpherePrivilege> entry : result.entrySet()) {
-            Optional<ShardingSphereUser> user = metaDataContexts.getAuthentication().getAuthentication().keySet().stream().filter(t -> t.getGrantee().equals(t.getGrantee())).findFirst();
+            Optional<ShardingSphereUser> user = metaDataContexts.getAuthentication().getAuthentication().keySet().stream().filter(t -> t.getGrantee().equals(entry.getKey().getGrantee())).findFirst();
             if (user.isPresent() && null != result.get(entry.getKey())) {
                 metaDataContexts.getAuthentication().getAuthentication().put(user.get(), entry.getValue());
             } else if (!user.isPresent() && null != result.get(entry.getKey())) {
