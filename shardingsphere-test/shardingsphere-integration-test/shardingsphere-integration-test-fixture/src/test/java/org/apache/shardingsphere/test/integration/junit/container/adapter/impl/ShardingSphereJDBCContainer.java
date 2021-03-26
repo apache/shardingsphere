@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.integration.junit.container.adapter.impl;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.governance.api.yaml.YamlGovernanceShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.governance.repository.api.exception.GovernanceException;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
@@ -74,7 +75,7 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
                 while (retryCount++ < 30) {
                     try {
                         dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(scenario)));
-                    } catch (RuntimeException ex) {
+                    } catch (GovernanceException ex) {
                         Thread.sleep(1000L);
                         continue;
                     }
