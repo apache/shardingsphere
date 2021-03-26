@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
@@ -97,7 +98,9 @@ public final class GovernanceMetaDataContextsTest {
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
         when(metaData.getName()).thenReturn("schema");
-        when(metaData.getResource()).thenReturn(mock(ShardingSphereResource.class));
+        ShardingSphereResource resource = mock(ShardingSphereResource.class);
+        when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(metaData.getResource()).thenReturn(resource);
         when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(readWriteSplittingRule));
         return Collections.singletonMap("schema", metaData);
