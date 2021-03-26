@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.integration.junit.container.adapter.impl;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.governance.api.yaml.YamlGovernanceShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
@@ -65,7 +66,12 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
      */
     public DataSource getDataSource() {
         try {
-            return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(getDescription().getScenario())));
+            String scenario = getDescription().getScenario();
+            // TODO fix sharding_governance
+            if ("sharding_governance".equals(scenario)) {
+                return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(scenario)));
+            }
+            return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(scenario)));
         } catch (SQLException | IOException ex) {
             throw new RuntimeException(ex);
         }
