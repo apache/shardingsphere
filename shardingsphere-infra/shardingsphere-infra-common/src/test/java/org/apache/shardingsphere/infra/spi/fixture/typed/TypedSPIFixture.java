@@ -15,21 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.fixture;
+package org.apache.shardingsphere.infra.spi.fixture.typed;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
-import java.util.Properties;
-
-@Getter
-@Setter
-public final class TypedSPIFixtureImpl implements TypedSPIFixture {
-    
-    private Properties props = new Properties();
-    
-    @Override
-    public String getType() {
-        return "FIXTURE";
-    }
+public interface TypedSPIFixture extends TypedSPI {
 }

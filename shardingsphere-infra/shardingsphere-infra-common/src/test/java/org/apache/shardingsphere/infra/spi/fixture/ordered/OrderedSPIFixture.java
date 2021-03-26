@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.fixture;
+package org.apache.shardingsphere.infra.spi.fixture.ordered;
 
-import org.apache.shardingsphere.infra.spi.required.RequiredSPI;
+import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterface;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
-public interface NoImplRequiredSPIFixture extends RequiredSPI {
+public interface OrderedSPIFixture<T extends FixtureCustomInterface> extends OrderedSPI<T> {
 }
-
