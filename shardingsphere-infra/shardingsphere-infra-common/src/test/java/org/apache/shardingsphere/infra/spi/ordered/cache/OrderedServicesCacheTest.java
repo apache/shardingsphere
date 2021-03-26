@@ -15,28 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.ordered;
+package org.apache.shardingsphere.infra.spi.ordered.cache;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterface;
 import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterfaceImpl;
 import org.apache.shardingsphere.infra.spi.fixture.OrderedSPIFixture;
 import org.apache.shardingsphere.infra.spi.fixture.OrderedSPIFixtureImpl;
-import org.apache.shardingsphere.infra.spi.ordered.cache.OrderedServicesCache;
 import org.junit.After;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-public final class OrderedSPIRegistryTest {
-    
+public final class OrderedServicesCacheTest {
+
     static {
         ShardingSphereServiceLoader.register(OrderedSPIFixture.class);
     }
@@ -52,24 +56,20 @@ public final class OrderedSPIRegistryTest {
     }
     
     @Test
-    public void assertGetRegisteredServicesByClass() {
-        Map<Class<?>, OrderedSPIFixture> actual = OrderedSPIRegistry.getRegisteredServicesByClass(Collections.singleton(FixtureCustomInterfaceImpl.class), OrderedSPIFixture.class);
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(FixtureCustomInterfaceImpl.class), instanceOf(OrderedSPIFixtureImpl.class));
+    public void assertFindCachedServices() {
+        FixtureCustomInterface fixtureCustomInterface = new FixtureCustomInterfaceImpl();
+        Collection<FixtureCustomInterface> customInterfaces = Collections.singleton(fixtureCustomInterface);
+        OrderedSPIFixture<?> cacheOrderedSPIFixture = new OrderedSPIFixtureImpl();
+        Map<FixtureCustomInterface, OrderedSPIFixture> cachedOrderedServices = new LinkedHashMap<>(customInterfaces.size(), 1);
+        cachedOrderedServices.put(fixtureCustomInterface, cacheOrderedSPIFixture);
+        OrderedServicesCache.cacheServices(customInterfaces, OrderedSPIFixture.class, cachedOrderedServices);
+        Optional<CachedOrderedServices> actual = OrderedServicesCache.findCachedServices(customInterfaces, OrderedSPIFixture.class);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getServices().get(fixtureCustomInterface), is(cacheOrderedSPIFixture));
     }
     
     @Test
-    public void assertGetRegisteredServices() {
-        FixtureCustomInterfaceImpl key = new FixtureCustomInterfaceImpl();
-        Map<FixtureCustomInterfaceImpl, OrderedSPIFixture> actual = OrderedSPIRegistry.getRegisteredServices(Collections.singleton(key), OrderedSPIFixture.class);
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(key), instanceOf(OrderedSPIFixtureImpl.class));
-    }
-
-    @Test
-    public void assertGetRegisteredServicesFromCache() {
-        FixtureCustomInterfaceImpl key = new FixtureCustomInterfaceImpl();
-        assertThat(OrderedSPIRegistry.getRegisteredServices(Collections.singleton(key), OrderedSPIFixture.class), 
-                is(OrderedSPIRegistry.getRegisteredServices(Collections.singleton(key), OrderedSPIFixture.class)));
+    public void assertNotFindCachedServices() {
+        assertFalse(OrderedServicesCache.findCachedServices(Collections.singleton(new FixtureCustomInterfaceImpl()), OrderedSPIFixture.class).isPresent());
     }
 }
