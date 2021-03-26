@@ -46,6 +46,13 @@ public interface Authentication {
     Map<ShardingSphereUser, ShardingSpherePrivilege> getAuthentication();
     
     /**
+     * Get all users.
+     *
+     * @return all users
+     */
+    Collection<ShardingSphereUser> getAllUsers();
+    
+    /**
      * Find user.
      * 
      * @param grantee grantee

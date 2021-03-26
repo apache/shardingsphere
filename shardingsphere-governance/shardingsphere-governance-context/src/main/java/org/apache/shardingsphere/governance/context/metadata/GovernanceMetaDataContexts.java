@@ -326,7 +326,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
                 governanceFacade.getRegistryCenter().loadDataSourceConfigurations(schemaName)));
         MetaDataContextsBuilder metaDataContextsBuilder = new MetaDataContextsBuilder(dataSourcesMap, 
                 Collections.singletonMap(schemaName, governanceFacade.getRegistryCenter().loadRuleConfigurations(schemaName)), 
-                metaDataContexts.getAuthentication().getAuthentication().keySet(), metaDataContexts.getProps().getProps());
+                metaDataContexts.getAuthentication().getAllUsers(), metaDataContexts.getProps().getProps());
         return metaDataContextsBuilder.build().getMetaDataMap().get(schemaName);
     }
     
@@ -345,7 +345,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private ShardingSphereMetaData getChangedMetaData(final ShardingSphereMetaData oldMetaData, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
         MetaDataContextsBuilder builder = new MetaDataContextsBuilder(Collections.singletonMap(oldMetaData.getName(), oldMetaData.getResource().getDataSources()),
-                Collections.singletonMap(oldMetaData.getName(), ruleConfigs), metaDataContexts.getAuthentication().getAuthentication().keySet(), metaDataContexts.getProps().getProps());
+                Collections.singletonMap(oldMetaData.getName(), ruleConfigs), metaDataContexts.getAuthentication().getAllUsers(), metaDataContexts.getProps().getProps());
         return builder.build().getMetaDataMap().values().iterator().next();
     }
     
@@ -357,7 +357,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         Map<String, Map<String, DataSource>> dataSourcesMap = Collections.singletonMap(oldMetaData.getName(), 
                 getNewDataSources(oldMetaData.getResource().getDataSources(), getAddedDataSources(oldMetaData, newDataSourceConfigs), modifiedDataSources, deletedDataSources));
         return new MetaDataContextsBuilder(dataSourcesMap, Collections.singletonMap(oldMetaData.getName(), oldMetaData.getRuleMetaData().getConfigurations()),
-                metaDataContexts.getAuthentication().getAuthentication().keySet(), metaDataContexts.getProps().getProps()).build().getMetaDataMap().get(oldMetaData.getName());
+                metaDataContexts.getAuthentication().getAllUsers(), metaDataContexts.getProps().getProps()).build().getMetaDataMap().get(oldMetaData.getName());
     }
     
     private Map<String, DataSource> getNewDataSources(final Map<String, DataSource> oldDataSources, 
@@ -420,7 +420,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
         }
         Map<ShardingSphereUser, ShardingSpherePrivilege> result = PrivilegeBuilder.build(metaDataContexts.getMetaDataMap().values(), users, metaDataContexts.getProps());
         for (Entry<ShardingSphereUser, ShardingSpherePrivilege> entry : result.entrySet()) {
-            Optional<ShardingSphereUser> user = metaDataContexts.getAuthentication().getAuthentication().keySet().stream().filter(t -> t.getGrantee().equals(entry.getKey().getGrantee())).findFirst();
+            Optional<ShardingSphereUser> user = metaDataContexts.getAuthentication().getAllUsers().stream().filter(t -> t.getGrantee().equals(entry.getKey().getGrantee())).findFirst();
             if (user.isPresent() && null != result.get(entry.getKey())) {
                 metaDataContexts.getAuthentication().getAuthentication().put(user.get(), entry.getValue());
             } else if (!user.isPresent() && null != result.get(entry.getKey())) {
