@@ -43,6 +43,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.exec.ExecContext;
+import org.apache.shardingsphere.infra.executor.exec.ExecContext.OriginSql;
 import org.apache.shardingsphere.infra.executor.exec.Executor;
 import org.apache.shardingsphere.infra.executor.exec.ExecutorBuilder;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
@@ -148,31 +149,45 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
         ResultSet result;
         try {
-            LogicSQL logicSQL = createLogicSQL(sql);
-            ShardingSphereMetaData shardingSphereMetaData = metaDataContexts.getDefaultMetaData();
-            Optional<ShardingRule> shardingRule = shardingSphereMetaData.getRuleMetaData().getRules().stream()
-                    .filter(rule -> rule instanceof ShardingRule).map(rule -> (ShardingRule) rule).findAny();
-            OptimizerContext.create(shardingRule.get());
-            ExecStmt execStmt = Compiler.compileQuery(shardingSphereMetaData.getName(), shardingSphereMetaData.getSchema(), logicSQL.getSqlStatementContext());
-            if (execStmt.isSuccess()) {
-                DatabaseType databaseType = metaDataContexts.getDefaultMetaData().getResource().getDatabaseType();
-        
-                ExecContext execContext = new ExecContext(sql, shardingRule.get(),
-                        logicSQL.getParameters(), execStmt.getSqlNode(), databaseType, metaDataContexts.getProps(),
-                        this.getConnection(), this.statementOption, this.connection.isHoldTransaction());
-                Executor executor = ExecutorBuilder.build(execContext, execStmt.getPhysicalPlan());
-                result = new SSResultSet(executor, executor.getMetaData(), this, execContext);
-            } else {
-                executionContext = createExecutionContext(sql);
-                List<QueryResult> queryResults = executeQuery0();
-                MergedResult mergedResult = mergeQuery(queryResults);
-                result = new ShardingSphereResultSet(getResultSetsForShardingSphereResultSet(), mergedResult, this, executionContext);
+            result = executeSql(sql);
+            if (result != null) {
+                return result;
             }
+            executionContext = createExecutionContext(sql);
+            List<QueryResult> queryResults = executeQuery0();
+            MergedResult mergedResult = mergeQuery(queryResults);
+            result = new ShardingSphereResultSet(getResultSetsForShardingSphereResultSet(), mergedResult, this, executionContext);
         } finally {
             currentResultSet = null;
         }
         currentResultSet = result;
         return result;
+    }
+    
+    private ResultSet executeSql(final String sql) throws SQLException {
+        boolean optimization = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.FEDERATED_SQL_QUERY_OPTIMIZATION);
+        if (!optimization) {
+            return null;
+        }
+        LogicSQL logicSQL = createLogicSQL(sql);
+        ShardingSphereMetaData shardingSphereMetaData = metaDataContexts.getDefaultMetaData();
+        Optional<ShardingRule> shardingRule = shardingSphereMetaData.getRuleMetaData().getRules().stream()
+                .filter(rule -> rule instanceof ShardingRule).map(rule -> (ShardingRule) rule).findAny();
+        OptimizerContext.create(shardingRule.get());
+        ExecStmt execStmt = Compiler.compileQuery(shardingSphereMetaData.getName(), shardingSphereMetaData.getSchema(), logicSQL.getSqlStatementContext());
+        if (!execStmt.isSuccess()) {
+            return null;
+        }
+        DatabaseType databaseType = metaDataContexts.getDefaultMetaData().getResource().getDatabaseType();
+    
+        ExecContext execContext = ExecContext.ExecContextBuilder.builder(shardingRule.get(), logicSQL.getParameters(), databaseType, this.getConnection())
+                .originSql(new OriginSql(sql, execStmt.getSqlNode()))
+                .storageResourceOption(this.statementOption)
+                .props(this.metaDataContexts.getProps())
+                .holdTransaction(this.connection.isHoldTransaction())
+                .build();
+        Executor executor = ExecutorBuilder.build(execContext, execStmt.getPhysicalPlan());
+        return new SSResultSet(executor, executor.getMetaData(), this, execContext);
     }
     
     private List<ResultSet> getResultSetsForShardingSphereResultSet() throws SQLException {

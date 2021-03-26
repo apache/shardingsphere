@@ -1,52 +1,158 @@
 package org.apache.shardingsphere.infra.executor.exec;
 
 import lombok.Getter;
+import lombok.NonNull;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorDriverManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.StorageResourceOption;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
-import java.sql.Connection;
-import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Properties;
 
 @Getter
-public class ExecContext {
+public final class ExecContext {
     
-    private String sql;
-    
-    private List<Object> parameters;
-    
-    private SqlNode sqlNode;
-    
+    @NonNull
     private ShardingRule shardingRule;
     
+    @NonNull
+    private List<Object> parameters;
+    
+    @NonNull
     private DatabaseType databaseType;
     
-    private ConfigurationProperties props;
+    @NonNull
+    private ExecutorJDBCManager executorJDBCManager;
     
-    private ExecutorDriverManager<Connection, Statement, StatementOption> executorDriverManager;
+    private OriginSql originSql;
+    
+    private ConfigurationProperties props;
     
     private StorageResourceOption option;
     
     private boolean holdTransaction;
     
-    public ExecContext(final String sql, final ShardingRule shardingRule, final List<Object> parameters, 
-                       final SqlNode sqlNode, final DatabaseType databaseType,
-                       final ConfigurationProperties props, 
-                       final ExecutorDriverManager<Connection, Statement, StatementOption> executorDriverManager,
-                       final StorageResourceOption option, final boolean holdTransaction) {
-        this.sql = sql;
+    private ExecContext(final ShardingRule shardingRule, final List<Object> parameters, final DatabaseType databaseType, final ExecutorJDBCManager executorJDBCManager) {
         this.shardingRule = shardingRule;
         this.parameters = parameters;
-        this.sqlNode = sqlNode;
         this.databaseType = databaseType;
-        this.props = props;
-        this.executorDriverManager = executorDriverManager;
-        this.option = option;
-        this.holdTransaction = holdTransaction;
+        this.executorJDBCManager = executorJDBCManager;
+    }
+    
+    @Getter
+    public static class OriginSql {
+        
+        private String sql;
+        
+        private SqlNode sqlNode;
+        
+        public OriginSql(final String sql, final SqlNode sqlNode) {
+            this.sql = sql;
+            this.sqlNode = sqlNode;
+        }
+    }
+    
+    public static final class ExecContextBuilder {
+        
+        private final ShardingRule shardingRule;
+        
+        private final List<Object> parameters;
+        
+        private final DatabaseType databaseType;
+        
+        private final ExecutorJDBCManager executorJDBCManager;
+        
+        private OriginSql originSql;
+        
+        private ConfigurationProperties props;
+        
+        private StorageResourceOption storageResourceOption;
+        
+        private boolean holdTransaction;
+        
+        private ExecContextBuilder(final ShardingRule shardingRule, final List<Object> parameters, final DatabaseType databaseType, final ExecutorJDBCManager executorJDBCManager) {
+            this.shardingRule = shardingRule;
+            this.parameters = parameters;
+            this.databaseType = databaseType;
+            this.executorJDBCManager = executorJDBCManager;
+        }
+    
+        /**
+         * set original sql.
+         * @param originSql original sql
+         * @return this builder
+         */
+        public ExecContextBuilder originSql(final OriginSql originSql) {
+            this.originSql = originSql;
+            return this;
+        }
+    
+        /**
+         * set configuration properties.
+         * @param props configuration properties
+         * @return this builder
+         */
+        public ExecContextBuilder props(final ConfigurationProperties props) {
+            this.props = props;
+            return this;
+        }
+    
+        /**
+         * set storage resource option.
+         * @param storageResourceOption storage resource option 
+         * @return this builder
+         */
+        public ExecContextBuilder storageResourceOption(final StorageResourceOption storageResourceOption) {
+            this.storageResourceOption = storageResourceOption;
+            return this;
+        }
+    
+        /**
+         * set transaction policy of this execution.
+         * @param holdTransaction wheather hole transaction 
+         * @return this builder
+         */
+        public ExecContextBuilder holdTransaction(final boolean holdTransaction) {
+            this.holdTransaction = holdTransaction;
+            return this;
+        }
+    
+        /**
+         * build current <code>ExecContext</code>.
+         * @return <code>ExecContext</code> instance
+         */
+        public ExecContext build() {
+            ExecContext execContext = new ExecContext(shardingRule, parameters, databaseType, executorJDBCManager);
+            execContext.originSql = this.originSql;
+            execContext.holdTransaction = this.holdTransaction;
+            if (this.storageResourceOption == null) {
+                execContext.option = new StatementOption(false);
+            } else {
+                execContext.option = this.storageResourceOption;
+            }
+            if (this.props == null) {
+                execContext.props = new ConfigurationProperties(new Properties());
+            } else {
+                execContext.props = this.props;
+            }
+            return execContext;
+        }
+    
+        /**
+         * build the <code>ExecContext</code> builder.
+         * @param shardingRule sharding rule, this parameter is required.
+         * @param parameters parameters of {@link PreparedStatement}, this parameter is required.
+         * @param databaseType database type of storage, this parameter is required.
+         * @param executorJDBCManager Executor JDBC driver manager, this parameter is required.
+         * @return builder of <code>ExecContext</code>.
+         */
+        public static ExecContextBuilder builder(final ShardingRule shardingRule, final List<Object> parameters, final DatabaseType databaseType, final ExecutorJDBCManager executorJDBCManager) {
+            return new ExecContextBuilder(shardingRule, parameters, databaseType, executorJDBCManager);
+        }
     }
 }

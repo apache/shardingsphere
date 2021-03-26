@@ -21,7 +21,7 @@ DELETE FROM t_user;
 DELETE FROM t_order_0;
 DELETE FROM t_order_1;
 
-INSERT INTO t_order_0 VALUES(1001, 11, 'init');
+INSERT INTO t_order_0 VALUES(10001, 11, 'init');
 INSERT INTO t_order_item_0 VALUES(1001, 10002, 11, 'init', 't_order_item_calcite_sharding');
 INSERT INTO t_order_item_1 VALUES(1011, 10003, 11, 'init', 't_order_item_calcite_sharding');
 

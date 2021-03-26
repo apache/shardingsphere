@@ -48,11 +48,14 @@ public class NestedLoopJoinExecutorTest extends BaseExecutorTest {
                 rexBuilder.makeInputRef(orderUserIdField.getType(), userRel.getRowType().getFieldCount() + orderUserIdField.getIndex()));
         SSNestedLoopJoin nestedLoopJoin = SSNestedLoopJoin.create(userScan, orderScan, joinCondition, Collections.emptySet(), JoinRelType.INNER);
         
+        int rowCount = 0;
         Executor executor = buildExecutor(nestedLoopJoin);
         while(executor.moveNext()) {
             Row row = executor.current();
             Assert.assertNotNull(row);
+            rowCount++;
         }
+        Assert.assertEquals(3, rowCount);
     }
     
     private RelDataTypeField getField(RelNode relNode, String field) {

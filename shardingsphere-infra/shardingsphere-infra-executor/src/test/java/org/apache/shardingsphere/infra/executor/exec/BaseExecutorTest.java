@@ -22,6 +22,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.executor.exec.ExecContext.OriginSql;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -153,9 +154,12 @@ public abstract class BaseExecutorTest {
     
     protected ExecContext statementExecContext() {
         ShardingRule shardingRule = rules.stream().filter(rule -> rule instanceof ShardingRule).map(ShardingRule.class::cast).findFirst().get();
-        return new ExecContext("", shardingRule, Collections.emptyList(), null, new H2DatabaseType(), 
-                new ConfigurationProperties(new Properties()), new ExecutorJDBCManagerImpl(getActualDataSources()), 
-                new StatementOption(true), true);
+        return ExecContext.ExecContextBuilder.builder(shardingRule, Collections.emptyList(), new H2DatabaseType(), new ExecutorJDBCManagerImpl(getActualDataSources()))
+                .originSql(new OriginSql("", null))
+                .storageResourceOption(new StatementOption(true))
+                .props(new ConfigurationProperties(new Properties()))
+                .holdTransaction(false)
+                .build();
     }
     
     protected Executor buildExecutor(RelNode relNode) {

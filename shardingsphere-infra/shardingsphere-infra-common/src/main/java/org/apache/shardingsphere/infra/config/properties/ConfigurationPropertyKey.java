@@ -119,6 +119,11 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_HINT_ENABLED("proxy-hint-enabled", String.valueOf(Boolean.FALSE), boolean.class),
     
     /**
+     * federated sql query optimization using calcite.
+     */
+    FEDERATED_SQL_QUERY_OPTIMIZATION("federated-sql-query-optimization", String.valueOf(Boolean.FALSE), boolean.class),
+    
+    /**
      * The length of time in milliseconds an SQL waits for a global lock before giving up.
      */
     LOCK_WAIT_TIMEOUT_MILLISECONDS("lock-wait-timeout-milliseconds", String.valueOf(50000L), long.class);

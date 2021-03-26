@@ -123,7 +123,7 @@ public final class JDBCQueryExecutor extends AbstractExecutor {
             stmtType = JDBCDriverType.STATEMENT;
         }
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(stmtType,
-                maxConnectionsSizePerQuery, getExecContext().getExecutorDriverManager(), getExecContext().getOption(),
+                maxConnectionsSizePerQuery, getExecContext().getExecutorJDBCManager(), getExecContext().getOption(),
                 Collections.singletonList(getExecContext().getShardingRule()));
         return prepareEngine.prepare(routeContext, executionUnits);
     }

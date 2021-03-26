@@ -27,7 +27,7 @@ public class ScanExecutorTest extends BaseExecutorTest {
     public void testScanTable() {
         relBuilder.scan("t_order");
         List<RexNode> predicates = new ArrayList<>();
-        predicates.add(relBuilder.call(SqlStdOperatorTable.EQUALS, relBuilder.field("order_id"), relBuilder.literal(1000)));
+        predicates.add(relBuilder.call(SqlStdOperatorTable.EQUALS, relBuilder.field("order_id"), relBuilder.literal(10000)));
         predicates.add(relBuilder.call(SqlStdOperatorTable.EQUALS, relBuilder.field("user_id"), relBuilder.literal(10)));
         relBuilder.filter(predicates);
         RelNode relNode = relBuilder.build();
@@ -49,7 +49,7 @@ public class ScanExecutorTest extends BaseExecutorTest {
         // single table single row with partial column
         relBuilder.scan("t_order");
         List<RexNode> predicates = new ArrayList<>();
-        predicates.add(relBuilder.call(SqlStdOperatorTable.EQUALS, relBuilder.field("order_id"), relBuilder.literal(1000)));
+        predicates.add(relBuilder.call(SqlStdOperatorTable.EQUALS, relBuilder.field("order_id"), relBuilder.literal(10000)));
         predicates.add(relBuilder.call(SqlStdOperatorTable.EQUALS, relBuilder.field("user_id"), relBuilder.literal(10)));
         relBuilder.filter(predicates);
         relBuilder.project(relBuilder.field("status"), relBuilder.field("user_id"));
