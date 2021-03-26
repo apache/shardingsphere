@@ -211,11 +211,8 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
      */
     @Subscribe
     public synchronized void renew(final UserRuleChangedEvent event) {
-        Collection<ShardingSphereUser> users = event.getUsers();
-        DefaultAuthentication authentication = new DefaultAuthentication(getNewUsers(users));
-        authentication.getAuthentication().putAll(getModifiedUsers(users));
-        metaDataContexts = new StandardMetaDataContexts(metaDataContexts.getMetaDataMap(), metaDataContexts.getExecutorEngine(), authentication, metaDataContexts.getProps());
-        reloadPrivilege(users);
+        metaDataContexts = new StandardMetaDataContexts(metaDataContexts.getMetaDataMap(), metaDataContexts.getExecutorEngine(), createAuthentication(event.getUsers()), metaDataContexts.getProps());
+        reloadPrivilege(event.getUsers());
     }
     
     /**
@@ -309,6 +306,12 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
                 ((StatusContainedRule) each).updateRuleStatus(new PrimaryDataSourceEvent(governanceSchema.getSchemaName(), governanceSchema.getDataSourceName(), event.getPrimaryDataSourceName()));
             }
         }
+    }
+    
+    private DefaultAuthentication createAuthentication(final Collection<ShardingSphereUser> users) {
+        DefaultAuthentication result = new DefaultAuthentication();
+        result.init(getNewUsers(users), getModifiedUsers(users));
+        return result;
     }
     
     private ShardingSphereMetaData buildMetaData(final MetaDataPersistedEvent event) throws SQLException {
@@ -416,12 +419,12 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
             return;
         }
         Map<ShardingSphereUser, ShardingSpherePrivilege> result = PrivilegeBuilder.build(metaDataContexts.getMetaDataMap().values(), users, metaDataContexts.getProps());
-        for (Entry<ShardingSphereUser, ShardingSpherePrivilege> each : result.entrySet()) {
+        for (Entry<ShardingSphereUser, ShardingSpherePrivilege> entry : result.entrySet()) {
             Optional<ShardingSphereUser> user = metaDataContexts.getAuthentication().getAuthentication().keySet().stream().filter(t -> t.getGrantee().equals(t.getGrantee())).findFirst();
-            if (user.isPresent() && null != result.get(each.getKey())) {
-                metaDataContexts.getAuthentication().getAuthentication().put(user.get(), each.getValue());
-            } else if (!user.isPresent() && null != result.get(each.getKey())) {
-                metaDataContexts.getAuthentication().getAuthentication().put(each.getKey(), each.getValue());
+            if (user.isPresent() && null != result.get(entry.getKey())) {
+                metaDataContexts.getAuthentication().getAuthentication().put(user.get(), entry.getValue());
+            } else if (!user.isPresent() && null != result.get(entry.getKey())) {
+                metaDataContexts.getAuthentication().getAuthentication().put(entry.getKey(), entry.getValue());
             }
         }
     }

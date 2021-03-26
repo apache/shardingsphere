@@ -37,6 +37,7 @@ import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -103,7 +104,8 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertAuthentication(final ProxyConfiguration proxyConfig) {
-        DefaultAuthentication authentication = new DefaultAuthentication(proxyConfig.getUsers());
+        DefaultAuthentication authentication = new DefaultAuthentication();
+        authentication.init(proxyConfig.getUsers(), Collections.emptyMap());
         assertNotNull(authentication);
         Optional<ShardingSphereUser> user = authentication.findUser(new Grantee("user1", ""));
         assertTrue(user.isPresent());
