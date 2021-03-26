@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.auth.builtin;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
@@ -32,16 +31,17 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Default authentication.
 */
-@NoArgsConstructor
 @Getter
 public final class DefaultAuthentication implements Authentication {
     
     private final Map<ShardingSphereUser, ShardingSpherePrivilege> authentication = new ConcurrentHashMap<>();
     
-    public DefaultAuthentication(final Collection<ShardingSphereUser> users) {
-        for (ShardingSphereUser each : users) {
+    @Override
+    public void init(final Collection<ShardingSphereUser> initializedUsers, final Map<ShardingSphereUser, ShardingSpherePrivilege> loadedPrivileges) {
+        for (ShardingSphereUser each : initializedUsers) {
             authentication.put(each, createShardingSpherePrivilege());
         }
+        authentication.putAll(loadedPrivileges);
     }
     
     private ShardingSpherePrivilege createShardingSpherePrivilege() {
