@@ -15,9 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.fixture;
+package org.apache.shardingsphere.infra.metadata.auth.refresher.event;
 
-import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 
-public interface OrderedSPIFixture<T extends FixtureCustomInterface> extends OrderedSPI<T> {
+import java.util.Collection;
+
+/**
+ * Grant event.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class GrantEvent {
+    
+    private final Collection<ShardingSphereUser> users;
 }

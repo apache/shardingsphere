@@ -40,6 +40,8 @@ public final class RegistryListenerManager {
 
     private final AuthenticationChangedListener authenticationChangedListener;
     
+    private final PrivilegeNodeChangedListener privilegeNodeChangedListener;
+    
     public RegistryListenerManager(final RegistryRepository registryRepository, final Collection<String> schemaNames) {
         terminalStateChangedListener = new TerminalStateChangedListener(registryRepository);
         dataSourceStateChangedListener = new DataSourceStateChangedListener(registryRepository, schemaNames);
@@ -47,6 +49,7 @@ public final class RegistryListenerManager {
         metaDataListener = new MetaDataListener(registryRepository, schemaNames);
         propertiesChangedListener = new PropertiesChangedListener(registryRepository);
         authenticationChangedListener = new AuthenticationChangedListener(registryRepository);
+        privilegeNodeChangedListener = new PrivilegeNodeChangedListener(registryRepository);
     }
     
     /**
@@ -59,5 +62,6 @@ public final class RegistryListenerManager {
         metaDataListener.watch();
         propertiesChangedListener.watch(Type.UPDATED);
         authenticationChangedListener.watch(Type.UPDATED);
+        privilegeNodeChangedListener.watch(Type.UPDATED);
     }
 }

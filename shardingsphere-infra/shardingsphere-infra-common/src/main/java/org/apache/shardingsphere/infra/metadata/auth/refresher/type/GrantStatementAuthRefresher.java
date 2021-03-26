@@ -17,10 +17,17 @@
 
 package org.apache.shardingsphere.infra.metadata.auth.refresher.type;
 
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.auth.Authentication;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.auth.refresher.AuthenticationRefresher;
+import org.apache.shardingsphere.infra.metadata.auth.refresher.event.GrantEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLGrantStatement;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Grant statement auth refresher.
@@ -29,5 +36,11 @@ public final class GrantStatementAuthRefresher implements AuthenticationRefreshe
     
     @Override
     public void refresh(final Authentication authentication, final SQLStatement sqlStatement, final ShardingSphereMetaData metaData) {
+        if (sqlStatement instanceof MySQLGrantStatement) {
+            Collection<ShardingSphereUser> users = ((MySQLGrantStatement) sqlStatement).getUsers().stream()
+                    .map(each -> new ShardingSphereUser(each.getUser(), each.getAuth(), each.getHost())).collect(Collectors.toList());
+            ShardingSphereEventBus.getInstance().post(new GrantEvent(users));
+        }
+        // TODO support other db
     }
 }

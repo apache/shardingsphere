@@ -37,7 +37,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MySQLTableMetaDataLoaderTest {
+public final class OracleTableMetaDataLoaderTest {
     
     @BeforeClass
     public static void setUp() {
@@ -49,7 +49,7 @@ public final class MySQLTableMetaDataLoaderTest {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME FROM information_schema.columns WHERE TABLE_SCHEMA=?").executeQuery()).thenReturn(resultSet);
+                "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, IDENTITY_COLUMN, COLLATION_NAME FROM information_schema.columns WHERE TABLE_SCHEMA=?").executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
                 "SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl')").executeQuery()).thenReturn(indexResultSet);
@@ -61,7 +61,7 @@ public final class MySQLTableMetaDataLoaderTest {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME FROM information_schema.columns WHERE TABLE_SCHEMA=? AND TABLE_NAME NOT IN ('existed_tbl')")
+                "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, IDENTITY_COLUMN, COLLATION_NAME FROM information_schema.columns WHERE TABLE_SCHEMA=? AND TABLE_NAME NOT IN ('existed_tbl')")
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
@@ -92,8 +92,8 @@ public final class MySQLTableMetaDataLoaderTest {
         when(result.getString("COLUMN_NAME")).thenReturn("id", "name");
         when(result.getString("DATA_TYPE")).thenReturn("int", "varchar");
         when(result.getString("COLUMN_KEY")).thenReturn("PRI", "");
-        when(result.getString("EXTRA")).thenReturn("auto_increment", "");
-        when(result.getString("COLLATION_NAME")).thenReturn("utf8", "utf8_general_ci");
+        when(result.getString("IDENTITY_COLUMN")).thenReturn("auto_increment", "");
+        when(result.getString("COLLATION_NAME")).thenReturn("BINARY_CS", "BINARY_CI");
         return result;
     }
     
@@ -107,11 +107,11 @@ public final class MySQLTableMetaDataLoaderTest {
     
     private DialectTableMetaDataLoader getTableMetaDataLoader() {
         for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(DialectTableMetaDataLoader.class)) {
-            if ("MySQL".equals(each.getDatabaseType())) {
+            if ("Oracle".equals(each.getDatabaseType())) {
                 return each;
             }
         }
-        throw new IllegalStateException("Can not find MySQLTableMetaDataLoader");
+        throw new IllegalStateException("Can not find OracleTableMetaDataLoader");
     }
     
     private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {

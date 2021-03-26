@@ -28,7 +28,6 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 
@@ -40,7 +39,7 @@ public final class UserRuleYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        DefaultAuthentication authentication = new DefaultAuthentication(new LinkedHashSet<>(2, 1));
+        DefaultAuthentication authentication = new DefaultAuthentication();
         authentication.getAuthentication().put(new ShardingSphereUser("user1", "pwd1", "127.0.0.1"), new ShardingSpherePrivilege());
         authentication.getAuthentication().put(new ShardingSphereUser("user2", "pwd2", "127.0.0.2"), new ShardingSpherePrivilege());
         YamlUserRuleConfiguration actual = new UserRuleYamlSwapper().swapToYamlConfiguration(authentication.getAuthentication().keySet());

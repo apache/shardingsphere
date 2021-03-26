@@ -15,14 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.fixture;
+package org.apache.shardingsphere.infra.spi.fixture.typed;
 
-import org.apache.shardingsphere.infra.spi.required.RequiredSPI;
+import lombok.Getter;
+import lombok.Setter;
 
-public final class RequiredSPIImpl implements RequiredSPI {
+import java.util.Properties;
+
+@Getter
+@Setter
+public final class TypedSPIFixtureImpl implements TypedSPIFixture {
+    
+    private Properties props = new Properties();
     
     @Override
-    public boolean isDefault() {
-        return false;
+    public String getType() {
+        return "FIXTURE";
     }
 }
