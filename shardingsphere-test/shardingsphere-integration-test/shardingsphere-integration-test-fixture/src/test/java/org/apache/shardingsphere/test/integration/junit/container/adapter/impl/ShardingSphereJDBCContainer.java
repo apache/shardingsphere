@@ -69,10 +69,20 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
             String scenario = getDescription().getScenario();
             // TODO fix sharding_governance
             if ("sharding_governance".equals(scenario)) {
-                return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(scenario)));
+                DataSource dataSource;
+                int retryCount = 0;
+                while (retryCount++ < 30) {
+                    try {
+                        dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(scenario)));
+                    } catch (RuntimeException ex) {
+                        Thread.sleep(1000L);
+                        continue;
+                    }
+                    return dataSource;
+                }
             }
             return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(scenario)));
-        } catch (SQLException | IOException ex) {
+        } catch (SQLException | IOException | InterruptedException ex) {
             throw new RuntimeException(ex);
         }
     }

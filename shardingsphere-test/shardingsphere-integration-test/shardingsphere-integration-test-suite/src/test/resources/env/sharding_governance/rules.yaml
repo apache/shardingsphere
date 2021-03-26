@@ -20,10 +20,10 @@ governance:
     type: ZooKeeper
     serverLists: localhost:26810
     props:
-      retryIntervalMilliseconds: 3000
+      retryIntervalMilliseconds: 500
       timeToLiveSeconds: 60
       maxRetries: 4
-      operationTimeoutMilliseconds: 3000
+      operationTimeoutMilliseconds: 500
   overwrite: true
 
 rules:
