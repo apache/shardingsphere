@@ -52,13 +52,13 @@ public final class GeneralDQLIT extends BaseDQLIT {
     private void assertExecuteQueryForStatement(final Connection connection) throws SQLException, ParseException {
         try (
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(getStatement())) {
+                ResultSet resultSet = statement.executeQuery(getSQL())) {
             assertResultSet(resultSet);
         }
     }
     
     private void assertExecuteQueryForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getStatement())) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
             for (SQLValue each : getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
@@ -81,7 +81,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
     
     private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            assertTrue("Not a query statement.", statement.execute(getStatement()));
+            assertTrue("Not a query statement.", statement.execute(getSQL()));
             try (ResultSet resultSet = statement.getResultSet()) {
                 assertResultSet(resultSet);
             }
@@ -89,7 +89,7 @@ public final class GeneralDQLIT extends BaseDQLIT {
     }
     
     private void assertExecuteForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getStatement())) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
             for (SQLValue each : getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }

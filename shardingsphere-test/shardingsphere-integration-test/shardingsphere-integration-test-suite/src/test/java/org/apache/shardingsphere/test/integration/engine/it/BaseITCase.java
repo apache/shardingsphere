@@ -29,10 +29,10 @@ import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironme
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.annotation.ContainerInitializer;
 import org.apache.shardingsphere.test.integration.junit.annotation.ContainerType;
-import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.annotation.OnContainer;
-import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereAdapterContainer;
-import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereStorageContainer;
+import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
+import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
+import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.runner.ShardingSphereRunner;
 import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
 import org.junit.After;
@@ -57,11 +57,9 @@ public abstract class BaseITCase {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
-    @Getter
     @OnContainer(name = "adapter")
     private ShardingSphereAdapterContainer proxy;
     
-    @Getter
     @OnContainer(name = "storage", type = ContainerType.STORAGE, hostName = "mysql.db.host")
     private ShardingSphereStorageContainer storage;
     
@@ -72,9 +70,8 @@ public abstract class BaseITCase {
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
     @ShardingSphereITInject
-    private String statement;
+    private String sql;
    
-    @Getter
     @ShardingSphereITInject
     private TestCaseDescription description;
     
@@ -84,35 +81,17 @@ public abstract class BaseITCase {
     @ShardingSphereITInject
     private String parentPath;
     
-    private DataSource dataSource;
+    private DataSource targetDataSource;
     
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
     
     @ContainerInitializer
-    protected void initialize() {
+    protected final void initialize() {
         if (Objects.nonNull(proxy) && Objects.nonNull(storage)) {
             proxy.dependsOn(storage);
         }
-    }
-    
-    @Before
-    public void createDataSource() {
-        dataSource = proxy.getDataSource();
-    }
-    
-    protected DataSource getTargetDataSource() {
-        return dataSource;
-    }
-    
-    protected String getStatement() throws ParseException {
-        return sqlExecuteType == SQLExecuteType.Literal ? getLiteralSQL(statement) : statement;
-    }
-    
-    protected String getLiteralSQL(final String sql) throws ParseException {
-        List<Object> parameters = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
-        return parameters.isEmpty() ? sql : String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%").replace("%%", "%").replace("'%'", "'%%'");
     }
     
     @BeforeClass
@@ -122,10 +101,24 @@ public abstract class BaseITCase {
         }
     }
     
+    @Before
+    public final void createDataSource() {
+        targetDataSource = proxy.getDataSource();
+    }
+    
+    protected final String getSQL() throws ParseException {
+        return sqlExecuteType == SQLExecuteType.Literal ? getLiteralSQL(sql) : sql;
+    }
+    
+    protected final String getLiteralSQL(final String sql) throws ParseException {
+        List<Object> parameters = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
+        return parameters.isEmpty() ? sql : String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%").replace("%%", "%").replace("'%'", "'%%'");
+    }
+    
     @After
     public final void tearDown() {
-        if (dataSource instanceof ShardingSphereDataSource) {
-            ((ShardingSphereDataSource) dataSource).getMetaDataContexts().getExecutorEngine().close();
+        if (targetDataSource instanceof ShardingSphereDataSource) {
+            ((ShardingSphereDataSource) targetDataSource).getMetaDataContexts().getExecutorEngine().close();
         }
     }
 }

@@ -17,10 +17,16 @@
 
 package org.apache.shardingsphere.governance.core.event.model.lock;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
 
 /**
  * Lock released event.
  */
+@AllArgsConstructor
+@Getter
 public final class LockReleasedEvent implements GovernanceEvent {
+    
+    private String lockName;
 }

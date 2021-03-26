@@ -36,7 +36,7 @@ public final class TestCaseParameters {
     
     private final String parentPath;
     
-    private final String statement;
+    private final String sql;
     
     private final SQLExecuteType executeType;
     

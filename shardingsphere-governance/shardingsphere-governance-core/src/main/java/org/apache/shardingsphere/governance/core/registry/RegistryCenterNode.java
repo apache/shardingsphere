@@ -55,6 +55,8 @@ public final class RegistryCenterNode {
     
     private static final String AUTHENTICATION_NODE = "authentication";
     
+    private static final String PRIVILEGE_NODE = "privilegenode";
+    
     private static final String PROPS_NODE = "props";
     
     private static final String COMMA_SEPARATOR = ",";
@@ -250,6 +252,15 @@ public final class RegistryCenterNode {
      */
     public String getAuthenticationPath() {
         return getFullPath(AUTHENTICATION_NODE);
+    }
+    
+    /**
+     * Get authenticationnodes path.
+     *
+     * @return authenticationnodes path
+     */
+    public String getPrivilegeNodePath() {
+        return Joiner.on(PATH_SEPARATOR).join(ROOT, PRIVILEGE_NODE);
     }
     
     /**

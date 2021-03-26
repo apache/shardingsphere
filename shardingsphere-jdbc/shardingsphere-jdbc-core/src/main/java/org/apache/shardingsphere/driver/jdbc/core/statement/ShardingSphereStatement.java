@@ -29,7 +29,7 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.jdbc.core.constant.SQLExceptionConstant;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
-import org.apache.shardingsphere.infra.audit.SQLCheckEngine;
+import org.apache.shardingsphere.infra.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;

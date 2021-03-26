@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLArrayColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
 
@@ -28,7 +27,6 @@ import java.sql.Types;
  * Column description for PostgreSQL.
  */
 @Getter
-@Slf4j
 public final class PostgreSQLColumnDescription {
     
     private final String columnName;

@@ -55,12 +55,12 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     private int executeUpdateForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            return statement.executeUpdate(getStatement());
+            return statement.executeUpdate(getSQL());
         }
     }
     
     private int executeUpdateForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getStatement())) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
             for (SQLValue each : getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }
@@ -86,13 +86,13 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     private int executeForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            assertFalse("Not a DML statement.", statement.execute(getStatement()));
+            assertFalse("Not a DML statement.", statement.execute(getSQL()));
             return statement.getUpdateCount();
         }
     }
     
     private int executeForPreparedStatement(final Connection connection) throws SQLException, ParseException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getStatement())) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
             for (SQLValue each : getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
             }

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.test.integration.junit.annotation;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.junit.container.H2Container;
-import org.apache.shardingsphere.test.integration.junit.container.MySQLContainer;
-import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereStorageContainer;
+import org.apache.shardingsphere.test.integration.junit.container.storage.impl.H2Container;
+import org.apache.shardingsphere.test.integration.junit.container.storage.impl.MySQLContainer;
+import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 
 /**
  * ShardingSphere IT storage type.
