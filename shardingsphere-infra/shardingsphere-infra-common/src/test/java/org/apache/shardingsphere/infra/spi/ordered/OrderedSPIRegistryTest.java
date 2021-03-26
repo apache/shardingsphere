@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.spi.ordered;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterface;
 import org.apache.shardingsphere.infra.spi.fixture.FixtureCustomInterfaceImpl;
@@ -41,19 +40,19 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class OrderedSPIRegistryTest {
-
+    
     private Collection<FixtureCustomInterface> customInterfaceCollection;
-
+    
     private FixtureCustomInterface fixtureCustomInterface;
-
-    private OrderedSPIFixture cacheOrderedSPIFixture;
-
+    
+    private OrderedSPIFixture<?> cacheOrderedSPIFixture;
+    
     @Before
     public void init() {
         ShardingSphereServiceLoader.register(OrderedSPIFixture.class);
-
         customInterfaceCollection = new LinkedList<>();
         fixtureCustomInterface = new FixtureCustomInterfaceImpl();
         customInterfaceCollection.add(fixtureCustomInterface);
@@ -62,10 +61,21 @@ public final class OrderedSPIRegistryTest {
         result.put(fixtureCustomInterface, cacheOrderedSPIFixture);
         OrderedServicesCache.cacheServices(customInterfaceCollection, OrderedSPIFixture.class, result);
     }
-
+    
+    @After
+    public void clean() throws NoSuchFieldException, IllegalAccessException {
+        Field field = OrderedServicesCache.class.getDeclaredField("CACHED_SERVICES");
+        field.setAccessible(true);
+        Field modifiers = Field.class.getDeclaredField("modifiers");
+        modifiers.setAccessible(true);
+        modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+        field.set(null, new ConcurrentHashMap<>());
+    }
+    
     @Test
     public void assertGetRegisteredServicesByCache() {
         Optional<CachedOrderedServices> actual = OrderedServicesCache.findCachedServices(customInterfaceCollection, OrderedSPIFixture.class);
+        assertTrue(actual.isPresent());
         assertThat(cacheOrderedSPIFixture, is(actual.get().getServices().get(fixtureCustomInterface)));
     }
     
@@ -80,21 +90,8 @@ public final class OrderedSPIRegistryTest {
     
     @Test
     public void assertGetRegisteredServices() {
-        Collection<FixtureCustomInterface> collection = new LinkedList<>();
-        collection.add(new FixtureCustomInterfaceImpl());
-        Map<FixtureCustomInterface, OrderedSPIFixture> actual = OrderedSPIRegistry.getRegisteredServices(collection, OrderedSPIFixture.class);
-        assertThat(actual.size(), is(1));
+        Collection<FixtureCustomInterface> fixtures = new LinkedList<>();
+        fixtures.add(new FixtureCustomInterfaceImpl());
+        assertThat(OrderedSPIRegistry.getRegisteredServices(fixtures, OrderedSPIFixture.class).size(), is(1));
     }
-
-    @After
-    @SneakyThrows
-    public void clean() {
-        Field field = OrderedServicesCache.class.getDeclaredField("CACHED_SERVICES");
-        field.setAccessible(true);
-        Field modifiers = Field.class.getDeclaredField("modifiers");
-        modifiers.setAccessible(true);
-        modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-        field.set(null, new ConcurrentHashMap<>());
-    }
-
 }
