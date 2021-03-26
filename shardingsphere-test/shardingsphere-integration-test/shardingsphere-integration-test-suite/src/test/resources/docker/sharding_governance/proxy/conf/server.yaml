@@ -23,7 +23,7 @@ governance:
     props:
       retryIntervalMilliseconds: 500
       timeToLiveSeconds: 60
-      maxRetries: 3
+      maxRetries: 4
       operationTimeoutMilliseconds: 500
   overwrite: true
 

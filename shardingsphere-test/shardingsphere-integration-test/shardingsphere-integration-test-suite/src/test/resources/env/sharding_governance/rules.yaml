@@ -18,7 +18,12 @@ governance:
   name: governance_ds
   registryCenter:
     type: ZooKeeper
-    serverLists: zk:2181
+    serverLists: localhost:26810
+    props:
+      retryIntervalMilliseconds: 500
+      timeToLiveSeconds: 60
+      maxRetries: 3
+      operationTimeoutMilliseconds: 500
   overwrite: true
 
 rules:
