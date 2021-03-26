@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback;
 
 import com.google.common.base.Preconditions;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
