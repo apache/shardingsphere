@@ -27,8 +27,7 @@ import java.util.List;
  */
 public class BinaryFunctionImplementor extends AbstractFunctionImplementor<RexCall, BinaryBuiltinFunction> {
     
-    /** Types that can be arguments to comparison operators such as
-     * {@code <}. */
+    /** Types that can be arguments to comparison operators such as {@code <}. */
     private static final List<Primitive> COMP_OP_TYPES =
             ImmutableList.of(
                     Primitive.BYTE,

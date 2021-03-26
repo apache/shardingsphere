@@ -35,7 +35,6 @@ public class ScanExecutorTest extends BaseExecutorTest {
         Executor executor = buildExecutor(scan);
         QueryResultMetaData metaData = executor.getMetaData();
         Assert.assertNotNull(metaData);
-        Assert.assertTrue(executor instanceof ScanExecutor);
         int rowCount = 0;
         while(executor.moveNext()) {
             Row row = executor.current();

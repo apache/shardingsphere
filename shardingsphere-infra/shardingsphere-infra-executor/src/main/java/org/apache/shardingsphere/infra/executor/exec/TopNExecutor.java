@@ -32,7 +32,17 @@ public class TopNExecutor extends LimitSortExecutor {
             Row row = getExecutor().current();
             heap.add(row);
         }
-        Iterator<Row> inputRowIterator = heap.iterator();
+        Iterator<Row> inputRowIterator = new Iterator<Row>() {
+            @Override
+            public boolean hasNext() {
+                return heap.size() > 0;
+            }
+    
+            @Override
+            public Row next() {
+                return heap.poll();
+            }
+        };
         skipOffsetRows(inputRowIterator);
         return inputRowIterator;
     }

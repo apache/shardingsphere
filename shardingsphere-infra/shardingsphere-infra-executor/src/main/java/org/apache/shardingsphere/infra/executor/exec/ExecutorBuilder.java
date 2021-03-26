@@ -2,7 +2,6 @@ package org.apache.shardingsphere.infra.executor.exec;
 
 import lombok.Getter;
 import org.apache.calcite.rel.RelNode;
-import org.apache.shardingsphere.infra.optimize.rel.logical.LogicalScan;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSCalc;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSHashAggregate;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSLimitSort;
@@ -29,7 +28,7 @@ public class ExecutorBuilder {
     public final Executor build(final RelNode rel) {
         Executor executor;
         if (rel instanceof SSScan) {
-            executor = ScanExecutor.build((SSScan) rel, this);
+            executor = ScanExecutorBuilder.build((SSScan) rel, this);
         } else if (rel instanceof SSMergeSort) {
             executor = MergeSortExecutor.build((SSMergeSort) rel, this);
         } else if (rel instanceof SSNestedLoopJoin) {
@@ -39,9 +38,11 @@ public class ExecutorBuilder {
         } else if (rel instanceof SSHashAggregate) {
             executor = HashAggregateExecutor.build((SSHashAggregate) rel, this);
         } else if (rel instanceof SSSort) {
-            executor = SortExecutor.build((SSSort) rel, this);
-        } else if (rel instanceof SSLimitSort) {
-            executor = LimitSortExecutor.build((SSLimitSort) rel, this);
+            if (rel instanceof SSLimitSort) {
+                executor = LimitSortExecutor.build((SSLimitSort) rel, this);
+            } else {
+                executor = SortExecutor.build((SSSort) rel, this);
+            }
         } else {
             throw new UnsupportedOperationException("unsupported physic operator " + rel.getClass().getName());
         }

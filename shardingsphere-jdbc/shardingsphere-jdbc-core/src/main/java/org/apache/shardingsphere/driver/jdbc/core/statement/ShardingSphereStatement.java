@@ -151,7 +151,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             LogicSQL logicSQL = createLogicSQL(sql);
             ShardingSphereMetaData shardingSphereMetaData = metaDataContexts.getDefaultMetaData();
             Optional<ShardingRule> shardingRule = shardingSphereMetaData.getRuleMetaData().getRules().stream()
-                    .filter(rule -> rule instanceof ShardingRule).map(rule -> (ShardingRule)rule).findAny();
+                    .filter(rule -> rule instanceof ShardingRule).map(rule -> (ShardingRule) rule).findAny();
             OptimizerContext.create(shardingRule.get());
             ExecStmt execStmt = Compiler.compileQuery(shardingSphereMetaData.getName(), shardingSphereMetaData.getSchema(), logicSQL.getSqlStatementContext());
             if (execStmt.isSuccess()) {

@@ -13,9 +13,9 @@ public interface RexCallToFunctionImplementor<T, R extends BuiltinFunction> {
     
     /**
      * Implement the sub-class of BuiltinFunction from parameter rexCall.
-     * @param rexCall to be implemented
+     * @param call to be implemented
      * @param argTypes argument type for <code>BuiltinFunction</code>  
      * @return sub-class of <code>BuiltinFunction</code> instance
      */
-    R implement(T rexCall, RelDataType[] argTypes);
+    R implement(T call, RelDataType[] argTypes);
 }

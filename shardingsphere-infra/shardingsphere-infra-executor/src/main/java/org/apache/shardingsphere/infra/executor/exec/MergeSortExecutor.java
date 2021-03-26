@@ -45,7 +45,7 @@ public final class MergeSortExecutor extends AbstractExecutor {
         this.mergeSortIterator = Iterables.mergeSorted(executors, ordering).iterator();
         
         for (int i = 0; i < offset; i++) {
-            if (!moveNext()) {
+            if (!executeMove()) {
                 break;
             }
         }
@@ -54,7 +54,7 @@ public final class MergeSortExecutor extends AbstractExecutor {
     
     @Override
     public boolean executeMove() {
-        if (count >= fetch) {
+        if (count > fetch) {
             return false;
         }
         if (mergeSortIterator.hasNext()) {
@@ -79,9 +79,9 @@ public final class MergeSortExecutor extends AbstractExecutor {
      */
     public static Executor build(final SSMergeSort rel, final ExecutorBuilder executorBuilder) {
         Executor executor = executorBuilder.build(rel.getInput());
-        Comparator<Row> ordering = RowComparatorUtil.convertCollationToRowComparator(rel.collation);
         if (executor instanceof MultiExecutor) {
             ExecContext execContext = executorBuilder.getExecContext();
+            Comparator<Row> ordering = RowComparatorUtil.convertCollationToRowComparator(rel.collation);
             int offset = resolveRexNodeValue(rel.offset, 0, execContext.getParameters(), Integer.class);
             int fetch = resolveRexNodeValue(rel.fetch, Integer.MAX_VALUE, execContext.getParameters(), Integer.class);
             return new MergeSortExecutor(execContext, ((MultiExecutor) executor).getExecutors(), ordering, offset, fetch);

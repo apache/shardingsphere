@@ -72,7 +72,7 @@ public class LimitSortExecutor extends SortExecutor {
     
     @Override
     public final boolean executeMove() {
-        if (super.moveNext() && fetchedNum < fetch) {
+        if (super.executeMove() && fetchedNum < fetch) {
             fetchedNum++;
             return true;
         }
