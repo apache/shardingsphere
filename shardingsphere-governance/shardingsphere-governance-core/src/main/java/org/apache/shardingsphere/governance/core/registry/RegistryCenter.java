@@ -544,6 +544,7 @@ public final class RegistryCenter {
     
     private void initLockNode() {
         repository.persist(lockNode.getLockRootNodePath(), "");
+        repository.persist(lockNode.getLockedAckRootNodePah(), "");
     }
     
     /**
