@@ -38,11 +38,11 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Table meta data loader for MySQL.
+ * Table meta data loader for Oracle.
  */
-public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoader {
+public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoader {
     
-    private static final String TABLE_META_DATA_SQL = "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME FROM information_schema.columns WHERE TABLE_SCHEMA=?";
+    private static final String TABLE_META_DATA_SQL = "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, IDENTITY_COLUMN, COLLATION_NAME FROM information_schema.columns WHERE TABLE_SCHEMA=?";
     
     private static final String TABLE_META_DATA_SQL_WITH_EXISTED_TABLES = TABLE_META_DATA_SQL + " AND TABLE_NAME NOT IN (%s)";
     
@@ -88,9 +88,9 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
         String columnName = resultSet.getString("COLUMN_NAME");
         String dataType = resultSet.getString("DATA_TYPE");
         boolean primaryKey = "PRI".equals(resultSet.getString("COLUMN_KEY"));
-        boolean generated = "auto_increment".equals(resultSet.getString("EXTRA"));
+        boolean generated = "auto_increment".equals(resultSet.getString("IDENTITY_COLUMN"));
         String collationName = resultSet.getString("COLLATION_NAME");
-        boolean caseSensitive = null != collationName && !collationName.endsWith("_ci");
+        boolean caseSensitive = null != collationName && collationName.endsWith("_CS");
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
     }
 
@@ -125,6 +125,6 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
     
     @Override
     public String getDatabaseType() {
-        return "MySQL";
+        return "Oracle";
     }
 }
