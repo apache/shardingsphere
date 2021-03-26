@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUs
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -46,19 +47,17 @@ public final class MySQLAuthenticationHandler {
      * @param username username
      * @param hostname hostname
      * @param authResponse auth response
-     * @param database database
+     * @param databaseName database name
      * @return login success or failure
      */
-    public Optional<MySQLServerErrorCode> login(final String username, final String hostname, final byte[] authResponse, final String database) {
+    public Optional<MySQLServerErrorCode> login(final String username, final String hostname, final byte[] authResponse, final String databaseName) {
         Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findUser(new Grantee(username, hostname));
         if (!user.isPresent() || !isPasswordRight(user.get().getPassword(), authResponse)) {
             return Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR);
         }
-        ShardingSpherePrivilege privilege = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().getAuthentication().get(user.get());
-        if (null != privilege && privilege.hasPrivileges(database)) {
-            return Optional.empty();
-        }
-        return Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
+        Optional<ShardingSpherePrivilege> privilege = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findPrivilege(user.get().getGrantee());
+        // TODO : privilege.hasPrivileges(schema, xxx) (xxx means the privileges needed here), rather than Collections.emptyList()
+        return privilege.isPresent() && privilege.get().hasPrivileges(databaseName, Collections.emptyList()) ? Optional.empty() : Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
     }
     
     private boolean isPasswordRight(final String password, final byte[] authResponse) {
