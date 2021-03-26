@@ -30,6 +30,13 @@ import java.util.Optional;
 public interface Authentication {
     
     /**
+     * Initialize authentication.
+     * 
+     * @param props properties
+     */
+    void init(Map<String, Object> props);
+    
+    /**
      * Get authentication.
      *
      * @return Authentication

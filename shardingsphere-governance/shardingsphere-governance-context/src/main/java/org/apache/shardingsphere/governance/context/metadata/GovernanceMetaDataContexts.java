@@ -211,11 +211,8 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
      */
     @Subscribe
     public synchronized void renew(final UserRuleChangedEvent event) {
-        Collection<ShardingSphereUser> users = event.getUsers();
-        DefaultAuthentication authentication = new DefaultAuthentication(getNewUsers(users));
-        authentication.getAuthentication().putAll(getModifiedUsers(users));
-        metaDataContexts = new StandardMetaDataContexts(metaDataContexts.getMetaDataMap(), metaDataContexts.getExecutorEngine(), authentication, metaDataContexts.getProps());
-        reloadPrivilege(users);
+        metaDataContexts = new StandardMetaDataContexts(metaDataContexts.getMetaDataMap(), metaDataContexts.getExecutorEngine(), createAuthentication(event.getUsers()), metaDataContexts.getProps());
+        reloadPrivilege(event.getUsers());
     }
     
     /**
@@ -309,6 +306,15 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
                 ((StatusContainedRule) each).updateRuleStatus(new PrimaryDataSourceEvent(governanceSchema.getSchemaName(), governanceSchema.getDataSourceName(), event.getPrimaryDataSourceName()));
             }
         }
+    }
+    
+    private DefaultAuthentication createAuthentication(final Collection<ShardingSphereUser> users) {
+        DefaultAuthentication result = new DefaultAuthentication();
+        Map<String, Object> props = new HashMap<>(2, 1);
+        props.put("user", getNewUsers(users));
+        props.put("privileges", getModifiedUsers(users));
+        result.init(props);
+        return result;
     }
     
     private ShardingSphereMetaData buildMetaData(final MetaDataPersistedEvent event) throws SQLException {
