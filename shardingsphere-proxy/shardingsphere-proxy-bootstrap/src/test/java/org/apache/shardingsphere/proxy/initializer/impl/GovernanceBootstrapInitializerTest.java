@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
@@ -48,7 +49,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -115,7 +116,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         assertSchemaDataSources(actual.getSchemaDataSources());
         assertSchemaRules(actual.getSchemaRules());
         Authentication authentication = new DefaultAuthentication();
-        authentication.init(actual.getUsers(), Collections.emptyMap());
+        authentication.init(getPrivileges(actual.getUsers()));
         assertAuthentication(authentication);
         assertProps(actual.getProps());
     }
@@ -194,6 +195,14 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         Properties props = shardingAlgorithm.getProps();
         assertNotNull(props);
         assertThat(props.getProperty("algorithm-expression"), is(expectedAlgorithmExpr));
+    }
+    
+    private Map<ShardingSphereUser, ShardingSpherePrivilege> getPrivileges(final Collection<ShardingSphereUser> users) {
+        Map<ShardingSphereUser, ShardingSpherePrivilege> privileges = new HashMap<>(users.size(), 1);
+        for (ShardingSphereUser each : users) {
+            privileges.put(each, new ShardingSpherePrivilege());
+        }
+        return privileges;
     }
     
     private void assertAuthentication(final Authentication actual) {

@@ -335,11 +335,15 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     
     private Authentication createAuthentication(final Collection<ShardingSphereUser> users) {
         Authentication result = new DefaultAuthentication();
-        result.init(getNewUsers(users), getModifiedUsers(users));
+        Collection<ShardingSphereUser> newUsers = getNewUsers(users);
+        Map<ShardingSphereUser, ShardingSpherePrivilege> modifiedUsers = getModifiedUsers(users);
+        for (ShardingSphereUser each : newUsers) {
+            modifiedUsers.put(each, new ShardingSpherePrivilege());
+        }
+        result.init(modifiedUsers);
         return result;
     }
     
-    // TODO is it correct for new users with super privilege by default?
     private Collection<ShardingSphereUser> getNewUsers(final Collection<ShardingSphereUser> users) {
         return users.stream().filter(each -> !metaDataContexts.getAuthentication().findUser(each.getGrantee()).isPresent()).collect(Collectors.toList());
     }
