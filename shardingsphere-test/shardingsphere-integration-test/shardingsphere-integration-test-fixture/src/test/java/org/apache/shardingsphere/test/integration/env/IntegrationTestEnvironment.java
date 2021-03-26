@@ -184,7 +184,7 @@ public final class IntegrationTestEnvironment {
     
     private void waitForEnvironmentReady(final String scenario) {
         int retryCount = 0;
-        // TODO to check zookeeper is ready
+        // TODO check zookeeper is ready
         while (!isProxyReady(scenario) && retryCount < 30) {
             try {
                 Thread.sleep(1000L);
