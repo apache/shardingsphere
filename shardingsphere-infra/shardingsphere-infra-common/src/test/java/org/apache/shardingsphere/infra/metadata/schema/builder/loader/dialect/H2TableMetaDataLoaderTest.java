@@ -148,7 +148,7 @@ public final class H2TableMetaDataLoaderTest {
                 return each;
             }
         }
-        throw new IllegalStateException("Can not find MySQLTableMetaDataLoader");
+        throw new IllegalStateException("Can not find H2LTableMetaDataLoader");
     }
 
     private void assertTableMetaDataMap(final Map<String, TableMetaData> actual) {
