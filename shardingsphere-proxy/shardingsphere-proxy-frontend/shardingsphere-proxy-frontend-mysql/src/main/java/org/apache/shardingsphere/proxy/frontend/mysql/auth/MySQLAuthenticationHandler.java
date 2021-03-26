@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUs
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -56,8 +55,7 @@ public final class MySQLAuthenticationHandler {
             return Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR);
         }
         Optional<ShardingSpherePrivilege> privilege = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findPrivilege(user.get().getGrantee());
-        // TODO : privilege.hasPrivileges(schema, xxx) (xxx means the privileges needed here), rather than Collections.emptyList()
-        return privilege.isPresent() && privilege.get().hasPrivileges(databaseName, Collections.emptyList()) ? Optional.empty() : Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
+        return privilege.isPresent() && privilege.get().hasPrivileges(databaseName) ? Optional.empty() : Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
     }
     
     private boolean isPasswordRight(final String password, final byte[] authResponse) {
