@@ -17,185 +17,105 @@
 
 package org.apache.shardingsphere.test.integration.junit.compose;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.SneakyThrows;
+import com.google.common.collect.Lists;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.integration.junit.annotation.ContainerInitializer;
-import org.apache.shardingsphere.test.integration.junit.annotation.OnContainer;
-import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
-import org.apache.shardingsphere.test.integration.junit.container.storage.impl.H2Container;
-import org.apache.shardingsphere.test.integration.junit.container.storage.impl.MySQLContainer;
-import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
+import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
+import org.apache.shardingsphere.test.integration.common.ExecutionMode;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
+import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.impl.ShardingSphereJDBCContainer;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.impl.ShardingSphereProxyContainer;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
+import org.apache.shardingsphere.test.integration.junit.container.storage.impl.H2Container;
+import org.apache.shardingsphere.test.integration.junit.container.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.integration.junit.logging.ContainerLogs;
-import org.apache.shardingsphere.test.integration.junit.runner.TestCaseBeanContext;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
-import org.junit.runners.model.FrameworkField;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.TestClass;
+import org.junit.rules.ExternalResource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.lifecycle.Startable;
 
 import java.io.Closeable;
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /**
  * Container compose.
  */
-@RequiredArgsConstructor
 @Slf4j
-public final class ContainerCompose implements Closeable {
+public final class ContainerCompose extends ExternalResource implements Closeable {
     
     private final Network network = Network.newNetwork();
     
     private final String clusterName;
     
-    private final TestClass testClass;
+    private final ParameterizedArray parameterizedArray;
     
-    private final TestCaseDescription description;
+    private final ImmutableList<ShardingSphereContainer> containers;
     
-    private final TestCaseBeanContext beanContext;
+    @Getter
+    private final ShardingSphereStorageContainer storageContainer;
     
-    private ImmutableList<ShardingSphereContainer> containers;
+    @Getter
+    private final ShardingSphereAdapterContainer adapterContainer;
     
-    @Setter
-    private Object instance;
+    private volatile boolean started;
     
-    /**
-     * Create container and then autowired to test-case.
-     */
-    public void createContainers() {
-        ImmutableList.Builder<ShardingSphereContainer> builder = new ImmutableList.Builder<>();
-        testClass.getAnnotatedFields(OnContainer.class).stream()
-                .map(this::createContainer)
-                .filter(Objects::nonNull)
-                .peek(this::inject)
-                .forEach(builder::add);
-        containers = builder.build();
+    public ContainerCompose(final String clusterName, final ParameterizedArray parameterizedArray) {
+        this.clusterName = clusterName;
+        this.parameterizedArray = parameterizedArray;
+        TestCaseDescription description = TestCaseDescription.builder()
+                .adapter(parameterizedArray.getAdapter())
+                .scenario(parameterizedArray.getScenario())
+                .database(parameterizedArray.getDatabaseType().getName())
+                .executionMode(ExecutionMode.SINGLE)
+                .sqlCommandType(SQLCommandType.DAL)
+                .build();
+        this.storageContainer = createStorageContainer(description);
+        this.adapterContainer = createAdapterContainer(description);
+        adapterContainer.dependsOn(storageContainer);
+        this.containers = ImmutableList.of(storageContainer, adapterContainer);
     }
     
-    @SneakyThrows
-    private ShardingSphereContainer createContainer(final FrameworkField field) {
-        OnContainer metadata = field.getAnnotation(OnContainer.class);
-        try {
-            ShardingSphereContainer result = createContainer(metadata);
-            if (Objects.isNull(result)) {
-                log.warn("container {} is not activated.", metadata.name());
-                return null;
+    private ShardingSphereAdapterContainer createAdapterContainer(final TestCaseDescription description) {
+        Supplier<ShardingSphereAdapterContainer> supplier = () -> {
+            switch (parameterizedArray.getAdapter()) {
+                case "proxy":
+                    return new ShardingSphereProxyContainer();
+                case "jdbc":
+                    return new ShardingSphereJDBCContainer();
+                default:
+                    throw new RuntimeException("Adapter[" + parameterizedArray.getAdapter() + "] is unknown.");
+                
             }
-            result.setDockerName(metadata.name());
-            String hostName = metadata.hostName();
-            if (Strings.isNullOrEmpty(hostName)) {
-                hostName = metadata.name();
+        };
+        ShardingSphereAdapterContainer adapterContainer = supplier.get();
+        adapterContainer.setDescription(description);
+        adapterContainer.setNetwork(network);
+        adapterContainer.withLogConsumer(ContainerLogs.newConsumer(this.clusterName + "-adapter"));
+        return adapterContainer;
+    }
+    
+    private ShardingSphereStorageContainer createStorageContainer(final TestCaseDescription description) {
+        Supplier<ShardingSphereStorageContainer> supplier = () -> {
+            switch (parameterizedArray.getDatabaseType().getName()) {
+                case "MySQL":
+                    return new MySQLContainer();
+                case "H2":
+                    return new H2Container();
+                default:
+                    throw new RuntimeException("Unknown storage type " + parameterizedArray.getDatabaseType());
             }
-            result.withNetworkAliases(hostName);
-            result.setNetwork(network);
-            result.withLogConsumer(ContainerLogs.newConsumer(clusterName + "_" + metadata.name()));
-            field.getField().setAccessible(true);
-            field.getField().set(instance, result);
-            beanContext.registerBeanByName(metadata.name(), result);
-            log.info("container {} is activated.", metadata.name());
-            return result;
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.error("Failed to instantiate container {}.", metadata.name(), ex);
-        }
-        return null;
-    }
-    
-    @SneakyThrows
-    private ShardingSphereContainer createContainer(final OnContainer metadata) {
-        switch (metadata.type()) {
-            case ADAPTER:
-                return createAdapterContainer();
-            case STORAGE:
-                return createStorageContainer();
-            case COORDINATOR:
-                throw new UnsupportedOperationException("");
-            default:
-                return null;
-        }
-    }
-    
-    private ShardingSphereAdapterContainer createAdapterContainer() {
-        switch (description.getAdapter()) {
-            case "proxy":
-                return new ShardingSphereProxyContainer();
-            case "jdbc":
-                return new ShardingSphereJDBCContainer();
-            default:
-                throw new RuntimeException("Adapter[" + description.getAdapter() + "] is unknown.");
-        }
-    }
-    
-    private ShardingSphereStorageContainer createStorageContainer() {
-        switch (description.getStorageType()) {
-            case MySQL:
-                return new MySQLContainer();
-            case H2:
-                return new H2Container();
-            default:
-                throw new RuntimeException("Unknown storage type " + description.getStorageType());
-        }
-    }
-    
-    private void inject(final ShardingSphereContainer container) {
-        Collection<Field> fields = new LinkedList<>();
-        for (Class<?> klass = container.getClass(); Objects.nonNull(klass); klass = klass.getSuperclass()) {
-            fields.addAll(Arrays.asList(klass.getDeclaredFields()));
-        }
-        fields.stream().filter(each -> each.isAnnotationPresent(ShardingSphereITInject.class)).forEach(each -> setFieldValue(each, container));
-    }
-    
-    private void setFieldValue(final Field field, final ShardingSphereContainer container) {
-        Class<?> type = field.getType();
-        field.setAccessible(true);
-        try {
-            if (type.isPrimitive() || String.class == type) {
-                field.set(container, beanContext.getBeanByName(field.getName()));
-            } else {
-                field.set(container, beanContext.getBean(type));
-            }
-        } catch (final IllegalAccessException ex) {
-            log.error("Failed to auto inject {}.{}.", container.getContainerName(), field.getName());
-        }
-    }
-    
-    /**
-     * Create the initializer and execute.
-     */
-    @SneakyThrows
-    public void createInitializerAndExecute() {
-        testClass.getAnnotatedMethods(ContainerInitializer.class).forEach(this::invokeExplosively);
-    }
-    
-    private void invokeExplosively(final FrameworkMethod frameworkMethod) {
-        try {
-            if (frameworkMethod.isStatic()) {
-                frameworkMethod.getMethod().setAccessible(true);
-                frameworkMethod.invokeExplosively(null);
-            } else {
-                frameworkMethod.getMethod().setAccessible(true);
-                frameworkMethod.invokeExplosively(instance);
-            }
-            // CHECKSTYLE:OFF
-        } catch (final Throwable ex) {
-            // CHECKSTYLE:ON
-            throw new RuntimeException(ex);
-        }
+        };
+        ShardingSphereStorageContainer storageContainer = supplier.get();
+        storageContainer.setNetwork(network);
+        storageContainer.setDescription(description);
+        storageContainer.withLogConsumer(ContainerLogs.newConsumer(this.clusterName + "-storage"));
+        storageContainer.setNetworkAliases(Lists.newArrayList("mysql.db.host"));
+        return storageContainer;
     }
     
     /**
@@ -227,7 +147,20 @@ public final class ContainerCompose implements Closeable {
                         }
                     }
                 });
+        started = true;
         log.info("Any container is startup.");
+    }
+    
+    @Override
+    protected void before() {
+        if (!started) {
+            synchronized (this) {
+                if (!started) {
+                    start();
+                    waitUntilReady();
+                }
+            }
+        }
     }
     
     @Override

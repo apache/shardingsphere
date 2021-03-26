@@ -21,6 +21,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
+import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -36,6 +37,10 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDALIT extends SingleITCase {
+    
+    public BaseDALIT(final AssertionParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
+    }
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {
         assertMetaData(resultSet.getMetaData(), getExpectedColumns());
