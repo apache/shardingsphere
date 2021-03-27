@@ -48,7 +48,7 @@ public class DefaultPlannerTest extends AbstractSchemaTest {
     }
     
     private RelNode parseAndOptimize(String sql) {
-        SqlNode sqlNode = SqlParserFacade.parse(sql, schema);
+        SqlNode sqlNode = SqlParserFacade.parse(sql);
         RelNode relNode = relNodeConverter.validateAndConvert(sqlNode);
     
         return defaultPlanner.getPhysicPlan(relNode);
@@ -56,7 +56,6 @@ public class DefaultPlannerTest extends AbstractSchemaTest {
     
     @Test
     public void testSingleTable() {
-        // TODO 
         String sql = "select user_id, user_name from t_user ";
         RelNode physicalRelNode = parseAndOptimize(sql);
         Assert.assertNotNull(physicalRelNode);
@@ -88,7 +87,7 @@ public class DefaultPlannerTest extends AbstractSchemaTest {
                 + "o1.order_id = o2.order_id where o1.status='FINISHED' and o2.order_item_id > 1024 and 1=1 order by "
                 + "o1.order_id desc";
     
-        SqlNode sqlNode = SqlParserFacade.parse(sql, schema);
+        SqlNode sqlNode = SqlParserFacade.parse(sql);
         RelNode relNode = relNodeConverter.validateAndConvert(sqlNode);
         
         RelNode physicalRelNode = defaultPlanner.getPhysicPlan(relNode);

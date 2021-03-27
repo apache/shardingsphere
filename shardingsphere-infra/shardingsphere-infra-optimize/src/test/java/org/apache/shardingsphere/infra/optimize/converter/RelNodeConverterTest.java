@@ -51,7 +51,7 @@ public class RelNodeConverterTest extends AbstractSchemaTest {
 
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(schema, Collections.emptyList(), sqlStatement);
-        Optional<SqlNode> optional = SqlNodeConverter.convertSqlStatement(sqlStatementContext);
+        Optional<SqlNode> optional = SqlNodeConverter.convertSqlStatement(sqlStatement);
         Assert.assertTrue(optional.isPresent());
         RelNode relNode = relNodeConverter.validateAndConvert(optional.get());
         Assert.assertNotNull(relNode);

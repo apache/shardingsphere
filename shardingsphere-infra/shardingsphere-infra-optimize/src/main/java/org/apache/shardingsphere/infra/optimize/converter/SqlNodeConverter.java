@@ -1,10 +1,12 @@
 package org.apache.shardingsphere.infra.optimize.converter;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.calcite.sql.JoinConditionType;
 import org.apache.calcite.sql.JoinType;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlCharStringLiteral;
+import org.apache.calcite.sql.SqlDynamicParam;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlJoin;
 import org.apache.calcite.sql.SqlLiteral;
@@ -14,16 +16,6 @@ import org.apache.calcite.sql.SqlSelect;
 import org.apache.calcite.sql.SqlSelectKeyword;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
-import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByContext;
-import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.infra.binder.segment.select.pagination.PaginationContext;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
-import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ExpressionProjection;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.optimize.operator.BinarySqlOperator;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -32,12 +24,21 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.TextOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.NumberLiteralPaginationValueSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
@@ -45,6 +46,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -60,23 +64,31 @@ import java.util.Optional;
  */
 public class SqlNodeConverter {
     
+    private static final String JOIN_TYPE_INNER = "INNER";
+    
+    private static final String JOIN_TYPE_LEFT = "LEFT";
+    
+    private static final String JOIN_TYPE_RIGHT = "RIGHT";
+    
+    private static final String JOIN_TYPE_FULL = "FULL";
+    
     /**
      * convert shardingsphere ast to calcite ast.
-     * @param statementContext shardingsphere ast
+     * @param sqlStatement shardingsphere ast
      * @return an Optional 
      */
-    public static Optional<SqlNode> convertSqlStatement(final SQLStatementContext<?> statementContext) {
+    public static Optional<SqlNode> convertSqlStatement(final SQLStatement sqlStatement) {
         try {
-            SqlNode sqlNode = convertStatement(statementContext);
-            return Optional.of(sqlNode);
+            SqlNode sqlNode = convertStatement(sqlStatement);
+            return Optional.ofNullable(sqlNode);
         } catch (UnsupportedOperationException e) {
             return Optional.empty();
         }
     }
 
-    private static SqlNode convertStatement(final SQLStatementContext<?> statementContext) {
-        if (statementContext instanceof SelectStatementContext) {
-            return convertSelectStatement((SelectStatementContext) statementContext);
+    private static SqlNode convertStatement(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            return convertSelectStatement((SelectStatement) sqlStatement);
         }
         return null;
     }
@@ -86,20 +98,16 @@ public class SqlNodeConverter {
      * @param selectStatement select ast
      * @return calcite select ast
      */
-    public static SqlNode convertSelectStatement(final SelectStatementContext selectStatement) {
-        SqlNodeList keywordList = convertDistinct(selectStatement.getProjectionsContext());
-        SqlNodeList projections = convertProjections(selectStatement.getProjectionsContext());
-
-        SqlNode from = convertTableSegment(selectStatement.getSqlStatement().getFrom());
+    public static SqlNode convertSelectStatement(final SelectStatement selectStatement) {
+        SqlNodeList keywordList = convertDistinct(selectStatement.getProjections());
+        SqlNodeList projections = convertProjections(selectStatement.getProjections());
+        SqlNode from = convertTableSegment(selectStatement.getFrom());
         SqlNode where = selectStatement.getWhere().isPresent() ? convertWhere(selectStatement.getWhere().get()) : null;
-
-        // TODO 不支持 group by having
-        SqlNodeList groupBy = convertGroupBy(selectStatement.getGroupByContext());
-
-        SqlNodeList orderBy = convertOrderBy(selectStatement.getOrderByContext());
-        
-        Map.Entry<SqlNode, SqlNode> offsetRowCount = convertPagination(selectStatement.getPaginationContext());
-
+        SqlNodeList groupBy = convertGroupBy(selectStatement.getGroupBy().isPresent() ? selectStatement.getGroupBy().get() : null);
+        SqlNodeList orderBy = convertOrderBy(selectStatement.getOrderBy().isPresent() ? selectStatement.getOrderBy().get() : null);
+    
+        Optional<LimitSegment> limitSegment = SelectStatementHandler.getLimitSegment(selectStatement);
+        Map.Entry<SqlNode, SqlNode> offsetRowCount = convertPagination(limitSegment.isPresent() ? limitSegment.get() : null);
         SqlNode offset = offsetRowCount.getKey();
         SqlNode rowCount = offsetRowCount.getValue();
 
@@ -112,7 +120,7 @@ public class SqlNodeConverter {
      * @param projections project ast
      * @return calcite project ast
      */
-    public static SqlNodeList convertDistinct(final ProjectionsContext projections) {
+    public static SqlNodeList convertDistinct(final ProjectionsSegment projections) {
         if (projections.isDistinctRow()) {
             return new SqlNodeList(Arrays.asList(SqlSelectKeyword.DISTINCT.symbol(SqlParserPos.ZERO)), SqlParserPos.ZERO);
         }
@@ -121,140 +129,203 @@ public class SqlNodeConverter {
     
     /**
      * convert project.
-     * @param projectionsContext project ast
+     * @param projectionsSegment project ast
      * @return calcite project ast
      */
-    public static SqlNodeList convertProjections(final ProjectionsContext projectionsContext) {
-        Collection<Projection> projections = projectionsContext.getProjections();
+    public static SqlNodeList convertProjections(final ProjectionsSegment projectionsSegment) {
+        Collection<ProjectionSegment> projections = projectionsSegment.getProjections();
         List<SqlNode> columnNodes = new ArrayList<>(projections.size());
-        for (Projection projection : projections) {
-            if (projection instanceof ColumnProjection) {
-                columnNodes.add(convertColumnProjection((ColumnProjection) projection));
-            } else if (projection instanceof ExpressionProjection) {
-                // TODO
-                // expression is not ast current.
-                // columnNodes.add(convertExpressionProjection((ExpressionProjectionSegment) projection));
+        for (ProjectionSegment projection : projections) {
+            if (projection instanceof ColumnProjectionSegment) {
+                columnNodes.add(convertColumnProjection((ColumnProjectionSegment) projection));
+            } else if (projection instanceof ExpressionProjectionSegment) {
+                columnNodes.add(convertExpressionProjection((ExpressionProjectionSegment) projection));
             }
-            // TODO
+            // TODO other Projection
         }
         return new SqlNodeList(columnNodes, SqlParserPos.ZERO);
     }
     
     /**
-     * convert column project.
-     * @param columnProjection column project
-     * @return calcite <code>SqlNode</code>
+     * convert from clause.
+     * @param table from 
+     * @return from table <code>SqlNode</code>
      */
-    public static SqlNode convertColumnProjection(final ColumnProjection columnProjection) {
-        String columnName = columnProjection.getName();
-        String owner = columnProjection.getOwner();
-        return new SqlIdentifier(Arrays.asList(owner == null ? "" : owner, columnName), SqlParserPos.ZERO);
-    }
-
-    private static SqlNode convertExpressionProjection(final ExpressionProjectionSegment expressionProjection) {
-        String expression = expressionProjection.getText();
-        return SqlCharStringLiteral.createCharString(expression, SqlParserPos.ZERO);
-    }
-    
-    public static SqlNode convertWhere(final WhereSegment where) {
-        ExpressionSegment whereExpr = where.getExpr();
-        return convertExpression(whereExpr);
-        // TODO or
-        // TODO not
-        // TODO not in
-    }
-
-    public static SqlNodeList convertGroupBy(final GroupByContext groupBy) {
-        Collection<OrderByItem> groupByItems = groupBy.getItems();
-        if (groupByItems == null || groupByItems.size() == 0) {
-            return null;
-        }
-        List<SqlNode> groupBySqlNodes = convertOrderByItems(groupByItems);
-        return new SqlNodeList(groupBySqlNodes, SqlParserPos.ZERO);
-    }
-
-    public static SqlNodeList convertOrderBy(final OrderByContext orderBy) {
-        Collection<OrderByItem> orderByItems = orderBy.getItems();
-        List<SqlNode> orderBySqlNodes = convertOrderByItems(orderByItems);
-        return new SqlNodeList(orderBySqlNodes, SqlParserPos.ZERO);
-    }
-
-    public static Map.Entry<SqlNode, SqlNode> convertPagination(final PaginationContext pagination) {
-        if (pagination == null || !pagination.isHasPagination()) {
-            return new SimpleEntry<>(null, null);
-        }
-        // TODO fixme
-        SqlNode offSet = SqlLiteral.createExactNumeric(String.valueOf(pagination.getActualOffset()), SqlParserPos.ZERO);
-
-        Optional<Long> rowCountOptional = pagination.getActualRowCount();
-        SqlNode rowCount = null;
-        if (rowCountOptional.isPresent()) {
-            rowCount = SqlLiteral.createExactNumeric(String.valueOf(rowCountOptional.get()), SqlParserPos.ZERO);
-        }
-        return new SimpleEntry<>(offSet, rowCount);
-    }
-
-    public static List<SqlNode> convertOrderByItems(final Collection<OrderByItem> orderByItems) {
-        List<SqlNode> sqlNodes = Lists.newArrayList();
-        for (OrderByItem orderByItem : orderByItems) {
-            OrderByItemSegment orderByItemSegment = orderByItem.getSegment();
-            if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
-                sqlNodes.add(convertColumnOrderByToSqlNode((ColumnOrderByItemSegment) orderByItemSegment));
-            } else if (orderByItemSegment instanceof ExpressionOrderByItemSegment) {
-                // sqlNodes.add(convertToSqlNode((ExpressionOrderByItemSegment)orderByItemSegment));
-            } else if (orderByItemSegment instanceof IndexOrderByItemSegment) {
-                // sqlNodes.add(convertToSqlNode((IndexOrderByItemSegment)orderByItemSegment));
-            } else if (orderByItemSegment instanceof TextOrderByItemSegment) {
-                // sqlNodes.add(convertToSqlNode((TextOrderByItemSegment)orderByItemSegment));
-            }
-        }
-        return sqlNodes;
-    }
-
-    public static SqlNode convertColumnOrderByToSqlNode(final ColumnOrderByItemSegment columnOrderBy) {
-        SqlNode sqlNode = convertToSqlNode(columnOrderBy.getColumn());
-        if (Objects.equals(OrderDirection.DESC, columnOrderBy.getOrderDirection())) {
-            sqlNode = new SqlBasicCall(SqlStdOperatorTable.DESC, new SqlNode[] {sqlNode}, SqlParserPos.ZERO);
-        }
-        return sqlNode;
-    }
-
     public static SqlNode convertTableSegment(final TableSegment table) {
         if (table instanceof SimpleTableSegment) {
             TableNameSegment tableName = ((SimpleTableSegment) table).getTableName();
             SqlNode tableNameSqlNode = new SqlIdentifier(tableName.getIdentifier().getValue(), SqlParserPos.ZERO);
             if (table.getAlias().isPresent()) {
                 SqlNode aliasIdentifier = new SqlIdentifier(table.getAlias().get(), SqlParserPos.ZERO);
-                SqlNode tableAsSqlNode = new SqlBasicCall(SqlStdOperatorTable.AS, new SqlNode[] {tableNameSqlNode, aliasIdentifier}, SqlParserPos.ZERO);
-                return tableAsSqlNode;
+                return new SqlBasicCall(SqlStdOperatorTable.AS, new SqlNode[] {tableNameSqlNode, aliasIdentifier}, SqlParserPos.ZERO);
             } else {
                 return tableNameSqlNode;
             }
-        } else if (table instanceof SubqueryTableSegment) {
-            // TODO
         } else if (table instanceof JoinTableSegment) {
-            JoinTableSegment join = (JoinTableSegment) table;
-            String joinType = join.getJoinType();
-            SqlNode left = convertTableSegment(join.getLeft());
-            SqlNode right = convertTableSegment(join.getRight());
-            ExpressionSegment expressionSegment = join.getCondition();
-            SqlNode condition = convertExpression(expressionSegment);
-
-            SqlLiteral conditionType = condition == null ? JoinConditionType.NONE.symbol(SqlParserPos.ZERO)
-                    : JoinConditionType.ON.symbol(SqlParserPos.ZERO);
-            
-            if (joinType == null) {
-                return new SqlJoin(SqlParserPos.ZERO, left, 
-                        SqlLiteral.createBoolean(false, SqlParserPos.ZERO), 
-                        JoinType.INNER.symbol(SqlParserPos.ZERO), right, conditionType, condition);
-            } else if ("INNER".equals(joinType)) {
-
-            }
+            return convertJoin((JoinTableSegment) table);
+        } else if (table instanceof SubqueryTableSegment) {
+            return convertSubquery((SubqueryTableSegment) table);
         }
         throw new UnsupportedOperationException("unsupportd TableSegment type: " + table.getClass());
     }
+    
+    /**
+     * convert where clause.
+     * @param where where clause
+     * @return where <code>SqlNode</code>
+     */
+    public static SqlNode convertWhere(final WhereSegment where) {
+        ExpressionSegment whereExpr = where.getExpr();
+        return convertExpression(whereExpr);
+    }
+    
+    /**
+     * convert group by clause.
+     * @param groupBy  group by 
+     * @return group by <code>SqlNode</code>
+     */
+    public static SqlNodeList convertGroupBy(final GroupBySegment groupBy) {
+        if (groupBy == null || groupBy.getGroupByItems() == null || groupBy.getGroupByItems().isEmpty()) {
+            return null;
+        }
+        Collection<OrderByItemSegment> groupByItems = groupBy.getGroupByItems();
+        
+        // TODO group by having is not supported yet.
+        List<SqlNode> groupBySqlNodes = convertOrderByItems(groupByItems);
+        return new SqlNodeList(groupBySqlNodes, SqlParserPos.ZERO);
+    }
+    
+    /**
+     * convert order by clause.
+     * @param orderBy order by clause
+     * @return order by <code>SqlNode</code>, or null if order by does not exist
+     */
+    public static SqlNodeList convertOrderBy(final OrderBySegment orderBy) {
+        if (orderBy == null) {
+            return null;
+        }
+        List<SqlNode> orderBySqlNodes = convertOrderByItems(orderBy.getOrderByItems());
+        return new SqlNodeList(orderBySqlNodes, SqlParserPos.ZERO);
+    }
+    
+    /**
+     * convert pagination.
+     * @param limitSegment pagination clause
+     * @return offset and fetch <code>SqlNode</code>.
+     */
+    public static Map.Entry<SqlNode, SqlNode> convertPagination(final LimitSegment limitSegment) {
+        if (limitSegment == null) {
+            return new SimpleEntry<>(null, null);
+        }
+    
+        SqlNode offsetSqlNode = null;
+        SqlNode fetchSqlNode = null;
+        
+        Optional<PaginationValueSegment> offset = limitSegment.getOffset();
+        Optional<PaginationValueSegment> fetch = limitSegment.getRowCount();
+        
+        if (offset.isPresent()) {
+            offsetSqlNode = convertLimit(offset.get());
+        }
+        
+        if (fetch.isPresent()) {
+            fetchSqlNode = convertLimit(fetch.get());
+        }
+        return new SimpleEntry<>(offsetSqlNode, fetchSqlNode);
+    }
+    
+    private static SqlNode convertLimit(final PaginationValueSegment paginationValue) {
+        if (paginationValue instanceof NumberLiteralPaginationValueSegment) {
+            NumberLiteralPaginationValueSegment offsetValue = (NumberLiteralPaginationValueSegment) paginationValue;
+            return SqlLiteral.createExactNumeric(String.valueOf(offsetValue.getValue()), SqlParserPos.ZERO);
+        } else {
+            ParameterMarkerLimitValueSegment offsetParam = (ParameterMarkerLimitValueSegment) paginationValue;
+            return new SqlDynamicParam(offsetParam.getParameterIndex(), SqlParserPos.ZERO);
+        }
+    }
+    
+    private static SqlNode convertColumnProjection(final ColumnProjectionSegment columnProjection) {
+        ColumnSegment column = columnProjection.getColumn();
+        return convertColumnSegment(column);
+    }
 
-    public static SqlNode convertBinaryOperationExpression(final BinaryOperationExpression binaryOperationExpression) {
+    private static SqlNode convertExpressionProjection(final ExpressionProjectionSegment expressionProjection) {
+        // TODO expression has not been parsed now.
+        String expression = expressionProjection.getText();
+        return SqlCharStringLiteral.createCharString(expression, SqlParserPos.ZERO);
+    }
+
+    private static List<SqlNode> convertOrderByItems(final Collection<OrderByItemSegment> orderByItems) {
+        List<SqlNode> sqlNodes = Lists.newArrayList();
+        for (OrderByItemSegment orderByItemSegment : orderByItems) {
+            if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
+                sqlNodes.add(convertColumnOrderByToSqlNode((ColumnOrderByItemSegment) orderByItemSegment));
+            } else if (orderByItemSegment instanceof ExpressionOrderByItemSegment) {
+                sqlNodes.add(convertExpressionOrderByToSqlNode((ExpressionOrderByItemSegment) orderByItemSegment));
+            } else if (orderByItemSegment instanceof IndexOrderByItemSegment) {
+                sqlNodes.add(convertIndexOrderByToSqlNode((IndexOrderByItemSegment) orderByItemSegment));
+            } else if (orderByItemSegment instanceof TextOrderByItemSegment) {
+                sqlNodes.add(convertTextOrderByToSqlNode((TextOrderByItemSegment) orderByItemSegment));
+            }
+        }
+        return sqlNodes;
+    }
+
+    private static SqlNode convertColumnOrderByToSqlNode(final ColumnOrderByItemSegment columnOrderBy) {
+        SqlNode sqlNode = convertColumnSegment(columnOrderBy.getColumn());
+        if (Objects.equals(OrderDirection.DESC, columnOrderBy.getOrderDirection())) {
+            sqlNode = new SqlBasicCall(SqlStdOperatorTable.DESC, new SqlNode[] {sqlNode}, SqlParserPos.ZERO);
+        }
+        return sqlNode;
+    }
+    
+    private static SqlNode convertExpressionOrderByToSqlNode(final ExpressionOrderByItemSegment expressionOrderBy) {
+        // TODO 
+        throw new UnsupportedOperationException("unsupported expression order by");
+    }
+    
+    private static SqlNode convertIndexOrderByToSqlNode(final IndexOrderByItemSegment indexOrderBy) {
+        // TODO
+        throw new UnsupportedOperationException("unsupported index order by");
+    }
+    
+    private static SqlNode convertTextOrderByToSqlNode(final TextOrderByItemSegment textOrderBy) {
+        throw new UnsupportedOperationException("unsupported text order by");
+    }
+    
+    private static SqlNode convertSubquery(final SubqueryTableSegment subquery) {
+        // TODO
+        throw new UnsupportedOperationException("subquery is not supported");
+    }
+    
+    protected static SqlNode convertJoin(final JoinTableSegment join) {
+        String joinType = join.getJoinType();
+        SqlNode left = convertTableSegment(join.getLeft());
+        SqlNode right = convertTableSegment(join.getRight());
+        ExpressionSegment expressionSegment = join.getCondition();
+        SqlNode condition = convertExpression(expressionSegment);
+    
+        SqlLiteral conditionType = condition == null ? JoinConditionType.NONE.symbol(SqlParserPos.ZERO)
+                : JoinConditionType.ON.symbol(SqlParserPos.ZERO);
+    
+        SqlLiteral joinTypeSqlNode;
+        if (joinType == null || JOIN_TYPE_INNER.equals(joinType)) {
+            joinTypeSqlNode = JoinType.INNER.symbol(SqlParserPos.ZERO);
+        } else if (JOIN_TYPE_LEFT.equals(joinType)) {
+            joinTypeSqlNode = JoinType.LEFT.symbol(SqlParserPos.ZERO);
+        } else if (JOIN_TYPE_RIGHT.equals(joinType)) {
+            joinTypeSqlNode = JoinType.RIGHT.symbol(SqlParserPos.ZERO);
+        } else if (JOIN_TYPE_FULL.equals(joinType)) {
+            joinTypeSqlNode = JoinType.FULL.symbol(SqlParserPos.ZERO);
+        } else {
+            throw new UnsupportedOperationException("unsupported join type " + joinType);
+        }
+        return new SqlJoin(SqlParserPos.ZERO, left, 
+                SqlLiteral.createBoolean(false, SqlParserPos.ZERO),
+                joinTypeSqlNode, right, conditionType, condition);
+    }
+
+    private static SqlNode convertBinaryOperationExpression(final BinaryOperationExpression binaryOperationExpression) {
         SqlNode left = convertExpression(binaryOperationExpression.getLeft());
         SqlNode right = convertExpression(binaryOperationExpression.getRight());
         String operator = binaryOperationExpression.getOperator();
@@ -263,11 +334,11 @@ public class SqlNodeConverter {
                 SqlParserPos.ZERO);
     }
 
-    public static SqlNode convertExpression(final ExpressionSegment expression) {
+    private static SqlNode convertExpression(final ExpressionSegment expression) {
         if (expression instanceof LiteralExpressionSegment) {
             return convertToSqlNode((LiteralExpressionSegment) expression);
         } else if (expression instanceof CommonExpressionSegment) {
-            // TODO return convertToSqlNode((CommonExpressionSegment)expression);
+            return convertToSqlNode((CommonExpressionSegment) expression);
         } else if (expression instanceof ListExpression) {
             List<ExpressionSegment> items = ((ListExpression) expression).getItems();
             SqlNode left = null;
@@ -292,12 +363,15 @@ public class SqlNodeConverter {
     }
 
     private static SqlNode convertColumnSegment(final ColumnSegment columnSegment) {
-        String columnName = columnSegment.getIdentifier().getValue();
         Optional<OwnerSegment> owner = columnSegment.getOwner();
-        return new SqlIdentifier(Arrays.asList(owner.isPresent() ? owner.get().getIdentifier().getValue() : "", columnName), SqlParserPos.ZERO);
+        String columnName = columnSegment.getIdentifier().getValue();
+        if (owner.isPresent()) {
+            return new SqlIdentifier(ImmutableList.of(owner.get().getIdentifier().getValue(), columnName), SqlParserPos.ZERO);
+        }
+        return new SqlIdentifier(columnName, SqlParserPos.ZERO);
     }
 
-    public static SqlNode convertToSqlNode(final LiteralExpressionSegment literalExpression) {
+    private static SqlNode convertToSqlNode(final LiteralExpressionSegment literalExpression) {
         Object literals = literalExpression.getLiterals();
         if (literals.getClass() == Integer.class) {
             return SqlLiteral.createExactNumeric(String.valueOf(literalExpression.getLiterals()), SqlParserPos.ZERO);
@@ -307,14 +381,9 @@ public class SqlNodeConverter {
         return null;
     }
     
-    public static SqlNode convertToSqlNode(final ColumnSegment column) {
-        String columnName = column.getIdentifier().getValue();
-        Optional<OwnerSegment> ownerOptional = column.getOwner();
-        String ownernName = "";
-        if (ownerOptional.isPresent()) {
-            ownernName = ownerOptional.get().getIdentifier().getValue();
-        }
-        return new SqlIdentifier(Arrays.asList(ownernName, columnName), SqlParserPos.ZERO);
+    private static SqlNode convertToSqlNode(final CommonExpressionSegment commonExpressionSegment) {
+        // TODO 
+        throw new UnsupportedOperationException("unsupported common expression");
     }
 
 }
