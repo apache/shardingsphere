@@ -37,17 +37,13 @@ public final class DefaultAuthentication implements Authentication {
     private final Map<ShardingSphereUser, ShardingSpherePrivilege> authentication = new ConcurrentHashMap<>();
     
     @Override
-    public void init(final Collection<ShardingSphereUser> initializedUsers, final Map<ShardingSphereUser, ShardingSpherePrivilege> loadedPrivileges) {
-        for (ShardingSphereUser each : initializedUsers) {
-            authentication.put(each, createShardingSpherePrivilege());
-        }
+    public void init(final Map<ShardingSphereUser, ShardingSpherePrivilege> loadedPrivileges) {
         authentication.putAll(loadedPrivileges);
     }
     
-    private ShardingSpherePrivilege createShardingSpherePrivilege() {
-        ShardingSpherePrivilege result = new ShardingSpherePrivilege();
-        result.setSuperPrivilege();
-        return result;
+    @Override
+    public Collection<ShardingSphereUser> getAllUsers() {
+        return authentication.keySet();
     }
     
     @Override

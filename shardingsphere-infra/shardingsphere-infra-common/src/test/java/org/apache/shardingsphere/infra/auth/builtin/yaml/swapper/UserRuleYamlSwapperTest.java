@@ -42,7 +42,7 @@ public final class UserRuleYamlSwapperTest {
         DefaultAuthentication authentication = new DefaultAuthentication();
         authentication.getAuthentication().put(new ShardingSphereUser("user1", "pwd1", "127.0.0.1"), new ShardingSpherePrivilege());
         authentication.getAuthentication().put(new ShardingSphereUser("user2", "pwd2", "127.0.0.2"), new ShardingSpherePrivilege());
-        YamlUserRuleConfiguration actual = new UserRuleYamlSwapper().swapToYamlConfiguration(authentication.getAuthentication().keySet());
+        YamlUserRuleConfiguration actual = new UserRuleYamlSwapper().swapToYamlConfiguration(authentication.getAllUsers());
         assertThat(actual.getUsers().size(), is(2));
         assertThat(actual.getUsers().get("user1").getPassword(), is("pwd1"));
         assertThat(actual.getUsers().get("user1").getHostname(), is("127.0.0.1"));

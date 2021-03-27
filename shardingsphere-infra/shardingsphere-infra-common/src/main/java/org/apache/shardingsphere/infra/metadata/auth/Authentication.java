@@ -33,10 +33,9 @@ public interface Authentication {
     /**
      * Initialize authentication.
      * 
-     * @param initializedUsers initialized users
      * @param loadedPrivileges loaded privileges
      */
-    void init(Collection<ShardingSphereUser> initializedUsers, Map<ShardingSphereUser, ShardingSpherePrivilege> loadedPrivileges);
+    void init(Map<ShardingSphereUser, ShardingSpherePrivilege> loadedPrivileges);
     
     /**
      * Get authentication.
@@ -44,6 +43,13 @@ public interface Authentication {
      * @return Authentication
      */
     Map<ShardingSphereUser, ShardingSpherePrivilege> getAuthentication();
+    
+    /**
+     * Get all users.
+     *
+     * @return all users
+     */
+    Collection<ShardingSphereUser> getAllUsers();
     
     /**
      * Find user.
