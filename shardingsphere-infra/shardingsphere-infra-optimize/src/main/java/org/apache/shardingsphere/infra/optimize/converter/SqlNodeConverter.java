@@ -309,7 +309,9 @@ public class SqlNodeConverter {
                 : JoinConditionType.ON.symbol(SqlParserPos.ZERO);
     
         SqlLiteral joinTypeSqlNode;
-        if (joinType == null || JOIN_TYPE_INNER.equals(joinType)) {
+        if (joinType == null) {
+            joinTypeSqlNode = JoinType.COMMA.symbol(SqlParserPos.ZERO);
+        } else if (JOIN_TYPE_INNER.equals(joinType)) {
             joinTypeSqlNode = JoinType.INNER.symbol(SqlParserPos.ZERO);
         } else if (JOIN_TYPE_LEFT.equals(joinType)) {
             joinTypeSqlNode = JoinType.LEFT.symbol(SqlParserPos.ZERO);
@@ -335,6 +337,9 @@ public class SqlNodeConverter {
     }
 
     private static SqlNode convertExpression(final ExpressionSegment expression) {
+        if (expression == null) {
+            return null; 
+        }
         if (expression instanceof LiteralExpressionSegment) {
             return convertToSqlNode((LiteralExpressionSegment) expression);
         } else if (expression instanceof CommonExpressionSegment) {

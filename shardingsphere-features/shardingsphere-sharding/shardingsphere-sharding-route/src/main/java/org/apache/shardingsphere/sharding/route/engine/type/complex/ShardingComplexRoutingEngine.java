@@ -23,11 +23,13 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngine;
+import org.apache.shardingsphere.sharding.route.engine.type.single.SingleTablesRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.TreeSet;
@@ -59,6 +61,9 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
                 }
                 shardingRule.findBindingTableRule(each).ifPresent(bindingTableRule -> bindingTableNames.addAll(
                     bindingTableRule.getTableRules().stream().map(TableRule::getLogicTable).collect(Collectors.toList())));
+            } else if(shardingRule.singleTableRuleExists(Arrays.asList(each))) {
+                new SingleTablesRoutingEngine(Arrays.asList(each), null).route(newRouteContext, shardingRule);
+                routeContexts.add(newRouteContext);
             }
         }
         if (routeContexts.isEmpty()) {

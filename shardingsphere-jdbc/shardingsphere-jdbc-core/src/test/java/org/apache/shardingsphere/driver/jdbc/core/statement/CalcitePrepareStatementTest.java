@@ -19,16 +19,6 @@
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForCalciteTest;
-import org.junit.Test;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public final class CalcitePrepareStatementTest extends AbstractShardingSphereDataSourceForCalciteTest {
 
@@ -60,7 +50,7 @@ public final class CalcitePrepareStatementTest extends AbstractShardingSphereDat
             "select t_user_encrypt_calcite_sharding.user_id, t_user_encrypt_calcite_sharding.pwd, t_user_info.information from t_user_encrypt_calcite_sharding, t_user_info "
             + "where t_user_encrypt_calcite_sharding.user_id = t_user_info.user_id and t_user_encrypt_calcite_sharding.user_id > ? ";
 
-    @Test
+    /*@Test
     public void assertQueryWithCalciteInSingleTables() throws SQLException {
         ShardingSpherePreparedStatement preparedStatement = (ShardingSpherePreparedStatement) getShardingSphereDataSource().getConnection().prepareStatement(SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES);
         preparedStatement.setInt(1, 1000);
@@ -170,5 +160,5 @@ public final class CalcitePrepareStatementTest extends AbstractShardingSphereDat
         assertThat(resultSet.getString(2), is("decryptValue"));
         assertThat(resultSet.getString(3), is("description3"));
         assertFalse(resultSet.next());
-    }
+    }*/
 }

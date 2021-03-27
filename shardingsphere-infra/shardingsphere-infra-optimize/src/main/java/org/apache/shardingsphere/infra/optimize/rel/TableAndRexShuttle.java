@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShard
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.TableRule;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -57,9 +56,6 @@ public final class TableAndRexShuttle extends RelShuttleImpl {
         if (filter.getInput() instanceof LogicalTableScan) {
             String tableName = RelNodeUtil.getTableName((TableScan) filter.getInput());
             List<RexNode> rexNodes = RelOptUtil.conjunctions(filter.getCondition());
-    
-            TableRule tableRule = shardingRule.getTableRule(tableName);
-            // TODO only sharding table 
             
             for (RexNode rexNode : rexNodes) {
                 if (!(rexNode instanceof RexCall)) {

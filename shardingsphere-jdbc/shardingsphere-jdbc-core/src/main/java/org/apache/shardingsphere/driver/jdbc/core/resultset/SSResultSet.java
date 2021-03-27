@@ -120,22 +120,22 @@ public final class SSResultSet extends AbstractUnsupportedOperationResultSet {
     
     @Override
     public int getInt(final int i) throws SQLException {
-        return 0;
+        return (int) ResultSetUtil.convertValue(getColumnValue(i), int.class);
     }
     
     @Override
-    public int getInt(final String s) throws SQLException {
-        return 0;
+    public int getInt(final String columnLabel) throws SQLException {
+        return getInt(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override
     public long getLong(final int i) throws SQLException {
-        return 0;
+        return (long) ResultSetUtil.convertValue(getColumnValue(i), long.class);
     }
     
     @Override
-    public long getLong(final String s) throws SQLException {
-        return 0;
+    public long getLong(final String columnLabel) throws SQLException {
+        return getLong(getIndexFromColumnLabelAndIndexMap(columnLabel));
     }
     
     @Override

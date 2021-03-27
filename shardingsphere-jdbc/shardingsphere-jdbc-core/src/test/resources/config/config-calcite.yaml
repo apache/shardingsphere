@@ -19,7 +19,7 @@ rules:
   - !SHARDING
     tables:
       t_order_item_calcite_sharding:
-        actualDataNodes: calcite_ds.t_order_item_calcite_sharding_${0..1}
+        actualDataNodes: calcite_jdbc_2.t_order_item_calcite_sharding_${0..1}
         tableStrategy:
           standard:
             shardingColumn: item_id
@@ -75,4 +75,5 @@ rules:
 props:
   sql-show: true
   query-with-cipher-column: true
+  federated-sql-query-optimization: true
 
