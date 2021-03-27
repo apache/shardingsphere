@@ -163,9 +163,9 @@ public final class GovernanceMetaDataContextsTest {
     @Test
     public void assertAuthenticationChanged() {
         DefaultAuthentication authentication = new DefaultAuthentication();
-        UserRuleChangedEvent event = new UserRuleChangedEvent(authentication.getAuthentication().keySet());
+        UserRuleChangedEvent event = new UserRuleChangedEvent(authentication.getAllUsers());
         governanceMetaDataContexts.renew(event);
-        assertThat(governanceMetaDataContexts.getAuthentication().getAuthentication().size(), is(authentication.getAuthentication().size()));
+        assertThat(governanceMetaDataContexts.getAuthentication().getAllUsers().size(), is(authentication.getAuthentication().size()));
     }
     
     @Test
