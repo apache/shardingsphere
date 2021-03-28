@@ -57,7 +57,7 @@ public abstract class BaseDMLIT extends SingleITCase {
     @SneakyThrows
     public final void fillData() {
         dataSetEnvironmentManager = new DataSetEnvironmentManager(
-                EnvironmentPath.getDataSetFile(getDescription().getScenario()),
+                EnvironmentPath.getDataSetFile(getScenario()),
                 getStorageContainer().getDataSourceMap()
         );
         dataSetEnvironmentManager.fillData();

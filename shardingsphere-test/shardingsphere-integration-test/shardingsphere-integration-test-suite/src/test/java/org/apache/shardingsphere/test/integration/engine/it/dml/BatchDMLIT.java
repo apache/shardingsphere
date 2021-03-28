@@ -61,7 +61,7 @@ public final class BatchDMLIT extends BatchITCase {
     
     @Test
     public void assertExecuteBatch() throws SQLException, ParseException {
-        switch (getDescription().getScenario()) {
+        switch (getScenario()) {
             case "replica_query":
             case "shadow":
             case "encrypt":
@@ -94,7 +94,7 @@ public final class BatchDMLIT extends BatchITCase {
     @Test
     public void assertClearBatch() throws SQLException, ParseException {
         // TODO fix replica_query
-        switch (getDescription().getScenario()) {
+        switch (getScenario()) {
             case "replica_query":
             case "shadow":
             case "encrypt":

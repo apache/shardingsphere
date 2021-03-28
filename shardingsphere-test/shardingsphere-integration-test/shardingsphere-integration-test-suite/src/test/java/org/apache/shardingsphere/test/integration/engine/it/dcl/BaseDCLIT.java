@@ -39,9 +39,9 @@ public abstract class BaseDCLIT extends SingleITCase {
     @Before
     public final void insertData() throws SQLException, IOException, JAXBException {
         authorityEnvironmentManager = new AuthorityEnvironmentManager(
-                EnvironmentPath.getAuthorityFile(getDescription().getScenario()),
+                EnvironmentPath.getAuthorityFile(getScenario()),
                 getStorageContainer().getDataSourceMap(),
-                getDescription().getDatabaseType()
+                getDatabaseType()
         );
         authorityEnvironmentManager.initialize();
     }

@@ -35,6 +35,7 @@ public final class MySQLContainer extends ShardingSphereStorageContainer {
     
     @Override
     protected void configure() {
+        withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
         withInitSQLMapping("/env/" + getDescription().getScenario() + "/init-sql/mysql");
         setEnv(Lists.newArrayList("LANG=C.UTF-8"));
     }
@@ -42,7 +43,6 @@ public final class MySQLContainer extends ShardingSphereStorageContainer {
     @Override
     @SneakyThrows
     protected void execute() {
-        execInContainer("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
     }
     
     @Override

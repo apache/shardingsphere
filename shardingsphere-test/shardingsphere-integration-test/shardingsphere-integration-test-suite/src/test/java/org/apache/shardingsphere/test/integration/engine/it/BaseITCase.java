@@ -23,13 +23,11 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
-import org.apache.shardingsphere.test.integration.common.ExecutionMode;
 import org.apache.shardingsphere.test.integration.junit.compose.ContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.runner.ShardingSphereRunner;
-import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -62,8 +60,6 @@ public abstract class BaseITCase {
     
     private final ShardingSphereAdapterContainer adapterContainer;
     
-    private final TestCaseDescription description;
-    
     private DataSource targetDataSource;
     
     static {
@@ -79,13 +75,6 @@ public abstract class BaseITCase {
         this.storageContainer = compose.getStorageContainer();
         this.adapterContainer = compose.getAdapterContainer();
         this.integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
-        this.description = TestCaseDescription.builder()
-                .adapter(parameterizedArray.getAdapter())
-                .scenario(parameterizedArray.getScenario())
-                .database(parameterizedArray.getDatabaseType().getName())
-                .executionMode(ExecutionMode.SINGLE)
-                .sqlCommandType(SQLCommandType.DAL)
-                .build();
     }
     
     @Before
@@ -102,7 +91,4 @@ public abstract class BaseITCase {
     
     protected abstract String getSQL() throws ParseException;
     
-    protected TestCaseDescription getDescription() {
-        return description;
-    }
 }

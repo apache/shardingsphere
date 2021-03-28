@@ -57,7 +57,7 @@ public abstract class BaseDALIT extends SingleITCase {
     
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
         // TODO Fix shadow
-        if ("shadow".equals(getDescription().getScenario())) {
+        if ("shadow".equals(getScenario())) {
             return;
         }
         assertThat(actual.getColumnCount(), is(expected.size()));
