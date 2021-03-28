@@ -55,7 +55,7 @@ public class LimitSortExecutorTest extends BaseExecutorTest {
         Map<String, Integer> columnNameIdxMap = createColumnLabelAndIndexMap(executor.getMetaData());
         int rowCount = 0;
         Comparable pre = null;
-        while(executor.moveNext()) {
+        while (executor.moveNext()) {
             Row row = executor.current();
             Comparable value = row.getColumnValue(columnNameIdxMap.get("order_item_id"));
             if (pre != null) {

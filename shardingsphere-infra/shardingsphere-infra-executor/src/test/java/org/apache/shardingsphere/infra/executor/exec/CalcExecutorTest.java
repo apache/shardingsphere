@@ -47,14 +47,14 @@ public class CalcExecutorTest extends BaseExecutorTest {
                 .project(relBuilder.field("order_item_id"), relBuilder.field("order_id"), relBuilder.field("user_id"))
                 .build();
         Assert.assertTrue(relNode instanceof LogicalProject);
-        Assert.assertTrue(((LogicalProject)relNode).getInput() instanceof LogicalFilter);
-        LogicalFilter logicalFilter = (LogicalFilter)((LogicalProject)relNode).getInput();
-        RexProgram program = RexProgram.create(scan.getRowType(), ((LogicalProject)relNode).getProjects(), logicalFilter.getCondition(),
+        Assert.assertTrue(((LogicalProject) relNode).getInput() instanceof LogicalFilter);
+        LogicalFilter logicalFilter = (LogicalFilter) ((LogicalProject) relNode).getInput();
+        RexProgram program = RexProgram.create(scan.getRowType(), ((LogicalProject) relNode).getProjects(), logicalFilter.getCondition(),
                 Arrays.asList("order_id", "order_item_id", "user_id"), relBuilder.getRexBuilder());
         SSCalc calc = SSCalc.create(scan, program);
     
         Executor executor = buildExecutor(calc);
-        while(executor.moveNext()) {
+        while (executor.moveNext()) {
             Row row = executor.current();
             Assert.assertNotNull(row);
         }

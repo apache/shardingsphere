@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForCalciteTest;
@@ -37,20 +36,20 @@ public final class CalciteStatementTest extends AbstractShardingSphereDataSource
             + "where o.order_id = 1000 and i.item_id = 100000";
 
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES =
-            "select t_order_calcite.order_id, t_order_calcite.user_id, t_order_calcite.status, t_order_item_calcite_sharding.item_id, " +
-                    "t_order_item_calcite_sharding.order_id, t_order_item_calcite_sharding.user_id, t_order_item_calcite_sharding.status, " +
-                    "t_order_item_calcite_sharding.remarks from t_order_calcite, "
+            "select t_order_calcite.order_id, t_order_calcite.user_id, t_order_calcite.status, t_order_item_calcite_sharding.item_id, "
+                    + "t_order_item_calcite_sharding.order_id, t_order_item_calcite_sharding.user_id, t_order_item_calcite_sharding.status, "
+                    + "t_order_item_calcite_sharding.remarks from t_order_calcite, "
                     + "t_order_item_calcite_sharding where t_order_calcite.order_id = "
                     + "t_order_item_calcite_sharding.item_id";
 
-    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ALIAS = "select o.order_id, o.user_id, o.status, " +
-            "i.item_id, i.order_id, i.user_id, i.status, i.remarks"
+    private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_ALIAS = "select o.order_id, o.user_id, o.status, "
+            + "i.item_id, i.order_id, i.user_id, i.status, i.remarks"
             + " from t_order_calcite o, t_order_item_calcite_sharding i where o.order_id = i.item_id";
 
     private static final String SELECT_SQL_BY_ID_ACROSS_SINGLE_AND_SHARDING_TABLES_REWRITE =
-            "select t_order_calcite.order_id, t_order_calcite.user_id, t_order_calcite.status, t_order_item_calcite_sharding.item_id, " +
-                    "t_order_item_calcite_sharding.order_id, t_order_item_calcite_sharding.user_id, t_order_item_calcite_sharding.status, " +
-                    "t_order_item_calcite_sharding.remarks from "
+            "select t_order_calcite.order_id, t_order_calcite.user_id, t_order_calcite.status, t_order_item_calcite_sharding.item_id, "
+                    + "t_order_item_calcite_sharding.order_id, t_order_item_calcite_sharding.user_id, t_order_item_calcite_sharding.status, "
+                    + "t_order_item_calcite_sharding.remarks from "
                     + "t_order_calcite, t_order_item_calcite_sharding "
                     + "where t_order_calcite.order_id = t_order_item_calcite_sharding.item_id "
                     + "AND t_order_item_calcite_sharding.remarks = 't_order_item_calcite_sharding'";

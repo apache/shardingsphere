@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import org.apache.shardingsphere.driver.jdbc.base.AbstractShardingSphereDataSourceForCalciteTest;
@@ -52,7 +51,8 @@ public final class CalcitePrepareStatementTest extends AbstractShardingSphereDat
 
     /*@Test
     public void assertQueryWithCalciteInSingleTables() throws SQLException {
-        ShardingSpherePreparedStatement preparedStatement = (ShardingSpherePreparedStatement) getShardingSphereDataSource().getConnection().prepareStatement(SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES);
+        ShardingSpherePreparedStatement preparedStatemenEncryptStatementTestt = (ShardingSpherePreparedStatement) getShardingSphereDataSource()
+        .getConnection().prepareStatement(SELECT_SQL_BY_ID_ACROSS_SINGLE_TABLES);
         preparedStatement.setInt(1, 1000);
         preparedStatement.setInt(2, 100000);
         ResultSet resultSet = preparedStatement.executeQuery();

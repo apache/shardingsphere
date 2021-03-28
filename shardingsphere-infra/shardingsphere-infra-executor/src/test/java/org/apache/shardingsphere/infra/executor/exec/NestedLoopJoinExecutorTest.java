@@ -48,14 +48,14 @@ public class NestedLoopJoinExecutorTest extends BaseExecutorTest {
         orderPredicates.add(relBuilder.call(SqlStdOperatorTable.EQUALS, relBuilder.field("user_id"), relBuilder.literal(10)));
         relBuilder.filter(orderPredicates);
         RelNode orderRel = relBuilder.build();
-        SSScan orderScan = SSScan.create(relBuilder.getCluster(), orderRel.getTraitSet(), orderRel);
+        final SSScan orderScan = SSScan.create(relBuilder.getCluster(), orderRel.getTraitSet(), orderRel);
         
         relBuilder.scan("t_user");
         List<RexNode> userPredicates = new ArrayList<>();
         userPredicates.add(relBuilder.call(SqlStdOperatorTable.EQUALS, relBuilder.field("user_id"), relBuilder.literal(10)));
         relBuilder.filter(userPredicates);
         RelNode userRel = relBuilder.build();
-        SSScan userScan = SSScan.create(relBuilder.getCluster(), userRel.getTraitSet(), userRel);
+        final SSScan userScan = SSScan.create(relBuilder.getCluster(), userRel.getTraitSet(), userRel);
     
         RexBuilder rexBuilder = relBuilder.getRexBuilder();
         RelDataTypeField userUserIdField = getField(userRel, "user_id");
@@ -67,7 +67,7 @@ public class NestedLoopJoinExecutorTest extends BaseExecutorTest {
         
         int rowCount = 0;
         Executor executor = buildExecutor(nestedLoopJoin);
-        while(executor.moveNext()) {
+        while (executor.moveNext()) {
             Row row = executor.current();
             Assert.assertNotNull(row);
             rowCount++;
@@ -75,7 +75,7 @@ public class NestedLoopJoinExecutorTest extends BaseExecutorTest {
         Assert.assertEquals(3, rowCount);
     }
     
-    private RelDataTypeField getField(RelNode relNode, String field) {
+    private RelDataTypeField getField(final RelNode relNode, final String field) {
         return relNode.getRowType().getField(field, false, false);
     }
 }

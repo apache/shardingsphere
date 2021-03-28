@@ -53,7 +53,7 @@ public class ScanExecutorTest extends BaseExecutorTest {
         QueryResultMetaData metaData = executor.getMetaData();
         Assert.assertNotNull(metaData);
         int rowCount = 0;
-        while(executor.moveNext()) {
+        while (executor.moveNext()) {
             Row row = executor.current();
             Assert.assertNotNull(row);
             rowCount++;
@@ -76,7 +76,7 @@ public class ScanExecutorTest extends BaseExecutorTest {
         Assert.assertEquals(2, executor.getMetaData().getColumnCount());
         Map<String, Integer> columnNameIdxMap = createColumnLabelAndIndexMap(executor.getMetaData());
         int rowCount = 0;
-        while(executor.moveNext()) {
+        while (executor.moveNext()) {
             Row row = executor.current();
             Assert.assertNotNull(row);
             int userId = row.getColumnValue(columnNameIdxMap.get("user_id"));
@@ -104,7 +104,7 @@ public class ScanExecutorTest extends BaseExecutorTest {
         RelNode relNode = relBuilder.build();
         SSScan scan = new SSScan(relBuilder.getCluster(), relNode.getTraitSet(), relNode);
         Executor executor = buildExecutor(scan);
-        while(executor.moveNext()) {
+        while (executor.moveNext()) {
             Row row = executor.current();
             Assert.assertNotNull(row);
         }

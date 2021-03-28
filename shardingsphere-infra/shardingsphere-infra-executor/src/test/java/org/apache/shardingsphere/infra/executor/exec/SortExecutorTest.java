@@ -50,7 +50,7 @@ public class SortExecutorTest extends BaseExecutorTest {
         SSSort sort = SSSort.create(scan, logicalSort.getCollation());
     
         Executor executor = buildExecutor(sort);
-        while(executor.moveNext()) {
+        while (executor.moveNext()) {
             Row row = executor.current();
             Assert.assertNotNull(row);
         }

@@ -34,7 +34,7 @@ public class ExecutorJDBCManagerImpl implements ExecutorJDBCManager {
     
     private Map<String, DataSource> dataSourceMap;
     
-    public ExecutorJDBCManagerImpl(Map<String, DataSource> dataSourceMap) {
+    public ExecutorJDBCManagerImpl(final Map<String, DataSource> dataSourceMap) {
         this.dataSourceMap = dataSourceMap;
     }
     
@@ -42,7 +42,7 @@ public class ExecutorJDBCManagerImpl implements ExecutorJDBCManager {
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         DataSource dataSource = dataSourceMap.get(dataSourceName);
         List<Connection> connections = new ArrayList<>();
-        for(int i = 0; i < connectionSize; i++) {
+        for (int i = 0; i < connectionSize; i++) {
             connections.add(dataSource.getConnection());
         }
         return connections;
@@ -54,7 +54,9 @@ public class ExecutorJDBCManagerImpl implements ExecutorJDBCManager {
     }
     
     @Override
-    public PreparedStatement createStorageResource(final String sql, final List<Object> parameters, final Connection connection, final ConnectionMode connectionMode, final StatementOption option) throws SQLException {
+    public PreparedStatement createStorageResource(final String sql, final List<Object> parameters, 
+                                                   final Connection connection, final ConnectionMode connectionMode, 
+                                                   final StatementOption option) throws SQLException {
         return option.isReturnGeneratedKeys() ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
                 : connection.prepareStatement(sql, option.getResultSetType(), option.getResultSetConcurrency(), option.getResultSetHoldability());
     }

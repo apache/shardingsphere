@@ -35,7 +35,6 @@ import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
 import org.apache.calcite.tools.Frameworks;
 import org.apache.calcite.tools.RelBuilder;
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
@@ -86,11 +85,13 @@ public abstract class BaseExecutorTest {
     
     private static final String SCHEMA_NAME = "logic_db";
     
-    protected static Collection<ShardingSphereRule> rules;
+    private static Collection<ShardingSphereRule> rules;
     
-    protected static ShardingSphereSchema schema;
+    private static ShardingSphereSchema schema;
     
+    // CHECKSTYLE:OFF
     protected RelBuilder relBuilder;
+    // CHECKSTYLE:ON
     
     @BeforeClass
     public static synchronized void initializeDataSource() throws SQLException, IOException {
@@ -99,6 +100,10 @@ public abstract class BaseExecutorTest {
         initSchema();
     }
     
+    /**
+     * init test tables.
+     * @throws SQLException sql exception
+     */
     public static void initTable() throws SQLException {
         Map<String, DataSource> dataSourceMap = ACTUAL_DATA_SOURCES;
         Connection database0 = dataSourceMap.get("ds_0").getConnection();
@@ -110,23 +115,16 @@ public abstract class BaseExecutorTest {
         RunScript.execute(database1, new InputStreamReader(Objects.requireNonNull(BaseExecutorTest.class.getClassLoader().getResourceAsStream("h2/calcite_data_1.sql"))));
     }
     
+    /**
+     * init sharding rule.
+     * @throws IOException io exception
+     */
     public static void initRule() throws IOException {
         File yamlFile = new File(BaseExecutorTest.class.getResource("/config/sharding-databases-tables.yaml").getFile());
         YamlRootRuleConfigurations configurations = YamlEngine.unmarshal(yamlFile, YamlRootRuleConfigurations.class);
         ACTUAL_DATA_SOURCES.putAll(DATASOURCE_SWAPPER.swapToDataSources(configurations.getDataSources()));
         Collection<RuleConfiguration> ruleConfigs = SWAPPER_ENGINE.swapToRuleConfigurations(configurations.getRules());
         rules = ShardingSphereRulesBuilder.build(ruleConfigs, new H2DatabaseType(), ACTUAL_DATA_SOURCES, SCHEMA_NAME);
-    }
-    
-    private static void createDataSources(final String dataSourceName, final String initSql) throws SQLException {
-        ACTUAL_DATA_SOURCES.put(dataSourceName, build(dataSourceName));
-        initializeSchema(dataSourceName, initSql);
-    }
-    
-    private static void initializeSchema(final String dataSourceName, final String initSql) throws SQLException {
-        try (Connection conn = ACTUAL_DATA_SOURCES.get(dataSourceName).getConnection()) {
-            
-        }
     }
     
     protected static void initSchema() {
@@ -159,7 +157,7 @@ public abstract class BaseExecutorTest {
     
         SchemaPlus rootSchema = Frameworks.createRootSchema(true);
         rootSchema.add(schemaName, new ShardingSphereCalciteSchema(schema));
-        CalciteSchema schema =  CalciteSchema.from(rootSchema);
+        CalciteSchema schema = CalciteSchema.from(rootSchema);
     
         RelOptSchema catalog = new CalciteCatalogReader(schema,
                 schema.path(schemaName),
@@ -179,7 +177,7 @@ public abstract class BaseExecutorTest {
                 .build();
     }
     
-    protected Executor buildExecutor(RelNode relNode) {
+    protected Executor buildExecutor(final RelNode relNode) {
         return ExecutorBuilder.build(statementExecContext(), relNode);
     }
     
@@ -188,22 +186,6 @@ public abstract class BaseExecutorTest {
         for (int columnIndex = resultSetMetaData.getColumnCount(); columnIndex > 0; columnIndex--) {
             result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
         }
-        return result;
-    }
-    
-    /**
-     * Build data source.
-     *
-     * @param dataSourceName data source name
-     * @return data source
-     */
-    public static DataSource build(final String dataSourceName) {
-        BasicDataSource result = new BasicDataSource();
-        result.setDriverClassName("org.h2.Driver");
-        result.setUrl(String.format("jdbc:h2:mem:%s;DATABASE_TO_UPPER=false;MODE=MySQL", dataSourceName));
-        result.setUsername("sa");
-        result.setPassword("");
-        result.setMaxTotal(50);
         return result;
     }
 }

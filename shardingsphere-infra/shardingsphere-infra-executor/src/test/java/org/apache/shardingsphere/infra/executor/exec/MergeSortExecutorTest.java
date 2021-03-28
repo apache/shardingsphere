@@ -47,16 +47,16 @@ public class MergeSortExecutorTest extends BaseExecutorTest {
         int offset = 1;
         int fetch = 3;
         RexBuilder rexBuilder = relBuilder.getRexBuilder();
-        SSMergeSort mergeSort = SSMergeSort.create(scan.getTraitSet(), scan, ((LogicalSort)tableScan).getCollation(),
+        SSMergeSort mergeSort = SSMergeSort.create(scan.getTraitSet(), scan, ((LogicalSort) tableScan).getCollation(),
                 rexBuilder.makeBigintLiteral(new BigDecimal(offset)), rexBuilder.makeBigintLiteral(new BigDecimal(fetch)));
         int rowCount = 0;
         Executor executor = buildExecutor(mergeSort);
         Map<String, Integer> columNameIndexMap = createColumnLabelAndIndexMap(executor.getMetaData());
         Comparable pre = null;
-        while(executor.moveNext()) {
+        while (executor.moveNext()) {
             Row row = executor.current();
             Comparable value = row.getColumnValue(columNameIndexMap.get("order_item_id"));
-            if(pre == null) {
+            if (pre == null) {
                 pre = value;
             } else {
                 Assert.assertTrue(pre.compareTo(value) <= 0);
