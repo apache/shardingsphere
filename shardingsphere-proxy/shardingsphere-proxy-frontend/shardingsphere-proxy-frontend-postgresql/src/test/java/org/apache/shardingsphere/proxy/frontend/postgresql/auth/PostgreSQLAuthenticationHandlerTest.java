@@ -52,22 +52,22 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PostgreSQLAuthenticationHandlerTest {
-
+public final class PostgreSQLAuthenticationHandlerTest {
+    
     private static final String SCHEMA_PATTERN = "schema_%s";
-
+    
     private final String username = "postgres";
-
+    
     private final String password = "sharding";
-
+    
     private final String database = "test";
-
+    
     private final String md5Salt = "md5test";
-
+    
     private PostgreSQLPacketPayload payload;
-
+    
     private PostgreSQLPasswordMessagePacket passwordMessagePacket;
-
+    
     @Before
     public void init() {
         payload = new PostgreSQLPacketPayload(createByteBuf(16, 128));
@@ -76,35 +76,35 @@ public class PostgreSQLAuthenticationHandlerTest {
         payload.writeStringNul(md5Digest);
         passwordMessagePacket = new PostgreSQLPasswordMessagePacket(payload);
     }
-
+    
     @Test
     public void assertLoginWithPassword() {
         setAuthentication(new ShardingSphereUser(username, password, "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION));
     }
-
+    
     @Test
     public void assertLoginWithAbsentUser() {
         setAuthentication(new ShardingSphereUser("username", password, "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION));
     }
-
+    
     @Test
     public void assertLoginWithIncorrectPassword() {
         setAuthentication(new ShardingSphereUser(username, "password", "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_PASSWORD));
     }
-
+    
     @Test
     public void assertLoginWithoutPassword() {
         setAuthentication(new ShardingSphereUser(username, null, "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_PASSWORD));
     }
-
+    
     private void setAuthentication(final ShardingSphereUser user) {
         DefaultAuthentication authentication = new DefaultAuthentication();
         ShardingSpherePrivilege privilege = new ShardingSpherePrivilege();
@@ -112,22 +112,22 @@ public class PostgreSQLAuthenticationHandlerTest {
         authentication.getAuthentication().put(user, privilege);
         initProxyContext(authentication);
     }
-
+    
     @SneakyThrows(ReflectiveOperationException.class)
     private void initProxyContext(final DefaultAuthentication authentication) {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         field.setAccessible(true);
         field.set(ProxyContext.getInstance(), getMetaDataContexts(authentication));
     }
-
+    
     private MetaDataContexts getMetaDataContexts(final DefaultAuthentication authentication) {
         return new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), authentication, new ConfigurationProperties(new Properties()));
     }
-
+    
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {
         return new UnpooledHeapByteBuf(UnpooledByteBufAllocator.DEFAULT, initialCapacity, maxCapacity);
     }
-
+    
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
         Map<String, ShardingSphereMetaData> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
@@ -138,7 +138,7 @@ public class PostgreSQLAuthenticationHandlerTest {
         }
         return result;
     }
-
+    
     @SneakyThrows(ReflectiveOperationException.class)
     private String md5Encode(final String username, final String password, final byte[] md5Salt) {
         Method method = PostgreSQLAuthenticationHandler.class.getDeclaredMethod("md5Encode", String.class, String.class, byte[].class);
