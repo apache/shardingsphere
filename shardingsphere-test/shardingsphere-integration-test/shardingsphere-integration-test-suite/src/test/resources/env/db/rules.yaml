@@ -42,7 +42,6 @@ rules:
   bindingTables:
     - t_order,t_order_item,t_order_details
   broadcastTables:
-    - t_user
     - t_broadcast_table
     - t_broadcast_table_for_ddl
 

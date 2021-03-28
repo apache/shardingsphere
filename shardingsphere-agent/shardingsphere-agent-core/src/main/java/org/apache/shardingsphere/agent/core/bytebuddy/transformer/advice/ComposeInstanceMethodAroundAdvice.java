@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
+import org.apache.shardingsphere.agent.api.advice.InstanceMethodAroundAdvice;
 import org.apache.shardingsphere.agent.api.result.MethodInvocationResult;
 
 import java.lang.reflect.Method;
@@ -32,20 +31,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class ComposeInstanceMethodAroundAdvice implements InstanceMethodAroundAdvice {
     
-    private final @NonNull List<InstanceMethodAroundAdvice> adviceList;
+    private final List<InstanceMethodAroundAdvice> advices;
     
     @Override
     public void beforeMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        adviceList.forEach(item -> item.beforeMethod(target, method, args, result));
+        advices.forEach(item -> item.beforeMethod(target, method, args, result));
     }
     
     @Override
     public void afterMethod(final AdviceTargetObject target, final Method method, final Object[] args, final MethodInvocationResult result) {
-        adviceList.forEach(item -> item.afterMethod(target, method, args, result));
+        advices.forEach(item -> item.afterMethod(target, method, args, result));
     }
     
     @Override
     public void onThrowing(final AdviceTargetObject target, final Method method, final Object[] args, final Throwable throwable) {
-        adviceList.forEach(item -> item.onThrowing(target, method, args, throwable));
+        advices.forEach(item -> item.onThrowing(target, method, args, throwable));
     }
 }

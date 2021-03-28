@@ -90,10 +90,10 @@ public final class MetaDataContextsBuilder {
      */
     public StandardMetaDataContexts build() throws SQLException {
         Map<String, ShardingSphereMetaData> mataDataMap = new HashMap<>(ruleConfigs.size(), 1);
-        Authentication authentication = buildAuthentication(users, mataDataMap);
         for (String each : ruleConfigs.keySet()) {
             mataDataMap.put(each, buildMetaData(each));
         }
+        Authentication authentication = buildAuthentication(users, mataDataMap);
         return new StandardMetaDataContexts(mataDataMap, executorEngine, authentication, props);
     }
     
@@ -158,7 +158,7 @@ public final class MetaDataContextsBuilder {
     
     private Authentication buildAuthentication(final Collection<ShardingSphereUser> users, final Map<String, ShardingSphereMetaData> metaDataMap) {
         DefaultAuthentication result = new DefaultAuthentication();
-        result.getAuthentication().putAll(PrivilegeBuilder.build(metaDataMap.values(), users, props));
+        result.init(PrivilegeBuilder.build(metaDataMap.values(), users, props));
         return result;
     }
 }

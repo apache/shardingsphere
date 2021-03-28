@@ -24,11 +24,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobAPIFactory;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobOperateAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
-import org.apache.shardingsphere.governance.repository.api.ConfigurationRepository;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
@@ -85,6 +85,15 @@ public final class ScalingAPIFactory {
     }
     
     /**
+     * Get job operate API.
+     *
+     * @return job operate API
+     */
+    public static JobOperateAPI getJobOperateAPI() {
+        return ElasticJobAPIHolder.getInstance().getJobOperateAPI();
+    }
+    
+    /**
      * Get registry center.
      *
      * @return Coordinator registry center
@@ -122,7 +131,6 @@ public final class ScalingAPIFactory {
         
         static {
             ShardingSphereServiceLoader.register(RegistryRepository.class);
-            ShardingSphereServiceLoader.register(ConfigurationRepository.class);
         }
         
         public static RegistryRepositoryAPI getInstance() {
@@ -155,12 +163,15 @@ public final class ScalingAPIFactory {
         
         private final JobConfigurationAPI jobConfigurationAPI;
         
+        private final JobOperateAPI jobOperateAPI;
+        
         private ElasticJobAPIHolder() {
             checkServerConfig();
             GovernanceConfiguration governanceConfig = ScalingContext.getInstance().getServerConfig().getGovernanceConfig();
             String namespace = governanceConfig.getName() + ScalingConstant.SCALING_ROOT;
             jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
             jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
+            jobOperateAPI = JobAPIFactory.createJobOperateAPI(governanceConfig.getRegistryCenterConfiguration().getServerLists(), namespace, null);
         }
         
         public static ElasticJobAPIHolder getInstance() {

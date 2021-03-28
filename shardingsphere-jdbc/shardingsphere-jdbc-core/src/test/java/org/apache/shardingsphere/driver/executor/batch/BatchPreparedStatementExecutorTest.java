@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.driver.executor.batch;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.driver.executor.AbstractBaseExecutorTest;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
@@ -144,9 +145,9 @@ public final class BatchPreparedStatementExecutorTest extends AbstractBaseExecut
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setFields(final Collection<ExecutionGroup<JDBCExecutionUnit>> executionGroups, final Collection<BatchExecutionUnit> batchExecutionUnits) {
-        Field field = BatchPreparedStatementExecutor.class.getDeclaredField("executionGroups");
+        Field field = BatchPreparedStatementExecutor.class.getDeclaredField("executionGroupContext");
         field.setAccessible(true);
-        field.set(actual, executionGroups);
+        field.set(actual, new ExecutionGroupContext<>(executionGroups));
         field = BatchPreparedStatementExecutor.class.getDeclaredField("batchExecutionUnits");
         field.setAccessible(true);
         field.set(actual, batchExecutionUnits);

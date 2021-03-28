@@ -32,7 +32,7 @@ import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingTa
 import org.apache.shardingsphere.sharding.route.engine.type.complex.ShardingComplexRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ignore.ShardingIgnoreRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.federated.ShardingFederatedRoutingEngine;
-import org.apache.shardingsphere.sharding.route.engine.type.single.SingleTableRoutingEngine;
+import org.apache.shardingsphere.sharding.route.engine.type.single.SingleTablesRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.unicast.ShardingUnicastRoutingEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -100,7 +100,7 @@ public final class ShardingRouteEngineFactory {
         }
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         if (!tableNames.isEmpty() && !shardingRule.tableRuleExists(tableNames)) {
-            return new SingleTableRoutingEngine(tableNames, sqlStatement);
+            return new SingleTablesRoutingEngine(tableNames, sqlStatement);
         }
         return new ShardingTableBroadcastRoutingEngine(metaData.getSchema(), sqlStatementContext);
     }
@@ -113,7 +113,7 @@ public final class ShardingRouteEngineFactory {
             return new ShardingDatabaseBroadcastRoutingEngine();
         }
         if (!tableNames.isEmpty() && !shardingRule.tableRuleExists(tableNames)) {
-            return new SingleTableRoutingEngine(tableNames, sqlStatement);
+            return new SingleTablesRoutingEngine(tableNames, sqlStatement);
         }
         if (!tableNames.isEmpty()) {
             return new ShardingUnicastRoutingEngine(tableNames);
@@ -126,7 +126,7 @@ public final class ShardingRouteEngineFactory {
             Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
             return shardingRule.tableRuleExists(tableNames)
                     ? new ShardingTableBroadcastRoutingEngine(metaData.getSchema(), sqlStatementContext)
-                    : new SingleTableRoutingEngine(tableNames, sqlStatementContext.getSqlStatement());
+                    : new SingleTablesRoutingEngine(tableNames, sqlStatementContext.getSqlStatement());
         } else {
             return new ShardingInstanceBroadcastRoutingEngine(metaData.getResource().getDataSourcesMetaData());
         }
@@ -150,33 +150,26 @@ public final class ShardingRouteEngineFactory {
             return new ShardingUnicastRoutingEngine(tableNames);
         }
         if (!shardingRule.tableRuleExists(tableNames)) {
-            return new SingleTableRoutingEngine(tableNames, sqlStatement);
+            return new SingleTablesRoutingEngine(tableNames, sqlStatement);
         }
-        if (shardingRule.tableRuleExists(tableNames) && shardingRule.singleTableRuleExists(tableNames)) {
-            return new ShardingFederatedRoutingEngine(tableNames);
+        if (shardingRule.isAllShardingTables(tableNames) && 1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames)) {
+            return new ShardingStandardRoutingEngine(tableNames.iterator().next(), shardingConditions, props);
         }
-        return getShardingRoutingEngine(shardingRule, shardingConditions, sqlStatementContext, tableNames, props);
-    }
-    
-    private static ShardingRouteEngine getShardingRoutingEngine(final ShardingRule shardingRule, final ShardingConditions shardingConditions,
-                                                                final SQLStatementContext<?> sqlStatementContext,
-                                                                final Collection<String> tableNames, final ConfigurationProperties props) {
-        Collection<String> shardingTableNames = shardingRule.getShardingLogicTableNames(tableNames);
-        if (1 == shardingTableNames.size() || shardingRule.isAllBindingTables(shardingTableNames)) {
-            return new ShardingStandardRoutingEngine(shardingTableNames.iterator().next(), shardingConditions, props);
-        }
-        if (isFederatedQuery(sqlStatementContext, tableNames, shardingTableNames)) {
+        if (isShardingFederatedQuery(sqlStatementContext, tableNames, shardingRule)) {
             return new ShardingFederatedRoutingEngine(tableNames);
         }
         // TODO config for cartesian set
         return new ShardingComplexRoutingEngine(tableNames, shardingConditions, props);
     }
     
-    private static boolean isFederatedQuery(final SQLStatementContext<?> sqlStatementContext, final Collection<String> tableNames, final Collection<String> shardingTableNames) {
+    private static boolean isShardingFederatedQuery(final SQLStatementContext<?> sqlStatementContext, final Collection<String> tableNames, final ShardingRule shardingRule) {
         if (!(sqlStatementContext instanceof SelectStatementContext)) {
             return false;
         }
         SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
-        return tableNames.size() == shardingTableNames.size() && (select.isContainsJoinQuery() || select.isContainsSubquery());
+        if (!select.isContainsJoinQuery() && !select.isContainsSubquery()) {
+            return false;
+        }
+        return shardingRule.isAllShardingTables(tableNames) || (shardingRule.tableRuleExists(tableNames) && shardingRule.singleTableRuleExists(tableNames));
     }
 }

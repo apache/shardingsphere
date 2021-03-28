@@ -91,6 +91,15 @@ public final class JobProgress {
     }
     
     /**
+     * Get data source.
+     *
+     * @return data source
+     */
+    public String getDataSource() {
+        return incrementalTaskProgressMap.keySet().stream().findAny().orElse("");
+    }
+    
+    /**
      * Get inventory finished percentage.
      *
      * @return finished percentage
@@ -103,11 +112,11 @@ public final class JobProgress {
     }
     
     /**
-     * Get incremental average delay milliseconds.
+     * Get incremental delay milliseconds.
      *
      * @return average delay
      */
-    public long getIncrementalAverageDelayMilliseconds() {
+    public long getIncrementalDelayMilliseconds() {
         List<Long> delays = incrementalTaskProgressMap.values().stream()
                 .map(each -> each.getIncrementalTaskDelay().getDelayMilliseconds())
                 .collect(Collectors.toList());

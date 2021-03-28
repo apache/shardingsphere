@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.context.metadata;
 
-import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
@@ -29,17 +28,18 @@ import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
-import org.apache.shardingsphere.replicaquery.rule.ReplicaQueryRule;
+import org.apache.shardingsphere.readwrite.splitting.common.rule.ReadWriteSplittingRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,30 +81,28 @@ public final class GovernanceMetaDataContextsTest {
     @Mock
     private RegistryCenter registryCenter;
     
-    @Mock
-    private ConfigCenter configCenter;
-    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereMetaData metaData;
     
     @Mock
-    private ReplicaQueryRule replicaQueryRule;
+    private ReadWriteSplittingRule readWriteSplittingRule;
     
     private GovernanceMetaDataContexts governanceMetaDataContexts;
     
     @Before
     public void setUp() {
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
-        when(governanceFacade.getConfigCenter()).thenReturn(configCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
         governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), authentication, props), governanceFacade);
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
         when(metaData.getName()).thenReturn("schema");
-        when(metaData.getResource()).thenReturn(mock(ShardingSphereResource.class));
+        ShardingSphereResource resource = mock(ShardingSphereResource.class);
+        when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(metaData.getResource()).thenReturn(resource);
         when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
-        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(replicaQueryRule));
+        when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(readWriteSplittingRule));
         return Collections.singletonMap("schema", metaData);
     }
     
@@ -131,7 +129,7 @@ public final class GovernanceMetaDataContextsTest {
     @Test
     public void assertSchemaAdd() throws SQLException {
         MetaDataPersistedEvent event = new MetaDataPersistedEvent("schema_add");
-        when(configCenter.loadDataSourceConfigurations("schema_add")).thenReturn(getDataSourceConfigurations());
+        when(registryCenter.loadDataSourceConfigurations("schema_add")).thenReturn(getDataSourceConfigurations());
         governanceMetaDataContexts.renew(event);
         assertNotNull(governanceMetaDataContexts.getMetaData("schema_add"));
         assertNotNull(governanceMetaDataContexts.getMetaData("schema_add").getResource().getDataSources());
@@ -165,9 +163,9 @@ public final class GovernanceMetaDataContextsTest {
     @Test
     public void assertAuthenticationChanged() {
         DefaultAuthentication authentication = new DefaultAuthentication();
-        UserRuleChangedEvent event = new UserRuleChangedEvent(authentication.getAuthentication().keySet());
+        UserRuleChangedEvent event = new UserRuleChangedEvent(authentication.getAllUsers());
         governanceMetaDataContexts.renew(event);
-        assertThat(governanceMetaDataContexts.getAuthentication().getAuthentication().size(), is(authentication.getAuthentication().size()));
+        assertThat(governanceMetaDataContexts.getAuthentication().getAllUsers().size(), is(authentication.getAuthentication().size()));
     }
     
     @Test
@@ -197,7 +195,7 @@ public final class GovernanceMetaDataContextsTest {
     public void assertDisableStateChanged() {
         DisabledStateChangedEvent event = new DisabledStateChangedEvent(new GovernanceSchema("schema.ds_0"), true);
         governanceMetaDataContexts.renew(event);
-        verify(replicaQueryRule, times(2)).updateRuleStatus(any(RuleChangedEvent.class));
+        verify(readWriteSplittingRule, times(2)).updateRuleStatus(any(RuleChangedEvent.class));
     }
     
     @Test

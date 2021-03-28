@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.governance.core.facade;
 
-import org.apache.shardingsphere.governance.core.config.ConfigCenter;
 import org.apache.shardingsphere.governance.core.facade.listener.GovernanceListenerManager;
 import org.apache.shardingsphere.governance.core.facade.repository.GovernanceRepositoryFacade;
 import org.apache.shardingsphere.governance.core.facade.util.FieldUtil;
@@ -53,9 +52,6 @@ public final class GovernanceFacadeTest {
     private GovernanceRepositoryFacade repositoryFacade;
     
     @Mock
-    private ConfigCenter configCenter;
-    
-    @Mock
     private RegistryCenter registryCenter;
     
     @Mock
@@ -66,7 +62,6 @@ public final class GovernanceFacadeTest {
         GovernanceConfiguration governanceConfig = new GovernanceConfiguration("test_name", new GovernanceCenterConfiguration("ALL", "127.0.0.1", new Properties()), false);
         governanceFacade.init(governanceConfig, Arrays.asList("sharding_db", "replica_query_db"));
         FieldUtil.setField(governanceFacade, "repositoryFacade", repositoryFacade);
-        FieldUtil.setField(governanceFacade, "configCenter", configCenter);
         FieldUtil.setField(governanceFacade, "registryCenter", registryCenter);
         FieldUtil.setField(governanceFacade, "listenerManager", listenerManager);
     }
@@ -80,9 +75,9 @@ public final class GovernanceFacadeTest {
         authentication.getAuthentication().put(user, new ShardingSpherePrivilege());
         Properties props = new Properties();
         governanceFacade.onlineInstance(
-                Collections.singletonMap("sharding_db", dataSourceConfigMap), ruleConfigurationMap, authentication.getAuthentication().keySet(), props);
-        verify(configCenter).persistConfigurations("sharding_db", dataSourceConfigMap, ruleConfigurationMap.get("sharding_db"), false);
-        verify(configCenter).persistGlobalConfiguration(authentication.getAuthentication().keySet(), props, false);
+                Collections.singletonMap("sharding_db", dataSourceConfigMap), ruleConfigurationMap, authentication.getAllUsers(), props);
+        verify(registryCenter).persistConfigurations("sharding_db", dataSourceConfigMap, ruleConfigurationMap.get("sharding_db"), false);
+        verify(registryCenter).persistGlobalConfiguration(authentication.getAllUsers(), props, false);
         verify(registryCenter).persistInstanceOnline();
         verify(registryCenter).persistDataNodes();
         verify(listenerManager).init();

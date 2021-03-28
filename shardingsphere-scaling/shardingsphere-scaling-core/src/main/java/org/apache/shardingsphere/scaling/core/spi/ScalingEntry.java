@@ -22,9 +22,8 @@ import org.apache.shardingsphere.scaling.core.common.sqlbuilder.ScalingSQLBuilde
 import org.apache.shardingsphere.scaling.core.executor.dumper.IncrementalDumper;
 import org.apache.shardingsphere.scaling.core.executor.dumper.InventoryDumper;
 import org.apache.shardingsphere.scaling.core.executor.importer.Importer;
-import org.apache.shardingsphere.scaling.core.job.check.DataConsistencyChecker;
+import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 import org.apache.shardingsphere.scaling.core.job.position.PositionInitializer;
-import org.apache.shardingsphere.scaling.core.job.preparer.checker.DataSourceChecker;
 
 /**
  * Scaling entry.
@@ -50,7 +49,7 @@ public interface ScalingEntry extends DatabaseTypeAwareSPI {
      *
      * @return position initializer type
      */
-    Class<? extends PositionInitializer> getPositionInitializer();
+    Class<? extends PositionInitializer> getPositionInitializerClass();
     
     /**
      * Get importer type.
@@ -60,18 +59,11 @@ public interface ScalingEntry extends DatabaseTypeAwareSPI {
     Class<? extends Importer> getImporterClass();
     
     /**
-     * Get data source checker.
+     * Get environment checker type.
      *
-     * @return data source checker type
+     * @return environment checker type
      */
-    Class<? extends DataSourceChecker> getDataSourceCheckerClass();
-    
-    /**
-     * Get data consistency checker.
-     *
-     * @return data consistency checker type
-     */
-    Class<? extends DataConsistencyChecker> getDataConsistencyCheckerClass();
+    Class<? extends EnvironmentChecker> getEnvironmentCheckerClass();
     
     /**
      * Get SQL builder class.

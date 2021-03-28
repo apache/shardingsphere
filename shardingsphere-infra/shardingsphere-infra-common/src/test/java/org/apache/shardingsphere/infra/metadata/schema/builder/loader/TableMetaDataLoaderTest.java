@@ -108,17 +108,16 @@ public final class TableMetaDataLoaderTest {
         assertTrue(actual.isPresent());
         Map<String, ColumnMetaData> columnMetaDataMap = actual.get().getColumns();
         assertThat(columnMetaDataMap.size(), is(2));
-        assertColumnMetaData(columnMetaDataMap.get("pk_col"), "pk_col", Types.INTEGER, "INT", true, true);
-        assertColumnMetaData(columnMetaDataMap.get("col"), "col", Types.VARCHAR, "VARCHAR", false, false);
+        assertColumnMetaData(columnMetaDataMap.get("pk_col"), "pk_col", Types.INTEGER, true, true);
+        assertColumnMetaData(columnMetaDataMap.get("col"), "col", Types.VARCHAR, false, false);
         Map<String, IndexMetaData> indexMetaDataMap = actual.get().getIndexes();
         assertThat(indexMetaDataMap.size(), is(1));
         assertTrue(indexMetaDataMap.containsKey("my_index"));
     }
     
-    private void assertColumnMetaData(final ColumnMetaData actual, final String name, final int dataType, final String typeName, final boolean primaryKey, final boolean caseSensitive) {
+    private void assertColumnMetaData(final ColumnMetaData actual, final String name, final int dataType, final boolean primaryKey, final boolean caseSensitive) {
         assertThat(actual.getName(), is(name));
         assertThat(actual.getDataType(), is(dataType));
-        assertThat(actual.getDataTypeName(), is(typeName));
         assertThat(actual.isPrimaryKey(), is(primaryKey));
         assertThat(actual.isCaseSensitive(), is(caseSensitive));
     }

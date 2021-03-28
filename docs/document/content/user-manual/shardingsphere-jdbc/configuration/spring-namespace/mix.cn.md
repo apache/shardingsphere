@@ -15,7 +15,7 @@ weight = 6
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
-       xmlns:replica-query="http://shardingsphere.apache.org/schema/shardingsphere/replica-query"
+       xmlns:read-write-splitting="http://shardingsphere.apache.org/schema/shardingsphere/read-write-splitting"
        xmlns:encrypt="http://shardingsphere.apache.org/schema/shardingsphere/encrypt"
        xsi:schemaLocation="http://www.springframework.org/schema/beans 
                            http://www.springframework.org/schema/beans/spring-beans.xsd 
@@ -25,47 +25,47 @@ weight = 6
                            http://www.springframework.org/schema/tx/spring-tx.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/replica-query
-                           http://shardingsphere.apache.org/schema/shardingsphere/replica-query/replica-query.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/read-write-splitting
+                           http://shardingsphere.apache.org/schema/shardingsphere/read-write-splitting/read-write-splitting.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt
                            http://shardingsphere.apache.org/schema/shardingsphere/encrypt/encrypt.xsd
                            ">
 						   
-    <bean id="primary_ds0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    <bean id="write_ds0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/primary_ds?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/write_ds?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8" />
         <property name="username" value="root" />
         <property name="password" value="" />
     </bean>
     
-    <bean id="replica_ds0_0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    <bean id="read_ds0_0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <!-- 省略详细数据源配置详情 -->
     </bean>
     
-    <bean id="replica_ds0_1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    <bean id="read_ds0_1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <!-- 省略详细数据源配置详情 -->
     </bean>
     
-	<bean id="primary_ds1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+	<bean id="write_ds1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <!-- 省略详细数据源配置详情 -->
     </bean>
 	
-	<bean id="replica_ds1_0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+	<bean id="read_ds1_0" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <!-- 省略详细数据源配置详情 -->
     </bean>
     
-    <bean id="replica_ds1_1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+    <bean id="read_ds1_1" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
         <!-- 省略详细数据源配置详情 -->
     </bean>
 	
 	<!-- 主从配置负载均衡策略 -->
-    <replica-query:load-balance-algorithm id="randomStrategy" type="RANDOM" />
+    <read-write-splitting:load-balance-algorithm id="randomStrategy" type="RANDOM" />
     
 	<!-- 主从规则配置 -->
-    <replica-query:rule id="replicaQueryRuleDs0">
-        <replica-query:data-source-rule id="ds_0" primary-data-source-name="primary_ds0" replica-data-source-names="replica_ds0_0, replica_ds0_1" load-balance-algorithm-ref="randomStrategy" />
-		<replica-query:data-source-rule id="ds_1" primary-data-source-name="primary_ds1" replica-data-source-names="replica_ds1_0, replica_ds1_1" load-balance-algorithm-ref="randomStrategy" />
-    </replica-query:rule>
+    <read-write-splitting:rule id="readWriteSplittingRule">
+        <read-write-splitting:data-source-rule id="ds_0" write-data-source-name="write_ds0" read-data-source-names="read_ds0_0, read_ds0_1" load-balance-algorithm-ref="randomStrategy" />
+		<read-write-splitting:data-source-rule id="ds_1" write-data-source-name="write_ds1" read-data-source-names="read_ds1_0, read_ds1_1" load-balance-algorithm-ref="randomStrategy" />
+    </read-write-splitting:rule>
     
 	<!-- 分片策略配置 -->
 	<sharding:standard-strategy id="databaseStrategy" sharding-column="user_id" algorithm-ref="inlineDatabaseStrategyAlgorithm" />
@@ -121,8 +121,8 @@ weight = 6
     
 	<!-- 数据源配置 -->
 	<!-- data-source-names 数据源名称为所有的数据源节点名称 -->
-    <shardingsphere:data-source id="replicaQueryDataSource" data-source-names="primary_ds0, replica_ds0_0, replica_ds0_1, primary_ds1, replica_ds1_0, replica_ds1_1" 
-        rule-refs="replicaQueryRule, shardingRule, encryptRule" >
+    <shardingsphere:data-source id="readQueryDataSource" data-source-names="write_ds0, read_ds0_0, read_ds0_1, write_ds1, read_ds1_0, read_ds1_1" 
+        rule-refs="readWriteSplittingRule, shardingRule, encryptRule" >
         <props>
             <prop key="query-with-cipher-column">true</prop>
             <prop key="sql-show">true</prop>

@@ -92,7 +92,7 @@ public final class ShardingCTLHintBackendHandlerTest {
         String sql = "sctl:hint set primary_only=true ";
         ShardingCTLHintBackendHandler hintBackendHandler = new ShardingCTLHintBackendHandler(sql, backendConnection);
         assertThat(hintBackendHandler.execute(), instanceOf(UpdateResponseHeader.class));
-        assertTrue(HintManager.isPrimaryRouteOnly());
+        assertTrue(HintManager.isWriteRouteOnly());
     }
     
     @Test

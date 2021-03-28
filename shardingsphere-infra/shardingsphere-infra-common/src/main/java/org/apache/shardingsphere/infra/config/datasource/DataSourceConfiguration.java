@@ -24,6 +24,7 @@ import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
@@ -111,9 +112,13 @@ public final class DataSourceConfiguration {
             if (SKIPPED_PROPERTY_NAMES.contains(entry.getKey())) {
                 continue;
             }
-            Optional<Method> setterMethod = findSetterMethod(methods, entry.getKey());
-            if (setterMethod.isPresent()) {
-                setterMethod.get().invoke(result, entry.getValue());
+            try {
+                Optional<Method> setterMethod = findSetterMethod(methods, entry.getKey());
+                if (setterMethod.isPresent()) {
+                    setterMethod.get().invoke(result, entry.getValue());
+                }
+            } catch (final IllegalArgumentException ex) {
+                throw new ShardingSphereConfigurationException("Incorrect configuration item: the property %s of the dataSource, because %s", entry.getKey(), ex.getMessage());
             }
         }
         Optional<JDBCParameterDecorator> decorator = findJDBCParameterDecorator(result);
@@ -122,7 +127,7 @@ public final class DataSourceConfiguration {
     
     @SuppressWarnings("rawtypes")
     private Optional<JDBCParameterDecorator> findJDBCParameterDecorator(final DataSource dataSource) {
-        return ShardingSphereServiceLoader.newServiceInstances(JDBCParameterDecorator.class).stream().filter(each -> each.getType() == dataSource.getClass()).findFirst();
+        return ShardingSphereServiceLoader.getSingletonServiceInstances(JDBCParameterDecorator.class).stream().filter(each -> each.getType() == dataSource.getClass()).findFirst();
     }
     
     private Optional<Method> findSetterMethod(final Method[] methods, final String property) {

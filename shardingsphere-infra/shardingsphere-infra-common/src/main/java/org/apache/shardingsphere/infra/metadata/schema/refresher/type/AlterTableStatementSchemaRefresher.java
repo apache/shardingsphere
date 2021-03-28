@@ -34,8 +34,8 @@ import java.util.Collection;
 public final class AlterTableStatementSchemaRefresher implements SchemaRefresher<AlterTableStatement> {
     
     @Override
-    public void refresh(final ShardingSphereSchema schema, 
-                        final Collection<String> routeDataSourceNames, final AlterTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
+    public void refresh(final ShardingSphereSchema schema, final Collection<String> routeDataSourceNames, 
+                        final AlterTableStatement sqlStatement, final SchemaBuilderMaterials materials) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (!containsInTableContainedRule(tableName, materials)) {
             return;
