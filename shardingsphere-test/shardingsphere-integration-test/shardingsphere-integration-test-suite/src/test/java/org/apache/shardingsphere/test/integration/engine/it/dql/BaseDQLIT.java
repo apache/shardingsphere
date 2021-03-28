@@ -47,7 +47,7 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDQLIT extends SingleITCase {
     
-    private volatile boolean initialed = false;
+    private volatile boolean initialed;
     
     public BaseDQLIT(final AssertionParameterizedArray parameter) {
         super(parameter);
