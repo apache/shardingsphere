@@ -50,9 +50,9 @@ public final class SQLCheckEngine {
      */
     public static void check(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingSphereMetaData metaData, final Authentication auth) {
         for (SQLChecker each : CHECKERS) {
-            SQLCheckResult auditResult = each.check(sqlStatement, parameters, metaData, auth);
-            if (!auditResult.isPassed()) {
-                throw new SQLCheckException(each.getSQLCheckType(), auditResult.getErrorMessage());
+            SQLCheckResult checkResult = each.check(sqlStatement, parameters, metaData, auth);
+            if (!checkResult.isPassed()) {
+                throw new SQLCheckException(each.getSQLCheckType(), checkResult.getErrorMessage());
             }
         }
     }

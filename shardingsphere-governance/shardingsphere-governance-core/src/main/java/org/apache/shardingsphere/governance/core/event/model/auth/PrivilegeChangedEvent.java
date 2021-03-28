@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.fixture;
+package org.apache.shardingsphere.governance.core.event.model.auth;
 
-public final class OrderedSPIFixtureImpl implements OrderedSPIFixture<FixtureCustomInterfaceImpl> {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+
+import java.util.Collection;
+
+/**
+ * Privilege changed event.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class PrivilegeChangedEvent implements GovernanceEvent {
     
-    @Override
-    public int getOrder() {
-        return 0;
-    }
-    
-    @Override
-    public Class<FixtureCustomInterfaceImpl> getTypeClass() {
-        return FixtureCustomInterfaceImpl.class;
-    }
+    private final Collection<ShardingSphereUser> users;
 }

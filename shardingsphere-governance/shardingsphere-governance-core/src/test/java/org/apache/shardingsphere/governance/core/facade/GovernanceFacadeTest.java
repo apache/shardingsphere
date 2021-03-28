@@ -75,9 +75,9 @@ public final class GovernanceFacadeTest {
         authentication.getAuthentication().put(user, new ShardingSpherePrivilege());
         Properties props = new Properties();
         governanceFacade.onlineInstance(
-                Collections.singletonMap("sharding_db", dataSourceConfigMap), ruleConfigurationMap, authentication.getAuthentication().keySet(), props);
+                Collections.singletonMap("sharding_db", dataSourceConfigMap), ruleConfigurationMap, authentication.getAllUsers(), props);
         verify(registryCenter).persistConfigurations("sharding_db", dataSourceConfigMap, ruleConfigurationMap.get("sharding_db"), false);
-        verify(registryCenter).persistGlobalConfiguration(authentication.getAuthentication().keySet(), props, false);
+        verify(registryCenter).persistGlobalConfiguration(authentication.getAllUsers(), props, false);
         verify(registryCenter).persistInstanceOnline();
         verify(registryCenter).persistDataNodes();
         verify(listenerManager).init();

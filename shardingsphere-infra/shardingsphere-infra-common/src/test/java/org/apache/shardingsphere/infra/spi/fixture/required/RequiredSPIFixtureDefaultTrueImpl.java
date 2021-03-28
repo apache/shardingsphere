@@ -15,9 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.spi.fixture;
+package org.apache.shardingsphere.infra.spi.fixture.required;
 
-import org.apache.shardingsphere.infra.spi.required.RequiredSPI;
-
-public interface RequiredSPIFixture extends RequiredSPI {
+public final class RequiredSPIFixtureDefaultTrueImpl implements RequiredSPIFixture {
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }
+

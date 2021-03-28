@@ -45,6 +45,7 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.auth.refresher.event.CreateUserEvent;
+import org.apache.shardingsphere.infra.metadata.auth.refresher.event.GrantEvent;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
@@ -193,6 +194,12 @@ public final class RegistryCenter {
         if (!users.isEmpty() && (isOverwrite || !hasAuthentication())) {
             repository.persist(node.getAuthenticationPath(),
                     YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
+        }
+    }
+    
+    private void persistChangedPrivilege(final Collection<ShardingSphereUser> users) {
+        if (!users.isEmpty()) {
+            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
         }
     }
 
@@ -459,6 +466,16 @@ public final class RegistryCenter {
     }
     
     /**
+     * User with changed privilege cached event.
+     *
+     * @param event grant event
+     */
+    @Subscribe
+    public synchronized void renew(final GrantEvent event) {
+        persistChangedPrivilege(event.getUsers());
+    }
+    
+    /**
      * Persist instance online.
      */
     public void persistInstanceOnline() {
@@ -527,6 +544,7 @@ public final class RegistryCenter {
     
     private void initLockNode() {
         repository.persist(lockNode.getLockRootNodePath(), "");
+        repository.persist(lockNode.getLockedAckRootNodePah(), "");
     }
     
     /**
