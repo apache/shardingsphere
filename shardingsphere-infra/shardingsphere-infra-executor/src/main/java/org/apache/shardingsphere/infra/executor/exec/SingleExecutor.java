@@ -47,4 +47,11 @@ public abstract class SingleExecutor extends AbstractExecutor {
      * do initialization for current <code>Executor</code> instance.
      */
     protected abstract void doInit();
+    
+    @Override
+    public final void close() {
+        if (executor != null) {
+            executor.close();
+        }
+    }
 }

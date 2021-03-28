@@ -88,4 +88,14 @@ public abstract class AbstractJoinExecutor extends AbstractExecutor {
     protected final JoinRow newJoinRow(final Row outerRow, final Row innerRow) {
         return new JoinRow(left(outerRow, innerRow), right(outerRow, innerRow));
     }
+    
+    @Override
+    public final void close() {
+        if (outer != null) {
+            outer.close();
+        }
+        if (inner != null) {
+            inner.close();
+        }
+    }
 }

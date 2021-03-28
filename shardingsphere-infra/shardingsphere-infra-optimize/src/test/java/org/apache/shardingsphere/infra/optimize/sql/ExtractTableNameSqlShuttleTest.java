@@ -24,6 +24,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class ExtractTableNameSqlShuttleTest {
     
@@ -38,7 +39,8 @@ public class ExtractTableNameSqlShuttleTest {
     
         ExtractTableNameSqlShuttle extractTableNameSqlShuttle = new ExtractTableNameSqlShuttle();
         SqlNode newNode = calciteSqlNode.accept(extractTableNameSqlShuttle);
-        Assert.assertEquals(Arrays.asList("T_ORDER"), extractTableNameSqlShuttle.getTableNames());
+        Assert.assertEquals(Arrays.asList("T_ORDER"), extractTableNameSqlShuttle.getTableNames().stream()
+                .map(SqlDynamicValueParam::getOriginal).collect(Collectors.toList()));
         // TODO check result SqlNode
     }
     
@@ -53,7 +55,8 @@ public class ExtractTableNameSqlShuttleTest {
         
         ExtractTableNameSqlShuttle extractTableNameSqlShuttle = new ExtractTableNameSqlShuttle();
         SqlNode newNode = calciteSqlNode.accept(extractTableNameSqlShuttle);
-        Assert.assertEquals(Arrays.asList("T_ORDER"), extractTableNameSqlShuttle.getTableNames());
+        Assert.assertEquals(Arrays.asList("T_ORDER"), extractTableNameSqlShuttle.getTableNames().stream()
+                .map(SqlDynamicValueParam::getOriginal).collect(Collectors.toList()));
         // TODO check result SqlNode
     }
     
@@ -69,7 +72,8 @@ public class ExtractTableNameSqlShuttleTest {
         
         ExtractTableNameSqlShuttle extractTableNameSqlShuttle = new ExtractTableNameSqlShuttle();
         SqlNode newNode = calciteSqlNode.accept(extractTableNameSqlShuttle);
-        Assert.assertEquals(Arrays.asList("T_ORDER", "T_ORDER_ITEM"), extractTableNameSqlShuttle.getTableNames());
+        Assert.assertEquals(Arrays.asList("T_ORDER", "T_ORDER_ITEM"), extractTableNameSqlShuttle.getTableNames().stream()
+                .map(SqlDynamicValueParam::getOriginal).collect(Collectors.toList()));
         // TODO check result SqlNode
     }
 }

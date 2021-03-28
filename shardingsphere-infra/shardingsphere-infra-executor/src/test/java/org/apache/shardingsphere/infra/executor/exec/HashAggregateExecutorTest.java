@@ -51,6 +51,7 @@ public class HashAggregateExecutorTest extends BaseExecutorTest {
             Row row = executor.current();
             Assert.assertNotNull(row);
         }
+        executor.close();
     }
     
 }

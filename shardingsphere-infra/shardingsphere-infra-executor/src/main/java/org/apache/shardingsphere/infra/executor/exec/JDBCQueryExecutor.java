@@ -92,6 +92,13 @@ public final class JDBCQueryExecutor extends AbstractExecutor {
         return metaData;
     }
     
+    @Override
+    public void close() {
+        if (executor != null) {
+            executor.close();
+        }
+    }
+    
     private Executor executeQuery(final ExecutionGroupContext<JDBCExecutionUnit> executionGroups) throws SQLException {
         ExecutorEngine executorEngine = new ExecutorEngine(getExecContext().getProps().<Integer>getValue(ConfigurationPropertyKey.EXECUTOR_SIZE));
         JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, getExecContext().isHoldTransaction());

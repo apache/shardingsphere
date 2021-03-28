@@ -53,7 +53,6 @@ import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationS
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.h2.tools.RunScript;
-import org.junit.BeforeClass;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -93,11 +92,18 @@ public abstract class BaseExecutorTest {
     protected RelBuilder relBuilder;
     // CHECKSTYLE:ON
     
-    @BeforeClass
-    public static synchronized void initializeDataSource() throws SQLException, IOException {
-        initRule();
-        initTable();
-        initSchema();
+    static {
+        initializeDataSource();
+    }
+    
+    private static synchronized void initializeDataSource() {
+        try {
+            initRule();
+            initTable();
+            initSchema();
+        } catch (IOException | SQLException e) {
+            throw new RuntimeException("init datasource failed", e);
+        }
     }
     
     /**

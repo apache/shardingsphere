@@ -74,4 +74,9 @@ public class MultiExecutor extends AbstractExecutor implements Executor {
         }
         return executors.get(queryResultIdx).current();
     }
+    
+    @Override
+    public final void close() {
+        executors.forEach(Executor::close);
+    }
 }

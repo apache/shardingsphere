@@ -65,5 +65,6 @@ public class MergeSortExecutorTest extends BaseExecutorTest {
         }
     
         Assert.assertEquals(fetch, rowCount);
+        executor.close();
     }
 }

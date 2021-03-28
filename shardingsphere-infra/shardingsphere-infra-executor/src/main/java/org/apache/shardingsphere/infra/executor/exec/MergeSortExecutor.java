@@ -122,4 +122,9 @@ public final class MergeSortExecutor extends AbstractExecutor {
         }
         return defaultValue;
     }
+    
+    @Override
+    public void close() {
+        executors.forEach(Executor::close);
+    }
 }

@@ -69,4 +69,13 @@ public final class QueryResultExecutor extends AbstractExecutor {
     public QueryResultMetaData getMetaData() {
         return queryResult.getMetaData();
     }
+    
+    @Override
+    public void close() {
+        try {
+            queryResult.close();
+        } catch (SQLException ex) {
+            throw new ShardingSphereException("close query result error", ex);
+        }
+    }
 }
