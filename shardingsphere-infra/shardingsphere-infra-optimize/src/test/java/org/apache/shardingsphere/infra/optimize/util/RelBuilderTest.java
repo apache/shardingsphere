@@ -40,6 +40,10 @@ import java.util.Map;
 
 public class RelBuilderTest {
     
+    /**
+     * create RelBuilder config.
+     * @return RelBuilder config to create RelBuilder
+     */
     public static Frameworks.ConfigBuilder config() {
         final SchemaPlus rootSchema = Frameworks.createRootSchema(true);
         return Frameworks.newConfigBuilder()
@@ -58,6 +62,10 @@ public class RelBuilderTest {
                 .programs(Programs.heuristicJoinOrder(Programs.RULE_SET, true, 2));
     }
     
+    /**
+     * create RelBuilder.
+     * @return RelBuilder
+     */
     public static RelBuilder createRelBuilder() {
         FrameworkConfig config = RelBuilderTest.config().build();
         return RelBuilder.create(config);

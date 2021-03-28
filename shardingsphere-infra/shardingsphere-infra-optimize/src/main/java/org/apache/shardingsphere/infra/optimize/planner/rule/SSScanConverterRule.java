@@ -35,7 +35,6 @@ public final class SSScanConverterRule extends ConverterRule {
         super(config);
     }
     
-    
     @Override
     public RelNode convert(final RelNode rel) {
         LogicalScan logicalScan = (LogicalScan) rel;

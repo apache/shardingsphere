@@ -13,27 +13,37 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *//*
-
+ */
 
 package org.apache.shardingsphere.infra.optimize.schema.row;
 
 import org.apache.calcite.linq4j.Enumerator;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-
-*/
 /**
  * Calcite row enumerator.
  *
- *//*
-
+ */
 public final class CalciteRowEnumerator implements Enumerator<Object[]> {
+    @Override
+    public Object[] current() {
+        return new Object[0];
+    }
+    
+    @Override
+    public boolean moveNext() {
+        return false;
+    }
+    
+    @Override
+    public void reset() {
+        
+    }
+    
+    @Override
+    public void close() {
+        
+    }
+    /*
     
     private final Collection<QueryResult> queryResults = new LinkedList<>();
     
@@ -103,5 +113,6 @@ public final class CalciteRowEnumerator implements Enumerator<Object[]> {
             throw new ShardingSphereException(ex);
         }
     }
+   
+     */
 }
-*/

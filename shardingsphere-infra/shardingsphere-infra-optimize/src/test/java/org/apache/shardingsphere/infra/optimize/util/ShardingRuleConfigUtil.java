@@ -36,6 +36,10 @@ import static org.mockito.Mockito.mock;
 
 public class ShardingRuleConfigUtil {
     
+    /**
+     * create ShardingRule.
+     * @return ShardingRule
+     */
     public static ShardingRule createMaximumShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         

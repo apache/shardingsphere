@@ -13,43 +13,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *//*
-
+ */
 
 package org.apache.shardingsphere.infra.optimize.schema.table.execute;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-
-*/
 /**
  * Calcite table execution context generator.
- *//*
+ */
 
 @RequiredArgsConstructor
 public final class CalciteExecutionContextGenerator {
-    
+    /*
     private final String table;
     
     private final ExecutionContext initialExecutionContext;
     
     private final CalciteExecutionSQLGenerator filter;
-    
-    */
-/**
-     * Create execution context.
-     *
-     * @return execution context
-     *//*
 
     public ExecutionContext generate() {
         RouteContext routeContext = getRouteContext(initialExecutionContext.getRouteContext());
@@ -100,5 +81,6 @@ public final class CalciteExecutionContextGenerator {
         }
         return result;
     }
+    */
 }
-*/
+

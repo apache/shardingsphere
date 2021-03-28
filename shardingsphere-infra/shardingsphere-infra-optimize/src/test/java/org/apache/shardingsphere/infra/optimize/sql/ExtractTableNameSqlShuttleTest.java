@@ -29,8 +29,8 @@ public class ExtractTableNameSqlShuttleTest {
     
     @Test
     public void testVisitFromWithIdentifier() throws SqlParseException {
-        String sql = "select 10 + 30 as prefix, t_order.order_id + 10, t_order.order_id, t_order.user_id from t_order where t_order.status='FINISHED' " +
-                "and 1=1 order by t_order.order_id desc";
+        String sql = "select 10 + 30 as prefix, t_order.order_id + 10, t_order.order_id, t_order.user_id from t_order where t_order.status='FINISHED' "
+                + "and 1=1 order by t_order.order_id desc";
         
         SqlParser parser = SqlParser.create(sql);
         SqlNode calciteSqlNode = parser.parseQuery();
@@ -44,8 +44,8 @@ public class ExtractTableNameSqlShuttleTest {
     
     @Test
     public void testVisitFromWithAsBasicCall() throws SqlParseException {
-        String sql = "select 10 + 30 as prefix, o1.order_id + 10, o1.order_id, o1.user_id from t_order as o1 where o1.status='FINISHED' " +
-                "and 1=1 order by o1.order_id desc";
+        String sql = "select 10 + 30 as prefix, o1.order_id + 10, o1.order_id, o1.user_id from t_order as o1 where o1.status='FINISHED' " 
+                + "and 1=1 order by o1.order_id desc";
         
         SqlParser parser = SqlParser.create(sql);
         SqlNode calciteSqlNode = parser.parseQuery();
@@ -54,12 +54,6 @@ public class ExtractTableNameSqlShuttleTest {
         ExtractTableNameSqlShuttle extractTableNameSqlShuttle = new ExtractTableNameSqlShuttle();
         SqlNode newNode = calciteSqlNode.accept(extractTableNameSqlShuttle);
         Assert.assertEquals(Arrays.asList("T_ORDER"), extractTableNameSqlShuttle.getTableNames());
-        // TODO check result SqlNode
-    }
-    
-    @Test
-    public void testVisitFromWithJoinIdentifier() throws SqlParseException {
-        // TODO 
         // TODO check result SqlNode
     }
     

@@ -13,40 +13,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *//*
-
+ */
 
 package org.apache.shardingsphere.infra.optimize.execute.raw;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.calcite.adapter.enumerable.EnumerableConvention;
-import org.apache.calcite.interpreter.InterpretableConvention;
-import org.apache.calcite.interpreter.InterpretableConverter;
-import org.apache.calcite.linq4j.Enumerable;
-import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.plan.RelOptPlanner;
-import org.apache.calcite.plan.RelTraitSet;
-import org.apache.calcite.rel.RelNode;
-import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.parser.SqlParseException;
-import org.apache.calcite.sql.parser.SqlParser;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.optimize.context.CalciteContext;
-import org.apache.shardingsphere.infra.optimize.execute.CalciteExecutor;
-import org.apache.shardingsphere.infra.optimize.execute.raw.context.CalciteDataContext;
-
-import java.sql.ResultSet;
-import java.util.Collections;
-import java.util.List;
-
-*/
 /**
  * Calcite raw executor.
- *//*
+ */
+
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.optimize.execute.CalciteExecutor;
 
 @RequiredArgsConstructor
 public final class CalciteRawExecutor implements CalciteExecutor {
-    
+    /*
     private final CalciteContext context;
     
     @Override
@@ -90,6 +70,6 @@ public final class CalciteRawExecutor implements CalciteExecutor {
         public CalciteInterpretableConverter(final RelOptCluster cluster, final RelTraitSet traits, final RelNode input) {
             super(cluster, traits, input);
         }
-    }
+    }*/
 }
-*/
+

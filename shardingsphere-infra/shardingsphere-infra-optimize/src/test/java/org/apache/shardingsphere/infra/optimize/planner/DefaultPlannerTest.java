@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.optimize.schema.AbstractSchemaTest;
 import org.apache.shardingsphere.infra.optimize.tools.OptimizerContext;
 import org.apache.shardingsphere.infra.optimize.util.ShardingRuleConfigUtil;
 import org.apache.shardingsphere.infra.optimize.util.SqlParserFacade;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,19 +42,16 @@ import java.util.List;
 
 public class DefaultPlannerTest extends AbstractSchemaTest {
     
-    RelNodeConverter relNodeConverter;
+    private RelNodeConverter relNodeConverter;
     
-    ShardingSphereSQLParserEngine sqlStatementParserEngine;
+    private ShardingSphereSchema schema;
     
-    ShardingSphereSchema schema;
-    
-    DefaultPlanner defaultPlanner;
+    private DefaultPlanner defaultPlanner;
     
     @Before
     public void init() {
         schema = buildSchema();
         
-    
         relNodeConverter = new RelNodeConverter("logical_db", schema);
     
         defaultPlanner = new DefaultPlanner();
@@ -64,7 +60,7 @@ public class DefaultPlannerTest extends AbstractSchemaTest {
         OptimizerContext.create(shardingRule);
     }
     
-    private RelNode parseAndOptimize(String sql) {
+    private RelNode parseAndOptimize(final String sql) {
         SqlNode sqlNode = SqlParserFacade.parse(sql);
         RelNode relNode = relNodeConverter.validateAndConvert(sqlNode);
     

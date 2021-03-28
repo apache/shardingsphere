@@ -39,12 +39,12 @@ public final class CalciteRowExecutor {
     
     private final JDBCExecutorCallback<? extends ExecuteResult> callback;
     
-    *//**
+    *
      * Execute.
      *
      * @param context context
      * @return a query result list
-     *//*
+
     public Collection<QueryResult> execute(final ExecutionContext context) {
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext(context);

@@ -13,25 +13,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *//*
-
+ */
 
 package org.apache.shardingsphere.infra.optimize.execute;
 
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
-*/
 /**
  * Calcite executor.
- *//*
+ */
 
 public interface CalciteExecutor {
-    
-    */
 /**
      * Execute query.
      *
@@ -39,27 +29,22 @@ public interface CalciteExecutor {
      * @param parameters parameters
      * @return execute result
      * @throws SQLException SQL exception
-     *//*
-
+     
     List<QueryResult> executeQuery(String sql, List<Object> parameters) throws SQLException;
-    
-    */
-/**
+
      * Close.
      * 
      * @throws SQLException SQL exception
-     *//*
+     
 
     void close() throws SQLException;
-    
-    */
-/**
+
      * Get result set.
      *
      * @return result set
      * @throws SQLException sql exception
-     *//*
+     
 
     ResultSet getResultSet() throws SQLException;
+    */
 }
-*/

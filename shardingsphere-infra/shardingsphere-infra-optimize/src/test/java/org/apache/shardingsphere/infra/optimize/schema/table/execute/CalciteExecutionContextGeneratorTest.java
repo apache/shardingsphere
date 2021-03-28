@@ -13,31 +13,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *//*
-
+ */
 
 package org.apache.shardingsphere.infra.optimize.schema.table.execute;
 
-import org.apache.calcite.DataContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-
 public final class CalciteExecutionContextGeneratorTest {
-    
+    /*
     private ExecutionContext initialExecutionContext;
     
     @Before
@@ -70,6 +51,6 @@ public final class CalciteExecutionContextGeneratorTest {
         assertThat(actual.getExecutionUnits().size(), is(4));
         assertThat(actual.getExecutionUnits().iterator().next().getDataSourceName(), is("ds0"));
         assertThat(actual.getExecutionUnits().iterator().next().getSqlUnit().getSql(), is("SELECT * FROM t_order_0"));
-    }
+    }*/
 }
-*/
+

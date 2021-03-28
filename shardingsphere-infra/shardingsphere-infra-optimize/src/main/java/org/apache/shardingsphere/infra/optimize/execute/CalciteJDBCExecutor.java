@@ -13,35 +13,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *//*
-
+ */
 
 package org.apache.shardingsphere.infra.optimize.execute;
 
-import org.apache.calcite.config.CalciteConnectionProperty;
-import org.apache.calcite.jdbc.CalciteConnection;
-import org.apache.calcite.schema.SchemaPlus;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
-import org.apache.shardingsphere.infra.optimize.context.CalciteContext;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-
-*/
 /**
  * Calcite JDBC executor.
- *//*
-
+ */
 public final class CalciteJDBCExecutor implements CalciteExecutor {
-    
+    /*
     public static final String CONNECTION_URL = "jdbc:calcite:";
     
     public static final String DRIVER_NAME = "org.apache.calcite.jdbc.Driver";
@@ -107,5 +87,5 @@ public final class CalciteJDBCExecutor implements CalciteExecutor {
             count++;
         }
     }
+    */
 }
-*/

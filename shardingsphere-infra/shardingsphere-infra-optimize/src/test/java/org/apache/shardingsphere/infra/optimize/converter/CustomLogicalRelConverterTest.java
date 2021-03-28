@@ -41,6 +41,4 @@ public class CustomLogicalRelConverterTest {
         Assert.assertTrue(res instanceof LogicalFilter);
         Assert.assertTrue(((LogicalFilter) res).getInput() instanceof LogicalScan);
     }
-    
-    
 }

@@ -39,7 +39,7 @@ public class Compiler {
      */
     public static ExecStmt compileQuery(final String schemaName, final ShardingSphereSchema shardingSphereSchema, final SQLStatement sqlStatement) {
         if (!(sqlStatement instanceof SelectStatement)) {
-           return new ExecStmt(); 
+            return new ExecStmt(); 
         }
         Optional<SqlNode> convertSqlStatement = SqlNodeConverter.convertSqlStatement(sqlStatement);
         if (!convertSqlStatement.isPresent()) {

@@ -34,9 +34,14 @@ import java.util.Optional;
  */
 public class SqlParserFacade {
     
-    static ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(
+    private static ShardingSphereSQLParserEngine sqlStatementParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeRegistry.getTrunkDatabaseTypeName(
             new MySQLDatabaseType()));
     
+    /**
+     * parse sql text to calcite ast.
+     * @param sql sql text
+     * @return calcite ast
+     */
     public static SqlNode parse(final String sql) {
         SqlNode sqlNode = null;
         // sqlNode = parseWithSs(sql);
@@ -49,10 +54,10 @@ public class SqlParserFacade {
         return sqlNode;
     }
     
-    private static SqlNode parseWithSs(String sql) {
+    private static SqlNode parseWithSs(final String sql) {
         SQLStatement sqlStatement = sqlStatementParserEngine.parse(sql, false);
         Optional<SqlNode> optional = SqlNodeConverter.convertSqlStatement(sqlStatement);
-        if(optional.isPresent()) {
+        if (optional.isPresent()) {
             return optional.get();
         }
         return null;

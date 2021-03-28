@@ -36,14 +36,14 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * testcase of converting shardingshphere ast to calcite ast.
- *
- * after converting phrase finished, the next phrase is comparing  the converted result with the
+ * 
+ * <p>after converting phrase finished, the next phrase is comparing  the converted result with the
  * result of calcite parser.
- *
+ * </p>
  */
 public final class SqlNodeConverterTest extends AbstractSchemaTest {
 
-    ShardingSphereSQLParserEngine sqlStatementParserEngine;
+    private ShardingSphereSQLParserEngine sqlStatementParserEngine;
 
     @Before
     public void init() {

@@ -13,27 +13,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *//*
-
+ */
 
 package org.apache.shardingsphere.infra.optimize.schema;
 
-import org.apache.commons.collections4.map.LinkedMap;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.optimize.schema.row.CalciteRowExecutor;
-import org.junit.Test;
-
-import java.util.Collections;
-import java.util.Map;
-
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-
 public final class CalciteLogicSchemaFactoryTest {
-    
+    /*
     @Test
     public void assertCreate() {
         Map<String, ShardingSphereMetaData> metaDataMap = new LinkedMap<>();
@@ -44,6 +29,6 @@ public final class CalciteLogicSchemaFactoryTest {
         CalciteRowExecutor calciteRowExecutor = new CalciteRowExecutor(Collections.emptyList(), 0, null, jdbcExecutor, executionContext, null);
         CalciteLogicSchema logicDbExist = calciteLogicSchemaFactory.create("logic_db", calciteRowExecutor);
         assertNotNull(logicDbExist);
-    }
+    }*/
 }
-*/
+
