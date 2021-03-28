@@ -31,5 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 @Getter
 @Setter
 public final class PostgreSQLAlterSequenceStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
+
     private String sequenceName;
 }
