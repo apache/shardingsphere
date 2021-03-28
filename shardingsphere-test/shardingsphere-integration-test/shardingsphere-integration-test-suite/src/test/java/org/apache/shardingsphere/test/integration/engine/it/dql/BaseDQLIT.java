@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.dql;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
+import org.apache.shardingsphere.test.integration.env.EnvironmentType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
-import org.junit.BeforeClass;
+import org.junit.Before;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -47,20 +47,42 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDQLIT extends SingleITCase {
     
+    private volatile boolean initialed = false;
+    
     public BaseDQLIT(final AssertionParameterizedArray parameter) {
         super(parameter);
     }
     
-    @BeforeClass
-    public static void fillData() throws IOException, JAXBException, SQLException, ParseException {
-        for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()) {
-            fillData(each);
+    @Before
+    public void setup() throws IOException, JAXBException, SQLException, ParseException {
+        if (!initialed) {
+            synchronized (BaseDQLIT.class) {
+                if (!initialed) {
+                    fillData();
+                    initialed = true;
+                }
+            }
         }
     }
     
-    private static void fillData(final DatabaseType databaseType) throws SQLException, ParseException, IOException, JAXBException {
-        for (String each : IntegrationTestEnvironment.getInstance().getScenarios()) {
-            new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(each), ActualDataSourceBuilder.createActualDataSources(each, databaseType)).fillData();
+    private void fillData() throws SQLException, ParseException, IOException, JAXBException {
+        if (EnvironmentType.DOCKER == IntegrationTestEnvironment.getInstance().getEnvType()) {
+            new DataSetEnvironmentManager(
+                    EnvironmentPath.getDataSetFile(getScenario()),
+                    getStorageContainer().getDataSourceMap()
+            ).fillData();
+        } else {
+            IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()
+                    .forEach(e -> IntegrationTestEnvironment.getInstance().getScenarios().forEach(each -> {
+                        try {
+                            new DataSetEnvironmentManager(
+                                    EnvironmentPath.getDataSetFile(each),
+                                    ActualDataSourceBuilder.createActualDataSources(each, e)
+                            ).fillData();
+                        } catch (SQLException | ParseException | IOException | JAXBException jaxbException) {
+                            jaxbException.printStackTrace();
+                        }
+                    }));
         }
     }
     
