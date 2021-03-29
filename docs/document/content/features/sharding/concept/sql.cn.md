@@ -52,4 +52,4 @@ SELECT i.* FROM t_order_1 o JOIN t_order_item_1 i ON o.order_id=i.order_id WHERE
 
 ## 单表
 
-指所有的分片数据源中只存在唯一一份的表。适用于数据量不大且不需要做任何分片操作的场景。
+指所有的分片数据源中只存在唯一一张的表。适用于数据量不大且不需要做任何分片操作的场景。

@@ -47,4 +47,4 @@ It refers to tables that exist in all sharding database sources. Their structure
 
 ## Single Table
 
-It refers to only table that exist in single sharding database source. It is suitable for scenarios where the amount of data is not large and does not require any sharding operations.
+It refers to only one table that exists in all sharding database sources. It is suitable for scenarios where the amount of data is not large and does not require any sharding operations.
