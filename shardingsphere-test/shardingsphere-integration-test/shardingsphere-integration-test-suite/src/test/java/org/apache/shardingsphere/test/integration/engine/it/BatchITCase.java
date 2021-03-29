@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.engine.it;
 
-import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -56,10 +55,8 @@ import static org.junit.Assert.assertThat;
 
 @Getter(AccessLevel.PROTECTED)
 public abstract class BatchITCase extends BaseITCase {
-   
-    private final Collection<DataSet> dataSets = new LinkedList<>();
     
-    private final Collection<DataSet> dataSet = Lists.newArrayList();
+    private final Collection<DataSet> dataSets = new LinkedList<>();
     
     private final String parentPath;
     

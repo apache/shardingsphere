@@ -26,11 +26,11 @@ import org.junit.runners.Parameterized;
 public final class ShardingSphereRunner extends Parameterized {
     
     // CHECKSTYLE:OFF
-    public ShardingSphereRunner(final Class<?> klass) throws Throwable {
+    public ShardingSphereRunner(final Class<?> clazz) throws Throwable {
         // CHECKSTYLE:ON
-        super(klass);
+        super(clazz);
         if (EnvironmentType.DOCKER != IntegrationTestEnvironment.getInstance().getEnvType()) {
-            ParallelRuntimeStrategy parallelRuntimeStrategy = klass.getAnnotation(ParallelRuntimeStrategy.class);
+            ParallelRuntimeStrategy parallelRuntimeStrategy = clazz.getAnnotation(ParallelRuntimeStrategy.class);
             if (null != parallelRuntimeStrategy) {
                 setScheduler(new ParallelRunnerScheduler(parallelRuntimeStrategy.value()));
             }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.engine.it.ddl;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.junit.compose.ComposeManagement;
+import org.apache.shardingsphere.test.integration.junit.compose.ComposeManager;
 import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 public final class GeneralDDLIT extends BaseDDLIT {
     
     @ClassRule
-    public static ComposeManagement mgr = new ComposeManagement("GeneralDDLIT");
+    public static ComposeManager composeManager = new ComposeManager("GeneralDDLIT");
     
     public GeneralDDLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
@@ -48,7 +48,7 @@ public final class GeneralDDLIT extends BaseDDLIT {
     public static Collection<AssertionParameterizedArray> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DDL)
                 .stream()
-                .peek(e -> e.setCompose(mgr.getOrCreateCompose(e)))
+                .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
                 .collect(Collectors.toList());
     }
     

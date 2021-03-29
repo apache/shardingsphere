@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.engine.it.dal;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.junit.compose.ComposeManagement;
+import org.apache.shardingsphere.test.integration.junit.compose.ComposeManager;
 import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
@@ -44,7 +44,7 @@ import static org.junit.Assert.assertThat;
 public final class GeneralDALIT extends BaseDALIT {
     
     @ClassRule
-    public static ComposeManagement mgr = new ComposeManagement("GeneralDALIT");
+    public static ComposeManager composeManager = new ComposeManager("GeneralDALIT");
     
     public GeneralDALIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
@@ -54,9 +54,9 @@ public final class GeneralDALIT extends BaseDALIT {
     public static Collection<ParameterizedArray> getParameters() {
         return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DAL)
                 .stream()
-                .filter(e -> SQLExecuteType.Literal == e.getSqlExecuteType())
-                .filter(e -> "proxy".equals(e.getAdapter()))
-                .peek(e -> e.setCompose(mgr.getOrCreateCompose(e)))
+                .filter(each -> SQLExecuteType.Literal == each.getSqlExecuteType())
+                .filter(each -> "proxy".equals(each.getAdapter()))
+                .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
                 .collect(Collectors.toList());
     }
     

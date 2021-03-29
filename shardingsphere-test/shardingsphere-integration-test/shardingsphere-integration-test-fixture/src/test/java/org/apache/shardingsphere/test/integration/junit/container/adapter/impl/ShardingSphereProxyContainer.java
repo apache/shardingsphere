@@ -21,6 +21,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 import org.testcontainers.utility.MountableFile;
@@ -41,8 +42,8 @@ public final class ShardingSphereProxyContainer extends ShardingSphereAdapterCon
     
     private final AtomicReference<DataSource> dataSourceProvider = new AtomicReference<>();
     
-    public ShardingSphereProxyContainer() {
-        super("apache/shardingsphere-proxy-test");
+    public ShardingSphereProxyContainer(final ParameterizedArray parameterizedArray) {
+        super("shardingsphere-proxy", "apache/shardingsphere-proxy-test", parameterizedArray);
     }
     
     /**
@@ -81,7 +82,7 @@ public final class ShardingSphereProxyContainer extends ShardingSphereAdapterCon
     
     @Override
     protected void configure() {
-        withConfMapping("/docker/" + getDescription().getScenario() + "/proxy/conf");
+        withConfMapping("/docker/" + getParameterizedArray().getScenario() + "/proxy/conf");
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*ShardingSphere-Proxy start success.*"));
         super.configure();
     }
@@ -119,6 +120,6 @@ public final class ShardingSphereProxyContainer extends ShardingSphereAdapterCon
     
     protected String getURL() {
         return String.format("jdbc:mysql://%s:%s/%s?useServerPrepStmts=true&serverTimezone=UTC&useSSL=false&useLocalSessionState=true&characterEncoding=utf-8",
-                getHost(), getMappedPort(3307), getDescription().getScenario());
+                getHost(), getMappedPort(3307), getParameterizedArray().getScenario());
     }
 }

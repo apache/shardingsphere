@@ -21,7 +21,7 @@ import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.engine.it.BatchITCase;
-import org.apache.shardingsphere.test.integration.junit.compose.ComposeManagement;
+import org.apache.shardingsphere.test.integration.junit.compose.ComposeManager;
 import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArrayFactory;
 import org.apache.shardingsphere.test.integration.junit.param.model.CaseParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
@@ -45,7 +45,7 @@ import static org.junit.Assert.assertThat;
 public final class BatchDMLIT extends BatchITCase {
     
     @ClassRule
-    public static ComposeManagement mgr = new ComposeManagement("BatchDMLIT");
+    public static ComposeManager composeManager = new ComposeManager("BatchDMLIT");
     
     public BatchDMLIT(final CaseParameterizedArray parameterizedArray) {
         super(parameterizedArray);
@@ -55,7 +55,7 @@ public final class BatchDMLIT extends BatchITCase {
     public static Collection<ParameterizedArray> getParameters() {
         return ParameterizedArrayFactory.getCaseParameterized(SQLCommandType.DML)
                 .stream()
-                .peek(e -> e.setCompose(mgr.getOrCreateCompose(e)))
+                .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
                 .collect(Collectors.toList());
     }
     

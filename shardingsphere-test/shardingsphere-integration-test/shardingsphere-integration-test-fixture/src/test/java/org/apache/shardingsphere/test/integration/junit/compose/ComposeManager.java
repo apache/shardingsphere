@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.junit.compose;
 
-import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.integration.env.EnvironmentType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
@@ -25,12 +24,13 @@ import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironme
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.junit.rules.ExternalResource;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class ComposeManagement extends ExternalResource {
+public final class ComposeManager extends ExternalResource {
     
-    private final Map<String, ContainerCompose> composeMap = Maps.newHashMap();
+    private final Map<String, ContainerCompose> composeMap = new HashMap<>();
     
     private final String suiteName;
     
@@ -45,20 +45,13 @@ public class ComposeManagement extends ExternalResource {
         if (composeMap.containsKey(key)) {
             return composeMap.get(key);
         }
-        ContainerCompose compose = new ContainerCompose(suiteName, parameterizedArray);
-        composeMap.put(key, compose);
-        return compose;
+        ContainerCompose result = new ContainerCompose(suiteName, parameterizedArray);
+        composeMap.put(key, result);
+        return result;
     }
     
     private String generateKey(final ParameterizedArray parameter) {
-        return new StringBuffer(suiteName)
-                .append('-')
-                .append(parameter.getScenario())
-                .append('-')
-                .append(parameter.getAdapter())
-                .append('-')
-                .append(parameter.getDatabaseType().getName())
-                .toString();
+        return String.join("-", suiteName, parameter.getScenario(), parameter.getAdapter(), parameter.getDatabaseType().getName());
     }
     
     @Override
@@ -66,9 +59,9 @@ public class ComposeManagement extends ExternalResource {
         if (EnvironmentType.DOCKER != IntegrationTestEnvironment.getInstance().getEnvType()) {
             DatabaseEnvironmentManager.executeInitSQLs();
         } else {
-            composeMap.values().forEach(e -> {
-                e.start();
-                e.waitUntilReady();
+            composeMap.values().forEach(each -> {
+                each.start();
+                each.waitUntilReady();
             });
         }
     }

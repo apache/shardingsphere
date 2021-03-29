@@ -17,12 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.junit.compose;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.common.ExecutionMode;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.impl.ShardingSphereJDBCContainer;
@@ -32,20 +27,21 @@ import org.apache.shardingsphere.test.integration.junit.container.storage.impl.H
 import org.apache.shardingsphere.test.integration.junit.container.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.integration.junit.logging.ContainerLogs;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
-import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
 import org.junit.rules.ExternalResource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.lifecycle.Startable;
 
 import java.io.Closeable;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
  * Container compose.
  */
-@Slf4j
 public final class ContainerCompose extends ExternalResource implements Closeable {
     
     private final Network network = Network.newNetwork();
@@ -54,7 +50,7 @@ public final class ContainerCompose extends ExternalResource implements Closeabl
     
     private final ParameterizedArray parameterizedArray;
     
-    private final ImmutableList<ShardingSphereContainer> containers;
+    private final List<ShardingSphereContainer> containers;
     
     @Getter
     private final ShardingSphereStorageContainer storageContainer;
@@ -67,55 +63,46 @@ public final class ContainerCompose extends ExternalResource implements Closeabl
     public ContainerCompose(final String clusterName, final ParameterizedArray parameterizedArray) {
         this.clusterName = clusterName;
         this.parameterizedArray = parameterizedArray;
-        TestCaseDescription description = TestCaseDescription.builder()
-                .adapter(parameterizedArray.getAdapter())
-                .scenario(parameterizedArray.getScenario())
-                .database(parameterizedArray.getDatabaseType().getName())
-                .executionMode(ExecutionMode.SINGLE)
-                .sqlCommandType(SQLCommandType.DAL)
-                .build();
-        this.storageContainer = createStorageContainer(description);
-        this.adapterContainer = createAdapterContainer(description);
+        this.storageContainer = createStorageContainer();
+        this.adapterContainer = createAdapterContainer();
         adapterContainer.dependsOn(storageContainer);
-        this.containers = ImmutableList.of(storageContainer, adapterContainer);
+        this.containers = Arrays.asList(storageContainer, adapterContainer);
     }
     
-    private ShardingSphereAdapterContainer createAdapterContainer(final TestCaseDescription description) {
+    private ShardingSphereAdapterContainer createAdapterContainer() {
         Supplier<ShardingSphereAdapterContainer> supplier = () -> {
             switch (parameterizedArray.getAdapter()) {
                 case "proxy":
-                    return new ShardingSphereProxyContainer();
+                    return new ShardingSphereProxyContainer(parameterizedArray);
                 case "jdbc":
-                    return new ShardingSphereJDBCContainer();
+                    return new ShardingSphereJDBCContainer(parameterizedArray);
                 default:
-                    throw new RuntimeException("Adapter[" + parameterizedArray.getAdapter() + "] is unknown.");
+                    throw new RuntimeException(String.format("Adapter[%s] is unknown.", parameterizedArray.getAdapter()));
                 
             }
         };
-        ShardingSphereAdapterContainer adapterContainer = supplier.get();
-        adapterContainer.setDescription(description);
-        adapterContainer.setNetwork(network);
-        adapterContainer.withLogConsumer(ContainerLogs.newConsumer(this.clusterName + "-adapter"));
-        return adapterContainer;
+        ShardingSphereAdapterContainer result = supplier.get();
+        result.setNetwork(network);
+        result.withLogConsumer(ContainerLogs.newConsumer(this.clusterName + "-adapter"));
+        return result;
     }
     
-    private ShardingSphereStorageContainer createStorageContainer(final TestCaseDescription description) {
+    private ShardingSphereStorageContainer createStorageContainer() {
         Supplier<ShardingSphereStorageContainer> supplier = () -> {
             switch (parameterizedArray.getDatabaseType().getName()) {
                 case "MySQL":
-                    return new MySQLContainer();
+                    return new MySQLContainer(parameterizedArray);
                 case "H2":
-                    return new H2Container();
+                    return new H2Container(parameterizedArray);
                 default:
                     throw new RuntimeException("Unknown storage type " + parameterizedArray.getDatabaseType());
             }
         };
-        ShardingSphereStorageContainer storageContainer = supplier.get();
-        storageContainer.setNetwork(network);
-        storageContainer.setDescription(description);
-        storageContainer.withLogConsumer(ContainerLogs.newConsumer(this.clusterName + "-storage"));
-        storageContainer.setNetworkAliases(Lists.newArrayList("mysql.db.host"));
-        return storageContainer;
+        ShardingSphereStorageContainer result = supplier.get();
+        result.setNetwork(network);
+        result.withLogConsumer(ContainerLogs.newConsumer(this.clusterName + "-storage"));
+        result.setNetworkAliases(Collections.singletonList("mysql.db.host"));
+        return result;
     }
     
     /**
@@ -148,7 +135,6 @@ public final class ContainerCompose extends ExternalResource implements Closeabl
                     }
                 });
         started = true;
-        log.info("Any container is startup.");
     }
     
     @Override

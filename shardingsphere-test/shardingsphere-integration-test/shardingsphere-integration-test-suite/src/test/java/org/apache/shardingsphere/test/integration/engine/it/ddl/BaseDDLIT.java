@@ -70,7 +70,6 @@ public abstract class BaseDDLIT extends SingleITCase {
         try (Connection connection = getTargetDataSource().getConnection()) {
             executeInitSQLs(connection);
         }
-//        resetTargetDataSource();
     }
     
     @After
