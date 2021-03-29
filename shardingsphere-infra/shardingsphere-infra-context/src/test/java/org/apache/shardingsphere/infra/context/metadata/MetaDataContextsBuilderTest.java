@@ -40,7 +40,7 @@ public final class MetaDataContextsBuilderTest {
     public void assertBuildWithoutConfiguration() throws SQLException {
         MetaDataContexts actual = new MetaDataContextsBuilder(Collections.emptyMap(), Collections.emptyMap(), null).build();
         assertTrue(actual.getAllSchemaNames().isEmpty());
-        assertTrue(actual.getAuthentication().getAuthentication().isEmpty());
+        assertTrue(actual.getAuthentication().getAllUsers().isEmpty());
         assertTrue(actual.getProps().getProps().isEmpty());
     }
     
@@ -52,7 +52,7 @@ public final class MetaDataContextsBuilderTest {
                 Collections.singletonMap("logic_db", Collections.emptyMap()), Collections.singletonMap("logic_db", Collections.singleton(new FixtureRuleConfiguration())), props).build();
         assertRules(actual);
         assertTrue(actual.getMetaData("logic_db").getResource().getDataSources().isEmpty());
-        assertTrue(actual.getAuthentication().getAuthentication().isEmpty());
+        assertTrue(actual.getAuthentication().getAllUsers().isEmpty());
         assertThat(actual.getProps().getProps().size(), is(1));
         assertThat(actual.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(1));
     }
@@ -65,7 +65,7 @@ public final class MetaDataContextsBuilderTest {
                 Collections.singletonMap("logic_db", Collections.singleton(new FixtureRuleConfiguration())), props).build();
         assertRules(actual);
         assertDataSources(actual);
-        assertTrue(actual.getAuthentication().getAuthentication().isEmpty());
+        assertTrue(actual.getAuthentication().getAllUsers().isEmpty());
         assertThat(actual.getProps().getProps().size(), is(1));
         assertThat(actual.getProps().getValue(ConfigurationPropertyKey.EXECUTOR_SIZE), is(1));
     }

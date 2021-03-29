@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.sharding.rule.builder;
 
-import lombok.Setter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.aware.ResourceAware;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -31,15 +29,11 @@ import java.util.Map;
 /**
  * Algorithm provided sharding rule builder.
  */
-@Setter
-public final class AlgorithmProvidedShardingRuleBuilder implements ShardingSphereRuleBuilder<ShardingRule, AlgorithmProvidedShardingRuleConfiguration>, ResourceAware {
-    
-    private DatabaseType databaseType;
-    
-    private Map<String, DataSource> dataSourceMap;
+public final class AlgorithmProvidedShardingRuleBuilder implements ShardingSphereRuleBuilder<ShardingRule, AlgorithmProvidedShardingRuleConfiguration> {
     
     @Override
-    public ShardingRule build(final AlgorithmProvidedShardingRuleConfiguration ruleConfig) {
+    public ShardingRule build(final String schemaName,
+                              final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final AlgorithmProvidedShardingRuleConfiguration ruleConfig) {
         return new ShardingRule(ruleConfig, databaseType, dataSourceMap);
     }
     

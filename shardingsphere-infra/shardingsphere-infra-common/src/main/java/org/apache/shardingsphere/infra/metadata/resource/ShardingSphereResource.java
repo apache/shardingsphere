@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere resource.
@@ -40,6 +41,16 @@ public final class ShardingSphereResource {
     private final CachedDatabaseMetaData cachedDatabaseMetaData;
     
     private final DatabaseType databaseType;
+    
+    /**
+     * Get all instance data sources.
+     *
+     * @return all instance data sources
+     */
+    public Collection<DataSource> getAllInstanceDataSources() {
+        return dataSources.entrySet().stream().filter(entry ->
+                dataSourcesMetaData.getAllInstanceDataSourceNames().contains(entry.getKey())).map(Map.Entry::getValue).collect(Collectors.toSet());
+    }
     
     /**
      * Close data sources.

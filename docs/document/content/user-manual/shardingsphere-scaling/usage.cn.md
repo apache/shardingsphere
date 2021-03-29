@@ -55,8 +55,8 @@ PostgreSQL 需要开启 [test_decoding](https://www.postgresql.org/docs/9.4/test
 
 | 参数                                               | 描述                                                         |
 | ------------------------------------------------- | ------------------------------------------------------------ |
-| ruleConfiguration.source                          | 源端数据源相关配置                                             |
-| ruleConfiguration.target                          | 目标端数据源相关配置                                           |
+| ruleConfig.source                                 | 源端数据源相关配置                                             |
+| ruleConfig.target                                 | 目标端数据源相关配置                                           |
 | jobConfiguration.concurrency                      | 迁移并发度，举例：如果设置为3，则待迁移的表将会有三个线程同时对该表进行迁移，前提是该表有整数型主键 |
 
 数据源配置：
@@ -65,24 +65,6 @@ PostgreSQL 需要开启 [test_decoding](https://www.postgresql.org/docs/9.4/test
 | ------------------------------------------------- | ------------------------------------------------------------ |
 | type                                              | 数据源类型（可选参数：shardingSphereJdbc、jdbc）                |
 | parameter                                         | 数据源参数                                                    |
-
-Parameter配置：
-
-type = shardingSphereJdbc 
-
-| 参数                                               | 描述                                                         |
-| ------------------------------------------------- | ------------------------------------------------------------ |
-| dataSource                                        | 源端sharding sphere数据源相关配置                              |
-| rule                                              | 源端sharding sphere表规则相关配置                              |
-
-type = jdbc 
-
-| 参数                                               | 描述                                                         |
-| ------------------------------------------------- | ------------------------------------------------------------ |
-| name                                              | jdbc 名称                                                    |
-| ruleConfiguration.targetDataSources.jdbcUrl           | jdbc 连接                                                    |
-| ruleConfiguration.targetDataSources.username      | jdbc 用户                                                    |
-| ruleConfiguration.targetDataSources.password      | jdbc 密码                                                    |
 
 *** 注意 ***
 
@@ -95,28 +77,21 @@ curl -X POST \
   http://localhost:8888/scaling/job/start \
   -H 'content-type: application/json' \
   -d '{
-        "ruleConfiguration": {
+        "ruleConfig": {
           "source": {
             "type": "shardingSphereJdbc",
-            "parameter": {
-              "dataSource":"
+            "parameter": "
                 dataSources:
                   ds_0:
                     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-                    props:
-                      driverClassName: com.mysql.jdbc.Driver
-                      jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_0?useSSL=false
-                      username: scaling
-                      password: scaling
+                    jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_0?useSSL=false
+                    username: scaling
+                    password: scaling
                   ds_1:
                     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-                    props:
-                      driverClassName: com.mysql.jdbc.Driver
-                      jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_1?useSSL=false
-                      username: scaling
-                      password: scaling
-                ",
-              "rule":"
+                    jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_1?useSSL=false
+                    username: scaling
+                    password: scaling
                 rules:
                 - !SHARDING
                   tables:
@@ -141,15 +116,14 @@ curl -X POST \
                       props:
                         algorithm-expression: t_order_$->{user_id % 2}
                 "
-            }
           },
           "target": {
               "type": "jdbc",
-              "parameter": {
-                "username": "root",
-                "password": "root",
-                "jdbcUrl": "jdbc:mysql://127.0.0.1:3307/sharding_db?serverTimezone=UTC&useSSL=false"
-              }
+              "parameter": "
+                username: root
+                password: root
+                jdbcUrl: jdbc:mysql://127.0.0.1:3307/sharding_db?serverTimezone=UTC&useSSL=false
+                "
           }
         },
         "jobConfiguration":{

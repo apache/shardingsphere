@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.dql;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.integration.engine.it.SingleIT;
-import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
+import org.apache.shardingsphere.test.integration.env.EnvironmentType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
-import org.junit.BeforeClass;
+import org.apache.shardingsphere.test.integration.junit.annotation.BeforeAllCases;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -45,22 +45,29 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public abstract class BaseDQLIT extends SingleIT {
+public abstract class BaseDQLIT extends SingleITCase {
     
-    protected BaseDQLIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
-        super(parameterizedArray);
-    }
-    
-    @BeforeClass
-    public static void fillData() throws IOException, JAXBException, SQLException, ParseException {
-        for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()) {
-            fillData(each);
-        }
-    }
-    
-    private static void fillData(final DatabaseType databaseType) throws SQLException, ParseException, IOException, JAXBException {
-        for (String each : IntegrationTestEnvironment.getInstance().getScenarios()) {
-            new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(each), ActualDataSourceBuilder.createActualDataSources(each, databaseType)).fillData();
+    @BeforeAllCases
+    @SneakyThrows
+    protected void fillData() {
+        if (EnvironmentType.DOCKER == IntegrationTestEnvironment.getInstance().getEnvType()) {
+            new DataSetEnvironmentManager(
+                    EnvironmentPath.getDataSetFile(getDescription().getScenario()),
+                    getStorage().getDataSourceMap()
+            ).fillData();
+        } else {
+            IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet().forEach(e -> {
+                IntegrationTestEnvironment.getInstance().getScenarios().forEach(each -> {
+                    try {
+                        new DataSetEnvironmentManager(
+                                EnvironmentPath.getDataSetFile(each),
+                                ActualDataSourceBuilder.createActualDataSources(each, e)
+                        ).fillData();
+                    } catch (SQLException | ParseException | IOException | JAXBException jaxbException) {
+                        jaxbException.printStackTrace();
+                    }
+                });
+            });
         }
     }
     
@@ -79,7 +86,7 @@ public abstract class BaseDQLIT extends SingleIT {
     
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
         // TODO Fix shadow
-        if ("shadow".equals(getScenario())) {
+        if ("shadow".equals(getDescription().getScenario())) {
             return;
         }
         assertThat(actual.getColumnCount(), is(expected.size()));

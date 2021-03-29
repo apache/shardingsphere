@@ -30,6 +30,10 @@ chapter = true
 | *Implementation Class*       | *Description*                             |
 | ---------------------------- | ----------------------------------------- |
 | MySQLTableMetaDataLoader     | Use MySQL dialect to load meta data       |
+| OracleTableMetaDataLoader    | Use Oracle dialect to load meta data      |
+| PostgreSQLTableMetaDataLoader| Use PostgreSQL dialect to load meta data  |
+| SQLServerTableMetaDataLoader | Use SQLServer dialect to load meta data   |
+| H2TableMetaDataLoader        | Use H2 dialect to load meta data          |
 
 ## SQLRouter
 

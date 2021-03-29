@@ -31,6 +31,8 @@ public final class ReadWriteSplittingDataSourceRuleConfiguration {
     
     private final String name;
     
+    private final String autoAwareDataSourceName;
+    
     private final String writeDataSourceName;
     
     private final List<String> readDataSourceNames;

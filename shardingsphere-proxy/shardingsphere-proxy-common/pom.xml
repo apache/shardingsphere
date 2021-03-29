@@ -54,7 +54,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-ha-common</artifactId>
+            <artifactId>shardingsphere-db-discovery-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         
