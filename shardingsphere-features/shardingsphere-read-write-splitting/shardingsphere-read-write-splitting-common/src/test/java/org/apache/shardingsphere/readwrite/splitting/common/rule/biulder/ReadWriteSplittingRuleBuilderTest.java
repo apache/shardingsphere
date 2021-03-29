@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwrite.splitting.common.rule.biulder;
 
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
@@ -43,9 +44,9 @@ public final class ReadWriteSplittingRuleBuilderTest {
     public void assertBuild() {
         ReadWriteSplittingRuleConfiguration ruleConfig = mock(ReadWriteSplittingRuleConfiguration.class);
         ReadWriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadWriteSplittingDataSourceRuleConfiguration(
-                "name", "writeDataSourceName", Collections.singletonList("name"), "loadBalancerName");
+                "name", "pr_ds", "writeDataSourceName", Collections.singletonList("name"), "loadBalancerName");
         when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(dataSourceRuleConfig));
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
-        assertThat(builder.build(ruleConfig), instanceOf(ReadWriteSplittingRule.class));
+        assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), ruleConfig), instanceOf(ReadWriteSplittingRule.class));
     }
 }

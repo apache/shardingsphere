@@ -43,7 +43,7 @@ public final class TableMetaData {
     
     @Getter(AccessLevel.NONE)
     private final List<String> columnNames = new ArrayList<>();
-
+    
     private final List<String> primaryKeyColumns = new ArrayList<>();
     
     public TableMetaData() {
@@ -85,8 +85,6 @@ public final class TableMetaData {
     public ColumnMetaData getColumnMetaData(final int columnIndex) {
         return columns.get(columnNames.get(columnIndex));
     }
-
-
     
     /**
      * Find index of column.

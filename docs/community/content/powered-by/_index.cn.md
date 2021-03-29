@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 163 家公司。
+共计 165 家公司。
 
 ### 金融行业
 <ul>
@@ -193,6 +193,11 @@ chapter = true
     <li><a href="https://www.hikvision.com/" rel="nofollow">海康威视</a></li>
     <li><a href="http://www.iotlead.com/" rel="nofollow">思创理德</a></li>
     <li><a href=" http://tcslwxwl.cn.b2b168.com/" rel="nofollow">神州商龙科技股份有限公司</a></li>
+</ul>
+
+### 制造业
+<ul>
+    <li><a href="https://www.lixiang.com" rel="nofollow">理想汽车</a></li>
 </ul>
 
 ### 软件开发及服务

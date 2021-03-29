@@ -29,7 +29,11 @@ chapter = true
 
 | *已知实现类*                   | *详细说明*                   |
 | ----------------------------- | --------------------------- |
-| MySQLTableMetaDataLoader      | 使用 MySQL 方言加载元数据     |
+| MySQLTableMetaDataLoader      | 使用 MySQL 方言加载元数据      |
+| OracleTableMetaDataLoader     | 使用 Oracle 方言加载元数据     |
+| PostgreSQLTableMetaDataLoader | 使用 PostgreSQL 方言加载元数据 |
+| SQLServerTableMetaDataLoader  | 使用 SQLServer 方言加载元数据  |
+| H2TableMetaDataLoader         | 使用 H2 方言加载元数据         |
 
 ## SQLRouter
 

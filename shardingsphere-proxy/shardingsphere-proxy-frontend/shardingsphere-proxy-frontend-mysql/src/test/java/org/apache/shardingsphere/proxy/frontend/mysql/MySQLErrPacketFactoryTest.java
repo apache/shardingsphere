@@ -188,8 +188,8 @@ public final class MySQLErrPacketFactoryTest {
     public void assertNewInstanceWithCircuitBreakException() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new CircuitBreakException());
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(10000));
-        assertThat(actual.getSqlState(), is("C10000"));
+        assertThat(actual.getErrorCode(), is(1000));
+        assertThat(actual.getSqlState(), is("C1000"));
         assertThat(actual.getErrorMessage(), is("Circuit break mode is ON."));
     }
     
@@ -197,8 +197,8 @@ public final class MySQLErrPacketFactoryTest {
     public void assertNewInstanceWithShardingTableRuleNotExistedException() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new ShardingTableRuleNotExistedException(Collections.singleton("tbl")));
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(11001));
-        assertThat(actual.getSqlState(), is("C11001"));
+        assertThat(actual.getErrorCode(), is(1101));
+        assertThat(actual.getSqlState(), is("C1101"));
         assertThat(actual.getErrorMessage(), is("Sharding table rule [tbl] is not exist."));
     }
     
@@ -206,8 +206,8 @@ public final class MySQLErrPacketFactoryTest {
     public void assertNewInstanceWithTablesInUsedException() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new TablesInUsedException(Collections.singleton("tbl")));
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(11002));
-        assertThat(actual.getSqlState(), is("C11002"));
+        assertThat(actual.getErrorCode(), is(1102));
+        assertThat(actual.getSqlState(), is("C1102"));
         assertThat(actual.getErrorMessage(), is("Can not drop rule, tables [tbl] in the rule are still in used."));
     }
 
@@ -215,8 +215,8 @@ public final class MySQLErrPacketFactoryTest {
     public void assertNewInstanceWithUnsupportedCommandException() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new UnsupportedCommandException("No reason"));
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(19998));
-        assertThat(actual.getSqlState(), is("C19998"));
+        assertThat(actual.getErrorCode(), is(1998));
+        assertThat(actual.getSqlState(), is("C1998"));
         assertThat(actual.getErrorMessage(), is("Unsupported command: [No reason]"));
     }
     
@@ -224,8 +224,8 @@ public final class MySQLErrPacketFactoryTest {
     public void assertNewInstanceWithOtherException() {
         MySQLErrPacket actual = MySQLErrPacketFactory.newInstance(new RuntimeException("No reason"));
         assertThat(actual.getSequenceId(), is(1));
-        assertThat(actual.getErrorCode(), is(19999));
-        assertThat(actual.getSqlState(), is("C19999"));
+        assertThat(actual.getErrorCode(), is(1999));
+        assertThat(actual.getSqlState(), is("C1999"));
         assertThat(actual.getErrorMessage(), is("Unknown exception: [No reason]"));
     }
 }

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSph
 import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,11 +31,25 @@ import java.util.Optional;
 public interface Authentication {
     
     /**
+     * Initialize authentication.
+     * 
+     * @param loadedPrivileges loaded privileges
+     */
+    void init(Map<ShardingSphereUser, ShardingSpherePrivilege> loadedPrivileges);
+    
+    /**
      * Get authentication.
      *
      * @return Authentication
      */
     Map<ShardingSphereUser, ShardingSpherePrivilege> getAuthentication();
+    
+    /**
+     * Get all users.
+     *
+     * @return all users
+     */
+    Collection<ShardingSphereUser> getAllUsers();
     
     /**
      * Find user.

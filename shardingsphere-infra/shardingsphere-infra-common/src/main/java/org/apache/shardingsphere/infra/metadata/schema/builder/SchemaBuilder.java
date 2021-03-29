@@ -97,7 +97,7 @@ public final class SchemaBuilder {
     }
     
     private static Optional<DialectTableMetaDataLoader> findDialectTableMetaDataLoader(final SchemaBuilderMaterials materials) {
-        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.newServiceInstances(DialectTableMetaDataLoader.class)) {
+        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(DialectTableMetaDataLoader.class)) {
             if (each.getDatabaseType().equals(materials.getDatabaseType().getName())) {
                 return Optional.of(each);
             }

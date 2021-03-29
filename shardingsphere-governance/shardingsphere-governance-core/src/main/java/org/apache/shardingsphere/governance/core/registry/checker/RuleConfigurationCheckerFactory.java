@@ -19,12 +19,12 @@ package org.apache.shardingsphere.governance.core.registry.checker;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.db.discovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.ha.api.config.HARuleConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.readwrite.splitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwrite.splitting.api.ReadWriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwrite.splitting.common.algorithm.config.AlgorithmProvidedReadWriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -47,7 +47,7 @@ public final class RuleConfigurationCheckerFactory {
         REGISTRY.put(EncryptRuleConfiguration.class, new EncryptRuleConfigurationChecker());
         REGISTRY.put(AlgorithmProvidedEncryptRuleConfiguration.class, new AlgorithmProvidedEncryptRuleConfigurationChecker());
         REGISTRY.put(ShadowRuleConfiguration.class, new ShadowRuleConfigurationChecker());
-        REGISTRY.put(HARuleConfiguration.class, new HARuleConfigurationChecker());
+        REGISTRY.put(DatabaseDiscoveryRuleConfiguration.class, new DatabaseDiscoveryRuleConfigurationChecker());
     }
     
     /**

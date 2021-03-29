@@ -29,6 +29,7 @@ import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurat
 import org.apache.shardingsphere.governance.core.event.model.rule.RuleConfigurationsAlteredEvent;
 import org.apache.shardingsphere.governance.core.event.model.rule.SwitchRuleConfigurationEvent;
 import org.apache.shardingsphere.governance.core.event.model.scaling.StartScalingEvent;
+import org.apache.shardingsphere.governance.core.lock.node.LockAck;
 import org.apache.shardingsphere.governance.core.lock.node.LockNode;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.governance.core.registry.checker.RuleConfigurationCheckerFactory;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.auth.refresher.event.CreateUserEvent;
+import org.apache.shardingsphere.infra.metadata.auth.refresher.event.GrantEvent;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
@@ -71,9 +73,9 @@ import java.util.stream.Collectors;
  */
 public final class RegistryCenter {
     
-    private static final int CHECK_RETRY_MAXIMUM = 5;
+    private static final int CHECK_ACK_MAXIMUM = 5;
     
-    private static final int CHECK_RETRY_INTERVAL_SECONDS = 3;
+    private static final int CHECK_ACK_INTERVAL_SECONDS = 1;
     
     private final RegistryCenterNode node;
     
@@ -90,6 +92,7 @@ public final class RegistryCenter {
         repository = registryRepository;
         instance = GovernanceInstance.getInstance();
         lockNode = new LockNode();
+        initLockNode();
         registryCacheManager = new RegistryCacheManager(registryRepository, node);
         ShardingSphereEventBus.getInstance().register(this);
     }
@@ -191,6 +194,12 @@ public final class RegistryCenter {
         if (!users.isEmpty() && (isOverwrite || !hasAuthentication())) {
             repository.persist(node.getAuthenticationPath(),
                     YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
+        }
+    }
+    
+    private void persistChangedPrivilege(final Collection<ShardingSphereUser> users) {
+        if (!users.isEmpty()) {
+            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
         }
     }
 
@@ -457,6 +466,16 @@ public final class RegistryCenter {
     }
     
     /**
+     * User with changed privilege cached event.
+     *
+     * @param event grant event
+     */
+    @Subscribe
+    public synchronized void renew(final GrantEvent event) {
+        persistChangedPrivilege(event.getUsers());
+    }
+    
+    /**
      * Persist instance online.
      */
     public void persistInstanceOnline() {
@@ -496,18 +515,8 @@ public final class RegistryCenter {
     }
     
     /**
-     * Load instance data.
-     * 
-     * @param instanceId instance id
-     * @return instance data
-     */
-    public String loadInstanceData(final String instanceId) {
-        return repository.get(node.getProxyNodePath(instanceId));
-    }
-    
-    /**
      * Load all instances.
-     * 
+     *
      * @return collection of all instances
      */
     public Collection<String> loadAllInstances() {
@@ -533,38 +542,80 @@ public final class RegistryCenter {
         return repository.get(node.getDataSourcePath(schemaName, dataSourceName));
     }
     
+    private void initLockNode() {
+        repository.persist(lockNode.getLockRootNodePath(), "");
+        repository.persist(lockNode.getLockedAckRootNodePah(), "");
+    }
+    
     /**
      * Try to get lock.
      *
+     * @param lockName lock name
      * @param timeout the maximum time in milliseconds to acquire lock
      * @return true if get the lock, false if not
      */
-    public boolean tryLock(final long timeout) {
-        return repository.tryLock(lockNode.getLockNodePath(), timeout, TimeUnit.MILLISECONDS) && checkLock();
+    public boolean tryLock(final String lockName, final long timeout) {
+        return repository.tryLock(lockNode.getLockNodePath(lockName), timeout, TimeUnit.MILLISECONDS);
     }
     
     /**
      * Release lock.
+     * 
+     * @param lockName lock name
      */
-    public void releaseLock() {
-        repository.releaseLock(lockNode.getLockNodePath());
+    public void releaseLock(final String lockName) {
+        repository.releaseLock(lockNode.getLockNodePath(lockName));
     }
     
-    private boolean checkLock() {
-        boolean result = checkOrRetry(loadAllInstances());
+    /**
+     * Ack lock.
+     * 
+     * @param lockName lock name
+     */
+    public void ackLock(final String lockName) {
+        repository.persistEphemeral(lockNode.getLockedAckNodePath(Joiner.on("-").join(instance.getInstanceId(), lockName)), LockAck.LOCKED.getValue());
+    }
+    
+    /**
+     * ack unlock.
+     * 
+     * @param lockName lock name
+     */
+    public void ackUnlock(final String lockName) {
+        repository.delete(lockNode.getLockedAckNodePath(Joiner.on("-").join(instance.getInstanceId(), lockName)));
+    }
+    
+    /**
+     * Check lock ack.
+     * 
+     * @param lockName lock name
+     * @return true if all instances ack lock, false if not
+     */
+    public boolean checkLockAck(final String lockName) {
+        boolean result = checkAck(loadAllInstances(), lockName, LockAck.LOCKED.getValue());
         if (!result) {
-            releaseLock();
+            releaseLock(lockName);
         }
         return result;
     }
     
-    private boolean checkOrRetry(final Collection<String> instanceIds) {
-        for (int i = 0; i < CHECK_RETRY_MAXIMUM; i++) {
-            if (check(instanceIds)) {
+    /**
+     * Check unlock ack.
+     * 
+     * @param lockName lock name
+     * @return true if all instances ack unlock, false if not
+     */
+    public boolean checkUnlockAck(final String lockName) {
+        return checkAck(loadAllInstances(), lockName, LockAck.UNLOCKED.getValue());
+    }
+    
+    private boolean checkAck(final Collection<String> instanceIds, final String lockName, final String ackValue) {
+        for (int i = 0; i < CHECK_ACK_MAXIMUM; i++) {
+            if (check(instanceIds, lockName, ackValue)) {
                 return true;
             }
             try {
-                Thread.sleep(CHECK_RETRY_INTERVAL_SECONDS * 1000L);
+                Thread.sleep(CHECK_ACK_INTERVAL_SECONDS * 1000L);
                 // CHECKSTYLE:OFF
             } catch (final InterruptedException ex) {
                 // CHECKSTYLE:ON
@@ -573,12 +624,16 @@ public final class RegistryCenter {
         return false;
     }
     
-    private boolean check(final Collection<String> instanceIds) {
+    private boolean check(final Collection<String> instanceIds, final String lockName, final String ackValue) {
         for (String each : instanceIds) {
-            if (!RegistryCenterNodeStatus.LOCKED.toString().equalsIgnoreCase(loadInstanceData(each))) {
+            if (!ackValue.equalsIgnoreCase(loadLockAck(each, lockName))) {
                 return false;
             }
         }
         return true;
+    }
+    
+    private String loadLockAck(final String instanceId, final String lockName) {
+        return Strings.nullToEmpty(repository.get(lockNode.getLockedAckNodePath(Joiner.on("-").join(instanceId, lockName))));
     }
 }

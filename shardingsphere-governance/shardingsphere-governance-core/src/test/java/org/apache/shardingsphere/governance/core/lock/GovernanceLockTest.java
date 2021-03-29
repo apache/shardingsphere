@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.governance.core.lock;
 
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +26,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class GovernanceLockTest {
@@ -34,22 +34,25 @@ public final class GovernanceLockTest {
     @Mock
     private RegistryCenter registryCenter;
     
-    private ShardingSphereLock lock;
+    private GovernanceLock lock;
     
     @Before
     public void setUp() {
-        lock = new GovernanceLock(registryCenter);
+        lock = new GovernanceLock(registryCenter, 50L);
     }
     
     @Test
     public void assertTryLock() {
-        lock.tryLock(50L);
-        verify(registryCenter).tryLock(eq(50L));
+        when(registryCenter.tryLock(eq("test"), eq(50L))).thenReturn(Boolean.TRUE);
+        lock.tryLock("test", 50L);
+        verify(registryCenter).tryLock(eq("test"), eq(50L));
     }
     
     @Test
     public void assertReleaseLock() {
-        lock.releaseLock();
-        verify(registryCenter).releaseLock();
+        when(registryCenter.checkUnlockAck("test")).thenReturn(Boolean.TRUE);
+        lock.releaseLock("test");
+        verify(registryCenter).checkUnlockAck(eq("test"));
+        verify(registryCenter).releaseLock(eq("test"));
     }
 }

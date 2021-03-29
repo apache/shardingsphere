@@ -51,6 +51,17 @@ public final class TypedSPIRegistry {
     }
     
     /**
+     * Find registered service.
+     *
+     * @param typedSPIClass typed SPI class
+     * @param <T> type
+     * @return registered service
+     */
+    public static <T extends TypedSPI> Optional<T> findRegisteredService(final Class<T> typedSPIClass) { 
+        return ShardingSphereServiceLoader.newServiceInstances(typedSPIClass).stream().findFirst();
+    }
+    
+    /**
      * Get registered service.
      * 
      * @param typedSPIClass typed SPI class

@@ -55,8 +55,8 @@ Body:
 
 | Parameter                                         | Describe                                                     |
 | ------------------------------------------------- | ------------------------------------------------------------ |
-| ruleConfiguration.source                          | source data source configuration                             |
-| ruleConfiguration.target                          | target data source configuration                             |
+| ruleConfig.source                                 | source data source configuration                             |
+| ruleConfig.target                                 | target data source configuration                             |
 | jobConfiguration.concurrency                      | sync task proposed concurrency                               |
 
 Data source configuration:
@@ -65,24 +65,6 @@ Data source configuration:
 | ------------------------------------------------- | ------------------------------------------------------------ |
 | type                                              | data source type(available parameters:shardingSphereJdbc,jdbc)|
 | parameter                                         | data source parameter                                        |
-
-Parameter configuration:
-
-type = shardingSphereJdbc 
-
-| Parameter                                         | Describe                                                     |
-| ------------------------------------------------- | ------------------------------------------------------------ |
-| dataSource                                        | sharding sphere data source configuration                    |
-| rule                                              | sharding sphere data source table rule                       |
-
-type = jdbc 
-
-| Parameter                                         | Describe                                                     |
-| ------------------------------------------------- | ------------------------------------------------------------ |
-| name                                              | jdbc name                                                    |
-| ruleConfiguration.targetDataSources.jdbcUrl           | jdbc url                                                     |
-| ruleConfiguration.targetDataSources.username      | jdbc username                                                |
-| ruleConfiguration.targetDataSources.password      | jdbc password                                                |
 
 *** Notice ***
 
@@ -95,28 +77,21 @@ curl -X POST \
   http://localhost:8888/scaling/job/start \
   -H 'content-type: application/json' \
   -d '{
-        "ruleConfiguration": {
+        "ruleConfig": {
           "source": {
             "type": "shardingSphereJdbc",
-            "parameter": {
-              "dataSource":"
+            "parameter": "
                 dataSources:
                   ds_0:
                     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-                    props:
-                      driverClassName: com.mysql.jdbc.Driver
-                      jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_0?useSSL=false
-                      username: scaling
-                      password: scaling
+                    jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_0?useSSL=false
+                    username: scaling
+                    password: scaling
                   ds_1:
                     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-                    props:
-                      driverClassName: com.mysql.jdbc.Driver
-                      jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_1?useSSL=false
-                      username: scaling
-                      password: scaling
-                ",
-              "rule":"
+                    jdbcUrl: jdbc:mysql://127.0.0.1:3306/scaling_1?useSSL=false
+                    username: scaling
+                    password: scaling
                 rules:
                 - !SHARDING
                   tables:
@@ -141,15 +116,14 @@ curl -X POST \
                       props:
                         algorithm-expression: t_order_$->{user_id % 2}
                 "
-            }
           },
           "target": {
               "type": "jdbc",
-              "parameter": {
-                "username": "root",
-                "password": "root",
-                "jdbcUrl": "jdbc:mysql://127.0.0.1:3307/sharding_db?serverTimezone=UTC&useSSL=false"
-              }
+              "parameter": "
+                username: root
+                password: root
+                jdbcUrl: jdbc:mysql://127.0.0.1:3307/sharding_db?serverTimezone=UTC&useSSL=false
+                "
           }
         },
         "jobConfiguration":{

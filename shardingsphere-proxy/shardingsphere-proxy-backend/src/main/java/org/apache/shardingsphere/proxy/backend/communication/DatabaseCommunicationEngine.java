@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
@@ -32,11 +31,9 @@ import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.engine.MetadataRefreshEngine;
-import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresherFactory;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.LockWaitTimeoutException;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.impl.BinaryQueryResponseCell;
@@ -106,37 +103,9 @@ public final class DatabaseCommunicationEngine {
     }
     
     private Collection<ExecuteResult> execute(final ExecutionContext executionContext) throws SQLException {
-        boolean locked = false;
-        try {
-            locked = tryLock(executionContext, ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
-            Collection<ExecuteResult> result = proxySQLExecutor.execute(executionContext);
-            refreshMetadata(executionContext);
-            return result;
-        } finally {
-            if (locked) {
-                releaseLock();
-            }
-        }
-    }
-    
-    private boolean tryLock(final ExecutionContext executionContext, final Long lockTimeoutMilliseconds) {
-        if (ProxyContext.getInstance().getLock().isPresent() && needLock(executionContext.getSqlStatementContext().getSqlStatement())) {
-            if (!ProxyContext.getInstance().getLock().get().tryLock(lockTimeoutMilliseconds)) {
-                throw new LockWaitTimeoutException(lockTimeoutMilliseconds);
-            }
-            return true;
-        }
-        return false;
-    }
-    
-    private boolean needLock(final SQLStatement sqlStatement) {
-        return MetadataRefresherFactory.newInstance(sqlStatement).isPresent();
-    }
-    
-    private void releaseLock() {
-        if (ProxyContext.getInstance().getLock().isPresent()) {
-            ProxyContext.getInstance().getLock().get().releaseLock();
-        }
+        Collection<ExecuteResult> result = proxySQLExecutor.execute(executionContext);
+        refreshMetadata(executionContext);
+        return result;
     }
     
     private QueryResponseHeader processExecuteQuery(final ExecutionContext executionContext, final List<QueryResult> queryResults, final QueryResult queryResultSample) throws SQLException {

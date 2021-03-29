@@ -54,6 +54,6 @@ public final class MySQLComInitDbExecutor implements CommandExecutor {
     
     private boolean isAuthorizedSchema(final String schema) {
         Optional<ShardingSpherePrivilege> privilege = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findPrivilege(backendConnection.getGrantee());
-        return privilege.isPresent() && privilege.get().getDataPrivilege().hasPrivileges(schema, Collections.emptyList());
+        return privilege.map(shardingSpherePrivilege -> shardingSpherePrivilege.hasPrivileges(schema)).orElse(false);
     }
 }

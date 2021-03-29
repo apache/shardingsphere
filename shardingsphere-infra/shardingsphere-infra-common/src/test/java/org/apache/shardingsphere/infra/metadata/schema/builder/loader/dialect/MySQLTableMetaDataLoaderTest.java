@@ -52,7 +52,7 @@ public final class MySQLTableMetaDataLoaderTest {
                 "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, EXTRA, COLLATION_NAME FROM information_schema.columns WHERE TABLE_SCHEMA=?").executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=?").executeQuery()).thenReturn(indexResultSet);
+                "SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl')").executeQuery()).thenReturn(indexResultSet);
         assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.emptyList()));
     }
     
@@ -65,7 +65,8 @@ public final class MySQLTableMetaDataLoaderTest {
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=?").executeQuery()).thenReturn(indexResultSet);
+                "SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN ('tbl')")
+                .executeQuery()).thenReturn(indexResultSet);
         assertTableMetaDataMap(getTableMetaDataLoader().load(dataSource, Collections.singletonList("existed_tbl")));
     }
     
@@ -92,19 +93,20 @@ public final class MySQLTableMetaDataLoaderTest {
         when(result.getString("DATA_TYPE")).thenReturn("int", "varchar");
         when(result.getString("COLUMN_KEY")).thenReturn("PRI", "");
         when(result.getString("EXTRA")).thenReturn("auto_increment", "");
-        when(result.getString("COLLATION_NAME")).thenReturn("utf8_general_ci", "utf8");
+        when(result.getString("COLLATION_NAME")).thenReturn("utf8", "utf8_general_ci");
         return result;
     }
-
+    
     private ResultSet mockIndexMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
         when(result.getString("INDEX_NAME")).thenReturn("id");
+        when(result.getString("TABLE_NAME")).thenReturn("tbl");
         return result;
     }
     
     private DialectTableMetaDataLoader getTableMetaDataLoader() {
-        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.newServiceInstances(DialectTableMetaDataLoader.class)) {
+        for (DialectTableMetaDataLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(DialectTableMetaDataLoader.class)) {
             if ("MySQL".equals(each.getDatabaseType())) {
                 return each;
             }
