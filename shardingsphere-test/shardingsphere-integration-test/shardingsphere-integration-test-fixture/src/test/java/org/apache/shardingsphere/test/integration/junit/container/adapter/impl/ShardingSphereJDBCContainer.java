@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.junit.container.adapter.impl;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.governance.api.yaml.YamlGovernanceShardingSphereDataSourceFactory;
-import org.apache.shardingsphere.governance.repository.api.exception.GovernanceException;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
@@ -70,20 +69,10 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
             String scenario = getDescription().getScenario();
             // TODO fix sharding_governance
             if ("sharding_governance".equals(scenario)) {
-                DataSource dataSource;
-                int retryCount = 0;
-                while (retryCount++ < 30) {
-                    try {
-                        dataSource = YamlGovernanceShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(scenario)));
-                    } catch (GovernanceException ex) {
-                        Thread.sleep(1000L);
-                        continue;
-                    }
-                    return dataSource;
-                }
+                return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(scenario)));
             }
             return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(scenario)));
-        } catch (SQLException | IOException | InterruptedException ex) {
+        } catch (SQLException | IOException ex) {
             throw new RuntimeException(ex);
         }
     }

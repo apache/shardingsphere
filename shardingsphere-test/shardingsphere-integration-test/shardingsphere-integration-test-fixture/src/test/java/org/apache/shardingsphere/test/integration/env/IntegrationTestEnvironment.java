@@ -19,6 +19,9 @@ package org.apache.shardingsphere.test.integration.env;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.shardingsphere.governance.repository.api.exception.GovernanceException;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
@@ -26,8 +29,10 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.database.embedded.EmbeddedDatabaseDistributionProperties;
 import org.apache.shardingsphere.test.integration.env.database.embedded.EmbeddedDatabaseManager;
 import org.apache.shardingsphere.test.integration.env.datasource.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.governnance.RegistryCenterEnvironment;
 import org.apache.shardingsphere.test.integration.env.props.DatabaseScenarioProperties;
 import org.apache.shardingsphere.test.integration.env.props.EnvironmentProperties;
+import org.apache.shardingsphere.test.integration.env.props.RegistryCenterScenarioProperties;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -62,6 +67,8 @@ public final class IntegrationTestEnvironment {
     private Map<DatabaseType, Map<String, DataSourceEnvironment>> dataSourceEnvironments;
     
     private final Map<String, DataSourceEnvironment> proxyEnvironments;
+
+    private final Map<String, RegistryCenterEnvironment> registryCenterEnvironments;
     
     private IntegrationTestEnvironment() {
         Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
@@ -70,7 +77,9 @@ public final class IntegrationTestEnvironment {
         scenarios = getScenarios(engineEnvProps);
         runAdditionalTestCases = Boolean.parseBoolean(engineEnvProps.getProperty("it.run.additional.cases"));
         Map<String, DatabaseScenarioProperties> databaseProps = getDatabaseScenarioProperties();
+        Map<String, RegistryCenterScenarioProperties> registryCenterProps = getRegistryCenterScenarioProperties();
         dataSourceEnvironments = createDataSourceEnvironments(getDatabaseTypes(engineEnvProps), databaseProps);
+        registryCenterEnvironments = createRegistryCenterEnvironments(registryCenterProps);
         if (EnvironmentType.EMBEDDED == envType) {
             EmbeddedDatabaseDistributionProperties embeddedDatabaseProps = new EmbeddedDatabaseDistributionProperties(EnvironmentProperties.loadProperties("env/embedded-databases.properties"));
             dataSourceEnvironments = mergeDataSourceEnvironments(embeddedDatabaseProps);
@@ -107,6 +116,18 @@ public final class IntegrationTestEnvironment {
         }
         return result;
     }
+
+    private Map<String, RegistryCenterScenarioProperties> getRegistryCenterScenarioProperties() {
+        Map<String, RegistryCenterScenarioProperties> result = new HashMap<>(scenarios.size(), 1);
+        for (String each : scenarios) {
+            // TODO fix sharding_governance
+            if (!"sharding_governance".equals(each)) {
+                continue;
+            }
+            result.put(each, new RegistryCenterScenarioProperties(each, EnvironmentProperties.loadProperties(String.format("env/%s/scenario-env.properties", each))));
+        }
+        return result;
+    }
     
     private Collection<DatabaseType> getDatabaseTypes(final Properties engineEnvProps) {
         return Arrays.stream(engineEnvProps.getProperty("it.databases").split(",")).map(each -> DatabaseTypeRegistry.getActualDatabaseType(each.trim())).collect(Collectors.toList());
@@ -121,6 +142,18 @@ public final class IntegrationTestEnvironment {
                 dataSourceEnvs.put(scenario, createDataSourceEnvironment(each, databaseProps.get(scenario)));
                 result.put(each, dataSourceEnvs);
             }
+        }
+        return result;
+    }
+
+    private Map<String, RegistryCenterEnvironment> createRegistryCenterEnvironments(final Map<String, RegistryCenterScenarioProperties> registryCenterProps) {
+        Map<String, RegistryCenterEnvironment> result = new HashMap<>(scenarios.size(), 1);
+        for (String each : scenarios) {
+            // TODO fix sharding_governance
+            if (!"sharding_governance".equals(each)) {
+                continue;
+            }
+            result.put(each, createRegisterCenterEnvironment(registryCenterProps.get(each)));
         }
         return result;
     }
@@ -181,17 +214,36 @@ public final class IntegrationTestEnvironment {
         return new DataSourceEnvironment(
                 new MySQLDatabaseType(), databaseProps.getProxyHost(), databaseProps.getProxyPort(), databaseProps.getProxyUsername(), databaseProps.getProxyPassword());
     }
+
+    private RegistryCenterEnvironment createRegisterCenterEnvironment(final RegistryCenterScenarioProperties registryCenterProps) {
+        return new RegistryCenterEnvironment(registryCenterProps.getDatabaseHost(), registryCenterProps.getDatabasePort());
+    }
     
     private void waitForEnvironmentReady(final String scenario) {
         int retryCount = 0;
-        // TODO check zookeeper is ready
-        while (!isProxyReady(scenario) && retryCount < 30) {
+        while (!isRegistryCenterReady(scenario) && !isProxyReady(scenario) && retryCount < 30) {
             try {
                 Thread.sleep(1000L);
             } catch (final InterruptedException ignore) {
             }
             retryCount++;
         }
+    }
+
+    private boolean isRegistryCenterReady(final String scenario) {
+        // TODO fix sharding_governance
+        if (!"sharding_governance".equals(scenario)) {
+            return true;
+        }
+        RegistryCenterEnvironment registryCenterEnvironment = registryCenterEnvironments.get(scenario);
+        CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder();
+        builder.connectString(registryCenterEnvironment.getUrl());
+        try (CuratorFramework curator = builder.build()) {
+            curator.getChildren();
+        } catch (final GovernanceException exception) {
+            return false;
+        }
+        return true;
     }
     
     @SuppressWarnings("CallToDriverManagerGetConnection")

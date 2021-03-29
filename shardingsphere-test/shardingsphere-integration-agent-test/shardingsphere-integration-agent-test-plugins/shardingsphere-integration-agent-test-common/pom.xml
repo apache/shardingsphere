@@ -49,6 +49,11 @@
             <artifactId>HikariCP</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc-governance</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

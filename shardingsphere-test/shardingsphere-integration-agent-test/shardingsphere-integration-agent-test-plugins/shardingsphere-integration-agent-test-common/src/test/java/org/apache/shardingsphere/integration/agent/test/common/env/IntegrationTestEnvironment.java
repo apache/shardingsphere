@@ -19,15 +19,19 @@ package org.apache.shardingsphere.integration.agent.test.common.env;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.shardingsphere.governance.repository.api.exception.GovernanceException;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
-import javax.sql.DataSource;
-import lombok.Getter;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Slf4j
@@ -65,13 +69,30 @@ public final class IntegrationTestEnvironment {
     private void waitForEnvironmentReady(final Properties engineEnvProps) {
         log.info("wait begin proxy environment");
         int retryCount = 0;
-        while (!isProxyReady(engineEnvProps) && retryCount < Integer.parseInt(engineEnvProps.getProperty("proxy.retry", "30"))) {
+        while (!isRegistryCenterReady(engineEnvProps) && !isProxyReady(engineEnvProps) && retryCount < Integer.parseInt(engineEnvProps.getProperty("proxy.retry", "30"))) {
             try {
                 Thread.sleep(Long.parseLong(engineEnvProps.getProperty("proxy.waitMs", "1000")));
             } catch (final InterruptedException ignore) {
             }
             retryCount++;
         }
+    }
+
+    private boolean isRegistryCenterReady(final Properties engineEnvProps) {
+        if (!engineEnvProps.contains("center.host") || !engineEnvProps.contains("center.port")) {
+            return true;
+        }
+        String host = engineEnvProps.getProperty("center.host");
+        String port = engineEnvProps.getProperty("center.port");
+        CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder();
+        builder.connectString(host + ":" + port);
+        try (CuratorFramework curator = builder.build()) {
+            curator.getChildren();
+        } catch (GovernanceException exception) {
+            return false;
+        }
+        log.info(" governance environment success");
+        return true;
     }
     
     private boolean isProxyReady(final Properties engineEnvProps) {
