@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.auth.Authentication;
+import org.apache.shardingsphere.infra.metadata.auth.AuthenticationEngine;
 
 /**
  * Authentication context.
@@ -50,6 +51,6 @@ public final class AuthenticationContext {
      * @param authentication authentication
      */
     public synchronized void init(final Authentication authentication) {
-        this.authentication = authentication;
+        this.authentication = AuthenticationEngine.findSPIAuthentication().orElse(authentication);
     }
 }

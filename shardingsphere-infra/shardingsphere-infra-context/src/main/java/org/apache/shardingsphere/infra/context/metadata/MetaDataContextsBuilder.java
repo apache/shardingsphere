@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.metadata.auth.builder.PrivilegeBuilder;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.metadata.auth.model.AuthenticationContext;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -96,7 +97,7 @@ public final class MetaDataContextsBuilder {
         }
         Authentication authentication = buildAuthentication(users, mataDataMap);
         AuthenticationContext.getInstance().init(authentication);
-        return new StandardMetaDataContexts(mataDataMap, executorEngine, authentication, props);
+        return new StandardMetaDataContexts(mataDataMap, executorEngine, new ShardingSphereUsers(users), props);
     }
     
     private ShardingSphereMetaData buildMetaData(final String schemaName) throws SQLException {

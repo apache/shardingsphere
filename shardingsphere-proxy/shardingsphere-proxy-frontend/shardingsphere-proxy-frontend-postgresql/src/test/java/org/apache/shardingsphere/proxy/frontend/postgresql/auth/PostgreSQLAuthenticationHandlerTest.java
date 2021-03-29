@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthenticati
 import org.apache.shardingsphere.infra.metadata.auth.model.AuthenticationContext;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -124,7 +125,7 @@ public final class PostgreSQLAuthenticationHandlerTest {
     }
     
     private MetaDataContexts getMetaDataContexts(final Authentication authentication) {
-        return new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), authentication, new ConfigurationProperties(new Properties()));
+        return new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new ShardingSphereUsers(authentication.getAllUsers()), new ConfigurationProperties(new Properties()));
     }
     
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {

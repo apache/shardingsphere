@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.metadata.auth.model.AuthenticationContext
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.database.SchemaPrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -139,7 +140,7 @@ public final class MySQLAuthenticationHandlerTest {
     }
     
     private MetaDataContexts getMetaDataContexts(final DefaultAuthentication authentication) {
-        return new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), authentication, new ConfigurationProperties(new Properties()));
+        return new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new ShardingSphereUsers(authentication.getAllUsers()), new ConfigurationProperties(new Properties()));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {

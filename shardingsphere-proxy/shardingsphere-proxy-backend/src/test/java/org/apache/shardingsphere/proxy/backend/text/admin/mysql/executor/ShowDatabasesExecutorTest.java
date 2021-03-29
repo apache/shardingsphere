@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.auth.model.AuthenticationContext
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -61,8 +62,15 @@ public final class ShowDatabasesExecutorTest {
         showDatabasesExecutor = new ShowDatabasesExecutor();
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), getAuthentication(), new ConfigurationProperties(new Properties())));
+        initAuthentication();
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(getMetaDataMap(), 
+                mock(ExecutorEngine.class), new ShardingSphereUsers(Collections.singleton(new ShardingSphereUser("root", "root", ""))), new ConfigurationProperties(new Properties())));
+    }
+    
+    private void initAuthentication() {
+        Authentication authentication = new DefaultAuthentication();
+        authentication.getAuthentication().put(new ShardingSphereUser("root", "root", ""), new ShardingSpherePrivilege());
+        AuthenticationContext.getInstance().init(authentication);
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
@@ -73,13 +81,6 @@ public final class ShowDatabasesExecutorTest {
             when(metaData.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
             result.put(String.format(SCHEMA_PATTERN, i), metaData);
         }
-        return result;
-    }
-    
-    private Authentication getAuthentication() {
-        Authentication result = new DefaultAuthentication();
-        result.getAuthentication().put(new ShardingSphereUser("root", "root", ""), new ShardingSpherePrivilege());
-        AuthenticationContext.getInstance().init(result);
         return result;
     }
     
