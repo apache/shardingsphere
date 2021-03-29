@@ -20,26 +20,45 @@ package org.apache.shardingsphere.test.integration.engine.it.dml;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
+import org.apache.shardingsphere.test.integration.junit.compose.ComposeManager;
+import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runners.Parameterized;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
 
-@TestCaseSpec(name = "General DML", sqlCommandType = SQLCommandType.DML)
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDMLIT extends BaseDMLIT {
+    @ClassRule
+    public static ComposeManager composeManager = new ComposeManager("GeneralDMLIT");
+    
+    public GeneralDMLIT(final AssertionParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
+    }
+    
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<AssertionParameterizedArray> getParameters() {
+        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DML)
+                .stream()
+                .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
+                .collect(Collectors.toList());
+    }
     
     @Test
     public void assertExecuteUpdate() throws SQLException, ParseException {
-        switch (getDescription().getScenario()) {
+        switch (getScenario()) {
             case "replica_query":
             case "shadow":
             case "encrypt":
@@ -70,7 +89,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
-        switch (getDescription().getScenario()) {
+        switch (getScenario()) {
             case "replica_query":
             case "shadow":
             case "encrypt":

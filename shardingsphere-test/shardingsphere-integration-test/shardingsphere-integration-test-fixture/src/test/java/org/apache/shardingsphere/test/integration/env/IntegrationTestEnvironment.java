@@ -77,11 +77,6 @@ public final class IntegrationTestEnvironment {
             createEmbeddedDatabases(embeddedDatabaseProps);
         }
         proxyEnvironments = createProxyEnvironments(databaseProps);
-        if (EnvironmentType.DOCKER == envType) {
-            for (String each : scenarios) {
-                waitForEnvironmentReady(each);
-            }
-        }
     }
     
     private EnvironmentType getEnvironmentType(final Properties engineEnvProps) {

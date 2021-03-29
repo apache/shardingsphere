@@ -19,21 +19,22 @@ package org.apache.shardingsphere.test.integration.junit.container.storage.impl;
 
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 
 /**
  * PostgreSQL container.
  */
 public final class PostgreSQLContainer extends ShardingSphereStorageContainer {
     
-    public PostgreSQLContainer() {
-        super("postgres:12.6", new PostgreSQLDatabaseType());
+    public PostgreSQLContainer(final ParameterizedArray parameterizedArray) {
+        super("postgres", "postgres:12.6", new PostgreSQLDatabaseType(), false, parameterizedArray);
     }
     
     @Override
     protected void configure() {
         addEnv("POSTGRES_USER", "postgres");
         addEnv("POSTGRES_PASSWORD", "postgres");
-        withInitSQLMapping("/env/" + getDescription().getScenario() + "/init-sql/postgresql");
+        withInitSQLMapping("/env/" + getParameterizedArray().getScenario() + "/init-sql/postgresql");
         super.configure();
     }
     

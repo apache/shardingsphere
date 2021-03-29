@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.engine.it.dql;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
@@ -27,7 +26,8 @@ import org.apache.shardingsphere.test.integration.env.EnvironmentType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
-import org.apache.shardingsphere.test.integration.junit.annotation.BeforeAllCases;
+import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
+import org.junit.Before;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -47,27 +47,42 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDQLIT extends SingleITCase {
     
-    @BeforeAllCases
-    @SneakyThrows
-    protected void fillData() {
+    private volatile boolean initialed;
+    
+    public BaseDQLIT(final AssertionParameterizedArray parameter) {
+        super(parameter);
+    }
+    
+    @Before
+    public void setup() throws IOException, JAXBException, SQLException, ParseException {
+        if (!initialed) {
+            synchronized (BaseDQLIT.class) {
+                if (!initialed) {
+                    fillData();
+                    initialed = true;
+                }
+            }
+        }
+    }
+    
+    private void fillData() throws SQLException, ParseException, IOException, JAXBException {
         if (EnvironmentType.DOCKER == IntegrationTestEnvironment.getInstance().getEnvType()) {
             new DataSetEnvironmentManager(
-                    EnvironmentPath.getDataSetFile(getDescription().getScenario()),
-                    getStorage().getDataSourceMap()
+                    EnvironmentPath.getDataSetFile(getScenario()),
+                    getStorageContainer().getDataSourceMap()
             ).fillData();
         } else {
-            IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet().forEach(e -> {
-                IntegrationTestEnvironment.getInstance().getScenarios().forEach(each -> {
-                    try {
-                        new DataSetEnvironmentManager(
-                                EnvironmentPath.getDataSetFile(each),
-                                ActualDataSourceBuilder.createActualDataSources(each, e)
-                        ).fillData();
-                    } catch (SQLException | ParseException | IOException | JAXBException jaxbException) {
-                        jaxbException.printStackTrace();
-                    }
-                });
-            });
+            IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()
+                    .forEach(e -> IntegrationTestEnvironment.getInstance().getScenarios().forEach(each -> {
+                        try {
+                            new DataSetEnvironmentManager(
+                                    EnvironmentPath.getDataSetFile(each),
+                                    ActualDataSourceBuilder.createActualDataSources(each, e)
+                            ).fillData();
+                        } catch (SQLException | ParseException | IOException | JAXBException jaxbException) {
+                            jaxbException.printStackTrace();
+                        }
+                    }));
         }
     }
     
@@ -86,7 +101,7 @@ public abstract class BaseDQLIT extends SingleITCase {
     
     private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
         // TODO Fix shadow
-        if ("shadow".equals(getDescription().getScenario())) {
+        if ("shadow".equals(getScenario())) {
             return;
         }
         assertThat(actual.getColumnCount(), is(expected.size()));

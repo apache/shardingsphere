@@ -96,7 +96,7 @@
         <profile>
             <id>it.env.docker</id>
             <properties>
-                <it.env>DOCKER</it.env>
+                <it.env.type>DOCKER</it.env.type>
             </properties>
             <build>
                 <plugins>

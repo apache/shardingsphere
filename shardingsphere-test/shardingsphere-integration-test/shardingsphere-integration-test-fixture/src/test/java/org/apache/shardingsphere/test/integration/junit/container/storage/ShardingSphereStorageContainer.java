@@ -23,6 +23,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.junit.annotation.XmlResource;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.processor.DatabaseProcessor;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
@@ -48,12 +49,9 @@ public abstract class ShardingSphereStorageContainer extends ShardingSphereConta
     @Getter
     private final DatabaseType databaseType;
     
-    public ShardingSphereStorageContainer(final String dockerImageName, final DatabaseType databaseType) {
-        this(dockerImageName, databaseType, false);
-    }
-    
-    public ShardingSphereStorageContainer(final String dockerImageName, final DatabaseType databaseType, final boolean isFakeContainer) {
-        super(dockerImageName, isFakeContainer);
+    public ShardingSphereStorageContainer(final String dockerName, final String dockerImageName, final DatabaseType databaseType,
+                                          final boolean isFakeContainer, final ParameterizedArray parameterizedArray) {
+        super(dockerName, dockerImageName, isFakeContainer, parameterizedArray);
         this.databaseType = databaseType;
     }
     
