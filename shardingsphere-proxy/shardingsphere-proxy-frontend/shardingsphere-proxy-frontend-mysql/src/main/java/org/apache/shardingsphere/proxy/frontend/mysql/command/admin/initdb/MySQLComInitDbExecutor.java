@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.metadata.auth.model.AuthenticationContext;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -53,7 +54,7 @@ public final class MySQLComInitDbExecutor implements CommandExecutor {
     }
     
     private boolean isAuthorizedSchema(final String schema) {
-        Optional<ShardingSpherePrivilege> privilege = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findPrivilege(backendConnection.getGrantee());
-        return privilege.map(shardingSpherePrivilege -> shardingSpherePrivilege.hasPrivileges(schema)).orElse(false);
+        Optional<ShardingSpherePrivilege> privilege = AuthenticationContext.getInstance().getAuthentication().findPrivilege(backendConnection.getGrantee());
+        return privilege.map(optional -> optional.hasPrivileges(schema)).orElse(false);
     }
 }

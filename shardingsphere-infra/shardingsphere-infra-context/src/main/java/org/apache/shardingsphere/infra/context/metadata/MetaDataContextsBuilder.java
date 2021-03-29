@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.metadata.auth.builder.PrivilegeBuilder;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.metadata.auth.model.AuthenticationContext;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
@@ -94,6 +95,7 @@ public final class MetaDataContextsBuilder {
             mataDataMap.put(each, buildMetaData(each));
         }
         Authentication authentication = buildAuthentication(users, mataDataMap);
+        AuthenticationContext.getInstance().init(authentication);
         return new StandardMetaDataContexts(mataDataMap, executorEngine, authentication, props);
     }
     

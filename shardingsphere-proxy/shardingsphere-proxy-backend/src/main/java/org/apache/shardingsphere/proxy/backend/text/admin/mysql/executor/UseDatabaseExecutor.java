@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.auth.model.AuthenticationContext;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -46,7 +47,7 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     }
     
     private boolean isAuthorizedSchema(final BackendConnection backendConnection, final String schema) {
-        Optional<ShardingSpherePrivilege> privilege = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findPrivilege(backendConnection.getGrantee());
+        Optional<ShardingSpherePrivilege> privilege = AuthenticationContext.getInstance().getAuthentication().findPrivilege(backendConnection.getGrantee());
         return privilege.isPresent() && privilege.get().hasPrivileges(schema);
     }
 }

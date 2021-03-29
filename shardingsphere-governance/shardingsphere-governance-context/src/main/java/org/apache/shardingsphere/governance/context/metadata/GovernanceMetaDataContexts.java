@@ -52,8 +52,10 @@ import org.apache.shardingsphere.infra.metadata.auth.builder.PrivilegeBuilder;
 import org.apache.shardingsphere.infra.metadata.auth.builder.loader.PrivilegeLoader;
 import org.apache.shardingsphere.infra.metadata.auth.builder.loader.PrivilegeLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.metadata.auth.model.AuthenticationContext;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -141,6 +143,11 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     @Override
     public Authentication getAuthentication() {
         return metaDataContexts.getAuthentication();
+    }
+    
+    @Override
+    public ShardingSphereUsers getUsers() {
+        return metaDataContexts.getUsers();
     }
     
     @Override
@@ -366,6 +373,7 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
             Map<ShardingSphereUser, ShardingSpherePrivilege> privileges = PrivilegeBuilder.build(metaDataContexts.getMetaDataMap().values(), users, metaDataContexts.getProps());
             authentication.getAuthentication().putAll(getPrivilegesWithPassword(authentication, privileges));
         }
+        AuthenticationContext.getInstance().init(authentication);
     }
     
     private Map<ShardingSphereUser, ShardingSpherePrivilege> getPrivilegesWithPassword(final Authentication authentication, final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges) {

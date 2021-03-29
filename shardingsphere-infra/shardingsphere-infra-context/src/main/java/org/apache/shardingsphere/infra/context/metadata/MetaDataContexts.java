@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.auth.Authentication;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
 import org.apache.shardingsphere.infra.state.StateContext;
 
@@ -76,6 +77,13 @@ public interface MetaDataContexts extends Closeable {
      * @return authentication
      */
     Authentication getAuthentication();
+    
+    /**
+     * Get users.
+     * 
+     * @return users
+     */
+    ShardingSphereUsers getUsers();
     
     /**
      * Get configuration properties.

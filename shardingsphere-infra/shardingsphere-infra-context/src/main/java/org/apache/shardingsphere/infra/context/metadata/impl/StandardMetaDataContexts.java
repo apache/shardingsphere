@@ -27,10 +27,12 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.metadata.auth.AuthenticationEngine;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
 import org.apache.shardingsphere.infra.state.StateContext;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -50,6 +52,8 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     
     private final Authentication authentication;
     
+    private final ShardingSphereUsers users;
+    
     private final ConfigurationProperties props;
     
     private final StateContext stateContext;
@@ -64,6 +68,7 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
         this.executorEngine = executorEngine;
         calciteContextFactory = new CalciteContextFactory(metaDataMap);
         this.authentication = AuthenticationEngine.findSPIAuthentication().orElse(authentication);
+        users = new ShardingSphereUsers(new HashSet<>(authentication.getAllUsers()));
         this.props = props;
         stateContext = new StateContext();
     }
