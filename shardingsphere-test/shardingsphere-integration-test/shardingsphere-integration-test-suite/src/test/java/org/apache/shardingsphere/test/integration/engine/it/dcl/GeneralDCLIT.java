@@ -47,7 +47,7 @@ public final class GeneralDCLIT extends BaseDCLIT {
     
     @Parameterized.Parameters(name = "{0}")
     public static Collection<ParameterizedArray> getParameters() {
-        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DAL)
+        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DCL)
                 .stream()
                 .peek(e -> e.setCompose(mgr.getOrCreateCompose(e)))
                 .collect(Collectors.toList());
