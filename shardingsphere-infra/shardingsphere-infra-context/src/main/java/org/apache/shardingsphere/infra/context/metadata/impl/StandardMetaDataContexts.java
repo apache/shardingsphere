@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
 import org.apache.shardingsphere.infra.state.StateContext;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -54,7 +54,7 @@ public final class StandardMetaDataContexts implements MetaDataContexts {
     private final StateContext stateContext;
     
     public StandardMetaDataContexts() {
-        this(new LinkedHashMap<>(), null, new ShardingSphereUsers(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+        this(new LinkedHashMap<>(), null, new ShardingSphereUsers(new HashSet<>()), new ConfigurationProperties(new Properties()));
     }
     
     public StandardMetaDataContexts(final Map<String, ShardingSphereMetaData> metaDataMap,
