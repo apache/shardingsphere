@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.model;
+package org.apache.shardingsphere.infra.metadata.auth;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
-import org.apache.shardingsphere.infra.metadata.auth.AuthenticationEngine;
 
 /**
  * Authentication context.
