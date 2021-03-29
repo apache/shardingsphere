@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.check;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -43,8 +42,7 @@ public interface SQLChecker extends OrderedSPI {
      * @param sqlStatement SQL statement
      * @param parameters SQL parameters
      * @param metaData meta data
-     * @param auth auth
      * @return SQL check result
      */
-    SQLCheckResult check(SQLStatement sqlStatement, List<Object> parameters, ShardingSphereMetaData metaData, Authentication auth);
+    SQLCheckResult check(SQLStatement sqlStatement, List<Object> parameters, ShardingSphereMetaData metaData);
 }

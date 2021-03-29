@@ -28,7 +28,6 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.metadata.auth.AuthenticationContext;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
@@ -71,7 +70,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
     private static void sqlCheck(final BackendConnection backendConnection, final SQLStatement sqlStatement) {
         MetaDataContexts contexts = ProxyContext.getInstance().getMetaDataContexts();
-        SQLCheckEngine.check(sqlStatement, Collections.emptyList(), contexts.getMetaData(backendConnection.getSchemaName()), AuthenticationContext.getInstance().getAuthentication());
+        SQLCheckEngine.check(sqlStatement, Collections.emptyList(), contexts.getMetaData(backendConnection.getSchemaName()));
     }
     
     @Override

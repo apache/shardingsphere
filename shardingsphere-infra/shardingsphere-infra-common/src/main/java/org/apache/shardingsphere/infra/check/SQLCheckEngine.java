@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.check;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -46,11 +45,10 @@ public final class SQLCheckEngine {
      * @param sqlStatement SQL statement
      * @param parameters SQL parameters
      * @param metaData meta data
-     * @param auth auth
      */
-    public static void check(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingSphereMetaData metaData, final Authentication auth) {
+    public static void check(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingSphereMetaData metaData) {
         for (SQLChecker each : CHECKERS) {
-            SQLCheckResult checkResult = each.check(sqlStatement, parameters, metaData, auth);
+            SQLCheckResult checkResult = each.check(sqlStatement, parameters, metaData);
             if (!checkResult.isPassed()) {
                 throw new SQLCheckException(each.getSQLCheckType(), checkResult.getErrorMessage());
             }
