@@ -59,6 +59,7 @@ public class ScanExecutorTest extends BaseExecutorTest {
             rowCount++;
         }
         Assert.assertEquals(1, rowCount);
+        executor.close();
     }
     
     @Test
@@ -86,6 +87,7 @@ public class ScanExecutorTest extends BaseExecutorTest {
             rowCount++;
         }
         Assert.assertEquals(1, rowCount);
+        executor.close();
     }
     
     /**
@@ -104,10 +106,10 @@ public class ScanExecutorTest extends BaseExecutorTest {
         RelNode relNode = relBuilder.build();
         SSScan scan = new SSScan(relBuilder.getCluster(), relNode.getTraitSet(), relNode);
         Executor executor = buildExecutor(scan);
-        /*while (executor.moveNext()) {
+        while (executor.moveNext()) {
             Row row = executor.current();
             Assert.assertNotNull(row);
-        }*/
+        }
         executor.close();
     }
     

@@ -40,6 +40,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.exec.ExecContext.OriginSql;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
@@ -88,6 +89,8 @@ public abstract class BaseExecutorTest {
     
     private static ShardingSphereSchema schema;
     
+    private static ExecutorJDBCManager executorJDBCManager;
+    
     // CHECKSTYLE:OFF
     protected RelBuilder relBuilder;
     // CHECKSTYLE:ON
@@ -101,6 +104,7 @@ public abstract class BaseExecutorTest {
             initRule();
             initTable();
             initSchema();
+            executorJDBCManager = new ExecutorJDBCManagerImpl(getActualDataSources());
         } catch (IOException | SQLException e) {
             throw new RuntimeException("init datasource failed", e);
         }
@@ -175,7 +179,7 @@ public abstract class BaseExecutorTest {
     
     protected ExecContext statementExecContext() {
         ShardingRule shardingRule = rules.stream().filter(rule -> rule instanceof ShardingRule).map(ShardingRule.class::cast).findFirst().get();
-        return ExecContext.ExecContextBuilder.builder(shardingRule, Collections.emptyList(), new H2DatabaseType(), new ExecutorJDBCManagerImpl(getActualDataSources()))
+        return ExecContext.ExecContextBuilder.builder(shardingRule, Collections.emptyList(), new H2DatabaseType(), executorJDBCManager)
                 .originSql(new OriginSql("", null))
                 .storageResourceOption(new StatementOption(true))
                 .props(new ConfigurationProperties(new Properties()))

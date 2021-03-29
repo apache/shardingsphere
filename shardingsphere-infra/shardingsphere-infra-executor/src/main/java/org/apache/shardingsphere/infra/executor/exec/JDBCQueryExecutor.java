@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.infra.executor.exec;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -43,6 +45,7 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -60,6 +63,8 @@ public final class JDBCQueryExecutor extends AbstractExecutor {
     
     private Executor executor;
     
+    private Collection<Statement> statements = Lists.newArrayList();
+    
     public JDBCQueryExecutor(final ExecutionUnit executionUnit, final RouteContext routeContext, 
                              final ExecContext execContext, final QueryResultMetaData metaData) {
         super(execContext);
@@ -72,6 +77,9 @@ public final class JDBCQueryExecutor extends AbstractExecutor {
     protected void executeInit() {
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroups = prepareExecutionGroup(Arrays.asList(executionUnit));
+            for (ExecutionGroup<JDBCExecutionUnit> each : executionGroups.getInputGroups()) {
+                statements.addAll(each.getInputs().stream().map(JDBCExecutionUnit::getStorageResource).collect(Collectors.toList()));
+            }
             this.executor = executeQuery(executionGroups);
         } catch (SQLException ex) {
             throw new ShardingSphereException("jdbc executor init failed", ex);
@@ -97,6 +105,21 @@ public final class JDBCQueryExecutor extends AbstractExecutor {
         if (executor != null) {
             executor.close();
         }
+        Collection<SQLException> exceptions = new LinkedList<>();
+        statements.forEach(statement -> {
+            try {
+                statement.close();
+            } catch (SQLException ex) {
+                exceptions.add(ex);
+            }
+        });
+        statements.clear();
+        if (exceptions.isEmpty()) {
+            return;
+        }
+        SQLException ex = new SQLException("");
+        exceptions.forEach(ex::setNextException);
+        throw new ShardingSphereException(ex);
     }
     
     private Executor executeQuery(final ExecutionGroupContext<JDBCExecutionUnit> executionGroups) throws SQLException {
@@ -130,6 +153,9 @@ public final class JDBCQueryExecutor extends AbstractExecutor {
     
     private Executor wrapQueryResult(final ExecContext execContext, final List<QueryResult> queryResults) {
         List<Executor> executors = queryResults.stream().map(queryResult -> new QueryResultExecutor(queryResult, execContext)).collect(Collectors.toList());
+        if (executors.size() == 1) {
+            return executors.get(0);
+        }
         return new MultiExecutor(executors, execContext);
     }
     

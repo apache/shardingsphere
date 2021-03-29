@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.executor.exec;
 
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.logical.LogicalSort;
+import org.apache.shardingsphere.infra.executor.exec.meta.Row;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSLimitSort;
 import org.apache.shardingsphere.infra.optimize.rel.physical.SSScan;
 import org.junit.Assert;
@@ -54,7 +55,7 @@ public class LimitSortExecutorTest extends BaseExecutorTest {
         Map<String, Integer> columnNameIdxMap = createColumnLabelAndIndexMap(executor.getMetaData());
         int rowCount = 0;
         Comparable pre = null;
-        /*while (executor.moveNext()) {
+        while (executor.moveNext()) {
             Row row = executor.current();
             Comparable value = row.getColumnValue(columnNameIdxMap.get("order_item_id"));
             if (pre != null) {
@@ -63,7 +64,7 @@ public class LimitSortExecutorTest extends BaseExecutorTest {
             pre = value;
             rowCount++;
         }
-        Assert.assertEquals(fetch, rowCount);*/
+        Assert.assertEquals(fetch, rowCount);
         executor.close();
     }
     
@@ -87,7 +88,7 @@ public class LimitSortExecutorTest extends BaseExecutorTest {
         Map<String, Integer> columnNameIdxMap = createColumnLabelAndIndexMap(executor.getMetaData());
         Comparable pre = null;
         int rowCount = 0;
-        /*while (executor.moveNext()) {
+        while (executor.moveNext()) {
             Row row = executor.current();
             Comparable value = row.getColumnValue(columnNameIdxMap.get("order_item_id"));
             if (pre != null) {
@@ -96,7 +97,7 @@ public class LimitSortExecutorTest extends BaseExecutorTest {
             pre = value;
             rowCount++;
         }
-        Assert.assertEquals(fetch, rowCount);*/
+        Assert.assertEquals(fetch, rowCount);
         executor.close();
     }
 }
