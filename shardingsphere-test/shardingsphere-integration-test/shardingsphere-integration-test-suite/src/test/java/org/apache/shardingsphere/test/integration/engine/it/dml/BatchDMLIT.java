@@ -20,28 +20,48 @@ package org.apache.shardingsphere.test.integration.engine.it.dml;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.common.ExecutionMode;
 import org.apache.shardingsphere.test.integration.engine.it.BatchITCase;
-import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
+import org.apache.shardingsphere.test.integration.junit.compose.ComposeManager;
+import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.junit.param.model.CaseParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runners.Parameterized;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@TestCaseSpec(sqlCommandType = SQLCommandType.DML, executionMode = ExecutionMode.BATCH)
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class BatchDMLIT extends BatchITCase {
     
+    @ClassRule
+    public static ComposeManager composeManager = new ComposeManager("BatchDMLIT");
+    
+    public BatchDMLIT(final CaseParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
+    }
+    
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<ParameterizedArray> getParameters() {
+        return ParameterizedArrayFactory.getCaseParameterized(SQLCommandType.DML)
+                .stream()
+                .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
+                .collect(Collectors.toList());
+    }
+    
     @Test
     public void assertExecuteBatch() throws SQLException, ParseException {
-        switch (getDescription().getScenario()) {
+        switch (getScenario()) {
             case "replica_query":
             case "shadow":
             case "encrypt":
@@ -57,7 +77,7 @@ public final class BatchDMLIT extends BatchITCase {
     
     private int[] executeBatchForPreparedStatement(final Connection connection) throws SQLException, ParseException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
-            for (IntegrationTestCaseAssertion each : getTestCase().getAssertions()) {
+            for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
                 addBatch(preparedStatement, each);
             }
             return preparedStatement.executeBatch();
@@ -74,7 +94,7 @@ public final class BatchDMLIT extends BatchITCase {
     @Test
     public void assertClearBatch() throws SQLException, ParseException {
         // TODO fix replica_query
-        switch (getDescription().getScenario()) {
+        switch (getScenario()) {
             case "replica_query":
             case "shadow":
             case "encrypt":
@@ -83,7 +103,7 @@ public final class BatchDMLIT extends BatchITCase {
         }
         try (Connection connection = getTargetDataSource().getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(getSQL())) {
-                for (IntegrationTestCaseAssertion each : getTestCase().getAssertions()) {
+                for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
                     addBatch(preparedStatement, each);
                 }
                 preparedStatement.clearBatch();

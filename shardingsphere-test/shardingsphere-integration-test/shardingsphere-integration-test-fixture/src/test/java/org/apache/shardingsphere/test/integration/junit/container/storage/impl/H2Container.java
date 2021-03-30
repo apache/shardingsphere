@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -34,15 +35,15 @@ public final class H2Container extends ShardingSphereStorageContainer {
     
     private volatile boolean isHealthy;
     
-    public H2Container() {
-        super("h2:fake", new H2DatabaseType(), true);
+    public H2Container(final ParameterizedArray parameterizedArray) {
+        super("h2-embedded", "h2:fake", new H2DatabaseType(), true, parameterizedArray);
     }
     
     @Override
     @SneakyThrows
     protected void configure() {
         super.configure();
-        actualDataSources = ActualDataSourceBuilder.createActualDataSources(getDescription().getScenario(), getDescription().getDatabaseType());
+        actualDataSources = ActualDataSourceBuilder.createActualDataSources(getParameterizedArray().getScenario(), getParameterizedArray().getDatabaseType());
         isHealthy = true;
     }
     

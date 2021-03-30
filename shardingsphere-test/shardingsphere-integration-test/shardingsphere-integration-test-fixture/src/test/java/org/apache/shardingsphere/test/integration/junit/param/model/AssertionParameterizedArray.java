@@ -19,11 +19,13 @@ package org.apache.shardingsphere.test.integration.junit.param.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.junit.compose.ContainerCompose;
 
 /**
  * Parameterized array of assertion based integration test.
@@ -45,6 +47,9 @@ public final class AssertionParameterizedArray implements ParameterizedArray {
     private final SQLExecuteType sqlExecuteType;
     
     private final SQLCommandType sqlCommandType;
+    
+    @Setter
+    private ContainerCompose compose;
     
     @Override
     public String toString() {

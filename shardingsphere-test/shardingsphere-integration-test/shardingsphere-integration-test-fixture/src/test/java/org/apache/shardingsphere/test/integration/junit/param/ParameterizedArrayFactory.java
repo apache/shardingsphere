@@ -56,16 +56,16 @@ public final class ParameterizedArrayFactory {
      * @param sqlCommandType SQL command type
      * @return assertion parameterized array
      */
-    public static Collection<ParameterizedArray> getAssertionParameterized(final SQLCommandType sqlCommandType) {
-        Collection<ParameterizedArray> result = new LinkedList<>();
+    public static Collection<AssertionParameterizedArray> getAssertionParameterized(final SQLCommandType sqlCommandType) {
+        Collection<AssertionParameterizedArray> result = new LinkedList<>();
         for (IntegrationTestCaseContext each : TEST_CASES_LOADER.getTestCaseContexts(sqlCommandType)) {
             result.addAll(getAssertionParameterizedArray(each, sqlCommandType));
         }
         return result;
     }
     
-    private static Collection<ParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext, final SQLCommandType sqlCommandType) {
-        Collection<ParameterizedArray> result = new LinkedList<>();
+    private static Collection<AssertionParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext, final SQLCommandType sqlCommandType) {
+        Collection<AssertionParameterizedArray> result = new LinkedList<>();
         for (DatabaseType each : getDatabaseTypes(testCaseContext.getTestCase().getDbTypes())) {
             if (IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().containsKey(each)) {
                 result.addAll(getAssertionParameterizedArray(testCaseContext, each, sqlCommandType));
@@ -74,35 +74,35 @@ public final class ParameterizedArrayFactory {
         return result;
     }
     
-    private static Collection<ParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext,
+    private static Collection<AssertionParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext,
                                                                                  final DatabaseType databaseType, final SQLCommandType sqlCommandType) {
-        Collection<ParameterizedArray> result = new LinkedList<>();
+        Collection<AssertionParameterizedArray> result = new LinkedList<>();
         for (SQLExecuteType each : SQLExecuteType.values()) {
             result.addAll(getAssertionParameterizedArray(testCaseContext, databaseType, each, sqlCommandType));
         }
         return result;
     }
     
-    private static Collection<ParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext,
+    private static Collection<AssertionParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext,
                                                                                  final DatabaseType databaseType, final SQLExecuteType sqlExecuteType, final SQLCommandType sqlCommandType) {
-        Collection<ParameterizedArray> result = new LinkedList<>();
+        Collection<AssertionParameterizedArray> result = new LinkedList<>();
         for (IntegrationTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
             result.addAll(getAssertionParameterizedArray(testCaseContext, databaseType, sqlExecuteType, each, sqlCommandType));
         }
         return result;
     }
     
-    private static Collection<ParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext, 
+    private static Collection<AssertionParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext,
                                                                                  final DatabaseType databaseType, final SQLExecuteType sqlExecuteType,
                                                                                  final IntegrationTestCaseAssertion assertion, final SQLCommandType sqlCommandType) {
-        Collection<ParameterizedArray> result = new LinkedList<>();
+        Collection<AssertionParameterizedArray> result = new LinkedList<>();
         for (String adapter : ENV.getAdapters()) {
             result.addAll(getAssertionParameterizedArray(testCaseContext, assertion, adapter, databaseType, sqlExecuteType, sqlCommandType));
         }
         return result;
     }
     
-    private static Collection<ParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext, final IntegrationTestCaseAssertion assertion,
+    private static Collection<AssertionParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext, final IntegrationTestCaseAssertion assertion,
                                                                                  final String adapter, final DatabaseType databaseType,
                                                                                  final SQLExecuteType sqlExecuteType, final SQLCommandType sqlCommandType) {
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));

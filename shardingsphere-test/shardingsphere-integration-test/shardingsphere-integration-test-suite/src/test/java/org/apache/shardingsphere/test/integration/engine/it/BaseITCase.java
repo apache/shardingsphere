@@ -20,36 +20,22 @@ package org.apache.shardingsphere.test.integration.engine.it;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.env.EnvironmentType;
-import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
-import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.junit.annotation.ContainerInitializer;
-import org.apache.shardingsphere.test.integration.junit.annotation.ContainerType;
-import org.apache.shardingsphere.test.integration.junit.annotation.OnContainer;
-import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
+import org.apache.shardingsphere.test.integration.junit.compose.ContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.runner.ShardingSphereRunner;
-import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 import javax.sql.DataSource;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
 import java.util.TimeZone;
-import java.util.stream.Collectors;
 
 @Getter(AccessLevel.PROTECTED)
 @RunWith(ShardingSphereRunner.class)
@@ -57,29 +43,22 @@ public abstract class BaseITCase {
     
     public static final String NOT_VERIFY_FLAG = "NOT_VERIFY";
     
-    @OnContainer(name = "adapter")
-    private ShardingSphereAdapterContainer proxy;
+    @Rule
+    public final ContainerCompose compose;
     
-    @OnContainer(name = "storage", type = ContainerType.STORAGE, hostName = "mysql.db.host")
-    private ShardingSphereStorageContainer storage;
+    private final String adapter;
     
-    @ShardingSphereITInject
-    private IntegrationTestCaseAssertion assertion;
+    private final String scenario;
     
-    @ShardingSphereITInject
-    private DataSetEnvironmentManager dataSetEnvironmentManager;
+    private final DatabaseType databaseType;
     
-    @ShardingSphereITInject
-    private String sql;
-   
-    @ShardingSphereITInject
-    private TestCaseDescription description;
+    private final SQLCommandType sqlCommandType;
     
-    @ShardingSphereITInject
-    private SQLExecuteType sqlExecuteType;
+    private final IntegrationTestCase integrationTestCase;
     
-    @ShardingSphereITInject
-    private String parentPath;
+    private final ShardingSphereStorageContainer storageContainer;
+    
+    private final ShardingSphereAdapterContainer adapterContainer;
     
     private DataSource targetDataSource;
     
@@ -87,32 +66,20 @@ public abstract class BaseITCase {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
     
-    @ContainerInitializer
-    protected final void initialize() {
-        if (Objects.nonNull(proxy) && Objects.nonNull(storage)) {
-            proxy.dependsOn(storage);
-        }
-    }
-    
-    @BeforeClass
-    public static void executeInitSQLs() throws IOException, JAXBException, SQLException {
-        if (EnvironmentType.DOCKER != IntegrationTestEnvironment.getInstance().getEnvType()) {
-            DatabaseEnvironmentManager.executeInitSQLs();
-        }
+    BaseITCase(final ParameterizedArray parameterizedArray) {
+        this.adapter = parameterizedArray.getAdapter();
+        this.compose = parameterizedArray.getCompose();
+        this.scenario = parameterizedArray.getScenario();
+        this.databaseType = parameterizedArray.getDatabaseType();
+        this.sqlCommandType = parameterizedArray.getSqlCommandType();
+        this.storageContainer = compose.getStorageContainer();
+        this.adapterContainer = compose.getAdapterContainer();
+        this.integrationTestCase = parameterizedArray.getTestCaseContext().getTestCase();
     }
     
     @Before
     public final void createDataSource() {
-        targetDataSource = proxy.getDataSource();
-    }
-    
-    protected final String getSQL() throws ParseException {
-        return sqlExecuteType == SQLExecuteType.Literal ? getLiteralSQL(sql) : sql;
-    }
-    
-    protected final String getLiteralSQL(final String sql) throws ParseException {
-        List<Object> parameters = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
-        return parameters.isEmpty() ? sql : String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%").replace("%%", "%").replace("'%'", "'%%'");
+        targetDataSource = adapterContainer.getDataSource();
     }
     
     @After
@@ -121,4 +88,7 @@ public abstract class BaseITCase {
             ((ShardingSphereDataSource) targetDataSource).getMetaDataContexts().getExecutorEngine().close();
         }
     }
+    
+    protected abstract String getSQL() throws ParseException;
+    
 }

@@ -92,9 +92,13 @@ public final class ShardingRuleQueryBackendHandler extends SchemaRequiredBackend
                 Map<String, Object> table = new HashMap<>();
                 table.put("name", each.getLogicTable());
                 table.put("actualDataNodes", each.getActualDataNodes());
-                table.put("tableStrategy", generateShardingStrategy(ruleConfig.get(), each.getTableShardingStrategy()));
-                table.put("databaseStrategy", generateShardingStrategy(ruleConfig.get(), each.getDatabaseShardingStrategy()));
-                table.put("keyGenerateStrategy", generateKeyGenerateStrategy(ruleConfig.get(), each.getKeyGenerateStrategy()));
+                ShardingStrategyConfiguration tableShardingStrategy = null != each.getTableShardingStrategy() ? each.getTableShardingStrategy() : ruleConfig.get().getDefaultTableShardingStrategy();
+                table.put("tableStrategy", generateShardingStrategy(ruleConfig.get(), tableShardingStrategy));
+                ShardingStrategyConfiguration databaseShardingStrategy = null != each.getDatabaseShardingStrategy()
+                    ? each.getDatabaseShardingStrategy() : ruleConfig.get().getDefaultDatabaseShardingStrategy();
+                table.put("databaseStrategy", generateShardingStrategy(ruleConfig.get(), databaseShardingStrategy));
+                KeyGenerateStrategyConfiguration keyGenerateStrategy = null != each.getKeyGenerateStrategy() ? each.getKeyGenerateStrategy() : ruleConfig.get().getDefaultKeyGenerateStrategy();
+                table.put("keyGenerateStrategy", generateKeyGenerateStrategy(ruleConfig.get(), keyGenerateStrategy));
                 table.put("bindingTable", generateBindingTable(bindingTables, each.getLogicTable()));
                 result.add(table);
             }

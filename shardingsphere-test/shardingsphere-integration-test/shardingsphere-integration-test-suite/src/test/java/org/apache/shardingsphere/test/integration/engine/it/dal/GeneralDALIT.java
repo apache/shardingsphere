@@ -19,28 +19,46 @@ package org.apache.shardingsphere.test.integration.engine.it.dal;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.junit.annotation.ParameterFilter;
-import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
-import org.apache.shardingsphere.test.integration.junit.param.TestCaseParameters;
-import org.apache.shardingsphere.test.integration.junit.runner.TestCaseBeanContext;
-import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
+import org.apache.shardingsphere.test.integration.junit.compose.ComposeManager;
+import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runners.Parameterized;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-@ParameterFilter(filter = GeneralDALIT.Filter.class)
-@TestCaseSpec(sqlCommandType = SQLCommandType.DAL)
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDALIT extends BaseDALIT {
+    
+    @ClassRule
+    public static ComposeManager composeManager = new ComposeManager("GeneralDALIT");
+    
+    public GeneralDALIT(final AssertionParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
+    }
+    
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<ParameterizedArray> getParameters() {
+        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DAL)
+                .stream()
+                .filter(each -> SQLExecuteType.Literal == each.getSqlExecuteType())
+                .filter(each -> "proxy".equals(each.getAdapter()))
+                .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
+                .collect(Collectors.toList());
+    }
     
     @Test
     public void assertExecute() throws SQLException, ParseException {
@@ -62,11 +80,4 @@ public final class GeneralDALIT extends BaseDALIT {
         }
     }
     
-    public static class Filter implements ParameterFilter.Filter {
-        @Override
-        public boolean filter(final TestCaseBeanContext context) {
-            return context.getBean(TestCaseParameters.class).getExecuteType() == SQLExecuteType.Literal
-                    && "proxy".equals(context.getBean(TestCaseDescription.class).getAdapter());
-        }
-    }
 }

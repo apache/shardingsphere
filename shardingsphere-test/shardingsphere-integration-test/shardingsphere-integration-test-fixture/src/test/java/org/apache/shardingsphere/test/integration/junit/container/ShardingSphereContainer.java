@@ -19,14 +19,12 @@ package org.apache.shardingsphere.test.integration.junit.container;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
 import org.apache.shardingsphere.test.integration.junit.annotation.XmlResource;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.processor.Processor;
-import org.apache.shardingsphere.test.integration.junit.runner.TestCaseDescription;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.DockerHealthcheckWaitStrategy;
 import org.testcontainers.images.RemoteDockerImage;
@@ -62,16 +60,16 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     private final boolean isFakeContainer;
     
     @Getter
-    @ShardingSphereITInject
-    private TestCaseDescription description;
+    private final ParameterizedArray parameterizedArray;
     
     @Getter
-    @Setter
-    private String dockerName;
+    private final String dockerName;
     
-    public ShardingSphereContainer(final String dockerImageName, final boolean isFakeContainer) {
+    public ShardingSphereContainer(final String dockerName, final String dockerImageName, final boolean isFakeContainer, final ParameterizedArray parameterizedArray) {
         super(convertToDockerImage(dockerImageName, isFakeContainer));
+        this.dockerName = dockerName;
         this.isFakeContainer = isFakeContainer;
+        this.parameterizedArray = parameterizedArray;
     }
     
     private static RemoteDockerImage convertToDockerImage(final String dockerImageName, final boolean isFakeContainer) {
@@ -149,7 +147,7 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     private String parse(final String pattern) {
         String result = pattern;
         Matcher matcher = REGEX.matcher(pattern);
-        Map<String, Method> methodMap = Arrays.stream(TestCaseDescription.class.getDeclaredMethods())
+        Map<String, Method> methodMap = Arrays.stream(ParameterizedArray.class.getDeclaredMethods())
                 .filter(e -> e.getName().startsWith("get"))
                 .collect(Collectors.toMap(e -> StringUtils.uncapitalize(e.getName().substring(3)), e -> e));
         while (matcher.find()) {
@@ -160,7 +158,7 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
     
     @SneakyThrows
     private String invoke(final Method method) {
-        return String.valueOf(method.invoke(description));
+        return String.valueOf(method.invoke(parameterizedArray));
     }
     
     protected void execute() {
