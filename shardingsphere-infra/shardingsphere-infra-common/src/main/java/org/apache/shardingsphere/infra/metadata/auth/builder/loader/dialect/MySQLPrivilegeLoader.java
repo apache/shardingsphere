@@ -52,6 +52,7 @@ public final class MySQLPrivilegeLoader implements PrivilegeLoader {
     @Override
     public Map<ShardingSphereUser, ShardingSpherePrivilege> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         Map<ShardingSphereUser, ShardingSpherePrivilege> result = new LinkedHashMap<>();
+        users.forEach(user -> result.put(user, new ShardingSpherePrivilege()));
         fillGlobalPrivilege(result, dataSource, users);
         fillSchemaPrivilege(result, dataSource, users);
         fillTablePrivilege(result, dataSource, users);
