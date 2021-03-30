@@ -81,7 +81,8 @@ public final class DatabaseCommunicationEngine {
         this.logicSQL = logicSQL;
         proxySQLExecutor = new ProxySQLExecutor(driverType, backendConnection);
         kernelProcessor = new KernelProcessor();
-        engine = new MetadataRefreshEngine(metaData, ProxyContext.getInstance().getMetaDataContexts().getAuthentication(), ProxyContext.getInstance().getMetaDataContexts().getProps());
+        engine = new MetadataRefreshEngine(metaData, ProxyContext.getInstance().getMetaDataContexts().getAuthentication(), 
+                ProxyContext.getInstance().getMetaDataContexts().getProps(), ProxyContext.getInstance().getLock());
         proxyLockEngine = new ProxyLockEngine(proxySQLExecutor, engine, backendConnection.getSchemaName());
     }
     

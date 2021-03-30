@@ -93,6 +93,11 @@ public final class GovernanceLock implements ShardingSphereLock {
         return lockedResources.contains(lockName);
     }
     
+    @Override
+    public boolean isReleased(final String lockName) {
+        return registryCenter.checkUnlockAck(lockName);
+    }
+    
     /**
      * Renew lock time out.
      *
