@@ -255,12 +255,12 @@ public final class RegistryCenterNode {
     }
     
     /**
-     * Get authenticationnodes path.
+     * Get privilege node path.
      *
-     * @return authenticationnodes path
+     * @return privilege node path
      */
     public String getPrivilegeNodePath() {
-        return Joiner.on(PATH_SEPARATOR).join(ROOT, PRIVILEGE_NODE);
+        return Joiner.on(PATH_SEPARATOR).join("", ROOT, PRIVILEGE_NODE);
     }
     
     /**
