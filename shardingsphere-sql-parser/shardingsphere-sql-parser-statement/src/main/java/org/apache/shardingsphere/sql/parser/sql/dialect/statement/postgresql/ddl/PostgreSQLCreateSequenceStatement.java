@@ -15,12 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.annotation;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Container type.
+ * PostgreSQL create sequence statement.
  */
-public enum ContainerType {
-    
-    ADAPTER, STORAGE, COORDINATOR
+@ToString
+@Getter
+@Setter
+public final class PostgreSQLCreateSequenceStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
+
+    private String sequenceName;
 }
+

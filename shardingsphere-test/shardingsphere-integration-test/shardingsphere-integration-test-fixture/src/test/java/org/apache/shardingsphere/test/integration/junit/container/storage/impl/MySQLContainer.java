@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 
 import java.util.Optional;
 
@@ -29,20 +30,20 @@ import java.util.Optional;
  */
 public final class MySQLContainer extends ShardingSphereStorageContainer {
     
-    public MySQLContainer() {
-        super("mysql/mysql-server:5.7", new MySQLDatabaseType());
+    public MySQLContainer(final ParameterizedArray parameterizedArray) {
+        super("mysql-server", "mysql/mysql-server:5.7", new MySQLDatabaseType(), false, parameterizedArray);
     }
     
     @Override
     protected void configure() {
-        withInitSQLMapping("/env/" + getDescription().getScenario() + "/init-sql/mysql");
+        withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
+        withInitSQLMapping("/env/" + getParameterizedArray().getScenario() + "/init-sql/mysql");
         setEnv(Lists.newArrayList("LANG=C.UTF-8"));
     }
     
     @Override
     @SneakyThrows
     protected void execute() {
-        execInContainer("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
     }
     
     @Override

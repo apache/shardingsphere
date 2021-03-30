@@ -33,7 +33,7 @@ jobs:
       matrix:
         env: [ docker ]
         adapter: [ proxy, jdbc ]
-        scenario: [ db,tbl,dbtbl_with_read_write_splitting,encrypt,dbtbl_with_read_write_splitting_and_encrypt, read_write_splitting, sharding_governance]
+        scenario: [ db,tbl,dbtbl_with_read_write_splitting,encrypt,dbtbl_with_read_write_splitting_and_encrypt,read_write_splitting,sharding_governance ]
     steps:
       - name: Cache Maven Repos
         uses: actions/cache@v2
@@ -47,10 +47,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 8
+      - name: set environment
+        run: export MAVEN_OPS=' -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true'
       - name: Build Project
-        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker -DskipTests -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true
+        run: ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite -Pit.env.docker
       - name: Run Integration Test
-        run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Pit.env.docker -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -Dit.adapter=${{ matrix.adapter }} -Dit.database=MySQL -Dit.scenario=${{ matrix.scenario }}
+        run: ./mvnw -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dit.adapters=${{ matrix.adapter }} -Dit.databases=MySQL -Dit.scenarios=${{ matrix.scenario }} -Dit.env.type=DOCKER
 
   mysql-proxy-agent-metrics:
     name: MySQL-Proxy with Agent Metrics

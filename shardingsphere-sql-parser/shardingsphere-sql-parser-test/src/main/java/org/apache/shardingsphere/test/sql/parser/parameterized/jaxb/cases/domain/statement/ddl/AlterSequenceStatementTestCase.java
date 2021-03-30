@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.annotation;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import org.apache.shardingsphere.test.integration.junit.container.storage.impl.H2Container;
-import org.apache.shardingsphere.test.integration.junit.container.storage.impl.MySQLContainer;
-import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * ShardingSphere IT storage type.
+ * Alter sequence statement test case.
  */
-public enum ShardingSphereITStorageType {
-    
-    MySQL(MySQLContainer.class),
-    
-    H2(H2Container.class);
-    
-    @Getter
-    private final Class<? extends ShardingSphereStorageContainer> klass;
-    
-    ShardingSphereITStorageType(final Class<? extends ShardingSphereStorageContainer> klass) {
-        this.klass = klass;
-    }
+public final class AlterSequenceStatementTestCase extends SQLParserTestCase {
 }

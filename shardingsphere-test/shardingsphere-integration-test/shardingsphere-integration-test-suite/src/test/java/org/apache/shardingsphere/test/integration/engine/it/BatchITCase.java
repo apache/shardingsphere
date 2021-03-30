@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.test.integration.engine.it;
 
-import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineExpressionParser;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
 import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
@@ -31,7 +29,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.junit.annotation.ShardingSphereITInject;
+import org.apache.shardingsphere.test.integration.junit.param.model.CaseParameterizedArray;
 import org.junit.After;
 import org.junit.Before;
 
@@ -57,29 +55,30 @@ import static org.junit.Assert.assertThat;
 
 @Getter(AccessLevel.PROTECTED)
 public abstract class BatchITCase extends BaseITCase {
-   
-    @Getter
-    @ShardingSphereITInject
-    private IntegrationTestCase testCase;
     
-    private Collection<DataSet> dataSets;
+    private final Collection<DataSet> dataSets = new LinkedList<>();
     
-    private Collection<DataSet> dataSet = Lists.newArrayList();
+    private final String parentPath;
     
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    @Before
-    public void setup() throws IOException, JAXBException {
-        dataSets = new LinkedList<>();
-        for (IntegrationTestCaseAssertion each : testCase.getAssertions()) {
-            dataSets.add(DataSetLoader.load(getParentPath(), getDescription().getScenario(), getDescription().getDatabaseType(), each.getExpectedDataFile()));
-        }
-        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getDescription().getScenario()), getStorage().getDataSourceMap());
+    public BatchITCase(final CaseParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
+        this.parentPath = parameterizedArray.getTestCaseContext().getParentPath();
     }
     
     @Before
-    public void fillData() throws SQLException, ParseException, InterruptedException {
+    public void fillData() throws SQLException, ParseException, IOException, JAXBException {
+        for (IntegrationTestCaseAssertion each : getIntegrationTestCase().getAssertions()) {
+            dataSets.add(DataSetLoader.load(getParentPath(), getScenario(), getDatabaseType(), each.getExpectedDataFile()));
+        }
+        dataSetEnvironmentManager = new DataSetEnvironmentManager(EnvironmentPath.getDataSetFile(getScenario()), getStorageContainer().getDataSourceMap());
         dataSetEnvironmentManager.fillData();
+    }
+    
+    @Override
+    protected String getSQL() throws ParseException {
+        return getIntegrationTestCase().getSql();
     }
     
     @After
@@ -93,7 +92,7 @@ public abstract class BatchITCase extends BaseITCase {
         DataSetMetadata expectedDataSetMetadata = expected.getMetadataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
-            try (Connection connection = getStorage().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
+            try (Connection connection = getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(String.format("SELECT * FROM %s ORDER BY 1", dataNode.getTableName()))) {
                 assertDataSet(preparedStatement, expected.findRows(dataNode), expectedDataSetMetadata);
             }

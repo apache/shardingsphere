@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.test.integration.junit.container.adapter;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.integration.junit.annotation.XmlResource;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.processor.AuthenticationProcessor;
 import org.apache.shardingsphere.test.integration.junit.processor.AuthenticationProcessor.Authentication;
 
@@ -35,16 +35,12 @@ public abstract class ShardingSphereAdapterContainer extends ShardingSphereConta
     @XmlResource(file = "/docker/{scenario}/proxy/conf/server.yaml", processor = AuthenticationProcessor.class)
     private Authentication authentication;
     
-    @Getter
-    @Setter
-    private String dockerName;
-    
-    public ShardingSphereAdapterContainer(final String dockerImageName) {
-        this(dockerImageName, false);
+    public ShardingSphereAdapterContainer(final String dockerName, final String dockerImageName, final ParameterizedArray parameterizedArray) {
+        this(dockerName, dockerImageName, false, parameterizedArray);
     }
     
-    public ShardingSphereAdapterContainer(final String dockerImageName, final boolean isFakeContainer) {
-        super(dockerImageName, isFakeContainer);
+    public ShardingSphereAdapterContainer(final String dockerName, final String dockerImageName, final boolean isFakeContainer, final ParameterizedArray parameterizedArray) {
+        super(dockerName, dockerImageName, isFakeContainer, parameterizedArray);
     }
     
     /**

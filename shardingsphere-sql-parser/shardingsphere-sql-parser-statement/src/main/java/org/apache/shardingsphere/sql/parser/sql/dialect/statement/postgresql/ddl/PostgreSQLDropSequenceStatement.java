@@ -15,34 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.param;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCase;
-import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
-import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Test case parameters.
+ * PostgreSQL drop sequence statement.
  */
-@RequiredArgsConstructor
-@Getter
 @ToString
-public final class TestCaseParameters {
-    
-    private final String name;
-    
-    private final String parentPath;
-    
-    private final String sql;
-    
-    private final SQLExecuteType executeType;
-    
-    private final Class<?> testClass;
-    
-    private final IntegrationTestCase testCase;
-    
-    private final IntegrationTestCaseAssertion assertion;
+@Getter
+@Setter
+public final class PostgreSQLDropSequenceStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
+
+    private String sequenceName;
 }
