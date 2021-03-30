@@ -307,7 +307,12 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
     @Override
     public final ASTNode visitPredicate(final PredicateContext ctx) {
         if (null != ctx.IN() && null == ctx.NOT()) {
-            return createInSegment(ctx);
+            ASTNode astNode = visit(ctx.bitExpr(0));
+            if (astNode instanceof ColumnSegment) {
+                return createInSegment(ctx, (ColumnSegment) astNode);
+            } else {
+                return astNode;
+            }
         }
         if (null != ctx.BETWEEN() && null == ctx.NOT()) {
             return createBetweenSegment(ctx);
@@ -316,6 +321,11 @@ public abstract class MySQLVisitor extends MySQLStatementBaseVisitor<ASTNode> {
             return visit(ctx.bitExpr(0));
         }
         return visitRemainPredicate(ctx);
+    }
+
+    private PredicateSegment createInSegment(final PredicateContext ctx, final ColumnSegment column) {
+        PredicateBracketValue predicateBracketValue = createBracketValue(ctx);
+        return new PredicateSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, new PredicateInRightValue(predicateBracketValue, getExpressionSegments(ctx)));
     }
     
     private PredicateSegment createInSegment(final PredicateContext ctx) {
