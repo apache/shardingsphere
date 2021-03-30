@@ -104,7 +104,7 @@ public abstract class ShardingSphereContainer extends GenericContainer<ShardingS
                         // CHECKSTYLE:OFF
                     } catch (final Exception ex) {
                         // CHECKSTYLE:ON
-                        log.warn("Failed to check container {} healthy.", c.getDockerName(), ex);
+                        log.info("Failed to check container {} healthy.", c.getDockerName(), ex);
                         return false;
                     }
                 })
