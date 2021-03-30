@@ -78,9 +78,8 @@ public final class GovernanceLock implements ShardingSphereLock {
      */
     @Override
     public void releaseLock(final String lockName) {
-        if (registryCenter.checkUnlockAck(lockName)) {
-            registryCenter.releaseLock(lockName);
-        }
+        registryCenter.releaseLock(lockName);
+        registryCenter.checkUnlockAck(lockName);
     }
     
     /**
