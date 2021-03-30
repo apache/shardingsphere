@@ -20,9 +20,12 @@ package org.apache.shardingsphere.test.integration.junit.compose;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
+import org.apache.shardingsphere.test.integration.junit.container.adapter.impl.ShardingSphereProxyContainer;
 import org.apache.shardingsphere.test.integration.junit.container.governance.ZookeeperContainer;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
+
+import java.util.Collections;
 
 @Slf4j
 public final class GovernanceContainerCompose extends ContainerCompose {
@@ -37,9 +40,10 @@ public final class GovernanceContainerCompose extends ContainerCompose {
         super(clusterName, parameterizedArray);
         this.storageContainer = createStorageContainer();
         this.adapterContainer = createAdapterContainer();
+        this.storageContainer.setNetworkAliases(Collections.singletonList("mysql.sharding-governance.host"));
         ZookeeperContainer zookeeperContainer = createZookeeperContainer();
         if ("proxy".equals(parameterizedArray.getAdapter())) {
-            ShardingSphereAdapterContainer proxy = createAdapterContainer();
+            ShardingSphereAdapterContainer proxy = createContainer(() -> new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray), "ShardingSphere-Proxy-1");
             proxy.dependsOn(storageContainer, zookeeperContainer);
         }
         adapterContainer.dependsOn(storageContainer, zookeeperContainer);

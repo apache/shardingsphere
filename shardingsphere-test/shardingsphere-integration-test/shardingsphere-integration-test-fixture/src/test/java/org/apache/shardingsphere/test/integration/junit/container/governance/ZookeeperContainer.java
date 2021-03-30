@@ -21,8 +21,6 @@ import org.apache.shardingsphere.test.integration.junit.container.ShardingSphere
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
-import javax.sql.DataSource;
-
 public class ZookeeperContainer extends ShardingSphereContainer {
     
     public ZookeeperContainer(final ParameterizedArray parameterizedArray) {
@@ -30,12 +28,4 @@ public class ZookeeperContainer extends ShardingSphereContainer {
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*"));
     }
     
-    /**
-     * Get DataSource.
-     *
-     * @return DataSource
-     */
-    public DataSource getDataSource() {
-        return null;
-    }
 }
