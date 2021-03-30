@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.auth.builder.loader.dialect;
 
-import com.google.common.base.Joiner;
 import org.apache.shardingsphere.infra.metadata.auth.builder.loader.PrivilegeLoader;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
@@ -43,7 +42,13 @@ import java.util.stream.Collectors;
  * MySQL privilege loader.
  */
 public final class MySQLPrivilegeLoader implements PrivilegeLoader {
-    
+
+    private static final String GLOBAL_PRIVILEGE_SQL = "SELECT * FROM mysql.user WHERE (user, host) in (%s)";
+
+    private static final String SCHEMA_PRIVILEGE_SQL = "SELECT * FROM mysql.db WHERE (user, host) in (%s)";
+
+    private static final String TABLE_PRIVILEGE_SQL = "SELECT Db, Table_name, Table_priv FROM mysql.tables_priv WHERE (user, host) in (%s)";
+
     @Override
     public Map<ShardingSphereUser, ShardingSpherePrivilege> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         Map<ShardingSphereUser, ShardingSpherePrivilege> result = new LinkedHashMap<>();
@@ -120,24 +125,21 @@ public final class MySQLPrivilegeLoader implements PrivilegeLoader {
     }
     
     private String getGlobalPrivilegeSQL(final Collection<ShardingSphereUser> users) {
-        Collection<String> result = new LinkedList<>();
-        StringBuilder builder = new StringBuilder("SELECT * FROM mysql.user WHERE (user, host) in ( ");
-        users.forEach(each -> builder.append("(").append(each.getGrantee().getUsername()).append(", ").append(each.getGrantee().getHostname()).append(")"));
-        return builder.append(Joiner.on(", ").join(result)).append(" )").toString();
+        String userHostTuples = users.stream().map(each -> String.format("(%s, %s)", each.getGrantee().getUsername(), each.getGrantee().getHostname()))
+                .collect(Collectors.joining(","));
+        return String.format(GLOBAL_PRIVILEGE_SQL, userHostTuples);
     }
     
     private String getSchemaPrivilegeSQL(final Collection<ShardingSphereUser> users) {
-        Collection<String> result = new LinkedList<>();
-        StringBuilder builder = new StringBuilder("SELECT * FROM mysql.db WHERE (user, host) in ( ");
-        users.forEach(each -> builder.append("(").append(each.getGrantee().getUsername()).append(", ").append(each.getGrantee().getHostname()).append(")"));
-        return builder.append(Joiner.on(", ").join(result)).append(" )").toString();
+        String userHostTuples = users.stream().map(each -> String.format("(%s, %s)", each.getGrantee().getUsername(), each.getGrantee().getHostname()))
+                .collect(Collectors.joining(","));
+        return String.format(SCHEMA_PRIVILEGE_SQL, userHostTuples);
     }
     
     private String getTablePrivilegeSQL(final Collection<ShardingSphereUser> users) {
-        Collection<String> result = new LinkedList<>();
-        StringBuilder builder = new StringBuilder("SELECT Db, Table_name, Table_priv FROM mysql.tables_priv WHERE (user, host) in ( ");
-        users.forEach(each -> builder.append("(").append(each.getGrantee().getUsername()).append(", ").append(each.getGrantee().getHostname()).append(")"));
-        return builder.append(Joiner.on(", ").join(result)).append(" )").toString();
+        String userHostTuples = users.stream().map(each -> String.format("(%s, %s)", each.getGrantee().getUsername(), each.getGrantee().getHostname()))
+                .collect(Collectors.joining(","));
+        return String.format(TABLE_PRIVILEGE_SQL, userHostTuples);
     }
     
     private Optional<ShardingSphereUser> getShardingSphereUser(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final ResultSet resultSet) throws SQLException {
