@@ -22,8 +22,6 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
@@ -41,19 +39,11 @@ import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.XATransactionManagerType;
 import org.junit.Test;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 public final class StandardBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
@@ -168,7 +158,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     
     private YamlProxyServerConfiguration createYamlProxyServerConfiguration() {
         YamlProxyServerConfiguration result = new YamlProxyServerConfiguration();
-        result.setAuthentication(createYamlUserRuleConfiguration());
+        result.getUsers().add("root@:root");
         result.setProps(createProperties());
         return result;
     }
@@ -179,21 +169,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         result.setProperty("beta-2", "beta-B");
         return result;
     }
-    
-    private YamlUserRuleConfiguration createYamlUserRuleConfiguration() {
-        Map<String, YamlUserConfiguration> users = new HashMap<>(1, 1);
-        users.put("root", createYamlUserConfiguration());
-        YamlUserRuleConfiguration result = new YamlUserRuleConfiguration();
-        result.setUsers(users);
-        return result;
-    }
-    
-    private YamlUserConfiguration createYamlUserConfiguration() {
-        YamlUserConfiguration result = new YamlUserConfiguration();
-        result.setPassword("root");
-        return result;
-    }
-    
+
     @Test
     public void assertDecorateMetaDataContexts() {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);

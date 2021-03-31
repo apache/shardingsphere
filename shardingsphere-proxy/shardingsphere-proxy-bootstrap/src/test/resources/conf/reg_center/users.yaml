@@ -14,9 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-#
-#users:
-#  root:
-#    password: root
-#  sharding:
-#    password: sharding
+
+users:
+  - hostname: '%'
+    password: root
+    username: root
+  - hostname: ''
+    password: sharding
+    username: sharding

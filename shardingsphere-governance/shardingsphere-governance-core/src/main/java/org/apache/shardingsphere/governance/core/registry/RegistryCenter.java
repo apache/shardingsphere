@@ -42,6 +42,8 @@ import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfigurationConverter;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfigurationWrap;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.auth.refresher.event.CreateUserEvent;
@@ -192,8 +194,9 @@ public final class RegistryCenter {
 
     private void persistAuthentication(final Collection<ShardingSphereUser> users, final boolean isOverwrite) {
         if (!users.isEmpty() && (isOverwrite || !hasAuthentication())) {
-            repository.persist(node.getAuthenticationPath(),
-                    YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
+            YamlUserConfigurationWrap yamlUserConfiguration = new YamlUserConfigurationWrap();
+            yamlUserConfiguration.getUsers().addAll(YamlUserConfigurationConverter.convertYamlUserConfigurations(users));
+            repository.persist(node.getUsersNode(),YamlEngine.marshal(yamlUserConfiguration));
         }
     }
     
@@ -257,7 +260,7 @@ public final class RegistryCenter {
      */
     public Collection<ShardingSphereUser> loadUserRule() {
         return hasAuthentication()
-                ? YamlConfigurationConverter.convertUserRule(repository.get(node.getAuthenticationPath()))
+                ? YamlConfigurationConverter.convertAuthentication(repository.get(node.getUsersNode()))
                 : Collections.emptyList();
     }
     
@@ -335,7 +338,7 @@ public final class RegistryCenter {
     }
     
     private boolean hasAuthentication() {
-        return !Strings.isNullOrEmpty(repository.get(node.getAuthenticationPath()));
+        return !Strings.isNullOrEmpty(repository.get(node.getUsersNode()));
     }
     
     /**

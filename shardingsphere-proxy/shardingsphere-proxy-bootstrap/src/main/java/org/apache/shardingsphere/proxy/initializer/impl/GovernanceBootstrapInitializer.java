@@ -21,12 +21,12 @@ import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataC
 import org.apache.shardingsphere.governance.context.transaction.GovernanceTransactionContexts;
 import org.apache.shardingsphere.governance.core.facade.GovernanceFacade;
 import org.apache.shardingsphere.governance.core.yaml.swapper.GovernanceConfigurationYamlSwapper;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -38,12 +38,8 @@ import org.apache.shardingsphere.scaling.core.config.ScalingContext;
 import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -67,12 +63,12 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
             governanceFacade.onlineInstance();
         } else {
             governanceFacade.onlineInstance(
-                    getDataSourceConfigurationMap(ruleConfigs), getRuleConfigurations(ruleConfigs), new UserRuleYamlSwapper().swapToObject(serverConfig.getAuthentication()), serverConfig.getProps());
+                    getDataSourceConfigurationMap(ruleConfigs), getRuleConfigurations(ruleConfigs), YamlUserConfigurationConverter.convertShardingSphereUser(serverConfig.getUsers()), serverConfig.getProps());
         }
     }
     
     private boolean isEmptyLocalConfiguration(final YamlProxyServerConfiguration serverConfig, final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
-        return ruleConfigs.isEmpty() && null == serverConfig.getAuthentication() && serverConfig.getProps().isEmpty();
+        return ruleConfigs.isEmpty() && serverConfig.getUsers().isEmpty()  && serverConfig.getProps().isEmpty();
     }
     
     private Map<String, Map<String, DataSourceConfiguration>> getDataSourceConfigurationMap(final Map<String, YamlProxyRuleConfiguration> ruleConfigs) {
@@ -89,7 +85,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
         return yamlRuleConfigurations.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
             entry -> swapperEngine.swapToRuleConfigurations(entry.getValue().getRules()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
-    
+
     private ProxyConfiguration loadProxyConfiguration() {
         Collection<String> schemaNames = governanceFacade.getRegistryCenter().getAllSchemaNames();
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);

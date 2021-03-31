@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.config.yaml.swapper;
 
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfigurationConverter;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -48,7 +48,7 @@ public final class YamlProxyConfigurationSwapper {
     public ProxyConfiguration swap(final YamlProxyConfiguration yamlConfig) {
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = getDataSourceParametersMap(yamlConfig.getRuleConfigurations());
         Map<String, Collection<RuleConfiguration>> schemaRules = getRuleConfigurations(yamlConfig.getRuleConfigurations());
-        Collection<ShardingSphereUser> users = new UserRuleYamlSwapper().swapToObject(yamlConfig.getServerConfiguration().getAuthentication());
+        Collection<ShardingSphereUser> users = YamlUserConfigurationConverter.convertShardingSphereUser(yamlConfig.getServerConfiguration().getUsers());
         Properties props = yamlConfig.getServerConfiguration().getProps();
         return new ProxyConfiguration(schemaDataSources, schemaRules, users, props);
     }

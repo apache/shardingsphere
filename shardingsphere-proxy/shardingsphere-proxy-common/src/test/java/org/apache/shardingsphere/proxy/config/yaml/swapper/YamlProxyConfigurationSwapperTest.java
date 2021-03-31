@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.proxy.config.yaml.swapper;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
@@ -37,18 +36,11 @@ import org.apache.shardingsphere.readwrite.splitting.api.ReadWriteSplittingRuleC
 import org.apache.shardingsphere.readwrite.splitting.common.yaml.config.YamlReadWriteSplittingRuleConfiguration;
 import org.junit.Test;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -209,15 +201,13 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void prepareAuthentication(final YamlProxyServerConfiguration yamlProxyServerConfig) {
-        Map<String, YamlUserConfiguration> yamlUserConfigurationMap = new HashMap<>(1, 1);
-        YamlUserConfiguration yamlUserConfig = mock(YamlUserConfiguration.class);
-        when(yamlUserConfig.getPassword()).thenReturn("pass");
-        yamlUserConfigurationMap.put("user1", yamlUserConfig);
-        YamlUserRuleConfiguration userRuleConfiguration = mock(YamlUserRuleConfiguration.class);
-        when(userRuleConfiguration.getUsers()).thenReturn(yamlUserConfigurationMap);
-        when(yamlProxyServerConfig.getAuthentication()).thenReturn(userRuleConfiguration);
+        when(yamlProxyServerConfig.getUsers()).thenReturn(getUsers());
     }
-    
+
+    private Collection<String> getUsers() {
+        return Lists.newArrayList("user1@:pass");
+    }
+
     private YamlProxyServerConfiguration getYamlProxyServerConfiguration(final YamlProxyConfiguration yamlProxyConfig) {
         YamlProxyServerConfiguration result = mock(YamlProxyServerConfiguration.class);
         when(yamlProxyConfig.getServerConfiguration()).thenReturn(result);

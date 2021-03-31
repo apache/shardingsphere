@@ -54,6 +54,8 @@ public final class RegistryCenterNode {
     private static final String SCHEMA_NODE = "schema";
     
     private static final String AUTHENTICATION_NODE = "authentication";
+
+    private static final String USERS_NODE = "users";
     
     private static final String PRIVILEGE_NODE = "privilegenode";
     
@@ -253,7 +255,10 @@ public final class RegistryCenterNode {
     public String getAuthenticationPath() {
         return getFullPath(AUTHENTICATION_NODE);
     }
-    
+
+    public String getUsersNode() {
+        return getFullPath(USERS_NODE);
+    }
     /**
      * Get authenticationnodes path.
      *

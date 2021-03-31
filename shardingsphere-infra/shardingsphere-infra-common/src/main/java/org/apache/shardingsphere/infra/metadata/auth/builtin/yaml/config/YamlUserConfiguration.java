@@ -27,6 +27,8 @@ import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
 @Getter
 @Setter
 public final class YamlUserConfiguration implements YamlConfiguration {
+
+    private String username;
     
     private String hostname;
     
