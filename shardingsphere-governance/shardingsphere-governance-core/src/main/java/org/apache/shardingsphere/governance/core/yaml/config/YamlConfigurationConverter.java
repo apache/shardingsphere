@@ -23,7 +23,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfigurationConverter;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfigurationWrap;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
@@ -109,8 +108,8 @@ public final class YamlConfigurationConverter {
      * @return authentication
      */
     public static Collection<ShardingSphereUser> convertAuthentication(final String yamlContent) {
-        Collection<YamlUserConfiguration> users = YamlEngine.unmarshal(yamlContent, YamlUserConfigurationWrap.class).getUsers();
-        return YamlUserConfigurationConverter.convertShardingSphereUsers(users);
+        Collection<String> users = YamlEngine.unmarshal(yamlContent, YamlUserConfigurationWrap.class).getUsers();
+        return YamlUserConfigurationConverter.convertShardingSphereUser(users);
     }
     
     /**

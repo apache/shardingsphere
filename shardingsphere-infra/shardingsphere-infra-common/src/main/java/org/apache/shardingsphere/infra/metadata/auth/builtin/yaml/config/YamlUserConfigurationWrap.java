@@ -13,5 +13,5 @@ import java.util.LinkedList;
 @Getter
 @Setter
 public final class YamlUserConfigurationWrap implements YamlConfiguration {
-    private Collection<YamlUserConfiguration> users = new LinkedList<>();
+    private Collection<String> users = new LinkedList<>();
 }

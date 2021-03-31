@@ -10,14 +10,17 @@ import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserYa
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlUserConfigurationConverter {
     private static UserYamlSwapper userYamlSwapper = new UserYamlSwapper();
 
-    public static Collection<YamlUserConfiguration> convertYamlUserConfigurations(Collection<ShardingSphereUser> users){
-        return users.stream().map(user -> userYamlSwapper.swapToYamlConfiguration(user)).collect(Collectors.toList());
+    public static Collection<String> convertYamlUserConfigurationFormatteds(Collection<ShardingSphereUser> users){
+        Collection<String> result = new LinkedList<>();
+        users.stream().map(user -> userYamlSwapper.swapToYamlConfiguration(user)).forEach(yamlUser -> result.add(yamlUser.toString()));
+        return result;
     }
 
     public static Collection<ShardingSphereUser> convertShardingSphereUsers(Collection<YamlUserConfiguration> yamlUsers) {

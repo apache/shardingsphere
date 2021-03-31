@@ -33,4 +33,9 @@ public final class YamlUserConfiguration implements YamlConfiguration {
     private String hostname;
     
     private String password;
+
+    @Override
+    public String toString() {
+        return username+"@"+null == hostname ? "%" : hostname + ":" + password;
+    }
 }

@@ -195,7 +195,7 @@ public final class RegistryCenter {
     private void persistAuthentication(final Collection<ShardingSphereUser> users, final boolean isOverwrite) {
         if (!users.isEmpty() && (isOverwrite || !hasAuthentication())) {
             YamlUserConfigurationWrap yamlUserConfiguration = new YamlUserConfigurationWrap();
-            yamlUserConfiguration.getUsers().addAll(YamlUserConfigurationConverter.convertYamlUserConfigurations(users));
+            yamlUserConfiguration.getUsers().addAll(YamlUserConfigurationConverter.convertYamlUserConfigurationFormatteds(users));
             repository.persist(node.getUsersNode(),YamlEngine.marshal(yamlUserConfiguration));
         }
     }
