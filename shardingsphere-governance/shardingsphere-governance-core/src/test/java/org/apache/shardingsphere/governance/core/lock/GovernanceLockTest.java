@@ -50,7 +50,9 @@ public final class GovernanceLockTest {
     
     @Test
     public void assertReleaseLock() {
+        when(registryCenter.checkUnlockAck("test")).thenReturn(Boolean.TRUE);
         lock.releaseLock("test");
+        verify(registryCenter).checkUnlockAck(eq("test"));
         verify(registryCenter).releaseLock(eq("test"));
     }
 }

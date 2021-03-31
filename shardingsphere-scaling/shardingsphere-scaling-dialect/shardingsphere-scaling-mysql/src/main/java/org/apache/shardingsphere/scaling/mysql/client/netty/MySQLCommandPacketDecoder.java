@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.scaling.mysql.client.netty;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.ByteToMessageDecoder;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
@@ -26,18 +29,13 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageDecoder;
 import org.apache.shardingsphere.scaling.mysql.client.InternalResultSet;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 /**
  * MySQL Command Packet decoder.
  */
-@Slf4j
 public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
     private enum States { ResponsePacket, FieldPacket, RowDataPacket }

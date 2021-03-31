@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.junit.param.model;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.cases.IntegrationTestCaseContext;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
+import org.apache.shardingsphere.test.integration.junit.compose.ContainerCompose;
 
 /**
  * Parameterized array.
@@ -60,4 +61,18 @@ public interface ParameterizedArray {
      * @return SQL command type
      */
     SQLCommandType getSqlCommandType();
+    
+    /**
+     * Get container compose.
+     *
+     * @return container compose
+     */
+    ContainerCompose getCompose();
+    
+    /**
+     * Set container compose.
+     *
+     * @param compose container compose
+     */
+    void setCompose(ContainerCompose compose);
 }

@@ -18,6 +18,7 @@
 
 <sql-cases>
     <sql-case id="select_constant_without_table" value="SELECT 1 as a" />
+    <sql-case id="select_with_binary_operation_of_aggregation_expr" value="SELECT (count(*)+1) as a" db-types="MySQL" />
     <sql-case id="select_with_schema_func" value="SELECT schema(), database()" db-types="MySQL" />
     <sql-case id="select_sqlmode_ansi_quotes" value='select "id" from "t_order" where "t_order"."id"=10' db-types="MySQL" />
     <sql-case id="select_with_union" value="SELECT * from table1 union select * from table2" db-types="PostgreSQL"/>

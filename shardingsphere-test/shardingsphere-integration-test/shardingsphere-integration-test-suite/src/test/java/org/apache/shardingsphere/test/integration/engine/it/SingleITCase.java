@@ -19,11 +19,19 @@ package org.apache.shardingsphere.test.integration.engine.it;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.test.integration.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.integration.cases.dataset.DataSetLoader;
+import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
+import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.watcher.ITWatcher;
-import org.junit.Before;
 import org.junit.Rule;
+
+import java.text.ParseException;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter(AccessLevel.PROTECTED)
 public abstract class SingleITCase extends BaseITCase {
@@ -31,10 +39,25 @@ public abstract class SingleITCase extends BaseITCase {
     @Rule
     public ITWatcher watcher = new ITWatcher();
     
-    private DataSet dataSet;
+    private final SQLExecuteType sqlExecuteType;
     
-    @Before
-    public void setup() {
-        dataSet = null == getAssertion() ? null : DataSetLoader.load(getParentPath(), getDescription().getScenario(), getDescription().getDatabaseType(), getAssertion().getExpectedDataFile());
+    private final IntegrationTestCaseAssertion assertion;
+    
+    private final DataSet dataSet;
+    
+    public SingleITCase(final AssertionParameterizedArray parameter) {
+        super(parameter);
+        this.sqlExecuteType = parameter.getSqlExecuteType();
+        this.assertion = parameter.getAssertion();
+        this.dataSet = null == assertion ? null : DataSetLoader.load(parameter.getTestCaseContext().getParentPath(), getScenario(), getDatabaseType(), assertion.getExpectedDataFile());
+    }
+    
+    protected final String getSQL() throws ParseException {
+        return sqlExecuteType == SQLExecuteType.Literal ? getLiteralSQL(getIntegrationTestCase().getSql()) : getIntegrationTestCase().getSql();
+    }
+    
+    protected final String getLiteralSQL(final String sql) throws ParseException {
+        List<Object> parameters = null == assertion ? Collections.emptyList() : assertion.getSQLValues().stream().map(SQLValue::toString).collect(Collectors.toList());
+        return parameters.isEmpty() ? sql : String.format(sql.replace("%", "$").replace("?", "%s"), parameters.toArray()).replace("$", "%").replace("%%", "%").replace("'%'", "'%%'");
     }
 }
