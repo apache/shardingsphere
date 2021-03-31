@@ -39,7 +39,7 @@ authentication:
       password: root
     sharding:
       password: sharding
-      authorizedSchemas: sharding_db
+      hostname: '%'
 
 props:
   max-connections-size-per-query: 1
