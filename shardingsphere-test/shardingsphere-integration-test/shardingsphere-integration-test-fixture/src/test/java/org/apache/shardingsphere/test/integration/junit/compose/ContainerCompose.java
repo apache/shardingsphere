@@ -33,10 +33,12 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.lifecycle.Startable;
 
+import javax.sql.DataSource;
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -144,6 +146,33 @@ public abstract class ContainerCompose extends ExternalResource implements Close
      * @return ShardingSphere storage container
      */
     public abstract ShardingSphereStorageContainer getStorageContainer();
+    
+    /**
+     * Get target datasource for writer.
+     *
+     * @return datasource
+     */
+    public DataSource getDataSourceForWriter() {
+        return getAdapterContainer().getDataSource();
+    }
+    
+    /**
+     * Get target datasource for reader.
+     *
+     * @return datasource
+     */
+    public DataSource getDataSourceForReader() {
+        return getAdapterContainer().getDataSource();
+    }
+    
+    /**
+     * Get all target datasources.
+     *
+     * @return datasource map
+     */
+    public Map<String, DataSource> getDataSourceMap() {
+        return Collections.singletonMap(getAdapterContainer().getDockerName(), getAdapterContainer().getDataSource());
+    }
     
     @Override
     protected void before() {

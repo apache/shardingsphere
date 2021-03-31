@@ -25,7 +25,10 @@ import org.apache.shardingsphere.test.integration.junit.container.governance.Zoo
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 
+import javax.sql.DataSource;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 public final class GovernanceContainerCompose extends ContainerCompose {
@@ -36,6 +39,8 @@ public final class GovernanceContainerCompose extends ContainerCompose {
     @Getter
     private final ShardingSphereAdapterContainer adapterContainer;
     
+    private final ShardingSphereAdapterContainer adapterContainerForReader;
+    
     public GovernanceContainerCompose(final String clusterName, final ParameterizedArray parameterizedArray) {
         super(clusterName, parameterizedArray);
         this.storageContainer = createStorageContainer();
@@ -43,8 +48,10 @@ public final class GovernanceContainerCompose extends ContainerCompose {
         this.storageContainer.setNetworkAliases(Collections.singletonList("mysql.sharding-governance.host"));
         ZookeeperContainer zookeeperContainer = createZookeeperContainer();
         if ("proxy".equals(parameterizedArray.getAdapter())) {
-            ShardingSphereAdapterContainer proxy = createContainer(() -> new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray), "ShardingSphere-Proxy-1");
-            proxy.dependsOn(storageContainer, zookeeperContainer);
+            adapterContainerForReader = createContainer(() -> new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray), "ShardingSphere-Proxy-1");
+            adapterContainerForReader.dependsOn(storageContainer, zookeeperContainer);
+        } else {
+            adapterContainerForReader = this.adapterContainer;
         }
         adapterContainer.dependsOn(storageContainer, zookeeperContainer);
     }
@@ -53,4 +60,16 @@ public final class GovernanceContainerCompose extends ContainerCompose {
         return createContainer(() -> new ZookeeperContainer(getParameterizedArray()), "zk");
     }
     
+    @Override
+    public DataSource getDataSourceForReader() {
+        return adapterContainerForReader.getDataSource();
+    }
+    
+    @Override
+    public Map<String, DataSource> getDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>(2);
+        result.put(adapterContainer.getDockerName(), adapterContainer.getDataSource());
+        result.put(adapterContainerForReader.getDockerName(), adapterContainerForReader.getDataSource());
+        return result;
+    }
 }
