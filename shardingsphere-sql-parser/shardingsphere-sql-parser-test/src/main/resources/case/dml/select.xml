@@ -23,6 +23,12 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_with_binary_operation_of_aggregation_expr" >
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="count(*)+1" alias="a" start-index="8" stop-index="23" />
+        </projections>
+    </select>
+
     <select sql-case-id="select_with_schema_func" >
         <projections start-index="7" stop-index="26">
             <expression-projection text="schema()" start-index="7" stop-index="14" />
