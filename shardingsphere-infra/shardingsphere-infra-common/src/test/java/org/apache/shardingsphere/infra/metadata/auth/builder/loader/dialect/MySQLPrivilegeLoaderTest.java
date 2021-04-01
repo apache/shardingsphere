@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MySQLPrivilegeLoaderTest {
+public final class MySQLPrivilegeLoaderTest {
 
     @BeforeClass
     public static void setUp() {
