@@ -15,18 +15,34 @@
  * limitations under the License.
  */
 
-DELETE FROM t_order_calcite;
-DELETE FROM t_user_info;
-DELETE FROM t_order_calcite_sharding_0;
-DELETE FROM t_order_calcite_sharding_1;
-INSERT INTO t_order_calcite VALUES(1000, 10, 'init');
-INSERT INTO t_order_calcite VALUES(1001, 11, 'init');
+package org.apache.shardingsphere.infra.lock;
 
-INSERT INTO t_user_info VALUES(0, 'description0');
-INSERT INTO t_user_info VALUES(1, 'description1');
-INSERT INTO t_user_info VALUES(2, 'description2');
-INSERT INTO t_user_info VALUES(3, 'description3');
-INSERT INTO t_order_calcite_sharding_0 VALUES(1010, 10, 'init');
-INSERT INTO t_order_calcite_sharding_1 VALUES(1011, 11, 'init');
-INSERT INTO t_order_calcite_sharding_0 VALUES(1100, 10, 'init');
-INSERT INTO t_order_calcite_sharding_1 VALUES(1101, 11, 'init');
+import com.google.common.base.Joiner;
+
+/**
+ * Lock name util.
+ */
+public final class LockNameUtil {
+    
+    private static final String METADATA_REFRESH_LOCK_NAME = "metadata_refresh";
+    
+    /**
+     * Get table lock name.
+     * 
+     * @param schemaName schema name
+     * @param tableName  table name
+     * @return table lock name
+     */
+    public static String getTableLockName(final String schemaName, final String tableName) {
+        return Joiner.on(".").join(schemaName, tableName);
+    }
+    
+    /**
+     * Get metadata refresh lock name.
+     * 
+     * @return metadata refresh lock name
+     */
+    public static String getMetadataRefreshLockName() {
+        return METADATA_REFRESH_LOCK_NAME;
+    }
+}

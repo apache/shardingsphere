@@ -47,10 +47,18 @@ public interface ShardingSphereLock {
     void releaseLock(String lockName);
     
     /**
-     * Check whether resource is locked.
+     * Check whether resource is locked in current instance.
      * 
      * @param lockName lock name
-     * @return true if locked ,false if not
+     * @return true if locked, false if not
      */
     boolean isLocked(String lockName);
+    
+    /**
+     * Check whether resource is released in all instances.
+     * 
+     * @param lockName lock name
+     * @return true if released, false if not
+     */
+    boolean isReleased(String lockName);
 }

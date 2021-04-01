@@ -167,4 +167,6 @@
 <!--alter server test-->
 <!--    <sql-case id="alter_server_options" value="ALTER SERVER foo OPTIONS (host 'foo', dbname 'foodb')" db-types="PostgreSQL" />-->
 <!--    <sql-case id="alter_server_version" value="ALTER SERVER foo VERSION '8.4' OPTIONS (SET host 'baz')" db-types="PostgreSQL" />-->
+<!--    alter sequence test-->
+    <sql-case id="alter_sequence" value="ALTER SEQUENCE seq_id MINVALUE 10" db-types="PostgreSQL" />
 </sql-cases>

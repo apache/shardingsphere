@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-DELETE FROM t_order_calcite;
-DELETE FROM t_user_info;
-DELETE FROM t_order_calcite_sharding_0;
-DELETE FROM t_order_calcite_sharding_1;
-INSERT INTO t_order_calcite VALUES(1000, 10, 'init');
-INSERT INTO t_order_calcite VALUES(1001, 11, 'init');
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-INSERT INTO t_user_info VALUES(0, 'description0');
-INSERT INTO t_user_info VALUES(1, 'description1');
-INSERT INTO t_user_info VALUES(2, 'description2');
-INSERT INTO t_user_info VALUES(3, 'description3');
-INSERT INTO t_order_calcite_sharding_0 VALUES(1010, 10, 'init');
-INSERT INTO t_order_calcite_sharding_1 VALUES(1011, 11, 'init');
-INSERT INTO t_order_calcite_sharding_0 VALUES(1100, 10, 'init');
-INSERT INTO t_order_calcite_sharding_1 VALUES(1101, 11, 'init');
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+/**
+ * Alter sequence statement test case.
+ */
+public final class AlterSequenceStatementTestCase extends SQLParserTestCase {
+}

@@ -15,32 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleDeleteStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleUpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Merge statement.
+ * PostgreSQL create sequence statement.
  */
+@ToString
 @Getter
 @Setter
-@ToString
-public abstract class MergeStatement extends AbstractSQLStatement implements DMLStatement {
-    
-    private TableSegment target;
-    
-    private TableSegment source;
-    
-    private ExpressionSegment expr;
-    
-    private UpdateStatement update = new OracleUpdateStatement();
-    
-    private DeleteStatement delete = new OracleDeleteStatement();
+public final class PostgreSQLCreateSequenceStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
+
+    private String sequenceName;
 }
+

@@ -58,4 +58,6 @@
     <sql-case id="drop_index_with_bracket" value="DROP INDEX [order_index] ON [t_order]" db-types="SQLServer" />
     <sql-case id="drop_index_if_exists_on_table" value="DROP INDEX IF EXISTS order_index ON t_order" db-types="SQLServer" />
     <sql-case id="drop_index_with_online_force_invalidation" value="DROP INDEX order_index ONLINE FORCE DEFERRED INVALIDATION" db-types="Oracle" />
+<!--    drop sequence test-->
+    <sql-case id="drop_sequence" value="DROP SEQUENCE seq_id" db-types="PostgreSQL" />
 </sql-cases>

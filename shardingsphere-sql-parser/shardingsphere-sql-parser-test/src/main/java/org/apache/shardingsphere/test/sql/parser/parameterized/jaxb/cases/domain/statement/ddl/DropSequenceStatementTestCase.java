@@ -15,25 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.util.List;
-
-@Setter
-@Getter
-public final class AggregateExpression implements ExpressionSegment {
-    
-    private int startIndex;
-    
-    private int stopIndex;
-    
-    private AggregationType methodName;
-    
-    private List<ExpressionSegment> args;
-    
-    private boolean distinct;
+/**
+ * Drop sequence statement test case.
+ */
+public final class DropSequenceStatementTestCase extends SQLParserTestCase {
 }
