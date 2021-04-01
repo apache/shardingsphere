@@ -169,4 +169,8 @@
 <!--    <sql-case id="alter_server_version" value="ALTER SERVER foo VERSION '8.4' OPTIONS (SET host 'baz')" db-types="PostgreSQL" />-->
 <!--    alter sequence test-->
     <sql-case id="alter_sequence" value="ALTER SEQUENCE seq_id MINVALUE 10" db-types="PostgreSQL" />
+<!--alter synonym test-->
+    <sql-case id="alter_synonym_compile" value="ALTER SYNONYM offices COMPILE" db-types="Oracle" />
+    <sql-case id="alter_public_synonym_compile" value="ALTER PUBLIC SYNONYM emp_table COMPILE" db-types="Oracle" />
+    <sql-case id="alter_synonym_noneditionable" value="ALTER SYNONYM offices NONEDITIONABLE" db-types="Oracle" />  
 </sql-cases>

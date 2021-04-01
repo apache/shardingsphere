@@ -110,6 +110,8 @@ public enum SQLVisitorRule {
 
     DROP_SEQUENCE("DropSequence", SQLStatementType.DDL),
     
+    ALTER_SYNONYM("AlterSynonym", SQLStatementType.DDL),  
+  
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),
     
     SET_IMPLICIT_TRANSACTIONS("SetImplicitTransactions", SQLStatementType.TCL),

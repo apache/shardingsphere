@@ -56,6 +56,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Schema
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SimpleExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SpecialFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.StringLiteralsContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SynonymNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UnreservedWordContext;
@@ -193,7 +194,12 @@ public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisit
     public final ASTNode visitSchemaName(final SchemaNameContext ctx) {
         return visit(ctx.identifier());
     }
-    
+
+    @Override
+    public final ASTNode visitSynonymName(final SynonymNameContext ctx) {
+        return visit(ctx.identifier());
+    }
+
     @Override
     public final ASTNode visitTableName(final TableNameContext ctx) {
         SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name())));

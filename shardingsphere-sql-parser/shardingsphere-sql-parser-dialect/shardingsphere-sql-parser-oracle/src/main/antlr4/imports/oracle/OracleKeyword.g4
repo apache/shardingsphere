@@ -1350,3 +1350,11 @@ ZONEMAP
 WITHOUT
     : W I T H O U T
     ;
+
+EDITIONABLE
+    : E D I T I O N A B L E
+    ;
+
+NONEDITIONABLE
+    : N O N E D I T I O N A B L E
+    ;

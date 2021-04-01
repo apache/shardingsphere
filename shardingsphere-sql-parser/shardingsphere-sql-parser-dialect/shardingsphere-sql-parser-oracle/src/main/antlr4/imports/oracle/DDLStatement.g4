@@ -915,3 +915,7 @@ rowMovementClause
 flashbackArchiveClause
     : FLASHBACK ARCHIVE flashbackArchiveName? | NO FLASHBACK ARCHIVE
     ;
+
+alterSynonym
+    : ALTER PUBLIC? SYNONYM (schemaName DOT_)? synonymName (COMPILE | EDITIONABLE | NONEDITIONABLE)
+    ;
