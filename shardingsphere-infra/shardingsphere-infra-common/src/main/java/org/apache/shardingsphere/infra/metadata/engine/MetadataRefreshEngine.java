@@ -105,7 +105,7 @@ public final class MetadataRefreshEngine {
     }
     
     private void refreshAuthentication(final SQLStatement sqlStatement, final AuthenticationRefresher refresher) {
-        refresher.refresh(authentication, sqlStatement, metaData);
+        refresher.refresh(authentication, sqlStatement);
         // TODO :Subscribe and handle this event
         ShardingSphereEventBus.getInstance().post(new AuthenticationAlteredEvent(authentication));
     }

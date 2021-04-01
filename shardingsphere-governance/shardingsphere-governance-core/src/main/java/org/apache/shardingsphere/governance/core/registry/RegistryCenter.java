@@ -227,7 +227,7 @@ public final class RegistryCenter {
         newArrayList.add(schemaName);
         repository.persist(node.getMetadataNodePath(), Joiner.on(",").join(newArrayList));
     }
-
+    
     /**
      * Load data source configurations.
      *
@@ -235,8 +235,7 @@ public final class RegistryCenter {
      * @return data source configurations
      */
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String schemaName) {
-        return hasDataSourceConfiguration(schemaName)
-                ? YamlConfigurationConverter.convertDataSourceConfigurations(repository.get(node.getMetadataDataSourcePath(schemaName))) : new LinkedHashMap<>();
+        return hasDataSourceConfiguration(schemaName) ? YamlConfigurationConverter.convertDataSourceConfigurations(repository.get(node.getMetadataDataSourcePath(schemaName))) : new LinkedHashMap<>();
     }
     
     /**
@@ -267,8 +266,7 @@ public final class RegistryCenter {
      * @return properties
      */
     public Properties loadProperties() {
-        return Strings.isNullOrEmpty(repository.get(node.getPropsPath())) ? new Properties()
-                : YamlConfigurationConverter.convertProperties(repository.get(node.getPropsPath()));
+        return Strings.isNullOrEmpty(repository.get(node.getPropsPath())) ? new Properties() : YamlConfigurationConverter.convertProperties(repository.get(node.getPropsPath()));
     }
     
     /**
