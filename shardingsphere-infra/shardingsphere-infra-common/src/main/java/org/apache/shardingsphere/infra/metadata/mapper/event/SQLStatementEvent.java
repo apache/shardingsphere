@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.mapper.event;
+package org.apache.shardingsphere.infra.metadata.mapper.event;
 
 /**
  * SQL statement event.

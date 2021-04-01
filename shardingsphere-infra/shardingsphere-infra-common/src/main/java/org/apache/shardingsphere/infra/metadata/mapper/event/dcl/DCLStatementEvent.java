@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.mapper.event.dcl;
+package org.apache.shardingsphere.infra.metadata.mapper.event.dcl;
 
-import org.apache.shardingsphere.infra.metadata.auth.mapper.event.SQLStatementEvent;
+import org.apache.shardingsphere.infra.metadata.mapper.event.SQLStatementEvent;
 
 /**
  * DCL statement event.

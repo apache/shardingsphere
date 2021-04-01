@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.mapper.type;
+package org.apache.shardingsphere.infra.metadata.mapper.type;
 
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.auth.mapper.SQLStatementEventMapper;
-import org.apache.shardingsphere.infra.metadata.auth.mapper.event.dcl.impl.GrantStatementEvent;
+import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapper;
+import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.GrantStatementEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLGrantStatement;
 

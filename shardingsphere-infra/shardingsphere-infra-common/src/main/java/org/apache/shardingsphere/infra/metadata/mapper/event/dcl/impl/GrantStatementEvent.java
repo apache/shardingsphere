@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.mapper.event.dcl.impl;
+package org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.auth.mapper.event.dcl.DCLStatementEvent;
+import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.DCLStatementEvent;
 
 import java.util.Collection;
 

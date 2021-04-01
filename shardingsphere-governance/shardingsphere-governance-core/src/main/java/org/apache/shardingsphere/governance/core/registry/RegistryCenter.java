@@ -44,8 +44,8 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.auth.mapper.event.dcl.impl.CreateUserStatementEvent;
-import org.apache.shardingsphere.infra.metadata.auth.mapper.event.dcl.impl.GrantStatementEvent;
+import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
+import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.GrantStatementEvent;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
