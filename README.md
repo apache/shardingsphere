@@ -13,6 +13,7 @@
 [![snyk](https://snyk.io/test/github/apache/shardingsphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/apache/shardingsphere?targetFile=pom.xml)
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/apache/skywalking)
+[![Maintainability](https://cloud.quality-gate.com/dashboard/api/badge?projectName=apache_incubator-shardingsphere&branchName=master)](https://cloud.quality-gate.com/dashboard/branches/30#overview)
 
 ## Document
 

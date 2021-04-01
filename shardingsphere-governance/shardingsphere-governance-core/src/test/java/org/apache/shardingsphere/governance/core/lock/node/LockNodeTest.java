@@ -39,7 +39,7 @@ public final class LockNodeTest {
     
     @Test
     public void assertGetLockName() {
-        assertThat(lockNode.getLockName("/lock/locks/test").get(), is("test"));
+        assertThat(lockNode.getLockName("/lock/locks/sharding_db.test/_c_c2d-lock-00000").get(), is("sharding_db.test"));
     }
     
     @Test

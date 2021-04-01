@@ -30,9 +30,12 @@ import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataCon
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.metadata.auth.AuthenticationContext;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -106,7 +109,7 @@ public final class PostgreSQLAuthenticationHandlerTest {
     }
     
     private void setAuthentication(final ShardingSphereUser user) {
-        DefaultAuthentication authentication = new DefaultAuthentication();
+        Authentication authentication = new DefaultAuthentication();
         ShardingSpherePrivilege privilege = new ShardingSpherePrivilege();
         privilege.setSuperPrivilege();
         authentication.getAuthentication().put(user, privilege);
@@ -114,14 +117,15 @@ public final class PostgreSQLAuthenticationHandlerTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void initProxyContext(final DefaultAuthentication authentication) {
+    private void initProxyContext(final Authentication authentication) {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         field.setAccessible(true);
         field.set(ProxyContext.getInstance(), getMetaDataContexts(authentication));
+        AuthenticationContext.getInstance().init(authentication);
     }
     
-    private MetaDataContexts getMetaDataContexts(final DefaultAuthentication authentication) {
-        return new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), authentication, new ConfigurationProperties(new Properties()));
+    private MetaDataContexts getMetaDataContexts(final Authentication authentication) {
+        return new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new ShardingSphereUsers(authentication.getAllUsers()), new ConfigurationProperties(new Properties()));
     }
     
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {

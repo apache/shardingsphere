@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
-import java.util.List;
-
-@Setter
+/**
+ * PostgreSQL alter sequence statement.
+ */
+@ToString
 @Getter
-public final class AggregateExpression implements ExpressionSegment {
-    
-    private int startIndex;
-    
-    private int stopIndex;
-    
-    private AggregationType methodName;
-    
-    private List<ExpressionSegment> args;
-    
-    private boolean distinct;
+@Setter
+public final class PostgreSQLAlterSequenceStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
+
+    private String sequenceName;
 }

@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUsers;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.Before;
@@ -33,6 +32,7 @@ import org.junit.Test;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -55,7 +55,8 @@ public final class ShowTablesExecutorTest {
         Map<String, ShardingSphereMetaData> metaDataMap = getMetaDataMap();
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), getAuthentication(), new ConfigurationProperties(new Properties())));
+        metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(metaDataMap, mock(ExecutorEngine.class), 
+                new ShardingSphereUsers(Collections.singleton(new ShardingSphereUser("root", "root", ""))), new ConfigurationProperties(new Properties())));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
@@ -66,12 +67,6 @@ public final class ShowTablesExecutorTest {
             when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
             result.put(String.format(SCHEMA_PATTERN, i), metaData);
         }
-        return result;
-    }
-    
-    private DefaultAuthentication getAuthentication() {
-        DefaultAuthentication result = new DefaultAuthentication();
-        result.getAuthentication().put(new ShardingSphereUser("root", "root", ""), new ShardingSpherePrivilege());
         return result;
     }
     

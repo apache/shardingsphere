@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.check;
 
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -31,11 +31,13 @@ import java.util.List;
 public interface SQLChecker extends OrderedSPI {
     
     /**
-     * Get SQL check type.
+     * Check schema.
      *
-     * @return sql check type
+     * @param schemaName schema name
+     * @param grantee grantee
+     * @return check result
      */
-    String getSQLCheckType();
+    boolean check(String schemaName, Grantee grantee);
     
     /**
      * Check SQL.
@@ -43,8 +45,15 @@ public interface SQLChecker extends OrderedSPI {
      * @param sqlStatement SQL statement
      * @param parameters SQL parameters
      * @param metaData meta data
-     * @param auth auth
+     * @param grantee grantee
      * @return SQL check result
      */
-    SQLCheckResult check(SQLStatement sqlStatement, List<Object> parameters, ShardingSphereMetaData metaData, Authentication auth);
+    SQLCheckResult check(SQLStatement sqlStatement, List<Object> parameters, ShardingSphereMetaData metaData, Grantee grantee);
+    
+    /**
+     * Get SQL check type.
+     *
+     * @return sql check type
+     */
+    String getSQLCheckType();
 }

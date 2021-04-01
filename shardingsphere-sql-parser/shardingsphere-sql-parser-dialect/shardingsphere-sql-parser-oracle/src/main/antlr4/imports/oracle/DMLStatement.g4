@@ -176,7 +176,7 @@ havingClause
 subquery
     : LP_ unionClause RP_
     ;
-        
+
 lockClause
     : FOR UPDATE 
     ;
@@ -186,7 +186,7 @@ merge
     ;
 
 hint
-    : (BLOCK_COMMENT | INLINE_COMMENT)
+    : BLOCK_COMMENT | INLINE_COMMENT
     ;
 
 intoClause
@@ -198,7 +198,11 @@ usingClause
     ;
 
 mergeUpdateClause
-    : WHEN MATCHED THEN UPDATE SET mergeAssignment (COMMA_ mergeAssignment)* whereClause? (DELETE whereClause)?
+    : WHEN MATCHED THEN UPDATE SET mergeSetAssignmentsClause whereClause? deleteWhereClause?
+    ;
+
+mergeSetAssignmentsClause
+    : mergeAssignment (COMMA_ mergeAssignment)*
     ;
 
 mergeAssignment
@@ -206,7 +210,11 @@ mergeAssignment
     ;
 
 mergeAssignmentValue
-    : (expr | DEFAULT)
+    : expr | DEFAULT
+    ;
+
+deleteWhereClause
+    : DELETE whereClause
     ;
 
 mergeInsertClause

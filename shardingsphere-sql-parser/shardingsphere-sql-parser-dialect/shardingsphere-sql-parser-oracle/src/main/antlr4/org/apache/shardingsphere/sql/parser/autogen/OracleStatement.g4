@@ -46,5 +46,6 @@ execute
     | setRole
     | call
     | merge
+    | alterSynonym
     ) SEMI_?
     ;

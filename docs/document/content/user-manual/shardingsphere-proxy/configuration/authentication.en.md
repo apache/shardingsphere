@@ -12,5 +12,5 @@ authentication:
       password: root # Self-defined password
     sharding: # Self-defined username
       password: sharding # Self-defined password
-      authorizedSchemas: sharding_db, replica_query_db # Schemas authorized to this user, please use commas to connect multiple schemas. Default authorized schemas is all of the schemas.
+      hostname: '%' # Which host can be allowed to access the Sharding Proxy.
 ```
