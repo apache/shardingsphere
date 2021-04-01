@@ -75,7 +75,7 @@ public final class ShardingRuleQueryBackendHandler extends SchemaRequiredBackend
         result.add(new QueryHeader(schema, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         result.add(new QueryHeader(schema, "", "actualDataNodes", "actualDataNodes", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         result.add(new QueryHeader(schema, "", "tableStrategy", "tableStrategy", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
-        result.add(new QueryHeader(schema, "", "databaseStrategy", "databaseStrategy", Types.BIGINT, "BIGINT", 255, 0, false, false, false, false));
+        result.add(new QueryHeader(schema, "", "databaseStrategy", "databaseStrategy", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         result.add(new QueryHeader(schema, "", "keyGenerateStrategy", "keyGenerateStrategy", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         result.add(new QueryHeader(schema, "", "bindingTable", "bindingTable", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         return result;
