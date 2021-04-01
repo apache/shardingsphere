@@ -15,20 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.refresher.event;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
-
-import java.util.Collection;
+package org.apache.shardingsphere.infra.metadata.auth.mapper.event;
 
 /**
- * Grant event.
+ * SQL statement event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class GrantEvent {
-    
-    private final Collection<ShardingSphereUser> users;
+public interface SQLStatementEvent {
 }

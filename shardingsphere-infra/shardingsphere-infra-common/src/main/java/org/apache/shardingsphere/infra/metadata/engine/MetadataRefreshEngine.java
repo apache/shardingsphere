@@ -23,9 +23,8 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.lock.LockNameUtil;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
-import org.apache.shardingsphere.infra.metadata.auth.refresher.AuthenticationRefresher;
-import org.apache.shardingsphere.infra.metadata.auth.refresher.event.AuthenticationAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.auth.mapper.SQLStatementEventMapper;
+import org.apache.shardingsphere.infra.metadata.auth.mapper.SQLStatementEventMapperFactory;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
@@ -42,16 +41,12 @@ public final class MetadataRefreshEngine {
     
     private final ShardingSphereMetaData metaData;
     
-    private final Authentication authentication;
-    
     private final SchemaBuilderMaterials materials;
     
     private final Optional<ShardingSphereLock> lockOptional;
     
-    public MetadataRefreshEngine(final ShardingSphereMetaData metaData, final Authentication authentication,
-                                 final ConfigurationProperties properties, final Optional<ShardingSphereLock> lockOptional) {
+    public MetadataRefreshEngine(final ShardingSphereMetaData metaData, final ConfigurationProperties properties, final Optional<ShardingSphereLock> lockOptional) {
         this.metaData = metaData;
-        this.authentication = authentication;
         this.lockOptional = lockOptional;
         materials = new SchemaBuilderMaterials(metaData.getResource().getDatabaseType(), metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), properties);
     }
@@ -66,12 +61,12 @@ public final class MetadataRefreshEngine {
     public void refresh(final SQLStatement sqlStatement, final Collection<String> routeDataSourceNames) throws SQLException {
         Optional<MetadataRefresher> metadataRefresher = MetadataRefresherFactory.newInstance(sqlStatement);
         if (metadataRefresher.isPresent()) {
-            if (metadataRefresher.get() instanceof SchemaRefresher) {
-                refreshSchema(sqlStatement, routeDataSourceNames, (SchemaRefresher) metadataRefresher.get());
-            }
-            if (metadataRefresher.get() instanceof AuthenticationRefresher) {
-                refreshAuthentication(sqlStatement, (AuthenticationRefresher) metadataRefresher.get());
-            }
+            refreshSchema(sqlStatement, routeDataSourceNames, (SchemaRefresher) metadataRefresher.get());
+        }
+        Optional<SQLStatementEventMapper> sqlStatementEventMapper = SQLStatementEventMapperFactory.newInstance(sqlStatement);
+        if (sqlStatementEventMapper.isPresent()) {
+            ShardingSphereEventBus.getInstance().post(sqlStatementEventMapper.get().map(sqlStatement));
+            // TODO Subscribe and handle DCLStatementEvent
         }
     }
     
@@ -102,11 +97,5 @@ public final class MetadataRefreshEngine {
     private void refreshSchemaWithoutLock(final SQLStatement sqlStatement, final Collection<String> routeDataSourceNames, final SchemaRefresher refresher) throws SQLException {
         refresher.refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, materials);
         ShardingSphereEventBus.getInstance().post(new SchemaAlteredEvent(metaData.getName(), metaData.getSchema()));
-    }
-    
-    private void refreshAuthentication(final SQLStatement sqlStatement, final AuthenticationRefresher refresher) {
-        refresher.refresh(authentication, sqlStatement, metaData);
-        // TODO :Subscribe and handle this event
-        ShardingSphereEventBus.getInstance().post(new AuthenticationAlteredEvent(authentication));
     }
 }

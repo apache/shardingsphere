@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.refresher;
+package org.apache.shardingsphere.infra.metadata.auth.mapper.event.dcl.impl;
 
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresher;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.auth.mapper.event.dcl.DCLStatementEvent;
+
+import java.util.Collection;
 
 /**
- * Authentication refresher.
+ * Create user statement event.
  */
-public interface AuthenticationRefresher extends MetadataRefresher {
+@RequiredArgsConstructor
+@Getter
+public final class CreateUserStatementEvent implements DCLStatementEvent {
     
-    /**
-     * Refresh.
-     *
-     * @param authentication authentication
-     * @param sqlStatement sql statement
-     * @param metaData metaData
-     */
-    void refresh(Authentication authentication, SQLStatement sqlStatement, ShardingSphereMetaData metaData);
+    private final Collection<ShardingSphereUser> users;
 }
