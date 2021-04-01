@@ -103,6 +103,12 @@ public enum SQLVisitorRule {
     ALTER_VIEW("AlterView", SQLStatementType.DDL),
     
     DROP_VIEW("DropView", SQLStatementType.DDL),
+
+    CREATE_SEQUENCE("CreateSequence", SQLStatementType.DDL),
+
+    ALTER_SEQUENCE("AlterSequence", SQLStatementType.DDL),
+
+    DROP_SEQUENCE("DropSequence", SQLStatementType.DDL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),
     

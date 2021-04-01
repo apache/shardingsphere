@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.annotation;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.junit.container.storage.impl.H2Container;
-import org.apache.shardingsphere.test.integration.junit.container.storage.impl.MySQLContainer;
-import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * ShardingSphere IT storage type.
+ * PostgreSQL create sequence statement.
  */
-public enum ShardingSphereITStorageType {
-    
-    MySQL(MySQLContainer.class),
-    
-    H2(H2Container.class);
-    
-    @Getter
-    private final Class<? extends ShardingSphereStorageContainer> klass;
-    
-    ShardingSphereITStorageType(final Class<? extends ShardingSphereStorageContainer> klass) {
-        this.klass = klass;
-    }
+@ToString
+@Getter
+@Setter
+public final class PostgreSQLCreateSequenceStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
+
+    private String sequenceName;
 }
+

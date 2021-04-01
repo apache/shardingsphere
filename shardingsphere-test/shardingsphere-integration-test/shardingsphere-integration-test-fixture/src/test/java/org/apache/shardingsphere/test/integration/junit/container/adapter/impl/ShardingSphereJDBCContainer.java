@@ -22,6 +22,7 @@ import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.testcontainers.containers.wait.strategy.WaitStrategy;
 import org.testcontainers.lifecycle.Startable;
 
@@ -43,8 +44,8 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
     
     private Map<String, DataSource> dataSourceMap;
     
-    public ShardingSphereJDBCContainer() {
-        super("ShardingSphere-JDBC", true);
+    public ShardingSphereJDBCContainer(final ParameterizedArray parameterizedArray) {
+        super("ShardingSphere-JDBC", "ShardingSphere-JDBC", true, parameterizedArray);
     }
     
     @Override
@@ -65,7 +66,7 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
      */
     public DataSource getDataSource() {
         try {
-            return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(getDescription().getScenario())));
+            return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario())));
         } catch (SQLException | IOException ex) {
             throw new RuntimeException(ex);
         }

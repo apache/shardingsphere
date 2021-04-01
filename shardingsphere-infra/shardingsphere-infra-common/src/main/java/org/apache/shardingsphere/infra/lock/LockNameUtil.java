@@ -15,41 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.annotation;
+package org.apache.shardingsphere.infra.lock;
 
-import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.common.ExecutionMode;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.google.common.base.Joiner;
 
 /**
- * Test case specification.
+ * Lock name util.
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface TestCaseSpec {
+public final class LockNameUtil {
+    
+    private static final String METADATA_REFRESH_LOCK_NAME = "metadata_refresh";
     
     /**
-     * Test case name.
-     *
-     * @return pattern
+     * Get table lock name.
+     * 
+     * @param schemaName schema name
+     * @param tableName  table name
+     * @return table lock name
      */
-    String name() default "";
+    public static String getTableLockName(final String schemaName, final String tableName) {
+        return Joiner.on(".").join(schemaName, tableName);
+    }
     
     /**
-     * Sql command type.
-     *
-     * @return type
+     * Get metadata refresh lock name.
+     * 
+     * @return metadata refresh lock name
      */
-    SQLCommandType sqlCommandType();
-    
-    /**
-     * Case execution mode.
-     *
-     * @return execution mode
-     */
-    ExecutionMode executionMode() default ExecutionMode.SINGLE;
+    public static String getMetadataRefreshLockName() {
+        return METADATA_REFRESH_LOCK_NAME;
+    }
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.engine.it.dcl;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.authority.AuthorityEnvironmentManager;
+import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 import org.junit.After;
 import org.junit.Before;
 
@@ -31,12 +32,16 @@ public abstract class BaseDCLIT extends SingleITCase {
     
     private AuthorityEnvironmentManager authorityEnvironmentManager;
     
+    public BaseDCLIT(final AssertionParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
+    }
+    
     @Before
     public final void insertData() throws SQLException, IOException, JAXBException {
         authorityEnvironmentManager = new AuthorityEnvironmentManager(
-                EnvironmentPath.getAuthorityFile(getDescription().getScenario()),
-                getStorage().getDataSourceMap(),
-                getDescription().getDatabaseType()
+                EnvironmentPath.getAuthorityFile(getScenario()),
+                getStorageContainer().getDataSourceMap(),
+                getDatabaseType()
         );
         authorityEnvironmentManager.initialize();
     }

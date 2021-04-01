@@ -15,37 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.junit.annotation;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.test.integration.junit.runner.TestCaseBeanContext;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Parameter filter.
+ * Drop sequence statement test case.
  */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ParameterFilter {
-    
-    /**
-     * Filter.
-     *
-     * @return filter
-     */
-    Class<? extends Filter> filter();
-    
-    interface Filter {
-        
-        /**
-         * Filter.
-         *
-         * @param context test case context
-         * @return false if ignore
-         */
-        boolean filter(TestCaseBeanContext context);
-    }
+public final class DropSequenceStatementTestCase extends SQLParserTestCase {
 }

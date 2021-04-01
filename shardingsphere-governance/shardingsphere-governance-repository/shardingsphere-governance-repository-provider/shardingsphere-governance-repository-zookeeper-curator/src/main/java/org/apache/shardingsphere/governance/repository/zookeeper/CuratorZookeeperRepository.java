@@ -289,7 +289,6 @@ public final class CuratorZookeeperRepository implements RegistryRepository {
         try {
             if (availableLock(key)) {
                 locks.get(key).release();
-                locks.remove(key);
             }
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
