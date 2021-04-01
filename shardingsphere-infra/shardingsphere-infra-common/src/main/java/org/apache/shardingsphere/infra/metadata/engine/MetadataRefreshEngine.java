@@ -88,7 +88,7 @@ public final class MetadataRefreshEngine {
         ShardingSphereLock lock = lockOptional.get();
         try {
             if (!lock.tryLock(LockNameUtil.getMetadataRefreshLockName())) {
-                throw new ShardingSphereException("Can not get lock for metadata refresher.");
+                throw new ShardingSphereException("Metadata refresh failed.");
             }
             refreshSchemaWithoutLock(sqlStatement, routeDataSourceNames, refresher);
             if (!lock.isReleased(LockNameUtil.getMetadataRefreshLockName())) {

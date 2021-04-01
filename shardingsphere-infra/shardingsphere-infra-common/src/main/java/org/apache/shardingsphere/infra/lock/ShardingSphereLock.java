@@ -61,4 +61,11 @@ public interface ShardingSphereLock {
      * @return true if released, false if not
      */
     boolean isReleased(String lockName);
+    
+    /**
+     * Get default lock time out milliseconds.
+     * 
+     * @return default lock time out milliseconds
+     */
+    long getDefaultTimeOut();
 }

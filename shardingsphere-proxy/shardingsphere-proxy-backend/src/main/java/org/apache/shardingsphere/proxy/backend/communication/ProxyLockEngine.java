@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.communication;
 
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.lock.LockNameUtil;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.engine.MetadataRefreshEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.LockWaitTimeoutException;
+import org.apache.shardingsphere.proxy.backend.exception.TableLockWaitTimeoutException;
+import org.apache.shardingsphere.proxy.backend.exception.TableLockedException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
@@ -85,7 +85,7 @@ public final class ProxyLockEngine {
         for (String tableName : tableNames) {
             String lockName = LockNameUtil.getTableLockName(schemaName, tableName);
             if (!lock.tryLock(lockName)) {
-                throw new LockWaitTimeoutException(ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
+                throw new TableLockWaitTimeoutException(schemaName, tableName, lock.getDefaultTimeOut());
             }
             lockNames.add(lockName);
         }
@@ -94,7 +94,7 @@ public final class ProxyLockEngine {
     private void checkTableLock(final ShardingSphereLock lock, final Collection<String> tableNames) {
         for (String tableName : tableNames) {
             if (lock.isLocked(LockNameUtil.getTableLockName(schemaName, tableName))) {
-                throw new LockWaitTimeoutException(ProxyContext.getInstance().getMetaDataContexts().getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS));
+                throw new TableLockedException(schemaName, tableName);
             }
         }
     }
