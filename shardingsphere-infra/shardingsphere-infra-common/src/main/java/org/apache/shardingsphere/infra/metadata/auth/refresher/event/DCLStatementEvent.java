@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.auth.refresher.event;
 
 /**
- * Authentication altered event.
+ * DCL statement event.
  */
-public final class AuthenticationAlteredEvent {
+public interface DCLStatementEvent {
 }

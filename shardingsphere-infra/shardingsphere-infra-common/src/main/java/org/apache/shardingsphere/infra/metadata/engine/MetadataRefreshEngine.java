@@ -23,9 +23,8 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.lock.LockNameUtil;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.auth.refresher.SQLStatementEventMapperFactory;
 import org.apache.shardingsphere.infra.metadata.auth.refresher.SQLStatementEventMapper;
-import org.apache.shardingsphere.infra.metadata.auth.refresher.event.AuthenticationAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.auth.refresher.SQLStatementEventMapperFactory;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.SchemaRefresher;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
@@ -64,9 +63,10 @@ public final class MetadataRefreshEngine {
         if (metadataRefresher.isPresent()) {
             refreshSchema(sqlStatement, routeDataSourceNames, (SchemaRefresher) metadataRefresher.get());
         }
-        Optional<SQLStatementEventMapper> authenticationRefresher = SQLStatementEventMapperFactory.newInstance(sqlStatement);
-        if (authenticationRefresher.isPresent()) {
-            refreshAuthentication(sqlStatement, authenticationRefresher.get());
+        Optional<SQLStatementEventMapper> sqlStatementEventMapper = SQLStatementEventMapperFactory.newInstance(sqlStatement);
+        if (sqlStatementEventMapper.isPresent()) {
+            ShardingSphereEventBus.getInstance().post(sqlStatementEventMapper.get().map(sqlStatement));
+            // TODO Subscribe and handle DCLStatementEvent
         }
     }
     
@@ -97,11 +97,5 @@ public final class MetadataRefreshEngine {
     private void refreshSchemaWithoutLock(final SQLStatement sqlStatement, final Collection<String> routeDataSourceNames, final SchemaRefresher refresher) throws SQLException {
         refresher.refresh(metaData.getSchema(), routeDataSourceNames, sqlStatement, materials);
         ShardingSphereEventBus.getInstance().post(new SchemaAlteredEvent(metaData.getName(), metaData.getSchema()));
-    }
-    
-    private void refreshAuthentication(final SQLStatement sqlStatement, final SQLStatementEventMapper refresher) {
-        ShardingSphereEventBus.getInstance().post(refresher.map(sqlStatement));
-        // TODO :Subscribe and handle this event
-        ShardingSphereEventBus.getInstance().post(new AuthenticationAlteredEvent());
     }
 }

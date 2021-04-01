@@ -28,7 +28,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class GrantStatementEvent implements SQLStatementEvent {
+public final class GrantStatementEvent implements DCLStatementEvent {
     
     private final Collection<ShardingSphereUser> users;
 }
