@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.mapper;
+package org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl;
 
-import org.apache.shardingsphere.infra.metadata.auth.mapper.event.SQLStatementEvent;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.DCLStatementEvent;
+
+import java.util.Collection;
 
 /**
- * SQL statement event mapper.
+ * Create user statement event.
  */
-public interface SQLStatementEventMapper {
+@RequiredArgsConstructor
+@Getter
+public final class CreateUserStatementEvent implements DCLStatementEvent {
     
-    /**
-     * Map SQL statement to SQL statement event.
-     *
-     * @param sqlStatement SQL statement
-     * @return SQL statement event
-     */
-    SQLStatementEvent map(SQLStatement sqlStatement);
+    private final Collection<ShardingSphereUser> users;
 }
