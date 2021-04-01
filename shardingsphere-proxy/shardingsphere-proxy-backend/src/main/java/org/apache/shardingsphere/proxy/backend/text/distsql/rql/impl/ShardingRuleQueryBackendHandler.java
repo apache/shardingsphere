@@ -71,7 +71,7 @@ public final class ShardingRuleQueryBackendHandler extends SchemaRequiredBackend
     }
     
     private List<QueryHeader> getQueryHeader() {
-        List<QueryHeader> result = new LinkedList();
+        List<QueryHeader> result = new LinkedList<>();
         result.add(new QueryHeader(schema, "", "name", "name", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         result.add(new QueryHeader(schema, "", "actualDataNodes", "actualDataNodes", Types.CHAR, "CHAR", 255, 0, false, false, false, false));
         result.add(new QueryHeader(schema, "", "tableStrategy", "tableStrategy", Types.CHAR, "CHAR", 255, 0, false, false, false, false));

@@ -304,8 +304,7 @@ public final class SQLParserTestCases {
 
     @XmlElement(name = "drop-sequence")
     private final List<DropSequenceStatementTestCase> dropSequenceTestCase = new LinkedList<>();
-
-
+    
     /**
      * Get all SQL parser test cases.
      * 

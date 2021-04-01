@@ -17,24 +17,67 @@
 
 package org.apache.shardingsphere.infra.check.auth;
 
+import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.check.SQLChecker;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.auth.AuthenticationContext;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Authentication SQL checker.
  */
-public abstract class AuthenticationSQLChecker implements SQLChecker {
+public final class AuthenticationSQLChecker implements SQLChecker {
     
     private static final int ORDER = 0;
     
     private static final String CHECK_TYPE = "AUTHENTICATION";
     
     @Override
-    public final int getOrder() {
+    public boolean check(final String schemaName, final Grantee grantee) {
+        if (null == grantee) {
+            return true;
+        }
+        return AuthenticationContext.getInstance().getAuthentication().findPrivilege(grantee).map(optional -> optional.hasPrivileges(schemaName)).orElse(false);
+    }
+    
+    @Override
+    public SQLCheckResult check(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingSphereMetaData metaData, final Grantee grantee) {
+        if (null == grantee) {
+            return new SQLCheckResult(true, "");
+        }
+        Optional<ShardingSpherePrivilege> privilege = AuthenticationContext.getInstance().getAuthentication().findPrivilege(grantee);
+        // TODO add error msg
+        return privilege.map(optional -> new SQLCheckResult(optional.hasPrivileges(Collections.singletonList(getPrivilege(sqlStatement))), "")).orElseGet(() -> new SQLCheckResult(false, ""));
+    }
+    
+    private PrivilegeType getPrivilege(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof MySQLShowDatabasesStatement) {
+            return PrivilegeType.SHOW_DB;
+        }
+        // TODO add more Privilege and SQL statement mapping
+        return null;
+    }
+    
+    @Override
+    public String getSQLCheckType() {
+        return CHECK_TYPE;
+    }
+    
+    @Override
+    public int getOrder() {
         return ORDER;
     }
     
     @Override
-    public final String getSQLCheckType() {
-        return CHECK_TYPE;
+    public Class getTypeClass() {
+        return null;
     }
 }

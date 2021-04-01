@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
+import org.apache.shardingsphere.infra.check.SQLCheckEngine;
+import org.apache.shardingsphere.infra.check.SQLCheckException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
@@ -28,12 +28,13 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Optional;
 
 /**
  * Show databases executor.
@@ -49,26 +50,23 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private Collection<Object> getSchemaNames(final BackendConnection backendConnection) {
-        Optional<ShardingSpherePrivilege> privilege = ProxyContext.getInstance().getMetaDataContexts().getAuthentication().findPrivilege(backendConnection.getGrantee());
-        if (!privilege.isPresent()) {
-            return Collections.emptyList();
-        }
-        Collection<Object> result = new LinkedList<>();
-        if (privilege.get().hasPrivileges(Collections.singletonList(PrivilegeType.SHOW_DB))) {
-            result.addAll(ProxyContext.getInstance().getAllSchemaNames());
-        } else {
+        // TODO make sure metadata is necessary
+        try {
+            SQLCheckEngine.check(new MySQLShowDatabasesStatement(), Collections.emptyList(), null, backendConnection.getGrantee());
+            return new ArrayList<>(ProxyContext.getInstance().getAllSchemaNames());
+        } catch (final SQLCheckException ex) {
+            Collection<Object> result = new LinkedList<>();
             for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
-                if (privilege.get().hasPrivileges(each)) {
+                if (SQLCheckEngine.check(each, backendConnection.getGrantee())) {
                     result.add(each);
                 }
             }
+            return result;
         }
-        return result;
     }
     
     @Override
     public QueryResultMetaData getQueryResultMetaData() {
-        return new RawQueryResultMetaData(
-                Collections.singletonList(new RawQueryResultColumnMetaData("SCHEMATA", "Database", "SCHEMA_NAME", Types.VARCHAR, "VARCHAR", 255, 0)));
+        return new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("SCHEMATA", "Database", "SCHEMA_NAME", Types.VARCHAR, "VARCHAR", 255, 0)));
     }
 }

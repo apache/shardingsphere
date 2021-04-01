@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.auth.AuthenticationContext;
 import org.apache.shardingsphere.infra.metadata.engine.MetadataRefreshEngine;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
@@ -67,6 +68,8 @@ public final class DatabaseCommunicationEngine {
     
     private final KernelProcessor kernelProcessor;
     
+    private final MetadataRefreshEngine engine;
+    
     private List<QueryHeader> queryHeaders;
     
     private MergedResult mergedResult;
@@ -79,8 +82,9 @@ public final class DatabaseCommunicationEngine {
         this.logicSQL = logicSQL;
         proxySQLExecutor = new ProxySQLExecutor(driverType, backendConnection);
         kernelProcessor = new KernelProcessor();
-        proxyLockEngine = new ProxyLockEngine(proxySQLExecutor, new MetadataRefreshEngine(metaData, ProxyContext.getInstance().getMetaDataContexts().getAuthentication(),
-                ProxyContext.getInstance().getMetaDataContexts().getProps(), ProxyContext.getInstance().getLock()), backendConnection.getSchemaName());
+        engine = new MetadataRefreshEngine(metaData, 
+                AuthenticationContext.getInstance().getAuthentication(), ProxyContext.getInstance().getMetaDataContexts().getProps(), ProxyContext.getInstance().getLock());
+        proxyLockEngine = new ProxyLockEngine(proxySQLExecutor, engine, backendConnection.getSchemaName());
     }
     
     /**

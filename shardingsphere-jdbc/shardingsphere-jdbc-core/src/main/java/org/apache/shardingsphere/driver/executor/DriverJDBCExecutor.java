@@ -50,9 +50,8 @@ public final class DriverJDBCExecutor {
     public DriverJDBCExecutor(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor) {
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
-        this.jdbcLockEngine = new JDBCLockEngine(metaDataContexts, jdbcExecutor);
+        jdbcLockEngine = new JDBCLockEngine(metaDataContexts, jdbcExecutor);
     }
-    
     
     /**
      * Execute query.

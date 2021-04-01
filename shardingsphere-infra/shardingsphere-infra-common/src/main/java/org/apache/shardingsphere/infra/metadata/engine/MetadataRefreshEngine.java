@@ -75,7 +75,7 @@ public final class MetadataRefreshEngine {
         }
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("rawtypes")
     private void refreshSchema(final SQLStatement sqlStatement, final Collection<String> routeDataSourceNames, final SchemaRefresher refresher) throws SQLException {
         if (lockOptional.isPresent()) {
             refreshSchemaWithLock(sqlStatement, routeDataSourceNames, refresher);

@@ -157,7 +157,6 @@ public final class RegistryCenterNode {
         return matcher.find() ? Optional.of(new GovernanceSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
     }
     
-    
     /**
      * Get primary nodes governance schema.
      *
