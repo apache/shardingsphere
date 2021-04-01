@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.integration.junit.container.adapter.impl;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.driver.governance.api.yaml.YamlGovernanceShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
@@ -51,7 +52,6 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
     @Override
     public void start() {
         super.start();
-        // do not start because it is a fake container.
         List<Startable> startables = getDependencies().stream()
                 .filter(e -> e instanceof ShardingSphereStorageContainer)
                 .collect(Collectors.toList());
@@ -66,6 +66,9 @@ public final class ShardingSphereJDBCContainer extends ShardingSphereAdapterCont
      */
     public DataSource getDataSource() {
         try {
+            if ("sharding_governance".equals(getParameterizedArray().getScenario())) {
+                return YamlGovernanceShardingSphereDataSourceFactory.createDataSource(new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario())));
+            }
             return YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(EnvironmentPath.getRulesConfigurationFile(getParameterizedArray().getScenario())));
         } catch (SQLException | IOException ex) {
             throw new RuntimeException(ex);

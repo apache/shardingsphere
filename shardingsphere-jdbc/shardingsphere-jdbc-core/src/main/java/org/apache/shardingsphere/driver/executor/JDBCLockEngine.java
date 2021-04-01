@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.lock.LockNameUtil;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.infra.metadata.auth.AuthenticationContext;
 import org.apache.shardingsphere.infra.metadata.engine.MetadataRefreshEngine;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -56,8 +55,7 @@ public final class JDBCLockEngine {
     public JDBCLockEngine(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor) {
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
-        metadataRefreshEngine = new MetadataRefreshEngine(
-                metaDataContexts.getDefaultMetaData(), AuthenticationContext.getInstance().getAuthentication(), metaDataContexts.getProps(), metaDataContexts.getLock());
+        metadataRefreshEngine = new MetadataRefreshEngine(metaDataContexts.getDefaultMetaData(), metaDataContexts.getProps(), metaDataContexts.getLock());
     }
     
     /**

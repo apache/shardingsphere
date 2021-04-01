@@ -45,7 +45,12 @@ public final class ComposeManager extends ExternalResource {
         if (composeMap.containsKey(key)) {
             return composeMap.get(key);
         }
-        ContainerCompose result = new ContainerCompose(suiteName, parameterizedArray);
+        ContainerCompose result;
+        if ("sharding_governance".equals(parameterizedArray.getScenario())) {
+            result = new GovernanceContainerCompose(suiteName, parameterizedArray);
+        } else {
+            result = new SimpleContainerCompose(suiteName, parameterizedArray);
+        }
         composeMap.put(key, result);
         return result;
     }

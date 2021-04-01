@@ -15,10 +15,10 @@
 # limitations under the License.
 #
 
-schemaName: sharding-governance
+schemaName: sharding_governance
 
 dataSources:
-  governance:
+  governance_db:
     url: jdbc:mysql://mysql.sharding-governance.host:3306/governance_db?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
