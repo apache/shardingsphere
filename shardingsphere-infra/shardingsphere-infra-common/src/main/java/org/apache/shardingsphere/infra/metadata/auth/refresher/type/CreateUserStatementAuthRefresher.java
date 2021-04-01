@@ -25,10 +25,9 @@ import org.apache.shardingsphere.infra.metadata.auth.refresher.AuthenticationRef
 import org.apache.shardingsphere.infra.metadata.auth.refresher.event.CreateUserEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.UserSegment;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * Create user statement auth refresher.
@@ -37,16 +36,12 @@ public final class CreateUserStatementAuthRefresher implements AuthenticationRef
     
     @Override
     public void refresh(final Authentication authentication, final SQLStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        Collection<ShardingSphereUser> users = generateUsers((CreateUserStatement) sqlStatement);
+        Collection<ShardingSphereUser> users = createUsers((CreateUserStatement) sqlStatement);
         users.addAll(authentication.getAllUsers());
         ShardingSphereEventBus.getInstance().post(new CreateUserEvent(users));
     }
     
-    private Collection<ShardingSphereUser> generateUsers(final CreateUserStatement statement) {
-        Collection<ShardingSphereUser> result = new LinkedList<>();
-        for (UserSegment each : statement.getUsers()) {
-            result.add(new ShardingSphereUser(each.getUser(), each.getAuth(), null != each.getHost() ? each.getHost() : "%"));
-        }
-        return result;
+    private Collection<ShardingSphereUser> createUsers(final CreateUserStatement sqlStatement) {
+        return sqlStatement.getUsers().stream().map(each -> new ShardingSphereUser(each.getUser(), each.getAuth(), null != each.getHost() ? each.getHost() : "%")).collect(Collectors.toList());
     }
 }
