@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.refresher;
+package org.apache.shardingsphere.infra.metadata.mapper;
 
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresher;
+import org.apache.shardingsphere.infra.metadata.mapper.event.SQLStatementEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Authentication refresher.
+ * SQL statement event mapper.
  */
-public interface AuthenticationRefresher extends MetadataRefresher {
+public interface SQLStatementEventMapper {
     
     /**
-     * Refresh.
+     * Map SQL statement to SQL statement event.
      *
-     * @param authentication authentication
-     * @param sqlStatement sql statement
-     * @param metaData metaData
+     * @param sqlStatement SQL statement
+     * @return SQL statement event
      */
-    void refresh(Authentication authentication, SQLStatement sqlStatement, ShardingSphereMetaData metaData);
+    SQLStatementEvent map(SQLStatement sqlStatement);
 }

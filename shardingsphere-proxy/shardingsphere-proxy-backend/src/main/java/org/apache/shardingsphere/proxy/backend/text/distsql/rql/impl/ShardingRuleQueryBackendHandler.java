@@ -136,6 +136,9 @@ public final class ShardingRuleQueryBackendHandler extends SchemaRequiredBackend
     }
     
     private String generateKeyGenerateStrategy(final ShardingRuleConfiguration ruleConfig, final KeyGenerateStrategyConfiguration keyGenerateStrategy) {
+        if (null == keyGenerateStrategy) {
+            return "";
+        }
         StringBuilder result = new StringBuilder();
         result.append("column:");
         result.append(keyGenerateStrategy.getColumn());

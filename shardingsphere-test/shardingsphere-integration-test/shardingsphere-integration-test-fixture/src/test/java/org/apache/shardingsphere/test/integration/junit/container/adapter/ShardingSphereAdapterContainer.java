@@ -49,4 +49,5 @@ public abstract class ShardingSphereAdapterContainer extends ShardingSphereConta
      * @return DataSource
      */
     public abstract DataSource getDataSource();
+    
 }

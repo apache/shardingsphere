@@ -44,8 +44,8 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfigurationConverter;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.auth.refresher.event.CreateUserEvent;
-import org.apache.shardingsphere.infra.metadata.auth.refresher.event.GrantEvent;
+import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
+import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.GrantStatementEvent;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceDisabledEvent;
@@ -234,8 +234,7 @@ public final class RegistryCenter {
      * @return data source configurations
      */
     public Map<String, DataSourceConfiguration> loadDataSourceConfigurations(final String schemaName) {
-        return hasDataSourceConfiguration(schemaName)
-                ? YamlConfigurationConverter.convertDataSourceConfigurations(repository.get(node.getMetadataDataSourcePath(schemaName))) : new LinkedHashMap<>();
+        return hasDataSourceConfiguration(schemaName) ? YamlConfigurationConverter.convertDataSourceConfigurations(repository.get(node.getMetadataDataSourcePath(schemaName))) : new LinkedHashMap<>();
     }
     
     /**
@@ -266,8 +265,7 @@ public final class RegistryCenter {
      * @return properties
      */
     public Properties loadProperties() {
-        return Strings.isNullOrEmpty(repository.get(node.getPropsPath())) ? new Properties()
-                : YamlConfigurationConverter.convertProperties(repository.get(node.getPropsPath()));
+        return Strings.isNullOrEmpty(repository.get(node.getPropsPath())) ? new Properties() : YamlConfigurationConverter.convertProperties(repository.get(node.getPropsPath()));
     }
     
     /**
@@ -460,7 +458,7 @@ public final class RegistryCenter {
      * @param event user configuration cached event
      */
     @Subscribe
-    public synchronized void renew(final CreateUserEvent event) {
+    public synchronized void renew(final CreateUserStatementEvent event) {
         persistUsers(event.getUsers(), true);
     }
     
@@ -470,7 +468,7 @@ public final class RegistryCenter {
      * @param event grant event
      */
     @Subscribe
-    public synchronized void renew(final GrantEvent event) {
+    public synchronized void renew(final GrantStatementEvent event) {
         persistChangedPrivilege(event.getUsers());
     }
     
