@@ -17,16 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.auth.refresher.event;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
-
 /**
  * Authentication altered event.
  */
-@RequiredArgsConstructor
-@Getter
 public final class AuthenticationAlteredEvent {
-    
-    private final Authentication authentication;
 }

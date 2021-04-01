@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.lock.LockNameUtil;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.metadata.auth.refresher.AuthenticationRefresher;
 import org.apache.shardingsphere.infra.metadata.auth.refresher.event.AuthenticationAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
@@ -42,16 +41,12 @@ public final class MetadataRefreshEngine {
     
     private final ShardingSphereMetaData metaData;
     
-    private final Authentication authentication;
-    
     private final SchemaBuilderMaterials materials;
     
     private final Optional<ShardingSphereLock> lockOptional;
     
-    public MetadataRefreshEngine(final ShardingSphereMetaData metaData, final Authentication authentication,
-                                 final ConfigurationProperties properties, final Optional<ShardingSphereLock> lockOptional) {
+    public MetadataRefreshEngine(final ShardingSphereMetaData metaData, final ConfigurationProperties properties, final Optional<ShardingSphereLock> lockOptional) {
         this.metaData = metaData;
-        this.authentication = authentication;
         this.lockOptional = lockOptional;
         materials = new SchemaBuilderMaterials(metaData.getResource().getDatabaseType(), metaData.getResource().getDataSources(), metaData.getRuleMetaData().getRules(), properties);
     }
@@ -105,8 +100,8 @@ public final class MetadataRefreshEngine {
     }
     
     private void refreshAuthentication(final SQLStatement sqlStatement, final AuthenticationRefresher refresher) {
-        refresher.refresh(authentication, sqlStatement);
+        refresher.refresh(sqlStatement);
         // TODO :Subscribe and handle this event
-        ShardingSphereEventBus.getInstance().post(new AuthenticationAlteredEvent(authentication));
+        ShardingSphereEventBus.getInstance().post(new AuthenticationAlteredEvent());
     }
 }

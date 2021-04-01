@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.auth.refresher.type;
 
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.auth.refresher.AuthenticationRefresher;
 import org.apache.shardingsphere.infra.metadata.auth.refresher.event.GrantEvent;
@@ -34,7 +33,7 @@ import java.util.stream.Collectors;
 public final class GrantStatementAuthRefresher implements AuthenticationRefresher {
     
     @Override
-    public void refresh(final Authentication authentication, final SQLStatement sqlStatement) {
+    public void refresh(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof MySQLGrantStatement) {
             ShardingSphereEventBus.getInstance().post(new GrantEvent(getUsers((MySQLGrantStatement) sqlStatement)));
         }
