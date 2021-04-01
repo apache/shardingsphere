@@ -15,10 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.refresher.event;
+package org.apache.shardingsphere.infra.metadata.auth.mapper.event.dcl.impl;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.auth.mapper.event.dcl.DCLStatementEvent;
+
+import java.util.Collection;
 
 /**
- * SQL statement event.
+ * Grant statement event.
  */
-public interface SQLStatementEvent {
+@RequiredArgsConstructor
+@Getter
+public final class GrantStatementEvent implements DCLStatementEvent {
+    
+    private final Collection<ShardingSphereUser> users;
 }

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.refresher;
+package org.apache.shardingsphere.infra.metadata.auth.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.auth.refresher.type.CreateUserStatementEventMapper;
-import org.apache.shardingsphere.infra.metadata.auth.refresher.type.GrantStatementEventMapper;
+import org.apache.shardingsphere.infra.metadata.auth.mapper.type.CreateUserStatementEventMapper;
+import org.apache.shardingsphere.infra.metadata.auth.mapper.type.GrantStatementEventMapper;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;

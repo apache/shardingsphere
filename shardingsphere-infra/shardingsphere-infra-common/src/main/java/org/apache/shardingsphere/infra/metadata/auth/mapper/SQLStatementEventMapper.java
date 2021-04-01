@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.refresher;
+package org.apache.shardingsphere.infra.metadata.auth.mapper;
 
-import org.apache.shardingsphere.infra.metadata.auth.refresher.event.SQLStatementEvent;
+import org.apache.shardingsphere.infra.metadata.auth.mapper.event.SQLStatementEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**

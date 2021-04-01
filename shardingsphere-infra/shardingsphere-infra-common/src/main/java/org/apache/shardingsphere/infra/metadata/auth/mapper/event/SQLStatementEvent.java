@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.refresher.event.dcl;
+package org.apache.shardingsphere.infra.metadata.auth.mapper.event;
 
 /**
- * DCL statement event.
+ * SQL statement event.
  */
-public interface DCLStatementEvent {
+public interface SQLStatementEvent {
 }
