@@ -73,11 +73,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
             return AuthenticationResultBuilder.continued();
         }
         payload.getByteBuf().resetReaderIndex();
-        if (!startupMessageReceived.get()) {
-            return beforeStartupMessage(context, (PostgreSQLPacketPayload) payload);
-        } else {
-            return afterStartupMessage(context, (PostgreSQLPacketPayload) payload);
-        }
+        return startupMessageReceived.get() ? afterStartupMessage(context, (PostgreSQLPacketPayload) payload) : beforeStartupMessage(context, (PostgreSQLPacketPayload) payload);
     }
     
     private AuthenticationResult beforeStartupMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload) {

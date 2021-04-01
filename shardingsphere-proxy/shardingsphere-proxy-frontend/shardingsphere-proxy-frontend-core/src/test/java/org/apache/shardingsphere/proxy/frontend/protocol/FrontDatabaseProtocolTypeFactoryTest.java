@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.protocol;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUsers;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.Test;
 
@@ -49,7 +49,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
     @Test
     public void assertGetDatabaseTypeWhenThrowShardingSphereConfigurationException() {
         StandardMetaDataContexts metaDataContexts = new StandardMetaDataContexts(
-                Collections.emptyMap(), mock(ExecutorEngine.class), mock(Authentication.class), new ConfigurationProperties(new Properties()));
+                Collections.emptyMap(), mock(ExecutorEngine.class), mock(ShardingSphereUsers.class), new ConfigurationProperties(new Properties()));
         setMetaDataContexts(metaDataContexts);
         assertTrue(metaDataContexts.getMetaDataMap().isEmpty());
         assertThat(FrontDatabaseProtocolTypeFactory.getDatabaseType().getName(), is("MySQL"));
@@ -58,7 +58,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
     @Test
     public void assertGetDatabaseTypeInstanceOfMySQLDatabaseTypeFromMetaDataContextsSchemaName() {
         StandardMetaDataContexts metaDataContexts = new StandardMetaDataContexts(
-                mockMetaDataMap(), mock(ExecutorEngine.class), mock(Authentication.class), new ConfigurationProperties(new Properties()));
+                mockMetaDataMap(), mock(ExecutorEngine.class), mock(ShardingSphereUsers.class), new ConfigurationProperties(new Properties()));
         setMetaDataContexts(metaDataContexts);
         assertFalse(metaDataContexts.getMetaDataMap().isEmpty());
         String configuredDatabaseType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
@@ -73,7 +73,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest {
     public void assertGetDatabaseTypeOfPostgreSQLDatabaseTypeFromMetaDataContextsProps() {
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "PostgreSQL");
-        StandardMetaDataContexts metaDataContexts = new StandardMetaDataContexts(mockMetaDataMap(), mock(ExecutorEngine.class), mock(Authentication.class), new ConfigurationProperties(props));
+        StandardMetaDataContexts metaDataContexts = new StandardMetaDataContexts(mockMetaDataMap(), mock(ExecutorEngine.class), mock(ShardingSphereUsers.class), new ConfigurationProperties(props));
         setMetaDataContexts(metaDataContexts);
         assertFalse(metaDataContexts.getMetaDataMap().isEmpty());
         String configuredDatabaseType = metaDataContexts.getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);

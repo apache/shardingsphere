@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Assign
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DeleteContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DeleteWhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.FromClauseContext;
@@ -38,7 +39,11 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IntoCl
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.JoinSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.JoinedTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LockClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeAssignmentContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeAssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeSetAssignmentsClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeUpdateClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultipleTableNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultipleTablesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.OrderByItemContext;
@@ -487,6 +492,15 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         result.setTarget((SimpleTableSegment) visit(ctx.intoClause()));
         result.setSource((TableSegment) visit(ctx.usingClause()));
         result.setExpr((ExpressionSegment) (visit(ctx.usingClause().expr())));
+        if (null != ctx.mergeUpdateClause()) {
+            result.getUpdate().setSetAssignment((SetAssignmentSegment) visit(ctx.mergeUpdateClause().mergeSetAssignmentsClause()));
+            if (null != ctx.mergeUpdateClause().whereClause()) {
+                result.getUpdate().setWhere((WhereSegment) visit(ctx.mergeUpdateClause().whereClause()));
+            }
+            if (null != ctx.mergeUpdateClause().deleteWhereClause()) {
+                result.getDelete().setWhere((WhereSegment) visit(ctx.mergeUpdateClause().deleteWhereClause()));
+            }
+        }
         return result;
     }
     
@@ -529,5 +543,49 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
             result.setAlias((AliasSegment) visit(ctx.alias()));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitMergeUpdateClause(final MergeUpdateClauseContext ctx) {
+        OracleMergeStatement result = new OracleMergeStatement();
+        result.getUpdate().setSetAssignment((SetAssignmentSegment) visit(ctx.mergeSetAssignmentsClause()));
+        if (null != ctx.whereClause()) {
+            result.getUpdate().setWhere((WhereSegment) visit(ctx.whereClause()));
+        }
+        if (null != ctx.deleteWhereClause()) {
+            result.getDelete().setWhere((WhereSegment) visit(ctx.deleteWhereClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitMergeSetAssignmentsClause(final MergeSetAssignmentsClauseContext ctx) {
+        Collection<AssignmentSegment> assignments = new LinkedList<>();
+        for (MergeAssignmentContext each : ctx.mergeAssignment()) {
+            assignments.add((AssignmentSegment) visit(each));
+        }
+        return new SetAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), assignments);
+    }
+    
+    @Override
+    public ASTNode visitMergeAssignment(final MergeAssignmentContext ctx) {
+        ColumnSegment column = (ColumnSegment) visitColumnName(ctx.columnName());
+        ExpressionSegment value = (ExpressionSegment) visit(ctx.mergeAssignmentValue());
+        return new AssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, value);
+    }
+    
+    @Override
+    public ASTNode visitMergeAssignmentValue(final MergeAssignmentValueContext ctx) {
+        ExprContext expr = ctx.expr();
+        if (null != expr) {
+            return visit(expr);
+        }
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitDeleteWhereClause(final DeleteWhereClauseContext ctx) {
+        ASTNode segment = visit(ctx.whereClause().expr());
+        return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) segment);
     }
 }

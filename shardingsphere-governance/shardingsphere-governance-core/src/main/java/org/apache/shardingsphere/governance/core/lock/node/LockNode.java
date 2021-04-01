@@ -79,7 +79,7 @@ public final class LockNode {
      * @return lock name
      */
     public Optional<String> getLockName(final String lockNodePath) {
-        Pattern pattern = Pattern.compile(getLockRootNodePath() + "/" + "(\\w+)$", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(getLockRootNodePath() + "/" + "(.+)/(.+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(lockNodePath);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }

@@ -43,7 +43,7 @@ public final class LockChangedListener extends PostGovernanceRepositoryEventList
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        if (lockNode.getLockName(event.getKey()).isPresent()) {
+        if (!event.getKey().equals(lockNode.getLockRootNodePath()) && lockNode.getLockName(event.getKey()).isPresent()) {
             if (event.getType() == Type.ADDED) {
                 return Optional.of(new LockNotificationEvent(lockNode.getLockName(event.getKey()).get()));
             } else if (event.getType() == Type.DELETED) {

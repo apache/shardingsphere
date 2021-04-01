@@ -159,7 +159,6 @@ public final class RegistryCenterNode {
         return matcher.find() ? Optional.of(new GovernanceSchema(matcher.group(1), matcher.group(2))) : Optional.empty();
     }
     
-    
     /**
      * Get primary nodes governance schema.
      *
@@ -266,12 +265,12 @@ public final class RegistryCenterNode {
     }
 
     /**
-     * Get authenticationnodes path.
+     * Get privilege node path.
      *
-     * @return authenticationnodes path
+     * @return privilege node path
      */
     public String getPrivilegeNodePath() {
-        return Joiner.on(PATH_SEPARATOR).join(ROOT, PRIVILEGE_NODE);
+        return Joiner.on(PATH_SEPARATOR).join("", ROOT, PRIVILEGE_NODE);
     }
     
     /**

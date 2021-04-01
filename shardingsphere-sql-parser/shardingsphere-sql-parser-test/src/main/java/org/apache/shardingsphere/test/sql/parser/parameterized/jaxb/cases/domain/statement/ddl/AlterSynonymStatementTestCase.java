@@ -15,16 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-@RequiredArgsConstructor
-@Getter
-public final class AllColumnExpression implements ExpressionSegment {
-    
-    private int startIndex;
-    
-    private int stopIndex;
+/**
+ * Alter synonym statement test case.
+ */
+public final class AlterSynonymStatementTestCase extends SQLParserTestCase {
 }

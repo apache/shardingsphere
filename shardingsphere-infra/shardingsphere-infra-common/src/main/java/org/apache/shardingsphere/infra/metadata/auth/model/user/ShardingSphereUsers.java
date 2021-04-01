@@ -15,19 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.metadata.auth.model.user;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+import java.util.Optional;
+
 /**
- * Lock wait timeout exception.
+ * ShardingSphere users.
  */
 @RequiredArgsConstructor
 @Getter
-public final class LockWaitTimeoutException extends BackendException {
+public final class ShardingSphereUsers {
     
-    private static final long serialVersionUID = 2599713085782288003L;
+    private final Collection<ShardingSphereUser> users;
     
-    private final Long timeoutMilliseconds;
+    /**
+     * Find user.
+     *
+     * @param grantee grantee
+     * @return found user
+     */
+    public Optional<ShardingSphereUser> findUser(final Grantee grantee) {
+        return users.stream().filter(each -> each.getGrantee().equals(grantee)).findFirst();
+    }
 }

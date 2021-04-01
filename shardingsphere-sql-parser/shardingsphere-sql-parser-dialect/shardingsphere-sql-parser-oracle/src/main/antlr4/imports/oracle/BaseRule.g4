@@ -130,7 +130,11 @@ indexName
 savepointName
     : identifier
     ;
-    
+
+synonymName
+    : identifier
+    ;
+
 owner
     : identifier
     ;

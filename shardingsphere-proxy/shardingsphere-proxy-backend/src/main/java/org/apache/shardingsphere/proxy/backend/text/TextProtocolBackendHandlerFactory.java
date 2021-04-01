@@ -89,7 +89,7 @@ public final class TextProtocolBackendHandlerFactory {
     
     private static void sqlCheck(final BackendConnection backendConnection, final SQLStatement sqlStatement) {
         MetaDataContexts contexts = ProxyContext.getInstance().getMetaDataContexts();
-        SQLCheckEngine.check(sqlStatement, Collections.emptyList(), contexts.getMetaData(backendConnection.getSchemaName()), contexts.getAuthentication());
+        SQLCheckEngine.check(sqlStatement, Collections.emptyList(), contexts.getMetaData(backendConnection.getSchemaName()), backendConnection.getGrantee());
     }
     
     private static DatabaseType getBackendDatabaseType(final DatabaseType defaultDatabaseType, final BackendConnection backendConnection) {

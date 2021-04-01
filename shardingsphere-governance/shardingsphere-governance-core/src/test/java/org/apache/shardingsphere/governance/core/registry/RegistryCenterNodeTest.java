@@ -117,4 +117,9 @@ public final class RegistryCenterNodeTest {
     public void assertGetTablePath() {
         assertThat(registryCenterNode.getMetadataSchemaPath("sharding_db"), is("/metadata/sharding_db/schema"));
     }
+    
+    @Test
+    public void assertGetPrivilegeNodePath() {
+        assertThat(registryCenterNode.getPrivilegeNodePath(), is("/states/privilegenode"));
+    }
 }
