@@ -27,7 +27,6 @@ import org.apache.shardingsphere.proxy.backend.exception.AddReadWriteSplittingRu
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.LockWaitTimeoutException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ReadWriteSplittingRuleDataSourcesNotExistedException;
@@ -38,6 +37,8 @@ import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingRuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.ShardingTableRuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.TableLockWaitTimeoutException;
+import org.apache.shardingsphere.proxy.backend.exception.TableLockedException;
 import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactionException;
 import org.apache.shardingsphere.proxy.backend.exception.TablesInUsedException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
@@ -116,8 +117,15 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof RuleNotExistsException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_SP_DOES_NOT_EXIST);
         }
-        if (cause instanceof LockWaitTimeoutException) {
-            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_LOCKING_SERVICE_TIMEOUT, ((LockWaitTimeoutException) cause).getTimeoutMilliseconds());
+        if (cause instanceof TableLockWaitTimeoutException) {
+            TableLockWaitTimeoutException exception = (TableLockWaitTimeoutException) cause;
+            return new MySQLErrPacket(1, CommonErrorCode.TABLE_LOCK_WAIT_TIMEOUT, exception.getTableName(), 
+                    exception.getSchemaName(), exception.getTimeoutMilliseconds());
+        }
+        if (cause instanceof TableLockedException) {
+            TableLockedException exception = (TableLockedException) cause;
+            return new MySQLErrPacket(1, CommonErrorCode.TABLE_LOCKED, exception.getTableName(),
+                    exception.getSchemaName());
         }
         if (cause instanceof ResourceNotExistedException) {
             return new MySQLErrPacket(1, CommonErrorCode.RESOURCE_NOT_EXIST, ((ResourceNotExistedException) cause).getResourceNames());
