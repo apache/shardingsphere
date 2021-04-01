@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.executor;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.DefaultSchema;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -95,8 +94,7 @@ public final class JDBCLockEngine {
         for (String tableName : tableNames) {
             String lockName = LockNameUtil.getTableLockName(DefaultSchema.LOGIC_NAME, tableName);
             if (!lock.tryLock(lockName)) {
-                throw new SQLException(String.format("Table %s lock wait timeout of %s ms exceeded", tableName, 
-                        metaDataContexts.getProps().<Long>getValue(ConfigurationPropertyKey.LOCK_WAIT_TIMEOUT_MILLISECONDS)));
+                throw new SQLException(String.format("Table %s lock wait timeout of %s ms exceeded", tableName, lock.getDefaultTimeOut()));
             }
             lockNames.add(lockName);
         }

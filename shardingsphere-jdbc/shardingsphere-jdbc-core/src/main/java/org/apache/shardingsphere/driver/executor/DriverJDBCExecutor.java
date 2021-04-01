@@ -31,18 +31,14 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Driver JDBC executor.
  */
 public final class DriverJDBCExecutor {
-    
-    private final Map<String, DataSource> dataSourceMap;
     
     private final MetaDataContexts metaDataContexts;
     
@@ -51,9 +47,7 @@ public final class DriverJDBCExecutor {
     
     private final JDBCLockEngine jdbcLockEngine;
     
-    public DriverJDBCExecutor(final Map<String, DataSource> dataSourceMap, final MetaDataContexts metaDataContexts,
-                              final JDBCExecutor jdbcExecutor) {
-        this.dataSourceMap = dataSourceMap;
+    public DriverJDBCExecutor(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor) {
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
         this.jdbcLockEngine = new JDBCLockEngine(metaDataContexts, jdbcExecutor);
