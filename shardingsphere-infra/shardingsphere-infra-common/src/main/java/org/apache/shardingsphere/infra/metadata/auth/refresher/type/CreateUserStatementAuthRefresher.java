@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.auth.AuthenticationContext;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.auth.refresher.AuthenticationRefresher;
-import org.apache.shardingsphere.infra.metadata.auth.refresher.event.CreateUserEvent;
+import org.apache.shardingsphere.infra.metadata.auth.refresher.event.CreateUserStatementEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
 
@@ -37,7 +37,7 @@ public final class CreateUserStatementAuthRefresher implements AuthenticationRef
     public void refresh(final SQLStatement sqlStatement) {
         Collection<ShardingSphereUser> users = getUsers((CreateUserStatement) sqlStatement);
         users.addAll(AuthenticationContext.getInstance().getAuthentication().getAllUsers());
-        ShardingSphereEventBus.getInstance().post(new CreateUserEvent(users));
+        ShardingSphereEventBus.getInstance().post(new CreateUserStatementEvent(users));
     }
     
     private Collection<ShardingSphereUser> getUsers(final CreateUserStatement sqlStatement) {

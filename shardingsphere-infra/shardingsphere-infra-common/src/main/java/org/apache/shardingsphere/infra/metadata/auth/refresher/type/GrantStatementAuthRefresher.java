@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.auth.refresher.type;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.auth.refresher.AuthenticationRefresher;
-import org.apache.shardingsphere.infra.metadata.auth.refresher.event.GrantEvent;
+import org.apache.shardingsphere.infra.metadata.auth.refresher.event.GrantStatementEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLGrantStatement;
 
@@ -35,7 +35,7 @@ public final class GrantStatementAuthRefresher implements AuthenticationRefreshe
     @Override
     public void refresh(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof MySQLGrantStatement) {
-            ShardingSphereEventBus.getInstance().post(new GrantEvent(getUsers((MySQLGrantStatement) sqlStatement)));
+            ShardingSphereEventBus.getInstance().post(new GrantStatementEvent(getUsers((MySQLGrantStatement) sqlStatement)));
         }
         // TODO support other database dialects
     }

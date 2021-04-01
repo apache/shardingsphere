@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUs
 import java.util.Collection;
 
 /**
- * Create user event.
+ * Grant statement event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateUserEvent {
+public final class GrantStatementEvent implements SQLStatementEvent {
     
     private final Collection<ShardingSphereUser> users;
 }
