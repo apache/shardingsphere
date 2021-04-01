@@ -36,12 +36,12 @@ public final class CreateUserStatementAuthRefresher implements AuthenticationRef
     
     @Override
     public void refresh(final Authentication authentication, final SQLStatement sqlStatement, final ShardingSphereMetaData metaData) {
-        Collection<ShardingSphereUser> users = createUsers((CreateUserStatement) sqlStatement);
+        Collection<ShardingSphereUser> users = getUsers((CreateUserStatement) sqlStatement);
         users.addAll(authentication.getAllUsers());
         ShardingSphereEventBus.getInstance().post(new CreateUserEvent(users));
     }
     
-    private Collection<ShardingSphereUser> createUsers(final CreateUserStatement sqlStatement) {
+    private Collection<ShardingSphereUser> getUsers(final CreateUserStatement sqlStatement) {
         return sqlStatement.getUsers().stream().map(each -> new ShardingSphereUser(each.getUser(), each.getAuth(), null != each.getHost() ? each.getHost() : "%")).collect(Collectors.toList());
     }
 }

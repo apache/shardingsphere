@@ -37,10 +37,12 @@ public final class GrantStatementAuthRefresher implements AuthenticationRefreshe
     @Override
     public void refresh(final Authentication authentication, final SQLStatement sqlStatement, final ShardingSphereMetaData metaData) {
         if (sqlStatement instanceof MySQLGrantStatement) {
-            Collection<ShardingSphereUser> users = ((MySQLGrantStatement) sqlStatement).getUsers().stream()
-                    .map(each -> new ShardingSphereUser(each.getUser(), each.getAuth(), each.getHost())).collect(Collectors.toList());
-            ShardingSphereEventBus.getInstance().post(new GrantEvent(users));
+            ShardingSphereEventBus.getInstance().post(new GrantEvent(getUsers((MySQLGrantStatement) sqlStatement)));
         }
-        // TODO support other db
+        // TODO support other database dialects
+    }
+    
+    private Collection<ShardingSphereUser> getUsers(final MySQLGrantStatement sqlStatement) {
+        return sqlStatement.getUsers().stream().map(each -> new ShardingSphereUser(each.getUser(), each.getAuth(), each.getHost())).collect(Collectors.toList());
     }
 }
