@@ -232,10 +232,9 @@ public final class CuratorZookeeperRepository implements RegistryRepository {
     
     @Override
     public void watch(final String key, final DataChangedEventListener listener) {
-        String cacheKey = key.startsWith("/") ? key : "/" + key;
-        String path = cacheKey + PATH_SEPARATOR;
+        String path = key + PATH_SEPARATOR;
         if (!caches.containsKey(path)) {
-            addCacheData(cacheKey);
+            addCacheData(key);
             CuratorCache cache = caches.get(path);
             cache.listenable().addListener((type, oldData, data) -> {
                 String eventPath = CuratorCacheListener.Type.NODE_DELETED == type ? oldData.getPath() : data.getPath();
