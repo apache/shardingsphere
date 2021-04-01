@@ -28,9 +28,8 @@
 #    serverLists: localhost:2181
 #  overwrite: false
 
-authentication:
-  username: root
-  password: root
+users:
+  - root@%:root
 
 props:
   max-connections-size-per-query: 1

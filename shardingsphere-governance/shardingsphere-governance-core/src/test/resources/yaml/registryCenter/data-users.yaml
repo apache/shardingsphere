@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-!!map
 - root@%:root
 - sharding@:sharding
 - root1@:root1

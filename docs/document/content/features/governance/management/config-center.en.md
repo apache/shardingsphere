@@ -34,6 +34,7 @@ user configurations. Can configure username and password for ShardingSphere-Prox
 
 ```yaml
 - root@127.0.0.1:root
+- sharding@%:sharding
 ```
 
 ### /props
