@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.junit.compose;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.junit.container.adapter.ShardingSphereAdapterContainer;
@@ -32,17 +33,20 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.lifecycle.Startable;
 
+import javax.sql.DataSource;
 import java.io.Closeable;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
  * Container compose.
  */
-public final class ContainerCompose extends ExternalResource implements Closeable {
+@Getter(AccessLevel.PROTECTED)
+public abstract class ContainerCompose extends ExternalResource implements Closeable {
     
     private final Network network = Network.newNetwork();
     
@@ -50,26 +54,16 @@ public final class ContainerCompose extends ExternalResource implements Closeabl
     
     private final ParameterizedArray parameterizedArray;
     
-    private final List<ShardingSphereContainer> containers;
-    
-    @Getter
-    private final ShardingSphereStorageContainer storageContainer;
-    
-    @Getter
-    private final ShardingSphereAdapterContainer adapterContainer;
+    private final List<ShardingSphereContainer> containers = new ArrayList<>();
     
     private volatile boolean started;
     
     public ContainerCompose(final String clusterName, final ParameterizedArray parameterizedArray) {
         this.clusterName = clusterName;
         this.parameterizedArray = parameterizedArray;
-        this.storageContainer = createStorageContainer();
-        this.adapterContainer = createAdapterContainer();
-        adapterContainer.dependsOn(storageContainer);
-        this.containers = Arrays.asList(storageContainer, adapterContainer);
     }
     
-    private ShardingSphereAdapterContainer createAdapterContainer() {
+    protected ShardingSphereAdapterContainer createAdapterContainer() {
         Supplier<ShardingSphereAdapterContainer> supplier = () -> {
             switch (parameterizedArray.getAdapter()) {
                 case "proxy":
@@ -81,13 +75,10 @@ public final class ContainerCompose extends ExternalResource implements Closeabl
                 
             }
         };
-        ShardingSphereAdapterContainer result = supplier.get();
-        result.setNetwork(network);
-        result.withLogConsumer(ContainerLogs.newConsumer(this.clusterName + "-adapter"));
-        return result;
+        return createContainer(supplier, "adapter");
     }
     
-    private ShardingSphereStorageContainer createStorageContainer() {
+    protected ShardingSphereStorageContainer createStorageContainer() {
         Supplier<ShardingSphereStorageContainer> supplier = () -> {
             switch (parameterizedArray.getDatabaseType().getName()) {
                 case "MySQL":
@@ -98,10 +89,15 @@ public final class ContainerCompose extends ExternalResource implements Closeabl
                     throw new RuntimeException("Unknown storage type " + parameterizedArray.getDatabaseType());
             }
         };
-        ShardingSphereStorageContainer result = supplier.get();
+        return createContainer(supplier, "mysql.db.host");
+    }
+    
+    protected final <T extends ShardingSphereContainer> T createContainer(final Supplier<T> supplier, final String hostName) {
+        T result = supplier.get();
+        containers.add(result);
         result.setNetwork(network);
-        result.withLogConsumer(ContainerLogs.newConsumer(this.clusterName + "-storage"));
-        result.setNetworkAliases(Collections.singletonList("mysql.db.host"));
+        result.setNetworkAliases(Collections.singletonList(hostName));
+        result.withLogConsumer(ContainerLogs.newConsumer(String.join("-", clusterName, result.getDockerName())));
         return result;
     }
     
@@ -135,6 +131,47 @@ public final class ContainerCompose extends ExternalResource implements Closeabl
                     }
                 });
         started = true;
+    }
+    
+    /**
+     * Get adapter container.
+     *
+     * @return ShardingSphere adapter container
+     */
+    public abstract ShardingSphereAdapterContainer getAdapterContainer();
+    
+    /**
+     * Get storage container.
+     *
+     * @return ShardingSphere storage container
+     */
+    public abstract ShardingSphereStorageContainer getStorageContainer();
+    
+    /**
+     * Get target datasource for writer.
+     *
+     * @return datasource
+     */
+    public DataSource getDataSourceForWriter() {
+        return getAdapterContainer().getDataSource();
+    }
+    
+    /**
+     * Get target datasource for reader.
+     *
+     * @return datasource
+     */
+    public DataSource getDataSourceForReader() {
+        return getAdapterContainer().getDataSource();
+    }
+    
+    /**
+     * Get all target datasources.
+     *
+     * @return datasource map
+     */
+    public Map<String, DataSource> getDataSourceMap() {
+        return Collections.singletonMap(getAdapterContainer().getDockerName(), getAdapterContainer().getDataSource());
     }
     
     @Override
