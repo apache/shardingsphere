@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: sharding-governance
+schemaName: sharding_governance
 
 dataSources:
   governance_db:
