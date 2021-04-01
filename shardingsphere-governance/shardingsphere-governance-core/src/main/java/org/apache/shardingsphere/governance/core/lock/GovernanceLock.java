@@ -98,6 +98,11 @@ public final class GovernanceLock implements ShardingSphereLock {
         return registryCenter.checkUnlockAck(lockName);
     }
     
+    @Override
+    public long getDefaultTimeOut() {
+        return lockTimeoutMilliseconds;
+    }
+    
     /**
      * Renew lock time out.
      *

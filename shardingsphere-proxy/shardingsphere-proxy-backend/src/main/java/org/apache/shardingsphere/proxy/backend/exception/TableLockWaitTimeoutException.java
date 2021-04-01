@@ -21,13 +21,17 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Lock wait timeout exception.
+ * Table lock wait timeout exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class LockWaitTimeoutException extends BackendException {
+public final class TableLockWaitTimeoutException extends BackendException {
     
     private static final long serialVersionUID = 2599713085782288003L;
+    
+    private final String schemaName;
+    
+    private final String tableName;
     
     private final Long timeoutMilliseconds;
 }
