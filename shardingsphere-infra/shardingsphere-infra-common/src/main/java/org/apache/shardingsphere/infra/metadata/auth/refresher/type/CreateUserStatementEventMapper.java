@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.infra.metadata.auth.refresher.type;
 
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.auth.AuthenticationContext;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.auth.refresher.AuthenticationRefresher;
+import org.apache.shardingsphere.infra.metadata.auth.refresher.SQLStatementEventMapper;
 import org.apache.shardingsphere.infra.metadata.auth.refresher.event.CreateUserStatementEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.CreateUserStatement;
@@ -29,15 +28,15 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Create user statement auth refresher.
+ * Create user statement event.
  */
-public final class CreateUserStatementAuthRefresher implements AuthenticationRefresher {
+public final class CreateUserStatementEventMapper implements SQLStatementEventMapper {
     
     @Override
-    public void refresh(final SQLStatement sqlStatement) {
+    public CreateUserStatementEvent map(final SQLStatement sqlStatement) {
         Collection<ShardingSphereUser> users = getUsers((CreateUserStatement) sqlStatement);
         users.addAll(AuthenticationContext.getInstance().getAuthentication().getAllUsers());
-        ShardingSphereEventBus.getInstance().post(new CreateUserStatementEvent(users));
+        return new CreateUserStatementEvent(users);
     }
     
     private Collection<ShardingSphereUser> getUsers(final CreateUserStatement sqlStatement) {

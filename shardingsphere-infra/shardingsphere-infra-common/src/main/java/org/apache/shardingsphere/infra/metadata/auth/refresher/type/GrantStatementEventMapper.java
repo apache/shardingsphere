@@ -17,27 +17,28 @@
 
 package org.apache.shardingsphere.infra.metadata.auth.refresher.type;
 
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.auth.refresher.AuthenticationRefresher;
+import org.apache.shardingsphere.infra.metadata.auth.refresher.SQLStatementEventMapper;
 import org.apache.shardingsphere.infra.metadata.auth.refresher.event.GrantStatementEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLGrantStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
- * Grant statement auth refresher.
+ * Grant statement event mapper.
  */
-public final class GrantStatementAuthRefresher implements AuthenticationRefresher {
+public final class GrantStatementEventMapper implements SQLStatementEventMapper {
     
     @Override
-    public void refresh(final SQLStatement sqlStatement) {
+    public GrantStatementEvent map(final SQLStatement sqlStatement) {
         if (sqlStatement instanceof MySQLGrantStatement) {
-            ShardingSphereEventBus.getInstance().post(new GrantStatementEvent(getUsers((MySQLGrantStatement) sqlStatement)));
+            return new GrantStatementEvent(getUsers((MySQLGrantStatement) sqlStatement));
         }
         // TODO support other database dialects
+        return new GrantStatementEvent(Collections.emptyList());
     }
     
     private Collection<ShardingSphereUser> getUsers(final MySQLGrantStatement sqlStatement) {

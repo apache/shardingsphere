@@ -17,18 +17,19 @@
 
 package org.apache.shardingsphere.infra.metadata.auth.refresher;
 
-import org.apache.shardingsphere.infra.metadata.engine.MetadataRefresher;
+import org.apache.shardingsphere.infra.metadata.auth.refresher.event.SQLStatementEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Authentication refresher.
+ * SQL statement event mapper.
  */
-public interface AuthenticationRefresher extends MetadataRefresher {
+public interface SQLStatementEventMapper {
     
     /**
-     * Refresh.
+     * Map SQL statement to SQL statement event.
      *
      * @param sqlStatement SQL statement
+     * @return SQL statement event
      */
-    void refresh(SQLStatement sqlStatement);
+    SQLStatementEvent map(SQLStatement sqlStatement);
 }
