@@ -21,13 +21,18 @@ import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUse
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
 
+import java.util.Objects;
+
 /**
  * User YAML swapper.
  */
 public final class UserYamlSwapper implements YamlConfigurationSwapper<YamlUserConfiguration, ShardingSphereUser> {
 
     @Override
-    public YamlUserConfiguration swapToYamlConfiguration(ShardingSphereUser data) {
+    public YamlUserConfiguration swapToYamlConfiguration(final ShardingSphereUser data) {
+        if (Objects.isNull(data)) {
+            return null;
+        }
         YamlUserConfiguration result = new YamlUserConfiguration();
         result.setUsername(data.getGrantee().getUsername());
         result.setHostname(data.getGrantee().getHostname());
@@ -36,8 +41,10 @@ public final class UserYamlSwapper implements YamlConfigurationSwapper<YamlUserC
     }
 
     @Override
-    public ShardingSphereUser swapToObject(YamlUserConfiguration yamlConfig) {
-        return new ShardingSphereUser(yamlConfig.getUsername(), yamlConfig.getPassword(), (null == yamlConfig.getHostname()
-                || "%".equals(yamlConfig.getHostname())) ? "%" : yamlConfig.getHostname());
+    public ShardingSphereUser swapToObject(final YamlUserConfiguration yamlConfig) {
+        if (Objects.isNull(yamlConfig)) {
+            return null;
+        }
+        return new ShardingSphereUser(yamlConfig.getUsername(), yamlConfig.getPassword(), null == yamlConfig.getHostname() ? "%" : yamlConfig.getHostname());
     }
 }

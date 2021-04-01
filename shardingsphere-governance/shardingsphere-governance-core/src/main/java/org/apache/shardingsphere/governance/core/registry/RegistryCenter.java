@@ -43,8 +43,6 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfigurationConverter;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfigurationWrap;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.auth.refresher.event.CreateUserEvent;
 import org.apache.shardingsphere.infra.metadata.auth.refresher.event.GrantEvent;
@@ -123,7 +121,7 @@ public final class RegistryCenter {
      * @param isOverwrite is overwrite config center's configuration
      */
     public void persistGlobalConfiguration(final Collection<ShardingSphereUser> users, final Properties props, final boolean isOverwrite) {
-        persistAuthentication(users, isOverwrite);
+        persistUsers(users, isOverwrite);
         persistProperties(props, isOverwrite);
     }
     
@@ -192,17 +190,15 @@ public final class RegistryCenter {
         return result;
     }
 
-    private void persistAuthentication(final Collection<ShardingSphereUser> users, final boolean isOverwrite) {
-        if (!users.isEmpty() && (isOverwrite || !hasAuthentication())) {
-            YamlUserConfigurationWrap yamlUserConfiguration = new YamlUserConfigurationWrap();
-            yamlUserConfiguration.getUsers().addAll(YamlUserConfigurationConverter.convertYamlUserConfigurationFormatteds(users));
-            repository.persist(node.getUsersNode(),YamlEngine.marshal(yamlUserConfiguration));
+    private void persistUsers(final Collection<ShardingSphereUser> users, final boolean isOverwrite) {
+        if (!users.isEmpty() && (isOverwrite || !hasUsers())) {
+            repository.persist(node.getUsersNode(), YamlEngine.marshal(YamlUserConfigurationConverter.convertYamlUserConfigurationFormattings(users)));
         }
     }
     
     private void persistChangedPrivilege(final Collection<ShardingSphereUser> users) {
         if (!users.isEmpty()) {
-            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
+            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(YamlUserConfigurationConverter.convertYamlUserConfigurationFormattings(users)));
         }
     }
 
@@ -254,13 +250,13 @@ public final class RegistryCenter {
     }
     
     /**
-     * Load user rule.
+     * Load users.
      *
      * @return authentication
      */
-    public Collection<ShardingSphereUser> loadUserRule() {
-        return hasAuthentication()
-                ? YamlConfigurationConverter.convertAuthentication(repository.get(node.getUsersNode()))
+    public Collection<ShardingSphereUser> loadUsers() {
+        return hasUsers()
+                ? YamlConfigurationConverter.convertUsers(repository.get(node.getUsersNode()))
                 : Collections.emptyList();
     }
     
@@ -336,8 +332,12 @@ public final class RegistryCenter {
     public void deleteSchema(final String schemaName) {
         repository.delete(node.getSchemaNamePath(schemaName));
     }
-    
-    private boolean hasAuthentication() {
+
+    /**
+     * has users.
+     * @return true/false
+     */
+    private boolean hasUsers() {
         return !Strings.isNullOrEmpty(repository.get(node.getUsersNode()));
     }
     
@@ -465,7 +465,7 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final CreateUserEvent event) {
-        persistAuthentication(event.getUsers(), true);
+        persistUsers(event.getUsers(), true);
     }
     
     /**

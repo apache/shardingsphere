@@ -44,7 +44,7 @@ public final class AuthenticationProcessor implements Processor<AuthenticationPr
         return new Authentication("root", user.getPassword());
     }
 
-    private Map<String, YamlUserConfiguration> getYamlUserConfigurations(YamlProxyServerConfiguration configuration) {
+    private Map<String, YamlUserConfiguration> getYamlUserConfigurations(final YamlProxyServerConfiguration configuration) {
         Collection<YamlUserConfiguration> users = YamlUserConfigurationConverter.convertYamlUserConfiguration(configuration.getUsers());
         return users.stream().collect(Collectors.toMap(YamlUserConfiguration::getUsername, val -> val));
     }

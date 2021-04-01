@@ -15,10 +15,6 @@
 # limitations under the License.
 #
 
-users:
-  - hostname: '%'
-    password: root
-    username: root
-  - hostname: ''
-    password: sharding
-    username: sharding
+!!map
+- root@%:root
+- sharding@:sharding

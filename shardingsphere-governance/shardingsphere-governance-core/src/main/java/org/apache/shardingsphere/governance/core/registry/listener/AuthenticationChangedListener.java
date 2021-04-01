@@ -39,6 +39,6 @@ public final class AuthenticationChangedListener extends PostGovernanceRepositor
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        return Optional.of(new UserRuleChangedEvent(YamlConfigurationConverter.convertAuthentication(event.getValue())));
+        return Optional.of(new UserRuleChangedEvent(YamlConfigurationConverter.convertUsers(event.getValue())));
     }
 }

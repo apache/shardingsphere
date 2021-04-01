@@ -24,7 +24,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfigurationConverter;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfigurationWrap;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -35,7 +34,11 @@ import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfigurat
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 
 import javax.sql.DataSource;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Configuration converter for YAML content.
@@ -102,13 +105,13 @@ public final class YamlConfigurationConverter {
     }
     
     /**
-     * Convert authentication from YAML content.
+     * Convert users from YAML content.
      *
      * @param yamlContent YAML content
-     * @return authentication
+     * @return users
      */
-    public static Collection<ShardingSphereUser> convertAuthentication(final String yamlContent) {
-        Collection<String> users = YamlEngine.unmarshal(yamlContent, YamlUserConfigurationWrap.class).getUsers();
+    public static Collection<ShardingSphereUser> convertUsers(final String yamlContent) {
+        Collection<String> users = YamlEngine.unmarshal(yamlContent, Collection.class);
         return YamlUserConfigurationConverter.convertShardingSphereUser(users);
     }
     

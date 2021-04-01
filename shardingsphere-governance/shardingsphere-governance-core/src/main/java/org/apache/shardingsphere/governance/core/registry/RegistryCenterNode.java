@@ -256,9 +256,15 @@ public final class RegistryCenterNode {
         return getFullPath(AUTHENTICATION_NODE);
     }
 
+    /**
+     * Get users path.
+     *
+     * @return users path
+     */
     public String getUsersNode() {
         return getFullPath(USERS_NODE);
     }
+
     /**
      * Get authenticationnodes path.
      *
