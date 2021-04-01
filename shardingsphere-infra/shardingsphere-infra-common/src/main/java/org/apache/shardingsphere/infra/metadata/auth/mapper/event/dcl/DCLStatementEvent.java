@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.infra.metadata.auth.mapper.event.dcl;
 
+import org.apache.shardingsphere.infra.metadata.auth.mapper.event.SQLStatementEvent;
+
 /**
  * DCL statement event.
  */
-public interface DCLStatementEvent {
+public interface DCLStatementEvent extends SQLStatementEvent {
 }
