@@ -83,7 +83,7 @@ public final class PrivilegeBuilder {
         int maxConnectionsSizePerQuery = props.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> result = build(metaData.getResource().getAllInstanceDataSources(), users, loader, maxConnectionsSizePerQuery);
         checkPrivileges(result);
-        return PrivilegeMerger.merge(result, metaData.getName(), metaData.getRuleMetaData().getRules());
+        return PrivilegeMerger.merge(result, metaData);
     }
     
     private static Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> build(final Collection<DataSource> dataSources,

@@ -62,6 +62,15 @@ public final class DataSourcesMetaData {
         return existedDataSourceNames.stream().anyMatch(each -> isInSameDatabaseInstance(dataSourceMetaDataMap.get(dataSourceName), dataSourceMetaDataMap.get(each)));
     }
     
+    /**
+     * Check if the schema exists.
+     * @param physicalSchema physical schema
+     * @return boolean
+     */
+    public boolean isExisted(final String physicalSchema) {
+        return dataSourceMetaDataMap.values().stream().anyMatch(each -> each.getSchema().equals(physicalSchema));
+    }
+    
     private boolean isInSameDatabaseInstance(final DataSourceMetaData sample, final DataSourceMetaData target) {
         return sample instanceof MemorizedDataSourceMetaData
                 ? Objects.equals(target.getSchema(), sample.getSchema()) : target.getHostName().equals(sample.getHostName()) && target.getPort() == sample.getPort();
