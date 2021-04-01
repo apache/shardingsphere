@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.auth.refresher.type;
 
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.auth.refresher.SQLStatementEventMapper;
-import org.apache.shardingsphere.infra.metadata.auth.refresher.event.GrantStatementEvent;
+import org.apache.shardingsphere.infra.metadata.auth.refresher.event.dcl.impl.GrantStatementEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLGrantStatement;
 
