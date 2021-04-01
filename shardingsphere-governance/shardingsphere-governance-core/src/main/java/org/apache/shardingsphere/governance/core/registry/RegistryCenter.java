@@ -148,6 +148,7 @@ public final class RegistryCenter {
     
     private void addDataSourceConfigurations(final String schemaName, final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
         Map<String, DataSourceConfiguration> dataSourceConfigurationMap = loadDataSourceConfigurations(schemaName);
+        dataSourceConfigurationMap = new LinkedHashMap<>(dataSourceConfigurationMap);
         dataSourceConfigurationMap.putAll(dataSourceConfigurations);
         repository.persist(node.getMetadataDataSourcePath(schemaName), YamlEngine.marshal(createYamlDataSourceConfigurationWrap(dataSourceConfigurationMap)));
     }
