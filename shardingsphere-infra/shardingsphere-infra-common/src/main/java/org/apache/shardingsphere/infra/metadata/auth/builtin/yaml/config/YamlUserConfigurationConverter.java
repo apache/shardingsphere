@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlUserConfigurationConverter {
+
     private static UserYamlSwapper userYamlSwapper = new UserYamlSwapper();
 
     /**

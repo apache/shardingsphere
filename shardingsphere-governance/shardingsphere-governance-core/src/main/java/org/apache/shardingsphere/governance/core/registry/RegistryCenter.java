@@ -333,10 +333,6 @@ public final class RegistryCenter {
         repository.delete(node.getSchemaNamePath(schemaName));
     }
 
-    /**
-     * has users.
-     * @return true/false
-     */
     private boolean hasUsers() {
         return !Strings.isNullOrEmpty(repository.get(node.getUsersNode()));
     }

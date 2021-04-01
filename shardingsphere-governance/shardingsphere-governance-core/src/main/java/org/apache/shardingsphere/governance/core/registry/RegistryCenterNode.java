@@ -53,8 +53,6 @@ public final class RegistryCenterNode {
     
     private static final String SCHEMA_NODE = "schema";
     
-    private static final String AUTHENTICATION_NODE = "authentication";
-
     private static final String USERS_NODE = "users";
     
     private static final String PRIVILEGE_NODE = "privilegenode";
@@ -244,15 +242,6 @@ public final class RegistryCenterNode {
      */
     public String getMetadataSchemaPath(final String schemaName) {
         return getFullMetadataPath(schemaName, SCHEMA_NODE);
-    }
-    
-    /**
-     * Get authentication path.
-     *
-     * @return authentication path
-     */
-    public String getAuthenticationPath() {
-        return getFullPath(AUTHENTICATION_NODE);
     }
 
     /**

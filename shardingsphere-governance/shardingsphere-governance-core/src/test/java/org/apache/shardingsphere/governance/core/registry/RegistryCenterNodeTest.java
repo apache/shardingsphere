@@ -79,11 +79,6 @@ public final class RegistryCenterNodeTest {
     }
 
     @Test
-    public void assertGetAuthenticationPath() {
-        assertThat(registryCenterNode.getAuthenticationPath(), is("/authentication"));
-    }
-
-    @Test
     public void assertGetUsersNodePath() {
         assertThat(registryCenterNode.getUsersNode(), is("/users"));
     }
