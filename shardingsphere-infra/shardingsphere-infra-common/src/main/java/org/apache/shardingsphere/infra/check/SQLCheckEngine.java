@@ -65,6 +65,7 @@ public final class SQLCheckEngine {
      * @return check result
      */
     public static boolean check(final String schemaName, final Grantee grantee) {
+        System.out.println("CHECKERS.size():" + CHECKERS.size());
         for (SQLChecker each : CHECKERS) {
             boolean checkResult = each.check(schemaName, grantee);
             if (!checkResult) {
