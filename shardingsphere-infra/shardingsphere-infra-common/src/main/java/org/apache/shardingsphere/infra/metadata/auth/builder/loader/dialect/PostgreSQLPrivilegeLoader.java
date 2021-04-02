@@ -74,12 +74,13 @@ public final class PostgreSQLPrivilegeLoader implements PrivilegeLoader {
         String privilegeType = resultSet.getString("privilege_type");
         Boolean hasPrivilege = resultSet.getBoolean("is_grantable");
         String grantee = resultSet.getString("grantee");
-        addToPrivilegeTypesIfPresent(hasPrivilege,
-                getPrivilegeType(privilegeType),
-                privilegeCache.
-                computeIfAbsent(grantee, k -> new HashMap<>()).
-                computeIfAbsent(db, k -> new HashMap<>()).
-                computeIfAbsent(tableName, k -> new ArrayList<>()));
+        if (hasPrivilege) {
+            privilegeCache.
+                    computeIfAbsent(grantee, k -> new HashMap<>()).
+                    computeIfAbsent(db, k -> new HashMap<>()).
+                    computeIfAbsent(tableName, k -> new ArrayList<>()).
+                    add(getPrivilegeType(privilegeType));
+        }
     }
     
     private void fillTablePrivilege(final Map<String, Map<String, Map<String, List<PrivilegeType>>>> privilegeCache, final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges) {
@@ -124,12 +125,6 @@ public final class PostgreSQLPrivilegeLoader implements PrivilegeLoader {
                 return PrivilegeType.EXECUTE;
             default:
                 throw new UnsupportedOperationException(privilege);
-        }
-    }
-    
-    private void addToPrivilegeTypesIfPresent(final boolean hasPrivilege, final PrivilegeType privilegeType, final Collection<PrivilegeType> target) {
-        if (hasPrivilege) {
-            target.add(privilegeType);
         }
     }
     
