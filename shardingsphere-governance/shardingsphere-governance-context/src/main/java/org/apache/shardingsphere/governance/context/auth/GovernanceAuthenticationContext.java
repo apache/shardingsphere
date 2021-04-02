@@ -19,10 +19,11 @@ package org.apache.shardingsphere.governance.context.auth;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
+import lombok.Setter;
 import org.apache.shardingsphere.governance.core.event.model.auth.PrivilegeChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataAwareEventSubscriber;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.metadata.auth.AuthenticationContext;
 import org.apache.shardingsphere.infra.metadata.auth.builder.PrivilegeBuilder;
@@ -41,14 +42,10 @@ import java.util.stream.Collectors;
 /**
  * Governance authentication context.
  */
-public final class GovernanceAuthenticationContext {
+@Setter
+public final class GovernanceAuthenticationContext implements MetaDataAwareEventSubscriber {
     
-    private final MetaDataContexts metaDataContexts;
-    
-    public GovernanceAuthenticationContext(final MetaDataContexts metaDataContexts) {
-        this.metaDataContexts = metaDataContexts;
-        ShardingSphereEventBus.getInstance().register(this);
-    }
+    private volatile MetaDataContexts metaDataContexts;
     
     /**
      * Renew authentication.
