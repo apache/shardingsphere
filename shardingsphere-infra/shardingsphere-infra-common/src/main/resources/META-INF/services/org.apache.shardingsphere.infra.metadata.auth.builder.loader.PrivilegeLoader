@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.infra.metadata.auth.builder.loader.dialect.MySQLPrivilegeLoader
+org.apache.shardingsphere.infra.metadata.auth.builder.loader.dialect.PostgreSQLPrivilegeLoader
