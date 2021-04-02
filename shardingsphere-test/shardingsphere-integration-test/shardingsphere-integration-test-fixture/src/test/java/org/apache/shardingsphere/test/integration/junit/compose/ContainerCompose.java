@@ -189,6 +189,11 @@ public abstract class ContainerCompose extends ExternalResource implements Close
         }
     }
     
+    /**
+     * Execution initializer one time after container started.
+     *
+     * @param consumer initializer
+     */
     public final void executeOnStarted(Consumer<ContainerCompose> consumer) {
         if (!executed) {
             synchronized (this) {
