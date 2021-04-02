@@ -51,9 +51,12 @@ public final class MySQLAuthenticationHandler {
      */
     public Optional<MySQLServerErrorCode> login(final String username, final String hostname, final byte[] authResponse, final String databaseName) {
         Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getUsers().findUser(new Grantee(username, hostname));
+        System.out.println(user);
         if (!user.isPresent() || !isPasswordRight(user.get().getPassword(), authResponse)) {
+            System.out.println(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR);
             return Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR);
         }
+        System.out.println("SQLCheckEngine:" + SQLCheckEngine.check(databaseName, user.get().getGrantee()));
         return SQLCheckEngine.check(databaseName, user.get().getGrantee()) ? Optional.empty() : Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
     }
     
