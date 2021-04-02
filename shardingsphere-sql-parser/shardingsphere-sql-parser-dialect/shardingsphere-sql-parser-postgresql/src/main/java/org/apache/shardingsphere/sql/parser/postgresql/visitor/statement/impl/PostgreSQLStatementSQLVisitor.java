@@ -188,6 +188,16 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementB
         if (null != ctx.IN()) {
             return createInSegment(ctx);
         }
+        if (null != ctx.TILDE_()) {
+            String operator = "~";
+            if (null != ctx.NOT_()) {
+                operator = "!~";
+            }
+            ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
+            ExpressionSegment right = (ExpressionSegment) visit(ctx.aExpr(1));
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
+        }
         if (null != ctx.comparisonOperator()) {
             ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
             ExpressionSegment right = (ExpressionSegment) visit(ctx.aExpr(1));
