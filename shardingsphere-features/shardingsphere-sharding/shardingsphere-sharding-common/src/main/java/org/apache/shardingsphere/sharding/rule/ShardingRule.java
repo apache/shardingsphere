@@ -512,4 +512,13 @@ public final class ShardingRule implements DataNodeContainedRule, TableContained
     public Collection<String> getTables() {
         return tableRules.stream().map((Function<TableRule, String>) TableRule::getLogicTable).collect(Collectors.toList());
     }
+    
+    @Override
+    public Optional<String> findActualTableByCatalog(final String catalog, final String logicTable) {
+        return findTableRule(logicTable).flatMap(tableRule -> findActualTableFromActualDataNode(catalog, tableRule.getActualDataNodes()));
+    }
+    
+    private Optional<String> findActualTableFromActualDataNode(final String catalog, final List<DataNode> actualDataNodes) {
+        return actualDataNodes.stream().filter(each -> each.getDataSourceName().equalsIgnoreCase(catalog)).findFirst().map(DataNode::getTableName);
+    }
 }
