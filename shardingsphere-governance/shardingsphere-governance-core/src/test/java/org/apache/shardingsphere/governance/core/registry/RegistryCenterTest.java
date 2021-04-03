@@ -573,6 +573,27 @@ public final class RegistryCenterTest {
     }
     
     @Test
+    public void assertRenewDataSourceEventHasDataSourceConfig() {
+        DataSourceAddedEvent event = new DataSourceAddedEvent("sharding_db", createDataSourceConfigurations());
+        RegistryCenter registryCenter = new RegistryCenter(registryRepository);
+        String dataSourceYaml = "dataSources:\n"
+            + " ds_0:\n"
+            + "   dataSourceClassName: xxx\n"
+            + "   url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false\n"
+            + "   username: root\n"
+            + "   password: root\n"
+            + "   connectionTimeoutMilliseconds: 30000\n"
+            + "   idleTimeoutMilliseconds: 60000\n"
+            + "   maxLifetimeMilliseconds: 1800000\n"
+            + "   maxPoolSize: 50\n"
+            + "   minPoolSize: 1\n"
+            + "   maintenanceIntervalMilliseconds: 30000\n";
+        when(registryRepository.get("/metadata/sharding_db/datasource")).thenReturn(dataSourceYaml);
+        registryCenter.renew(event);
+        verify(registryRepository).persist(startsWith("/metadata/sharding_db/datasource"), anyString());
+    }
+    
+    @Test
     public void assertRenewRuleEvent() {
         RuleConfigurationsAlteredEvent event = new RuleConfigurationsAlteredEvent("sharding_db", createRuleConfigurations());
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);

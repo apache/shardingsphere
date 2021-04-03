@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.governance.core.event.notifier.GovernanceSchemaChangedNotifier
+org.apache.shardingsphere.governance.context.auth.GovernanceAuthenticationContext
