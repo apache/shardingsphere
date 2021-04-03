@@ -42,6 +42,7 @@ import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
@@ -189,11 +190,18 @@ public final class RegistryCenter {
         result.setRules(new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(configs));
         return result;
     }
-
+    
     private void persistAuthentication(final Collection<ShardingSphereUser> users, final boolean isOverwrite) {
         if (!users.isEmpty() && (isOverwrite || !hasAuthentication())) {
-            repository.persist(node.getAuthenticationPath(),
-                    YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
+            repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
+        }
+    }
+    
+    private void persistNewUsers(final Collection<ShardingSphereUser> users) {
+        if (!users.isEmpty()) {
+            YamlUserRuleConfiguration yamlUserConfig = YamlEngine.unmarshal(repository.get(node.getAuthenticationPath()), YamlUserRuleConfiguration.class);
+            yamlUserConfig.getUsers().putAll(new UserRuleYamlSwapper().swapToYamlConfiguration(users).getUsers());
+            repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(yamlUserConfig));
         }
     }
     
@@ -460,7 +468,7 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final CreateUserStatementEvent event) {
-        persistAuthentication(event.getUsers(), true);
+        persistNewUsers(event.getUsers());
     }
     
     /**
