@@ -42,7 +42,7 @@ public final class AuthorityRule implements ShardingSphereRule {
         Preconditions.checkState(1 == config.getPrivilegeLoaders().size(), "Only support one privilege loader.");
         privilegeLoader = ShardingSphereAlgorithmFactory.createAlgorithm(config.getPrivilegeLoaders().values().iterator().next(), PrivilegeLoadAlgorithm.class);
         Authentication authentication = new DefaultAuthentication();
-        // TODO 
+        // TODO pass correct parameters
         authentication.init(privilegeLoader.load(null, null, null));
         AuthenticationContext.getInstance().init(authentication);
     }
