@@ -19,12 +19,16 @@ package org.apache.shardingsphere.test.integration.engine.it.dql;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
-import org.apache.shardingsphere.test.integration.common.ExecutionMode;
 import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.junit.annotation.TestCaseSpec;
+import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.integration.junit.compose.ComposeManager;
+import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
 import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runners.Parameterized;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,12 +36,32 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertTrue;
 
-@TestCaseSpec(name = "Additional DQL", sqlCommandType = SQLCommandType.DQL, executionMode = ExecutionMode.ADDITIONAL)
 @ParallelRuntimeStrategy(ParallelLevel.CASE)
 public final class AdditionalDQLIT extends BaseDQLIT {
+    
+    @ClassRule
+    public static ComposeManager composeManager = new ComposeManager("AdditionalDQLIT");
+    
+    public AdditionalDQLIT(final AssertionParameterizedArray parameter) {
+        super(parameter);
+    }
+    
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<AssertionParameterizedArray> getParameters() {
+        if (IntegrationTestEnvironment.getInstance().isRunAdditionalTestCases()) {
+            return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DQL)
+                    .stream()
+                    .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
+                    .collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
     
     @Test
     public void assertExecuteQueryWithResultSetTypeAndResultSetConcurrency() throws SQLException, ParseException {

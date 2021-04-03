@@ -18,14 +18,15 @@
 package org.apache.shardingsphere.test.integration.junit.container.storage.impl;
 
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 
 /**
  * Native storage container.
  */
 public final class NativeStorageContainer extends ShardingSphereStorageContainer {
     
-    public NativeStorageContainer() {
-        super("native-storage", null);
+    public NativeStorageContainer(final ParameterizedArray parameterizedArray) {
+        super("native", "native-storage", null, true, parameterizedArray);
     }
     
     @Override

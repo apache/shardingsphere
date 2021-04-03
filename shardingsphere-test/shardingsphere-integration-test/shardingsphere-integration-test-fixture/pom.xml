@@ -54,6 +54,12 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc-governance</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    
+        <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
         </dependency>
@@ -96,7 +102,7 @@
         <profile>
             <id>it.env.docker</id>
             <properties>
-                <it.env>DOCKER</it.env>
+                <it.env.type>DOCKER</it.env.type>
             </properties>
             <build>
                 <plugins>

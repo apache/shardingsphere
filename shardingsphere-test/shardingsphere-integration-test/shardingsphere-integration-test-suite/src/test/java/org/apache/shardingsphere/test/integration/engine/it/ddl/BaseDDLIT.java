@@ -28,6 +28,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
+import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 import org.junit.After;
 import org.junit.Before;
 
@@ -52,20 +53,23 @@ public abstract class BaseDDLIT extends SingleITCase {
     
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
+    public BaseDDLIT(final AssertionParameterizedArray parameterizedArray) {
+        super(parameterizedArray);
+    }
+    
     @Before
     @SneakyThrows
     public final void initTables() {
         assertNotNull("Expected affected table is required", getAssertion().getInitialSQL());
         assertNotNull("Expected affected table is required", getAssertion().getInitialSQL().getAffectedTable());
         dataSetEnvironmentManager = new DataSetEnvironmentManager(
-                EnvironmentPath.getDataSetFile(getDescription().getScenario()),
-                getStorage().getDataSourceMap()
+                EnvironmentPath.getDataSetFile(getScenario()),
+                getStorageContainer().getDataSourceMap()
         );
         dataSetEnvironmentManager.fillData();
         try (Connection connection = getTargetDataSource().getConnection()) {
             executeInitSQLs(connection);
         }
-//        resetTargetDataSource();
     }
     
     @After
@@ -109,7 +113,7 @@ public abstract class BaseDDLIT extends SingleITCase {
     
     private void assertNotContainsTable(final Collection<DataNode> dataNodes) throws SQLException {
         for (DataNode each : dataNodes) {
-            try (Connection connection = getStorage().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
+            try (Connection connection = getStorageContainer().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 assertNotContainsTable(connection, each.getTableName());
             }
         }
@@ -122,7 +126,7 @@ public abstract class BaseDDLIT extends SingleITCase {
     private List<DataSetColumn> getActualColumns(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetColumn> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
-            try (Connection connection = getStorage().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
+            try (Connection connection = getStorageContainer().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 result.addAll(getActualColumns(connection, each.getTableName()));
             }
         }
@@ -146,7 +150,7 @@ public abstract class BaseDDLIT extends SingleITCase {
     private List<DataSetIndex> getActualIndexes(final Collection<DataNode> dataNodes) throws SQLException {
         Set<DataSetIndex> result = new LinkedHashSet<>();
         for (DataNode each : dataNodes) {
-            try (Connection connection = getStorage().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
+            try (Connection connection = getStorageContainer().getDataSourceMap().get(each.getDataSourceName()).getConnection()) {
                 result.addAll(getActualIndexes(connection, each.getTableName()));
             }
         }
@@ -177,9 +181,9 @@ public abstract class BaseDDLIT extends SingleITCase {
     
     private void assertColumnMetaData(final DataSetColumn actual, final DataSetColumn expected) {
         assertThat("Mismatched column name.", actual.getName(), is(expected.getName()));
-        if ("MySQL".equals(getDescription().getDatabaseType().getName()) && "integer".equals(expected.getType())) {
+        if ("MySQL".equals(getDatabaseType().getName()) && "integer".equals(expected.getType())) {
             assertThat("Mismatched column type.", actual.getType(), is("int"));
-        } else if ("PostgreSQL".equals(getDescription().getDatabaseType().getName()) && "integer".equals(expected.getType())) {
+        } else if ("PostgreSQL".equals(getDatabaseType().getName()) && "integer".equals(expected.getType())) {
             assertThat("Mismatched column type.", actual.getType(), is("int4"));
         } else {
             assertThat("Mismatched column type.", actual.getType(), is(expected.getType()));

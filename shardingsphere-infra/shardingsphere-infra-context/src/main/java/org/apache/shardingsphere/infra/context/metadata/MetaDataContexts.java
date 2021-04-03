@@ -21,12 +21,13 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
 import org.apache.shardingsphere.infra.state.StateContext;
 
 import java.io.Closeable;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -40,6 +41,13 @@ public interface MetaDataContexts extends Closeable {
      * @return all schema names
      */
     Collection<String> getAllSchemaNames();
+    
+    /**
+     * Get mata data map.
+     *
+     * @return mata data map
+     */
+    Map<String, ShardingSphereMetaData> getMetaDataMap();
     
     /**
      * Get mata data.
@@ -71,11 +79,11 @@ public interface MetaDataContexts extends Closeable {
     CalciteContextFactory getCalciteContextFactory();
     
     /**
-     * Get authentication.
+     * Get users.
      * 
-     * @return authentication
+     * @return users
      */
-    Authentication getAuthentication();
+    ShardingSphereUsers getUsers();
     
     /**
      * Get configuration properties.

@@ -44,3 +44,7 @@ In them, table `t_order` in the left end of FROM will be taken by ShardingSphere
 ## Broadcast Table
 
 It refers to tables that exist in all sharding database sources. Their structures and data are the same in each database. It can be applied to the small data volume scenario that needs to correlate with big data volume tables to query, dictionary table for example.
+
+## Single Table
+
+It refers to only one table that exists in all sharding database sources. It is suitable for scenarios where the amount of data is not large and does not require any sharding operations.

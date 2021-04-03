@@ -36,6 +36,8 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.metadata.auth.AuthenticationContext;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
@@ -71,8 +73,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class GovernanceMetaDataContextsTest {
     
-    private final DefaultAuthentication authentication = new DefaultAuthentication();
-    
     private final ConfigurationProperties props = new ConfigurationProperties(new Properties());
     
     @Mock
@@ -93,7 +93,8 @@ public final class GovernanceMetaDataContextsTest {
     public void setUp() {
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
-        governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), authentication, props), governanceFacade);
+        governanceMetaDataContexts = new GovernanceMetaDataContexts(
+                new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), new ShardingSphereUsers(Collections.emptyList()), props), governanceFacade);
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
@@ -114,11 +115,6 @@ public final class GovernanceMetaDataContextsTest {
     @Test
     public void assertGetDefaultMetaData() {
         assertNull(governanceMetaDataContexts.getDefaultMetaData());
-    }
-    
-    @Test
-    public void assertGetAuthentication() {
-        assertThat(governanceMetaDataContexts.getAuthentication(), is(authentication));
     }
     
     @Test
@@ -165,7 +161,7 @@ public final class GovernanceMetaDataContextsTest {
         DefaultAuthentication authentication = new DefaultAuthentication();
         UserRuleChangedEvent event = new UserRuleChangedEvent(authentication.getAllUsers());
         governanceMetaDataContexts.renew(event);
-        assertThat(governanceMetaDataContexts.getAuthentication().getAllUsers().size(), is(authentication.getAuthentication().size()));
+        assertThat(AuthenticationContext.getInstance().getAuthentication().getAllUsers().size(), is(authentication.getAuthentication().size()));
     }
     
     @Test
