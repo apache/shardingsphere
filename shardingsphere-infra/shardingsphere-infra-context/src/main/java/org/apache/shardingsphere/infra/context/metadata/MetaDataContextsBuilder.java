@@ -101,8 +101,7 @@ public final class MetaDataContextsBuilder {
         for (String each : ruleConfigs.keySet()) {
             mataDataMap.put(each, buildMetaData(each));
         }
-        Authentication authentication = buildAuthentication(users, mataDataMap);
-        AuthenticationContext.getInstance().init(authentication);
+        AuthenticationContext.getInstance().init(buildAuthentication(users, mataDataMap));
         return new StandardMetaDataContexts(mataDataMap, executorEngine, new ShardingSphereUsers(users), props);
     }
     
