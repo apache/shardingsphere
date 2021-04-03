@@ -51,21 +51,34 @@ public final class SchemaMetaDataLoader {
      */
     public static Collection<String> loadAllTableNames(final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
         try (MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
-            return loadAllTableNames(connectionAdapter);
+            return loadAllTableNames(connectionAdapter, databaseType);
         }
     }
     
-    private static Collection<String> loadAllTableNames(final Connection connection) throws SQLException {
+    private static Collection<String> loadAllTableNames(final Connection connection, final DatabaseType databaseType) throws SQLException {
         Collection<String> result = new LinkedList<>();
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), null, new String[]{TABLE_TYPE, VIEW_TYPE})) {
             while (resultSet.next()) {
                 String table = resultSet.getString(TABLE_NAME);
-                if (!isSystemTable(table)) {
+                if (!isSystemTable(table) && isPermission(connection, databaseType.getName(), table)) {
                     result.add(table);
                 }
             }
         }
         return result;
+    }
+    
+    private static boolean isPermission(final Connection connection, final String databaseType, final String table)
+            throws SQLException {
+        boolean isPermission = true;
+        if ("postgresql".equalsIgnoreCase(databaseType)) {
+            ResultSet resultSet = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)
+                    .executeQuery("SELECT table_name FROM information_schema.role_table_grants where table_name='" + table + "'");
+            if (!resultSet.next()) {
+                isPermission = false;
+            }
+        }
+        return isPermission;
     }
     
     private static boolean isSystemTable(final String table) {
