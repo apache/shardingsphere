@@ -453,4 +453,19 @@
         <input sql="SELECT * FROM t_account, t_account_detail WHERE t_account.account_id = 1 AND t_account.account_id = t_account_detail.account_id" />
         <output sql="SELECT * FROM t_account_1, t_account_detail_1 WHERE t_account_1.account_id = 1 AND t_account_1.account_id = t_account_detail_1.account_id" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_join_table_on_condition_with_qualified_columns">
+        <input sql="SELECT * FROM t_account join t_account_detail on t_account.account_id = t_account_detail.account_id and t_account.account_id = ?" parameters="1"/>
+        <output sql="SELECT * FROM t_account_1 join t_account_detail_1 on t_account_1.account_id = t_account_detail_1.account_id and t_account_1.account_id = ?" parameters="1"/>
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_join_table_where_condition_with_qualified_columns">
+        <input sql="SELECT * FROM t_account join t_account_detail on t_account.account_id = t_account_detail.account_id where t_account.account_id = ?" parameters="1"/>
+        <output sql="SELECT * FROM t_account_1 join t_account_detail_1 on t_account_1.account_id = t_account_detail_1.account_id where t_account_1.account_id = ?" parameters="1"/>
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_with_join_table_on_in_condition_with_qualified_columns">
+        <input sql="SELECT * FROM t_account join t_account_detail on t_account.account_id = t_account_detail.account_id and t_account.account_id in ( ? )" parameters="1"/>
+        <output sql="SELECT * FROM t_account_1 join t_account_detail_1 on t_account_1.account_id = t_account_detail_1.account_id and t_account_1.account_id in ( ? )" parameters="1"/>
+    </rewrite-assertion>
 </rewrite-assertions>
