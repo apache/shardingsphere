@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rule.builder;
+package org.apache.shardingsphere.authority.rule.builder;
 
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.constant.AuthorityOrder;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 
@@ -27,22 +27,22 @@ import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * Encrypt rule builder.
+ * Authority rule builder.
  */
-public final class EncryptRuleBuilder implements ShardingSphereRuleBuilder<EncryptRule, EncryptRuleConfiguration> {
+public final class AuthorityRuleBuilder implements ShardingSphereRuleBuilder<AuthorityRule, AuthorityRuleConfiguration> {
     
     @Override
-    public EncryptRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final EncryptRuleConfiguration ruleConfig) {
-        return new EncryptRule(ruleConfig);
+    public AuthorityRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final AuthorityRuleConfiguration ruleConfig) {
+        return new AuthorityRule(ruleConfig);
     }
     
     @Override
     public int getOrder() {
-        return EncryptOrder.ORDER;
+        return AuthorityOrder.ORDER;
     }
     
     @Override
-    public Class<EncryptRuleConfiguration> getTypeClass() {
-        return EncryptRuleConfiguration.class;
+    public Class<AuthorityRuleConfiguration> getTypeClass() {
+        return AuthorityRuleConfiguration.class;
     }
 }
