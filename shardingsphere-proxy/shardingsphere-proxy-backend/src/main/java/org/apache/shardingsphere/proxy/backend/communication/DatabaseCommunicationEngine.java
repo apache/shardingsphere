@@ -67,8 +67,6 @@ public final class DatabaseCommunicationEngine {
     
     private final KernelProcessor kernelProcessor;
     
-    private final MetadataRefreshEngine engine;
-    
     private List<QueryHeader> queryHeaders;
     
     private MergedResult mergedResult;
@@ -81,8 +79,8 @@ public final class DatabaseCommunicationEngine {
         this.logicSQL = logicSQL;
         proxySQLExecutor = new ProxySQLExecutor(driverType, backendConnection);
         kernelProcessor = new KernelProcessor();
-        engine = new MetadataRefreshEngine(metaData, ProxyContext.getInstance().getMetaDataContexts().getProps(), ProxyContext.getInstance().getLock());
-        proxyLockEngine = new ProxyLockEngine(proxySQLExecutor, engine, backendConnection.getSchemaName());
+        proxyLockEngine = new ProxyLockEngine(proxySQLExecutor, new MetadataRefreshEngine(metaData, 
+                ProxyContext.getInstance().getMetaDataContexts().getProps(), ProxyContext.getInstance().getLock().orElse(null)), backendConnection.getSchemaName());
     }
     
     /**

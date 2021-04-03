@@ -55,7 +55,7 @@ public final class JDBCLockEngine {
     public JDBCLockEngine(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor) {
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
-        metadataRefreshEngine = new MetadataRefreshEngine(metaDataContexts.getDefaultMetaData(), metaDataContexts.getProps(), metaDataContexts.getLock());
+        metadataRefreshEngine = new MetadataRefreshEngine(metaDataContexts.getDefaultMetaData(), metaDataContexts.getProps(), metaDataContexts.getLock().orElse(null));
     }
     
     /**
