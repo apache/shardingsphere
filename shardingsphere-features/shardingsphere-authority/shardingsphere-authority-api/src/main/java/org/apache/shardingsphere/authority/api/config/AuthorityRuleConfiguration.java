@@ -15,31 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.algorithm.config;
+package org.apache.shardingsphere.authority.api.config;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Algorithm provided encrypt rule configuration.
+ * Authority rule configuration.
  */
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class AlgorithmProvidedEncryptRuleConfiguration implements RuleConfiguration {
+public final class AuthorityRuleConfiguration implements RuleConfiguration {
     
-    private Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
-    
-    private Map<String, EncryptAlgorithm> encryptors = new LinkedHashMap<>();
+    private final Map<String, ShardingSphereAlgorithmConfiguration> privilegeLoaders;
 }

@@ -15,31 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.algorithm.config;
+package org.apache.shardingsphere.authority.yaml.config;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Algorithm provided encrypt rule configuration.
+ * Authority rule configuration for YAML.
  */
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
-public final class AlgorithmProvidedEncryptRuleConfiguration implements RuleConfiguration {
+public final class YamlAuthorityRuleConfiguration implements YamlRuleConfiguration {
     
-    private Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
+    private Map<String, YamlShardingSphereAlgorithmConfiguration> privilegeLoaders = new LinkedHashMap<>();
     
-    private Map<String, EncryptAlgorithm> encryptors = new LinkedHashMap<>();
+    @Override
+    public Class<AuthorityRuleConfiguration> getRuleConfigurationType() {
+        return AuthorityRuleConfiguration.class;
+    }
 }
