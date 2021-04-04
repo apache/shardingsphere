@@ -192,13 +192,13 @@ public final class RegistryCenter {
 
     private void persistUsers(final Collection<ShardingSphereUser> users, final boolean isOverwrite) {
         if (!users.isEmpty() && (isOverwrite || !hasUsers())) {
-            repository.persist(node.getUsersNode(), YamlEngine.marshal(YamlUserConfigurationConverter.convertYamlUserConfigurationFormattings(users)));
+            repository.persist(node.getUsersNode(), YamlEngine.marshal(YamlUserConfigurationConverter.convertYamlUserConfigurations(users)));
         }
     }
     
     private void persistChangedPrivilege(final Collection<ShardingSphereUser> users) {
         if (!users.isEmpty()) {
-            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(YamlUserConfigurationConverter.convertYamlUserConfigurationFormattings(users)));
+            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(YamlUserConfigurationConverter.convertYamlUserConfigurations(users)));
         }
     }
 

@@ -40,19 +40,10 @@ public final class YamlUserConfigurationConverter {
      * @param users collection of ShardingSphereUser
      * @return collection of formatting users content
      */
-    public static Collection<String> convertYamlUserConfigurationFormattings(final Collection<ShardingSphereUser> users) {
+    public static Collection<String> convertYamlUserConfigurations(final Collection<ShardingSphereUser> users) {
         Collection<String> result = new LinkedList<>();
         users.stream().map(user -> USER_YAML_SWAPPER.swapToYamlConfiguration(user)).forEach(user -> result.add(user.toString()));
         return result;
-    }
-
-    /**
-     * convert users Yaml content.
-     * @param users collection of ShardingSphereUser
-     * @return collection of formatting users content
-     */
-    public static Collection<YamlUserConfiguration> convertYamlUserConfigurations(final Collection<ShardingSphereUser> users) {
-        return users.stream().map(user -> USER_YAML_SWAPPER.swapToYamlConfiguration(user)).collect(Collectors.toList());
     }
 
     /**
