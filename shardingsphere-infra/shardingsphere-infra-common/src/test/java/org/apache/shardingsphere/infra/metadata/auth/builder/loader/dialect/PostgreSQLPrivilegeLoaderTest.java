@@ -39,6 +39,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -61,14 +62,18 @@ public final class PostgreSQLPrivilegeLoaderTest {
 
     private void assertPrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> actual) {
         assertThat(actual.size(), is(1));
-        ShardingSphereUser root = new ShardingSphereUser("postgres", "", "");
-        assertThat(actual.get(root).getAdministrativePrivilege().getPrivileges().size(), is(0));
-        assertThat(actual.get(root).getDatabasePrivilege().getGlobalPrivileges().size(), is(0));
-        assertThat(actual.get(root).getDatabasePrivilege().getSpecificPrivileges().size(), is(1));
+        ShardingSphereUser user = new ShardingSphereUser("postgres", "", "");
+        assertThat(actual.get(user).getDatabasePrivilege().getGlobalPrivileges().size(), is(0));
+        assertThat(actual.get(user).getDatabasePrivilege().getSpecificPrivileges().size(), is(1));
         Collection<PrivilegeType> expectedSpecificPrivilege = new CopyOnWriteArraySet(Arrays.asList(PrivilegeType.INSERT, PrivilegeType.SELECT, PrivilegeType.UPDATE,
                 PrivilegeType.DELETE));
-        SchemaPrivilege schemaPrivilege = actual.get(root).getDatabasePrivilege().getSpecificPrivileges().get("db0");
+        SchemaPrivilege schemaPrivilege = actual.get(user).getDatabasePrivilege().getSpecificPrivileges().get("db0");
         assertThat(schemaPrivilege.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege), is(true));
+        assertThat(actual.get(user).getAdministrativePrivilege().getPrivileges().size(), is(4));
+        Collection<PrivilegeType> expectedAdministrativePrivilege = new CopyOnWriteArraySet(Arrays.asList(PrivilegeType.SUPER, PrivilegeType.CREATE_ROLE,
+                PrivilegeType.CREATE_DATABASE, PrivilegeType.CAN_LOGIN));
+        assertEquals(actual.get(user).getAdministrativePrivilege().getPrivileges(), expectedAdministrativePrivilege);
+
     }
 
     private Collection<ShardingSphereUser> buildUsers() {
@@ -83,6 +88,9 @@ public final class PostgreSQLPrivilegeLoaderTest {
         String tablePrivilegeSql = "SELECT grantor, grantee, table_catalog, table_name, privilege_type, is_grantable from information_schema.table_privileges WHERE grantee IN (%s)";
         String userList = users.stream().map(item -> String.format("%s", item.getGrantee().getUsername(), item.getGrantee().getHostname())).collect(Collectors.joining(", "));
         when(dataSource.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSql, userList))).thenReturn(tablePrivilegeResultSet);
+        ResultSet rolePrivilegeResultSet = mockRolePrivilegeResultSet();
+        String rolePrivilegeSql = "select * from pg_roles WHERE rolname IN (%s)";
+        when(dataSource.getConnection().createStatement().executeQuery(String.format(rolePrivilegeSql, userList))).thenReturn(rolePrivilegeResultSet);
         return dataSource;
     }
 
@@ -92,8 +100,21 @@ public final class PostgreSQLPrivilegeLoaderTest {
         when(result.getString("table_catalog")).thenReturn("db0");
         when(result.getString("table_name")).thenReturn("t_order");
         when(result.getString("privilege_type")).thenReturn("INSERT", "SELECT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "TRIGGER");
-        when(result.getBoolean("is_grantable")).thenReturn(true, true, true, true, false, false, false);
+        when(result.getString("is_grantable")).thenReturn("TRUE", "TRUE", "TRUE", "TRUE", "TRUE", "TRUE", "TRUE");
         when(result.getString("grantee")).thenReturn("postgres");
+        return result;
+    }
+
+    private ResultSet mockRolePrivilegeResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("rolname")).thenReturn("postgres");
+        when(result.getBoolean("rolsuper")).thenReturn(true);
+        when(result.getBoolean("rolcreaterole")).thenReturn(true);
+        when(result.getBoolean("rolcreatedb")).thenReturn(true);
+        when(result.getBoolean("rolreplication")).thenReturn(false);
+        when(result.getBoolean("rolinherit")).thenReturn(false);
+        when(result.getBoolean("rolcanlogin")).thenReturn(true);
         return result;
     }
 
