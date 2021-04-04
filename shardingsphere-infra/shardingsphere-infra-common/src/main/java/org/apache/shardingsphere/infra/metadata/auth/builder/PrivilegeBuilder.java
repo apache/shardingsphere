@@ -100,13 +100,13 @@ public final class PrivilegeBuilder {
         return result;
     }
     
-    private static void fillShardingSpherePrivileges(final Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> result, final Future<Map<ShardingSphereUser, ShardingSpherePrivilege>> future)
-            throws InterruptedException, ExecutionException, TimeoutException {
+    private static void fillShardingSpherePrivileges(final Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> userPrivilegeMap, 
+                                                     final Future<Map<ShardingSphereUser, ShardingSpherePrivilege>> future) throws InterruptedException, ExecutionException, TimeoutException {
         for (Entry<ShardingSphereUser, ShardingSpherePrivilege> entry : future.get(FUTURE_GET_TIME_OUT_MILLISECONDS, TimeUnit.MILLISECONDS).entrySet()) {
-            if (!result.containsKey(entry.getKey())) {
-                result.put(entry.getKey(), new LinkedHashSet<>());
+            if (!userPrivilegeMap.containsKey(entry.getKey())) {
+                userPrivilegeMap.put(entry.getKey(), new LinkedHashSet<>());
             }
-            result.get(entry.getKey()).add(entry.getValue());
+            userPrivilegeMap.get(entry.getKey()).add(entry.getValue());
         }
     }
     
