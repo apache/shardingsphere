@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.context.metadata;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.check.SQLChecker;
 import org.apache.shardingsphere.infra.config.DatabaseAccessConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
@@ -43,7 +42,6 @@ import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.schema.builder.SchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRulesBuilder;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -72,10 +70,6 @@ public final class MetaDataContextsBuilder {
     private final ConfigurationProperties props;
     
     private final ExecutorEngine executorEngine;
-    
-    static {
-        ShardingSphereServiceLoader.newServiceInstances(SQLChecker .class);
-    }
     
     public MetaDataContextsBuilder(final Map<String, Map<String, DataSource>> dataSources, final Map<String, Collection<RuleConfiguration>> ruleConfigs, final Properties props) {
         this(dataSources, ruleConfigs, Collections.emptyList(), props);
@@ -159,14 +153,13 @@ public final class MetaDataContextsBuilder {
         }
     }
     
-    private ShardingSphereSchema buildSchema(final DatabaseType databaseType,
-                                             final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
+    private ShardingSphereSchema buildSchema(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
         return SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
     }
     
     private Authentication buildAuthentication(final Collection<ShardingSphereUser> users, final Map<String, ShardingSphereMetaData> metaDataMap) {
         DefaultAuthentication result = new DefaultAuthentication();
-        result.init(PrivilegeBuilder.build(metaDataMap.values(), users, props));
+        result.init(PrivilegeBuilder.build(metaDataMap.values(), users));
         return result;
     }
 }

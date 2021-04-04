@@ -100,7 +100,7 @@ public final class GovernanceAuthenticationContext implements MetaDataAwareEvent
         Authentication authentication = AuthenticationContext.getInstance().getAuthentication();
         Optional<PrivilegeLoader> loader = PrivilegeLoaderEngine.findPrivilegeLoader(metaDataContexts.getMetaDataMap().values().iterator().next().getResource().getDatabaseType());
         if (loader.isPresent()) {
-            Map<ShardingSphereUser, ShardingSpherePrivilege> privileges = PrivilegeBuilder.build(metaDataContexts.getMetaDataMap().values(), users, metaDataContexts.getProps());
+            Map<ShardingSphereUser, ShardingSpherePrivilege> privileges = PrivilegeBuilder.build(metaDataContexts.getMetaDataMap().values(), users);
             authentication.getAuthentication().putAll(getPrivilegesWithPassword(authentication, privileges));
         }
         AuthenticationContext.getInstance().init(authentication);

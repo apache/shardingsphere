@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.authority.spi;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
@@ -36,8 +35,7 @@ public interface PrivilegeLoadAlgorithm extends ShardingSphereAlgorithm {
      * 
      * @param metaDataList meta data list
      * @param users users
-     * @param props configuration properties
      * @return map of users and privileges
      */
-    Map<ShardingSphereUser, ShardingSpherePrivilege> load(Collection<ShardingSphereMetaData> metaDataList, Collection<ShardingSphereUser> users, ConfigurationProperties props);
+    Map<ShardingSphereUser, ShardingSpherePrivilege> load(Collection<ShardingSphereMetaData> metaDataList, Collection<ShardingSphereUser> users);
 }

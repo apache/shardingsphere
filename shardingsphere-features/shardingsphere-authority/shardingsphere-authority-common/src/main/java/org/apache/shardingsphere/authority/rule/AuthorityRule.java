@@ -43,7 +43,7 @@ public final class AuthorityRule implements ShardingSphereRule {
         privilegeLoader = ShardingSphereAlgorithmFactory.createAlgorithm(config.getPrivilegeLoaders().values().iterator().next(), PrivilegeLoadAlgorithm.class);
         Authentication authentication = new DefaultAuthentication();
         // TODO pass correct parameters
-        authentication.init(privilegeLoader.load(null, null, null));
+        authentication.init(privilegeLoader.load(null, null));
         AuthenticationContext.getInstance().init(authentication);
     }
 }
