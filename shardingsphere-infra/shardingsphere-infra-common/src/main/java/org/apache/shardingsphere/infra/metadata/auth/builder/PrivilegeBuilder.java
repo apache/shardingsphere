@@ -91,23 +91,13 @@ public final class PrivilegeBuilder {
         }
         futures.forEach(each -> {
             try {
-                fillShardingSpherePrivileges(result, each);
+                fillPrivileges(result, each);
             } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
                 throw new IllegalStateException(String.format("Error while loading privilege with %s", each), ex);
             }
         });
         executorService.shutdownNow();
         return result;
-    }
-    
-    private static void fillShardingSpherePrivileges(final Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> userPrivilegeMap, 
-                                                     final Future<Map<ShardingSphereUser, ShardingSpherePrivilege>> future) throws InterruptedException, ExecutionException, TimeoutException {
-        for (Entry<ShardingSphereUser, ShardingSpherePrivilege> entry : future.get(FUTURE_GET_TIME_OUT_MILLISECONDS, TimeUnit.MILLISECONDS).entrySet()) {
-            if (!userPrivilegeMap.containsKey(entry.getKey())) {
-                userPrivilegeMap.put(entry.getKey(), new LinkedHashSet<>());
-            }
-            userPrivilegeMap.get(entry.getKey()).add(entry.getValue());
-        }
     }
     
     private static Map<ShardingSphereUser, ShardingSpherePrivilege> createDefaultPrivileges(final Collection<ShardingSphereUser> users) {
@@ -118,8 +108,18 @@ public final class PrivilegeBuilder {
         return result;
     }
     
-    private static void checkPrivileges(final Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> result) {
-        for (Entry<ShardingSphereUser, Collection<ShardingSpherePrivilege>> entry : result.entrySet()) {
+    private static void fillPrivileges(final Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> userPrivilegeMap,
+                                       final Future<Map<ShardingSphereUser, ShardingSpherePrivilege>> future) throws InterruptedException, ExecutionException, TimeoutException {
+        for (Entry<ShardingSphereUser, ShardingSpherePrivilege> entry : future.get(FUTURE_GET_TIME_OUT_MILLISECONDS, TimeUnit.MILLISECONDS).entrySet()) {
+            if (!userPrivilegeMap.containsKey(entry.getKey())) {
+                userPrivilegeMap.put(entry.getKey(), new LinkedHashSet<>());
+            }
+            userPrivilegeMap.get(entry.getKey()).add(entry.getValue());
+        }
+    }
+    
+    private static void checkPrivileges(final Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> userPrivilegeMap) {
+        for (Entry<ShardingSphereUser, Collection<ShardingSpherePrivilege>> entry : userPrivilegeMap.entrySet()) {
             for (ShardingSpherePrivilege each : entry.getValue()) {
                 if (each.isEmpty()) {
                     throw new ShardingSphereException(String.format("There is no enough privileges for %s on all database instances.", entry.getKey().getGrantee()));
