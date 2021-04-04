@@ -36,7 +36,8 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilder implements Shar
     
     @Override
     public DatabaseDiscoveryRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
-                                       final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration ruleConfig, final Collection<ShardingSphereUser> users, final Collection<ShardingSphereRule> builtRules) {
+                                       final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration ruleConfig, 
+                                       final Collection<ShardingSphereUser> users, final Collection<ShardingSphereRule> builtRules) {
         return new DatabaseDiscoveryRule(ruleConfig, databaseType, dataSourceMap, schemaName);
     }
     
