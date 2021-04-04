@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.rule.builder;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -34,8 +35,8 @@ import java.util.Map;
 public final class ShardingRuleBuilder implements ShardingSphereRuleBuilder<ShardingRule, ShardingRuleConfiguration> {
     
     @Override
-    public ShardingRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, 
-                              final DatabaseType databaseType, final ShardingRuleConfiguration ruleConfig, final Collection<ShardingSphereRule> builtRules) {
+    public ShardingRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
+                              final ShardingRuleConfiguration ruleConfig, final Collection<ShardingSphereUser> users, final Collection<ShardingSphereRule> builtRules) {
         return new ShardingRule(ruleConfig, databaseType, dataSourceMap);
     }
     

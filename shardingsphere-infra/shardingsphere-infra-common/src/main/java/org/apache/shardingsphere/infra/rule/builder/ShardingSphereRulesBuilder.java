@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
@@ -44,19 +45,20 @@ public final class ShardingSphereRulesBuilder {
     /**
      * Build rules.
      *
+     * @param schemaName schema name
      * @param ruleConfigurations rule configurations
      * @param databaseType database type
      * @param dataSourceMap data source map
-     * @param schemaName schema name
-     * @return rules
+     * @param users users
+     * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> build(final Collection<RuleConfiguration> ruleConfigurations, final DatabaseType databaseType,
-                                                       final Map<String, DataSource> dataSourceMap, final String schemaName) {
+    public static Collection<ShardingSphereRule> build(final String schemaName, final Collection<RuleConfiguration> ruleConfigurations, 
+                                                       final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereUser> users) {
         Map<RuleConfiguration, ShardingSphereRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(ruleConfigurations, ShardingSphereRuleBuilder.class);
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, ShardingSphereRuleBuilder> entry : builders.entrySet()) {
-            result.add(entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey(), result));
+            result.add(entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey(), users, result));
         }
         return result;
     }

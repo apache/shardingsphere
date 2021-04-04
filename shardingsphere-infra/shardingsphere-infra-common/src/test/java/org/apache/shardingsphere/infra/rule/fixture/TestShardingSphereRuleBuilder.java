@@ -32,8 +32,8 @@ public final class TestShardingSphereRuleBuilder implements ShardingSphereRuleBu
     private static final ShardingSphereRule RULE = new TestShardingSphereRule();
     
     @Override
-    public ShardingSphereRule build(final String schemaName, final Map dataSourceMap, 
-                                    final DatabaseType databaseType, final RuleConfiguration ruleConfig, final Collection builtRules) {
+    public ShardingSphereRule build(final String schemaName, final Map dataSourceMap,
+                                    final DatabaseType databaseType, final RuleConfiguration ruleConfig, final Collection users, final Collection builtRules) {
         return RULE;
     }
     

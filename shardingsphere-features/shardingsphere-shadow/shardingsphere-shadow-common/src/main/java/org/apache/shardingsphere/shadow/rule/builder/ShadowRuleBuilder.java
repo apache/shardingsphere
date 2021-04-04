@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.rule.builder;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -34,8 +35,8 @@ import java.util.Map;
 public final class ShadowRuleBuilder implements ShardingSphereRuleBuilder<ShadowRule, ShadowRuleConfiguration> {
     
     @Override
-    public ShadowRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, 
-                            final DatabaseType databaseType, final ShadowRuleConfiguration ruleConfig, final Collection<ShardingSphereRule> builtRules) {
+    public ShadowRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
+                            final ShadowRuleConfiguration ruleConfig, final Collection<ShardingSphereUser> users, final Collection<ShardingSphereRule> builtRules) {
         return new ShadowRule(ruleConfig);
     }
     
