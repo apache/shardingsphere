@@ -66,5 +66,4 @@ public enum PrivilegeType {
     CREATE_DATABASE,
     INHERIT,
     CAN_LOGIN
-
 }
