@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.auth.builder.loader.PrivilegeLoa
 import org.apache.shardingsphere.infra.metadata.auth.builder.loader.PrivilegeLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -79,9 +80,24 @@ public final class PrivilegeBuilder {
     }
     
     private static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
-        Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> result = load(metaData.getResource().getAllInstanceDataSources(), users, loader);
+        return build(metaData.getName(), metaData.getResource().getAllInstanceDataSources(), metaData.getRuleMetaData().getRules(), users, loader);
+    }
+    
+    /**
+     * Build privileges.
+     * 
+     * @param schemaName schema name
+     * @param dataSources data sources
+     * @param rules rules
+     * @param users users
+     * @param loader privilege loader
+     * @return privileges
+     */
+    public static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final String schemaName, final Collection<DataSource> dataSources, 
+                                                                         final Collection<ShardingSphereRule> rules, final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
+        Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> result = load(dataSources, users, loader);
         checkPrivileges(result);
-        return PrivilegeMerger.merge(result, metaData.getName(), metaData.getRuleMetaData().getRules());
+        return PrivilegeMerger.merge(result, schemaName, rules);
     }
     
     private static Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> load(final Collection<DataSource> dataSources, 
