@@ -24,8 +24,11 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmF
 import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.metadata.auth.AuthenticationContext;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+
+import java.util.Collection;
 
 /**
  * Authority rule.
@@ -38,12 +41,12 @@ public final class AuthorityRule implements ShardingSphereRule {
     
     private final PrivilegeLoadAlgorithm privilegeLoader;
     
-    public AuthorityRule(final AuthorityRuleConfiguration config) {
+    public AuthorityRule(final AuthorityRuleConfiguration config, final Collection<ShardingSphereUser> users, final Collection<ShardingSphereRule> builtRules) {
         Preconditions.checkState(1 == config.getPrivilegeLoaders().size(), "Only support one privilege loader.");
         privilegeLoader = ShardingSphereAlgorithmFactory.createAlgorithm(config.getPrivilegeLoaders().values().iterator().next(), PrivilegeLoadAlgorithm.class);
         Authentication authentication = new DefaultAuthentication();
         // TODO pass correct parameters
-        authentication.init(privilegeLoader.load(null, null));
+        authentication.init(privilegeLoader.load(null, users));
         AuthenticationContext.getInstance().init(authentication);
     }
 }
