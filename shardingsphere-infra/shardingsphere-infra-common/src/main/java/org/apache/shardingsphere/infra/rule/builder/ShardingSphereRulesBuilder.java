@@ -27,8 +27,9 @@ import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Map.Entry;
 
 /**
  * ShardingSphere rule builder.
@@ -53,6 +54,10 @@ public final class ShardingSphereRulesBuilder {
     public static Collection<ShardingSphereRule> build(final Collection<RuleConfiguration> ruleConfigurations, final DatabaseType databaseType,
                                                        final Map<String, DataSource> dataSourceMap, final String schemaName) {
         Map<RuleConfiguration, ShardingSphereRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(ruleConfigurations, ShardingSphereRuleBuilder.class);
-        return builders.entrySet().stream().map(entry -> entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey())).collect(Collectors.toList());
+        Collection<ShardingSphereRule> result = new LinkedList<>();
+        for (Entry<RuleConfiguration, ShardingSphereRuleBuilder> entry : builders.entrySet()) {
+            result.add(entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey(), result));
+        }
+        return result;
     }
 }
