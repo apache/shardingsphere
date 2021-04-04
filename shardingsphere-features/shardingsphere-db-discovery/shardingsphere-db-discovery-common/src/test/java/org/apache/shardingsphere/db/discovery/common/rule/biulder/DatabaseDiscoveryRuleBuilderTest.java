@@ -51,6 +51,6 @@ public final class DatabaseDiscoveryRuleBuilderTest {
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
         Map<String, DataSource> dataSourceMap = new HashMap<>(1, 1);
         dataSourceMap.put("primaryDataSourceName", mock(DataSource.class));
-        assertThat(builder.build("test_schema", dataSourceMap, mock(DatabaseType.class), ruleConfig), instanceOf(DatabaseDiscoveryRule.class));
+        assertThat(builder.build("test_schema", dataSourceMap, mock(DatabaseType.class), ruleConfig, Collections.emptyList(), Collections.emptyList()), instanceOf(DatabaseDiscoveryRule.class));
     }
 }

@@ -23,16 +23,18 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 
+import java.util.Collection;
 import java.util.Map;
 
 public final class TestShardingSphereRuleBuilder implements ShardingSphereRuleBuilder {
     
     @Getter
-    private static ShardingSphereRule rule = new TestShardingSphereRule();
+    private static final ShardingSphereRule RULE = new TestShardingSphereRule();
     
     @Override
-    public ShardingSphereRule build(final String schemaName, final Map dataSourceMap, final DatabaseType databaseType, final RuleConfiguration ruleConfig) {
-        return rule;
+    public ShardingSphereRule build(final String schemaName, final Map dataSourceMap,
+                                    final DatabaseType databaseType, final RuleConfiguration ruleConfig, final Collection users, final Collection builtRules) {
+        return RULE;
     }
     
     @Override

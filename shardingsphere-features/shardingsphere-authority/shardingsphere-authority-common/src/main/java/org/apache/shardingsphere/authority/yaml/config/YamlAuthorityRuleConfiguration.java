@@ -15,26 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.check.audit;
+package org.apache.shardingsphere.authority.yaml.config;
 
-import org.apache.shardingsphere.infra.check.SQLChecker;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Authentication SQL checker.
+ * Authority rule configuration for YAML.
  */
-public abstract class AuditSQLChecker implements SQLChecker {
+@Getter
+@Setter
+public final class YamlAuthorityRuleConfiguration implements YamlRuleConfiguration {
     
-    private static final int ORDER = 1;
-    
-    private static final String CHECK_TYPE = "AUDIT";
-    
-    @Override
-    public final int getOrder() {
-        return ORDER;
-    }
+    private Map<String, YamlShardingSphereAlgorithmConfiguration> privilegeLoaders = new LinkedHashMap<>();
     
     @Override
-    public final String getSQLCheckType() {
-        return CHECK_TYPE;
+    public Class<AuthorityRuleConfiguration> getRuleConfigurationType() {
+        return AuthorityRuleConfiguration.class;
     }
 }

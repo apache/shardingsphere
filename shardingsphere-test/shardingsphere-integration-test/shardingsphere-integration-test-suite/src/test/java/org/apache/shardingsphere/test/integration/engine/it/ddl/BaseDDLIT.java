@@ -74,6 +74,7 @@ public abstract class BaseDDLIT extends SingleITCase {
     
     @After
     public final void destroyTables() throws SQLException {
+        dataSetEnvironmentManager.clearData();
         try (Connection connection = getTargetDataSource().getConnection()) {
             dropInitializedTable(connection);
         }
