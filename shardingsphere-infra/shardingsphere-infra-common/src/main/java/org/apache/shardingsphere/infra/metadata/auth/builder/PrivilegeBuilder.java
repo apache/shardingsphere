@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.auth.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.auth.builder.loader.PrivilegeLoader;
@@ -54,15 +55,17 @@ public final class PrivilegeBuilder {
     /**
      * Build privileges.
      *
+     * @param databaseType database type
      * @param metaDataList meta data list
      * @param users users
      * @return privileges
      */
-    public static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final Collection<ShardingSphereMetaData> metaDataList, final Collection<ShardingSphereUser> users) {
+    public static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final DatabaseType databaseType, 
+                                                                         final Collection<ShardingSphereMetaData> metaDataList, final Collection<ShardingSphereUser> users) {
         if (metaDataList.isEmpty()) {
             return createDefaultPrivileges(users);
         }
-        Optional<PrivilegeLoader> loader = PrivilegeLoaderEngine.findPrivilegeLoader(metaDataList.iterator().next().getResource().getDatabaseType());
+        Optional<PrivilegeLoader> loader = PrivilegeLoaderEngine.findPrivilegeLoader(databaseType);
         return loader.map(optional -> build(metaDataList, users, optional)).orElseGet(() -> createDefaultPrivileges(users));
     }
     
