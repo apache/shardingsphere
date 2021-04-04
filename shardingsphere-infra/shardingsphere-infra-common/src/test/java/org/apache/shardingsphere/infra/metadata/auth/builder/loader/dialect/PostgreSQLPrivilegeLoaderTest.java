@@ -61,7 +61,7 @@ public final class PostgreSQLPrivilegeLoaderTest {
 
     private void assertPrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> actual) {
         assertThat(actual.size(), is(1));
-        ShardingSphereUser root = new ShardingSphereUser("root", "", "");
+        ShardingSphereUser root = new ShardingSphereUser("postgres", "", "");
         assertThat(actual.get(root).getAdministrativePrivilege().getPrivileges().size(), is(0));
         assertThat(actual.get(root).getDatabasePrivilege().getGlobalPrivileges().size(), is(0));
         assertThat(actual.get(root).getDatabasePrivilege().getSpecificPrivileges().size(), is(1));
@@ -73,7 +73,7 @@ public final class PostgreSQLPrivilegeLoaderTest {
 
     private Collection<ShardingSphereUser> buildUsers() {
         LinkedList<ShardingSphereUser> users = new LinkedList<>();
-        users.add(new ShardingSphereUser("root", "", ""));
+        users.add(new ShardingSphereUser("postgres", "", ""));
         return users;
     }
 
@@ -93,7 +93,7 @@ public final class PostgreSQLPrivilegeLoaderTest {
         when(result.getString("table_name")).thenReturn("t_order");
         when(result.getString("privilege_type")).thenReturn("INSERT", "SELECT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "TRIGGER");
         when(result.getBoolean("is_grantable")).thenReturn(true, true, true, true, false, false, false);
-        when(result.getString("grantee")).thenReturn("root");
+        when(result.getString("grantee")).thenReturn("postgres");
         return result;
     }
 
