@@ -198,9 +198,10 @@ public final class RegistryCenter {
 
     private void persistNewUsers(final Collection<ShardingSphereUser> users) {
         if (!users.isEmpty()) {
-            YamlUserRuleConfiguration yamlUserConfig = YamlEngine.unmarshal(repository.get(node.getAuthenticationPath()), YamlUserRuleConfiguration.class);
-            yamlUserConfig.getUsers().putAll(new UserRuleYamlSwapper().swapToYamlConfiguration(users).getUsers());
-            repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(yamlUserConfig));
+            Collection<String> yamlUsers = YamlEngine.unmarshal(repository.get(node.getUsersNode()), Collection.class);
+            Collection<String> newUsers = new LinkedHashSet<>(YamlUserConfigurationConverter.convertYamlUserConfigurations(users));
+            newUsers.addAll(yamlUsers);
+            repository.persist(node.getUsersNode(), YamlEngine.marshal(newUsers));
         }
     }
     
@@ -467,7 +468,7 @@ public final class RegistryCenter {
      */
     @Subscribe
     public synchronized void renew(final CreateUserStatementEvent event) {
-        persistUsers(event.getUsers(), true);
+        persistNewUsers(event.getUsers());
     }
     
     /**
