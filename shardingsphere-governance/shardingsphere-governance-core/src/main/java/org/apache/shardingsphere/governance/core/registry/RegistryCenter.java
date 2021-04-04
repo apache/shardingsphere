@@ -195,6 +195,14 @@ public final class RegistryCenter {
             repository.persist(node.getUsersNode(), YamlEngine.marshal(YamlUserConfigurationConverter.convertYamlUserConfigurations(users)));
         }
     }
+
+    private void persistNewUsers(final Collection<ShardingSphereUser> users) {
+        if (!users.isEmpty()) {
+            YamlUserRuleConfiguration yamlUserConfig = YamlEngine.unmarshal(repository.get(node.getAuthenticationPath()), YamlUserRuleConfiguration.class);
+            yamlUserConfig.getUsers().putAll(new UserRuleYamlSwapper().swapToYamlConfiguration(users).getUsers());
+            repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(yamlUserConfig));
+        }
+    }
     
     private void persistChangedPrivilege(final Collection<ShardingSphereUser> users) {
         if (!users.isEmpty()) {

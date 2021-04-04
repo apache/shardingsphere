@@ -22,9 +22,12 @@ import org.apache.shardingsphere.db.discovery.api.config.rule.DatabaseDiscoveryD
 import org.apache.shardingsphere.db.discovery.common.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.db.discovery.common.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 
 import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,8 +37,8 @@ import java.util.Map;
 public final class DatabaseDiscoveryRuleBuilder implements ShardingSphereRuleBuilder<DatabaseDiscoveryRule, DatabaseDiscoveryRuleConfiguration> {
     
     @Override
-    public DatabaseDiscoveryRule build(final String schemaName,
-                                       final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, final DatabaseDiscoveryRuleConfiguration ruleConfig) {
+    public DatabaseDiscoveryRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
+                                       final DatabaseDiscoveryRuleConfiguration ruleConfig, final Collection<ShardingSphereUser> users, final Collection<ShardingSphereRule> builtRules) {
         Map<String, DataSource> realDataSourceMap = new HashMap<>();
         for (DatabaseDiscoveryDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
             for (String datasourceName : each.getDataSourceNames()) {

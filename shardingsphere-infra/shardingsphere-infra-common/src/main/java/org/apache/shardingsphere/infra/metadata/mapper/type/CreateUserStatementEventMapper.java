@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.mapper.type;
 
-import org.apache.shardingsphere.infra.metadata.auth.AuthenticationContext;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapper;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
@@ -34,9 +33,7 @@ public final class CreateUserStatementEventMapper implements SQLStatementEventMa
     
     @Override
     public CreateUserStatementEvent map(final SQLStatement sqlStatement) {
-        Collection<ShardingSphereUser> users = getUsers((CreateUserStatement) sqlStatement);
-        users.addAll(AuthenticationContext.getInstance().getAuthentication().getAllUsers());
-        return new CreateUserStatementEvent(users);
+        return new CreateUserStatementEvent(getUsers((CreateUserStatement) sqlStatement));
     }
     
     private Collection<ShardingSphereUser> getUsers(final CreateUserStatement sqlStatement) {
