@@ -159,7 +159,8 @@ public final class MetaDataContextsBuilder {
     
     private Authentication buildAuthentication(final Collection<ShardingSphereUser> users, final Map<String, ShardingSphereMetaData> metaDataMap) {
         DefaultAuthentication result = new DefaultAuthentication();
-        result.init(PrivilegeBuilder.build(metaDataMap.values(), users));
+        DatabaseType databaseType = metaDataMap.isEmpty() ? DatabaseTypeRegistry.getActualDatabaseType("MySQL") : metaDataMap.values().iterator().next().getResource().getDatabaseType();
+        result.init(PrivilegeBuilder.build(databaseType, metaDataMap.values(), users));
         return result;
     }
 }

@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.authority.spi;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
@@ -33,9 +34,11 @@ public interface PrivilegeLoadAlgorithm extends ShardingSphereAlgorithm {
     /**
      * Load privileges.
      * 
-     * @param metaDataList meta data list
+     * @param schemaName schema name
+     * @param dataSources data sources
+     * @param rules rules
      * @param users users
-     * @return map of users and privileges
+     * @return user and privileges map
      */
-    Map<ShardingSphereUser, ShardingSpherePrivilege> load(Collection<ShardingSphereMetaData> metaDataList, Collection<ShardingSphereUser> users);
+    Map<ShardingSphereUser, ShardingSpherePrivilege> load(String schemaName, Collection<DataSource> dataSources, Collection<ShardingSphereRule> rules, Collection<ShardingSphereUser> users);
 }

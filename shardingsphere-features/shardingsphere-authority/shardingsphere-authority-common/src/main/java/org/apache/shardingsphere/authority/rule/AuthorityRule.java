@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUs
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 
 /**
@@ -39,14 +40,12 @@ public final class AuthorityRule implements ShardingSphereRule {
         ShardingSphereServiceLoader.register(PrivilegeLoadAlgorithm.class);
     }
     
-    private final PrivilegeLoadAlgorithm privilegeLoader;
-    
-    public AuthorityRule(final AuthorityRuleConfiguration config, final Collection<ShardingSphereUser> users, final Collection<ShardingSphereRule> builtRules) {
+    public AuthorityRule(final AuthorityRuleConfiguration config, 
+                         final String schemaName, final Collection<DataSource> dataSources, final Collection<ShardingSphereUser> users, final Collection<ShardingSphereRule> builtRules) {
         Preconditions.checkState(1 == config.getPrivilegeLoaders().size(), "Only support one privilege loader.");
-        privilegeLoader = ShardingSphereAlgorithmFactory.createAlgorithm(config.getPrivilegeLoaders().values().iterator().next(), PrivilegeLoadAlgorithm.class);
-        Authentication authentication = new DefaultAuthentication();
-        // TODO pass correct parameters
-        authentication.init(privilegeLoader.load(null, users));
+        PrivilegeLoadAlgorithm privilegeLoader = ShardingSphereAlgorithmFactory.createAlgorithm(config.getPrivilegeLoaders().values().iterator().next(), PrivilegeLoadAlgorithm.class);
+        Authentication authentication = null == AuthenticationContext.getInstance().getAuthentication() ? new DefaultAuthentication() : AuthenticationContext.getInstance().getAuthentication();
+        authentication.init(privilegeLoader.load(schemaName, dataSources, builtRules, users));
         AuthenticationContext.getInstance().init(authentication);
     }
 }

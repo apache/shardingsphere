@@ -37,7 +37,7 @@ public final class AuthorityRuleBuilder implements ShardingSphereRuleBuilder<Aut
     @Override
     public AuthorityRule build(final String schemaName, final Map<String, DataSource> dataSourceMap, final DatabaseType databaseType, 
                                final AuthorityRuleConfiguration ruleConfig, final Collection<ShardingSphereUser> users, final Collection<ShardingSphereRule> builtRules) {
-        return new AuthorityRule(ruleConfig, users, builtRules);
+        return new AuthorityRule(ruleConfig, schemaName, dataSourceMap.values(), users, builtRules);
     }
     
     @Override
