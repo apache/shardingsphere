@@ -59,7 +59,6 @@ public final class WhereSegmentExtractUtils {
             WhereSegment whereSegment = new WhereSegment(expressionSegment.getStartIndex(), expressionSegment.getStopIndex(), expressionSegment);
             result.add(whereSegment);
         }
-
         return result;
     }
 
