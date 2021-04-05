@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.context.auth;
+package org.apache.shardingsphere.governance.context.authority;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
@@ -41,15 +41,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Governance authentication context.
+ * Governance authority context.
  */
 @Setter
-public final class GovernanceAuthenticationContext implements MetaDataAwareEventSubscriber {
+public final class GovernanceAuthorityContext implements MetaDataAwareEventSubscriber {
     
     private volatile MetaDataContexts metaDataContexts;
     
     /**
-     * Renew authentication.
+     * Renew user.
      *
      * @param event user changed event
      */
