@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.check.auth;
+package org.apache.shardingsphere.authority.checker;
 
 import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.check.SQLChecker;
@@ -32,13 +32,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Authentication SQL checker.
+ * Authority checker.
  */
-public final class AuthenticationSQLChecker implements SQLChecker {
-    
-    private static final int ORDER = 0;
-    
-    private static final String CHECK_TYPE = "AUTHENTICATION";
+public final class AuthorityChecker implements SQLChecker {
     
     @Override
     public boolean check(final String schemaName, final Grantee grantee) {
@@ -68,12 +64,12 @@ public final class AuthenticationSQLChecker implements SQLChecker {
     
     @Override
     public String getSQLCheckType() {
-        return CHECK_TYPE;
+        return "AUTHORITY";
     }
     
     @Override
     public int getOrder() {
-        return ORDER;
+        return 0;
     }
     
     @Override
