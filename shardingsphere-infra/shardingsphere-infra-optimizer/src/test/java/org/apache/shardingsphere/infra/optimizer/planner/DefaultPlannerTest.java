@@ -27,8 +27,10 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.optimizer.converter.RelNodeConverter;
 import org.apache.shardingsphere.infra.optimizer.rel.physical.SSCalc;
+import org.apache.shardingsphere.infra.optimizer.rel.physical.SSHashAggregate;
 import org.apache.shardingsphere.infra.optimizer.rel.physical.SSMergeSort;
 import org.apache.shardingsphere.infra.optimizer.rel.physical.SSScan;
+import org.apache.shardingsphere.infra.optimizer.rel.physical.SSSort;
 import org.apache.shardingsphere.infra.optimizer.schema.AbstractSchemaTest;
 import org.apache.shardingsphere.infra.optimizer.tools.OptimizerContext;
 import org.apache.shardingsphere.infra.optimizer.util.ShardingRuleConfigUtil;
@@ -39,6 +41,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
 
 public class DefaultPlannerTest extends AbstractSchemaTest {
     
@@ -106,5 +110,17 @@ public class DefaultPlannerTest extends AbstractSchemaTest {
         RelNode physicalRelNode = defaultPlanner.getPhysicPlan(relNode);
         Assert.assertTrue(physicalRelNode instanceof SSMergeSort);
         Assert.assertTrue(((SSMergeSort) physicalRelNode).getInput() instanceof SSScan);
+    }
+    
+    @Test
+    public void testWithSort() {
+        String sql = "select user_id, count(order_id) from t_order group by user_id order by user_id desc";
+        
+        SqlNode sqlNode = SqlParserFacade.parse(sql);
+        RelNode relNode = relNodeConverter.validateAndConvert(sqlNode);
+        
+        RelNode physicalRelNode = defaultPlanner.getPhysicPlan(relNode);
+        Assert.assertThat(physicalRelNode, instanceOf(SSSort.class));
+        Assert.assertThat(((SSSort) physicalRelNode).getInput(), instanceOf(SSHashAggregate.class));
     }
 }
