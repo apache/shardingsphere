@@ -136,13 +136,13 @@ public final class PostgreSQLPrivilegeLoader implements PrivilegeLoader {
     }
 
     private String getTablePrivilegeSQL(final Collection<ShardingSphereUser> users) {
-        String userList = users.stream().map(each -> each.getGrantee().getUsername())
+        String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername()))
                 .collect(Collectors.joining(", "));
         return String.format(TABLE_PRIVILEGE_SQL, userList);
     }
 
     private String getRolePrivilegeSQL(final Collection<ShardingSphereUser> users) {
-        String userList = users.stream().map(each -> each.getGrantee().getUsername())
+        String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername()))
                 .collect(Collectors.joining(", "));
         return String.format(ROLES_SQL, userList);
     }

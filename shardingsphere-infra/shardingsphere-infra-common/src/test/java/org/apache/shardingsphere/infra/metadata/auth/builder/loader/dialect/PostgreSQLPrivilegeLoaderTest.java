@@ -86,7 +86,7 @@ public final class PostgreSQLPrivilegeLoaderTest {
         ResultSet tablePrivilegeResultSet = mockTablePrivilegeResultSet();
         DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         String tablePrivilegeSql = "SELECT grantor, grantee, table_catalog, table_name, privilege_type, is_grantable from information_schema.table_privileges WHERE grantee IN (%s)";
-        String userList = users.stream().map(item -> String.format("%s", item.getGrantee().getUsername(), item.getGrantee().getHostname())).collect(Collectors.joining(", "));
+        String userList = users.stream().map(item -> String.format("'%s'", item.getGrantee().getUsername(), item.getGrantee().getHostname())).collect(Collectors.joining(", "));
         when(dataSource.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSql, userList))).thenReturn(tablePrivilegeResultSet);
         ResultSet rolePrivilegeResultSet = mockRolePrivilegeResultSet();
         String rolePrivilegeSql = "select * from pg_roles WHERE rolname IN (%s)";
