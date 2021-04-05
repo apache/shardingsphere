@@ -31,9 +31,6 @@ import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataCon
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.metadata.auth.AuthenticationContext;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
@@ -70,25 +67,25 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLFrontendEngineTest {
-
+    
     private static final String SCHEMA_PATTERN = "schema_%s";
-
+    
     private MySQLFrontendEngine mysqlFrontendEngine;
-
+    
     @Mock
     private ChannelHandlerContext context;
-
+    
     @Mock
     private MySQLPacketPayload payload;
-
+    
     @Mock
     private Channel channel;
-
+    
     @Before
     public void setUp() {
         resetConnectionIdGenerator();
     }
-
+    
     @SneakyThrows(ReflectiveOperationException.class)
     private void resetConnectionIdGenerator() {
         Field field = ConnectionIdGenerator.class.getDeclaredField("currentId");
@@ -96,18 +93,17 @@ public final class MySQLFrontendEngineTest {
         field.set(ConnectionIdGenerator.getInstance(), 0);
         mysqlFrontendEngine = new MySQLFrontendEngine();
     }
-
+    
     @Test
     public void assertHandshake() {
         assertTrue(mysqlFrontendEngine.getAuthEngine().handshake(context) > 0);
         verify(context).writeAndFlush(isA(MySQLHandshakePacket.class));
     }
-
+    
     @Test
     public void assertAuthWhenLoginSuccess() {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
-        ShardingSphereUser user = new ShardingSphereUser("root", "", "");
-        setAuthentication(user);
+        initProxyContext(new ShardingSphereUser("root", "", ""));
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
@@ -118,12 +114,11 @@ public final class MySQLFrontendEngineTest {
         assertTrue(actual.isFinished());
         verify(context).writeAndFlush(isA(MySQLOKPacket.class));
     }
-
+    
     @Test
     public void assertAuthWhenLoginFailure() {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
-        ShardingSphereUser user = new ShardingSphereUser("root", "error", "");
-        setAuthentication(user);
+        initProxyContext(new ShardingSphereUser("root", "error", ""));
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
@@ -134,12 +129,11 @@ public final class MySQLFrontendEngineTest {
         assertTrue(actual.isFinished());
         verify(context).writeAndFlush(isA(MySQLErrPacket.class));
     }
-
+    
     @Test
     public void assertErrorMsgWhenLoginFailure() throws UnknownHostException {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
-        ShardingSphereUser user = new ShardingSphereUser("root", "error", "");
-        setAuthentication(user);
+        initProxyContext(new ShardingSphereUser("root", "error", ""));
         when(payload.readStringNul()).thenReturn("root");
         when(payload.readStringNulByBytes()).thenReturn("root".getBytes());
         when(context.channel()).thenReturn(channel);
@@ -150,34 +144,25 @@ public final class MySQLFrontendEngineTest {
         assertTrue(actual.isFinished());
         verify(context).writeAndFlush(argThat((ArgumentMatcher<MySQLErrPacket>) argument -> "Access denied for user 'root'@'192.168.0.102' (using password: YES)".equals(argument.getErrorMessage())));
     }
-
-    private void setAuthentication(final ShardingSphereUser user) {
-        DefaultAuthentication authentication = new DefaultAuthentication();
-        ShardingSpherePrivilege privilege = new ShardingSpherePrivilege();
-        privilege.setSuperPrivilege();
-        authentication.getAuthentication().put(user, privilege);
-        initProxyContext(authentication);
-    }
-
+    
     @SneakyThrows(ReflectiveOperationException.class)
     private void setConnectionPhase(final MySQLConnectionPhase connectionPhase) {
         Field field = MySQLAuthenticationEngine.class.getDeclaredField("connectionPhase");
         field.setAccessible(true);
         field.set(mysqlFrontendEngine.getAuthEngine(), connectionPhase);
     }
-
+    
     @SneakyThrows(ReflectiveOperationException.class)
-    private void initProxyContext(final DefaultAuthentication authentication) {
+    private void initProxyContext(final ShardingSphereUser user) {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), getMetaDataContexts(authentication));
-        AuthenticationContext.getInstance().init(authentication);
+        field.set(ProxyContext.getInstance(), getMetaDataContexts(user));
     }
-
-    private MetaDataContexts getMetaDataContexts(final DefaultAuthentication authentication) {
-        return new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new ShardingSphereUsers(authentication.getAllUsers()), new ConfigurationProperties(new Properties()));
+    
+    private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
+        return new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new ShardingSphereUsers(Collections.singleton(user)), new ConfigurationProperties(new Properties()));
     }
-
+    
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {
         Map<String, ShardingSphereMetaData> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {

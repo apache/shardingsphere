@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
@@ -50,9 +52,8 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private Collection<Object> getSchemaNames(final BackendConnection backendConnection) {
-        // TODO make sure metadata is necessary
         try {
-            SQLCheckEngine.check(new MySQLShowDatabasesStatement(), Collections.emptyList(), null, backendConnection.getGrantee());
+            SQLCheckEngine.check(new MySQLShowDatabasesStatement(), Collections.emptyList(), getMetaData(), backendConnection.getGrantee());
             return new ArrayList<>(ProxyContext.getInstance().getAllSchemaNames());
         } catch (final SQLCheckException ex) {
             Collection<Object> result = new LinkedList<>();
@@ -63,6 +64,13 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
             }
             return result;
         }
+    }
+    
+    // TODO the metadata is first one, we need to confirm which schema should use.
+    private ShardingSphereMetaData getMetaData() {
+        return ProxyContext.getInstance().getAllSchemaNames().isEmpty()
+                ? new ShardingSphereMetaData("", null, new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()), null)
+                : ProxyContext.getInstance().getMetaData(ProxyContext.getInstance().getAllSchemaNames().get(0));
     }
     
     @Override

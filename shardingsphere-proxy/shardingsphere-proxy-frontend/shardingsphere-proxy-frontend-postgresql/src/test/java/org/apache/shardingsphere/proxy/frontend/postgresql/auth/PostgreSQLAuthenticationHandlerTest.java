@@ -30,10 +30,6 @@ import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataCon
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.metadata.auth.AuthenticationContext;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
@@ -63,7 +59,7 @@ public final class PostgreSQLAuthenticationHandlerTest {
     
     private final String password = "sharding";
     
-    private final String database = "test";
+    private final String database = "schema_0";
     
     private final String md5Salt = "md5test";
     
@@ -82,50 +78,41 @@ public final class PostgreSQLAuthenticationHandlerTest {
     
     @Test
     public void assertLoginWithPassword() {
-        setAuthentication(new ShardingSphereUser(username, password, "%"));
+        initProxyContext(new ShardingSphereUser(username, password, "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION));
     }
     
     @Test
     public void assertLoginWithAbsentUser() {
-        setAuthentication(new ShardingSphereUser("username", password, "%"));
+        initProxyContext(new ShardingSphereUser("username", password, "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION));
     }
     
     @Test
     public void assertLoginWithIncorrectPassword() {
-        setAuthentication(new ShardingSphereUser(username, "password", "%"));
+        initProxyContext(new ShardingSphereUser(username, "password", "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_PASSWORD));
     }
     
     @Test
     public void assertLoginWithoutPassword() {
-        setAuthentication(new ShardingSphereUser(username, null, "%"));
+        initProxyContext(new ShardingSphereUser(username, null, "%"));
         PostgreSQLLoginResult postgreSQLLoginResult = PostgreSQLAuthenticationHandler.loginWithMd5Password(username, database, md5Salt.getBytes(StandardCharsets.UTF_8), passwordMessagePacket);
         assertThat(postgreSQLLoginResult.getErrorCode(), is(PostgreSQLErrorCode.INVALID_PASSWORD));
     }
     
-    private void setAuthentication(final ShardingSphereUser user) {
-        Authentication authentication = new DefaultAuthentication();
-        ShardingSpherePrivilege privilege = new ShardingSpherePrivilege();
-        privilege.setSuperPrivilege();
-        authentication.getAuthentication().put(user, privilege);
-        initProxyContext(authentication);
-    }
-    
     @SneakyThrows(ReflectiveOperationException.class)
-    private void initProxyContext(final Authentication authentication) {
+    private void initProxyContext(final ShardingSphereUser user) {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), getMetaDataContexts(authentication));
-        AuthenticationContext.getInstance().init(authentication);
+        field.set(ProxyContext.getInstance(), getMetaDataContexts(user));
     }
     
-    private MetaDataContexts getMetaDataContexts(final Authentication authentication) {
-        return new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new ShardingSphereUsers(authentication.getAllUsers()), new ConfigurationProperties(new Properties()));
+    private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
+        return new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new ShardingSphereUsers(Collections.singleton(user)), new ConfigurationProperties(new Properties()));
     }
     
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {

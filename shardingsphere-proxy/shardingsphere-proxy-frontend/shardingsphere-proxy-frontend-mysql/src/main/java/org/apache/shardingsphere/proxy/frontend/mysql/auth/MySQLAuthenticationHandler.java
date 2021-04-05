@@ -54,7 +54,7 @@ public final class MySQLAuthenticationHandler {
         if (!user.isPresent() || !isPasswordRight(user.get().getPassword(), authResponse)) {
             return Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR);
         }
-        return SQLCheckEngine.check(databaseName, ProxyContext.getInstance().getMetaDataContexts().getMetaData(databaseName), user.get().getGrantee())
+        return null == databaseName || SQLCheckEngine.check(databaseName, ProxyContext.getInstance().getMetaDataContexts().getMetaData(databaseName), user.get().getGrantee())
                 ? Optional.empty() : Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
     }
     
