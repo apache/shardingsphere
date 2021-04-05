@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.authority.spi;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -35,10 +36,12 @@ public interface PrivilegeLoadAlgorithm extends ShardingSphereAlgorithm {
      * Load privileges.
      * 
      * @param schemaName schema name
+     * @param databaseType database type
      * @param dataSources data sources
      * @param rules rules
      * @param users users
      * @return user and privileges map
      */
-    Map<ShardingSphereUser, ShardingSpherePrivilege> load(String schemaName, Collection<DataSource> dataSources, Collection<ShardingSphereRule> rules, Collection<ShardingSphereUser> users);
+    Map<ShardingSphereUser, ShardingSpherePrivilege> load(String schemaName, DatabaseType databaseType, 
+                                                          Collection<DataSource> dataSources, Collection<ShardingSphereRule> rules, Collection<ShardingSphereUser> users);
 }
