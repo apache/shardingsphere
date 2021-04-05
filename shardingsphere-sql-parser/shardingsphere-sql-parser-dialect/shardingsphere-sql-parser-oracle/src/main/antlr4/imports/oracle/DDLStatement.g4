@@ -946,3 +946,4 @@ dropTablePartition
 partitionExtendedNames
     : (PARTITION | PARTITIONS) partition
     ;
+    
