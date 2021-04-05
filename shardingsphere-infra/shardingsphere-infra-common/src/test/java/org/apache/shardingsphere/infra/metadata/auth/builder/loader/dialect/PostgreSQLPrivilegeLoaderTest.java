@@ -73,7 +73,6 @@ public final class PostgreSQLPrivilegeLoaderTest {
         Collection<PrivilegeType> expectedAdministrativePrivilege = new CopyOnWriteArraySet(Arrays.asList(PrivilegeType.SUPER, PrivilegeType.CREATE_ROLE,
                 PrivilegeType.CREATE_DATABASE, PrivilegeType.CAN_LOGIN));
         assertEquals(actual.get(user).getAdministrativePrivilege().getPrivileges(), expectedAdministrativePrivilege);
-
     }
 
     private Collection<ShardingSphereUser> buildUsers() {
