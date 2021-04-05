@@ -929,7 +929,7 @@ addTablePartition
     ;
 
 addRangePartitionClause
-    : rangeValuesClause tablePartitionDescription
+    : PARTITION partitionName? rangeValuesClause tablePartitionDescription
     ((LP_? rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)* | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)* RP_?)
         | hashSubpartitionQuantity)?
     ;
