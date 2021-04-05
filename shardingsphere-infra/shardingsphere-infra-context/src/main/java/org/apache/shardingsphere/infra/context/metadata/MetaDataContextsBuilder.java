@@ -27,10 +27,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
-import org.apache.shardingsphere.infra.metadata.auth.AuthenticationContext;
-import org.apache.shardingsphere.infra.metadata.auth.builder.PrivilegeBuilder;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.resource.CachedDatabaseMetaData;
@@ -95,7 +91,6 @@ public final class MetaDataContextsBuilder {
         for (String each : ruleConfigs.keySet()) {
             mataDataMap.put(each, buildMetaData(each));
         }
-        AuthenticationContext.getInstance().init(buildAuthentication(users, mataDataMap));
         return new StandardMetaDataContexts(mataDataMap, executorEngine, new ShardingSphereUsers(users), props);
     }
     
@@ -155,12 +150,5 @@ public final class MetaDataContextsBuilder {
     
     private ShardingSphereSchema buildSchema(final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) throws SQLException {
         return SchemaBuilder.build(new SchemaBuilderMaterials(databaseType, dataSourceMap, rules, props));
-    }
-    
-    private Authentication buildAuthentication(final Collection<ShardingSphereUser> users, final Map<String, ShardingSphereMetaData> metaDataMap) {
-        DefaultAuthentication result = new DefaultAuthentication();
-        DatabaseType databaseType = metaDataMap.isEmpty() ? DatabaseTypeRegistry.getActualDatabaseType("MySQL") : metaDataMap.values().iterator().next().getResource().getDatabaseType();
-        result.init(PrivilegeBuilder.build(databaseType, metaDataMap.values(), users));
-        return result;
     }
 }
