@@ -46,10 +46,10 @@ public final class SQLCheckEngine {
      * @param grantee grantee
      */
     public static void check(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingSphereMetaData metaData, final Grantee grantee) {
-        for (SQLChecker each : OrderedSPIRegistry.getRegisteredServices(SQLChecker.class)) {
+        for (SQLChecker<?> each : OrderedSPIRegistry.getRegisteredServices(SQLChecker.class)) {
             SQLCheckResult checkResult = each.check(sqlStatement, parameters, metaData, grantee);
             if (!checkResult.isPassed()) {
-                throw new SQLCheckException(each.getSQLCheckType(), checkResult.getErrorMessage());
+                throw new SQLCheckException(checkResult.getErrorMessage());
             }
         }
     }
@@ -62,7 +62,7 @@ public final class SQLCheckEngine {
      * @return check result
      */
     public static boolean check(final String schemaName, final Grantee grantee) {
-        for (SQLChecker each : OrderedSPIRegistry.getRegisteredServices(SQLChecker.class)) {
+        for (SQLChecker<?> each : OrderedSPIRegistry.getRegisteredServices(SQLChecker.class)) {
             boolean checkResult = each.check(schemaName, grantee);
             if (!checkResult) {
                 return false;

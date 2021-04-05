@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.authority.checker;
 
+import org.apache.shardingsphere.authority.constant.AuthorityOrder;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.check.SQLChecker;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -34,7 +36,7 @@ import java.util.Optional;
 /**
  * Authority checker.
  */
-public final class AuthorityChecker implements SQLChecker {
+public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
     
     @Override
     public boolean check(final String schemaName, final Grantee grantee) {
@@ -63,17 +65,12 @@ public final class AuthorityChecker implements SQLChecker {
     }
     
     @Override
-    public String getSQLCheckType() {
-        return "AUTHORITY";
-    }
-    
-    @Override
     public int getOrder() {
-        return 0;
+        return AuthorityOrder.ORDER;
     }
     
     @Override
-    public Class getTypeClass() {
-        return null;
+    public Class<AuthorityRule> getTypeClass() {
+        return AuthorityRule.class;
     }
 }
