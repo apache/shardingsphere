@@ -106,13 +106,13 @@ public final class PostgreSQLPrivilegeLoader implements PrivilegeLoader {
             Statement statement = connection.createStatement();
             try (ResultSet resultSet = statement.executeQuery(getRolePrivilegeSQL(users))) {
                 while (resultSet.next()) {
-                    fillGlobalPrivilege(privileges, resultSet);
+                    fillRolePrivilege(privileges, resultSet);
                 }
             }
         }
     }
 
-    private void fillGlobalPrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final ResultSet resultSet) throws SQLException {
+    private void fillRolePrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final ResultSet resultSet) throws SQLException {
         Optional<ShardingSphereUser> user = getShardingSphereUser(privileges, resultSet);
         if (user.isPresent()) {
             privileges.get(user.get()).getAdministrativePrivilege().getPrivileges().addAll(loadRolePrivileges(resultSet));
