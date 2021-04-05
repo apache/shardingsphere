@@ -41,15 +41,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Governance authentication context.
+ * Governance authority context.
  */
 @Setter
-public final class GovernanceAuthenticationContext implements MetaDataAwareEventSubscriber {
+public final class GovernanceAuthorityContext implements MetaDataAwareEventSubscriber {
     
     private volatile MetaDataContexts metaDataContexts;
     
     /**
-     * Renew authentication.
+     * Renew user.
      *
      * @param event user changed event
      */
