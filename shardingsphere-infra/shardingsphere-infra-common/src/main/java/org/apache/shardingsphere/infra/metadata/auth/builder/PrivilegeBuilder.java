@@ -64,10 +64,10 @@ public final class PrivilegeBuilder {
     public static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final DatabaseType databaseType, 
                                                                          final Collection<ShardingSphereMetaData> metaDataList, final Collection<ShardingSphereUser> users) {
         if (metaDataList.isEmpty()) {
-            return createDefaultPrivileges(users);
+            return buildDefaultPrivileges(users);
         }
         Optional<PrivilegeLoader> loader = PrivilegeLoaderEngine.findPrivilegeLoader(databaseType);
-        return loader.map(optional -> build(metaDataList, users, optional)).orElseGet(() -> createDefaultPrivileges(users));
+        return loader.map(optional -> build(metaDataList, users, optional)).orElseGet(() -> buildDefaultPrivileges(users));
     }
     
     private static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final Collection<ShardingSphereMetaData> metaDataList, 
@@ -119,7 +119,13 @@ public final class PrivilegeBuilder {
         return result;
     }
     
-    private static Map<ShardingSphereUser, ShardingSpherePrivilege> createDefaultPrivileges(final Collection<ShardingSphereUser> users) {
+    /**
+     * Build default privileges.
+     * 
+     * @param users users
+     * @return privileges
+     */
+    public static Map<ShardingSphereUser, ShardingSpherePrivilege> buildDefaultPrivileges(final Collection<ShardingSphereUser> users) {
         Map<ShardingSphereUser, ShardingSpherePrivilege> result = new LinkedHashMap<>(users.size(), 1);
         ShardingSpherePrivilege privilege = new ShardingSpherePrivilege();
         privilege.setSuperPrivilege();
