@@ -20,14 +20,8 @@ package org.apache.shardingsphere.authority.yaml.swapper;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.swapper.algorithm.ShardingSphereAlgorithmConfigurationYamlSwapper;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Authority rule configuration YAML swapper.
@@ -39,21 +33,13 @@ public final class AuthorityRuleConfigurationYamlSwapper implements YamlRuleConf
     @Override
     public YamlAuthorityRuleConfiguration swapToYamlConfiguration(final AuthorityRuleConfiguration data) {
         YamlAuthorityRuleConfiguration result = new YamlAuthorityRuleConfiguration();
-        data.getPrivilegeLoaders().forEach((key, value) -> result.getPrivilegeLoaders().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
+        result.setPrivilegeLoader(algorithmSwapper.swapToYamlConfiguration(data.getPrivilegeLoader()));
         return result;
     }
     
     @Override
     public AuthorityRuleConfiguration swapToObject(final YamlAuthorityRuleConfiguration yamlConfig) {
-        return new AuthorityRuleConfiguration(swapAuthorityAlgorithm(yamlConfig));
-    }
-    
-    private Map<String, ShardingSphereAlgorithmConfiguration> swapAuthorityAlgorithm(final YamlAuthorityRuleConfiguration yamlConfig) {
-        Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>(yamlConfig.getPrivilegeLoaders().size(), 1);
-        for (Entry<String, YamlShardingSphereAlgorithmConfiguration> entry : yamlConfig.getPrivilegeLoaders().entrySet()) {
-            result.put(entry.getKey(), algorithmSwapper.swapToObject(entry.getValue()));
-        }
-        return result;
+        return new AuthorityRuleConfiguration(algorithmSwapper.swapToObject(yamlConfig.getPrivilegeLoader()));
     }
     
     @Override

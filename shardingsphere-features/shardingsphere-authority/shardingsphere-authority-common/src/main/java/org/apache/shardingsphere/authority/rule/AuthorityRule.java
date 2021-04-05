@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.authority.rule;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.spi.PrivilegeLoadAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
@@ -43,8 +42,7 @@ public final class AuthorityRule implements ShardingSphereRule {
     
     public AuthorityRule(final AuthorityRuleConfiguration config, final String schemaName, final DatabaseType databaseType, 
                          final Collection<DataSource> dataSources, final Collection<ShardingSphereUser> users, final Collection<ShardingSphereRule> builtRules) {
-        Preconditions.checkState(1 == config.getPrivilegeLoaders().size(), "Only support one privilege loader.");
-        PrivilegeLoadAlgorithm privilegeLoader = ShardingSphereAlgorithmFactory.createAlgorithm(config.getPrivilegeLoaders().values().iterator().next(), PrivilegeLoadAlgorithm.class);
+        PrivilegeLoadAlgorithm privilegeLoader = ShardingSphereAlgorithmFactory.createAlgorithm(config.getPrivilegeLoader(), PrivilegeLoadAlgorithm.class);
         Authentication authentication = null == AuthenticationContext.getInstance().getAuthentication() ? new DefaultAuthentication() : AuthenticationContext.getInstance().getAuthentication();
         authentication.init(privilegeLoader.load(schemaName, databaseType, dataSources, builtRules, users));
         AuthenticationContext.getInstance().init(authentication);

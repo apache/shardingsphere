@@ -23,9 +23,6 @@ import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereAlgorithmConfiguration;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 /**
  * Authority rule configuration for YAML.
  */
@@ -33,7 +30,7 @@ import java.util.Map;
 @Setter
 public final class YamlAuthorityRuleConfiguration implements YamlRuleConfiguration {
     
-    private Map<String, YamlShardingSphereAlgorithmConfiguration> privilegeLoaders = new LinkedHashMap<>();
+    private YamlShardingSphereAlgorithmConfiguration privilegeLoader;
     
     @Override
     public Class<AuthorityRuleConfiguration> getRuleConfigurationType() {
