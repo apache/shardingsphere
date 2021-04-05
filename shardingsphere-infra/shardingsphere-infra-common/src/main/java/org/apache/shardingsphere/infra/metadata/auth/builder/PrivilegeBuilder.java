@@ -103,7 +103,7 @@ public final class PrivilegeBuilder {
     private static Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> load(final Collection<DataSource> dataSources, 
                                                                                      final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
         Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> result = new LinkedHashMap<>(users.size(), 1);
-        ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CPU_CORES * 2, dataSources.size()));
+        ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CPU_CORES * 2, dataSources.isEmpty() ? 1 : dataSources.size()));
         Collection<Future<Map<ShardingSphereUser, ShardingSpherePrivilege>>> futures = new HashSet<>(dataSources.size(), 1);
         for (DataSource each : dataSources) {
             futures.add(executorService.submit(() -> loader.load(users, each)));
@@ -147,7 +147,7 @@ public final class PrivilegeBuilder {
         for (Entry<ShardingSphereUser, Collection<ShardingSpherePrivilege>> entry : userPrivilegeMap.entrySet()) {
             for (ShardingSpherePrivilege each : entry.getValue()) {
                 if (each.isEmpty()) {
-                    throw new ShardingSphereException(String.format("There is no enough privileges for %s on all database instances.", entry.getKey().getGrantee()));
+                    throw new ShardingSphereException(String.format("There is no enough privileges for %s on all database instances.", entry.getKey().getGrantee().toString().replaceAll("%", "%%")));
                 }
             }
         }

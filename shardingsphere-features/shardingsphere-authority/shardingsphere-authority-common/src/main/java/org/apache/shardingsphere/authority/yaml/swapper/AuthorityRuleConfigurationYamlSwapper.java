@@ -63,7 +63,7 @@ public final class AuthorityRuleConfigurationYamlSwapper implements YamlRuleConf
     
     @Override
     public String getRuleTagName() {
-        return "Authority";
+        return "AUTHORITY";
     }
     
     @Override

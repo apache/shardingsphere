@@ -34,5 +34,5 @@ public final class AuthorityOrder {
     /**
      * Algorithm provider authority order.
      */
-    public static final int ALGORITHM_PROVIDER_AUTHORITY_ORDER = 501;
+    public static final int ALGORITHM_PROVIDER_AUTHORITY_ORDER = ORDER + 1;
 }
