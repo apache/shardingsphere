@@ -37,7 +37,7 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     @Override
     public void execute(final BackendConnection backendConnection) {
         String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
-        if (!ProxyContext.getInstance().schemaExists(schema) && SQLCheckEngine.check(schema, backendConnection.getGrantee())) {
+        if (!ProxyContext.getInstance().schemaExists(schema) && SQLCheckEngine.check(schema, ProxyContext.getInstance().getMetaDataContexts().getMetaData(schema), backendConnection.getGrantee())) {
             throw new UnknownDatabaseException(schema);
         }
         backendConnection.setCurrentSchema(schema);

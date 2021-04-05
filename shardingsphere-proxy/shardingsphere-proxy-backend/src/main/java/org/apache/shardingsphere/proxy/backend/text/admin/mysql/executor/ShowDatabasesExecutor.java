@@ -57,7 +57,7 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
         } catch (final SQLCheckException ex) {
             Collection<Object> result = new LinkedList<>();
             for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
-                if (SQLCheckEngine.check(each, backendConnection.getGrantee())) {
+                if (SQLCheckEngine.check(each, ProxyContext.getInstance().getMetaData(each), backendConnection.getGrantee())) {
                     result.add(each);
                 }
             }
