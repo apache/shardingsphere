@@ -147,7 +147,7 @@ public final class PrivilegeBuilder {
         for (Entry<ShardingSphereUser, Collection<ShardingSpherePrivilege>> entry : userPrivilegeMap.entrySet()) {
             for (ShardingSpherePrivilege each : entry.getValue()) {
                 if (each.isEmpty()) {
-                    throw new ShardingSphereException(String.format("There is no enough privileges for %s on all database instances.", entry.getKey().getGrantee()));
+                    throw new ShardingSphereException(String.format("There is no enough privileges for %s on all database instances.", entry.getKey().getGrantee()).toString().replaceAll("%", "%%"));
                 }
             }
         }
