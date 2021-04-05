@@ -56,7 +56,7 @@ public final class PostgreSQLAuthenticationHandler {
         if (!expectedMd5Digest.equals(md5Digest)) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, String.format("password authentication failed for user \"%s\"", username));
         }
-        return SQLCheckEngine.check(databaseName, user.get().getGrantee())
+        return null == databaseName || SQLCheckEngine.check(databaseName, ProxyContext.getInstance().getMetaDataContexts().getMetaData(databaseName), user.get().getGrantee())
                 ? new PostgreSQLLoginResult(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION, null)
                 : new PostgreSQLLoginResult(PostgreSQLErrorCode.PRIVILEGE_NOT_GRANTED, String.format("Access denied for user '%s' to database '%s'", username, databaseName));
     }

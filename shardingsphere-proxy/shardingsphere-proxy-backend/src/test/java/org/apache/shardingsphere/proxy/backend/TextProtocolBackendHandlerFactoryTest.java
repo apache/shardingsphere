@@ -22,10 +22,6 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
-import org.apache.shardingsphere.infra.metadata.auth.AuthenticationContext;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -53,12 +49,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -71,24 +64,18 @@ public final class TextProtocolBackendHandlerFactoryTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private BackendConnection backendConnection;
     
-    @SuppressWarnings("unchecked")
     @Before
     public void setUp() {
         when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         setTransactionContexts();
         when(backendConnection.getSchemaName()).thenReturn("schema");
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        when(metaDataContexts.getMetaData("schema")).thenReturn(mock(ShardingSphereMetaData.class));
+        when(metaDataContexts.getMetaData("schema")).thenReturn(mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS));
         when(metaDataContexts.getMetaData("schema").getResource()).thenReturn(mock(ShardingSphereResource.class));
         when(metaDataContexts.getMetaData("schema").getResource().getDatabaseType()).thenReturn(databaseType);
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
         ProxyContext proxyContext = ProxyContext.getInstance();
         proxyContext.init(metaDataContexts, transactionContexts);
-        Authentication authentication = mock(Authentication.class);
-        ShardingSpherePrivilege privilege = mock(ShardingSpherePrivilege.class);
-        when(privilege.hasPrivileges((Collection<PrivilegeType>) any())).thenReturn(true);
-        when(authentication.findPrivilege(any())).thenReturn(Optional.of(privilege));
-        AuthenticationContext.getInstance().init(authentication);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
