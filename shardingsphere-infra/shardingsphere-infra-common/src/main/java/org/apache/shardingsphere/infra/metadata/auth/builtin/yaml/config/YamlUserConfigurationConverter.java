@@ -36,9 +36,10 @@ public final class YamlUserConfigurationConverter {
     private static final UserYamlSwapper USER_YAML_SWAPPER = new UserYamlSwapper();
 
     /**
-     * convert users Yaml content.
-     * @param users collection of ShardingSphereUser
-     * @return collection of formatting users content
+     * Convert to users yaml content.
+     *
+     * @param users sharding sphere users
+     * @return users yaml content
      */
     public static Collection<String> convertYamlUserConfigurations(final Collection<ShardingSphereUser> users) {
         Collection<String> result = new LinkedList<>();
@@ -47,9 +48,10 @@ public final class YamlUserConfigurationConverter {
     }
 
     /**
-     * convert ShardingSphereUser.
+     * Convert to sharding sphere users.
+     *
      * @param users users yaml content
-     * @return collection of ShardingSphereUser
+     * @return sharding sphere users
      */
     public static Collection<ShardingSphereUser> convertShardingSphereUser(final Collection<String> users) {
         Collection<YamlUserConfiguration> yamlUsers = convertYamlUserConfiguration(users);
@@ -57,18 +59,20 @@ public final class YamlUserConfigurationConverter {
     }
 
     /**
-     * convert YamlUserConfiguration.
+     * Convert to yaml user configurations.
+     *
      * @param users users yaml content
-     * @return collection of YamlUserConfiguration
+     * @return yaml user configurations
      */
     public static Collection<YamlUserConfiguration> convertYamlUserConfiguration(final Collection<String> users) {
         return users.stream().map(user -> convertYamlUserConfiguration(user)).collect(Collectors.toList());
     }
 
     /**
-     * convert YamlUserConfiguration.
-     * @param yamlUser users yaml content
-     * @return YamlUserConfiguration
+     * Convert to yaml user configuration.
+     *
+     * @param yamlUser user yaml content
+     * @return yaml user configuration
      */
     private static YamlUserConfiguration convertYamlUserConfiguration(final String yamlUser) {
         Preconditions.checkArgument(0 < yamlUser.indexOf("@") && 0 < yamlUser.indexOf(":") && yamlUser.indexOf(":") <= yamlUser.length() - 1,
