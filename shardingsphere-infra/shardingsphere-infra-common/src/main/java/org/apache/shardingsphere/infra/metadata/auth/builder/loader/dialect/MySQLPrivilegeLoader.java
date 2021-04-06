@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeTy
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.database.SchemaPrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.database.TablePrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.auth.builder.loader;
 
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

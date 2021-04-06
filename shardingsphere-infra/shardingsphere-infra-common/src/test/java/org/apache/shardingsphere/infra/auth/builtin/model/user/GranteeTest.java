@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.auth.builtin.model.user;
 
-import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
