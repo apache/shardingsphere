@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 
-import java.util.Map;
-
 /**
  * Authority rule configuration.
  */
@@ -31,5 +29,5 @@ import java.util.Map;
 @Getter
 public final class AuthorityRuleConfiguration implements RuleConfiguration {
     
-    private final Map<String, ShardingSphereAlgorithmConfiguration> privilegeLoaders;
+    private final ShardingSphereAlgorithmConfiguration privilegeLoader;
 }

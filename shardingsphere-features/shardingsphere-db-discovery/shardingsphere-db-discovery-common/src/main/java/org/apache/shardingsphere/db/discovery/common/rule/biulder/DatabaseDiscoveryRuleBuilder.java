@@ -22,7 +22,7 @@ import org.apache.shardingsphere.db.discovery.api.config.rule.DatabaseDiscoveryD
 import org.apache.shardingsphere.db.discovery.common.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.db.discovery.common.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
 

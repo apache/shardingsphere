@@ -24,8 +24,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.infra.check.SQLCheckEngine;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.security.MessageDigest;
@@ -56,7 +56,7 @@ public final class PostgreSQLAuthenticationHandler {
         if (!expectedMd5Digest.equals(md5Digest)) {
             return new PostgreSQLLoginResult(PostgreSQLErrorCode.INVALID_PASSWORD, String.format("password authentication failed for user \"%s\"", username));
         }
-        return SQLCheckEngine.check(databaseName, user.get().getGrantee())
+        return null == databaseName || SQLCheckEngine.check(databaseName, ProxyContext.getInstance().getMetaDataContexts().getMetaData(databaseName), user.get().getGrantee())
                 ? new PostgreSQLLoginResult(PostgreSQLErrorCode.SUCCESSFUL_COMPLETION, null)
                 : new PostgreSQLLoginResult(PostgreSQLErrorCode.PRIVILEGE_NOT_GRANTED, String.format("Access denied for user '%s' to database '%s'", username, databaseName));
     }

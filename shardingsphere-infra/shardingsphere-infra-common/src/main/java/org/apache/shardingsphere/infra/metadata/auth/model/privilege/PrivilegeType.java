@@ -58,5 +58,12 @@ public enum PrivilegeType {
     CREATE_USER,
     CREATE_TABLESPACE,
     CREATE_ROLE,
-    DROP_ROLE
+    DROP_ROLE,
+    TRUNCATE,
+    USAGE,
+    CONNECT,
+    TEMPORARY,
+    CREATE_DATABASE,
+    INHERIT,
+    CAN_LOGIN
 }

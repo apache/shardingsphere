@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.model.user;
+package org.apache.shardingsphere.infra.metadata.user;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

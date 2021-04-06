@@ -15,20 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config;
+package org.apache.shardingsphere.infra.metadata.user;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-
-import java.util.Map;
 
 /**
- * User rule configuration for YAML.
+ * ShardingSphere user.
  */
 @Getter
-@Setter
-public final class YamlUserRuleConfiguration implements YamlConfiguration {
+@EqualsAndHashCode(of = "grantee")
+public final class ShardingSphereUser {
     
-    private Map<String, YamlUserConfiguration> users;
+    private final Grantee grantee;
+    
+    private final String password;
+    
+    public ShardingSphereUser(final String username, final String password, final String hostname) {
+        grantee = new Grantee(username, hostname);
+        this.password = password;
+    }
 }

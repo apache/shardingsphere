@@ -22,11 +22,11 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.auth.Authentication;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfiguration;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
@@ -180,10 +180,10 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         return result;
     }
     
-    private YamlUserRuleConfiguration createYamlUserRuleConfiguration() {
+    private YamlUsersConfiguration createYamlUserRuleConfiguration() {
         Map<String, YamlUserConfiguration> users = new HashMap<>(1, 1);
         users.put("root", createYamlUserConfiguration());
-        YamlUserRuleConfiguration result = new YamlUserRuleConfiguration();
+        YamlUsersConfiguration result = new YamlUsersConfiguration();
         result.setUsers(users);
         return result;
     }

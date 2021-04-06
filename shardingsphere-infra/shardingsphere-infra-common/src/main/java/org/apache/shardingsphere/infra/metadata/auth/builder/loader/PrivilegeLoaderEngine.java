@@ -31,7 +31,7 @@ import java.util.Optional;
 public final class PrivilegeLoaderEngine {
     
     static {
-        ShardingSphereServiceLoader.newServiceInstances(PrivilegeLoader.class);
+        ShardingSphereServiceLoader.register(PrivilegeLoader.class);
     }
     
     /**

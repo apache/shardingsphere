@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.mapper.type;
 
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.mapper.SQLStatementEventMapper;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.GrantStatementEvent;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;

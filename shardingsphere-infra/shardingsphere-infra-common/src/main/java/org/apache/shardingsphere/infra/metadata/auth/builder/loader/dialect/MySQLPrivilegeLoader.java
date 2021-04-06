@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeTy
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.database.SchemaPrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.database.TablePrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -126,19 +126,18 @@ public final class MySQLPrivilegeLoader implements PrivilegeLoader {
     }
     
     private String getGlobalPrivilegeSQL(final Collection<ShardingSphereUser> users) {
-        String userHostTuples = users.stream().map(each -> String.format("(%s, %s)", each.getGrantee().getUsername(), each.getGrantee().getHostname()))
-                .collect(Collectors.joining(","));
+        String userHostTuples = users.stream().map(each -> String.format("('%s', '%s')", each.getGrantee().getUsername(), each.getGrantee().getHostname())).collect(Collectors.joining(","));
         return String.format(GLOBAL_PRIVILEGE_SQL, userHostTuples);
     }
     
     private String getSchemaPrivilegeSQL(final Collection<ShardingSphereUser> users) {
-        String userHostTuples = users.stream().map(each -> String.format("(%s, %s)", each.getGrantee().getUsername(), each.getGrantee().getHostname()))
+        String userHostTuples = users.stream().map(each -> String.format("('%s', '%s')", each.getGrantee().getUsername(), each.getGrantee().getHostname()))
                 .collect(Collectors.joining(","));
         return String.format(SCHEMA_PRIVILEGE_SQL, userHostTuples);
     }
     
     private String getTablePrivilegeSQL(final Collection<ShardingSphereUser> users) {
-        String userHostTuples = users.stream().map(each -> String.format("(%s, %s)", each.getGrantee().getUsername(), each.getGrantee().getHostname()))
+        String userHostTuples = users.stream().map(each -> String.format("('%s', '%s')", each.getGrantee().getUsername(), each.getGrantee().getHostname()))
                 .collect(Collectors.joining(","));
         return String.format(TABLE_PRIVILEGE_SQL, userHostTuples);
     }
