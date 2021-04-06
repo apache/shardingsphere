@@ -5,7 +5,7 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -15,33 +15,55 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.spi;
+package org.apache.shardingsphere.authority.engine;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 /**
- * Privilege load algorithm.
- */
-public interface PrivilegeLoadAlgorithm extends ShardingSphereAlgorithm {
+ * Authentication.
+*/
+public interface Authentication {
     
     /**
-     * Load privileges.
+     * Initialize authentication.
      * 
-     * @param schemaName schema name
-     * @param databaseType database type
-     * @param dataSources data sources
-     * @param rules rules
-     * @param users users
-     * @return user and privileges map
+     * @param loadedPrivileges loaded privileges
      */
-    Map<ShardingSphereUser, ShardingSpherePrivilege> load(String schemaName, DatabaseType databaseType, 
-                                                          Collection<DataSource> dataSources, Collection<ShardingSphereRule> rules, Collection<ShardingSphereUser> users);
+    void init(Map<ShardingSphereUser, ShardingSpherePrivilege> loadedPrivileges);
+    
+    /**
+     * Get authentication.
+     *
+     * @return Authentication
+     */
+    Map<ShardingSphereUser, ShardingSpherePrivilege> getAuthentication();
+    
+    /**
+     * Get all users.
+     *
+     * @return all users
+     */
+    Collection<ShardingSphereUser> getAllUsers();
+    
+    /**
+     * Find user.
+     * 
+     * @param grantee grantee
+     * @return found user
+     */
+    Optional<ShardingSphereUser> findUser(Grantee grantee);
+    
+    /**
+     * Find Privilege.
+     *
+     * @param grantee grantee
+     * @return found user
+     */
+    Optional<ShardingSpherePrivilege> findPrivilege(Grantee grantee);
 }

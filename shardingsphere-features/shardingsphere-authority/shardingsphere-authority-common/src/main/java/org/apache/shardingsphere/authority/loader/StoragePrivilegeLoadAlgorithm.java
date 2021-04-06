@@ -19,10 +19,10 @@ package org.apache.shardingsphere.authority.loader;
 
 import org.apache.shardingsphere.authority.spi.PrivilegeLoadAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.auth.builder.PrivilegeBuilder;
-import org.apache.shardingsphere.infra.metadata.auth.builder.loader.PrivilegeLoader;
-import org.apache.shardingsphere.infra.metadata.auth.builder.loader.PrivilegeLoaderEngine;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
+import org.apache.shardingsphere.authority.loader.builder.PrivilegeBuilder;
+import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoader;
+import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoaderEngine;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
