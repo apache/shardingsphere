@@ -943,6 +943,7 @@ addListPartitionClause
 dropTablePartition
     : DROP partitionExtendedNames
     ;
+
 partitionExtendedNames
     : (PARTITION | PARTITIONS) partition
     ;
