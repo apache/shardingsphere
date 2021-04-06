@@ -55,7 +55,7 @@ public final class PostgreSQLPrivilegeLoaderTest {
 
     @Test
     public void assertLoad() throws SQLException {
-        Collection<ShardingSphereUser> users = buildUsers();
+        Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSource(users);
         assertPrivilege(getPrivilegeLoader().load(users, dataSource));
     }
@@ -75,7 +75,7 @@ public final class PostgreSQLPrivilegeLoaderTest {
         assertEquals(actual.get(user).getAdministrativePrivilege().getPrivileges(), expectedAdministrativePrivilege);
     }
 
-    private Collection<ShardingSphereUser> buildUsers() {
+    private Collection<ShardingSphereUser> createUsers() {
         LinkedList<ShardingSphereUser> users = new LinkedList<>();
         users.add(new ShardingSphereUser("postgres", "", ""));
         return users;
