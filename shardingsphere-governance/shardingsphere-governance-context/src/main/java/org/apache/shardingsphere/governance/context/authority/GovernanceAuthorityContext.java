@@ -31,7 +31,7 @@ import org.apache.shardingsphere.authority.loader.builder.PrivilegeBuilder;
 import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoader;
 import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoaderEngine;
 import org.apache.shardingsphere.authority.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.authority.auth.model.privilege.ShardingSpherePrivilege;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;

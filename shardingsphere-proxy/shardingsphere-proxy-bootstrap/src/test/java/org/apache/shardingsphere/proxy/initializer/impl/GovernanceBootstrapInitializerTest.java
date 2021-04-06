@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.authority.auth.Authentication;
 import org.apache.shardingsphere.authority.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.authority.auth.model.privilege.ShardingSpherePrivilege;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
