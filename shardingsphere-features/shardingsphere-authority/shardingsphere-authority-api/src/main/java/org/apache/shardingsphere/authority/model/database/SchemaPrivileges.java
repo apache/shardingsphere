@@ -29,18 +29,18 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 /**
- * Schema privilege.
+ * Schema privileges.
  */
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class SchemaPrivilege {
+public final class SchemaPrivileges {
     
     private final String name;
     
     private final Collection<PrivilegeType> globalPrivileges = new CopyOnWriteArraySet<>();
     
-    private final Map<String, TablePrivilege> specificPrivileges = new ConcurrentHashMap<>();
+    private final Map<String, TablePrivileges> specificPrivileges = new ConcurrentHashMap<>();
     
     /**
      * Has privileges.

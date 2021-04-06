@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.engine.impl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.authority.engine.Authentication;
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
+import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
@@ -34,10 +34,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public final class DefaultAuthentication implements Authentication {
     
-    private final Map<ShardingSphereUser, ShardingSpherePrivilege> authentication = new ConcurrentHashMap<>();
+    private final Map<ShardingSphereUser, Privileges> authentication = new ConcurrentHashMap<>();
     
     @Override
-    public void init(final Map<ShardingSphereUser, ShardingSpherePrivilege> loadedPrivileges) {
+    public void init(final Map<ShardingSphereUser, Privileges> loadedPrivileges) {
         authentication.putAll(loadedPrivileges);
     }
     
@@ -52,7 +52,7 @@ public final class DefaultAuthentication implements Authentication {
     }
     
     @Override
-    public Optional<ShardingSpherePrivilege> findPrivilege(final Grantee grantee) {
+    public Optional<Privileges> findPrivileges(final Grantee grantee) {
         return findUser(grantee).map(authentication::get);
     }
 }

@@ -19,10 +19,10 @@ package org.apache.shardingsphere.authority.loader.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.authority.model.database.SchemaPrivilege;
-import org.apache.shardingsphere.authority.model.database.TablePrivilege;
+import org.apache.shardingsphere.authority.model.database.SchemaPrivileges;
+import org.apache.shardingsphere.authority.model.database.TablePrivileges;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
+import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
@@ -48,24 +48,24 @@ public final class PrivilegeMerger {
      * @param rules ShardingSphere rules
      * @return privileges
      */
-    public static Map<ShardingSphereUser, ShardingSpherePrivilege> merge(final Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> authentication,
+    public static Map<ShardingSphereUser, Privileges> merge(final Map<ShardingSphereUser, Collection<Privileges>> authentication,
                                                                          final String schemaName, final Collection<ShardingSphereRule> rules) {
-        Map<ShardingSphereUser, ShardingSpherePrivilege> result = new HashMap<>(authentication.size(), 1);
-        for (Entry<ShardingSphereUser, Collection<ShardingSpherePrivilege>> entry : authentication.entrySet()) {
+        Map<ShardingSphereUser, Privileges> result = new HashMap<>(authentication.size(), 1);
+        for (Entry<ShardingSphereUser, Collection<Privileges>> entry : authentication.entrySet()) {
             result.put(entry.getKey(), merge(entry.getKey(), entry.getValue(), schemaName, rules));
         }
         return result;
     }
     
-    private static ShardingSpherePrivilege merge(final ShardingSphereUser user, final Collection<ShardingSpherePrivilege> privileges, final String schemaName,
+    private static Privileges merge(final ShardingSphereUser user, final Collection<Privileges> privileges, final String schemaName,
                                                  final Collection<ShardingSphereRule> rules) {
         if (privileges.isEmpty()) {
-            return new ShardingSpherePrivilege();
+            return new Privileges();
         }
-        Iterator<ShardingSpherePrivilege> iterator = privileges.iterator();
-        ShardingSpherePrivilege result = iterator.next();
+        Iterator<Privileges> iterator = privileges.iterator();
+        Privileges result = iterator.next();
         while (iterator.hasNext()) {
-            ShardingSpherePrivilege each = iterator.next();
+            Privileges each = iterator.next();
             if (!result.equals(each)) {
                 throw new ShardingSphereException("Different physical instances have different permissions for user %s@%s", user.getGrantee().getUsername(), user.getGrantee().getHostname());
             }
@@ -74,34 +74,34 @@ public final class PrivilegeMerger {
         return result;
     }
     
-    private static void merge(final ShardingSpherePrivilege privilege, final String schemaName, final Collection<ShardingSphereRule> rules) {
-        Map<String, SchemaPrivilege> schemaPrivilegeMap = new HashMap<>();
-        for (Entry<String, SchemaPrivilege> entry : privilege.getDatabasePrivilege().getSpecificPrivileges().entrySet()) {
+    private static void merge(final Privileges privilege, final String schemaName, final Collection<ShardingSphereRule> rules) {
+        Map<String, SchemaPrivileges> schemaPrivilegeMap = new HashMap<>();
+        for (Entry<String, SchemaPrivileges> entry : privilege.getDatabasePrivileges().getSpecificPrivileges().entrySet()) {
             if (!schemaPrivilegeMap.containsKey(schemaName)) {
-                SchemaPrivilege newSchemaPrivilege = new SchemaPrivilege(schemaName);
+                SchemaPrivileges newSchemaPrivilege = new SchemaPrivileges(schemaName);
                 newSchemaPrivilege.getGlobalPrivileges().addAll(entry.getValue().getGlobalPrivileges());
                 newSchemaPrivilege.getSpecificPrivileges().putAll(entry.getValue().getSpecificPrivileges());
                 merge(newSchemaPrivilege, rules);
                 schemaPrivilegeMap.put(schemaName, newSchemaPrivilege);
             }
         }
-        privilege.getDatabasePrivilege().getSpecificPrivileges().clear();
-        privilege.getDatabasePrivilege().getSpecificPrivileges().putAll(schemaPrivilegeMap);
+        privilege.getDatabasePrivileges().getSpecificPrivileges().clear();
+        privilege.getDatabasePrivileges().getSpecificPrivileges().putAll(schemaPrivilegeMap);
     }
     
-    private static void merge(final SchemaPrivilege privilege, final Collection<ShardingSphereRule> rules) {
-        Map<String, TablePrivilege> tablePrivilegeMap = new HashMap<>();
-        for (Entry<String, TablePrivilege> entry : privilege.getSpecificPrivileges().entrySet()) {
+    private static void merge(final SchemaPrivileges privilege, final Collection<ShardingSphereRule> rules) {
+        Map<String, TablePrivileges> tablePrivilegeMap = new HashMap<>();
+        for (Entry<String, TablePrivileges> entry : privilege.getSpecificPrivileges().entrySet()) {
             Optional<String> logicalTable = getLogicalTable(entry, rules);
             if (logicalTable.isPresent() && !tablePrivilegeMap.containsKey(logicalTable.get())) {
-                tablePrivilegeMap.put(logicalTable.get(), new TablePrivilege(logicalTable.get(), entry.getValue().getPrivileges()));
+                tablePrivilegeMap.put(logicalTable.get(), new TablePrivileges(logicalTable.get(), entry.getValue().getPrivileges()));
             }
         }
         privilege.getSpecificPrivileges().clear();
         privilege.getSpecificPrivileges().putAll(tablePrivilegeMap);
     }
     
-    private static Optional<String> getLogicalTable(final Entry<String, TablePrivilege> privilege, final Collection<ShardingSphereRule> rules) {
+    private static Optional<String> getLogicalTable(final Entry<String, TablePrivileges> privilege, final Collection<ShardingSphereRule> rules) {
         for (ShardingSphereRule each : rules) {
             if (each instanceof DataNodeContainedRule) {
                 Optional<String> logicalTable = ((DataNodeContainedRule) each).findLogicTableByActualTable(privilege.getKey());

@@ -25,11 +25,11 @@ import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
- * Administrative privilege.
+ * Administrative privileges.
  */
 @Getter
 @EqualsAndHashCode
-public final class AdministrativePrivilege {
+public final class AdministrativePrivileges {
     
     private final Collection<PrivilegeType> privileges = new CopyOnWriteArraySet<>();
     

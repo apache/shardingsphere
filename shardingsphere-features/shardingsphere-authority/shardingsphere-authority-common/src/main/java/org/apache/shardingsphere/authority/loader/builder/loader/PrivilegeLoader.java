@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.authority.loader.builder.loader;
 
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
+import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import javax.sql.DataSource;
@@ -38,7 +38,7 @@ public interface PrivilegeLoader {
      * @return ShardingSphere privilege
      * @throws SQLException SQL exception
      */
-    Map<ShardingSphereUser, ShardingSpherePrivilege> load(Collection<ShardingSphereUser> users, DataSource dataSource) throws SQLException;
+    Map<ShardingSphereUser, Privileges> load(Collection<ShardingSphereUser> users, DataSource dataSource) throws SQLException;
     
     /**
      * Get database type.

@@ -25,12 +25,12 @@ import org.apache.shardingsphere.authority.model.PrivilegeType;
 import java.util.Collection;
 
 /**
- * Table privilege.
+ * Table privileges.
  */
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @Getter
-public final class TablePrivilege {
+public final class TablePrivileges {
     
     private final String tableName;
     

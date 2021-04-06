@@ -19,9 +19,9 @@ package org.apache.shardingsphere.authority.merge;
 
 import org.apache.shardingsphere.authority.loader.builder.PrivilegeMerger;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
-import org.apache.shardingsphere.authority.model.database.SchemaPrivilege;
-import org.apache.shardingsphere.authority.model.database.TablePrivilege;
+import org.apache.shardingsphere.authority.model.Privileges;
+import org.apache.shardingsphere.authority.model.database.SchemaPrivileges;
+import org.apache.shardingsphere.authority.model.database.TablePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.junit.Test;
@@ -42,36 +42,36 @@ public class PrivilegeMergeTest {
     
     @Test
     public void assertPrivilegeMergeResult() {
-        ShardingSpherePrivilege shardingSpherePrivilege = buildPrivilege();
+        Privileges privileges = buildPrivilege();
         ShardingSphereUser user = new ShardingSphereUser("test", "test", "%");
-        Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> privilegeMap = new HashMap();
-        privilegeMap.put(user, Collections.singletonList(shardingSpherePrivilege));
+        Map<ShardingSphereUser, Collection<Privileges>> privilegeMap = new HashMap();
+        privilegeMap.put(user, Collections.singletonList(privileges));
         DataNodeContainedRule rule = buildShardingSphereRule();
-        Map<ShardingSphereUser, ShardingSpherePrivilege> result = PrivilegeMerger.merge(privilegeMap, "schema", Collections.singletonList(rule));
+        Map<ShardingSphereUser, Privileges> result = PrivilegeMerger.merge(privilegeMap, "schema", Collections.singletonList(rule));
         assertEquals(1, result.size());
         assertTrue(result.containsKey(user));
-        assertTrue(result.get(user).getAdministrativePrivilege().getPrivileges().isEmpty());
-        assertTrue(result.get(user).getDatabasePrivilege().getGlobalPrivileges().isEmpty());
-        assertEquals(1, result.get(user).getDatabasePrivilege().getSpecificPrivileges().size());
-        assertTrue(result.get(user).getDatabasePrivilege().getSpecificPrivileges().get("schema").getGlobalPrivileges().isEmpty());
-        assertEquals(1, result.get(user).getDatabasePrivilege().getSpecificPrivileges().get("schema").getSpecificPrivileges().size());
-        assertEquals("TableName assert error.", "test", result.get(user).getDatabasePrivilege().getSpecificPrivileges().get("schema").getSpecificPrivileges().get("test").getTableName());
-        assertEquals(1, result.get(user).getDatabasePrivilege().getSpecificPrivileges().get("schema").getSpecificPrivileges().get("test").getPrivileges().size());
-        assertTrue(result.get(user).getDatabasePrivilege().getSpecificPrivileges().get("schema").getSpecificPrivileges().get("test").getPrivileges().contains(PrivilegeType.SELECT));
+        assertTrue(result.get(user).getAdministrativePrivileges().getPrivileges().isEmpty());
+        assertTrue(result.get(user).getDatabasePrivileges().getGlobalPrivileges().isEmpty());
+        assertEquals(1, result.get(user).getDatabasePrivileges().getSpecificPrivileges().size());
+        assertTrue(result.get(user).getDatabasePrivileges().getSpecificPrivileges().get("schema").getGlobalPrivileges().isEmpty());
+        assertEquals(1, result.get(user).getDatabasePrivileges().getSpecificPrivileges().get("schema").getSpecificPrivileges().size());
+        assertEquals("TableName assert error.", "test", result.get(user).getDatabasePrivileges().getSpecificPrivileges().get("schema").getSpecificPrivileges().get("test").getTableName());
+        assertEquals(1, result.get(user).getDatabasePrivileges().getSpecificPrivileges().get("schema").getSpecificPrivileges().get("test").getPrivileges().size());
+        assertTrue(result.get(user).getDatabasePrivileges().getSpecificPrivileges().get("schema").getSpecificPrivileges().get("test").getPrivileges().contains(PrivilegeType.SELECT));
     }
     
-    private ShardingSpherePrivilege buildPrivilege() {
+    private Privileges buildPrivilege() {
         Collection<PrivilegeType> tablePrivileges = new LinkedList<>();
         tablePrivileges.add(PrivilegeType.SELECT);
-        SchemaPrivilege schema1Privilege = new SchemaPrivilege("schema1");
-        schema1Privilege.getSpecificPrivileges().put("table1", new TablePrivilege("table1", tablePrivileges));
-        schema1Privilege.getSpecificPrivileges().put("table2", new TablePrivilege("table2", tablePrivileges));
-        SchemaPrivilege schema2Privilege = new SchemaPrivilege("schema2");
-        schema2Privilege.getSpecificPrivileges().put("table3", new TablePrivilege("table3", tablePrivileges));
-        schema2Privilege.getSpecificPrivileges().put("table4", new TablePrivilege("table4", tablePrivileges));
-        ShardingSpherePrivilege result = new ShardingSpherePrivilege();
-        result.getDatabasePrivilege().getSpecificPrivileges().put("schema1", schema1Privilege);
-        result.getDatabasePrivilege().getSpecificPrivileges().put("schema2", schema2Privilege);
+        SchemaPrivileges schema1Privilege = new SchemaPrivileges("schema1");
+        schema1Privilege.getSpecificPrivileges().put("table1", new TablePrivileges("table1", tablePrivileges));
+        schema1Privilege.getSpecificPrivileges().put("table2", new TablePrivileges("table2", tablePrivileges));
+        SchemaPrivileges schema2Privilege = new SchemaPrivileges("schema2");
+        schema2Privilege.getSpecificPrivileges().put("table3", new TablePrivileges("table3", tablePrivileges));
+        schema2Privilege.getSpecificPrivileges().put("table4", new TablePrivileges("table4", tablePrivileges));
+        Privileges result = new Privileges();
+        result.getDatabasePrivileges().getSpecificPrivileges().put("schema1", schema1Privilege);
+        result.getDatabasePrivileges().getSpecificPrivileges().put("schema2", schema2Privilege);
         return result;
     }
     
