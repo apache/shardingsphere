@@ -21,9 +21,9 @@ import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration
 import org.apache.shardingsphere.authority.spi.PrivilegeLoadAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
-import org.apache.shardingsphere.infra.metadata.auth.AuthenticationContext;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.authority.engine.Authentication;
+import org.apache.shardingsphere.authority.engine.AuthenticationContext;
+import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
