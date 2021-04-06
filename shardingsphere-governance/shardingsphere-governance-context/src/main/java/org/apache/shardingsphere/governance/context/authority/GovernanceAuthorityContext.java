@@ -27,9 +27,9 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.authority.engine.Authentication;
 import org.apache.shardingsphere.authority.engine.AuthenticationContext;
-import org.apache.shardingsphere.authority.loader.builder.PrivilegeBuilder;
-import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoader;
-import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoaderEngine;
+import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeLoader;
+import org.apache.shardingsphere.authority.loader.storage.impl.loader.PrivilegeLoader;
+import org.apache.shardingsphere.authority.loader.storage.impl.loader.PrivilegeLoaderEngine;
 import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
 import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -102,7 +102,7 @@ public final class GovernanceAuthorityContext implements MetaDataAwareEventSubsc
         DatabaseType databaseType = metaDataContexts.getMetaDataMap().values().iterator().next().getResource().getDatabaseType();
         Optional<PrivilegeLoader> loader = PrivilegeLoaderEngine.findPrivilegeLoader(databaseType);
         if (loader.isPresent()) {
-            Map<ShardingSphereUser, Privileges> privileges = PrivilegeBuilder.build(databaseType, metaDataContexts.getMetaDataMap().values(), users);
+            Map<ShardingSphereUser, Privileges> privileges = StoragePrivilegeLoader.build(databaseType, metaDataContexts.getMetaDataMap().values(), users);
             authentication.getAuthentication().putAll(getPrivilegesWithPassword(authentication, privileges));
         }
         AuthenticationContext.getInstance().init(authentication);

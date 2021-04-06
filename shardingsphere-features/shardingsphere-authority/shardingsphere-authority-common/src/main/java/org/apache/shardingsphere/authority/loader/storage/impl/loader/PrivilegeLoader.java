@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.loader.builder.loader;
+package org.apache.shardingsphere.authority.loader.storage.impl.loader;
 
 import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;

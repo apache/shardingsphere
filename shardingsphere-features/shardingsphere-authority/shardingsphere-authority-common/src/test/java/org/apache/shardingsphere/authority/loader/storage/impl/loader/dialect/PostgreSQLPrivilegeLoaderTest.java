@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.loader.builder.loader.dialect;
+package org.apache.shardingsphere.authority.loader.storage.impl.loader.dialect;
 
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.authority.model.database.SchemaPrivileges;
-import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoader;
+import org.apache.shardingsphere.authority.loader.storage.impl.loader.PrivilegeLoader;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.junit.BeforeClass;

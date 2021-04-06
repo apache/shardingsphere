@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.loader;
+package org.apache.shardingsphere.authority.loader.storage;
 
 import org.apache.shardingsphere.authority.spi.PrivilegeLoadAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.authority.loader.builder.PrivilegeBuilder;
-import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoader;
-import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoaderEngine;
+import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeLoader;
+import org.apache.shardingsphere.authority.loader.storage.impl.loader.PrivilegeLoader;
+import org.apache.shardingsphere.authority.loader.storage.impl.loader.PrivilegeLoaderEngine;
 import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -41,7 +41,7 @@ public final class StoragePrivilegeLoadAlgorithm implements PrivilegeLoadAlgorit
                                                     final Collection<ShardingSphereRule> rules, final Collection<ShardingSphereUser> users) {
         Optional<PrivilegeLoader> loader = PrivilegeLoaderEngine.findPrivilegeLoader(databaseType);
         return loader.map(
-            optional -> PrivilegeBuilder.build(schemaName, groupDataSourcesByInstance(dataSources), rules, users, optional)).orElseGet(() -> PrivilegeBuilder.buildDefaultPrivileges(users));
+            optional -> StoragePrivilegeLoader.build(schemaName, groupDataSourcesByInstance(dataSources), rules, users, optional)).orElseGet(() -> StoragePrivilegeLoader.buildDefaultPrivileges(users));
     }
     
     private Collection<DataSource> groupDataSourcesByInstance(final Collection<DataSource> dataSources) {

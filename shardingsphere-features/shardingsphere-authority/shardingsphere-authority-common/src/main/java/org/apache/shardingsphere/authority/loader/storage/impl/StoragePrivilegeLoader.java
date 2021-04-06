@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.loader.builder;
+package org.apache.shardingsphere.authority.loader.storage.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoader;
-import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoaderEngine;
+import org.apache.shardingsphere.authority.loader.storage.impl.loader.PrivilegeLoader;
+import org.apache.shardingsphere.authority.loader.storage.impl.loader.PrivilegeLoaderEngine;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -44,10 +44,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Privilege builder.
+ * Storage privilege loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PrivilegeBuilder {
+public final class StoragePrivilegeLoader {
     
     private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
     
@@ -97,7 +97,7 @@ public final class PrivilegeBuilder {
                                                             final Collection<ShardingSphereRule> rules, final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
         Map<ShardingSphereUser, Collection<Privileges>> result = load(dataSources, users, loader);
         checkPrivileges(result);
-        return PrivilegeMerger.merge(result, schemaName, rules);
+        return StoragePrivilegeMerger.merge(result, schemaName, rules);
     }
     
     private static Map<ShardingSphereUser, Collection<Privileges>> load(final Collection<DataSource> dataSources,
