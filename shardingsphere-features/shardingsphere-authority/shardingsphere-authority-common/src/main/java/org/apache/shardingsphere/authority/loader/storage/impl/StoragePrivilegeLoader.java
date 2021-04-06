@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.loader.storage.impl.loader;
+package org.apache.shardingsphere.authority.loader.storage.impl;
 
 import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -27,9 +27,9 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Privilege loader.
+ * Storage privilege loader.
  */
-public interface PrivilegeLoader extends TypedSPI {
+public interface StoragePrivilegeLoader extends TypedSPI {
     
     /**
      * Load privilege.

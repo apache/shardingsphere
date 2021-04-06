@@ -19,7 +19,6 @@ package org.apache.shardingsphere.authority.loader.storage.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.authority.loader.storage.impl.loader.PrivilegeLoader;
 import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -56,7 +55,7 @@ public final class StoragePrivilegeBuilder {
     private static final long FUTURE_GET_TIME_OUT_MILLISECONDS = 5000L;
     
     static {
-        ShardingSphereServiceLoader.register(PrivilegeLoader.class);
+        ShardingSphereServiceLoader.register(StoragePrivilegeLoader.class);
     }
     
     /**
@@ -72,12 +71,12 @@ public final class StoragePrivilegeBuilder {
         if (metaDataList.isEmpty()) {
             return buildDefaultPrivileges(users);
         }
-        Optional<PrivilegeLoader> loader = TypedSPIRegistry.findRegisteredService(PrivilegeLoader.class, databaseType.getName(), new Properties());
+        Optional<StoragePrivilegeLoader> loader = TypedSPIRegistry.findRegisteredService(StoragePrivilegeLoader.class, databaseType.getName(), new Properties());
         return loader.map(optional -> build(metaDataList, users, optional)).orElseGet(() -> buildDefaultPrivileges(users));
     }
     
     private static Map<ShardingSphereUser, Privileges> build(final Collection<ShardingSphereMetaData> metaDataList,
-                                                             final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
+                                                             final Collection<ShardingSphereUser> users, final StoragePrivilegeLoader loader) {
         Map<ShardingSphereUser, Privileges> result = new LinkedHashMap<>();
         for (ShardingSphereMetaData each : metaDataList) {
             result.putAll(build(each, users, loader));
@@ -85,7 +84,7 @@ public final class StoragePrivilegeBuilder {
         return result;
     }
     
-    private static Map<ShardingSphereUser, Privileges> build(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
+    private static Map<ShardingSphereUser, Privileges> build(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users, final StoragePrivilegeLoader loader) {
         return build(metaData.getName(), metaData.getResource().getAllInstanceDataSources(), metaData.getRuleMetaData().getRules(), users, loader);
     }
     
@@ -100,14 +99,14 @@ public final class StoragePrivilegeBuilder {
      * @return privileges
      */
     public static Map<ShardingSphereUser, Privileges> build(final String schemaName, final Collection<DataSource> dataSources,
-                                                            final Collection<ShardingSphereRule> rules, final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
+                                                            final Collection<ShardingSphereRule> rules, final Collection<ShardingSphereUser> users, final StoragePrivilegeLoader loader) {
         Map<ShardingSphereUser, Collection<Privileges>> result = load(dataSources, users, loader);
         checkPrivileges(result);
         return StoragePrivilegeMerger.merge(result, schemaName, rules);
     }
     
     private static Map<ShardingSphereUser, Collection<Privileges>> load(final Collection<DataSource> dataSources,
-                                                                        final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
+                                                                        final Collection<ShardingSphereUser> users, final StoragePrivilegeLoader loader) {
         Map<ShardingSphereUser, Collection<Privileges>> result = new LinkedHashMap<>(users.size(), 1);
         ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CPU_CORES * 2, dataSources.isEmpty() ? 1 : dataSources.size()));
         Collection<Future<Map<ShardingSphereUser, Privileges>>> futures = new HashSet<>(dataSources.size(), 1);

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.authority.engine.Authentication;
 import org.apache.shardingsphere.authority.engine.AuthenticationContext;
 import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
 import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeBuilder;
-import org.apache.shardingsphere.authority.loader.storage.impl.loader.PrivilegeLoader;
+import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeLoader;
 import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.governance.core.event.model.auth.PrivilegeChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
@@ -101,7 +101,7 @@ public final class GovernanceAuthorityContext implements MetaDataAwareEventSubsc
     private void reloadPrivilege(final Collection<ShardingSphereUser> users) {
         Authentication authentication = AuthenticationContext.getInstance().getAuthentication();
         DatabaseType databaseType = metaDataContexts.getMetaDataMap().values().iterator().next().getResource().getDatabaseType();
-        Optional<PrivilegeLoader> loader = TypedSPIRegistry.findRegisteredService(PrivilegeLoader.class, databaseType.getName(), new Properties());
+        Optional<StoragePrivilegeLoader> loader = TypedSPIRegistry.findRegisteredService(StoragePrivilegeLoader.class, databaseType.getName(), new Properties());
         if (loader.isPresent()) {
             Map<ShardingSphereUser, Privileges> privileges = StoragePrivilegeBuilder.build(databaseType, metaDataContexts.getMetaDataMap().values(), users);
             authentication.getAuthentication().putAll(getPrivilegesWithPassword(authentication, privileges));

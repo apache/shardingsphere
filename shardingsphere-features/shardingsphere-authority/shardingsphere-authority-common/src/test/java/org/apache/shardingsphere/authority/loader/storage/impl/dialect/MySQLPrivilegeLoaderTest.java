@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.loader.storage.impl.loader.dialect;
+package org.apache.shardingsphere.authority.loader.storage.impl.dialect;
 
-import org.apache.shardingsphere.authority.loader.storage.impl.loader.PrivilegeLoader;
+import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeLoader;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -47,14 +47,14 @@ public final class MySQLPrivilegeLoaderTest {
     
     @BeforeClass
     public static void setUp() {
-        ShardingSphereServiceLoader.register(PrivilegeLoader.class);
+        ShardingSphereServiceLoader.register(StoragePrivilegeLoader.class);
     }
     
     @Test
     public void assertLoad() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSource(users);
-        assertPrivileges(TypedSPIRegistry.getRegisteredService(PrivilegeLoader.class, "MySQL", new Properties()).load(users, dataSource));
+        assertPrivileges(TypedSPIRegistry.getRegisteredService(StoragePrivilegeLoader.class, "MySQL", new Properties()).load(users, dataSource));
     }
     
     private Collection<ShardingSphereUser> createUsers() {
