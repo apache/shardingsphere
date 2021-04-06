@@ -44,7 +44,7 @@ public final class MySQLComInitDbExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket<?>> execute() {
         String schema = SQLUtil.getExactlyValue(packet.getSchema());
-        if (ProxyContext.getInstance().schemaExists(schema) && SQLCheckEngine.check(schema, backendConnection.getGrantee())) {
+        if (ProxyContext.getInstance().schemaExists(schema) && SQLCheckEngine.check(schema, ProxyContext.getInstance().getMetaDataContexts().getMetaData(schema), backendConnection.getGrantee())) {
             backendConnection.setCurrentSchema(packet.getSchema());
             return Collections.singletonList(new MySQLOKPacket(1));
         }

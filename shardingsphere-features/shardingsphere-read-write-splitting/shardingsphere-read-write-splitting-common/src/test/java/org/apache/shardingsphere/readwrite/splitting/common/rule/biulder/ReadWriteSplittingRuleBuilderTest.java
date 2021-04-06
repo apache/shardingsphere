@@ -47,6 +47,6 @@ public final class ReadWriteSplittingRuleBuilderTest {
                 "name", "pr_ds", "writeDataSourceName", Collections.singletonList("name"), "loadBalancerName");
         when(ruleConfig.getDataSources()).thenReturn(Collections.singletonList(dataSourceRuleConfig));
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
-        assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), ruleConfig), instanceOf(ReadWriteSplittingRule.class));
+        assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), ruleConfig, Collections.emptyList(), Collections.emptyList()), instanceOf(ReadWriteSplittingRule.class));
     }
 }

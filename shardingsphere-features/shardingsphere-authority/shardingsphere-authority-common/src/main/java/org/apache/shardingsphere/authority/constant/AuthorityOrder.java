@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.check.audit;
+package org.apache.shardingsphere.authority.constant;
 
-import org.apache.shardingsphere.infra.check.SQLChecker;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Authentication SQL checker.
+ * Authority order.
  */
-public abstract class AuditSQLChecker implements SQLChecker {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AuthorityOrder {
     
-    private static final int ORDER = 1;
+    /**
+     * Authority order.
+     */
+    public static final int ORDER = 500;
     
-    private static final String CHECK_TYPE = "AUDIT";
-    
-    @Override
-    public final int getOrder() {
-        return ORDER;
-    }
-    
-    @Override
-    public final String getSQLCheckType() {
-        return CHECK_TYPE;
-    }
+    /**
+     * Algorithm provider authority order.
+     */
+    public static final int ALGORITHM_PROVIDER_AUTHORITY_ORDER = ORDER + 1;
 }

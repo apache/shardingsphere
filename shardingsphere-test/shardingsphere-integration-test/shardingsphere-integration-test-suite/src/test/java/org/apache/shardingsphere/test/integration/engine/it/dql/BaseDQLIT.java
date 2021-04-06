@@ -22,10 +22,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.EnvironmentType;
-import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
-import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 import org.junit.Before;
 
@@ -47,43 +44,22 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class BaseDQLIT extends SingleITCase {
     
-    private volatile boolean initialed;
-    
     public BaseDQLIT(final AssertionParameterizedArray parameter) {
         super(parameter);
     }
     
     @Before
-    public void setup() throws IOException, JAXBException, SQLException, ParseException {
-        if (!initialed) {
-            synchronized (BaseDQLIT.class) {
-                if (!initialed) {
-                    fillData();
-                    initialed = true;
-                }
+    public void setup() {
+        compose.executeOnStarted(compose -> {
+            try {
+                new DataSetEnvironmentManager(
+                        EnvironmentPath.getDataSetFile(getScenario()),
+                        getStorageContainer().getDataSourceMap()
+                ).fillData();
+            } catch (IOException | JAXBException | SQLException | ParseException e) {
+                throw new RuntimeException(e);
             }
-        }
-    }
-    
-    private void fillData() throws SQLException, ParseException, IOException, JAXBException {
-        if (EnvironmentType.DOCKER == IntegrationTestEnvironment.getInstance().getEnvType()) {
-            new DataSetEnvironmentManager(
-                    EnvironmentPath.getDataSetFile(getScenario()),
-                    getStorageContainer().getDataSourceMap()
-            ).fillData();
-        } else {
-            IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()
-                    .forEach(e -> IntegrationTestEnvironment.getInstance().getScenarios().forEach(each -> {
-                        try {
-                            new DataSetEnvironmentManager(
-                                    EnvironmentPath.getDataSetFile(each),
-                                    ActualDataSourceBuilder.createActualDataSources(each, e)
-                            ).fillData();
-                        } catch (SQLException | ParseException | IOException | JAXBException jaxbException) {
-                            jaxbException.printStackTrace();
-                        }
-                    }));
-        }
+        });
     }
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {

@@ -28,10 +28,7 @@ public final class SQLCheckException extends ShardingSphereException {
     
     private static final long serialVersionUID = 4183020614721058122L;
     
-    private final String sqlCheckType;
-    
-    public SQLCheckException(final String state, final String errorMessage) {
-        super(String.format("SQL %s checking failed. Error message: %s.", state, errorMessage));
-        this.sqlCheckType = state;
+    public SQLCheckException(final String errorMessage) {
+        super("SQL checking failed. Error message: %s.", errorMessage);
     }
 }

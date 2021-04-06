@@ -530,10 +530,10 @@ aExpr
     | aExpr LIKE aExpr ESCAPE aExpr
     | aExpr NOT LIKE aExpr
     | aExpr NOT LIKE aExpr ESCAPE aExpr
-    | aExpr ILIKE aExpr
-    | aExpr ILIKE aExpr ESCAPE aExpr
-    | aExpr NOT ILIKE aExpr
-    | aExpr NOT ILIKE aExpr ESCAPE aExpr
+    | aExpr TILDE_ aExpr
+    | aExpr TILDE_ aExpr ESCAPE aExpr
+    | aExpr NOT_ TILDE_ aExpr
+    | aExpr NOT_ TILDE_ aExpr ESCAPE aExpr
     | aExpr SIMILAR TO aExpr
     | aExpr SIMILAR TO aExpr ESCAPE aExpr
     | aExpr NOT SIMILAR TO aExpr
@@ -667,8 +667,8 @@ subqueryOp
     | OPERATOR LP_ anyOperator RP_
     | LIKE
     | NOT LIKE
-    | ILIKE
-    | NOT ILIKE
+    | TILDE_
+    | NOT_ TILDE_
     ;
 
 allOp

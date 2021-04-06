@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.governance.context.auth.GovernanceAuthenticationContext
+org.apache.shardingsphere.governance.context.authority.GovernanceAuthorityContext

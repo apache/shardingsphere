@@ -64,7 +64,6 @@ public final class UserRuleYamlSwapper implements YamlConfigurationSwapper<YamlU
     }
     
     private ShardingSphereUser swapToObject(final String username, final YamlUserConfiguration yamlConfig) {
-        return new ShardingSphereUser(username, yamlConfig.getPassword(), (null == yamlConfig.getHostname()
-                || "%".equals(yamlConfig.getHostname())) ? "%" : yamlConfig.getHostname());
+        return new ShardingSphereUser(username, yamlConfig.getPassword(), (null == yamlConfig.getHostname() || "%".equals(yamlConfig.getHostname())) ? "%" : yamlConfig.getHostname());
     }
 }

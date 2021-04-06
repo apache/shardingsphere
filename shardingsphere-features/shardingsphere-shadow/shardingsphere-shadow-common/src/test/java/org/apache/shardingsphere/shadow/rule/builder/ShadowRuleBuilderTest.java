@@ -42,6 +42,6 @@ public final class ShadowRuleBuilderTest {
     public void assertBuild() {
         ShadowRuleConfiguration ruleConfig = mock(ShadowRuleConfiguration.class);
         ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(Collections.singletonList(ruleConfig), ShardingSphereRuleBuilder.class).get(ruleConfig);
-        assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), ruleConfig), instanceOf(ShadowRule.class));
+        assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), ruleConfig, Collections.emptyList(), Collections.emptyList()), instanceOf(ShadowRule.class));
     }
 }

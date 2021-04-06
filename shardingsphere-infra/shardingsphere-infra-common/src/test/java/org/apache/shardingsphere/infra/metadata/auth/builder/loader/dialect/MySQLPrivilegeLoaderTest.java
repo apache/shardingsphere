@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUs
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -39,64 +37,46 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class MySQLPrivilegeLoaderTest {
-
+    
     @BeforeClass
     public static void setUp() {
         ShardingSphereServiceLoader.register(PrivilegeLoader.class);
     }
-
+    
     @Test
     public void assertLoad() throws SQLException {
-        Collection<ShardingSphereUser> users = buildUsers();
+        Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSource(users);
         assertPrivilege(getPrivilegeLoader().load(users, dataSource));
     }
-
-    private void assertPrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> actual) {
-        assertThat(actual.size(), is(2));
-        ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
-        assertThat(actual.get(root).getAdministrativePrivilege().getPrivileges().size(), is(3));
-        Collection<PrivilegeType> expectedAdministrativePrivilege = new CopyOnWriteArraySet(Arrays.asList(PrivilegeType.SUPER, PrivilegeType.RELOAD, PrivilegeType.SHUTDOWN));
-        assertEquals(actual.get(root).getAdministrativePrivilege().getPrivileges(), expectedAdministrativePrivilege);
-        Collection<PrivilegeType> expectedDatabasePrivilege = new CopyOnWriteArraySet(Arrays.asList(PrivilegeType.SELECT, PrivilegeType.INSERT, PrivilegeType.UPDATE,
-                PrivilegeType.DELETE, PrivilegeType.CREATE, PrivilegeType.ALTER));
-        assertThat(actual.get(root).getDatabasePrivilege().getGlobalPrivileges().size(), is(6));
-        assertEquals(actual.get(root).getDatabasePrivilege().getGlobalPrivileges(), expectedDatabasePrivilege);
-        ShardingSphereUser sys = new ShardingSphereUser("mysql.sys", "", "localhost");
-        assertThat(actual.get(sys).getAdministrativePrivilege().getPrivileges().size(), is(0));
-        assertThat(actual.get(sys).getDatabasePrivilege().getGlobalPrivileges().size(), is(0));
-        assertThat(actual.get(sys).getDatabasePrivilege().getSpecificPrivileges().size(), is(1));
+    
+    private Collection<ShardingSphereUser> createUsers() {
+        LinkedList<ShardingSphereUser> result = new LinkedList<>();
+        result.add(new ShardingSphereUser("root", "", "localhost"));
+        result.add(new ShardingSphereUser("mysql.sys", "", "localhost"));
+        return result;
     }
-
-    private Collection<ShardingSphereUser> buildUsers() {
-        LinkedList<ShardingSphereUser> users = new LinkedList<>();
-        users.add(new ShardingSphereUser("root", "", "localhost"));
-        users.add(new ShardingSphereUser("mysql.sys", "", "localhost"));
-        return users;
-    }
-
+    
     private DataSource mockDataSource(final Collection<ShardingSphereUser> users) throws SQLException {
         ResultSet globalPrivilegeResultSet = mockGlobalPrivilegeResultSet();
         ResultSet schemaPrivilegeResultSet = mockSchemaPrivilegeResultSet();
         ResultSet tablePrivilegeResultSet = mockTablePrivilegeResultSet();
-        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        String globalPrivilegeSql = "SELECT * FROM mysql.user WHERE (user, host) in (%s)";
-        String schemaPrivilegeSql = "SELECT * FROM mysql.db WHERE (user, host) in (%s)";
-        String tablePrivilegeSql = "SELECT Db, Table_name, Table_priv FROM mysql.tables_priv WHERE (user, host) in (%s)";
-        String useHostTuples = users.stream().map(item -> String.format("(%s, %s)", item.getGrantee().getUsername(), item.getGrantee().getHostname())).collect(Collectors.joining(","));
-        when(dataSource.getConnection().createStatement().executeQuery(String.format(globalPrivilegeSql, useHostTuples))).thenReturn(globalPrivilegeResultSet);
-        when(dataSource.getConnection().createStatement().executeQuery(String.format(schemaPrivilegeSql, useHostTuples))).thenReturn(schemaPrivilegeResultSet);
-        when(dataSource.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSql, useHostTuples))).thenReturn(tablePrivilegeResultSet);
-        return dataSource;
+        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        String globalPrivilegeSQL = "SELECT * FROM mysql.user WHERE (user, host) in (%s)";
+        String schemaPrivilegeSQL = "SELECT * FROM mysql.db WHERE (user, host) in (%s)";
+        String tablePrivilegeSQL = "SELECT Db, Table_name, Table_priv FROM mysql.tables_priv WHERE (user, host) in (%s)";
+        String useHostTuples = users.stream().map(item -> String.format("('%s', '%s')", item.getGrantee().getUsername(), item.getGrantee().getHostname())).collect(Collectors.joining(","));
+        when(result.getConnection().createStatement().executeQuery(String.format(globalPrivilegeSQL, useHostTuples))).thenReturn(globalPrivilegeResultSet);
+        when(result.getConnection().createStatement().executeQuery(String.format(schemaPrivilegeSQL, useHostTuples))).thenReturn(schemaPrivilegeResultSet);
+        when(result.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSQL, useHostTuples))).thenReturn(tablePrivilegeResultSet);
+        return result;
     }
-
+    
     private ResultSet mockGlobalPrivilegeResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, false);
@@ -135,7 +115,7 @@ public final class MySQLPrivilegeLoaderTest {
         when(result.getString("host")).thenReturn("localhost", "localhost");
         return result;
     }
-
+    
     private ResultSet mockSchemaPrivilegeResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
@@ -163,7 +143,7 @@ public final class MySQLPrivilegeLoaderTest {
         when(result.getString("host")).thenReturn("localhost");
         return result;
     }
-
+    
     private ResultSet mockTablePrivilegeResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
         when(result.next()).thenReturn(true, false);
@@ -174,7 +154,23 @@ public final class MySQLPrivilegeLoaderTest {
         when(result.getString("host")).thenReturn("localhost");
         return result;
     }
-
+    
+    private void assertPrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> actual) {
+        assertThat(actual.size(), is(2));
+        ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
+        assertThat(actual.get(root).getAdministrativePrivilege().getPrivileges().size(), is(3));
+        Collection<PrivilegeType> expectedAdministrativePrivileges = new CopyOnWriteArraySet<>(Arrays.asList(PrivilegeType.SUPER, PrivilegeType.RELOAD, PrivilegeType.SHUTDOWN));
+        assertThat(actual.get(root).getAdministrativePrivilege().getPrivileges(), is(expectedAdministrativePrivileges));
+        Collection<PrivilegeType> expectedDatabasePrivileges = new CopyOnWriteArraySet<>(
+                Arrays.asList(PrivilegeType.SELECT, PrivilegeType.INSERT, PrivilegeType.UPDATE, PrivilegeType.DELETE, PrivilegeType.CREATE, PrivilegeType.ALTER));
+        assertThat(actual.get(root).getDatabasePrivilege().getGlobalPrivileges().size(), is(6));
+        assertThat(actual.get(root).getDatabasePrivilege().getGlobalPrivileges(), is(expectedDatabasePrivileges));
+        ShardingSphereUser sys = new ShardingSphereUser("mysql.sys", "", "localhost");
+        assertThat(actual.get(sys).getAdministrativePrivilege().getPrivileges().size(), is(0));
+        assertThat(actual.get(sys).getDatabasePrivilege().getGlobalPrivileges().size(), is(0));
+        assertThat(actual.get(sys).getDatabasePrivilege().getSpecificPrivileges().size(), is(1));
+    }
+    
     private PrivilegeLoader getPrivilegeLoader() {
         for (PrivilegeLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(PrivilegeLoader.class)) {
             if ("MySQL".equals(each.getDatabaseType())) {
