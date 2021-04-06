@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.auth.builder.loader.dialect;
 import org.apache.shardingsphere.infra.metadata.auth.builder.loader.PrivilegeLoader;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -80,7 +80,6 @@ public final class MySQLPrivilegeLoaderTest {
     private ResultSet mockGlobalPrivilegeResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, false);
-        // AdministrativePrivilege
         when(result.getBoolean("Super_priv")).thenReturn(true, false);
         when(result.getBoolean("Reload_priv")).thenReturn(true, false);
         when(result.getBoolean("Shutdown_priv")).thenReturn(true, false);
@@ -91,7 +90,6 @@ public final class MySQLPrivilegeLoaderTest {
         when(result.getBoolean("Repl_client_priv")).thenReturn(false, false);
         when(result.getBoolean("Create_user_priv")).thenReturn(false, false);
         when(result.getBoolean("Create_tablespace_priv")).thenReturn(false, false);
-        // DatabasePrivilege
         when(result.getBoolean("Select_priv")).thenReturn(true, false);
         when(result.getBoolean("Insert_priv")).thenReturn(true, false);
         when(result.getBoolean("Update_priv")).thenReturn(true, false);
