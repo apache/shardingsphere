@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.user.yaml.swapper;
 
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
@@ -27,6 +25,7 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -38,10 +37,10 @@ public final class UsersYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        DefaultAuthentication authentication = new DefaultAuthentication();
-        authentication.getAuthentication().put(new ShardingSphereUser("user1", "pwd1", "127.0.0.1"), new ShardingSpherePrivilege());
-        authentication.getAuthentication().put(new ShardingSphereUser("user2", "pwd2", "127.0.0.2"), new ShardingSpherePrivilege());
-        YamlUsersConfiguration actual = new UsersYamlSwapper().swapToYamlConfiguration(authentication.getAllUsers());
+        Collection<ShardingSphereUser> users = new LinkedList<>();
+        users.add(new ShardingSphereUser("user1", "pwd1", "127.0.0.1"));
+        users.add(new ShardingSphereUser("user2", "pwd2", "127.0.0.2"));
+        YamlUsersConfiguration actual = new UsersYamlSwapper().swapToYamlConfiguration(users);
         assertThat(actual.getUsers().size(), is(2));
         assertThat(actual.getUsers().get("user1").getPassword(), is("pwd1"));
         assertThat(actual.getUsers().get("user1").getHostname(), is("127.0.0.1"));

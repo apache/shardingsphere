@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeTy
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.database.SchemaPrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.database.TablePrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -37,6 +37,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -44,11 +45,11 @@ import java.util.stream.Collectors;
  * PostgreSQL privilege loader.
  */
 public final class PostgreSQLPrivilegeLoader implements PrivilegeLoader {
-
+    
     private static final String ROLES_SQL = "select * from pg_roles WHERE rolname IN (%s)";
-
+    
     private static final String TABLE_PRIVILEGE_SQL = "SELECT grantor, grantee, table_catalog, table_name, privilege_type, is_grantable from information_schema.table_privileges WHERE grantee IN (%s)";
-
+    
     @Override
     public Map<ShardingSphereUser, ShardingSpherePrivilege> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         Map<ShardingSphereUser, ShardingSpherePrivilege> result = new LinkedHashMap<>();
@@ -70,13 +71,13 @@ public final class PostgreSQLPrivilegeLoader implements PrivilegeLoader {
         }
         fillTablePrivilege(privilegeCache, privileges);
     }
-
+    
     private void fillTablePrivilege(final Map<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> privilegeCache, final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges) {
-        for (ShardingSphereUser user : privilegeCache.keySet()) {
-            for (String db : privilegeCache.get(user).keySet()) {
-                for (String tableName : privilegeCache.get(user).get(db).keySet()) {
-                    TablePrivilege tablePrivilege = new TablePrivilege(tableName, privilegeCache.get(user).get(db).get(tableName));
-                    ShardingSpherePrivilege privilege = privileges.get(user);
+        for (Entry<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> entry : privilegeCache.entrySet()) {
+            for (String db : entry.getValue().keySet()) {
+                for (String tableName : entry.getValue().get(db).keySet()) {
+                    TablePrivilege tablePrivilege = new TablePrivilege(tableName, entry.getValue().get(db).get(tableName));
+                    ShardingSpherePrivilege privilege = privileges.get(entry.getKey());
                     if (!privilege.getDatabasePrivilege().getSpecificPrivileges().containsKey(db)) {
                         privilege.getDatabasePrivilege().getSpecificPrivileges().put(db, new SchemaPrivilege(db));
                     }
@@ -85,12 +86,12 @@ public final class PostgreSQLPrivilegeLoader implements PrivilegeLoader {
             }
         }
     }
-
+    
     private void collectPrivilege(final Map<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> privilegeCache, final ResultSet resultSet) throws SQLException {
         String db = resultSet.getString("table_catalog");
         String tableName = resultSet.getString("table_name");
         String privilegeType = resultSet.getString("privilege_type");
-        Boolean hasPrivilege = resultSet.getString("is_grantable").equalsIgnoreCase("TRUE");
+        boolean hasPrivilege = resultSet.getString("is_grantable").equalsIgnoreCase("TRUE");
         String grantee = resultSet.getString("grantee");
         if (hasPrivilege) {
             privilegeCache
@@ -100,7 +101,7 @@ public final class PostgreSQLPrivilegeLoader implements PrivilegeLoader {
                     .add(getPrivilegeType(privilegeType));
         }
     }
-
+    
     private void fillRolePrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
@@ -111,19 +112,19 @@ public final class PostgreSQLPrivilegeLoader implements PrivilegeLoader {
             }
         }
     }
-
+    
     private void fillRolePrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final ResultSet resultSet) throws SQLException {
         Optional<ShardingSphereUser> user = getShardingSphereUser(privileges, resultSet);
         if (user.isPresent()) {
             privileges.get(user.get()).getAdministrativePrivilege().getPrivileges().addAll(loadRolePrivileges(resultSet));
         }
     }
-
+    
     private Optional<ShardingSphereUser> getShardingSphereUser(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final ResultSet resultSet) throws SQLException {
         Grantee grantee = new Grantee(resultSet.getString("rolname"), "");
         return privileges.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst();
     }
-
+    
     private Collection<PrivilegeType> loadRolePrivileges(final ResultSet resultSet) throws SQLException {
         Collection<PrivilegeType> result = new LinkedList<>();
         addToPrivilegeTypesIfPresent(resultSet.getBoolean("rolsuper"), PrivilegeType.SUPER, result);
@@ -134,19 +135,17 @@ public final class PostgreSQLPrivilegeLoader implements PrivilegeLoader {
         addToPrivilegeTypesIfPresent(resultSet.getBoolean("rolcanlogin"), PrivilegeType.CAN_LOGIN, result);
         return result;
     }
-
+    
     private String getTablePrivilegeSQL(final Collection<ShardingSphereUser> users) {
-        String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername()))
-                .collect(Collectors.joining(", "));
+        String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(", "));
         return String.format(TABLE_PRIVILEGE_SQL, userList);
     }
-
+    
     private String getRolePrivilegeSQL(final Collection<ShardingSphereUser> users) {
-        String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername()))
-                .collect(Collectors.joining(", "));
+        String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(", "));
         return String.format(ROLES_SQL, userList);
     }
-
+    
     private PrivilegeType getPrivilegeType(final String privilege) {
         switch (privilege) {
             case "SELECT":
@@ -177,13 +176,13 @@ public final class PostgreSQLPrivilegeLoader implements PrivilegeLoader {
                 throw new UnsupportedOperationException(privilege);
         }
     }
-
+    
     private void addToPrivilegeTypesIfPresent(final boolean hasPrivilege, final PrivilegeType privilegeType, final Collection<PrivilegeType> target) {
         if (hasPrivilege) {
             target.add(privilegeType);
         }
     }
-
+    
     @Override
     public String getDatabaseType() {
         return "PostgreSQL";

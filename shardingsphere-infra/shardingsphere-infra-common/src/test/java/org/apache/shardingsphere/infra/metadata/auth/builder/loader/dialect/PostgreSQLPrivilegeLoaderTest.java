@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.metadata.auth.builder.loader.PrivilegeLoa
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.database.SchemaPrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -47,19 +47,19 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLPrivilegeLoaderTest {
-
+    
     @BeforeClass
     public static void setUp() {
         ShardingSphereServiceLoader.register(PrivilegeLoader.class);
     }
-
+    
     @Test
     public void assertLoad() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSource(users);
         assertPrivilege(getPrivilegeLoader().load(users, dataSource));
     }
-
+    
     private void assertPrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> actual) {
         assertThat(actual.size(), is(1));
         ShardingSphereUser user = new ShardingSphereUser("postgres", "", "");
@@ -74,25 +74,25 @@ public final class PostgreSQLPrivilegeLoaderTest {
                 PrivilegeType.CREATE_DATABASE, PrivilegeType.CAN_LOGIN));
         assertEquals(actual.get(user).getAdministrativePrivilege().getPrivileges(), expectedAdministrativePrivilege);
     }
-
+    
     private Collection<ShardingSphereUser> createUsers() {
-        LinkedList<ShardingSphereUser> users = new LinkedList<>();
-        users.add(new ShardingSphereUser("postgres", "", ""));
-        return users;
+        LinkedList<ShardingSphereUser> result = new LinkedList<>();
+        result.add(new ShardingSphereUser("postgres", "", ""));
+        return result;
     }
-
+    
     private DataSource mockDataSource(final Collection<ShardingSphereUser> users) throws SQLException {
         ResultSet tablePrivilegeResultSet = mockTablePrivilegeResultSet();
-        DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
+        DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         String tablePrivilegeSql = "SELECT grantor, grantee, table_catalog, table_name, privilege_type, is_grantable from information_schema.table_privileges WHERE grantee IN (%s)";
         String userList = users.stream().map(item -> String.format("'%s'", item.getGrantee().getUsername(), item.getGrantee().getHostname())).collect(Collectors.joining(", "));
-        when(dataSource.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSql, userList))).thenReturn(tablePrivilegeResultSet);
+        when(result.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSql, userList))).thenReturn(tablePrivilegeResultSet);
         ResultSet rolePrivilegeResultSet = mockRolePrivilegeResultSet();
         String rolePrivilegeSql = "select * from pg_roles WHERE rolname IN (%s)";
-        when(dataSource.getConnection().createStatement().executeQuery(String.format(rolePrivilegeSql, userList))).thenReturn(rolePrivilegeResultSet);
-        return dataSource;
+        when(result.getConnection().createStatement().executeQuery(String.format(rolePrivilegeSql, userList))).thenReturn(rolePrivilegeResultSet);
+        return result;
     }
-
+    
     private ResultSet mockTablePrivilegeResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
         when(result.next()).thenReturn(true, true, true, true, true, true, true, false);
@@ -103,7 +103,7 @@ public final class PostgreSQLPrivilegeLoaderTest {
         when(result.getString("grantee")).thenReturn("postgres");
         return result;
     }
-
+    
     private ResultSet mockRolePrivilegeResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
         when(result.next()).thenReturn(true, false);
@@ -116,7 +116,7 @@ public final class PostgreSQLPrivilegeLoaderTest {
         when(result.getBoolean("rolcanlogin")).thenReturn(true);
         return result;
     }
-
+    
     private PrivilegeLoader getPrivilegeLoader() {
         for (PrivilegeLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(PrivilegeLoader.class)) {
             if ("PostgreSQL".equals(each.getDatabaseType())) {
