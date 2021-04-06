@@ -20,11 +20,11 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.authority.engine.Authentication;
+import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
+import org.apache.shardingsphere.authority.model.Privileges;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
@@ -153,7 +153,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     private Map<ShardingSphereUser, ShardingSpherePrivilege> getPrivileges(final Collection<ShardingSphereUser> users) {
         Map<ShardingSphereUser, ShardingSpherePrivilege> privileges = new HashMap<>(users.size(), 1);
         for (ShardingSphereUser each : users) {
-            privileges.put(each, new ShardingSpherePrivilege());
+            privileges.put(each, new Privileges());
         }
         return privileges;
     }

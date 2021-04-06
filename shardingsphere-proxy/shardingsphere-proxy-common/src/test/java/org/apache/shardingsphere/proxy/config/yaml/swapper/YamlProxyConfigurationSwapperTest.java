@@ -22,10 +22,10 @@ import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCente
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
+import org.apache.shardingsphere.authority.model.Privileges;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -112,10 +112,10 @@ public final class YamlProxyConfigurationSwapperTest {
         assertNotNull(authentication);
     }
     
-    private Map<ShardingSphereUser, ShardingSpherePrivilege> getPrivileges(final Collection<ShardingSphereUser> users) {
-        Map<ShardingSphereUser, ShardingSpherePrivilege> privileges = new HashMap<>(users.size(), 1);
+    private Map<ShardingSphereUser, Privileges> getPrivileges(final Collection<ShardingSphereUser> users) {
+        Map<ShardingSphereUser, Privileges> privileges = new HashMap<>(users.size(), 1);
         for (ShardingSphereUser each : users) {
-            privileges.put(each, new ShardingSpherePrivilege());
+            privileges.put(each, new Privileges());
         }
         return privileges;
     }
