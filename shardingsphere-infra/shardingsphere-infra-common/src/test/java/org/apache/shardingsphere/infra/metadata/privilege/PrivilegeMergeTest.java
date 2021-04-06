@@ -1,0 +1,86 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.infra.metadata.privilege;
+
+import org.apache.shardingsphere.infra.metadata.auth.builder.PrivilegeMerger;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.database.SchemaPrivilege;
+import org.apache.shardingsphere.infra.metadata.auth.model.privilege.database.TablePrivilege;
+import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
+import org.junit.Test;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class PrivilegeMergeTest {
+    
+    @Test
+    public void assertPrivilegeMergeResult() {
+        ShardingSpherePrivilege shardingSpherePrivilege = buildPrivilege();
+        ShardingSphereUser user = new ShardingSphereUser("test", "test", "%");
+        Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> privilegeMap = new HashMap();
+        privilegeMap.put(user, Collections.singletonList(shardingSpherePrivilege));
+        DataNodeContainedRule rule = buildShardingSphereRule();
+        Map<ShardingSphereUser, ShardingSpherePrivilege> result = PrivilegeMerger.merge(privilegeMap, "schema", Collections.singletonList(rule));
+        assertEquals(1, result.size());
+        assertTrue(result.containsKey(user));
+        assertTrue(result.get(user).getAdministrativePrivilege().getPrivileges().isEmpty());
+        assertTrue(result.get(user).getDatabasePrivilege().getGlobalPrivileges().isEmpty());
+        assertEquals(1, result.get(user).getDatabasePrivilege().getSpecificPrivileges().size());
+        assertTrue(result.get(user).getDatabasePrivilege().getSpecificPrivileges().get("schema").getGlobalPrivileges().isEmpty());
+        assertEquals(1, result.get(user).getDatabasePrivilege().getSpecificPrivileges().get("schema").getSpecificPrivileges().size());
+        assertEquals("TableName assert error.", "test", result.get(user).getDatabasePrivilege().getSpecificPrivileges().get("schema").getSpecificPrivileges().get("test").getTableName());
+        assertEquals(1, result.get(user).getDatabasePrivilege().getSpecificPrivileges().get("schema").getSpecificPrivileges().get("test").getPrivileges().size());
+        assertTrue(result.get(user).getDatabasePrivilege().getSpecificPrivileges().get("schema").getSpecificPrivileges().get("test").getPrivileges().contains(PrivilegeType.SELECT));
+    }
+    
+    private ShardingSpherePrivilege buildPrivilege() {
+        Collection<PrivilegeType> tablePrivileges = new LinkedList<>();
+        tablePrivileges.add(PrivilegeType.SELECT);
+        SchemaPrivilege schema1Privilege = new SchemaPrivilege("schema1");
+        schema1Privilege.getSpecificPrivileges().put("table1", new TablePrivilege("table1", tablePrivileges));
+        schema1Privilege.getSpecificPrivileges().put("table2", new TablePrivilege("table2", tablePrivileges));
+        SchemaPrivilege schema2Privilege = new SchemaPrivilege("schema2");
+        schema2Privilege.getSpecificPrivileges().put("table3", new TablePrivilege("table3", tablePrivileges));
+        schema2Privilege.getSpecificPrivileges().put("table4", new TablePrivilege("table4", tablePrivileges));
+        ShardingSpherePrivilege result = new ShardingSpherePrivilege();
+        result.getDatabasePrivilege().getSpecificPrivileges().put("schema1", schema1Privilege);
+        result.getDatabasePrivilege().getSpecificPrivileges().put("schema2", schema2Privilege);
+        return result;
+    }
+    
+    private DataNodeContainedRule buildShardingSphereRule() {
+        DataNodeContainedRule result = mock(DataNodeContainedRule.class);
+        when(result.findLogicTableByActualTable("table1")).thenReturn(Optional.of("test"));
+        when(result.findLogicTableByActualTable("table2")).thenReturn(Optional.of("test"));
+        when(result.findLogicTableByActualTable("table3")).thenReturn(Optional.of("test"));
+        when(result.findLogicTableByActualTable("table4")).thenReturn(Optional.of("test"));
+        return result;
+    }
+}

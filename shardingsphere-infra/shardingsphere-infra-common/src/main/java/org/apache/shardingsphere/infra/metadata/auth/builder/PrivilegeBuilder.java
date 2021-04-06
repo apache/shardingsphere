@@ -93,7 +93,7 @@ public final class PrivilegeBuilder {
      * @param loader privilege loader
      * @return privileges
      */
-    public static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final String schemaName, final Collection<DataSource> dataSources, 
+    public static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final String schemaName, final Collection<DataSource> dataSources,
                                                                          final Collection<ShardingSphereRule> rules, final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
         Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> result = load(dataSources, users, loader);
         checkPrivileges(result);
