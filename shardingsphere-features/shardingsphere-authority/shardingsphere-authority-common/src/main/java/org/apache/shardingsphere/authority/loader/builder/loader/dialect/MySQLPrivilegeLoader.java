@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.authority.loader.builder.loader.dialect;
 
-import org.apache.shardingsphere.authority.model.database.SchemaPrivilege;
-import org.apache.shardingsphere.authority.model.database.TablePrivilege;
+import org.apache.shardingsphere.authority.model.database.SchemaPrivileges;
+import org.apache.shardingsphere.authority.model.database.TablePrivileges;
 import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoader;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
+import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
@@ -50,99 +50,98 @@ public final class MySQLPrivilegeLoader implements PrivilegeLoader {
     private static final String TABLE_PRIVILEGE_SQL = "SELECT Db, Table_name, Table_priv FROM mysql.tables_priv WHERE (user, host) in (%s)";
 
     @Override
-    public Map<ShardingSphereUser, ShardingSpherePrivilege> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
-        Map<ShardingSphereUser, ShardingSpherePrivilege> result = new LinkedHashMap<>();
-        users.forEach(user -> result.put(user, new ShardingSpherePrivilege()));
-        fillGlobalPrivilege(result, dataSource, users);
-        fillSchemaPrivilege(result, dataSource, users);
-        fillTablePrivilege(result, dataSource, users);
+    public Map<ShardingSphereUser, Privileges> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+        Map<ShardingSphereUser, Privileges> result = new LinkedHashMap<>();
+        users.forEach(user -> result.put(user, new Privileges()));
+        fillGlobalPrivileges(result, dataSource, users);
+        fillSchemaPrivileges(result, dataSource, users);
+        fillTablePrivileges(result, dataSource, users);
         return result;
     }
     
-    private void fillGlobalPrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
+    private void fillGlobalPrivileges(final Map<ShardingSphereUser, Privileges> userPrivilegeMap, final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
-            try (ResultSet resultSet = statement.executeQuery(getGlobalPrivilegeSQL(users))) {
+            try (ResultSet resultSet = statement.executeQuery(getGlobalPrivilegesSQL(users))) {
                 while (resultSet.next()) {
-                    fillGlobalPrivilege(privileges, resultSet);
+                    fillGlobalPrivileges(userPrivilegeMap, resultSet);
                 }
             }
         }
     }
     
-    private void fillGlobalPrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final ResultSet resultSet) throws SQLException {
-        Optional<ShardingSphereUser> user = getShardingSphereUser(privileges, resultSet);
+    private void fillGlobalPrivileges(final Map<ShardingSphereUser, Privileges> userPrivilegeMap, final ResultSet resultSet) throws SQLException {
+        Optional<ShardingSphereUser> user = findShardingSphereUser(userPrivilegeMap, resultSet);
         if (user.isPresent()) {
-            privileges.get(user.get()).getAdministrativePrivilege().getPrivileges().addAll(loadAdministrativePrivileges(resultSet));
-            privileges.get(user.get()).getDatabasePrivilege().getGlobalPrivileges().addAll(loadDatabaseGlobalPrivileges(resultSet));
+            userPrivilegeMap.get(user.get()).getAdministrativePrivileges().getPrivileges().addAll(loadAdministrativePrivileges(resultSet));
+            userPrivilegeMap.get(user.get()).getDatabasePrivileges().getGlobalPrivileges().addAll(loadDatabaseGlobalPrivileges(resultSet));
         }
     }
     
-    private void fillSchemaPrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
+    private void fillSchemaPrivileges(final Map<ShardingSphereUser, Privileges> userPrivilegeMap, final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
-            try (ResultSet resultSet = statement.executeQuery(getSchemaPrivilegeSQL(users))) {
+            try (ResultSet resultSet = statement.executeQuery(getSchemaPrivilegesSQL(users))) {
                 while (resultSet.next()) {
-                    fillSchemaPrivilege(privileges, resultSet);
+                    fillSchemaPrivileges(userPrivilegeMap, resultSet);
                 }
             }
         }
     }
     
-    private void fillSchemaPrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final ResultSet resultSet) throws SQLException {
-        Optional<ShardingSphereUser> user = getShardingSphereUser(privileges, resultSet);
+    private void fillSchemaPrivileges(final Map<ShardingSphereUser, Privileges> userPrivilegeMap, final ResultSet resultSet) throws SQLException {
+        Optional<ShardingSphereUser> user = findShardingSphereUser(userPrivilegeMap, resultSet);
         if (user.isPresent()) {
             String db = resultSet.getString("Db");
-            SchemaPrivilege schemaPrivilege = new SchemaPrivilege(db);
-            schemaPrivilege.getGlobalPrivileges().addAll(loadDatabaseGlobalPrivileges(resultSet));
-            privileges.get(user.get()).getDatabasePrivilege().getSpecificPrivileges().put(db, schemaPrivilege);
+            SchemaPrivileges schemaPrivileges = new SchemaPrivileges(db);
+            schemaPrivileges.getGlobalPrivileges().addAll(loadDatabaseGlobalPrivileges(resultSet));
+            userPrivilegeMap.get(user.get()).getDatabasePrivileges().getSpecificPrivileges().put(db, schemaPrivileges);
         }
     }
     
-    private void fillTablePrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
+    private void fillTablePrivileges(final Map<ShardingSphereUser, Privileges> userPrivilegeMap, final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
-            try (ResultSet resultSet = statement.executeQuery(getTablePrivilegeSQL(users))) {
+            try (ResultSet resultSet = statement.executeQuery(getTablePrivilegesSQL(users))) {
                 while (resultSet.next()) {
-                    fillTablePrivilege(privileges, resultSet);
+                    fillTablePrivileges(userPrivilegeMap, resultSet);
                 }
             }
         }
     }
     
-    private void fillTablePrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final ResultSet resultSet) throws SQLException {
-        Optional<ShardingSphereUser> user = getShardingSphereUser(privileges, resultSet);
+    private void fillTablePrivileges(final Map<ShardingSphereUser, Privileges> userPrivilegeMap, final ResultSet resultSet) throws SQLException {
+        Optional<ShardingSphereUser> user = findShardingSphereUser(userPrivilegeMap, resultSet);
         if (user.isPresent()) {
             String db = resultSet.getString("Db");
             String tableName = resultSet.getString("Table_name");
-            String[] tablePrivileges = (String[]) resultSet.getArray("Table_priv").getArray();
-            TablePrivilege tablePrivilege = new TablePrivilege(tableName, getPrivileges(tablePrivileges));
-            ShardingSpherePrivilege privilege = privileges.get(user.get());
-            if (!privilege.getDatabasePrivilege().getSpecificPrivileges().containsKey(db)) {
-                privilege.getDatabasePrivilege().getSpecificPrivileges().put(db, new SchemaPrivilege(db));
+            TablePrivileges tablePrivileges = new TablePrivileges(tableName, getPrivileges((String[]) resultSet.getArray("Table_priv").getArray()));
+            Privileges privileges = userPrivilegeMap.get(user.get());
+            if (!privileges.getDatabasePrivileges().getSpecificPrivileges().containsKey(db)) {
+                privileges.getDatabasePrivileges().getSpecificPrivileges().put(db, new SchemaPrivileges(db));
             }
-            privilege.getDatabasePrivilege().getSpecificPrivileges().get(db).getSpecificPrivileges().put(tableName, tablePrivilege);
+            privileges.getDatabasePrivileges().getSpecificPrivileges().get(db).getSpecificPrivileges().put(tableName, tablePrivileges);
         }
     }
     
-    private String getGlobalPrivilegeSQL(final Collection<ShardingSphereUser> users) {
+    private String getGlobalPrivilegesSQL(final Collection<ShardingSphereUser> users) {
         String userHostTuples = users.stream().map(each -> String.format("('%s', '%s')", each.getGrantee().getUsername(), each.getGrantee().getHostname())).collect(Collectors.joining(","));
         return String.format(GLOBAL_PRIVILEGE_SQL, userHostTuples);
     }
     
-    private String getSchemaPrivilegeSQL(final Collection<ShardingSphereUser> users) {
+    private String getSchemaPrivilegesSQL(final Collection<ShardingSphereUser> users) {
         String userHostTuples = users.stream().map(each -> String.format("('%s', '%s')", each.getGrantee().getUsername(), each.getGrantee().getHostname()))
                 .collect(Collectors.joining(","));
         return String.format(SCHEMA_PRIVILEGE_SQL, userHostTuples);
     }
     
-    private String getTablePrivilegeSQL(final Collection<ShardingSphereUser> users) {
+    private String getTablePrivilegesSQL(final Collection<ShardingSphereUser> users) {
         String userHostTuples = users.stream().map(each -> String.format("('%s', '%s')", each.getGrantee().getUsername(), each.getGrantee().getHostname()))
                 .collect(Collectors.joining(","));
         return String.format(TABLE_PRIVILEGE_SQL, userHostTuples);
     }
     
-    private Optional<ShardingSphereUser> getShardingSphereUser(final Map<ShardingSphereUser, ShardingSpherePrivilege> privileges, final ResultSet resultSet) throws SQLException {
+    private Optional<ShardingSphereUser> findShardingSphereUser(final Map<ShardingSphereUser, Privileges> privileges, final ResultSet resultSet) throws SQLException {
         Grantee grantee = new Grantee(resultSet.getString("user"), resultSet.getString("host"));
         return privileges.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst();
     }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoader
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
+import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
@@ -61,8 +61,8 @@ public final class PrivilegeBuilder {
      * @param users users
      * @return privileges
      */
-    public static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final DatabaseType databaseType, 
-                                                                         final Collection<ShardingSphereMetaData> metaDataList, final Collection<ShardingSphereUser> users) {
+    public static Map<ShardingSphereUser, Privileges> build(final DatabaseType databaseType,
+                                                            final Collection<ShardingSphereMetaData> metaDataList, final Collection<ShardingSphereUser> users) {
         if (metaDataList.isEmpty()) {
             return buildDefaultPrivileges(users);
         }
@@ -70,16 +70,16 @@ public final class PrivilegeBuilder {
         return loader.map(optional -> build(metaDataList, users, optional)).orElseGet(() -> buildDefaultPrivileges(users));
     }
     
-    private static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final Collection<ShardingSphereMetaData> metaDataList, 
-                                                                          final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
-        Map<ShardingSphereUser, ShardingSpherePrivilege> result = new LinkedHashMap<>();
+    private static Map<ShardingSphereUser, Privileges> build(final Collection<ShardingSphereMetaData> metaDataList,
+                                                             final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
+        Map<ShardingSphereUser, Privileges> result = new LinkedHashMap<>();
         for (ShardingSphereMetaData each : metaDataList) {
             result.putAll(build(each, users, loader));
         }
         return result;
     }
     
-    private static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
+    private static Map<ShardingSphereUser, Privileges> build(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
         return build(metaData.getName(), metaData.getResource().getAllInstanceDataSources(), metaData.getRuleMetaData().getRules(), users, loader);
     }
     
@@ -93,18 +93,18 @@ public final class PrivilegeBuilder {
      * @param loader privilege loader
      * @return privileges
      */
-    public static Map<ShardingSphereUser, ShardingSpherePrivilege> build(final String schemaName, final Collection<DataSource> dataSources, 
-                                                                         final Collection<ShardingSphereRule> rules, final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
-        Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> result = load(dataSources, users, loader);
+    public static Map<ShardingSphereUser, Privileges> build(final String schemaName, final Collection<DataSource> dataSources,
+                                                            final Collection<ShardingSphereRule> rules, final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
+        Map<ShardingSphereUser, Collection<Privileges>> result = load(dataSources, users, loader);
         checkPrivileges(result);
         return PrivilegeMerger.merge(result, schemaName, rules);
     }
     
-    private static Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> load(final Collection<DataSource> dataSources, 
-                                                                                     final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
-        Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> result = new LinkedHashMap<>(users.size(), 1);
+    private static Map<ShardingSphereUser, Collection<Privileges>> load(final Collection<DataSource> dataSources,
+                                                                        final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
+        Map<ShardingSphereUser, Collection<Privileges>> result = new LinkedHashMap<>(users.size(), 1);
         ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CPU_CORES * 2, dataSources.isEmpty() ? 1 : dataSources.size()));
-        Collection<Future<Map<ShardingSphereUser, ShardingSpherePrivilege>>> futures = new HashSet<>(dataSources.size(), 1);
+        Collection<Future<Map<ShardingSphereUser, Privileges>>> futures = new HashSet<>(dataSources.size(), 1);
         for (DataSource each : dataSources) {
             futures.add(executorService.submit(() -> loader.load(users, each)));
         }
@@ -125,17 +125,17 @@ public final class PrivilegeBuilder {
      * @param users users
      * @return privileges
      */
-    public static Map<ShardingSphereUser, ShardingSpherePrivilege> buildDefaultPrivileges(final Collection<ShardingSphereUser> users) {
-        Map<ShardingSphereUser, ShardingSpherePrivilege> result = new LinkedHashMap<>(users.size(), 1);
-        ShardingSpherePrivilege privilege = new ShardingSpherePrivilege();
-        privilege.setSuperPrivilege();
-        users.forEach(each -> result.put(each, privilege));
+    public static Map<ShardingSphereUser, Privileges> buildDefaultPrivileges(final Collection<ShardingSphereUser> users) {
+        Map<ShardingSphereUser, Privileges> result = new LinkedHashMap<>(users.size(), 1);
+        Privileges privileges = new Privileges();
+        privileges.setSuperPrivilege();
+        users.forEach(each -> result.put(each, privileges));
         return result;
     }
     
-    private static void fillPrivileges(final Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> userPrivilegeMap,
-                                       final Future<Map<ShardingSphereUser, ShardingSpherePrivilege>> future) throws InterruptedException, ExecutionException, TimeoutException {
-        for (Entry<ShardingSphereUser, ShardingSpherePrivilege> entry : future.get(FUTURE_GET_TIME_OUT_MILLISECONDS, TimeUnit.MILLISECONDS).entrySet()) {
+    private static void fillPrivileges(final Map<ShardingSphereUser, Collection<Privileges>> userPrivilegeMap,
+                                       final Future<Map<ShardingSphereUser, Privileges>> future) throws InterruptedException, ExecutionException, TimeoutException {
+        for (Entry<ShardingSphereUser, Privileges> entry : future.get(FUTURE_GET_TIME_OUT_MILLISECONDS, TimeUnit.MILLISECONDS).entrySet()) {
             if (!userPrivilegeMap.containsKey(entry.getKey())) {
                 userPrivilegeMap.put(entry.getKey(), new LinkedHashSet<>());
             }
@@ -143,9 +143,9 @@ public final class PrivilegeBuilder {
         }
     }
     
-    private static void checkPrivileges(final Map<ShardingSphereUser, Collection<ShardingSpherePrivilege>> userPrivilegeMap) {
-        for (Entry<ShardingSphereUser, Collection<ShardingSpherePrivilege>> entry : userPrivilegeMap.entrySet()) {
-            for (ShardingSpherePrivilege each : entry.getValue()) {
+    private static void checkPrivileges(final Map<ShardingSphereUser, Collection<Privileges>> userPrivilegeMap) {
+        for (Entry<ShardingSphereUser, Collection<Privileges>> entry : userPrivilegeMap.entrySet()) {
+            for (Privileges each : entry.getValue()) {
                 if (each.isEmpty()) {
                     throw new ShardingSphereException(String.format("There is no enough privileges for %s on all database instances.", entry.getKey().getGrantee().toString().replaceAll("%", "%%")));
                 }
