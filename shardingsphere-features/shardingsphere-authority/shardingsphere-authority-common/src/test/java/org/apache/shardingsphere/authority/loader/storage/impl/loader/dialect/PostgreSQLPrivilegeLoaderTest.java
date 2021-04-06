@@ -23,6 +23,7 @@ import org.apache.shardingsphere.authority.model.database.SchemaPrivileges;
 import org.apache.shardingsphere.authority.loader.storage.impl.loader.PrivilegeLoader;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
@@ -57,7 +59,7 @@ public final class PostgreSQLPrivilegeLoaderTest {
     public void assertLoad() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSource(users);
-        assertPrivileges(getPrivilegeLoader().load(users, dataSource));
+        assertPrivileges(TypedSPIRegistry.getRegisteredService(PrivilegeLoader.class, "PostgreSQL", new Properties()).load(users, dataSource));
     }
     
     private void assertPrivileges(final Map<ShardingSphereUser, Privileges> actual) {
@@ -115,14 +117,5 @@ public final class PostgreSQLPrivilegeLoaderTest {
         when(result.getBoolean("rolinherit")).thenReturn(false);
         when(result.getBoolean("rolcanlogin")).thenReturn(true);
         return result;
-    }
-    
-    private PrivilegeLoader getPrivilegeLoader() {
-        for (PrivilegeLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(PrivilegeLoader.class)) {
-            if ("PostgreSQL".equals(each.getType())) {
-                return each;
-            }
-        }
-        throw new IllegalStateException("Can not find PostgreSQLPrivilegeLoader");
     }
 }

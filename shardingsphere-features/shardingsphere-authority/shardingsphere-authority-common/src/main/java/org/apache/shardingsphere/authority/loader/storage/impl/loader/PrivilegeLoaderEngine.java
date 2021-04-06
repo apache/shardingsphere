@@ -21,8 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Privilege loader engine.
@@ -41,11 +43,6 @@ public final class PrivilegeLoaderEngine {
      * @return privilege loader
      */
     public static Optional<PrivilegeLoader> findPrivilegeLoader(final DatabaseType databaseType) {
-        for (PrivilegeLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(PrivilegeLoader.class)) {
-            if (each.getType().equals(databaseType.getName())) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
+        return TypedSPIRegistry.findRegisteredService(PrivilegeLoader.class, databaseType.getName(), new Properties());
     }
 }
