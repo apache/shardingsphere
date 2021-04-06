@@ -20,13 +20,14 @@ package org.apache.shardingsphere.authority.loader.storage.impl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.authority.loader.storage.impl.loader.PrivilegeLoader;
-import org.apache.shardingsphere.authority.loader.storage.impl.loader.PrivilegeLoaderEngine;
+import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -36,6 +37,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,14 +46,18 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Storage privilege loader.
+ * Storage privilege builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StoragePrivilegeLoader {
+public final class StoragePrivilegeBuilder {
     
     private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
     
     private static final long FUTURE_GET_TIME_OUT_MILLISECONDS = 5000L;
+    
+    static {
+        ShardingSphereServiceLoader.register(PrivilegeLoader.class);
+    }
     
     /**
      * Build privileges.
@@ -66,7 +72,7 @@ public final class StoragePrivilegeLoader {
         if (metaDataList.isEmpty()) {
             return buildDefaultPrivileges(users);
         }
-        Optional<PrivilegeLoader> loader = PrivilegeLoaderEngine.findPrivilegeLoader(databaseType);
+        Optional<PrivilegeLoader> loader = TypedSPIRegistry.findRegisteredService(PrivilegeLoader.class, databaseType.getName(), new Properties());
         return loader.map(optional -> build(metaDataList, users, optional)).orElseGet(() -> buildDefaultPrivileges(users));
     }
     
