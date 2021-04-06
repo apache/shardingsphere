@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfigurationConverter;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 

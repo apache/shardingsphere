@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.config.yaml.swapper;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfigurationConverter;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfigurationConverter;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;

@@ -150,8 +150,8 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         assertThat(((FixtureRuleConfiguration) actual).getName(), is("testRule"));
     }
     
-    private Map<ShardingSphereUser, ShardingSpherePrivilege> getPrivileges(final Collection<ShardingSphereUser> users) {
-        Map<ShardingSphereUser, ShardingSpherePrivilege> privileges = new HashMap<>(users.size(), 1);
+    private Map<ShardingSphereUser, Privileges> getPrivileges(final Collection<ShardingSphereUser> users) {
+        Map<ShardingSphereUser, Privileges> privileges = new HashMap<>(users.size(), 1);
         for (ShardingSphereUser each : users) {
             privileges.put(each, new Privileges());
         }

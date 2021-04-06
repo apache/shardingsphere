@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper;
+package org.apache.shardingsphere.infra.metadata.user.yaml.swapper;
 
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
 
 import java.util.Objects;

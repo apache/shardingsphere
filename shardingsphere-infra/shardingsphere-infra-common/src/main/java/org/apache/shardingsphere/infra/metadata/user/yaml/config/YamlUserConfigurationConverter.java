@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config;
+package org.apache.shardingsphere.infra.metadata.user.yaml.config;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserYamlSwapper;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.yaml.swapper.UserYamlSwapper;
 
 import java.util.Collection;
 import java.util.LinkedList;
