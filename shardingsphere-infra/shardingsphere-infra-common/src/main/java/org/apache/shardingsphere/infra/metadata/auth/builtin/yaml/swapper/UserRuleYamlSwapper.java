@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper;
 
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUsersConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlConfigurationSwapper;
 
@@ -31,11 +31,11 @@ import java.util.Map.Entry;
 /**
  * User rule YAML swapper.
  */
-public final class UserRuleYamlSwapper implements YamlConfigurationSwapper<YamlUserRuleConfiguration, Collection<ShardingSphereUser>> {
+public final class UserRuleYamlSwapper implements YamlConfigurationSwapper<YamlUsersConfiguration, Collection<ShardingSphereUser>> {
     
     @Override
-    public YamlUserRuleConfiguration swapToYamlConfiguration(final Collection<ShardingSphereUser> data) {
-        YamlUserRuleConfiguration result = new YamlUserRuleConfiguration();
+    public YamlUsersConfiguration swapToYamlConfiguration(final Collection<ShardingSphereUser> data) {
+        YamlUsersConfiguration result = new YamlUsersConfiguration();
         Map<String, YamlUserConfiguration> users = new LinkedHashMap<>(data.size(), 1);
         for (ShardingSphereUser each : data) {
             users.put(each.getGrantee().getUsername(), swapToYamlConfiguration(each));
@@ -52,7 +52,7 @@ public final class UserRuleYamlSwapper implements YamlConfigurationSwapper<YamlU
     }
     
     @Override
-    public Collection<ShardingSphereUser> swapToObject(final YamlUserRuleConfiguration yamlConfig) {
+    public Collection<ShardingSphereUser> swapToObject(final YamlUsersConfiguration yamlConfig) {
         Collection<ShardingSphereUser> result = new LinkedHashSet<>();
         if (null == yamlConfig) {
             return result;

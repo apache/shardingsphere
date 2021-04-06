@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.auth.builtin.yaml.swapper;
 
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUsersConfiguration;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -42,7 +42,7 @@ public final class UserRuleYamlSwapperTest {
         DefaultAuthentication authentication = new DefaultAuthentication();
         authentication.getAuthentication().put(new ShardingSphereUser("user1", "pwd1", "127.0.0.1"), new ShardingSpherePrivilege());
         authentication.getAuthentication().put(new ShardingSphereUser("user2", "pwd2", "127.0.0.2"), new ShardingSpherePrivilege());
-        YamlUserRuleConfiguration actual = new UserRuleYamlSwapper().swapToYamlConfiguration(authentication.getAllUsers());
+        YamlUsersConfiguration actual = new UserRuleYamlSwapper().swapToYamlConfiguration(authentication.getAllUsers());
         assertThat(actual.getUsers().size(), is(2));
         assertThat(actual.getUsers().get("user1").getPassword(), is("pwd1"));
         assertThat(actual.getUsers().get("user1").getHostname(), is("127.0.0.1"));
@@ -59,7 +59,7 @@ public final class UserRuleYamlSwapperTest {
         Map<String, YamlUserConfiguration> users = new HashMap<>(2, 1);
         users.put("user1", user1);
         users.put("user2", user2);
-        YamlUserRuleConfiguration yamlConfig = new YamlUserRuleConfiguration();
+        YamlUsersConfiguration yamlConfig = new YamlUsersConfiguration();
         yamlConfig.setUsers(users);
         Collection<ShardingSphereUser> actual = new UserRuleYamlSwapper().swapToObject(yamlConfig);
         Optional<ShardingSphereUser> actualUser1 = actual.stream().filter(each -> each.getGrantee().equals(new Grantee("user1", ""))).findFirst();

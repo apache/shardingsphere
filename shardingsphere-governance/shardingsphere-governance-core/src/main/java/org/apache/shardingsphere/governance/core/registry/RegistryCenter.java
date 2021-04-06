@@ -42,7 +42,7 @@ import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUsersConfiguration;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
@@ -199,7 +199,7 @@ public final class RegistryCenter {
     
     private void persistNewUsers(final Collection<ShardingSphereUser> users) {
         if (!users.isEmpty()) {
-            YamlUserRuleConfiguration yamlUserConfig = YamlEngine.unmarshal(repository.get(node.getAuthenticationPath()), YamlUserRuleConfiguration.class);
+            YamlUsersConfiguration yamlUserConfig = YamlEngine.unmarshal(repository.get(node.getAuthenticationPath()), YamlUsersConfiguration.class);
             yamlUserConfig.getUsers().putAll(new UserRuleYamlSwapper().swapToYamlConfiguration(users).getUsers());
             repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(yamlUserConfig));
         }

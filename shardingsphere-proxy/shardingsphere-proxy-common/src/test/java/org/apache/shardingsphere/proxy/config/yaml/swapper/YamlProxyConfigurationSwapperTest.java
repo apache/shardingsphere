@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUsersConfiguration;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -213,7 +213,7 @@ public final class YamlProxyConfigurationSwapperTest {
         YamlUserConfiguration yamlUserConfig = mock(YamlUserConfiguration.class);
         when(yamlUserConfig.getPassword()).thenReturn("pass");
         yamlUserConfigurationMap.put("user1", yamlUserConfig);
-        YamlUserRuleConfiguration userRuleConfiguration = mock(YamlUserRuleConfiguration.class);
+        YamlUsersConfiguration userRuleConfiguration = mock(YamlUsersConfiguration.class);
         when(userRuleConfiguration.getUsers()).thenReturn(yamlUserConfigurationMap);
         when(yamlProxyServerConfig.getAuthentication()).thenReturn(userRuleConfiguration);
     }
