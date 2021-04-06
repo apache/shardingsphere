@@ -119,7 +119,7 @@ public final class PostgreSQLPrivilegeLoaderTest {
     
     private PrivilegeLoader getPrivilegeLoader() {
         for (PrivilegeLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(PrivilegeLoader.class)) {
-            if ("PostgreSQL".equals(each.getDatabaseType())) {
+            if ("PostgreSQL".equals(each.getType())) {
                 return each;
             }
         }

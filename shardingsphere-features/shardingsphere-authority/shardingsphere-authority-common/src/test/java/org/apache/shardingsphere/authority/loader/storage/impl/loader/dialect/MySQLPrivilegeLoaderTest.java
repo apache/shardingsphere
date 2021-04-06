@@ -171,7 +171,7 @@ public final class MySQLPrivilegeLoaderTest {
     
     private PrivilegeLoader getPrivilegeLoader() {
         for (PrivilegeLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(PrivilegeLoader.class)) {
-            if ("MySQL".equals(each.getDatabaseType())) {
+            if ("MySQL".equals(each.getType())) {
                 return each;
             }
         }

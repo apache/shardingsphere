@@ -229,7 +229,7 @@ public final class MySQLPrivilegeLoader implements PrivilegeLoader {
     }
     
     @Override
-    public String getDatabaseType() {
+    public String getType() {
         return "MySQL";
     }
 }

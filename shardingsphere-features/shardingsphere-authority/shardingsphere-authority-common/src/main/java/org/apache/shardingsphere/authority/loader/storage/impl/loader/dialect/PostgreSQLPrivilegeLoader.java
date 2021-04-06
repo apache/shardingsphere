@@ -185,7 +185,7 @@ public final class PostgreSQLPrivilegeLoader implements PrivilegeLoader {
     }
     
     @Override
-    public String getDatabaseType() {
+    public String getType() {
         return "PostgreSQL";
     }
 }
