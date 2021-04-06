@@ -22,7 +22,7 @@ services:
     image: "zookeeper:3.4"
     ports:
       - "2181:2181"
-    container_name: sharding-sphere-zookeeper
+    container_name: shardingsphere-example-zookeeper
 
   etcd:
     ## get more versions of etcd here  : https://quay.io/repository/coreos/etcd?tag=latest&tab=tags
@@ -31,7 +31,7 @@ services:
       - "2379:2379"
       - "2380:2380"
       - "4001:4001"
-    container_name: sharding-sphere-etcd
+    container_name: shardingsphere-example-etcd
     entrypoint: /usr/local/bin/etcd
     command:
       - '--advertise-client-urls=http://0.0.0.0:2379'
