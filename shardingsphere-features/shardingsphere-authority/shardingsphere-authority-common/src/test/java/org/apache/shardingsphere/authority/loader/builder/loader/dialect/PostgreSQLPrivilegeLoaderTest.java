@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.authority.loader.builder.loader.dialect;
 
 import org.apache.shardingsphere.authority.model.PrivilegeType;
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
-import org.apache.shardingsphere.authority.model.database.SchemaPrivilege;
+import org.apache.shardingsphere.authority.model.Privileges;
+import org.apache.shardingsphere.authority.model.database.SchemaPrivileges;
 import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoader;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -57,22 +57,22 @@ public final class PostgreSQLPrivilegeLoaderTest {
     public void assertLoad() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSource(users);
-        assertPrivilege(getPrivilegeLoader().load(users, dataSource));
+        assertPrivileges(getPrivilegeLoader().load(users, dataSource));
     }
     
-    private void assertPrivilege(final Map<ShardingSphereUser, ShardingSpherePrivilege> actual) {
+    private void assertPrivileges(final Map<ShardingSphereUser, Privileges> actual) {
         assertThat(actual.size(), is(1));
         ShardingSphereUser user = new ShardingSphereUser("postgres", "", "");
-        assertThat(actual.get(user).getDatabasePrivilege().getGlobalPrivileges().size(), is(0));
-        assertThat(actual.get(user).getDatabasePrivilege().getSpecificPrivileges().size(), is(1));
+        assertThat(actual.get(user).getDatabasePrivileges().getGlobalPrivileges().size(), is(0));
+        assertThat(actual.get(user).getDatabasePrivileges().getSpecificPrivileges().size(), is(1));
         Collection<PrivilegeType> expectedSpecificPrivilege = new CopyOnWriteArraySet(Arrays.asList(PrivilegeType.INSERT, PrivilegeType.SELECT, PrivilegeType.UPDATE,
                 PrivilegeType.DELETE));
-        SchemaPrivilege schemaPrivilege = actual.get(user).getDatabasePrivilege().getSpecificPrivileges().get("db0");
-        assertThat(schemaPrivilege.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege), is(true));
-        assertThat(actual.get(user).getAdministrativePrivilege().getPrivileges().size(), is(4));
+        SchemaPrivileges schemaPrivileges = actual.get(user).getDatabasePrivileges().getSpecificPrivileges().get("db0");
+        assertThat(schemaPrivileges.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege), is(true));
+        assertThat(actual.get(user).getAdministrativePrivileges().getPrivileges().size(), is(4));
         Collection<PrivilegeType> expectedAdministrativePrivilege = new CopyOnWriteArraySet(Arrays.asList(PrivilegeType.SUPER, PrivilegeType.CREATE_ROLE,
                 PrivilegeType.CREATE_DATABASE, PrivilegeType.CAN_LOGIN));
-        assertEquals(actual.get(user).getAdministrativePrivilege().getPrivileges(), expectedAdministrativePrivilege);
+        assertEquals(actual.get(user).getAdministrativePrivileges().getPrivileges(), expectedAdministrativePrivilege);
     }
     
     private Collection<ShardingSphereUser> createUsers() {

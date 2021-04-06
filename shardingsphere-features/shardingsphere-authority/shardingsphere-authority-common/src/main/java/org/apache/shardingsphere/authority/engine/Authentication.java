@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.authority.engine;
 
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
+import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
@@ -35,14 +35,14 @@ public interface Authentication {
      * 
      * @param loadedPrivileges loaded privileges
      */
-    void init(Map<ShardingSphereUser, ShardingSpherePrivilege> loadedPrivileges);
+    void init(Map<ShardingSphereUser, Privileges> loadedPrivileges);
     
     /**
      * Get authentication.
      *
      * @return Authentication
      */
-    Map<ShardingSphereUser, ShardingSpherePrivilege> getAuthentication();
+    Map<ShardingSphereUser, Privileges> getAuthentication();
     
     /**
      * Get all users.
@@ -60,10 +60,10 @@ public interface Authentication {
     Optional<ShardingSphereUser> findUser(Grantee grantee);
     
     /**
-     * Find Privilege.
+     * Find Privileges.
      *
      * @param grantee grantee
      * @return found user
      */
-    Optional<ShardingSpherePrivilege> findPrivilege(Grantee grantee);
+    Optional<Privileges> findPrivileges(Grantee grantee);
 }

@@ -28,15 +28,15 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 /**
- * Database privilege.
+ * Database privileges.
  */
 @Getter
 @EqualsAndHashCode
-public final class DatabasePrivilege {
+public final class DatabasePrivileges {
     
     private final Collection<PrivilegeType> globalPrivileges = new CopyOnWriteArraySet<>();
     
-    private final Map<String, SchemaPrivilege> specificPrivileges = new ConcurrentHashMap<>();
+    private final Map<String, SchemaPrivileges> specificPrivileges = new ConcurrentHashMap<>();
     
     /**
      * Has privileges.

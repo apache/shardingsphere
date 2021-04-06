@@ -24,7 +24,7 @@ import org.apache.shardingsphere.authority.engine.Authentication;
 import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfiguration;
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
+import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -152,10 +152,10 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         assertThat(((FixtureRuleConfiguration) actual).getName(), is("testRule"));
     }
     
-    private Map<ShardingSphereUser, ShardingSpherePrivilege> getPrivileges(final Collection<ShardingSphereUser> users) {
-        Map<ShardingSphereUser, ShardingSpherePrivilege> privileges = new HashMap<>(users.size(), 1);
+    private Map<ShardingSphereUser, Privileges> getPrivileges(final Collection<ShardingSphereUser> users) {
+        Map<ShardingSphereUser, Privileges> privileges = new HashMap<>(users.size(), 1);
         for (ShardingSphereUser each : users) {
-            privileges.put(each, new ShardingSpherePrivilege());
+            privileges.put(each, new Privileges());
         }
         return privileges;
     }
