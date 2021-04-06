@@ -43,7 +43,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUsersConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UsersYamlSwapper;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.GrantStatementEvent;
@@ -193,21 +193,21 @@ public final class RegistryCenter {
     
     private void persistAuthentication(final Collection<ShardingSphereUser> users, final boolean isOverwrite) {
         if (!users.isEmpty() && (isOverwrite || !hasAuthentication())) {
-            repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
+            repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(new UsersYamlSwapper().swapToYamlConfiguration(users)));
         }
     }
     
     private void persistNewUsers(final Collection<ShardingSphereUser> users) {
         if (!users.isEmpty()) {
             YamlUsersConfiguration yamlUserConfig = YamlEngine.unmarshal(repository.get(node.getAuthenticationPath()), YamlUsersConfiguration.class);
-            yamlUserConfig.getUsers().putAll(new UserRuleYamlSwapper().swapToYamlConfiguration(users).getUsers());
+            yamlUserConfig.getUsers().putAll(new UsersYamlSwapper().swapToYamlConfiguration(users).getUsers());
             repository.persist(node.getAuthenticationPath(), YamlEngine.marshal(yamlUserConfig));
         }
     }
     
     private void persistChangedPrivilege(final Collection<ShardingSphereUser> users) {
         if (!users.isEmpty()) {
-            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(new UserRuleYamlSwapper().swapToYamlConfiguration(users)));
+            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(new UsersYamlSwapper().swapToYamlConfiguration(users)));
         }
     }
 

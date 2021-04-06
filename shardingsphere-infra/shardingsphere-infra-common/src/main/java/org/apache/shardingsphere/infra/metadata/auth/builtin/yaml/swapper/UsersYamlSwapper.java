@@ -29,9 +29,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * User rule YAML swapper.
+ * User YAML swapper.
  */
-public final class UserRuleYamlSwapper implements YamlConfigurationSwapper<YamlUsersConfiguration, Collection<ShardingSphereUser>> {
+public final class UsersYamlSwapper implements YamlConfigurationSwapper<YamlUsersConfiguration, Collection<ShardingSphereUser>> {
     
     @Override
     public YamlUsersConfiguration swapToYamlConfiguration(final Collection<ShardingSphereUser> data) {

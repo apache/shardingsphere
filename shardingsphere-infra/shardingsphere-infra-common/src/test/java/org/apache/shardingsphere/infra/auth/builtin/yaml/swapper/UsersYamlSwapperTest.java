@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.auth.builtin.yaml.swapper;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfiguration;
 import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUsersConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
+import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UsersYamlSwapper;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -35,14 +35,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class UserRuleYamlSwapperTest {
+public final class UsersYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
         DefaultAuthentication authentication = new DefaultAuthentication();
         authentication.getAuthentication().put(new ShardingSphereUser("user1", "pwd1", "127.0.0.1"), new ShardingSpherePrivilege());
         authentication.getAuthentication().put(new ShardingSphereUser("user2", "pwd2", "127.0.0.2"), new ShardingSpherePrivilege());
-        YamlUsersConfiguration actual = new UserRuleYamlSwapper().swapToYamlConfiguration(authentication.getAllUsers());
+        YamlUsersConfiguration actual = new UsersYamlSwapper().swapToYamlConfiguration(authentication.getAllUsers());
         assertThat(actual.getUsers().size(), is(2));
         assertThat(actual.getUsers().get("user1").getPassword(), is("pwd1"));
         assertThat(actual.getUsers().get("user1").getHostname(), is("127.0.0.1"));
@@ -61,7 +61,7 @@ public final class UserRuleYamlSwapperTest {
         users.put("user2", user2);
         YamlUsersConfiguration yamlConfig = new YamlUsersConfiguration();
         yamlConfig.setUsers(users);
-        Collection<ShardingSphereUser> actual = new UserRuleYamlSwapper().swapToObject(yamlConfig);
+        Collection<ShardingSphereUser> actual = new UsersYamlSwapper().swapToObject(yamlConfig);
         Optional<ShardingSphereUser> actualUser1 = actual.stream().filter(each -> each.getGrantee().equals(new Grantee("user1", ""))).findFirst();
         assertTrue(actualUser1.isPresent());
         Optional<ShardingSphereUser> actualUser2 = actual.stream().filter(each -> each.getGrantee().equals(new Grantee("user2", ""))).findFirst();
@@ -70,7 +70,7 @@ public final class UserRuleYamlSwapperTest {
     
     @Test
     public void assertSwapToObjectForNull() {
-        Collection<ShardingSphereUser> actual = new UserRuleYamlSwapper().swapToObject(null);
+        Collection<ShardingSphereUser> actual = new UsersYamlSwapper().swapToObject(null);
         assertTrue(actual.isEmpty());
     }
 }
