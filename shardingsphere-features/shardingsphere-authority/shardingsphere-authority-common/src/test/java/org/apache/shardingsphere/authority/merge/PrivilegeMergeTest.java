@@ -16,6 +16,7 @@
  */
 
 package org.apache.shardingsphere.authority.merge;
+
 import org.apache.shardingsphere.authority.loader.builder.PrivilegeMerger;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
