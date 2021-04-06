@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataCon
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.authority.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;

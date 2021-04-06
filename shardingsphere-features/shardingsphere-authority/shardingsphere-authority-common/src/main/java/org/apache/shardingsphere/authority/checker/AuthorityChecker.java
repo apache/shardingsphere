@@ -22,7 +22,7 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.check.SQLChecker;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.authority.auth.AuthenticationContext;
+import org.apache.shardingsphere.authority.engine.AuthenticationContext;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;

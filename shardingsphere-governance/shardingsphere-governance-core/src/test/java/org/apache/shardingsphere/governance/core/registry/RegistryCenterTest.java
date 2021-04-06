@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.authority.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.yaml.swapper.UsersYamlSwapper;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;

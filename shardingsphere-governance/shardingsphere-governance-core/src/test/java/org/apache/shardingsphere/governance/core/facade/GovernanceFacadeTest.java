@@ -24,7 +24,7 @@ import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.authority.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;

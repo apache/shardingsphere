@@ -25,12 +25,12 @@ import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChange
 import org.apache.shardingsphere.infra.context.metadata.MetaDataAwareEventSubscriber;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.authority.auth.Authentication;
-import org.apache.shardingsphere.authority.auth.AuthenticationContext;
+import org.apache.shardingsphere.authority.engine.Authentication;
+import org.apache.shardingsphere.authority.engine.AuthenticationContext;
 import org.apache.shardingsphere.authority.loader.builder.PrivilegeBuilder;
 import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoader;
 import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoaderEngine;
-import org.apache.shardingsphere.authority.auth.builtin.DefaultAuthentication;
+import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 

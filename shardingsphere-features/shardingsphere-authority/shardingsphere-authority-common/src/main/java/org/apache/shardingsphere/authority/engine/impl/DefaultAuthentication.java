@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.auth.builtin;
+package org.apache.shardingsphere.authority.engine.impl;
 
 import lombok.Getter;
-import org.apache.shardingsphere.authority.auth.Authentication;
+import org.apache.shardingsphere.authority.engine.Authentication;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
