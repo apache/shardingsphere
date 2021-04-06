@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.auth.builtin.yaml.swapper;
+package org.apache.shardingsphere.infra.metadata.user.yaml.swapper;
 
 import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUsersConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UsersYamlSwapper;
 import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfiguration;
 import org.junit.Test;
 
 import java.util.Collection;
