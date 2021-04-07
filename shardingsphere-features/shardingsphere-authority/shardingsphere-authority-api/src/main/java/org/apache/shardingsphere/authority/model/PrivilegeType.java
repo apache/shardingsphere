@@ -65,5 +65,6 @@ public enum PrivilegeType {
     TEMPORARY,
     CREATE_DATABASE,
     INHERIT,
-    CAN_LOGIN
+    CAN_LOGIN,
+    CREATE_SEQUENCE
 }
