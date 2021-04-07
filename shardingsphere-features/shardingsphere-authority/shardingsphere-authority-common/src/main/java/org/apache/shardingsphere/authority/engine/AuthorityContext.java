@@ -22,33 +22,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * Authentication context.
- *
- * @author zhangliang
+ * Authority context.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class AuthenticationContext {
+public final class AuthorityContext {
     
-    private static final AuthenticationContext INSTANCE = new AuthenticationContext();
+    private static final AuthorityContext INSTANCE = new AuthorityContext();
     
-    private volatile Authentication authentication;
+    private volatile ShardingSphereAuthority authority;
     
     /**
      * Get instance.
      * 
      * @return instance
      */
-    public static AuthenticationContext getInstance() {
+    public static AuthorityContext getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Initial authentication.
+     * Initial authority.
      * 
-     * @param authentication authentication
+     * @param authority authority
      */
-    public synchronized void init(final Authentication authentication) {
-        this.authentication = AuthenticationEngine.findSPIAuthentication().orElse(authentication);
+    public synchronized void init(final ShardingSphereAuthority authority) {
+        this.authority = AuthorityEngine.findSPIAuthority().orElse(authority);
     }
 }

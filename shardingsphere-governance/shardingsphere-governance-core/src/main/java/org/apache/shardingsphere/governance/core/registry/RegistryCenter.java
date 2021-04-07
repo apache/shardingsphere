@@ -260,12 +260,10 @@ public final class RegistryCenter {
     /**
      * Load user rule.
      *
-     * @return authentication
+     * @return authority
      */
     public Collection<ShardingSphereUser> loadUserRule() {
-        return hasAuthentication()
-                ? YamlConfigurationConverter.convertUserRule(repository.get(node.getAuthenticationPath()))
-                : Collections.emptyList();
+        return hasAuthentication() ? YamlConfigurationConverter.convertUserRule(repository.get(node.getAuthenticationPath())) : Collections.emptyList();
     }
     
     /**

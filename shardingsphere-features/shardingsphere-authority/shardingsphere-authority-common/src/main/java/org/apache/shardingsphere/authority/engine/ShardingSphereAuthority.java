@@ -17,30 +17,45 @@
 
 package org.apache.shardingsphere.authority.engine;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 /**
- * Authentication engine.
+ * ShardingSphere authority.
 */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AuthenticationEngine {
-    
-    static {
-        ShardingSphereServiceLoader.register(Authentication.class);
-    }
+public interface ShardingSphereAuthority {
     
     /**
-     * Find SPI authentication.
+     * Initialize authority.
      * 
-     * @return authentication
+     * @param loadedPrivileges loaded privileges
      */
-    public static Optional<Authentication> findSPIAuthentication() {
-        Collection<Authentication> authentications = ShardingSphereServiceLoader.newServiceInstances(Authentication.class);
-        return authentications.isEmpty() ? Optional.empty() : Optional.of(authentications.iterator().next());
-    }
+    void init(Map<ShardingSphereUser, ShardingSpherePrivileges> loadedPrivileges);
+    
+    /**
+     * Get authority.
+     *
+     * @return authority
+     */
+    Map<ShardingSphereUser, ShardingSpherePrivileges> getAuthority();
+    
+    /**
+     * Get all users.
+     *
+     * @return all users
+     */
+    Collection<ShardingSphereUser> getAllUsers();
+    
+    /**
+     * Find Privileges.
+     *
+     * @param grantee grantee
+     * @return found user
+     */
+    Optional<ShardingSpherePrivileges> findPrivileges(Grantee grantee);
 }

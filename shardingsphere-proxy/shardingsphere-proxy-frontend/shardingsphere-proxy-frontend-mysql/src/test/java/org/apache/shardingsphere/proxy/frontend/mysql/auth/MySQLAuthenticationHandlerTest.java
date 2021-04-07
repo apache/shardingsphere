@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataCon
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
+import org.apache.shardingsphere.authority.engine.impl.DefaultAuthority;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
@@ -81,28 +81,28 @@ public final class MySQLAuthenticationHandlerTest {
     
     @Test
     public void assertLoginWithPassword() {
-        setAuthentication(new ShardingSphereUser("root", "root", ""));
+        setAuthority(new ShardingSphereUser("root", "root", ""));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
         assertFalse(authenticationHandler.login("root", "", authResponse, "db1").isPresent());
     }
     
     @Test
     public void assertLoginWithAbsentUser() {
-        setAuthentication(new ShardingSphereUser("root", "root", ""));
+        setAuthority(new ShardingSphereUser("root", "root", ""));
         byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
         assertThat(authenticationHandler.login("root1", "", authResponse, "db1").orElse(null), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
     }
     
     @Test
     public void assertLoginWithIncorrectPassword() {
-        setAuthentication(new ShardingSphereUser("root", "root", ""));
+        setAuthority(new ShardingSphereUser("root", "root", ""));
         byte[] authResponse = {0, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
         assertThat(authenticationHandler.login("root", "", authResponse, "db1").orElse(null), is(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
     }
     
     @Test
     public void assertLoginWithoutPassword() {
-        setAuthentication(new ShardingSphereUser("root", null, ""));
+        setAuthority(new ShardingSphereUser("root", null, ""));
         byte[] authResponse = {};
         assertFalse(authenticationHandler.login("root", "", authResponse, "db1").isPresent());
     }
@@ -121,11 +121,11 @@ public final class MySQLAuthenticationHandlerTest {
         assertThat(authenticationHandler.getAuthPluginData().getAuthPluginData(), is(Bytes.concat(part1, part2)));
     }
     
-    private void setAuthentication(final ShardingSphereUser user) {
-        DefaultAuthentication authentication = new DefaultAuthentication();
+    private void setAuthority(final ShardingSphereUser user) {
+        DefaultAuthority authority = new DefaultAuthority();
         ShardingSpherePrivileges privileges = new ShardingSpherePrivileges();
         privileges.setSuperPrivilege();
-        authentication.getAuthentication().put(user, privileges);
+        authority.getAuthority().put(user, privileges);
         initProxyContext(user);
     }
     
