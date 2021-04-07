@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
-import org.apache.shardingsphere.authority.engine.Authentication;
-import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
+import org.apache.shardingsphere.authority.engine.ShardingSphereAuthority;
+import org.apache.shardingsphere.authority.engine.impl.DefaultAuthority;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -115,9 +115,9 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         assertNotNull(actual);
         assertSchemaDataSources(actual.getSchemaDataSources());
         assertSchemaRules(actual.getSchemaRules());
-        Authentication authentication = new DefaultAuthentication();
-        authentication.init(getPrivileges(actual.getUsers()));
-        assertAuthentication(authentication);
+        ShardingSphereAuthority authority = new DefaultAuthority();
+        authority.init(getPrivileges(actual.getUsers()));
+        assertAuthority(authority);
         assertProps(actual.getProps());
     }
     
@@ -205,7 +205,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         return privileges;
     }
     
-    private void assertAuthentication(final Authentication actual) {
+    private void assertAuthority(final ShardingSphereAuthority actual) {
         Optional<ShardingSphereUser> rootUser = actual.findUser(new Grantee("root", ""));
         assertTrue(rootUser.isPresent());
         assertThat(rootUser.get().getPassword(), is("root"));

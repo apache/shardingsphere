@@ -21,9 +21,9 @@ import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration
 import org.apache.shardingsphere.authority.spi.PrivilegeLoadAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.authority.engine.Authentication;
-import org.apache.shardingsphere.authority.engine.AuthenticationContext;
-import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
+import org.apache.shardingsphere.authority.engine.ShardingSphereAuthority;
+import org.apache.shardingsphere.authority.engine.AuthorityContext;
+import org.apache.shardingsphere.authority.engine.impl.DefaultAuthority;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -43,8 +43,8 @@ public final class AuthorityRule implements ShardingSphereRule {
     public AuthorityRule(final AuthorityRuleConfiguration config, final String schemaName, final DatabaseType databaseType, 
                          final Collection<DataSource> dataSources, final Collection<ShardingSphereUser> users, final Collection<ShardingSphereRule> builtRules) {
         PrivilegeLoadAlgorithm privilegeLoader = ShardingSphereAlgorithmFactory.createAlgorithm(config.getPrivilegeLoader(), PrivilegeLoadAlgorithm.class);
-        Authentication authentication = null == AuthenticationContext.getInstance().getAuthentication() ? new DefaultAuthentication() : AuthenticationContext.getInstance().getAuthentication();
-        authentication.init(privilegeLoader.load(schemaName, databaseType, dataSources, builtRules, users));
-        AuthenticationContext.getInstance().init(authentication);
+        ShardingSphereAuthority authority = null == AuthorityContext.getInstance().getAuthority() ? new DefaultAuthority() : AuthorityContext.getInstance().getAuthority();
+        authority.init(privilegeLoader.load(schemaName, databaseType, dataSources, builtRules, users));
+        AuthorityContext.getInstance().init(authority);
     }
 }

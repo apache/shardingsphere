@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.engine.impl;
+package org.apache.shardingsphere.authority.engine;
 
-import lombok.Getter;
-import org.apache.shardingsphere.authority.engine.Authentication;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -26,33 +24,46 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Default authentication.
+ * ShardingSphere authority.
 */
-@Getter
-public final class DefaultAuthentication implements Authentication {
+public interface ShardingSphereAuthority {
     
-    private final Map<ShardingSphereUser, ShardingSpherePrivileges> authentication = new ConcurrentHashMap<>();
+    /**
+     * Initialize authority.
+     * 
+     * @param loadedPrivileges loaded privileges
+     */
+    void init(Map<ShardingSphereUser, ShardingSpherePrivileges> loadedPrivileges);
     
-    @Override
-    public void init(final Map<ShardingSphereUser, ShardingSpherePrivileges> loadedPrivileges) {
-        authentication.putAll(loadedPrivileges);
-    }
+    /**
+     * Get authority.
+     *
+     * @return authority
+     */
+    Map<ShardingSphereUser, ShardingSpherePrivileges> getAuthority();
     
-    @Override
-    public Collection<ShardingSphereUser> getAllUsers() {
-        return authentication.keySet();
-    }
+    /**
+     * Get all users.
+     *
+     * @return all users
+     */
+    Collection<ShardingSphereUser> getAllUsers();
     
-    @Override
-    public Optional<ShardingSphereUser> findUser(final Grantee grantee) {
-        return authentication.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst();
-    }
+    /**
+     * Find user.
+     * 
+     * @param grantee grantee
+     * @return found user
+     */
+    Optional<ShardingSphereUser> findUser(Grantee grantee);
     
-    @Override
-    public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
-        return findUser(grantee).map(authentication::get);
-    }
+    /**
+     * Find Privileges.
+     *
+     * @param grantee grantee
+     * @return found user
+     */
+    Optional<ShardingSpherePrivileges> findPrivileges(Grantee grantee);
 }
