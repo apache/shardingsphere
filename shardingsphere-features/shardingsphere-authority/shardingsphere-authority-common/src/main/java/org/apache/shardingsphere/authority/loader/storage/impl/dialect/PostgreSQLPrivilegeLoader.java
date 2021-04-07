@@ -60,7 +60,8 @@ public final class PostgreSQLPrivilegeLoader implements StoragePrivilegeLoader {
         return result;
     }
     
-    private void fillTablePrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap, final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
+    private void fillTablePrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap, 
+                                     final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
         Map<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> privilegeCache = new HashMap<>();
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
@@ -73,7 +74,8 @@ public final class PostgreSQLPrivilegeLoader implements StoragePrivilegeLoader {
         fillTablePrivileges(privilegeCache, userPrivilegeMap);
     }
     
-    private void fillTablePrivileges(final Map<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> privilegeCache, final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap) {
+    private void fillTablePrivileges(final Map<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> privilegeCache, 
+                                     final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap) {
         for (Entry<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> entry : privilegeCache.entrySet()) {
             for (String db : entry.getValue().keySet()) {
                 for (String tableName : entry.getValue().get(db).keySet()) {
@@ -103,7 +105,8 @@ public final class PostgreSQLPrivilegeLoader implements StoragePrivilegeLoader {
         }
     }
     
-    private void fillRolePrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap, final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
+    private void fillRolePrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap, 
+                                    final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
             try (ResultSet resultSet = statement.executeQuery(getRolePrivilegesSQL(users))) {

@@ -59,7 +59,8 @@ public final class MySQLPrivilegeLoader implements StoragePrivilegeLoader {
         return result;
     }
     
-    private void fillGlobalPrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap, final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
+    private void fillGlobalPrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap, 
+                                      final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
             try (ResultSet resultSet = statement.executeQuery(getGlobalPrivilegesSQL(users))) {
@@ -78,7 +79,8 @@ public final class MySQLPrivilegeLoader implements StoragePrivilegeLoader {
         }
     }
     
-    private void fillSchemaPrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap, final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
+    private void fillSchemaPrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap, 
+                                      final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
             try (ResultSet resultSet = statement.executeQuery(getSchemaPrivilegesSQL(users))) {
@@ -99,7 +101,8 @@ public final class MySQLPrivilegeLoader implements StoragePrivilegeLoader {
         }
     }
     
-    private void fillTablePrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap, final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
+    private void fillTablePrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap, 
+                                     final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
             try (ResultSet resultSet = statement.executeQuery(getTablePrivilegesSQL(users))) {
