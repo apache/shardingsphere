@@ -17,17 +17,10 @@
 
 package org.apache.shardingsphere.proxy.config;
 
-import com.google.common.base.Preconditions;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameterMerger;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
-import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -35,6 +28,16 @@ import java.util.LinkedList;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.proxy.config.yaml.YamlDataSourceParameterMerger;
+import org.apache.shardingsphere.proxy.config.yaml.YamlProxyRuleConfiguration;
+import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
+
+import com.google.common.base.Preconditions;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Proxy configuration loader.
@@ -65,12 +68,14 @@ public final class ProxyConfigurationLoader {
                 YamlProxyRuleConfiguration::getSchemaName, each -> each, (oldValue, currentValue) -> oldValue, LinkedHashMap::new)));
     }
     
-    private static File getResourceFile(final String path) {
+    private static File getResourceFile(final String path) throws IOException {
         URL url = ProxyConfigurationLoader.class.getResource(path);
         if (null != url) {
-            return new File(url.getFile());
+            // Fixed: the path contains Chinese yaml error.
+            return new File(URLDecoder.decode(url.getFile(), "UTF-8"));
         }
-        return new File(path);
+        // Fixed: the path contains Chinese yaml error.
+        return new File(URLDecoder.decode(path, "UTF-8"));
     }
     
     private static YamlProxyServerConfiguration loadServerConfiguration(final File yamlFile) throws IOException {
