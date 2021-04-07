@@ -21,12 +21,11 @@ import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCente
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
-import org.apache.shardingsphere.authority.engine.impl.DefaultAuthority;
-import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfiguration;
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -104,21 +103,9 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void assertAuthority(final ProxyConfiguration proxyConfig) {
-        DefaultAuthority authority = new DefaultAuthority();
-        authority.init(getPrivileges(proxyConfig.getUsers()));
-        assertNotNull(authority);
-        Optional<ShardingSphereUser> user = authority.findUser(new Grantee("user1", ""));
+        Optional<ShardingSphereUser> user = new ShardingSphereUsers(proxyConfig.getUsers()).findUser(new Grantee("user1", ""));
         assertTrue(user.isPresent());
         assertThat(user.get().getPassword(), is("pass"));
-        assertNotNull(authority);
-    }
-    
-    private Map<ShardingSphereUser, ShardingSpherePrivileges> getPrivileges(final Collection<ShardingSphereUser> users) {
-        Map<ShardingSphereUser, ShardingSpherePrivileges> privileges = new HashMap<>(users.size(), 1);
-        for (ShardingSphereUser each : users) {
-            privileges.put(each, new ShardingSpherePrivileges());
-        }
-        return privileges;
     }
     
     private YamlProxyConfiguration getYamlProxyConfiguration() {

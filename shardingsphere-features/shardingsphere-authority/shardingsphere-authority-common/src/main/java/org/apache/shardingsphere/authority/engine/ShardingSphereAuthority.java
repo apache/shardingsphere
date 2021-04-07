@@ -52,14 +52,6 @@ public interface ShardingSphereAuthority {
     Collection<ShardingSphereUser> getAllUsers();
     
     /**
-     * Find user.
-     * 
-     * @param grantee grantee
-     * @return found user
-     */
-    Optional<ShardingSphereUser> findUser(Grantee grantee);
-    
-    /**
      * Find Privileges.
      *
      * @param grantee grantee
