@@ -26,6 +26,7 @@ import org.apache.shardingsphere.authority.engine.AuthorityContext;
 import org.apache.shardingsphere.authority.engine.impl.DefaultAuthority;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
@@ -34,7 +35,7 @@ import java.util.Collection;
 /**
  * Authority rule.
  */
-public final class AuthorityRule implements ShardingSphereRule {
+public final class AuthorityRule implements GlobalRule {
     
     static {
         ShardingSphereServiceLoader.register(PrivilegeLoadAlgorithm.class);
