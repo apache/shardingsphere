@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.authority.loader.builder.loader.dialect.MySQLPrivilegeLoader
-org.apache.shardingsphere.authority.loader.builder.loader.dialect.PostgreSQLPrivilegeLoader
+org.apache.shardingsphere.authority.loader.storage.impl.dialect.MySQLPrivilegeLoader
+org.apache.shardingsphere.authority.loader.storage.impl.dialect.PostgreSQLPrivilegeLoader

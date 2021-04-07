@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.loader.builder;
+package org.apache.shardingsphere.authority.loader.storage.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoader;
-import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoaderEngine;
+import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -36,6 +36,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,14 +45,18 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Privilege builder.
+ * Storage privilege builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PrivilegeBuilder {
+public final class StoragePrivilegeBuilder {
     
     private static final int CPU_CORES = Runtime.getRuntime().availableProcessors();
     
     private static final long FUTURE_GET_TIME_OUT_MILLISECONDS = 5000L;
+    
+    static {
+        ShardingSphereServiceLoader.register(StoragePrivilegeLoader.class);
+    }
     
     /**
      * Build privileges.
@@ -66,12 +71,12 @@ public final class PrivilegeBuilder {
         if (metaDataList.isEmpty()) {
             return buildDefaultPrivileges(users);
         }
-        Optional<PrivilegeLoader> loader = PrivilegeLoaderEngine.findPrivilegeLoader(databaseType);
+        Optional<StoragePrivilegeLoader> loader = TypedSPIRegistry.findRegisteredService(StoragePrivilegeLoader.class, databaseType.getName(), new Properties());
         return loader.map(optional -> build(metaDataList, users, optional)).orElseGet(() -> buildDefaultPrivileges(users));
     }
     
     private static Map<ShardingSphereUser, Privileges> build(final Collection<ShardingSphereMetaData> metaDataList,
-                                                             final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
+                                                             final Collection<ShardingSphereUser> users, final StoragePrivilegeLoader loader) {
         Map<ShardingSphereUser, Privileges> result = new LinkedHashMap<>();
         for (ShardingSphereMetaData each : metaDataList) {
             result.putAll(build(each, users, loader));
@@ -79,7 +84,7 @@ public final class PrivilegeBuilder {
         return result;
     }
     
-    private static Map<ShardingSphereUser, Privileges> build(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
+    private static Map<ShardingSphereUser, Privileges> build(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users, final StoragePrivilegeLoader loader) {
         return build(metaData.getName(), metaData.getResource().getAllInstanceDataSources(), metaData.getRuleMetaData().getRules(), users, loader);
     }
     
@@ -94,14 +99,14 @@ public final class PrivilegeBuilder {
      * @return privileges
      */
     public static Map<ShardingSphereUser, Privileges> build(final String schemaName, final Collection<DataSource> dataSources,
-                                                            final Collection<ShardingSphereRule> rules, final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
+                                                            final Collection<ShardingSphereRule> rules, final Collection<ShardingSphereUser> users, final StoragePrivilegeLoader loader) {
         Map<ShardingSphereUser, Collection<Privileges>> result = load(dataSources, users, loader);
         checkPrivileges(result);
-        return PrivilegeMerger.merge(result, schemaName, rules);
+        return StoragePrivilegeMerger.merge(result, schemaName, rules);
     }
     
     private static Map<ShardingSphereUser, Collection<Privileges>> load(final Collection<DataSource> dataSources,
-                                                                        final Collection<ShardingSphereUser> users, final PrivilegeLoader loader) {
+                                                                        final Collection<ShardingSphereUser> users, final StoragePrivilegeLoader loader) {
         Map<ShardingSphereUser, Collection<Privileges>> result = new LinkedHashMap<>(users.size(), 1);
         ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CPU_CORES * 2, dataSources.isEmpty() ? 1 : dataSources.size()));
         Collection<Future<Map<ShardingSphereUser, Privileges>>> futures = new HashSet<>(dataSources.size(), 1);
