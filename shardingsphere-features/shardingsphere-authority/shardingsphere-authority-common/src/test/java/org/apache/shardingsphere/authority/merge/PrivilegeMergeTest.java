@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.authority.merge;
 
-import org.apache.shardingsphere.authority.loader.builder.PrivilegeMerger;
+import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeMerger;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.authority.model.database.SchemaPrivileges;
@@ -47,7 +47,7 @@ public class PrivilegeMergeTest {
         Map<ShardingSphereUser, Collection<Privileges>> privilegeMap = new HashMap();
         privilegeMap.put(user, Collections.singletonList(privileges));
         DataNodeContainedRule rule = buildShardingSphereRule();
-        Map<ShardingSphereUser, Privileges> result = PrivilegeMerger.merge(privilegeMap, "schema", Collections.singletonList(rule));
+        Map<ShardingSphereUser, Privileges> result = StoragePrivilegeMerger.merge(privilegeMap, "schema", Collections.singletonList(rule));
         assertEquals(1, result.size());
         assertTrue(result.containsKey(user));
         assertTrue(result.get(user).getAdministrativePrivileges().getPrivileges().isEmpty());

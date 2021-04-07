@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.loader.builder;
+package org.apache.shardingsphere.authority.loader.storage.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -35,13 +35,13 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Privilege merger.
+ * Storage privilege merger.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PrivilegeMerger {
+public final class StoragePrivilegeMerger {
     
     /**
-     * Merge privilege.
+     * Merge privileges.
      * 
      * @param authentication authentication
      * @param schemaName schema name
