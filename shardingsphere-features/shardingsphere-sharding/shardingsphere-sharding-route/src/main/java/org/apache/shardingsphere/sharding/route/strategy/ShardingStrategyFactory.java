@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.strategy;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
@@ -45,13 +46,13 @@ public final class ShardingStrategyFactory {
      * @return sharding strategy instance
      */
     public static ShardingStrategy newInstance(final ShardingStrategyConfiguration shardingStrategyConfig, final ShardingAlgorithm shardingAlgorithm) {
-        if (shardingAlgorithm instanceof StandardShardingAlgorithm) {
+        if (shardingStrategyConfig instanceof StandardShardingStrategyConfiguration && shardingAlgorithm instanceof StandardShardingAlgorithm) {
             return new StandardShardingStrategy(((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn(), (StandardShardingAlgorithm) shardingAlgorithm);
         }
-        if (shardingAlgorithm instanceof ComplexKeysShardingAlgorithm) {
+        if (shardingStrategyConfig instanceof ComplexShardingStrategyConfiguration && shardingAlgorithm instanceof ComplexKeysShardingAlgorithm) {
             return new ComplexShardingStrategy(((ComplexShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumns(), (ComplexKeysShardingAlgorithm) shardingAlgorithm);
         }
-        if (shardingAlgorithm instanceof HintShardingAlgorithm) {
+        if (shardingStrategyConfig instanceof HintShardingStrategyConfiguration && shardingAlgorithm instanceof HintShardingAlgorithm) {
             return new HintShardingStrategy((HintShardingAlgorithm) shardingAlgorithm);
         }
         return new NoneShardingStrategy();

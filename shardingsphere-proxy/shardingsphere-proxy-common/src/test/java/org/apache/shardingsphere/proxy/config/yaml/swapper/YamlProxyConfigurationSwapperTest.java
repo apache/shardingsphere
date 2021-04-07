@@ -57,7 +57,7 @@ public final class YamlProxyConfigurationSwapperTest {
     public void assertSwap() {
         YamlProxyConfiguration yamlProxyConfig = getYamlProxyConfiguration();
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlProxyConfig);
-        assertAuthentication(proxyConfig);
+        assertAuthority(proxyConfig);
         assertProxyConfigurationProps(proxyConfig);
         assertSchemaDataSources(proxyConfig);
         assertSchemaRules(proxyConfig);
@@ -102,22 +102,10 @@ public final class YamlProxyConfigurationSwapperTest {
         assertThat(proxyConfigurationProps.getProperty("key4"), is("value4"));
     }
     
-    private void assertAuthentication(final ProxyConfiguration proxyConfig) {
-        DefaultAuthentication authentication = new DefaultAuthentication();
-        authentication.init(getPrivileges(proxyConfig.getUsers()));
-        assertNotNull(authentication);
-        Optional<ShardingSphereUser> user = authentication.findUser(new Grantee("user1", ""));
+    private void assertAuthority(final ProxyConfiguration proxyConfig) {
+        Optional<ShardingSphereUser> user = new ShardingSphereUsers(proxyConfig.getUsers()).findUser(new Grantee("user1", ""));
         assertTrue(user.isPresent());
         assertThat(user.get().getPassword(), is("pass"));
-        assertNotNull(authentication);
-    }
-    
-    private Map<ShardingSphereUser, Privileges> getPrivileges(final Collection<ShardingSphereUser> users) {
-        Map<ShardingSphereUser, Privileges> privileges = new HashMap<>(users.size(), 1);
-        for (ShardingSphereUser each : users) {
-            privileges.put(each, new Privileges());
-        }
-        return privileges;
     }
     
     private YamlProxyConfiguration getYamlProxyConfiguration() {

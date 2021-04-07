@@ -260,7 +260,7 @@ public final class RegistryCenter {
     /**
      * Load users.
      *
-     * @return authentication
+     * @return authority
      */
     public Collection<ShardingSphereUser> loadUsers() {
         return hasUsers()

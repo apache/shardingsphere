@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataCon
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
+import org.apache.shardingsphere.authority.engine.impl.DefaultAuthority;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -156,11 +156,11 @@ public final class GovernanceMetaDataContextsTest {
     }
     
     @Test
-    public void assertAuthenticationChanged() {
-        DefaultAuthentication authentication = new DefaultAuthentication();
-        UserRuleChangedEvent event = new UserRuleChangedEvent(authentication.getAllUsers());
+    public void assertAuthorityChanged() {
+        DefaultAuthority authority = new DefaultAuthority();
+        UserRuleChangedEvent event = new UserRuleChangedEvent(authority.getAllUsers());
         governanceMetaDataContexts.renew(event);
-        assertThat(governanceMetaDataContexts.getUsers().getUsers().size(), is(authentication.getAuthentication().size()));
+        assertThat(governanceMetaDataContexts.getUsers().getUsers().size(), is(authority.getAuthority().size()));
     }
     
     @Test

@@ -15,35 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.loader.builder.loader;
+package org.apache.shardingsphere.authority.engine;
 
-import org.apache.shardingsphere.authority.model.Privileges;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-
-import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Map;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
- * Privilege loader.
+ * Authority context.
  */
-public interface PrivilegeLoader {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+public final class AuthorityContext {
+    
+    private static final AuthorityContext INSTANCE = new AuthorityContext();
+    
+    private volatile ShardingSphereAuthority authority;
     
     /**
-     * Load privilege.
-     *
-     * @param users users
-     * @param dataSource data source
-     * @return ShardingSphere privilege
-     * @throws SQLException SQL exception
+     * Get instance.
+     * 
+     * @return instance
      */
-    Map<ShardingSphereUser, Privileges> load(Collection<ShardingSphereUser> users, DataSource dataSource) throws SQLException;
+    public static AuthorityContext getInstance() {
+        return INSTANCE;
+    }
     
     /**
-     * Get database type.
-     *
-     * @return database type
+     * Initial authority.
+     * 
+     * @param authority authority
      */
-    String getDatabaseType();
+    public synchronized void init(final ShardingSphereAuthority authority) {
+        this.authority = AuthorityEngine.findSPIAuthority().orElse(authority);
+    }
 }

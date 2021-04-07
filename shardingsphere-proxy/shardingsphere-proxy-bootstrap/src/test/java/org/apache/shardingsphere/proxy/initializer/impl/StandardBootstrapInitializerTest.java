@@ -110,9 +110,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     private void assertProxyConfiguration(final ProxyConfiguration actual) {
         assertSchemaDataSources(actual.getSchemaDataSources());
         assertSchemaRules(actual.getSchemaRules());
-        Authentication authentication = new DefaultAuthentication();
-        authentication.init(getPrivileges(actual.getUsers()));
-        assertAuthentication(authentication);
+        assertUsers(new ShardingSphereUsers(actual.getUsers()));
         assertProps(actual.getProps());
     }
     
@@ -150,15 +148,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         assertThat(((FixtureRuleConfiguration) actual).getName(), is("testRule"));
     }
     
-    private Map<ShardingSphereUser, Privileges> getPrivileges(final Collection<ShardingSphereUser> users) {
-        Map<ShardingSphereUser, Privileges> privileges = new HashMap<>(users.size(), 1);
-        for (ShardingSphereUser each : users) {
-            privileges.put(each, new Privileges());
-        }
-        return privileges;
-    }
-    
-    private void assertAuthentication(final Authentication actual) {
+    private void assertUsers(final ShardingSphereUsers actual) {
         Optional<ShardingSphereUser> rootUser = actual.findUser(new Grantee("root", ""));
         assertTrue(rootUser.isPresent());
         assertThat(rootUser.get().getPassword(), is("root"));
