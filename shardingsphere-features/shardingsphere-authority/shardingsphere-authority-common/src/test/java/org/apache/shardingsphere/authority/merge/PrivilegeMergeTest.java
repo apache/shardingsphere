@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.merge;
 
 import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeMerger;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
-import org.apache.shardingsphere.authority.model.Privileges;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.model.database.SchemaPrivileges;
 import org.apache.shardingsphere.authority.model.database.TablePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -42,12 +42,12 @@ public class PrivilegeMergeTest {
     
     @Test
     public void assertPrivilegeMergeResult() {
-        Privileges privileges = buildPrivilege();
+        ShardingSpherePrivileges privileges = buildPrivilege();
         ShardingSphereUser user = new ShardingSphereUser("test", "test", "%");
-        Map<ShardingSphereUser, Collection<Privileges>> privilegeMap = new HashMap();
+        Map<ShardingSphereUser, Collection<ShardingSpherePrivileges>> privilegeMap = new HashMap();
         privilegeMap.put(user, Collections.singletonList(privileges));
         DataNodeContainedRule rule = buildShardingSphereRule();
-        Map<ShardingSphereUser, Privileges> result = StoragePrivilegeMerger.merge(privilegeMap, "schema", Collections.singletonList(rule));
+        Map<ShardingSphereUser, ShardingSpherePrivileges> result = StoragePrivilegeMerger.merge(privilegeMap, "schema", Collections.singletonList(rule));
         assertEquals(1, result.size());
         assertTrue(result.containsKey(user));
         assertTrue(result.get(user).getAdministrativePrivileges().getPrivileges().isEmpty());
@@ -60,7 +60,7 @@ public class PrivilegeMergeTest {
         assertTrue(result.get(user).getDatabasePrivileges().getSpecificPrivileges().get("schema").getSpecificPrivileges().get("test").getPrivileges().contains(PrivilegeType.SELECT));
     }
     
-    private Privileges buildPrivilege() {
+    private ShardingSpherePrivileges buildPrivilege() {
         Collection<PrivilegeType> tablePrivileges = new LinkedList<>();
         tablePrivileges.add(PrivilegeType.SELECT);
         SchemaPrivileges schema1Privilege = new SchemaPrivileges("schema1");
@@ -69,7 +69,7 @@ public class PrivilegeMergeTest {
         SchemaPrivileges schema2Privilege = new SchemaPrivileges("schema2");
         schema2Privilege.getSpecificPrivileges().put("table3", new TablePrivileges("table3", tablePrivileges));
         schema2Privilege.getSpecificPrivileges().put("table4", new TablePrivileges("table4", tablePrivileges));
-        Privileges result = new Privileges();
+        ShardingSpherePrivileges result = new ShardingSpherePrivileges();
         result.getDatabasePrivileges().getSpecificPrivileges().put("schema1", schema1Privilege);
         result.getDatabasePrivileges().getSpecificPrivileges().put("schema2", schema2Privilege);
         return result;
