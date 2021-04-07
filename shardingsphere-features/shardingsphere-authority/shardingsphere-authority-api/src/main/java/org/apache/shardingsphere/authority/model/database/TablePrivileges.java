@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.authority.model.database;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 
@@ -28,6 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @EqualsAndHashCode
+@Getter
 public final class TablePrivileges {
     
     private final String tableName;
