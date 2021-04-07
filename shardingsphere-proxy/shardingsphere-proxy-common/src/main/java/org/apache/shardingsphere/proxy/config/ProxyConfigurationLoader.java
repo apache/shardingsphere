@@ -70,10 +70,8 @@ public final class ProxyConfigurationLoader {
     private static File getResourceFile(final String path) throws IOException {
         URL url = ProxyConfigurationLoader.class.getResource(path);
         if (null != url) {
-            // Fixed: the path contains Chinese yaml error.
             return new File(URLDecoder.decode(url.getFile(), "UTF-8"));
         }
-        // Fixed: the path contains Chinese yaml error.
         return new File(URLDecoder.decode(path, "UTF-8"));
     }
     
@@ -81,7 +79,7 @@ public final class ProxyConfigurationLoader {
         YamlProxyServerConfiguration result = YamlEngine.unmarshal(yamlFile, YamlProxyServerConfiguration.class);
         Preconditions.checkNotNull(result, "Server configuration file `%s` is invalid.", yamlFile.getName());
         Preconditions.checkState(
-                AuthenticationEngine.findSPIAuthentication().isPresent() || null != result.getAuthentication() || null != result.getGovernance(), "Authority configuration is invalid.");
+                AuthorityEngine.findSPIAuthority().isPresent() || null != result.getAuthentication() || null != result.getGovernance(), "Authority configuration is invalid.");
         return result;
     }
     

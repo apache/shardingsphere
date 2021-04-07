@@ -22,10 +22,10 @@ import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataCon
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.authority.engine.Authentication;
-import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
-import org.apache.shardingsphere.authority.engine.AuthenticationContext;
-import org.apache.shardingsphere.authority.model.Privileges;
+import org.apache.shardingsphere.authority.engine.ShardingSphereAuthority;
+import org.apache.shardingsphere.authority.engine.impl.DefaultAuthority;
+import org.apache.shardingsphere.authority.engine.AuthorityContext;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
@@ -40,6 +40,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -62,15 +63,17 @@ public final class ShowDatabasesExecutorTest {
         showDatabasesExecutor = new ShowDatabasesExecutor();
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        initAuthentication();
+        initAuthority();
         metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(getMetaDataMap(), 
                 mock(ExecutorEngine.class), new ShardingSphereUsers(Collections.singleton(new ShardingSphereUser("root", "root", ""))), new ConfigurationProperties(new Properties())));
     }
     
-    private void initAuthentication() {
-        Authentication authentication = new DefaultAuthentication();
-        authentication.getAuthentication().put(new ShardingSphereUser("root", "root", ""), new Privileges());
-        AuthenticationContext.getInstance().init(authentication);
+    private void initAuthority() {
+        ShardingSphereAuthority authority = new DefaultAuthority();
+        Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new HashMap<>(1, 1);
+        userPrivilegeMap.put(new ShardingSphereUser("root", "root", ""), new ShardingSpherePrivileges());
+        authority.init(userPrivilegeMap);
+        AuthorityContext.getInstance().init(authority);
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {

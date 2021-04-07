@@ -15,55 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.engine;
+package org.apache.shardingsphere.authority.engine.impl;
 
-import org.apache.shardingsphere.authority.model.Privileges;
+import org.apache.shardingsphere.authority.engine.ShardingSphereAuthority;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Authentication.
+ * Default authority.
 */
-public interface Authentication {
+public final class DefaultAuthority implements ShardingSphereAuthority {
     
-    /**
-     * Initialize authentication.
-     * 
-     * @param loadedPrivileges loaded privileges
-     */
-    void init(Map<ShardingSphereUser, Privileges> loadedPrivileges);
+    private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
     
-    /**
-     * Get authentication.
-     *
-     * @return Authentication
-     */
-    Map<ShardingSphereUser, Privileges> getAuthentication();
+    @Override
+    public void init(final Map<ShardingSphereUser, ShardingSpherePrivileges> loadedUserPrivilegeMap) {
+        userPrivilegeMap.putAll(loadedUserPrivilegeMap);
+    }
     
-    /**
-     * Get all users.
-     *
-     * @return all users
-     */
-    Collection<ShardingSphereUser> getAllUsers();
-    
-    /**
-     * Find user.
-     * 
-     * @param grantee grantee
-     * @return found user
-     */
-    Optional<ShardingSphereUser> findUser(Grantee grantee);
-    
-    /**
-     * Find Privileges.
-     *
-     * @param grantee grantee
-     * @return found user
-     */
-    Optional<Privileges> findPrivileges(Grantee grantee);
+    @Override
+    public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
+        return userPrivilegeMap.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst().map(userPrivilegeMap::get);
+    }
 }

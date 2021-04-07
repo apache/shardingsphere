@@ -17,38 +17,30 @@
 
 package org.apache.shardingsphere.authority.engine;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+
+import java.util.Map;
+import java.util.Optional;
 
 /**
- * Authentication context.
- *
- * @author zhangliang
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
-public final class AuthenticationContext {
-    
-    private static final AuthenticationContext INSTANCE = new AuthenticationContext();
-    
-    private volatile Authentication authentication;
+ * ShardingSphere authority.
+*/
+public interface ShardingSphereAuthority {
     
     /**
-     * Get instance.
+     * Initialize authority.
      * 
-     * @return instance
+     * @param loadedUserPrivilegeMap loaded map of users and privileges
      */
-    public static AuthenticationContext getInstance() {
-        return INSTANCE;
-    }
+    void init(Map<ShardingSphereUser, ShardingSpherePrivileges> loadedUserPrivilegeMap);
     
     /**
-     * Initial authentication.
-     * 
-     * @param authentication authentication
+     * Find Privileges.
+     *
+     * @param grantee grantee
+     * @return found privileges
      */
-    public synchronized void init(final Authentication authentication) {
-        this.authentication = AuthenticationEngine.findSPIAuthentication().orElse(authentication);
-    }
+    Optional<ShardingSpherePrivileges> findPrivileges(Grantee grantee);
 }

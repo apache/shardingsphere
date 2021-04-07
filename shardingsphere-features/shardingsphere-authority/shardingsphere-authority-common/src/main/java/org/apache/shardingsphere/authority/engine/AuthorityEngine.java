@@ -15,34 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.model.database;
+package org.apache.shardingsphere.authority.engine;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.model.PrivilegeType;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
- * Table privileges.
- */
-@RequiredArgsConstructor
-@EqualsAndHashCode
-@Getter
-public final class TablePrivileges {
+ * Authority engine.
+*/
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AuthorityEngine {
     
-    private final String tableName;
-    
-    private final Collection<PrivilegeType> privileges;
+    static {
+        ShardingSphereServiceLoader.register(ShardingSphereAuthority.class);
+    }
     
     /**
-     * Has privileges.
-     *
-     * @param privileges privileges
-     * @return has privileges or not
+     * Find SPI authority.
+     * 
+     * @return authority
      */
-    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return this.privileges.containsAll(privileges);
+    public static Optional<ShardingSphereAuthority> findSPIAuthority() {
+        Collection<ShardingSphereAuthority> authorities = ShardingSphereServiceLoader.newServiceInstances(ShardingSphereAuthority.class);
+        return authorities.isEmpty() ? Optional.empty() : Optional.of(authorities.iterator().next());
     }
 }
