@@ -40,7 +40,7 @@ public interface ShardingSphereAuthority {
      * Find Privileges.
      *
      * @param grantee grantee
-     * @return found user
+     * @return found privileges
      */
     Optional<ShardingSpherePrivileges> findPrivileges(Grantee grantee);
 }
