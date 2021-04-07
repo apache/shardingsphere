@@ -23,11 +23,9 @@ import org.apache.shardingsphere.governance.core.facade.util.FieldUtil;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenter;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.repository.api.config.GovernanceConfiguration;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.authority.engine.impl.DefaultAuthority;
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,13 +69,10 @@ public final class GovernanceFacadeTest {
         Map<String, DataSourceConfiguration> dataSourceConfigMap = Collections.singletonMap("test_ds", mock(DataSourceConfiguration.class));
         Map<String, Collection<RuleConfiguration>> ruleConfigurationMap = Collections.singletonMap("sharding_db", Collections.singletonList(mock(RuleConfiguration.class)));
         ShardingSphereUser user = new ShardingSphereUser("root", "root", "");
-        DefaultAuthority authority = new DefaultAuthority();
-        authority.getAuthority().put(user, new ShardingSpherePrivileges());
         Properties props = new Properties();
-        governanceFacade.onlineInstance(
-                Collections.singletonMap("sharding_db", dataSourceConfigMap), ruleConfigurationMap, authority.getAllUsers(), props);
+        governanceFacade.onlineInstance(Collections.singletonMap("sharding_db", dataSourceConfigMap), ruleConfigurationMap, Collections.singleton(user), props);
         verify(registryCenter).persistConfigurations("sharding_db", dataSourceConfigMap, ruleConfigurationMap.get("sharding_db"), false);
-        verify(registryCenter).persistGlobalConfiguration(authority.getAllUsers(), props, false);
+        verify(registryCenter).persistGlobalConfiguration(Collections.singleton(user), props, false);
         verify(registryCenter).persistInstanceOnline();
         verify(registryCenter).persistDataNodes();
         verify(listenerManager).init();
