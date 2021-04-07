@@ -20,9 +20,9 @@ package org.apache.shardingsphere.governance.context.authority;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
-import org.apache.shardingsphere.authority.engine.Authentication;
-import org.apache.shardingsphere.authority.engine.AuthenticationContext;
-import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
+import org.apache.shardingsphere.authority.engine.ShardingSphereAuthority;
+import org.apache.shardingsphere.authority.engine.AuthorityContext;
+import org.apache.shardingsphere.authority.engine.impl.DefaultAuthority;
 import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeBuilder;
 import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeLoader;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
@@ -56,8 +56,8 @@ public final class GovernanceAuthorityContext implements MetaDataAwareEventSubsc
      */
     @Subscribe
     public synchronized void renew(final UserRuleChangedEvent event) {
-        Authentication authentication = createAuthentication(event.getUsers());
-        AuthenticationContext.getInstance().init(authentication);
+        ShardingSphereAuthority authority = createAuthority(event.getUsers());
+        AuthorityContext.getInstance().init(authority);
         reloadPrivilege(event.getUsers());
     }
     
@@ -71,8 +71,8 @@ public final class GovernanceAuthorityContext implements MetaDataAwareEventSubsc
         reloadPrivilege(event.getUsers());
     }
     
-    private Authentication createAuthentication(final Collection<ShardingSphereUser> users) {
-        Authentication result = new DefaultAuthentication();
+    private ShardingSphereAuthority createAuthority(final Collection<ShardingSphereUser> users) {
+        ShardingSphereAuthority result = new DefaultAuthority();
         Collection<ShardingSphereUser> newUsers = getNewUsers(users);
         Map<ShardingSphereUser, ShardingSpherePrivileges> modifiedUsers = getModifiedUsers(users);
         for (ShardingSphereUser each : newUsers) {
@@ -83,15 +83,15 @@ public final class GovernanceAuthorityContext implements MetaDataAwareEventSubsc
     }
     
     private Collection<ShardingSphereUser> getNewUsers(final Collection<ShardingSphereUser> users) {
-        return users.stream().filter(each -> !AuthenticationContext.getInstance().getAuthentication().findUser(each.getGrantee()).isPresent()).collect(Collectors.toList());
+        return users.stream().filter(each -> !AuthorityContext.getInstance().getAuthority().findUser(each.getGrantee()).isPresent()).collect(Collectors.toList());
     }
     
     private Map<ShardingSphereUser, ShardingSpherePrivileges> getModifiedUsers(final Collection<ShardingSphereUser> users) {
         Map<ShardingSphereUser, ShardingSpherePrivileges> result = new HashMap<>(users.size(), 1);
         for (ShardingSphereUser each : users) {
-            Optional<ShardingSphereUser> user = AuthenticationContext.getInstance().getAuthentication().findUser(each.getGrantee());
+            Optional<ShardingSphereUser> user = AuthorityContext.getInstance().getAuthority().findUser(each.getGrantee());
             if (user.isPresent()) {
-                Optional<ShardingSpherePrivileges> privilege = AuthenticationContext.getInstance().getAuthentication().findPrivileges(user.get().getGrantee());
+                Optional<ShardingSpherePrivileges> privilege = AuthorityContext.getInstance().getAuthority().findPrivileges(user.get().getGrantee());
                 privilege.ifPresent(optional -> result.put(user.get(), optional));
             }
         }
@@ -99,21 +99,21 @@ public final class GovernanceAuthorityContext implements MetaDataAwareEventSubsc
     }
     
     private void reloadPrivilege(final Collection<ShardingSphereUser> users) {
-        Authentication authentication = AuthenticationContext.getInstance().getAuthentication();
+        ShardingSphereAuthority authority = AuthorityContext.getInstance().getAuthority();
         DatabaseType databaseType = metaDataContexts.getMetaDataMap().values().iterator().next().getResource().getDatabaseType();
         Optional<StoragePrivilegeLoader> loader = TypedSPIRegistry.findRegisteredService(StoragePrivilegeLoader.class, databaseType.getName(), new Properties());
         if (loader.isPresent()) {
             Map<ShardingSphereUser, ShardingSpherePrivileges> privileges = StoragePrivilegeBuilder.build(databaseType, metaDataContexts.getMetaDataMap().values(), users);
-            authentication.getAuthentication().putAll(getPrivilegesWithPassword(authentication, privileges));
+            authority.getAuthority().putAll(getPrivilegesWithPassword(authority, privileges));
         }
-        AuthenticationContext.getInstance().init(authentication);
+        AuthorityContext.getInstance().init(authority);
     }
     
-    private Map<ShardingSphereUser, ShardingSpherePrivileges> getPrivilegesWithPassword(final Authentication authentication, final Map<ShardingSphereUser, ShardingSpherePrivileges> privileges) {
+    private Map<ShardingSphereUser, ShardingSpherePrivileges> getPrivilegesWithPassword(final ShardingSphereAuthority authority, final Map<ShardingSphereUser, ShardingSpherePrivileges> privileges) {
         Map<ShardingSphereUser, ShardingSpherePrivileges> result = new HashMap<>(privileges.size(), 1);
         for (Map.Entry<ShardingSphereUser, ShardingSpherePrivileges> entry : privileges.entrySet()) {
             if (privileges.containsKey(entry.getKey())) {
-                Optional<ShardingSphereUser> user = authentication.findUser(entry.getKey().getGrantee());
+                Optional<ShardingSphereUser> user = authority.findUser(entry.getKey().getGrantee());
                 Preconditions.checkState(user.isPresent());
                 result.put(user.get(), entry.getValue());
             }

@@ -18,29 +18,35 @@
 package org.apache.shardingsphere.authority.engine;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-
-import java.util.Collection;
-import java.util.Optional;
 
 /**
- * Authentication engine.
-*/
+ * Authority context.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AuthenticationEngine {
+@Getter
+public final class AuthorityContext {
     
-    static {
-        ShardingSphereServiceLoader.register(Authentication.class);
+    private static final AuthorityContext INSTANCE = new AuthorityContext();
+    
+    private volatile ShardingSphereAuthority authority;
+    
+    /**
+     * Get instance.
+     * 
+     * @return instance
+     */
+    public static AuthorityContext getInstance() {
+        return INSTANCE;
     }
     
     /**
-     * Find SPI authentication.
+     * Initial authority.
      * 
-     * @return authentication
+     * @param authority authority
      */
-    public static Optional<Authentication> findSPIAuthentication() {
-        Collection<Authentication> authentications = ShardingSphereServiceLoader.newServiceInstances(Authentication.class);
-        return authentications.isEmpty() ? Optional.empty() : Optional.of(authentications.iterator().next());
+    public synchronized void init(final ShardingSphereAuthority authority) {
+        this.authority = AuthorityEngine.findSPIAuthority().orElse(authority);
     }
 }

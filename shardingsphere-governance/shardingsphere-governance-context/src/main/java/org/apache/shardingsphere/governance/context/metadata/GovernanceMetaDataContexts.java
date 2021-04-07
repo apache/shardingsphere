@@ -205,9 +205,9 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     }
     
     /**
-     * Renew authentication.
+     * Renew authority.
      *
-     * @param event User rule changed event
+     * @param event user rule changed event
      */
     @Subscribe
     public synchronized void renew(final UserRuleChangedEvent event) {

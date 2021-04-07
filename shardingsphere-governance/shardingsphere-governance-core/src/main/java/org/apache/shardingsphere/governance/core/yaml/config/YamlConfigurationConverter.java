@@ -110,7 +110,7 @@ public final class YamlConfigurationConverter {
      * Convert user rule from YAML content.
      *
      * @param yamlContent YAML content
-     * @return authentication
+     * @return users
      */
     public static Collection<ShardingSphereUser> convertUserRule(final String yamlContent) {
         return new UsersYamlSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlUsersConfiguration.class));
