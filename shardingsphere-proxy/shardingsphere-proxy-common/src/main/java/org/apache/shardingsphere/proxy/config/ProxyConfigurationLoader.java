@@ -71,10 +71,8 @@ public final class ProxyConfigurationLoader {
     private static File getResourceFile(final String path) throws IOException {
         URL url = ProxyConfigurationLoader.class.getResource(path);
         if (null != url) {
-            // Fixed: the path contains Chinese yaml error.
             return new File(URLDecoder.decode(url.getFile(), "UTF-8"));
         }
-        // Fixed: the path contains Chinese yaml error.
         return new File(URLDecoder.decode(path, "UTF-8"));
     }
     
