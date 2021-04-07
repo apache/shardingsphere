@@ -27,8 +27,13 @@ import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XAData
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Data source swapper.
