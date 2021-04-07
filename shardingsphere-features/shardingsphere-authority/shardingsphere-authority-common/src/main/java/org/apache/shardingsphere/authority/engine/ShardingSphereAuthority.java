@@ -37,13 +37,6 @@ public interface ShardingSphereAuthority {
     void init(Map<ShardingSphereUser, ShardingSpherePrivileges> loadedPrivileges);
     
     /**
-     * Get authority.
-     *
-     * @return authority
-     */
-    Map<ShardingSphereUser, ShardingSpherePrivileges> getAuthority();
-    
-    /**
      * Find Privileges.
      *
      * @param grantee grantee
