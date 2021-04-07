@@ -17,3 +17,4 @@
 
 org.apache.shardingsphere.authority.loader.builder.loader.dialect.MySQLPrivilegeLoader
 org.apache.shardingsphere.authority.loader.builder.loader.dialect.PostgreSQLPrivilegeLoader
+org.apache.shardingsphere.authority.loader.builder.loader.dialect.OraclePrivilegeLoader
