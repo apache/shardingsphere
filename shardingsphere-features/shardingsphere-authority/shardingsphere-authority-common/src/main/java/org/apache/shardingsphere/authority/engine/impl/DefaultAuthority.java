@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.authority.engine.impl;
 
-import lombok.Getter;
 import org.apache.shardingsphere.authority.engine.ShardingSphereAuthority;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,18 +29,17 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Default authority.
 */
-@Getter
 public final class DefaultAuthority implements ShardingSphereAuthority {
     
-    private final Map<ShardingSphereUser, ShardingSpherePrivileges> authority = new ConcurrentHashMap<>();
+    private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
     
     @Override
     public void init(final Map<ShardingSphereUser, ShardingSpherePrivileges> loadedPrivileges) {
-        authority.putAll(loadedPrivileges);
+        userPrivilegeMap.putAll(loadedPrivileges);
     }
     
     @Override
     public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
-        return authority.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst().map(authority::get);
+        return userPrivilegeMap.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst().map(userPrivilegeMap::get);
     }
 }

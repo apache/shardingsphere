@@ -125,7 +125,9 @@ public final class MySQLAuthenticationHandlerTest {
         DefaultAuthority authority = new DefaultAuthority();
         ShardingSpherePrivileges privileges = new ShardingSpherePrivileges();
         privileges.setSuperPrivilege();
-        authority.getAuthority().put(user, privileges);
+        Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new HashMap<>(1, 1);
+        userPrivilegeMap.put(user, privileges);
+        authority.init(userPrivilegeMap);
         initProxyContext(user);
     }
     
