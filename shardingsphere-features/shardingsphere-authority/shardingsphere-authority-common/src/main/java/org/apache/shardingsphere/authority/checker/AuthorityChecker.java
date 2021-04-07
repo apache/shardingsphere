@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.check.SQLChecker;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.authority.engine.AuthenticationContext;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
-import org.apache.shardingsphere.authority.model.Privileges;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
@@ -51,7 +51,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         if (null == grantee) {
             return new SQLCheckResult(true, "");
         }
-        Optional<Privileges> privileges = AuthenticationContext.getInstance().getAuthentication().findPrivileges(grantee);
+        Optional<ShardingSpherePrivileges> privileges = AuthenticationContext.getInstance().getAuthentication().findPrivileges(grantee);
         // TODO add error msg
         return privileges.map(optional -> new SQLCheckResult(optional.hasPrivileges(Collections.singletonList(getPrivilege(sqlStatement))), "")).orElseGet(() -> new SQLCheckResult(false, ""));
     }
