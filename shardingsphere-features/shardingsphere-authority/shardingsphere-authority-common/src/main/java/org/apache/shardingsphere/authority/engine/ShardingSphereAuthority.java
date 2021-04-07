@@ -32,15 +32,15 @@ public interface ShardingSphereAuthority {
     /**
      * Initialize authority.
      * 
-     * @param loadedPrivileges loaded privileges
+     * @param loadedUserPrivilegeMap loaded map of users and privileges
      */
-    void init(Map<ShardingSphereUser, ShardingSpherePrivileges> loadedPrivileges);
+    void init(Map<ShardingSphereUser, ShardingSpherePrivileges> loadedUserPrivilegeMap);
     
     /**
      * Find Privileges.
      *
      * @param grantee grantee
-     * @return found user
+     * @return found privileges
      */
     Optional<ShardingSpherePrivileges> findPrivileges(Grantee grantee);
 }

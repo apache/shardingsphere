@@ -34,8 +34,8 @@ public final class DefaultAuthority implements ShardingSphereAuthority {
     private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
     
     @Override
-    public void init(final Map<ShardingSphereUser, ShardingSpherePrivileges> loadedPrivileges) {
-        userPrivilegeMap.putAll(loadedPrivileges);
+    public void init(final Map<ShardingSphereUser, ShardingSpherePrivileges> loadedUserPrivilegeMap) {
+        userPrivilegeMap.putAll(loadedUserPrivilegeMap);
     }
     
     @Override
