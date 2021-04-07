@@ -104,7 +104,7 @@ public final class GovernanceAuthorityContext implements MetaDataAwareEventSubsc
         Optional<StoragePrivilegeLoader> loader = TypedSPIRegistry.findRegisteredService(StoragePrivilegeLoader.class, databaseType.getName(), new Properties());
         if (loader.isPresent()) {
             Map<ShardingSphereUser, ShardingSpherePrivileges> privileges = StoragePrivilegeBuilder.build(databaseType, metaDataContexts.getMetaDataMap().values(), users);
-            authority.getAuthority().putAll(getPrivilegesWithPassword(privileges));
+            authority.init(getPrivilegesWithPassword(privileges));
         }
         AuthorityContext.getInstance().init(authority);
     }

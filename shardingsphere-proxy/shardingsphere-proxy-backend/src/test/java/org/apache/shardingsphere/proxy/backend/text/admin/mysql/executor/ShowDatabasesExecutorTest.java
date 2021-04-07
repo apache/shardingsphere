@@ -40,6 +40,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -69,7 +70,9 @@ public final class ShowDatabasesExecutorTest {
     
     private void initAuthority() {
         ShardingSphereAuthority authority = new DefaultAuthority();
-        authority.getAuthority().put(new ShardingSphereUser("root", "root", ""), new ShardingSpherePrivileges());
+        Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new HashMap<>(1, 1);
+        userPrivilegeMap.put(new ShardingSphereUser("root", "root", ""), new ShardingSpherePrivileges());
+        authority.init(userPrivilegeMap);
         AuthorityContext.getInstance().init(authority);
     }
     
