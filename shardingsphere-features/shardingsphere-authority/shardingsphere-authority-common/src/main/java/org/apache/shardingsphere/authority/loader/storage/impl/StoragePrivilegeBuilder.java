@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -149,11 +150,15 @@ public final class StoragePrivilegeBuilder {
     }
     
     private static void checkPrivileges(final Map<ShardingSphereUser, Collection<ShardingSpherePrivileges>> userPrivilegeMap) {
-        for (Entry<ShardingSphereUser, Collection<ShardingSpherePrivileges>> entry : userPrivilegeMap.entrySet()) {
-            for (ShardingSpherePrivileges each : entry.getValue()) {
-                if (each.isEmpty()) {
-                    throw new ShardingSphereException(String.format("There is no enough privileges for %s on all database instances.", entry.getKey().getGrantee().toString().replaceAll("%", "%%")));
-                }
+        userPrivilegeMap.forEach(StoragePrivilegeBuilder::checkPrivileges);
+    }
+    
+    private static void checkPrivileges(final ShardingSphereUser user, final Collection<ShardingSpherePrivileges> privileges) {
+        Iterator<ShardingSpherePrivileges> iterator = privileges.iterator();
+        ShardingSpherePrivileges current = iterator.next();
+        while (iterator.hasNext()) {
+            if (!current.equals(iterator.next())) {
+                throw new ShardingSphereException("Different physical instances have different privileges for user %s", user.getGrantee().toString().replaceAll("%", "%%"));
             }
         }
     }

@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PrivilegeMergeTest {
+public final class PrivilegeMergeTest {
     
     @Test
     public void assertPrivilegeMergeResult() {
