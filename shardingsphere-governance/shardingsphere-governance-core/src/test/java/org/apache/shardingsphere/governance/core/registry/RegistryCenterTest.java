@@ -370,7 +370,7 @@ public final class RegistryCenterTest {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SHADOW_RULE_YAML), YamlRootRuleConfigurations.class).getRules());
     }
     
-    private DefaultAuthentication createAuthentication() {
+    private DefaultAuthority createAuthentication() {
         Collection<ShardingSphereUser> users = YamlUserConfigurationConverter.convertShardingSphereUser(YamlEngine.unmarshal(readYAML(USERS_YAML), Collection.class));
         DefaultAuthority result = new DefaultAuthority();
         for (ShardingSphereUser each : users) {
