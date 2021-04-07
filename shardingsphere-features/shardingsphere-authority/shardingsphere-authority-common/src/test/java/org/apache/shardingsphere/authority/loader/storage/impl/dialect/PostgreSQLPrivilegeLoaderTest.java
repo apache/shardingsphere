@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.loader.builder.loader.dialect;
+package org.apache.shardingsphere.authority.loader.storage.impl.dialect;
 
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.authority.model.database.SchemaPrivileges;
-import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoader;
+import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeLoader;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
@@ -50,14 +52,14 @@ public final class PostgreSQLPrivilegeLoaderTest {
     
     @BeforeClass
     public static void setUp() {
-        ShardingSphereServiceLoader.register(PrivilegeLoader.class);
+        ShardingSphereServiceLoader.register(StoragePrivilegeLoader.class);
     }
     
     @Test
     public void assertLoad() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSource(users);
-        assertPrivileges(getPrivilegeLoader().load(users, dataSource));
+        assertPrivileges(TypedSPIRegistry.getRegisteredService(StoragePrivilegeLoader.class, "PostgreSQL", new Properties()).load(users, dataSource));
     }
     
     private void assertPrivileges(final Map<ShardingSphereUser, Privileges> actual) {
@@ -115,14 +117,5 @@ public final class PostgreSQLPrivilegeLoaderTest {
         when(result.getBoolean("rolinherit")).thenReturn(false);
         when(result.getBoolean("rolcanlogin")).thenReturn(true);
         return result;
-    }
-    
-    private PrivilegeLoader getPrivilegeLoader() {
-        for (PrivilegeLoader each : ShardingSphereServiceLoader.getSingletonServiceInstances(PrivilegeLoader.class)) {
-            if ("PostgreSQL".equals(each.getDatabaseType())) {
-                return each;
-            }
-        }
-        throw new IllegalStateException("Can not find PostgreSQLPrivilegeLoader");
     }
 }

@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.loader.builder.loader;
+package org.apache.shardingsphere.authority.loader.storage.impl;
 
 import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -26,9 +27,9 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Privilege loader.
+ * Storage privilege loader.
  */
-public interface PrivilegeLoader {
+public interface StoragePrivilegeLoader extends TypedSPI {
     
     /**
      * Load privilege.
@@ -39,11 +40,4 @@ public interface PrivilegeLoader {
      * @throws SQLException SQL exception
      */
     Map<ShardingSphereUser, Privileges> load(Collection<ShardingSphereUser> users, DataSource dataSource) throws SQLException;
-    
-    /**
-     * Get database type.
-     *
-     * @return database type
-     */
-    String getDatabaseType();
 }

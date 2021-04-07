@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.loader.builder.loader.dialect;
+package org.apache.shardingsphere.authority.loader.storage.impl.dialect;
 
 import org.apache.shardingsphere.authority.model.database.SchemaPrivileges;
 import org.apache.shardingsphere.authority.model.database.TablePrivileges;
-import org.apache.shardingsphere.authority.loader.builder.loader.PrivilegeLoader;
+import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeLoader;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.Privileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 /**
  * PostgreSQL privilege loader.
  */
-public final class PostgreSQLPrivilegeLoader implements PrivilegeLoader {
+public final class PostgreSQLPrivilegeLoader implements StoragePrivilegeLoader {
     
     private static final String ROLES_SQL = "select * from pg_roles WHERE rolname IN (%s)";
     
@@ -185,7 +185,7 @@ public final class PostgreSQLPrivilegeLoader implements PrivilegeLoader {
     }
     
     @Override
-    public String getDatabaseType() {
+    public String getType() {
         return "PostgreSQL";
     }
 }
