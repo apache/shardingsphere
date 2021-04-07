@@ -20,6 +20,8 @@ package org.apache.shardingsphere.db.discovery.common.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.db.discovery.api.config.DatabaseDiscoveryRuleConfiguration;
+import org.apache.shardingsphere.db.discovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.db.discovery.common.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.db.discovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
@@ -27,15 +29,14 @@ import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
-import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.rule.type.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
+import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
+import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
+import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.type.StatusContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
-import org.apache.shardingsphere.db.discovery.api.config.DatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.db.discovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -49,7 +50,7 @@ import java.util.Optional;
 /**
  * Database discovery rule.
  */
-public final class DatabaseDiscoveryRule implements DataSourceContainedRule, StatusContainedRule {
+public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContainedRule, StatusContainedRule {
     
     static {
         ShardingSphereServiceLoader.register(DatabaseDiscoveryType.class);

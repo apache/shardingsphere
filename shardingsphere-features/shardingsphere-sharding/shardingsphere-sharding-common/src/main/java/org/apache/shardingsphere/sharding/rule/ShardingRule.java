@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.CreateTableEvent;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.DropTableEvent;
+import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.type.TableContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -67,7 +68,7 @@ import java.util.stream.Collectors;
  * Sharding rule.
  */
 @Getter
-public final class ShardingRule implements DataNodeContainedRule, TableContainedRule {
+public final class ShardingRule implements SchemaRule, DataNodeContainedRule, TableContainedRule {
     
     static {
         ShardingSphereServiceLoader.register(ShardingAlgorithm.class);
