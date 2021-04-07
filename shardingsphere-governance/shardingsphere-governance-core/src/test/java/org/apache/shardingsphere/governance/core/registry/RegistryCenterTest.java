@@ -38,7 +38,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKe
 import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.yaml.swapper.UsersYamlSwapper;
-import org.apache.shardingsphere.authority.model.Privileges;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -376,7 +376,7 @@ public final class RegistryCenterTest {
                 new UsersYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(AUTHENTICATION_YAML), YamlUsersConfiguration.class));
         DefaultAuthentication result = new DefaultAuthentication();
         for (ShardingSphereUser each : users) {
-            result.getAuthentication().put(each, new Privileges());
+            result.getAuthentication().put(each, new ShardingSpherePrivileges());
         }
         return result;
     }
