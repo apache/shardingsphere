@@ -42,11 +42,6 @@ public final class DefaultAuthority implements ShardingSphereAuthority {
     }
     
     @Override
-    public Collection<ShardingSphereUser> getAllUsers() {
-        return authority.keySet();
-    }
-    
-    @Override
     public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
         return authority.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst().map(authority::get);
     }

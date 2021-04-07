@@ -21,7 +21,6 @@ import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -43,13 +42,6 @@ public interface ShardingSphereAuthority {
      * @return authority
      */
     Map<ShardingSphereUser, ShardingSpherePrivileges> getAuthority();
-    
-    /**
-     * Get all users.
-     *
-     * @return all users
-     */
-    Collection<ShardingSphereUser> getAllUsers();
     
     /**
      * Find Privileges.
