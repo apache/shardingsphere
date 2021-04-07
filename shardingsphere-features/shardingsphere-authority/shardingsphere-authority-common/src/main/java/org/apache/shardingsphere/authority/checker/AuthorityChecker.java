@@ -22,10 +22,10 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.check.SQLChecker;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.auth.AuthenticationContext;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.PrivilegeType;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
+import org.apache.shardingsphere.authority.engine.AuthorityContext;
+import org.apache.shardingsphere.authority.model.PrivilegeType;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 
@@ -43,7 +43,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         if (null == grantee) {
             return true;
         }
-        return AuthenticationContext.getInstance().getAuthentication().findPrivilege(grantee).map(optional -> optional.hasPrivileges(schemaName)).orElse(false);
+        return AuthorityContext.getInstance().getAuthority().findPrivileges(grantee).map(optional -> optional.hasPrivileges(schemaName)).orElse(false);
     }
     
     @Override
@@ -51,9 +51,9 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         if (null == grantee) {
             return new SQLCheckResult(true, "");
         }
-        Optional<ShardingSpherePrivilege> privilege = AuthenticationContext.getInstance().getAuthentication().findPrivilege(grantee);
+        Optional<ShardingSpherePrivileges> privileges = AuthorityContext.getInstance().getAuthority().findPrivileges(grantee);
         // TODO add error msg
-        return privilege.map(optional -> new SQLCheckResult(optional.hasPrivileges(Collections.singletonList(getPrivilege(sqlStatement))), "")).orElseGet(() -> new SQLCheckResult(false, ""));
+        return privileges.map(optional -> new SQLCheckResult(optional.hasPrivileges(Collections.singletonList(getPrivilege(sqlStatement))), "")).orElseGet(() -> new SQLCheckResult(false, ""));
     }
     
     private PrivilegeType getPrivilege(final SQLStatement sqlStatement) {

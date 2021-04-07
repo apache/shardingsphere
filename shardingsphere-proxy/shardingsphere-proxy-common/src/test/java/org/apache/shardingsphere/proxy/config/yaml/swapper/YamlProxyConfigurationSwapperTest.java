@@ -21,12 +21,12 @@ import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCente
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.authority.engine.impl.DefaultAuthority;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfiguration;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -58,7 +58,7 @@ public final class YamlProxyConfigurationSwapperTest {
     public void assertSwap() {
         YamlProxyConfiguration yamlProxyConfig = getYamlProxyConfiguration();
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlProxyConfig);
-        assertAuthentication(proxyConfig);
+        assertAuthority(proxyConfig);
         assertProxyConfigurationProps(proxyConfig);
         assertSchemaDataSources(proxyConfig);
         assertSchemaRules(proxyConfig);
@@ -103,20 +103,20 @@ public final class YamlProxyConfigurationSwapperTest {
         assertThat(proxyConfigurationProps.getProperty("key4"), is("value4"));
     }
     
-    private void assertAuthentication(final ProxyConfiguration proxyConfig) {
-        DefaultAuthentication authentication = new DefaultAuthentication();
-        authentication.init(getPrivileges(proxyConfig.getUsers()));
-        assertNotNull(authentication);
-        Optional<ShardingSphereUser> user = authentication.findUser(new Grantee("user1", ""));
+    private void assertAuthority(final ProxyConfiguration proxyConfig) {
+        DefaultAuthority authority = new DefaultAuthority();
+        authority.init(getPrivileges(proxyConfig.getUsers()));
+        assertNotNull(authority);
+        Optional<ShardingSphereUser> user = authority.findUser(new Grantee("user1", ""));
         assertTrue(user.isPresent());
         assertThat(user.get().getPassword(), is("pass"));
-        assertNotNull(authentication);
+        assertNotNull(authority);
     }
     
-    private Map<ShardingSphereUser, ShardingSpherePrivilege> getPrivileges(final Collection<ShardingSphereUser> users) {
-        Map<ShardingSphereUser, ShardingSpherePrivilege> privileges = new HashMap<>(users.size(), 1);
+    private Map<ShardingSphereUser, ShardingSpherePrivileges> getPrivileges(final Collection<ShardingSphereUser> users) {
+        Map<ShardingSphereUser, ShardingSpherePrivileges> privileges = new HashMap<>(users.size(), 1);
         for (ShardingSphereUser each : users) {
-            privileges.put(each, new ShardingSpherePrivilege());
+            privileges.put(each, new ShardingSpherePrivileges());
         }
         return privileges;
     }
@@ -213,7 +213,7 @@ public final class YamlProxyConfigurationSwapperTest {
         YamlUserConfiguration yamlUserConfig = mock(YamlUserConfiguration.class);
         when(yamlUserConfig.getPassword()).thenReturn("pass");
         yamlUserConfigurationMap.put("user1", yamlUserConfig);
-        YamlUserRuleConfiguration userRuleConfiguration = mock(YamlUserRuleConfiguration.class);
+        YamlUsersConfiguration userRuleConfiguration = mock(YamlUsersConfiguration.class);
         when(userRuleConfiguration.getUsers()).thenReturn(yamlUserConfigurationMap);
         when(yamlProxyServerConfig.getAuthentication()).thenReturn(userRuleConfiguration);
     }
