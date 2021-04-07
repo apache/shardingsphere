@@ -43,15 +43,15 @@ public final class StoragePrivilegeMerger {
     /**
      * Merge privileges.
      * 
-     * @param authentication authentication
+     * @param authority authority
      * @param schemaName schema name
      * @param rules ShardingSphere rules
      * @return privileges
      */
-    public static Map<ShardingSphereUser, ShardingSpherePrivileges> merge(final Map<ShardingSphereUser, Collection<ShardingSpherePrivileges>> authentication,
+    public static Map<ShardingSphereUser, ShardingSpherePrivileges> merge(final Map<ShardingSphereUser, Collection<ShardingSpherePrivileges>> authority,
                                                                          final String schemaName, final Collection<ShardingSphereRule> rules) {
-        Map<ShardingSphereUser, ShardingSpherePrivileges> result = new HashMap<>(authentication.size(), 1);
-        for (Entry<ShardingSphereUser, Collection<ShardingSpherePrivileges>> entry : authentication.entrySet()) {
+        Map<ShardingSphereUser, ShardingSpherePrivileges> result = new HashMap<>(authority.size(), 1);
+        for (Entry<ShardingSphereUser, Collection<ShardingSpherePrivileges>> entry : authority.entrySet()) {
             result.put(entry.getKey(), merge(entry.getKey(), entry.getValue(), schemaName, rules));
         }
         return result;

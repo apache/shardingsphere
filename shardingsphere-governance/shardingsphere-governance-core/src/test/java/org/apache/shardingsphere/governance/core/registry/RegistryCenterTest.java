@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
+import org.apache.shardingsphere.authority.engine.impl.DefaultAuthority;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.yaml.swapper.UsersYamlSwapper;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
@@ -371,12 +371,12 @@ public final class RegistryCenterTest {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SHADOW_RULE_YAML), YamlRootRuleConfigurations.class).getRules());
     }
     
-    private DefaultAuthentication createAuthentication() {
+    private DefaultAuthority createAuthentication() {
         Collection<ShardingSphereUser> users =
                 new UsersYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(AUTHENTICATION_YAML), YamlUsersConfiguration.class));
-        DefaultAuthentication result = new DefaultAuthentication();
+        DefaultAuthority result = new DefaultAuthority();
         for (ShardingSphereUser each : users) {
-            result.getAuthentication().put(each, new ShardingSpherePrivileges());
+            result.getAuthority().put(each, new ShardingSpherePrivileges());
         }
         return result;
     }
