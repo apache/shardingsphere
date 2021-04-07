@@ -25,11 +25,11 @@ import org.apache.shardingsphere.authority.model.database.DatabasePrivileges;
 import java.util.Collection;
 
 /**
- * Privileges.
+ * ShardingSphere Privileges.
  */
 @Getter
 @EqualsAndHashCode
-public final class Privileges {
+public final class ShardingSpherePrivileges {
     
     private final AdministrativePrivileges administrativePrivileges = new AdministrativePrivileges();
     

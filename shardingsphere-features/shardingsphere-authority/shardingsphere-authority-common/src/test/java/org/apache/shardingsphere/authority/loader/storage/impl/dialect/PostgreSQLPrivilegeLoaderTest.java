@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.authority.loader.storage.impl.dialect;
 
 import org.apache.shardingsphere.authority.model.PrivilegeType;
-import org.apache.shardingsphere.authority.model.Privileges;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.model.database.SchemaPrivileges;
 import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeLoader;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -62,7 +62,7 @@ public final class PostgreSQLPrivilegeLoaderTest {
         assertPrivileges(TypedSPIRegistry.getRegisteredService(StoragePrivilegeLoader.class, "PostgreSQL", new Properties()).load(users, dataSource));
     }
     
-    private void assertPrivileges(final Map<ShardingSphereUser, Privileges> actual) {
+    private void assertPrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> actual) {
         assertThat(actual.size(), is(1));
         ShardingSphereUser user = new ShardingSphereUser("postgres", "", "");
         assertThat(actual.get(user).getDatabasePrivileges().getGlobalPrivileges().size(), is(0));

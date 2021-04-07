@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.authority.engine.Authentication;
 import org.apache.shardingsphere.authority.engine.impl.DefaultAuthentication;
 import org.apache.shardingsphere.authority.engine.AuthenticationContext;
-import org.apache.shardingsphere.authority.model.Privileges;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
@@ -69,7 +69,7 @@ public final class ShowDatabasesExecutorTest {
     
     private void initAuthentication() {
         Authentication authentication = new DefaultAuthentication();
-        authentication.getAuthentication().put(new ShardingSphereUser("root", "root", ""), new Privileges());
+        authentication.getAuthentication().put(new ShardingSphereUser("root", "root", ""), new ShardingSpherePrivileges());
         AuthenticationContext.getInstance().init(authentication);
     }
     
