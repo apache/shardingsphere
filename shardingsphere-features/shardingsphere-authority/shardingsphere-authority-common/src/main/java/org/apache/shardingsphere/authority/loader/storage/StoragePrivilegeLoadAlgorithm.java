@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.loader.storage;
 
 import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeBuilder;
 import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeLoader;
-import org.apache.shardingsphere.authority.model.Privileges;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeLoadAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -43,8 +43,8 @@ public final class StoragePrivilegeLoadAlgorithm implements PrivilegeLoadAlgorit
     }
     
     @Override
-    public Map<ShardingSphereUser, Privileges> load(final String schemaName, final DatabaseType databaseType, final Collection<DataSource> dataSources,
-                                                    final Collection<ShardingSphereRule> rules, final Collection<ShardingSphereUser> users) {
+    public Map<ShardingSphereUser, ShardingSpherePrivileges> load(final String schemaName, final DatabaseType databaseType, final Collection<DataSource> dataSources,
+                                                                  final Collection<ShardingSphereRule> rules, final Collection<ShardingSphereUser> users) {
         Optional<StoragePrivilegeLoader> loader = TypedSPIRegistry.findRegisteredService(StoragePrivilegeLoader.class, databaseType.getName(), new Properties());
         return loader.map(optional -> StoragePrivilegeBuilder.build(
                 schemaName, groupDataSourcesByInstance(dataSources), rules, users, optional)).orElseGet(() -> StoragePrivilegeBuilder.buildDefaultPrivileges(users));

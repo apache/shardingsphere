@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-features</artifactId>
+        <artifactId>shardingsphere-authority</artifactId>
         <version>5.0.0-RC1-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-authority-api</artifactId>

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.authority.loader.storage.impl;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.authority.model.Privileges;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
@@ -44,23 +44,23 @@ public final class StoragePrivilegeMerger {
      * @param rules ShardingSphere rules
      * @return privileges
      */
-    public static Map<ShardingSphereUser, Privileges> merge(final Map<ShardingSphereUser, Collection<Privileges>> authentication,
-                                                            final String schemaName, final Collection<ShardingSphereRule> rules) {
-        Map<ShardingSphereUser, Privileges> result = new HashMap<>(authentication.size(), 1);
-        for (Entry<ShardingSphereUser, Collection<Privileges>> entry : authentication.entrySet()) {
+    public static Map<ShardingSphereUser, ShardingSpherePrivileges> merge(final Map<ShardingSphereUser, Collection<ShardingSpherePrivileges>> authentication,
+                                                                          final String schemaName, final Collection<ShardingSphereRule> rules) {
+        Map<ShardingSphereUser, ShardingSpherePrivileges> result = new HashMap<>(authentication.size(), 1);
+        for (Entry<ShardingSphereUser, Collection<ShardingSpherePrivileges>> entry : authentication.entrySet()) {
             result.put(entry.getKey(), merge(entry.getKey(), entry.getValue()));
         }
         return result;
     }
     
-    private static Privileges merge(final ShardingSphereUser user, final Collection<Privileges> privileges) {
+    private static ShardingSpherePrivileges merge(final ShardingSphereUser user, final Collection<ShardingSpherePrivileges> privileges) {
         if (privileges.isEmpty()) {
-            return new Privileges();
+            return new ShardingSpherePrivileges();
         }
-        Iterator<Privileges> iterator = privileges.iterator();
-        Privileges result = iterator.next();
+        Iterator<ShardingSpherePrivileges> iterator = privileges.iterator();
+        ShardingSpherePrivileges result = iterator.next();
         while (iterator.hasNext()) {
-            Privileges each = iterator.next();
+            ShardingSpherePrivileges each = iterator.next();
             if (!result.equals(each)) {
                 throw new ShardingSphereException("Different physical instances have different permissions for user %s@%s", user.getGrantee().getUsername(), user.getGrantee().getHostname());
             }
