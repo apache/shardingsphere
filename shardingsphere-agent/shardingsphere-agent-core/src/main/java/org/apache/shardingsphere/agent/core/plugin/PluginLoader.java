@@ -29,8 +29,8 @@ import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatcher.Junction;
 import org.apache.shardingsphere.agent.api.point.PluginInterceptorPoint;
 import org.apache.shardingsphere.agent.config.AgentConfiguration;
-import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.config.path.AgentPathBuilder;
+import org.apache.shardingsphere.agent.core.config.registry.AgentConfigurationRegistry;
 import org.apache.shardingsphere.agent.core.spi.PluginServiceLoader;
 import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionService;
 import org.apache.shardingsphere.agent.spi.definition.PluginDefinitionService;
@@ -41,7 +41,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -254,13 +253,10 @@ public final class PluginLoader extends ClassLoader implements Closeable {
     }
     
     private void loadPluginDefinitionServices(final Set<String> ignoredPluginNames, final Map<String, PluginInterceptorPoint> pointMap) {
-        Collection<PluginDefinitionService> pluginDefinitionServices = PluginServiceLoader.newServiceInstances(PluginDefinitionService.class);
-        for (PluginDefinitionService each : pluginDefinitionServices) {
-            if (!ignoredPluginNames.isEmpty() && ignoredPluginNames.contains(each.getType())) {
-                continue;
-            }
-            buildPluginInterceptorPointMap(each, pointMap);
-        }
+        PluginServiceLoader.newServiceInstances(PluginDefinitionService.class)
+                .stream()
+                .filter(each -> ignoredPluginNames.isEmpty() || !ignoredPluginNames.contains(each.getType()))
+                .forEach(each -> buildPluginInterceptorPointMap(each, pointMap));
     }
     
     private String classNameToPath(final String className) {

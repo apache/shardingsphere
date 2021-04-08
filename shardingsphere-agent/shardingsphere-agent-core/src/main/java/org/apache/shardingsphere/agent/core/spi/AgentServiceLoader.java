@@ -77,8 +77,7 @@ public final class AgentServiceLoader<T> {
             return;
         }
         serviceMap.put(service, new LinkedList<>());
-        for (T each : ServiceLoader.load(service, PluginLoader.getInstance())) {
-            serviceMap.get(service).add(each);
-        }
+        ServiceLoader.load(service, PluginLoader.getInstance())
+                .forEach(each -> serviceMap.get(service).add(each));
     }
 }
