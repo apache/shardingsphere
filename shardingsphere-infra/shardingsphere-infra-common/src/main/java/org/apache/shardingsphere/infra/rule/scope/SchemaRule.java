@@ -15,32 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.engine;
+package org.apache.shardingsphere.infra.rule.scope;
 
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-
-import java.util.Map;
-import java.util.Optional;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * ShardingSphere authority.
-*/
-public interface ShardingSphereAuthority {
-    
-    /**
-     * Initialize authority.
-     * 
-     * @param loadedUserPrivilegeMap loaded map of users and privileges
-     */
-    void init(Map<ShardingSphereUser, ShardingSpherePrivileges> loadedUserPrivilegeMap);
-    
-    /**
-     * Find Privileges.
-     *
-     * @param grantee grantee
-     * @return found privileges
-     */
-    Optional<ShardingSpherePrivileges> findPrivileges(Grantee grantee);
+ * Schema rule.
+ */
+public interface SchemaRule extends ShardingSphereRule {
 }

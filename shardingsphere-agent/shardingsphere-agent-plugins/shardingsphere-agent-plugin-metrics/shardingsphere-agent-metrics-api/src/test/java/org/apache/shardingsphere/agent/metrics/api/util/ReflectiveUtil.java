@@ -23,6 +23,7 @@ import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 
 /**
  * Reflective utility.
@@ -74,13 +75,8 @@ public final class ReflectiveUtil {
 
     private static Field getField(final Class<?> clazz, final String fieldName) {
         Field[] fields = clazz.getDeclaredFields();
-        if (fields.length != 0) {
-            for (Field each : fields) {
-                if (fieldName.equals(each.getName())) {
-                    return each;
-                }
-            }
-        }
-        return null;
+        return fields.length != 0
+                ? Arrays.stream(fields).filter(each -> fieldName.equals(each.getName())).findFirst().orElse(null)
+                : null;
     }
 }

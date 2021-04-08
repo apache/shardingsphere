@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.governance.context.metadata;
 
+import org.apache.shardingsphere.authority.engine.impl.DefaultAuthority;
 import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
@@ -35,10 +36,10 @@ import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataCon
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.authority.engine.impl.DefaultAuthority;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 import org.apache.shardingsphere.readwrite.splitting.common.rule.ReadWriteSplittingRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -158,9 +159,9 @@ public final class GovernanceMetaDataContextsTest {
     @Test
     public void assertAuthorityChanged() {
         DefaultAuthority authority = new DefaultAuthority();
-        UserRuleChangedEvent event = new UserRuleChangedEvent(authority.getAllUsers());
+        UserRuleChangedEvent event = new UserRuleChangedEvent(Collections.singleton(mock(ShardingSphereUser.class)));
         governanceMetaDataContexts.renew(event);
-        assertThat(governanceMetaDataContexts.getUsers().getUsers().size(), is(authority.getAuthority().size()));
+        assertThat(governanceMetaDataContexts.getUsers().getUsers().size(), is(1));
     }
     
     @Test
