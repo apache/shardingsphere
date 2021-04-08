@@ -68,7 +68,46 @@ createSharingClause
     ;
 
 createDefinitionClause
-    : createRelationalTableClause | createObjectTableClause
+    : createRelationalTableClause | createObjectTableClause | createXMLTypeTableClause
+    ;
+
+createXMLTypeTableClause
+    : OF XMLTYPE
+      (LP_ (objectProperties) RP_)?
+      (XMLTYPE XMLTypeStorageClause)?
+      (XMLSchemaSpecClause)?
+      (XMLTypeVirtualColumnsClause)?
+      (ON COMMIT (DELETE | PRESERVE) ROWS)?
+      (OIDClause)?
+      (OIDIndexClause)?
+      (physicalProperties)?
+      (tableProperties)?
+    ;
+
+XMLTypeStorageClause
+    : STORE
+      (AS ( OBJECT RELATIONAL | ((SECUREFILE | BASICFILE)? (CLOB | BINARY XML) ((lobSegname (LP_ lobParameters RP_)? | (LP_ lobParameters RP_)))?)))
+      | (ALL VARRAYS AS (LOBS | TABLES ))
+    ;
+
+XMLSchemaSpecClause
+    : (XMLSCHEMA XMLSchema_URL)? ELEMENT 
+      (element | XMLSchema_URL # element)? 
+      (STORE ALL VARRAYS AS (LOBS | TABLES))? 
+      ((ALLOW | DISALLOW) NONSCHEMA)?
+      ((ALLOW | DISALLOW) ANYSCHEMA)?
+    ;
+
+XMLTypeVirtualColumnsClause
+    : 
+    ;
+
+OIDClause
+    : 
+    ;
+
+OIDIndexClause
+    : 
     ;
 
 createRelationalTableClause

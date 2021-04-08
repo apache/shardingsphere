@@ -1350,3 +1350,27 @@ ZONEMAP
 WITHOUT
     : W I T H O U T
     ;
+
+XMLTYPE
+    : X M L T Y P E
+    ;
+
+RELATIONAL
+    : R E L A T I O N A L
+    ;
+
+XML
+    : X M L
+    ;
+
+VARRAYS
+    : V A R R A Y S
+    ;
+
+LOBS
+    : L O B S
+    ;
+
+TABLES
+    : T A B L E S
+    ;
