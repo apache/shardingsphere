@@ -71,7 +71,5 @@ public enum PrivilegeType {
     CREATE_SESSION,
     ALTER_SESSION,
     CREATE_SYNONYM,
-    CREATE_TABLE,
-
-
+    CREATE_TABLE
 }
