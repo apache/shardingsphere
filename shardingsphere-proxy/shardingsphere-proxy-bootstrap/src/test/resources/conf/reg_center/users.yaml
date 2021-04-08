@@ -15,8 +15,5 @@
 # limitations under the License.
 #
 
-users:
-  root:
-    password: root
-  sharding:
-    password: sharding
+- root@%:root
+- sharding@:sharding

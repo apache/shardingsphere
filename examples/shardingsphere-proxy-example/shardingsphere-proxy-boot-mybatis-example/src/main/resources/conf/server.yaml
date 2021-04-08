@@ -33,13 +33,9 @@
 #      operationTimeoutMilliseconds: 500
 #  overwrite: false
 
-authentication:
-  users:
-    root:
-      password: root
-    sharding:
-      password: sharding
-      hostname: '%'
+users:
+  - root@:root
+  - sharding@%:sharding
 
 props:
   max-connections-size-per-query: 1

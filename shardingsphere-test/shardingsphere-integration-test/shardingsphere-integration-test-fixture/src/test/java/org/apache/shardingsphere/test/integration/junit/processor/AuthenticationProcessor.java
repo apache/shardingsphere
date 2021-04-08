@@ -22,10 +22,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Authentication processor.
@@ -36,10 +40,15 @@ public final class AuthenticationProcessor implements Processor<AuthenticationPr
     @SneakyThrows
     public Authentication process(final InputStream stream) {
         YamlProxyServerConfiguration configuration = YamlEngine.unmarshal(ByteStreams.toByteArray(stream), YamlProxyServerConfiguration.class);
-        YamlUserConfiguration user = configuration.getAuthentication().getUsers().get("root");
+        YamlUserConfiguration user = getYamlUserConfigurations(configuration).get("root");
         return new Authentication("root", user.getPassword());
     }
-    
+
+    private Map<String, YamlUserConfiguration> getYamlUserConfigurations(final YamlProxyServerConfiguration configuration) {
+        Collection<YamlUserConfiguration> users = YamlUserConfigurationConverter.convertYamlUserConfiguration(configuration.getUsers());
+        return users.stream().collect(Collectors.toMap(YamlUserConfiguration::getUsername, val -> val));
+    }
+
     @RequiredArgsConstructor
     @Getter
     public static class Authentication {

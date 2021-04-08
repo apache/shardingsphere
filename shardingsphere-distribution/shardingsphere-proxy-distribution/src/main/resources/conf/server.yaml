@@ -33,13 +33,9 @@
 #      operationTimeoutMilliseconds: 500
 #  overwrite: false
 
-#authentication:
-#  users:
-#    root:
-#      password: root
-#      hostname: '%'
-#    sharding:
-#      password: sharding
+#users:
+#  - root@%:root
+#  - sharding@:sharding
 
 #scaling:
 #  blockQueueSize: 10000

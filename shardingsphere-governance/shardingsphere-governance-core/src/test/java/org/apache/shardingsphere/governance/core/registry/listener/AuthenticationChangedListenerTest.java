@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class AuthenticationChangedListenerTest {
     
-    private static final String AUTHENTICATION_YAML = "  users:\n" + "    root1:\n      password: root1\n" + "    root2:\n" + "      password: root2\n";
+    private static final String AUTHENTICATION_YAML = "- root1@:root1\n" + "- root2@:root2\n";
     
     private AuthenticationChangedListener authenticationChangedListener;
     

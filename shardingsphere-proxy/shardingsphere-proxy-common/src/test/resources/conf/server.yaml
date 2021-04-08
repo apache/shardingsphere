@@ -22,10 +22,8 @@ governance:
     serverLists: localhost:2181
   overwrite: false
 
-authentication:
-  users:
-    root:
-      password: root
+users:
+    - root@:root
 
 props:
   max-connections-size-per-query: 1
