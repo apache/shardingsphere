@@ -39,6 +39,7 @@ import org.apache.shardingsphere.scaling.core.config.ServerConfiguration;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -95,7 +96,8 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
         Map<String, Map<String, DataSourceParameter>> schemaDataSources = loadDataSourceParametersMap(schemaNames);
         Map<String, Collection<RuleConfiguration>> schemaRules = loadSchemaRules(schemaNames);
         Properties props = governanceFacade.getRegistryCenter().loadProperties();
-        return new ProxyConfiguration(schemaDataSources, schemaRules, governanceFacade.getRegistryCenter().loadUserRule(), props);
+        // TODO load global rules from reg center
+        return new ProxyConfiguration(schemaDataSources, schemaRules, Collections.emptyList(), governanceFacade.getRegistryCenter().loadUserRule(), props);
     }
     
     private Map<String, Map<String, DataSourceParameter>> loadDataSourceParametersMap(final Collection<String> schemaNames) {

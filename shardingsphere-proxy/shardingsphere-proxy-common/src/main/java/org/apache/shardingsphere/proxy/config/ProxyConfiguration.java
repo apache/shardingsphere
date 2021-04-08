@@ -38,6 +38,8 @@ public final class ProxyConfiguration {
     
     private final Map<String, Collection<RuleConfiguration>> schemaRules;
     
+    private final Collection<RuleConfiguration> globalRules;
+    
     private final Collection<ShardingSphereUser> users;
     
     private final Properties props;

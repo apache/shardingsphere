@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.discovery.common.rule.biulder;
 
 import org.apache.shardingsphere.db.discovery.common.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.rule.builder.ShardingSphereRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.SchemaRuleBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.db.discovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilderTest {
     
     static {
-        ShardingSphereServiceLoader.register(ShardingSphereRuleBuilder.class);
+        ShardingSphereServiceLoader.register(SchemaRuleBuilder.class);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -46,8 +46,8 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilderTest {
         DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration(
                 "name", Collections.singletonList("name"), "discoveryTypeName");
         when(algorithmProvidedRuleConfig.getDataSources()).thenReturn(Collections.singletonList(ruleConfig));
-        ShardingSphereRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(
-                Collections.singletonList(algorithmProvidedRuleConfig), ShardingSphereRuleBuilder.class).get(algorithmProvidedRuleConfig);
+        SchemaRuleBuilder builder = OrderedSPIRegistry.getRegisteredServices(
+                Collections.singletonList(algorithmProvidedRuleConfig), SchemaRuleBuilder.class).get(algorithmProvidedRuleConfig);
         assertThat(builder.build("", Collections.emptyMap(), mock(DatabaseType.class), algorithmProvidedRuleConfig, Collections.emptyList(), Collections.emptyList()), 
                 instanceOf(DatabaseDiscoveryRule.class));
     }

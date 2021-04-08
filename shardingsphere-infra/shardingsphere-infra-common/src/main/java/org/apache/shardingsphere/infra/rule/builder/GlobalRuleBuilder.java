@@ -5,7 +5,7 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -15,32 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.spi;
+package org.apache.shardingsphere.infra.rule.builder;
 
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
+import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
 import java.util.Collection;
 import java.util.Map;
 
 /**
- * Privilege load algorithm.
+ * Global rule builder.
+ * 
+ * @param <R> type of global rule
+ * @param <T> type of rule configuration
  */
-public interface PrivilegeLoadAlgorithm extends ShardingSphereAlgorithm {
+public interface GlobalRuleBuilder<R extends GlobalRule, T extends RuleConfiguration> extends OrderedSPI<T> {
     
     /**
-     * Load privileges.
-     * 
-     * @param databaseType database type
+     * Build global rule.
+     *
      * @param mataDataMap mata data map
-     * @param rules rules
+     * @param databaseType database type
+     * @param ruleConfig rule configuration
      * @param users users
-     * @return user and privileges map
+     * @param builtRules built rules
+     * @return global rule
      */
-    Map<ShardingSphereUser, ShardingSpherePrivileges> load(DatabaseType databaseType, Map<String, ShardingSphereMetaData> mataDataMap, 
-                                                           Collection<ShardingSphereRule> rules, Collection<ShardingSphereUser> users);
+    R build(Map<String, ShardingSphereMetaData> mataDataMap, DatabaseType databaseType, T ruleConfig, Collection<ShardingSphereUser> users, Collection<ShardingSphereRule> builtRules);
 }

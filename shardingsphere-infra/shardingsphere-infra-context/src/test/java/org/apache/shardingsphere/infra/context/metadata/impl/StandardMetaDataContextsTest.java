@@ -41,8 +41,8 @@ public final class StandardMetaDataContextsTest {
     @Test
     public void assertGetDefaultMetaData() {
         ShardingSphereMetaData metaData = getShardingSphereMetaData();
-        StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(
-                Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), null, new ShardingSphereUsers(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+        StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(Collections.singletonMap(DefaultSchema.LOGIC_NAME, metaData), 
+                mock(ShardingSphereRuleMetaData.class), null, new ShardingSphereUsers(Collections.emptyList()), new ConfigurationProperties(new Properties()));
         assertThat(standardMetaDataContexts.getDefaultMetaData(), is(metaData));
     }
     
@@ -50,8 +50,8 @@ public final class StandardMetaDataContextsTest {
     public void assertClose() {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
         ShardingSphereMetaData metaData = getShardingSphereMetaData();
-        StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(
-                Collections.singletonMap("logic_db", metaData), executorEngine, new ShardingSphereUsers(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+        StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts(Collections.singletonMap("logic_db", metaData), 
+                mock(ShardingSphereRuleMetaData.class), executorEngine, new ShardingSphereUsers(Collections.emptyList()), new ConfigurationProperties(new Properties()));
         standardMetaDataContexts.close();
         verify(executorEngine).close();
     }
