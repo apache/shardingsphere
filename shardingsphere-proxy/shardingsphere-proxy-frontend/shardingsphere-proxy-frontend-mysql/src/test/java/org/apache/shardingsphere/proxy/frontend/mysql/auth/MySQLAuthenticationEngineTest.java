@@ -152,7 +152,7 @@ public final class MySQLAuthenticationEngineTest {
     private void setMetaDataContexts() throws NoSuchFieldException, IllegalAccessException {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), new StandardMetaDataContexts(Collections.singletonMap("sharding_db", mockShardingSphereMetaData()),
+        field.set(ProxyContext.getInstance(), new StandardMetaDataContexts(Collections.singletonMap("sharding_db", mockShardingSphereMetaData()), mock(ShardingSphereRuleMetaData.class),
                 mock(ExecutorEngine.class), new ShardingSphereUsers(Collections.emptyList()), new ConfigurationProperties(new Properties())));
     }
     
