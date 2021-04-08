@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
 
 import javax.sql.DataSource;
@@ -28,15 +29,15 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * ShardingSphere rule builder.
+ * Schema rule builder.
  * 
- * @param <R> type of ShardingSphere rule
+ * @param <R> type of schema rule
  * @param <T> type of rule configuration
  */
-public interface ShardingSphereRuleBuilder<R extends ShardingSphereRule, T extends RuleConfiguration> extends OrderedSPI<T> {
+public interface SchemaRuleBuilder<R extends SchemaRule, T extends RuleConfiguration> extends OrderedSPI<T> {
     
     /**
-     * Build ShardingSphere rule.
+     * Build Schema rule.
      *
      * @param schemaName schema name
      * @param dataSourceMap dataSource map
@@ -44,7 +45,7 @@ public interface ShardingSphereRuleBuilder<R extends ShardingSphereRule, T exten
      * @param ruleConfig rule configuration
      * @param users users
      * @param builtRules built rules
-     * @return ShardingSphere rule
+     * @return schema rule
      */
     R build(String schemaName, Map<String, DataSource> dataSourceMap, DatabaseType databaseType, T ruleConfig, Collection<ShardingSphereUser> users, Collection<ShardingSphereRule> builtRules);
 }

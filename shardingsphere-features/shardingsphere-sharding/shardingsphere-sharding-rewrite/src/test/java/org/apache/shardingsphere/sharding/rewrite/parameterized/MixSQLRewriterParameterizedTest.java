@@ -80,7 +80,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     protected Collection<SQLRewriteUnit> createSQLRewriteUnits() throws IOException {
         YamlRootRuleConfigurations ruleConfigurations = createRuleConfigurations();
         String databaseType = null == getTestParameters().getDatabaseType() ? "MySQL" : getTestParameters().getDatabaseType();
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.build("schema_name", new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.buildSchemaRules("schema_name", new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
                 ruleConfigurations.getRules()), DatabaseTypeRegistry.getTrunkDatabaseType(databaseType),
                 new YamlDataSourceConfigurationSwapper().swapToDataSources(ruleConfigurations.getDataSources()), Collections.emptyList());
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType);

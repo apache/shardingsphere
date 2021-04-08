@@ -15,9 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.fixture;
+package org.apache.shardingsphere.infra.rule.scope;
 
-import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-public final class TestShardingSphereRule implements SchemaRule {
+/**
+ * Global rule.
+ */
+public interface GlobalRule extends ShardingSphereRule {
 }

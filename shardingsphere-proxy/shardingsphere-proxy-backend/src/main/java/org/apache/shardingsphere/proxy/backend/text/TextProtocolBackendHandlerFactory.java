@@ -88,8 +88,8 @@ public final class TextProtocolBackendHandlerFactory {
     }
     
     private static void sqlCheck(final BackendConnection backendConnection, final SQLStatement sqlStatement) {
+        // TODO :Authority, need to refactor after GlobalRule is added
         if (!Strings.isNullOrEmpty(backendConnection.getSchemaName())) {
-            // TODO need to refactor after GlobalRule is added
             MetaDataContexts contexts = ProxyContext.getInstance().getMetaDataContexts();
             SQLCheckEngine.check(sqlStatement, Collections.emptyList(), contexts.getMetaData(backendConnection.getSchemaName()), backendConnection.getGrantee());
         }

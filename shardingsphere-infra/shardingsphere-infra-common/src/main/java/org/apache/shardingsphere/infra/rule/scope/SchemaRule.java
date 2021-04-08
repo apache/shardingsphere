@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.user.yaml.config;
+package org.apache.shardingsphere.infra.rule.scope;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
-
-import java.util.Map;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**
- * Users configuration for YAML.
+ * Schema rule.
  */
-@Getter
-@Setter
-public final class YamlUsersConfiguration implements YamlConfiguration {
-    
-    private Map<String, YamlUserConfiguration> users;
+public interface SchemaRule extends ShardingSphereRule {
 }
