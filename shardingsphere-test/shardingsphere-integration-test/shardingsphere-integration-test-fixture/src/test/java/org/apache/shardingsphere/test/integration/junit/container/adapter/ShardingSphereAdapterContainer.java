@@ -19,15 +19,16 @@ package org.apache.shardingsphere.test.integration.junit.container.adapter;
 
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 
 /**
  * ShardingSphere adapter container.
@@ -35,25 +36,28 @@ import javax.sql.DataSource;
 public abstract class ShardingSphereAdapterContainer extends ShardingSphereContainer {
     
     @Getter
-    private Authentication authentication;
+    private final YamlUserConfiguration authentication;
     
     public ShardingSphereAdapterContainer(final String dockerName, final String dockerImageName, final ParameterizedArray parameterizedArray) {
         this(dockerName, dockerImageName, false, parameterizedArray);
-        this.authentication = loadAuthentication(parameterizedArray);
     }
     
     @SneakyThrows
-    private Authentication loadAuthentication(final ParameterizedArray parameterizedArray) {
-        YamlProxyServerConfiguration proxyServerConfiguration = YamlEngine.unmarshal(
+    public ShardingSphereAdapterContainer(final String dockerName, final String dockerImageName, final boolean isFakeContainer, final ParameterizedArray parameterizedArray) {
+        super(dockerName, dockerImageName, isFakeContainer, parameterizedArray);
+        this.authentication = loadAuthentication(parameterizedArray);
+    }
+    
+    private YamlUserConfiguration loadAuthentication(final ParameterizedArray parameterizedArray) throws IOException {
+        YamlProxyServerConfiguration configuration = YamlEngine.unmarshal(
                 ByteStreams.toByteArray(this.getClass().getResourceAsStream("/docker/" + parameterizedArray.getScenario() + "/proxy/conf/server.yaml")),
                 YamlProxyServerConfiguration.class
         );
-        YamlUserConfiguration configuration = proxyServerConfiguration.getAuthentication().getUsers().get("root");
-        return new Authentication("root", configuration.getPassword());
-    }
-    
-    public ShardingSphereAdapterContainer(final String dockerName, final String dockerImageName, final boolean isFakeContainer, final ParameterizedArray parameterizedArray) {
-        super(dockerName, dockerImageName, isFakeContainer, parameterizedArray);
+        return YamlUserConfigurationConverter.convertYamlUserConfiguration(configuration.getUsers())
+                .stream()
+                .filter(each -> "root".equals(each.getUsername()))
+                .findFirst()
+                .orElse(new YamlUserConfiguration());
     }
     
     /**
@@ -63,12 +67,4 @@ public abstract class ShardingSphereAdapterContainer extends ShardingSphereConta
      */
     public abstract DataSource getDataSource();
     
-    @Getter
-    @RequiredArgsConstructor
-    public static class Authentication {
-        
-        private final String user;
-        
-        private final String password;
-    }
 }
