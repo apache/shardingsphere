@@ -46,7 +46,7 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     }
     
     @Override
-    protected ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) {
+    public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) {
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
         if (!DataSourceValidator.validate(dataSources)) {
