@@ -58,7 +58,8 @@ public final class OraclePrivilegeLoader implements StoragePrivilegeLoader {
         return result;
     }
 
-    private void fillTablePrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap, final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
+    private void fillTablePrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap, final DataSource dataSource,
+                                     final Collection<ShardingSphereUser> users) throws SQLException {
         Map<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> privilegeCache = new HashMap<>();
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
@@ -71,7 +72,8 @@ public final class OraclePrivilegeLoader implements StoragePrivilegeLoader {
         fillTablePrivileges(privilegeCache, userPrivilegeMap);
     }
 
-    private void fillTablePrivileges(final Map<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> privilegeCache, final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap) {
+    private void fillTablePrivileges(final Map<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> privilegeCache, 
+                                     final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap) {
         for (Entry<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> entry : privilegeCache.entrySet()) {
             for (String db : entry.getValue().keySet()) {
                 for (String tableName : entry.getValue().get(db).keySet()) {
@@ -101,7 +103,8 @@ public final class OraclePrivilegeLoader implements StoragePrivilegeLoader {
         }
     }
 
-    private void fillSysPrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap, final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
+    private void fillSysPrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap, final DataSource dataSource, 
+                                   final Collection<ShardingSphereUser> users) throws SQLException {
         Map<ShardingSphereUser, List<PrivilegeType>> privilegeCache = new HashMap<>();
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
@@ -114,7 +117,7 @@ public final class OraclePrivilegeLoader implements StoragePrivilegeLoader {
         fillSysPrivileges(privilegeCache, userPrivilegeMap);
     }
 
-    private void fillSysPrivileges(final Map<ShardingSphereUser,List<PrivilegeType>> privilegeCache, final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap) throws SQLException {
+    private void fillSysPrivileges(final Map<ShardingSphereUser, List<PrivilegeType>> privilegeCache, final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap) throws SQLException {
         for (Entry<ShardingSphereUser, List<PrivilegeType>> entry : privilegeCache.entrySet()) {
             userPrivilegeMap.get(entry.getKey()).getAdministrativePrivileges().getPrivileges().addAll(entry.getValue());
         }
