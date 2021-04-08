@@ -41,6 +41,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -70,6 +71,10 @@ public final class SQLServerPrivilegeLoaderTest {
                 PrivilegeType.DELETE));
         SchemaPrivileges schemaPrivileges = actual.get(user).getDatabasePrivileges().getSpecificPrivileges().get("db0");
         assertThat(schemaPrivileges.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege), is(true));
+
+        assertThat(actual.get(user).getAdministrativePrivileges().getPrivileges().size(), is(1));
+        Collection<PrivilegeType> expectedAdministrativePrivilege = new CopyOnWriteArraySet(Arrays.asList(PrivilegeType.CONNECT));
+        assertEquals(actual.get(user).getAdministrativePrivileges().getPrivileges(), expectedAdministrativePrivilege);
     }
 
     private Collection<ShardingSphereUser> createUsers() {
@@ -84,6 +89,11 @@ public final class SQLServerPrivilegeLoaderTest {
         String tablePrivilegeSql = "SELECT GRANTOR, GRANTEE, TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, PRIVILEGE_TYPE, IS_GRANTABLE from INFORMATION_SCHEMA.TABLE_PRIVILEGES WHERE GRANTEE IN (%s)";
         String userList = users.stream().map(item -> String.format("'%s'", item.getGrantee().getUsername())).collect(Collectors.joining(", "));
         when(result.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSql, userList))).thenReturn(tablePrivilegeResultSet);
+        ResultSet schemaPrivilegeResultSet = mockSchemaPrivilegeResultSet();
+        String schemaPrivilegeSql = "SELECT pr.name AS GRANTEE, pe.state_desc AS STATE, pe.permission_name AS PRIVILEGE_TYPE "
+                + "FROM sys.database_principals AS pr JOIN sys.database_permissions AS pe "
+                + "ON pe.grantee_principal_id = pr.principal_id WHERE pr.name IN (%s)";
+        when(result.getConnection().createStatement().executeQuery(String.format(schemaPrivilegeSql, userList))).thenReturn(schemaPrivilegeResultSet);
         return result;
     }
 
@@ -95,6 +105,15 @@ public final class SQLServerPrivilegeLoaderTest {
         when(result.getString("PRIVILEGE_TYPE")).thenReturn("INSERT", "SELECT", "UPDATE", "DELETE", "REFERENCES");
         when(result.getString("IS_GRANTABLE")).thenReturn("YES", "YES", "YES", "YES", "YES", "YES", "YES");
         when(result.getString("GRANTEE")).thenReturn("dbo");
+        return result;
+    }
+
+    private ResultSet mockSchemaPrivilegeResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("STATE")).thenReturn("GRANT");
+        when(result.getString("GRANTEE")).thenReturn("dbo");
+        when(result.getString("PRIVILEGE_TYPE")).thenReturn("CONNECT");
         return result;
     }
 }
