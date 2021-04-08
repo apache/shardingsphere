@@ -27,6 +27,7 @@ import java.util.Properties;
 /**
  * Environment properties.
  */
+// FIXME rename EnvironmentPropertiesLoader
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EnvironmentProperties {
     

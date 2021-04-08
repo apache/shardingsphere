@@ -61,7 +61,7 @@ public final class IntegrationTestEnvironment {
     
     private Map<DatabaseType, Map<String, DataSourceEnvironment>> dataSourceEnvironments;
     
-    private final Map<String, DataSourceEnvironment> proxyEnvironments;
+//    private final Map<String, DataSourceEnvironment> proxyEnvironments;
     
     private IntegrationTestEnvironment() {
         Properties engineEnvProps = EnvironmentProperties.loadProperties("env/engine-env.properties");
@@ -76,7 +76,7 @@ public final class IntegrationTestEnvironment {
             dataSourceEnvironments = mergeDataSourceEnvironments(embeddedDatabaseProps);
             createEmbeddedDatabases(embeddedDatabaseProps);
         }
-        proxyEnvironments = createProxyEnvironments(databaseProps);
+//        proxyEnvironments = createProxyEnvironments(databaseProps);
     }
     
     private EnvironmentType getEnvironmentType(final Properties engineEnvProps) {
@@ -190,13 +190,13 @@ public final class IntegrationTestEnvironment {
     
     @SuppressWarnings("CallToDriverManagerGetConnection")
     private boolean isProxyReady(final String scenario) {
-        DataSourceEnvironment dataSourceEnv = proxyEnvironments.get(scenario);
-        try (Connection connection = DriverManager.getConnection(dataSourceEnv.getURL(scenario), dataSourceEnv.getUsername(), dataSourceEnv.getPassword());
-             Statement statement = connection.createStatement()) {
-            statement.execute("SELECT 1");
-        } catch (final SQLException ignore) {
-            return false;
-        }
+//        DataSourceEnvironment dataSourceEnv = proxyEnvironments.get(scenario);
+//        try (Connection connection = DriverManager.getConnection(dataSourceEnv.getURL(scenario), dataSourceEnv.getUsername(), dataSourceEnv.getPassword());
+//             Statement statement = connection.createStatement()) {
+//            statement.execute("SELECT 1");
+//        } catch (final SQLException ignore) {
+//            return false;
+//        }
         return true;
     }
     
