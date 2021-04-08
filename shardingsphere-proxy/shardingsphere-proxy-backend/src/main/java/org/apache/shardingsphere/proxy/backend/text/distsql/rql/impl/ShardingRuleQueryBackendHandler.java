@@ -26,6 +26,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.proxy.backend.response.header.query.impl.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
@@ -86,24 +87,47 @@ public final class ShardingRuleQueryBackendHandler extends SchemaRequiredBackend
         Optional<ShardingRuleConfiguration> ruleConfig = ProxyContext.getInstance().getMetaData(schema).getRuleMetaData().getConfigurations()
                 .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findFirst();
         if (ruleConfig.isPresent()) {
-            List<List<String>> bindingTables = ruleConfig.get().getBindingTableGroups().stream().filter(each -> null != each && !each.isEmpty()).map(each -> Arrays.asList(each.split(",")))
-                    .collect(Collectors.toList());
-            for (ShardingTableRuleConfiguration each : ruleConfig.get().getTables()) {
-                Map<String, Object> table = new HashMap<>();
-                table.put("name", each.getLogicTable());
-                table.put("actualDataNodes", each.getActualDataNodes());
-                ShardingStrategyConfiguration tableShardingStrategy = null != each.getTableShardingStrategy() ? each.getTableShardingStrategy() : ruleConfig.get().getDefaultTableShardingStrategy();
-                table.put("tableStrategy", generateShardingStrategy(ruleConfig.get(), tableShardingStrategy));
-                ShardingStrategyConfiguration databaseShardingStrategy = null != each.getDatabaseShardingStrategy()
-                    ? each.getDatabaseShardingStrategy() : ruleConfig.get().getDefaultDatabaseShardingStrategy();
-                table.put("databaseStrategy", generateShardingStrategy(ruleConfig.get(), databaseShardingStrategy));
-                KeyGenerateStrategyConfiguration keyGenerateStrategy = null != each.getKeyGenerateStrategy() ? each.getKeyGenerateStrategy() : ruleConfig.get().getDefaultKeyGenerateStrategy();
-                table.put("keyGenerateStrategy", generateKeyGenerateStrategy(ruleConfig.get(), keyGenerateStrategy));
-                table.put("bindingTable", generateBindingTable(bindingTables, each.getLogicTable()));
-                result.add(table);
-            }
+            fillTableRule(result, ruleConfig.get());
+            fillAutoTableRule(result, ruleConfig.get());
         }
+        
         return result.iterator();
+    }
+    
+    private void fillTableRule(final List<Map<String, Object>> result, final ShardingRuleConfiguration ruleConfig) {
+        List<List<String>> bindingTables = ruleConfig.getBindingTableGroups().stream().filter(each -> null != each && !each.isEmpty()).map(each -> Arrays.asList(each.split(",")))
+                .collect(Collectors.toList());
+        for (ShardingTableRuleConfiguration each : ruleConfig.getTables()) {
+            Map<String, Object> table = new HashMap<>();
+            table.put("name", each.getLogicTable());
+            table.put("actualDataNodes", each.getActualDataNodes());
+            ShardingStrategyConfiguration tableShardingStrategy = null != each.getTableShardingStrategy() ? each.getTableShardingStrategy() : ruleConfig.getDefaultTableShardingStrategy();
+            table.put("tableStrategy", generateShardingStrategy(ruleConfig, tableShardingStrategy));
+            ShardingStrategyConfiguration databaseShardingStrategy = null != each.getDatabaseShardingStrategy()
+                    ? each.getDatabaseShardingStrategy() : ruleConfig.getDefaultDatabaseShardingStrategy();
+            table.put("databaseStrategy", generateShardingStrategy(ruleConfig, databaseShardingStrategy));
+            KeyGenerateStrategyConfiguration keyGenerateStrategy = null != each.getKeyGenerateStrategy() ? each.getKeyGenerateStrategy() : ruleConfig.getDefaultKeyGenerateStrategy();
+            table.put("keyGenerateStrategy", generateKeyGenerateStrategy(ruleConfig, keyGenerateStrategy));
+            table.put("bindingTable", generateBindingTable(bindingTables, each.getLogicTable()));
+            result.add(table);
+        }
+    }
+    
+    private void fillAutoTableRule(final List<Map<String, Object>> result, final ShardingRuleConfiguration ruleConfig) {
+        List<List<String>> bindingTables = ruleConfig.getBindingTableGroups().stream().filter(each -> null != each && !each.isEmpty()).map(each -> Arrays.asList(each.split(",")))
+                .collect(Collectors.toList());
+        for (ShardingAutoTableRuleConfiguration each : ruleConfig.getAutoTables()) {
+            Map<String, Object> table = new HashMap<>();
+            table.put("name", each.getLogicTable());
+            table.put("actualDataNodes", each.getActualDataSources());
+            ShardingStrategyConfiguration tableShardingStrategy = null != each.getShardingStrategy() ? each.getShardingStrategy() : ruleConfig.getDefaultTableShardingStrategy();
+            table.put("tableStrategy", generateShardingStrategy(ruleConfig, tableShardingStrategy));
+            table.put("databaseStrategy", "auto");
+            KeyGenerateStrategyConfiguration keyGenerateStrategy = null != each.getKeyGenerateStrategy() ? each.getKeyGenerateStrategy() : ruleConfig.getDefaultKeyGenerateStrategy();
+            table.put("keyGenerateStrategy", generateKeyGenerateStrategy(ruleConfig, keyGenerateStrategy));
+            table.put("bindingTable", generateBindingTable(bindingTables, each.getLogicTable()));
+            result.add(table);
+        }
     }
     
     private String generateBindingTable(final List<List<String>> bindingTableGroups, final String tableName) {
