@@ -108,9 +108,8 @@ public final class OraclePrivilegeLoaderTest {
         when(result.getString("TABLE_SCHEMA")).thenReturn("sys");
         when(result.getString("TABLE_NAME")).thenReturn("t_order");
         when(result.getString("PRIVILEGE")).thenReturn("SELECT", "INSERT", "DELETE", "UPDATE");
-        when(result.getString("GRANTABLE")).thenReturn("YES",  "YES", "FALSE", "YES");
+        when(result.getString("GRANTABLE")).thenReturn("YES", "YES", "FALSE", "YES");
         when(result.getString("GRANTEE")).thenReturn("admin");
         return result;
     }
-
 }
