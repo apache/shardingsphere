@@ -39,8 +39,7 @@ import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfiguration;
-import org.apache.shardingsphere.infra.metadata.user.yaml.swapper.UsersYamlSwapper;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -99,7 +98,7 @@ public final class RegistryCenterTest {
     
     private static final String SHADOW_RULE_YAML = "yaml/registryCenter/data-shadow-rule.yaml";
     
-    private static final String AUTHENTICATION_YAML = "yaml/registryCenter/data-authentication.yaml";
+    private static final String USERS_YAML = "yaml/registryCenter/data-users.yaml";
     
     private static final String PROPS_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": false\n";
     
@@ -319,8 +318,8 @@ public final class RegistryCenterTest {
     @Test
     public void assertPersistGlobalConfiguration() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
-        registryCenter.persistGlobalConfiguration(new UsersYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(AUTHENTICATION_YAML), YamlUsersConfiguration.class)), createProperties(), true);
-        verify(registryRepository, times(0)).persist("/authentication", readYAML(AUTHENTICATION_YAML));
+        registryCenter.persistGlobalConfiguration(YamlUserConfigurationConverter.convertShardingSphereUser(YamlEngine.unmarshal(readYAML(USERS_YAML), Collection.class)), createProperties(), true);
+        verify(registryRepository, times(0)).persist("/users", readYAML(USERS_YAML));
         verify(registryRepository).persist("/props", PROPS_YAML);
     }
     
@@ -368,7 +367,7 @@ public final class RegistryCenterTest {
     private Collection<RuleConfiguration> createShadowRuleConfiguration() {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SHADOW_RULE_YAML), YamlRootRuleConfigurations.class).getRules());
     }
-    
+
     private Properties createProperties() {
         Properties result = new Properties();
         result.put(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.FALSE);
@@ -475,10 +474,10 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertLoadAuthentication() {
-        when(registryRepository.get("/authentication")).thenReturn(readYAML(AUTHENTICATION_YAML));
+    public void assertLoadUsers() {
+        when(registryRepository.get("/users")).thenReturn(readYAML(USERS_YAML));
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
-        Collection<ShardingSphereUser> actual = registryCenter.loadUserRule();
+        Collection<ShardingSphereUser> actual = registryCenter.loadUsers();
         Optional<ShardingSphereUser> user = actual.stream().filter(each -> each.getGrantee().equals(new Grantee("root1", ""))).findFirst();
         assertTrue(user.isPresent());
         assertThat(user.get().getPassword(), is("root1"));

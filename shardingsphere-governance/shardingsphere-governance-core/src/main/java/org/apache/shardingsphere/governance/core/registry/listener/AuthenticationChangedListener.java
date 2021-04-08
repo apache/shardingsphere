@@ -34,11 +34,11 @@ import java.util.Optional;
 public final class AuthenticationChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
     public AuthenticationChangedListener(final RegistryRepository registryRepository) {
-        super(registryRepository, Collections.singletonList(new RegistryCenterNode().getAuthenticationPath()));
+        super(registryRepository, Collections.singletonList(new RegistryCenterNode().getUsersNode()));
     }
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        return Optional.of(new UserRuleChangedEvent(YamlConfigurationConverter.convertUserRule(event.getValue())));
+        return Optional.of(new UserRuleChangedEvent(YamlConfigurationConverter.convertUsers(event.getValue())));
     }
 }
