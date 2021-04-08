@@ -23,8 +23,6 @@ import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
-import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfiguration;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
@@ -156,7 +154,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     
     private YamlProxyServerConfiguration createYamlProxyServerConfiguration() {
         YamlProxyServerConfiguration result = new YamlProxyServerConfiguration();
-        result.setAuthentication(createYamlUserRuleConfiguration());
+        result.getUsers().add("root@:root");
         result.setProps(createProperties());
         return result;
     }
@@ -167,21 +165,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         result.setProperty("beta-2", "beta-B");
         return result;
     }
-    
-    private YamlUsersConfiguration createYamlUserRuleConfiguration() {
-        Map<String, YamlUserConfiguration> users = new HashMap<>(1, 1);
-        users.put("root", createYamlUserConfiguration());
-        YamlUsersConfiguration result = new YamlUsersConfiguration();
-        result.setUsers(users);
-        return result;
-    }
-    
-    private YamlUserConfiguration createYamlUserConfiguration() {
-        YamlUserConfiguration result = new YamlUserConfiguration();
-        result.setPassword("root");
-        return result;
-    }
-    
+
     @Test
     public void assertDecorateMetaDataContexts() {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);

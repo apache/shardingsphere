@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -132,12 +133,9 @@ public final class DataSourceConfiguration {
     
     private Optional<Method> findSetterMethod(final Method[] methods, final String property) {
         String setterMethodName = Joiner.on("").join(SETTER_PREFIX, CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, property));
-        for (Method each : methods) {
-            if (each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
+        return Arrays.stream(methods)
+                .filter(each -> each.getName().equals(setterMethodName) && 1 == each.getParameterTypes().length)
+                .findFirst();
     }
     
     /**

@@ -39,6 +39,6 @@ public final class PrivilegeNodeChangedListener extends PostGovernanceRepository
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        return Optional.of(new PrivilegeChangedEvent(YamlConfigurationConverter.convertUserRule(event.getValue())));
+        return Optional.of(new PrivilegeChangedEvent(YamlConfigurationConverter.convertUsers(event.getValue())));
     }
 }

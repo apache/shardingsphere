@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.config.yaml.swapper;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceCenterConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -24,8 +25,6 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
-import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -196,15 +195,13 @@ public final class YamlProxyConfigurationSwapperTest {
     }
     
     private void prepareAuthentication(final YamlProxyServerConfiguration yamlProxyServerConfig) {
-        Map<String, YamlUserConfiguration> yamlUserConfigurationMap = new HashMap<>(1, 1);
-        YamlUserConfiguration yamlUserConfig = mock(YamlUserConfiguration.class);
-        when(yamlUserConfig.getPassword()).thenReturn("pass");
-        yamlUserConfigurationMap.put("user1", yamlUserConfig);
-        YamlUsersConfiguration userRuleConfiguration = mock(YamlUsersConfiguration.class);
-        when(userRuleConfiguration.getUsers()).thenReturn(yamlUserConfigurationMap);
-        when(yamlProxyServerConfig.getAuthentication()).thenReturn(userRuleConfiguration);
+        when(yamlProxyServerConfig.getUsers()).thenReturn(getUsers());
     }
-    
+
+    private Collection<String> getUsers() {
+        return Lists.newArrayList("user1@:pass");
+    }
+
     private YamlProxyServerConfiguration getYamlProxyServerConfiguration(final YamlProxyConfiguration yamlProxyConfig) {
         YamlProxyServerConfiguration result = mock(YamlProxyServerConfiguration.class);
         when(yamlProxyConfig.getServerConfiguration()).thenReturn(result);
