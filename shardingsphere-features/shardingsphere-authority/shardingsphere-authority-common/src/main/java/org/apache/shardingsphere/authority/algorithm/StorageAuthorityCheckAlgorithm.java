@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.engine.impl;
+package org.apache.shardingsphere.authority.algorithm;
 
 import org.apache.shardingsphere.authority.loader.storage.StoragePrivilegeLoadEngine;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
