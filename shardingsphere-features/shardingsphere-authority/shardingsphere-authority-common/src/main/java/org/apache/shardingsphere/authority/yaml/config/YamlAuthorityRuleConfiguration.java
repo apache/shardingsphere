@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.yaml.config.algorithm.YamlShardingSphereA
 @Setter
 public final class YamlAuthorityRuleConfiguration implements YamlRuleConfiguration {
     
-    private YamlShardingSphereAlgorithmConfiguration privilegeLoader;
+    private YamlShardingSphereAlgorithmConfiguration checker;
     
     @Override
     public Class<AuthorityRuleConfiguration> getRuleConfigurationType() {

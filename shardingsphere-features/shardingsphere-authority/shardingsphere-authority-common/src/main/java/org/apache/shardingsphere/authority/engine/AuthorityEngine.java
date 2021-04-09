@@ -19,6 +19,7 @@ package org.apache.shardingsphere.authority.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.authority.spi.AuthorityCheckAlgorithm;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
@@ -31,7 +32,7 @@ import java.util.Optional;
 public final class AuthorityEngine {
     
     static {
-        ShardingSphereServiceLoader.register(ShardingSphereAuthority.class);
+        ShardingSphereServiceLoader.register(AuthorityCheckAlgorithm.class);
     }
     
     /**
@@ -39,8 +40,8 @@ public final class AuthorityEngine {
      * 
      * @return authority
      */
-    public static Optional<ShardingSphereAuthority> findSPIAuthority() {
-        Collection<ShardingSphereAuthority> authorities = ShardingSphereServiceLoader.newServiceInstances(ShardingSphereAuthority.class);
+    public static Optional<AuthorityCheckAlgorithm> findSPIAuthority() {
+        Collection<AuthorityCheckAlgorithm> authorities = ShardingSphereServiceLoader.newServiceInstances(AuthorityCheckAlgorithm.class);
         return authorities.isEmpty() ? Optional.empty() : Optional.of(authorities.iterator().next());
     }
 }

@@ -17,29 +17,37 @@
 
 package org.apache.shardingsphere.authority.engine.impl;
 
-import org.apache.shardingsphere.authority.engine.ShardingSphereAuthority;
+import org.apache.shardingsphere.authority.loader.storage.StoragePrivilegeLoadAlgorithm;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.spi.AuthorityCheckAlgorithm;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Default authority.
+ * Storage authority check algorithm.
 */
-public final class DefaultAuthority implements ShardingSphereAuthority {
+public final class StorageAuthorityCheckAlgorithm implements AuthorityCheckAlgorithm {
     
     private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
     
     @Override
-    public void init(final Map<ShardingSphereUser, ShardingSpherePrivileges> loadedUserPrivilegeMap) {
-        userPrivilegeMap.putAll(loadedUserPrivilegeMap);
+    public void init(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
+        userPrivilegeMap.putAll(new StoragePrivilegeLoadAlgorithm().load(mataDataMap, users));
     }
     
     @Override
     public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
         return userPrivilegeMap.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst().map(userPrivilegeMap::get);
+    }
+    
+    @Override
+    public String getType() {
+        return "STORAGE";
     }
 }
