@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.infra.rule.builder;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -31,8 +28,6 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -80,27 +75,8 @@ public final class ShardingSphereRulesBuilder {
         Map<RuleConfiguration, GlobalRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(globalRuleConfigurations, GlobalRuleBuilder.class);
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, GlobalRuleBuilder> entry : builders.entrySet()) {
-            DatabaseType databaseType = mataDataMap.isEmpty() ? new MySQLDatabaseType() : getDatabaseType(mataDataMap.values().iterator().next().getResource().getDataSources());
-            result.add(entry.getValue().build(mataDataMap, databaseType, entry.getKey(), users));
+            result.add(entry.getValue().build(mataDataMap, entry.getKey(), users));
         }
         return result;
-    }
-    
-    private static DatabaseType getDatabaseType(final Map<String, DataSource> dataSourceMap) {
-        DatabaseType result = null;
-        for (DataSource each : dataSourceMap.values()) {
-            DatabaseType databaseType = getDatabaseType(each);
-            Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
-            result = databaseType;
-        }
-        return null == result ? DatabaseTypeRegistry.getDefaultDatabaseType() : result;
-    }
-    
-    private static DatabaseType getDatabaseType(final DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
-        } catch (final SQLException ex) {
-            return null;
-        }
     }
 }
