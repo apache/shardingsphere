@@ -19,13 +19,15 @@ package org.apache.shardingsphere.test.integration.env.database.initialization.t
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
-import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
+import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Database SQL initialization for Default.
@@ -37,14 +39,19 @@ public abstract class DefaultDatabaseSQLInitialization {
      *
      * @param scenario scenario
      * @param databaseType database type
+     * @param dataSourceMap datasource map
      *
      * @throws IOException IO exception
      * @throws SQLException SQL exception
      */
-    public void executeInitSQLs(final String scenario, final DatabaseType databaseType) throws IOException, SQLException {
-        // TODO use multiple threads to improve performance
-        DataSource dataSource = ActualDataSourceBuilder.build(null, scenario, databaseType);
+    public void executeInitSQLs(final String scenario, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) throws IOException, SQLException {
         File file = new File(EnvironmentPath.getInitSQLFile(databaseType, scenario));
-        DatabaseEnvironmentManager.executeSQLScript(dataSource, file);
+        // TODO use multiple threads to improve performance
+        for (Map.Entry<String, DataSource> each : dataSourceMap.entrySet()) {
+            try (Connection connection = each.getValue().getConnection();
+                 FileReader reader = new FileReader(file)) {
+                RunScript.execute(connection, reader);
+            }
+        }
     }
 }
