@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlGovernanceConfiguration;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlScalingConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.YamlConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -39,6 +40,8 @@ public final class YamlProxyServerConfiguration implements YamlConfiguration {
     private YamlGovernanceConfiguration governance;
     
     private YamlScalingConfiguration scaling;
+    
+    private Collection<YamlRuleConfiguration> rules = new LinkedList<>();
     
     private Properties props = new Properties();
 }
