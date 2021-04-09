@@ -27,7 +27,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public class InvalidResourceException extends BackendException {
+public final class InvalidResourceException extends BackendException {
     
     private static final long serialVersionUID = 7029641448948791509L;
     
