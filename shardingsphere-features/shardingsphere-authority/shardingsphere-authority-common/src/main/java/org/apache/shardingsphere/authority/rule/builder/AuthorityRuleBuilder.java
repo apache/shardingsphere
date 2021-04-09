@@ -33,7 +33,7 @@ import java.util.Map;
 public final class AuthorityRuleBuilder implements GlobalRuleBuilder<AuthorityRule, AuthorityRuleConfiguration> {
     
     @Override
-    public AuthorityRule build(final Map<String, ShardingSphereMetaData> mataDataMap, final AuthorityRuleConfiguration ruleConfig, final Collection<ShardingSphereUser> users) {
+    public AuthorityRule build(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
         return new AuthorityRule(ruleConfig, mataDataMap, users);
     }
     

@@ -75,7 +75,7 @@ public final class ShardingSphereRulesBuilder {
         Map<RuleConfiguration, GlobalRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(globalRuleConfigurations, GlobalRuleBuilder.class);
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, GlobalRuleBuilder> entry : builders.entrySet()) {
-            result.add(entry.getValue().build(mataDataMap, entry.getKey(), users));
+            result.add(entry.getValue().build(entry.getKey(), mataDataMap, users));
         }
         return result;
     }
