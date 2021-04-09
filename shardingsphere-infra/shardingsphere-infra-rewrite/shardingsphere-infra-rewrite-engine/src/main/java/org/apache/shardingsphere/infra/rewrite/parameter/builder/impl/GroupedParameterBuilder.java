@@ -51,8 +51,8 @@ public final class GroupedParameterBuilder implements ParameterBuilder {
     @Override
     public List<Object> getParameters() {
         List<Object> result = new LinkedList<>();
-        for (int i = 0; i < parameterBuilders.size(); i++) {
-            result.addAll(getParameters(i));
+        for (ParameterBuilder each : parameterBuilders) {
+            result.addAll(each.getParameters());
         }
         result.addAll(genericParameterBuilder.getParameters());
         return result;
