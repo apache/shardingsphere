@@ -40,16 +40,19 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     
     private final DatabaseType databaseType;
     
+    private final DataSourceValidator dataSourceValidator;
+    
     public AddResourceBackendHandler(final DatabaseType databaseType, final AddResourceStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
         this.databaseType = databaseType;
+        this.dataSourceValidator = new DataSourceValidator();
     }
     
     @Override
     public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) {
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
-        if (!DataSourceValidator.validate(dataSources)) {
+        if (!dataSourceValidator.validate(dataSources)) {
             throw new ResourceNotExistedException(dataSources.keySet());
         }
         post(schemaName, dataSources);
