@@ -96,7 +96,8 @@ relationalProperty
     ;
 
 columnDefinition
-    : columnName dataType SORT? visibleClause (defaultNullClause expr | identityClause)? (ENCRYPT encryptionSpecification)? (inlineConstraint+ | inlineRefConstraint)?
+    : columnName (dataType (COLLATE columnCollationName)? )? SORT? visibleClause?
+    (defaultNullClause expr | identityClause)? (ENCRYPT encryptionSpecification)? (inlineConstraint+ | inlineRefConstraint)?
     ;
 
 visibleClause
@@ -240,7 +241,11 @@ tableAlias
     ;
 
 alterDefinitionClause
-    : (alterTableProperties | columnClauses | constraintClauses | alterExternalTable | alterTablePartition)?
+    : (alterTableProperties
+    | columnClauses
+    | constraintClauses
+    | alterTablePartitioning ((DEFERRED| IMMEDIATE) INVALIDATION)?
+    | alterExternalTable)?
     ;
 
 alterTableProperties
@@ -260,11 +265,11 @@ operateColumnClause
     ;
 
 addColumnSpecification
-    : ADD columnOrVirtualDefinitions columnProperties?
+    : ADD LP_ columnOrVirtualDefinitions RP_ columnProperties?
     ;
 
 columnOrVirtualDefinitions
-    : LP_? columnOrVirtualDefinition (COMMA_ columnOrVirtualDefinition)* RP_? | columnOrVirtualDefinition
+    : columnOrVirtualDefinition (COMMA_ columnOrVirtualDefinition)*
     ;
 
 columnOrVirtualDefinition
@@ -420,7 +425,7 @@ rebuildClause
     ;
 
 parallelClause
-    : PARALLEL
+    : NOPARALLEL | PARALLEL INT_NUM_?
     ;
 
 usableSpecification
@@ -464,7 +469,7 @@ segmentAttributesClause
     ;
 
 physicalAttributesClause
-    : (PCTFREE NUMBER_ | PCTUSED NUMBER_ | INITRANS NUMBER_ | storageClause)*
+    : (PCTFREE INT_NUM_ | PCTUSED INT_NUM_ | INITRANS INT_NUM_ | storageClause)*
     ;
 
 loggingClause
@@ -588,7 +593,7 @@ mappingTableClause
     ;
 
 prefixCompression
-    : COMPRESS NUMBER_? | NOCOMPRESS
+    : COMPRESS INT_NUM_? | NOCOMPRESS
     ;
 
 indexOrgOverflowClause
@@ -645,7 +650,7 @@ tablePartitioningClauses
 rangePartitions
     : PARTITION BY RANGE columnNames
       (INTERVAL LP_ expr RP_ (STORE IN LP_ tablespaceName (COMMA_ tablespaceName)* RP_)?)?
-      LP_ PARTITION partition? rangeValuesClause tablePartitionDescription (COMMA_ PARTITION partition? rangeValuesClause tablePartitionDescription externalPartSubpartDataProps?)* RP_
+      LP_ PARTITION partitionName? rangeValuesClause tablePartitionDescription (COMMA_ PARTITION partitionName? rangeValuesClause tablePartitionDescription externalPartSubpartDataProps?)* RP_
     ;
 
 rangeValuesClause
@@ -727,7 +732,7 @@ externalPartSubpartDataProps
 listPartitions
     : PARTITION BY LIST columnNames
       (AUTOMATIC (STORE IN LP_? tablespaceName (COMMA_ tablespaceName)* RP_?))?
-      LP_ PARTITION partition? listValuesClause tablePartitionDescription (COMMA_ PARTITION partition? listValuesClause tablePartitionDescription externalPartSubpartDataProps?)* RP_
+      LP_ PARTITION partitionName? listValuesClause tablePartitionDescription (COMMA_ PARTITION partitionName? listValuesClause tablePartitionDescription externalPartSubpartDataProps?)* RP_
     ;
 
 listValuesClause
@@ -756,7 +761,7 @@ advancedIndexCompression
     ;
 
 individualHashPartitions
-    : LP_? (PARTITION partition? readOnlyClause? indexingClause? partitioningStorageClause?) (COMMA_ PARTITION partition? readOnlyClause? indexingClause? partitioningStorageClause?)* RP_?
+    : LP_? (PARTITION partitionName? readOnlyClause? indexingClause? partitioningStorageClause?) (COMMA_ PARTITION partitionName? readOnlyClause? indexingClause? partitioningStorageClause?)* RP_?
     ;
 
 partitioningStorageClause
@@ -841,7 +846,7 @@ referencePartitioning
     ;
 
 referencePartitionDesc
-    : PARTITION partition? tablePartitionDescription?
+    : PARTITION partitionName? tablePartitionDescription?
     ;
 
 constraint
@@ -920,7 +925,7 @@ alterSynonym
     : ALTER PUBLIC? SYNONYM (schemaName DOT_)? synonymName (COMPILE | EDITIONABLE | NONEDITIONABLE)
     ;
 
-alterTablePartition
+alterTablePartitioning
     : addTablePartition | dropTablePartition
     ;
 
@@ -941,9 +946,51 @@ addListPartitionClause
     ;
 
 dropTablePartition
-    : DROP partitionExtendedNames
+    : DROP partitionExtendedNames (updateIndexClauses parallelClause?)?
     ;
 
 partitionExtendedNames
-    : (PARTITION | PARTITIONS) partition
+    : (PARTITION | PARTITIONS) (partitionName | partitionForClauses) (DOT_ (partitionName | partitionForClauses))*
+    ;
+
+partitionForClauses
+    : FOR LP_ partitionKeyValue (DOT_ partitionKeyValue)* RP_
+    ;
+
+updateIndexClauses
+    : updateGlobalIndexClause | updateAllIndexesClause
+    ;
+
+updateGlobalIndexClause
+    : (UPDATE | INVALIDATE) GLOBAL INDEXES
+    ;
+
+updateAllIndexesClause
+    : UPDATE INDEXES
+    (LP_ indexName LP_ (updateIndexPartition | updateIndexSubpartition)
+    (DOT_ indexName LP_ (updateIndexPartition | updateIndexSubpartition) RP_)* RP_)?
+    ;
+
+updateIndexPartition
+    : indexPartitionDesc indexSubpartitionClause?
+    (DOT_ indexPartitionDesc indexSubpartitionClause?)*
+    ;
+
+indexPartitionDesc
+    : PARTITION
+    (partitionName
+    ((segmentAttributesClause | indexCompression) | PARAMETERS LP_ SQ_ odciParameters SQ_ RP_ )?
+    usableSpecification?
+    )?
+    ;
+
+indexSubpartitionClause
+    : STORE IN LP_ tablespaceName (DOT_ tablespaceName)* RP_
+    | LP_ SUBPARTITION subpartitionName? (TABLESPACE tablespaceName)? indexCompression? usableSpecification?
+    (DOT_ SUBPARTITION subpartitionName? (TABLESPACE tablespaceName)? indexCompression? usableSpecification?)* RP_
+    ;
+
+updateIndexSubpartition
+    : SUBPARTITION subpartitionName? (TABLESPACE tablespaceName)?
+    (DOT_ SUBPARTITION subpartitionName? (TABLESPACE tablespaceName)?)*
     ;

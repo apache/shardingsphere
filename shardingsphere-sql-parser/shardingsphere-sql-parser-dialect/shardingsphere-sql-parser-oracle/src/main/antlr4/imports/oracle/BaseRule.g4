@@ -175,10 +175,6 @@ accessDriverType
     : identifier
     ;
 
-partition
-    : identifier
-    ;
-
 type
     : identifier
     ;
@@ -215,6 +211,10 @@ partitionSetName
     : identifier
     ;
 
+partitionKeyValue
+    : INT_NUM_ | dateTimeLiterals
+    ;
+
 zonemapName
     : identifier
     ;
@@ -245,6 +245,10 @@ oracleId
 
 collationName
     : STRING_ | IDENTIFIER_
+    ;
+
+columnCollationName
+    : identifier
     ;
 
 alias
@@ -485,4 +489,8 @@ matchNone
 
 hashSubpartitionQuantity
     : NUMBER
+    ;
+
+odciParameters
+    : identifier
     ;
