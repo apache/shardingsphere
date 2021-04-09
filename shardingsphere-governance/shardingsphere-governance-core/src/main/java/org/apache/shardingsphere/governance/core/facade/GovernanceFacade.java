@@ -40,6 +40,7 @@ public final class GovernanceFacade implements AutoCloseable {
     
     private boolean isOverwrite;
     
+    @Getter
     private GovernanceRepositoryFacade repositoryFacade;
     
     @Getter
