@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.authority.engine.impl;
 
-import org.apache.shardingsphere.authority.loader.storage.StoragePrivilegeLoadAlgorithm;
+import org.apache.shardingsphere.authority.loader.storage.StoragePrivilegeLoadEngine;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.AuthorityCheckAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -38,7 +38,7 @@ public final class StorageAuthorityCheckAlgorithm implements AuthorityCheckAlgor
     
     @Override
     public void init(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
-        userPrivilegeMap.putAll(new StoragePrivilegeLoadAlgorithm().load(mataDataMap, users));
+        userPrivilegeMap.putAll(new StoragePrivilegeLoadEngine().load(mataDataMap, users));
     }
     
     @Override

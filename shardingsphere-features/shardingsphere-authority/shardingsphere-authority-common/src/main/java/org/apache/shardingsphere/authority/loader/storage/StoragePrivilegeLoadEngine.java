@@ -5,7 +5,7 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -15,27 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.spi;
+package org.apache.shardingsphere.authority.loader.storage;
 
+import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeBuilder;
+import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeLoader;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Privilege load algorithm.
+ * Storage privilege load engine.
  */
-public interface PrivilegeLoadAlgorithm extends ShardingSphereAlgorithm {
+public final class StoragePrivilegeLoadEngine {
+    
+    static {
+        ShardingSphereServiceLoader.register(StoragePrivilegeLoader.class);
+    }
     
     /**
      * Load privileges.
-     * 
+     *
      * @param mataDataMap mata data map
      * @param users users
      * @return user and privileges map
      */
-    Map<ShardingSphereUser, ShardingSpherePrivileges> load(Map<String, ShardingSphereMetaData> mataDataMap, Collection<ShardingSphereUser> users);
+    public Map<ShardingSphereUser, ShardingSpherePrivileges> load(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
+        return StoragePrivilegeBuilder.build(new LinkedList<>(mataDataMap.values()), users);
+    }
 }
