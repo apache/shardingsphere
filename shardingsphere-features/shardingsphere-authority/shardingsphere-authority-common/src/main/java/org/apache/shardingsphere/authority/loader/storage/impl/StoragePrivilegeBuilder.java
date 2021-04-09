@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.authority.loader.storage.impl;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -28,6 +30,8 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -61,33 +65,49 @@ public final class StoragePrivilegeBuilder {
     /**
      * Build privileges.
      *
-     * @param databaseType database type
      * @param metaDataList meta data list
      * @param users users
      * @return privileges
      */
-    public static Map<ShardingSphereUser, ShardingSpherePrivileges> build(final DatabaseType databaseType,
-                                                                          final Collection<ShardingSphereMetaData> metaDataList, final Collection<ShardingSphereUser> users) {
-        if (metaDataList.isEmpty()) {
-            return buildDefaultPrivileges(users);
-        }
-        Optional<StoragePrivilegeLoader> loader = TypedSPIRegistry.findRegisteredService(StoragePrivilegeLoader.class, databaseType.getName(), new Properties());
-        return loader.map(optional -> build(metaDataList, users, optional)).orElseGet(() -> buildDefaultPrivileges(users));
+    public static Map<ShardingSphereUser, ShardingSpherePrivileges> build(final Collection<ShardingSphereMetaData> metaDataList, final Collection<ShardingSphereUser> users) {
+        return metaDataList.isEmpty() ? buildDefaultPrivileges(users) : buildWithMetaData(metaDataList, users);
     }
     
-    private static Map<ShardingSphereUser, ShardingSpherePrivileges> build(final Collection<ShardingSphereMetaData> metaDataList,
-                                                                           final Collection<ShardingSphereUser> users, final StoragePrivilegeLoader loader) {
+    private static Map<ShardingSphereUser, ShardingSpherePrivileges> buildWithMetaData(final Collection<ShardingSphereMetaData> metaDataList, final Collection<ShardingSphereUser> users) {
         Map<ShardingSphereUser, ShardingSpherePrivileges> result = new LinkedHashMap<>();
         for (ShardingSphereMetaData each : metaDataList) {
-            result.putAll(build(each, users, loader));
+            result.putAll(buildWithMetaData(each, users));
         }
         return result;
     }
     
-    private static Map<ShardingSphereUser, ShardingSpherePrivileges> build(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users, final StoragePrivilegeLoader loader) {
-        Map<ShardingSphereUser, Collection<ShardingSpherePrivileges>> result = load(metaData.getResource().getAllInstanceDataSources(), users, loader);
+    private static Map<ShardingSphereUser, ShardingSpherePrivileges> buildWithMetaData(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users) {
+        DatabaseType databaseType = getDatabaseType(metaData.getResource().getAllInstanceDataSources());
+        Optional<StoragePrivilegeLoader> loader = TypedSPIRegistry.findRegisteredService(StoragePrivilegeLoader.class, databaseType.getName(), new Properties());
+        if (!loader.isPresent()) {
+            return buildDefaultPrivileges(users);
+        }
+        Map<ShardingSphereUser, Collection<ShardingSpherePrivileges>> result = load(metaData.getResource().getAllInstanceDataSources(), users, loader.get());
         checkPrivileges(result);
         return StoragePrivilegeMerger.merge(result, metaData.getName(), metaData.getRuleMetaData().getRules());
+    }
+    
+    private static DatabaseType getDatabaseType(final Collection<DataSource> dataSources) {
+        DatabaseType result = null;
+        for (DataSource each : dataSources) {
+            DatabaseType databaseType = getDatabaseType(each);
+            Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
+            result = databaseType;
+        }
+        return null == result ? DatabaseTypeRegistry.getDefaultDatabaseType() : result;
+    }
+    
+    private static DatabaseType getDatabaseType(final DataSource dataSource) {
+        try (Connection connection = dataSource.getConnection()) {
+            return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
+        } catch (final SQLException ex) {
+            return null;
+        }
     }
     
     private static Map<ShardingSphereUser, Collection<ShardingSpherePrivileges>> load(final Collection<DataSource> dataSources,
