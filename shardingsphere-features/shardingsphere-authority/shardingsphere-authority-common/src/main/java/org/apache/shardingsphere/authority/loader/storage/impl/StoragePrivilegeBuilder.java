@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
@@ -86,24 +85,9 @@ public final class StoragePrivilegeBuilder {
     }
     
     private static Map<ShardingSphereUser, ShardingSpherePrivileges> build(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users, final StoragePrivilegeLoader loader) {
-        return build(metaData.getName(), metaData.getResource().getAllInstanceDataSources(), metaData.getRuleMetaData().getRules(), users, loader);
-    }
-    
-    /**
-     * Build privileges.
-     * 
-     * @param schemaName schema name
-     * @param dataSources data sources
-     * @param rules rules
-     * @param users users
-     * @param loader privilege loader
-     * @return privileges
-     */
-    public static Map<ShardingSphereUser, ShardingSpherePrivileges> build(final String schemaName, final Collection<DataSource> dataSources,
-                                                                          final Collection<ShardingSphereRule> rules, final Collection<ShardingSphereUser> users, final StoragePrivilegeLoader loader) {
-        Map<ShardingSphereUser, Collection<ShardingSpherePrivileges>> result = load(dataSources, users, loader);
+        Map<ShardingSphereUser, Collection<ShardingSpherePrivileges>> result = load(metaData.getResource().getAllInstanceDataSources(), users, loader);
         checkPrivileges(result);
-        return StoragePrivilegeMerger.merge(result, schemaName, rules);
+        return StoragePrivilegeMerger.merge(result, metaData.getName(), metaData.getRuleMetaData().getRules());
     }
     
     private static Map<ShardingSphereUser, Collection<ShardingSpherePrivileges>> load(final Collection<DataSource> dataSources,
