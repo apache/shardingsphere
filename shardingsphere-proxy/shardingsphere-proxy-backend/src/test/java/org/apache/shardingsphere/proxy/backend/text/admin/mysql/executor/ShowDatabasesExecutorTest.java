@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
-import org.apache.shardingsphere.authority.engine.AuthorityContext;
+import org.apache.shardingsphere.authority.AuthorityContext;
 import org.apache.shardingsphere.authority.algorithm.StorageAuthorityCheckAlgorithm;
 import org.apache.shardingsphere.authority.spi.AuthorityCheckAlgorithm;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
