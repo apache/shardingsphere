@@ -72,17 +72,16 @@ public final class ShardingSphereRulesBuilder {
      * @param globalRuleConfigurations global rule configurations
      * @param mataDataMap mata data map
      * @param users users
-     * @param schemaRules built schema rules
      * @return built global rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> buildGlobalRules(final Collection<RuleConfiguration> globalRuleConfigurations, final Map<String, ShardingSphereMetaData> mataDataMap, 
-                                                                  final Collection<ShardingSphereUser> users, final Collection<ShardingSphereRule> schemaRules) {
+    public static Collection<ShardingSphereRule> buildGlobalRules(final Collection<RuleConfiguration> globalRuleConfigurations, 
+                                                                  final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
         Map<RuleConfiguration, GlobalRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(globalRuleConfigurations, GlobalRuleBuilder.class);
-        Collection<ShardingSphereRule> result = new LinkedList<>(schemaRules);
+        Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, GlobalRuleBuilder> entry : builders.entrySet()) {
             DatabaseType databaseType = mataDataMap.isEmpty() ? new MySQLDatabaseType() : getDatabaseType(mataDataMap.values().iterator().next().getResource().getDataSources());
-            result.add(entry.getValue().build(mataDataMap, databaseType, entry.getKey(), users, result));
+            result.add(entry.getValue().build(mataDataMap, databaseType, entry.getKey(), users));
         }
         return result;
     }
