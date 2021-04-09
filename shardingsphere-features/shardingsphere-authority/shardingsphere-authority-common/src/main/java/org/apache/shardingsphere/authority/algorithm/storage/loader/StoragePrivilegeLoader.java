@@ -15,36 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.loader.storage;
+package org.apache.shardingsphere.authority.algorithm.storage.loader;
 
-import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeBuilder;
-import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeLoader;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Storage privilege load engine.
+ * Storage privilege loader.
  */
-public final class StoragePrivilegeLoadEngine {
-    
-    static {
-        ShardingSphereServiceLoader.register(StoragePrivilegeLoader.class);
-    }
+public interface StoragePrivilegeLoader extends TypedSPI {
     
     /**
-     * Load privileges.
+     * Load privilege.
      *
-     * @param mataDataMap mata data map
      * @param users users
-     * @return user and privileges map
+     * @param dataSource data source
+     * @return ShardingSphere privileges
+     * @throws SQLException SQL exception
      */
-    public Map<ShardingSphereUser, ShardingSpherePrivileges> load(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
-        return StoragePrivilegeBuilder.build(new LinkedList<>(mataDataMap.values()), users);
-    }
+    Map<ShardingSphereUser, ShardingSpherePrivileges> load(Collection<ShardingSphereUser> users, DataSource dataSource) throws SQLException;
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.context.metadata;
 
-import org.apache.shardingsphere.authority.algorithm.StorageAuthorityCheckAlgorithm;
+import org.apache.shardingsphere.authority.algorithm.storage.StorageAuthorityCheckAlgorithm;
 import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;

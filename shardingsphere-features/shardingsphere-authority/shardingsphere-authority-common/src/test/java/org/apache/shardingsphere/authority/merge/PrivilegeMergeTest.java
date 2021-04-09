@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.authority.merge;
 
-import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeMerger;
+import org.apache.shardingsphere.authority.algorithm.storage.loader.impl.StoragePrivilegeMerger;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.model.database.SchemaPrivileges;

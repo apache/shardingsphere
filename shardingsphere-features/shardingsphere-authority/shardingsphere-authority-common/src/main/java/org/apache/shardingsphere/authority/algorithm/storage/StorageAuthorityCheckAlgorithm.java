@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.algorithm;
+package org.apache.shardingsphere.authority.algorithm.storage;
 
-import org.apache.shardingsphere.authority.loader.storage.StoragePrivilegeLoadEngine;
+import org.apache.shardingsphere.authority.algorithm.storage.loader.StoragePrivilegeLoadEngine;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.AuthorityCheckAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
