@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
 import java.util.Map;
@@ -37,10 +36,8 @@ public interface PrivilegeLoadAlgorithm extends ShardingSphereAlgorithm {
      * 
      * @param databaseType database type
      * @param mataDataMap mata data map
-     * @param rules rules
      * @param users users
      * @return user and privileges map
      */
-    Map<ShardingSphereUser, ShardingSpherePrivileges> load(DatabaseType databaseType, Map<String, ShardingSphereMetaData> mataDataMap, 
-                                                           Collection<ShardingSphereRule> rules, Collection<ShardingSphereUser> users);
+    Map<ShardingSphereUser, ShardingSpherePrivileges> load(DatabaseType databaseType, Map<String, ShardingSphereMetaData> mataDataMap, Collection<ShardingSphereUser> users);
 }

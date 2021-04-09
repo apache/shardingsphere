@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmF
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
@@ -43,10 +42,10 @@ public final class AuthorityRule implements GlobalRule {
     }
     
     public AuthorityRule(final AuthorityRuleConfiguration config, final Map<String, ShardingSphereMetaData> mataDataMap, final DatabaseType databaseType,
-                         final Collection<ShardingSphereUser> users, final Collection<ShardingSphereRule> builtRules) {
+                         final Collection<ShardingSphereUser> users) {
         PrivilegeLoadAlgorithm privilegeLoader = ShardingSphereAlgorithmFactory.createAlgorithm(config.getPrivilegeLoader(), PrivilegeLoadAlgorithm.class);
         ShardingSphereAuthority authority = null == AuthorityContext.getInstance().getAuthority() ? new DefaultAuthority() : AuthorityContext.getInstance().getAuthority();
-        authority.init(privilegeLoader.load(databaseType, mataDataMap, builtRules, users));
+        authority.init(privilegeLoader.load(databaseType, mataDataMap, users));
         AuthorityContext.getInstance().init(authority);
     }
 }
