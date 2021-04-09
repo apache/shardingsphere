@@ -51,7 +51,8 @@ public final class GovernanceContainerCompose extends ContainerCompose {
             adapterContainerForReader = createContainer(() -> new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray), "ShardingSphere-Proxy-1");
             adapterContainerForReader.dependsOn(storageContainer, zookeeperContainer);
         } else {
-            adapterContainerForReader = this.adapterContainer;
+            adapterContainerForReader = createAdapterContainer();
+            adapterContainerForReader.dependsOn(storageContainer, zookeeperContainer);
         }
         adapterContainer.dependsOn(storageContainer, zookeeperContainer);
     }
