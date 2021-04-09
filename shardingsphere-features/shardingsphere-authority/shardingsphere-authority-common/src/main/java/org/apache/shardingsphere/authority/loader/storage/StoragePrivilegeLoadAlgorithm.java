@@ -21,7 +21,6 @@ import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeB
 import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeLoader;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeLoadAlgorithm;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -40,8 +39,8 @@ public final class StoragePrivilegeLoadAlgorithm implements PrivilegeLoadAlgorit
     }
     
     @Override
-    public Map<ShardingSphereUser, ShardingSpherePrivileges> load(final DatabaseType databaseType, final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
-        return StoragePrivilegeBuilder.build(databaseType, new LinkedList<>(mataDataMap.values()), users);
+    public Map<ShardingSphereUser, ShardingSpherePrivileges> load(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
+        return StoragePrivilegeBuilder.build(new LinkedList<>(mataDataMap.values()), users);
     }
     
     @Override
