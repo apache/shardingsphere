@@ -59,12 +59,28 @@ public final class ShowProcesslistExecutorTest {
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
         showProcesslistExecutor = new ShowProcesslistExecutor();
+        setupMetaDataContexts();
+        setupRegistryRepository();
+    }
+    
+    private void setupMetaDataContexts() throws NoSuchFieldException, IllegalAccessException {
         Map<String, ShardingSphereMetaData> metaDataMap = getMetaDataMap();
         Field metaDataContextsField = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContextsField.setAccessible(true);
         metaDataContextsField.set(ProxyContext.getInstance(), new StandardMetaDataContexts(metaDataMap, mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class),
             new ShardingSphereUsers(Collections.singleton(new ShardingSphereUser("root", "root", ""))), new ConfigurationProperties(new Properties())));
-        
+    }
+    
+    private Map<String, ShardingSphereMetaData> getMetaDataMap() {
+        Map<String, ShardingSphereMetaData> result = new HashMap<>(2);
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(metaData.isComplete()).thenReturn(true);
+        when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        result.put(SCHEMA_NAME, metaData);
+        return result;
+    }
+    
+    private void setupRegistryRepository() throws NoSuchFieldException, IllegalAccessException {
         RegistryRepository registryRepository = mock(RegistryRepository.class);
         ProxyContext.getInstance().initRegistryRepository(registryRepository);
         String executionNodeValue = "executionID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
@@ -76,19 +92,9 @@ public final class ShowProcesslistExecutorTest {
             + "  unitID: unitID2\n";
         when(registryRepository.getChildrenKeys(REGISTRY_CENTER_NODE.getExecutionNodesPath())).thenReturn(Collections.singletonList(executionId));
         when(registryRepository.get(REGISTRY_CENTER_NODE.getExecutionPath(executionId))).thenReturn(executionNodeValue);
-        
         Field registryRepositoryField = ProxyContext.getInstance().getClass().getDeclaredField("registryRepository");
         registryRepositoryField.setAccessible(true);
         registryRepositoryField.set(ProxyContext.getInstance(), registryRepository);
-    }
-    
-    private Map<String, ShardingSphereMetaData> getMetaDataMap() {
-        Map<String, ShardingSphereMetaData> result = new HashMap<>(2);
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.isComplete()).thenReturn(true);
-        when(metaData.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        result.put(SCHEMA_NAME, metaData);
-        return result;
     }
     
     @Test
