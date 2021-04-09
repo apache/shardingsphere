@@ -38,7 +38,7 @@ public final class GovernanceContainerCompose extends ContainerCompose {
     
     @Getter
     private final ShardingSphereAdapterContainer adapterContainer;
-    
+
     private final ShardingSphereAdapterContainer adapterContainerForReader;
     
     public GovernanceContainerCompose(final String clusterName, final ParameterizedArray parameterizedArray) {
@@ -61,15 +61,10 @@ public final class GovernanceContainerCompose extends ContainerCompose {
     }
     
     @Override
-    public DataSource getDataSourceForReader() {
-        return adapterContainerForReader.getDataSource();
-    }
-    
-    @Override
     public Map<String, DataSource> getDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>(2);
-        result.put(adapterContainer.getDockerName(), adapterContainer.getDataSource());
-        result.put(adapterContainerForReader.getDockerName(), adapterContainerForReader.getDataSource());
+        result.put("adapterForWriter", adapterContainer.getDataSource());
+        result.put("adapterForReader", adapterContainerForReader.getDataSource());
         return result;
     }
 }
