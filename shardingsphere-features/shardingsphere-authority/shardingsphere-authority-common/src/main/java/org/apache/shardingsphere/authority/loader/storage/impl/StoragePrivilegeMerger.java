@@ -55,8 +55,7 @@ public final class StoragePrivilegeMerger {
         return result;
     }
     
-    private static ShardingSpherePrivileges merge(final Collection<ShardingSpherePrivileges> privileges, final String schemaName,
-                                                 final Collection<ShardingSphereRule> rules) {
+    private static ShardingSpherePrivileges merge(final Collection<ShardingSpherePrivileges> privileges, final String schemaName, final Collection<ShardingSphereRule> rules) {
         return privileges.isEmpty() ? new ShardingSpherePrivileges() : getMergedPrivileges(privileges.iterator().next(), schemaName, rules);
     }
     
@@ -69,7 +68,7 @@ public final class StoragePrivilegeMerger {
     }
     
     private static Map<String, SchemaPrivileges> getMergedSchemaPrivileges(final ShardingSpherePrivileges privilege, final String schemaName, final Collection<ShardingSphereRule> rules) {
-        Map<String, SchemaPrivileges> result = new HashMap<>();
+        Map<String, SchemaPrivileges> result = new HashMap<>(privilege.getDatabasePrivileges().getSpecificPrivileges().size(), 1);
         for (Entry<String, SchemaPrivileges> entry : privilege.getDatabasePrivileges().getSpecificPrivileges().entrySet()) {
             if (!result.containsKey(schemaName)) {
                 SchemaPrivileges schemaPrivileges = new SchemaPrivileges(schemaName);
@@ -82,7 +81,7 @@ public final class StoragePrivilegeMerger {
     }
     
     private static Map<String, TablePrivileges> getMergedTablePrivileges(final SchemaPrivileges privilege, final Collection<ShardingSphereRule> rules) {
-        Map<String, TablePrivileges> result = new HashMap<>();
+        Map<String, TablePrivileges> result = new HashMap<>(privilege.getSpecificPrivileges().size(), 1);
         for (Entry<String, TablePrivileges> entry : privilege.getSpecificPrivileges().entrySet()) {
             Optional<String> logicalTable = getLogicalTable(entry, rules);
             if (logicalTable.isPresent() && !result.containsKey(logicalTable.get())) {

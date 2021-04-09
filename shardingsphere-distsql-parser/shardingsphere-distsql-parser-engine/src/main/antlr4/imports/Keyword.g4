@@ -134,3 +134,23 @@ LIST
 STATUS
     : S T A T U S
     ;
+
+HOST
+    : H O S T
+    ;
+    
+PORT
+    : P O R T
+    ;
+    
+DB
+    : D B
+    ;
+    
+USER
+    : U S E R
+    ;
+    
+PASSWORD
+    : P A S S W O R D
+    ;
