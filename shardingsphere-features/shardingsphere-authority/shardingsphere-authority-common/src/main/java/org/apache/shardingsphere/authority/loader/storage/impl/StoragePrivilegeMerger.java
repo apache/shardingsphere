@@ -55,8 +55,7 @@ public final class StoragePrivilegeMerger {
         return result;
     }
     
-    private static ShardingSpherePrivileges merge(final Collection<ShardingSpherePrivileges> privileges, final String schemaName,
-                                                 final Collection<ShardingSphereRule> rules) {
+    private static ShardingSpherePrivileges merge(final Collection<ShardingSpherePrivileges> privileges, final String schemaName, final Collection<ShardingSphereRule> rules) {
         return privileges.isEmpty() ? new ShardingSpherePrivileges() : getMergedPrivileges(privileges.iterator().next(), schemaName, rules);
     }
     
