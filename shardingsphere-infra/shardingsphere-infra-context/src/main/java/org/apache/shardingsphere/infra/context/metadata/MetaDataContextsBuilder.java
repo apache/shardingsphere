@@ -106,7 +106,7 @@ public final class MetaDataContextsBuilder {
         Map<String, DataSource> dataSourceMap = dataSources.get(schemaName);
         Collection<RuleConfiguration> ruleConfigs = schemaRuleConfigs.get(schemaName);
         DatabaseType databaseType = getDatabaseType(dataSourceMap);
-        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.buildSchemaRules(schemaName, ruleConfigs, databaseType, dataSourceMap, users);
+        Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.buildSchemaRules(schemaName, ruleConfigs, databaseType, dataSourceMap);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(ruleConfigs, rules);
         return new ShardingSphereMetaData(schemaName, buildResource(databaseType, dataSourceMap), ruleMetaData, buildSchema(databaseType, dataSourceMap, rules));
     }

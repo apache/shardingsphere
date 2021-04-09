@@ -82,7 +82,7 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         String databaseType = null == getTestParameters().getDatabaseType() ? "SQL92" : getTestParameters().getDatabaseType();
         Collection<ShardingSphereRule> rules = ShardingSphereRulesBuilder.buildSchemaRules("schema_name", new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(
                 yamlRootRuleConfigs.getRules()), DatabaseTypeRegistry.getTrunkDatabaseType(databaseType),
-                new YamlDataSourceConfigurationSwapper().swapToDataSources(yamlRootRuleConfigs.getDataSources()), Collections.emptyList());
+                new YamlDataSourceConfigurationSwapper().swapToDataSources(yamlRootRuleConfigs.getDataSources()));
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(databaseType);
         ShardingSphereSchema schema = mockSchema();
         ConfigurationProperties props = new ConfigurationProperties(yamlRootRuleConfigs.getProps());
