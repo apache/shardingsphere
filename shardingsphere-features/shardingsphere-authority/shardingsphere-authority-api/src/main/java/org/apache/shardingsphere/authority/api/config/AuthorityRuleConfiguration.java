@@ -29,5 +29,5 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 @Getter
 public final class AuthorityRuleConfiguration implements RuleConfiguration {
     
-    private final ShardingSphereAlgorithmConfiguration privilegeLoader;
+    private final ShardingSphereAlgorithmConfiguration checker;
 }

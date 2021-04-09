@@ -5,7 +5,7 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *  
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -20,22 +20,31 @@ package org.apache.shardingsphere.authority.spi;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 /**
- * Privilege load algorithm.
- */
-public interface PrivilegeLoadAlgorithm extends ShardingSphereAlgorithm {
+ * Authority check algorithm.
+*/
+public interface AuthorityCheckAlgorithm extends ShardingSphereAlgorithm {
     
     /**
-     * Load privileges.
+     * Initialize authority.
      * 
      * @param mataDataMap mata data map
      * @param users users
-     * @return user and privileges map
      */
-    Map<ShardingSphereUser, ShardingSpherePrivileges> load(Map<String, ShardingSphereMetaData> mataDataMap, Collection<ShardingSphereUser> users);
+    void init(Map<String, ShardingSphereMetaData> mataDataMap, Collection<ShardingSphereUser> users);
+    
+    /**
+     * Find Privileges.
+     *
+     * @param grantee grantee
+     * @return found privileges
+     */
+    Optional<ShardingSpherePrivileges> findPrivileges(Grantee grantee);
 }

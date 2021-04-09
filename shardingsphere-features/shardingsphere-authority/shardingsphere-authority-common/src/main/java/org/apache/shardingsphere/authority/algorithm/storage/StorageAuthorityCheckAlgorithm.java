@@ -15,32 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.loader.storage;
+package org.apache.shardingsphere.authority.algorithm.storage;
 
-import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeBuilder;
-import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeLoader;
+import org.apache.shardingsphere.authority.algorithm.storage.loader.StoragePrivilegeLoadEngine;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.spi.PrivilegeLoadAlgorithm;
+import org.apache.shardingsphere.authority.spi.AuthorityCheckAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Storage privilege load algorithm.
- */
-public final class StoragePrivilegeLoadAlgorithm implements PrivilegeLoadAlgorithm {
+ * Storage authority check algorithm.
+*/
+public final class StorageAuthorityCheckAlgorithm implements AuthorityCheckAlgorithm {
     
-    static {
-        ShardingSphereServiceLoader.register(StoragePrivilegeLoader.class);
+    private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
+    
+    @Override
+    public void init(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
+        userPrivilegeMap.putAll(new StoragePrivilegeLoadEngine().load(mataDataMap, users));
     }
     
     @Override
-    public Map<ShardingSphereUser, ShardingSpherePrivileges> load(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
-        return StoragePrivilegeBuilder.build(new LinkedList<>(mataDataMap.values()), users);
+    public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
+        return userPrivilegeMap.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst().map(userPrivilegeMap::get);
     }
     
     @Override

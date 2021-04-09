@@ -18,10 +18,8 @@
 package org.apache.shardingsphere.authority.rule;
 
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.authority.engine.AuthorityContext;
-import org.apache.shardingsphere.authority.engine.ShardingSphereAuthority;
-import org.apache.shardingsphere.authority.engine.impl.DefaultAuthority;
-import org.apache.shardingsphere.authority.spi.PrivilegeLoadAlgorithm;
+import org.apache.shardingsphere.authority.AuthorityContext;
+import org.apache.shardingsphere.authority.spi.AuthorityCheckAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -35,15 +33,14 @@ import java.util.Map;
  * Authority rule.
  */
 public final class AuthorityRule implements GlobalRule {
-    
+
     static {
-        ShardingSphereServiceLoader.register(PrivilegeLoadAlgorithm.class);
+        ShardingSphereServiceLoader.register(AuthorityCheckAlgorithm.class);
     }
     
     public AuthorityRule(final AuthorityRuleConfiguration config, final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
-        PrivilegeLoadAlgorithm privilegeLoader = ShardingSphereAlgorithmFactory.createAlgorithm(config.getPrivilegeLoader(), PrivilegeLoadAlgorithm.class);
-        ShardingSphereAuthority authority = null == AuthorityContext.getInstance().getAuthority() ? new DefaultAuthority() : AuthorityContext.getInstance().getAuthority();
-        authority.init(privilegeLoader.load(mataDataMap, users));
-        AuthorityContext.getInstance().init(authority);
+        AuthorityCheckAlgorithm checker = ShardingSphereAlgorithmFactory.createAlgorithm(config.getChecker(), AuthorityCheckAlgorithm.class);
+        checker.init(mataDataMap, users);
+        AuthorityContext.getInstance().init(checker);
     }
 }

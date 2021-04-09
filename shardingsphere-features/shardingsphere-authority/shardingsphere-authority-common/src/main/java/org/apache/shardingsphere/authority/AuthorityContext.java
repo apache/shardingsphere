@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.engine;
+package org.apache.shardingsphere.authority;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.authority.spi.AuthorityCheckAlgorithm;
 
 /**
  * Authority context.
@@ -30,7 +31,7 @@ public final class AuthorityContext {
     
     private static final AuthorityContext INSTANCE = new AuthorityContext();
     
-    private volatile ShardingSphereAuthority authority;
+    private volatile AuthorityCheckAlgorithm checker;
     
     /**
      * Get instance.
@@ -42,11 +43,11 @@ public final class AuthorityContext {
     }
     
     /**
-     * Initial authority.
+     * Initial authority checker.
      * 
-     * @param authority authority
+     * @param checker authority checker
      */
-    public synchronized void init(final ShardingSphereAuthority authority) {
-        this.authority = AuthorityEngine.findSPIAuthority().orElse(authority);
+    public synchronized void init(final AuthorityCheckAlgorithm checker) {
+        this.checker = checker;
     }
 }

@@ -15,31 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.engine.impl;
+package org.apache.shardingsphere.authority.algorithm.storage.loader;
 
-import org.apache.shardingsphere.authority.engine.ShardingSphereAuthority;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Default authority.
-*/
-public final class DefaultAuthority implements ShardingSphereAuthority {
+ * Storage privilege loader.
+ */
+public interface StoragePrivilegeLoader extends TypedSPI {
     
-    private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
-    
-    @Override
-    public void init(final Map<ShardingSphereUser, ShardingSpherePrivileges> loadedUserPrivilegeMap) {
-        userPrivilegeMap.putAll(loadedUserPrivilegeMap);
-    }
-    
-    @Override
-    public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
-        return userPrivilegeMap.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst().map(userPrivilegeMap::get);
-    }
+    /**
+     * Load privilege.
+     *
+     * @param users users
+     * @param dataSource data source
+     * @return ShardingSphere privileges
+     * @throws SQLException SQL exception
+     */
+    Map<ShardingSphereUser, ShardingSpherePrivileges> load(Collection<ShardingSphereUser> users, DataSource dataSource) throws SQLException;
 }

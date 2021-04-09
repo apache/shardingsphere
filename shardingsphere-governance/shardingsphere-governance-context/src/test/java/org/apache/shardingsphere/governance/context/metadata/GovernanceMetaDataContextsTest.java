@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.context.metadata;
 
-import org.apache.shardingsphere.authority.engine.impl.DefaultAuthority;
+import org.apache.shardingsphere.authority.algorithm.storage.StorageAuthorityCheckAlgorithm;
 import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
@@ -159,7 +159,7 @@ public final class GovernanceMetaDataContextsTest {
     
     @Test
     public void assertAuthorityChanged() {
-        DefaultAuthority authority = new DefaultAuthority();
+        StorageAuthorityCheckAlgorithm authority = new StorageAuthorityCheckAlgorithm();
         UserRuleChangedEvent event = new UserRuleChangedEvent(Collections.singleton(mock(ShardingSphereUser.class)));
         governanceMetaDataContexts.renew(event);
         assertThat(governanceMetaDataContexts.getUsers().getUsers().size(), is(1));
