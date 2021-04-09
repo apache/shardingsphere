@@ -21,7 +21,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.eventbus.Subscribe;
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
@@ -89,10 +88,8 @@ public final class ShardingRule implements SchemaRule, DataNodeContainedRule, Ta
     
     private final Map<String, SingleTableRule> singleTableRules;
     
-    @Getter(AccessLevel.NONE)
     private final ShardingStrategyConfiguration defaultDatabaseShardingStrategyConfig;
     
-    @Getter(AccessLevel.NONE)
     private final ShardingStrategyConfiguration defaultTableShardingStrategyConfig;
     
     private final KeyGenerateAlgorithm defaultKeyGenerateAlgorithm;
