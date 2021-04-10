@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.CombinationalSQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.OwnerToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
@@ -67,18 +68,18 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
     }
     
     private Collection<SQLToken> generateSQLTokens(final ProjectionsSegment segment, final String tableName,
-                                                                       final SelectStatementContext selectStatementContext, final EncryptTable encryptTable) {
+                                                                final SelectStatementContext selectStatementContext, final EncryptTable encryptTable) {
         Collection<SQLToken> result = new LinkedList<>();
         for (ProjectionSegment each : segment.getProjections()) {
             if (each instanceof ColumnProjectionSegment) {
                 if (encryptTable.getLogicColumns().contains(((ColumnProjectionSegment) each).getColumn().getIdentifier().getValue())) {
-                    result.addAll(generateSQLToken((ColumnProjectionSegment) each, tableName));
+                    result.add(generateSQLToken((ColumnProjectionSegment) each, tableName));
                 }
             }
             if (isToGeneratedSQLToken(each, selectStatementContext, tableName)) {
                 ShorthandProjection shorthandProjection = getShorthandProjection((ShorthandProjectionSegment) each, selectStatementContext.getProjectionsContext());
                 if (!shorthandProjection.getActualColumns().isEmpty()) {
-                    result.addAll(generateSQLToken((ShorthandProjectionSegment) each, shorthandProjection, tableName, encryptTable, selectStatementContext.getDatabaseType()));
+                    result.add(generateSQLToken((ShorthandProjectionSegment) each, shorthandProjection, tableName, encryptTable, selectStatementContext.getDatabaseType()));
                 }
             }
         }
@@ -93,27 +94,27 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
         return ownerSegment.map(segment -> selectStatementContext.getTablesContext().findTableNameFromSQL(segment.getIdentifier().getValue()).equalsIgnoreCase(tableName)).orElse(true);
     }
     
-    private Collection<SQLToken> generateSQLToken(final ColumnProjectionSegment segment, final String tableName) {
-        Collection<SQLToken> result = new LinkedList<>();
+    private CombinationalSQLToken generateSQLToken(final ColumnProjectionSegment segment, final String tableName) {
+        CombinationalSQLToken result = new CombinationalSQLToken(segment.getStartIndex(), segment.getStopIndex());
         String encryptColumnName = getEncryptColumnName(tableName, segment.getColumn().getIdentifier().getValue());
         if (!segment.getAlias().isPresent()) {
             encryptColumnName += " AS " + segment.getColumn().getIdentifier().getValue();
         }
         if (segment.getColumn().getOwner().isPresent()) {
             OwnerSegment ownerSegment = segment.getColumn().getOwner().get();
-            result.add(new OwnerToken(ownerSegment.getStartIndex(), ownerSegment.getStopIndex() + 1,
+            result.addMaterial(new OwnerToken(ownerSegment.getStartIndex(), ownerSegment.getStopIndex() + 1,
                     ownerSegment.getIdentifier().getValue(), tableName, ownerSegment.getIdentifier().getQuoteCharacter()));
-            result.add(new SubstitutableColumnNameToken(ownerSegment.getStopIndex() + 2, segment.getStopIndex(), encryptColumnName));
+            result.addMaterial(new SubstitutableColumnNameToken(ownerSegment.getStopIndex() + 2, segment.getStopIndex(), encryptColumnName));
         } else {
-            result.add(new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), encryptColumnName));
+            result.addMaterial(new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), encryptColumnName));
         }
         return result;
     }
     
-    private Collection<SQLToken> generateSQLToken(final ShorthandProjectionSegment segment,
+    private CombinationalSQLToken generateSQLToken(final ShorthandProjectionSegment segment,
                                                   final ShorthandProjection shorthandProjection, final String tableName, final EncryptTable encryptTable, final DatabaseType databaseType) {
         QuoteCharacter quoteCharacter = databaseType.getQuoteCharacter();
-        Collection<SQLToken> result = new LinkedList<>();
+        CombinationalSQLToken result = new CombinationalSQLToken(segment.getStartIndex(), segment.getStopIndex());
         int index = 0;
         for (ColumnProjection each : shorthandProjection.getActualColumns()) {
             index += 1;
@@ -127,8 +128,8 @@ public final class EncryptProjectionTokenGenerator extends BaseEncryptSQLTokenGe
             if (index <= shorthandProjection.getActualColumns().size() - 1) {
                 columnName = columnName + ", ";
             }
-            result.add(new OwnerToken(segment.getStartIndex(), segment.getStopIndex(), null == each.getOwner() ? tableName : each.getOwner(), tableName, quoteCharacter));
-            result.add(new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), columnName));
+            result.addMaterial(new OwnerToken(segment.getStartIndex(), segment.getStopIndex(), null == each.getOwner() ? tableName : each.getOwner(), tableName, quoteCharacter));
+            result.addMaterial(new SubstitutableColumnNameToken(segment.getStartIndex(), segment.getStopIndex(), columnName));
         }
         return result;
     }
