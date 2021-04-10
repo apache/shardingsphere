@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.authority.algorithm.natived.loader.impl.dialect.MySQLPrivilegeLoader
-org.apache.shardingsphere.authority.algorithm.natived.loader.impl.dialect.PostgreSQLPrivilegeLoader
-org.apache.shardingsphere.authority.algorithm.natived.loader.impl.dialect.OraclePrivilegeLoader
+org.apache.shardingsphere.authority.provider.natived.loader.impl.dialect.MySQLPrivilegeLoader
+org.apache.shardingsphere.authority.provider.natived.loader.impl.dialect.PostgreSQLPrivilegeLoader
+org.apache.shardingsphere.authority.provider.natived.loader.impl.dialect.OraclePrivilegeLoader

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.algorithm.natived.loader;
+package org.apache.shardingsphere.authority.provider.natived.loader;
 
-import org.apache.shardingsphere.authority.algorithm.natived.loader.impl.StoragePrivilegeBuilder;
+import org.apache.shardingsphere.authority.provider.natived.loader.impl.StoragePrivilegeBuilder;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
