@@ -28,9 +28,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Authority check algorithm.
+ * Authority provide algorithm.
 */
-public interface AuthorityCheckAlgorithm extends ShardingSphereAlgorithm {
+public interface AuthorityProvideAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Initialize authority.

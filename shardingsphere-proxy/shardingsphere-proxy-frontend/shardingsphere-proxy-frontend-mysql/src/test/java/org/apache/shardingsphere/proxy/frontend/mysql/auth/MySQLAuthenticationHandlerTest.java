@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.auth;
 
 import com.google.common.primitives.Bytes;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.authority.algorithm.storage.StorageAuthorityCheckAlgorithm;
+import org.apache.shardingsphere.authority.algorithm.storage.StorageAuthorityProviderAlgorithm;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.infra.check.SQLChecker;
@@ -121,7 +121,7 @@ public final class MySQLAuthenticationHandlerTest {
     }
     
     private void setAuthority(final ShardingSphereUser user) {
-        StorageAuthorityCheckAlgorithm algorithm = new StorageAuthorityCheckAlgorithm();
+        StorageAuthorityProviderAlgorithm algorithm = new StorageAuthorityProviderAlgorithm();
         algorithm.init(Collections.emptyMap(), Collections.emptyList());
         initProxyContext(user);
     }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.authority;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.authority.spi.AuthorityCheckAlgorithm;
+import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
 
 /**
  * Authority context.
@@ -31,7 +31,7 @@ public final class AuthorityContext {
     
     private static final AuthorityContext INSTANCE = new AuthorityContext();
     
-    private volatile AuthorityCheckAlgorithm checker;
+    private volatile AuthorityProvideAlgorithm provider;
     
     /**
      * Get instance.
@@ -43,11 +43,11 @@ public final class AuthorityContext {
     }
     
     /**
-     * Initial authority checker.
+     * Initial authority provide algorithm.
      * 
-     * @param checker authority checker
+     * @param provider authority provide algorithm
      */
-    public synchronized void init(final AuthorityCheckAlgorithm checker) {
-        this.checker = checker;
+    public synchronized void init(final AuthorityProvideAlgorithm provider) {
+        this.provider = provider;
     }
 }
