@@ -37,7 +37,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -67,7 +66,7 @@ public final class ParameterizedArrayFactory {
     private static Collection<AssertionParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext, final SQLCommandType sqlCommandType) {
         Collection<AssertionParameterizedArray> result = new LinkedList<>();
         for (DatabaseType each : getDatabaseTypes(testCaseContext.getTestCase().getDbTypes())) {
-            if (IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().containsKey(each)) {
+            if (IntegrationTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
                 result.addAll(getAssertionParameterizedArray(testCaseContext, each, sqlCommandType));
             }
         }
@@ -75,7 +74,7 @@ public final class ParameterizedArrayFactory {
     }
     
     private static Collection<AssertionParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext,
-                                                                                 final DatabaseType databaseType, final SQLCommandType sqlCommandType) {
+                                                                                          final DatabaseType databaseType, final SQLCommandType sqlCommandType) {
         Collection<AssertionParameterizedArray> result = new LinkedList<>();
         for (SQLExecuteType each : SQLExecuteType.values()) {
             result.addAll(getAssertionParameterizedArray(testCaseContext, databaseType, each, sqlCommandType));
@@ -84,7 +83,7 @@ public final class ParameterizedArrayFactory {
     }
     
     private static Collection<AssertionParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext,
-                                                                                 final DatabaseType databaseType, final SQLExecuteType sqlExecuteType, final SQLCommandType sqlCommandType) {
+                                                                                          final DatabaseType databaseType, final SQLExecuteType sqlExecuteType, final SQLCommandType sqlCommandType) {
         Collection<AssertionParameterizedArray> result = new LinkedList<>();
         for (IntegrationTestCaseAssertion each : testCaseContext.getTestCase().getAssertions()) {
             result.addAll(getAssertionParameterizedArray(testCaseContext, databaseType, sqlExecuteType, each, sqlCommandType));
@@ -93,8 +92,8 @@ public final class ParameterizedArrayFactory {
     }
     
     private static Collection<AssertionParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext,
-                                                                                 final DatabaseType databaseType, final SQLExecuteType sqlExecuteType,
-                                                                                 final IntegrationTestCaseAssertion assertion, final SQLCommandType sqlCommandType) {
+                                                                                          final DatabaseType databaseType, final SQLExecuteType sqlExecuteType,
+                                                                                          final IntegrationTestCaseAssertion assertion, final SQLCommandType sqlCommandType) {
         Collection<AssertionParameterizedArray> result = new LinkedList<>();
         for (String adapter : ENV.getAdapters()) {
             result.addAll(getAssertionParameterizedArray(testCaseContext, assertion, adapter, databaseType, sqlExecuteType, sqlCommandType));
@@ -103,8 +102,8 @@ public final class ParameterizedArrayFactory {
     }
     
     private static Collection<AssertionParameterizedArray> getAssertionParameterizedArray(final IntegrationTestCaseContext testCaseContext, final IntegrationTestCaseAssertion assertion,
-                                                                                 final String adapter, final DatabaseType databaseType,
-                                                                                 final SQLExecuteType sqlExecuteType, final SQLCommandType sqlCommandType) {
+                                                                                          final String adapter, final DatabaseType databaseType,
+                                                                                          final SQLExecuteType sqlExecuteType, final SQLCommandType sqlCommandType) {
         Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
         return ENV.getScenarios().stream().filter(each -> scenarios.isEmpty() || scenarios.contains(each))
                 .map(each -> new AssertionParameterizedArray(testCaseContext, assertion, adapter, each, databaseType, sqlExecuteType, sqlCommandType)).collect(Collectors.toList());
@@ -127,7 +126,7 @@ public final class ParameterizedArrayFactory {
     private static Collection<ParameterizedArray> getCaseParameterizedArray(final IntegrationTestCaseContext testCaseContext, final SQLCommandType sqlCommandType) {
         Collection<ParameterizedArray> result = new LinkedList<>();
         for (DatabaseType each : getDatabaseTypes(testCaseContext.getTestCase().getDbTypes())) {
-            if (IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().containsKey(each)) {
+            if (IntegrationTestEnvironment.getInstance().getDatabaseTypes().contains(each)) {
                 result.addAll(getCaseParameterizedArray(testCaseContext, each, sqlCommandType));
             }
         }
@@ -155,7 +154,4 @@ public final class ParameterizedArrayFactory {
         return Splitter.on(',').trimResults().splitToList(candidates).stream().map(DatabaseTypeRegistry::getActualDatabaseType).collect(Collectors.toList());
     }
     
-    private static List<Object[]> toArrays(final Collection<ParameterizedArray> parameterizedArrays) {
-        return parameterizedArrays.stream().map(each -> new Object[]{each}).collect(Collectors.toList());
-    }
 }

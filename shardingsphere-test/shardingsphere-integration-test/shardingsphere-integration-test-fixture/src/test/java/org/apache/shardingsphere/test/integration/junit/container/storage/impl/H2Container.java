@@ -17,10 +17,18 @@
 
 package org.apache.shardingsphere.test.integration.junit.container.storage.impl;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
+import org.h2.tools.RunScript;
 
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.FileReader;
+import java.sql.Connection;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -30,6 +38,20 @@ public final class H2Container extends ShardingSphereStorageContainer {
     
     public H2Container(final ParameterizedArray parameterizedArray) {
         super("h2-embedded", "h2:fake", new H2DatabaseType(), true, parameterizedArray);
+    }
+    
+    @Override
+    @SneakyThrows
+    protected void execute() {
+        super.execute();
+        // TODO initialize SQL script
+        File file = new File(EnvironmentPath.getInitSQLFile(getDatabaseType(), getParameterizedArray().getScenario()));
+        for (Map.Entry<String, DataSource> each : getDataSourceMap().entrySet()) {
+            try (Connection connection = each.getValue().getConnection();
+                 FileReader reader = new FileReader(file)) {
+                RunScript.execute(connection, reader);
+            }
+        }
     }
     
     @Override
