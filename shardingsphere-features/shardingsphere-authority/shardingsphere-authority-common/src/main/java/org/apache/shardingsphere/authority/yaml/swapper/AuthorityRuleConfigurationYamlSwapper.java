@@ -33,13 +33,13 @@ public final class AuthorityRuleConfigurationYamlSwapper implements YamlRuleConf
     @Override
     public YamlAuthorityRuleConfiguration swapToYamlConfiguration(final AuthorityRuleConfiguration data) {
         YamlAuthorityRuleConfiguration result = new YamlAuthorityRuleConfiguration();
-        result.setChecker(algorithmSwapper.swapToYamlConfiguration(data.getChecker()));
+        result.setProvider(algorithmSwapper.swapToYamlConfiguration(data.getProvider()));
         return result;
     }
     
     @Override
     public AuthorityRuleConfiguration swapToObject(final YamlAuthorityRuleConfiguration yamlConfig) {
-        return new AuthorityRuleConfiguration(algorithmSwapper.swapToObject(yamlConfig.getChecker()));
+        return new AuthorityRuleConfiguration(algorithmSwapper.swapToObject(yamlConfig.getProvider()));
     }
     
     @Override

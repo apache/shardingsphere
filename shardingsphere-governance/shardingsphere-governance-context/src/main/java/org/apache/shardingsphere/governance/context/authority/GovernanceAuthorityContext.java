@@ -20,8 +20,8 @@ package org.apache.shardingsphere.governance.context.authority;
 import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
 import org.apache.shardingsphere.authority.AuthorityContext;
-import org.apache.shardingsphere.authority.algorithm.storage.StorageAuthorityCheckAlgorithm;
-import org.apache.shardingsphere.authority.spi.AuthorityCheckAlgorithm;
+import org.apache.shardingsphere.authority.algorithm.storage.StorageAuthorityProviderAlgorithm;
+import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
 import org.apache.shardingsphere.governance.core.event.model.auth.PrivilegeChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataAwareEventSubscriber;
@@ -61,7 +61,7 @@ public final class GovernanceAuthorityContext implements MetaDataAwareEventSubsc
 
     private void reloadAuthority(final Collection<ShardingSphereUser> users) {
         // TODO reload AuthorityCheckAlgorithm from SPI
-        AuthorityCheckAlgorithm result = new StorageAuthorityCheckAlgorithm();
+        AuthorityProvideAlgorithm result = new StorageAuthorityProviderAlgorithm();
         result.init(metaDataContexts.getMetaDataMap(), users);
         AuthorityContext.getInstance().init(result);
     }

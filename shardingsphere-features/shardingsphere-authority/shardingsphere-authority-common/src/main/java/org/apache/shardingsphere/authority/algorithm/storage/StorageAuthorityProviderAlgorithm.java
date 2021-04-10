@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.algorithm.storage;
 
 import org.apache.shardingsphere.authority.algorithm.storage.loader.StoragePrivilegeLoadEngine;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.spi.AuthorityCheckAlgorithm;
+import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -30,9 +30,9 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Storage authority check algorithm.
+ * Storage authority provide algorithm.
 */
-public final class StorageAuthorityCheckAlgorithm implements AuthorityCheckAlgorithm {
+public final class StorageAuthorityProviderAlgorithm implements AuthorityProvideAlgorithm {
     
     private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
     
