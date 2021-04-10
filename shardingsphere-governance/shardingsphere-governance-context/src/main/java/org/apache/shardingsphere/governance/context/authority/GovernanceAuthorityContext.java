@@ -23,8 +23,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.authority.AuthorityContext;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
-import org.apache.shardingsphere.governance.core.event.model.auth.PrivilegeChangedEvent;
-import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.authority.AuthorityChangedEvent;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataAwareEventSubscriber;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -42,26 +41,15 @@ public final class GovernanceAuthorityContext implements MetaDataAwareEventSubsc
     private volatile MetaDataContexts metaDataContexts;
     
     /**
-     * Renew user.
+     * Renew authority.
      *
-     * @param event user changed event
+     * @param event authority changed event
      */
-    // TODO consider about merge UserRuleChangedEvent and PrivilegeChangedEvent
     @Subscribe
-    public synchronized void renew(final UserRuleChangedEvent event) {
+    public synchronized void renew(final AuthorityChangedEvent event) {
         reloadAuthority(event.getUsers());
     }
     
-    /**
-     * Renew privilege.
-     *
-     * @param event privilege changed event
-     */
-    @Subscribe
-    public synchronized void renew(final PrivilegeChangedEvent event) {
-        reloadAuthority(event.getUsers());
-    }
-
     private void reloadAuthority(final Collection<ShardingSphereUser> users) {
         Optional<AuthorityRuleConfiguration> authorityRuleConfig = metaDataContexts.getGlobalRuleMetaData().getConfigurations().stream().filter(
             each -> each instanceof AuthorityRuleConfiguration).findAny().map(each -> (AuthorityRuleConfiguration) each);

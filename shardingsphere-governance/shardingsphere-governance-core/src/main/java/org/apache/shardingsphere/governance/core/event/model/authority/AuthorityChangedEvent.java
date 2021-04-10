@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.governance.core.event.model.auth;
+package org.apache.shardingsphere.governance.core.event.model.authority;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +25,11 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import java.util.Collection;
 
 /**
- * Privilege changed event.
+ * Authority changed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class PrivilegeChangedEvent implements GovernanceEvent {
+public final class AuthorityChangedEvent implements GovernanceEvent {
     
     private final Collection<ShardingSphereUser> users;
 }

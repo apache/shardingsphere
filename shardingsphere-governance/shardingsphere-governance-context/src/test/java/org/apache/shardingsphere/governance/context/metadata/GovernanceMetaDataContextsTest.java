@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.governance.context.metadata;
 
-import org.apache.shardingsphere.authority.algorithm.natived.NativeAuthorityProviderAlgorithm;
-import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.authority.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataPersistedEvent;
@@ -159,8 +158,7 @@ public final class GovernanceMetaDataContextsTest {
     
     @Test
     public void assertAuthorityChanged() {
-        NativeAuthorityProviderAlgorithm authority = new NativeAuthorityProviderAlgorithm();
-        UserRuleChangedEvent event = new UserRuleChangedEvent(Collections.singleton(mock(ShardingSphereUser.class)));
+        AuthorityChangedEvent event = new AuthorityChangedEvent(Collections.singleton(mock(ShardingSphereUser.class)));
         governanceMetaDataContexts.renew(event);
         assertThat(governanceMetaDataContexts.getUsers().getUsers().size(), is(1));
     }
