@@ -42,7 +42,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         if (null == grantee) {
             return true;
         }
-        return authorityRule.getAuthorityProvider().findPrivileges(grantee).map(optional -> optional.hasPrivileges(schemaName)).orElse(false);
+        return authorityRule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(schemaName)).orElse(false);
     }
     
     @Override
@@ -50,7 +50,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         if (null == grantee) {
             return new SQLCheckResult(true, "");
         }
-        Optional<ShardingSpherePrivileges> privileges = authorityRule.getAuthorityProvider().findPrivileges(grantee);
+        Optional<ShardingSpherePrivileges> privileges = authorityRule.findPrivileges(grantee);
         // TODO add error msg
         return privileges.map(optional -> new SQLCheckResult(optional.hasPrivileges(Collections.singletonList(getPrivilege(sqlStatement))), "")).orElseGet(() -> new SQLCheckResult(false, ""));
     }
