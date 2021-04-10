@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import lombok.Setter;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
 import org.apache.shardingsphere.governance.core.event.model.authority.AuthorityChangedEvent;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataAwareEventSubscriber;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
@@ -51,7 +50,6 @@ public final class GovernanceAuthorityContext implements MetaDataAwareEventSubsc
     private void reloadAuthority(final Collection<ShardingSphereUser> users) {
         Optional<AuthorityRule> authorityRule = metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof AuthorityRule).findAny().map(each -> (AuthorityRule) each);
         Preconditions.checkState(authorityRule.isPresent());
-        AuthorityProvideAlgorithm provider = authorityRule.get().getAuthorityProvider();
-        provider.refresh(metaDataContexts.getMetaDataMap(), users);
+        authorityRule.get().refresh(metaDataContexts.getMetaDataMap(), users);
     }
 }
