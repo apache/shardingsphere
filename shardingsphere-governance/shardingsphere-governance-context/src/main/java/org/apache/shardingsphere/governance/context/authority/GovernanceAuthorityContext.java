@@ -53,7 +53,7 @@ public final class GovernanceAuthorityContext implements MetaDataAwareEventSubsc
         Optional<AuthorityRule> authorityRule = metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof AuthorityRule).findAny().map(each -> (AuthorityRule) each);
         Preconditions.checkState(authorityRule.isPresent());
         AuthorityProvideAlgorithm provider = authorityRule.get().getProvider();
-        provider.init(metaDataContexts.getMetaDataMap(), users);
+        provider.refresh(metaDataContexts.getMetaDataMap(), users);
         AuthorityContext.getInstance().init(provider);
     }
 }

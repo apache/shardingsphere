@@ -43,6 +43,11 @@ public final class NativeAuthorityProviderAlgorithm implements AuthorityProvideA
     }
     
     @Override
+    public void refresh(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
+        userPrivilegeMap.putAll(StoragePrivilegeBuilder.build(new LinkedList<>(mataDataMap.values()), users));
+    }
+    
+    @Override
     public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
         return userPrivilegeMap.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst().map(userPrivilegeMap::get);
     }
