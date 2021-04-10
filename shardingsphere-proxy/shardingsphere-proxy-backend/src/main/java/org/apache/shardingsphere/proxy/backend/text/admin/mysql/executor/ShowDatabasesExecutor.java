@@ -52,13 +52,14 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private Collection<Object> getSchemaNames(final BackendConnection backendConnection) {
+        ShardingSphereRuleMetaData globalRuleMetaData = ProxyContext.getInstance().getMetaDataContexts().getGlobalRuleMetaData();
         try {
-            SQLCheckEngine.check(new MySQLShowDatabasesStatement(), Collections.emptyList(), getMetaData(), backendConnection.getGrantee());
+            SQLCheckEngine.check(new MySQLShowDatabasesStatement(), Collections.emptyList(), getMetaData(), globalRuleMetaData, backendConnection.getGrantee());
             return new ArrayList<>(ProxyContext.getInstance().getAllSchemaNames());
         } catch (final SQLCheckException ex) {
             Collection<Object> result = new LinkedList<>();
             for (String each : ProxyContext.getInstance().getAllSchemaNames()) {
-                if (SQLCheckEngine.check(each, ProxyContext.getInstance().getMetaData(each), backendConnection.getGrantee())) {
+                if (SQLCheckEngine.check(each, ProxyContext.getInstance().getMetaData(each), globalRuleMetaData, backendConnection.getGrantee())) {
                     result.add(each);
                 }
             }

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.initdb.M
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.check.SQLCheckEngine;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
@@ -44,7 +45,9 @@ public final class MySQLComInitDbExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket<?>> execute() {
         String schema = SQLUtil.getExactlyValue(packet.getSchema());
-        if (ProxyContext.getInstance().schemaExists(schema) && SQLCheckEngine.check(schema, ProxyContext.getInstance().getMetaDataContexts().getMetaData(schema), backendConnection.getGrantee())) {
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getMetaDataContexts();
+        if (ProxyContext.getInstance().schemaExists(schema)
+                && SQLCheckEngine.check(schema, metaDataContexts.getMetaData(schema), metaDataContexts.getGlobalRuleMetaData(), backendConnection.getGrantee())) {
             backendConnection.setCurrentSchema(packet.getSchema());
             return Collections.singletonList(new MySQLOKPacket(1));
         }
