@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.natived.loader.impl.dialect;
+package org.apache.shardingsphere.authority.provider.natived.loader.dialect;
 
 import org.apache.shardingsphere.authority.model.database.SchemaPrivileges;
 import org.apache.shardingsphere.authority.model.database.TablePrivileges;

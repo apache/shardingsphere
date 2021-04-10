@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.provider.natived;
 
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.natived.loader.StoragePrivilegeLoader;
-import org.apache.shardingsphere.authority.provider.natived.loader.impl.StoragePrivilegeBuilder;
+import org.apache.shardingsphere.authority.provider.natived.loader.StoragePrivilegeBuilder;
 import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
