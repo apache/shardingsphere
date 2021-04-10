@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.authority.algorithm.storage.StorageAuthorityProviderAlgorithm
+org.apache.shardingsphere.authority.algorithm.natived.NativeAuthorityProviderAlgorithm
