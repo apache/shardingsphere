@@ -45,6 +45,7 @@ import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -125,6 +126,11 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     @Override
     public ShardingSphereMetaData getDefaultMetaData() {
         return metaDataContexts.getDefaultMetaData();
+    }
+    
+    @Override
+    public ShardingSphereRuleMetaData getGlobalRuleMetaData() {
+        return metaDataContexts.getGlobalRuleMetaData();
     }
     
     @Override
