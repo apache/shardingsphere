@@ -23,6 +23,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
 import org.apache.shardingsphere.infra.check.SQLCheckEngine;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -54,7 +55,8 @@ public final class MySQLAuthenticationHandler {
         if (!user.isPresent() || !isPasswordRight(user.get().getPassword(), authResponse)) {
             return Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR);
         }
-        return null == databaseName || SQLCheckEngine.check(databaseName, ProxyContext.getInstance().getMetaDataContexts().getMetaData(databaseName), user.get().getGrantee())
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getMetaDataContexts();
+        return null == databaseName || SQLCheckEngine.check(databaseName, metaDataContexts.getMetaData(databaseName), metaDataContexts.getGlobalRuleMetaData(), user.get().getGrantee())
                 ? Optional.empty() : Optional.of(MySQLServerErrorCode.ER_DBACCESS_DENIED_ERROR);
     }
     

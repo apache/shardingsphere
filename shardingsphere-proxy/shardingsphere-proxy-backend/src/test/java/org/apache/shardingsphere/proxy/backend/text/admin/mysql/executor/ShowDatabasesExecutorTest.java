@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
-import org.apache.shardingsphere.authority.AuthorityContext;
-import org.apache.shardingsphere.authority.provider.natived.NativeAuthorityProviderAlgorithm;
-import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -61,15 +58,8 @@ public final class ShowDatabasesExecutorTest {
         showDatabasesExecutor = new ShowDatabasesExecutor();
         Field metaDataContexts = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         metaDataContexts.setAccessible(true);
-        initAuthorityProvider();
         metaDataContexts.set(ProxyContext.getInstance(), new StandardMetaDataContexts(getMetaDataMap(), mock(ShardingSphereRuleMetaData.class), 
                 mock(ExecutorEngine.class), new ShardingSphereUsers(Collections.singleton(new ShardingSphereUser("root", "root", ""))), new ConfigurationProperties(new Properties())));
-    }
-    
-    private void initAuthorityProvider() {
-        AuthorityProvideAlgorithm algorithm = new NativeAuthorityProviderAlgorithm();
-        algorithm.init(Collections.emptyMap(), Collections.emptyList());
-        AuthorityContext.getInstance().init(algorithm);
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {

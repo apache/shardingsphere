@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.authority.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.authority.AuthorityContext;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
@@ -40,11 +39,10 @@ public final class AuthorityRule implements GlobalRule {
         ShardingSphereServiceLoader.register(AuthorityProvideAlgorithm.class);
     }
     
-    private final AuthorityProvideAlgorithm provider;
+    private final AuthorityProvideAlgorithm authorityProvider;
     
     public AuthorityRule(final AuthorityRuleConfiguration config, final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
-        provider = ShardingSphereAlgorithmFactory.createAlgorithm(config.getProvider(), AuthorityProvideAlgorithm.class);
-        provider.init(mataDataMap, users);
-        AuthorityContext.getInstance().init(provider);
+        authorityProvider = ShardingSphereAlgorithmFactory.createAlgorithm(config.getProvider(), AuthorityProvideAlgorithm.class);
+        authorityProvider.init(mataDataMap, users);
     }
 }

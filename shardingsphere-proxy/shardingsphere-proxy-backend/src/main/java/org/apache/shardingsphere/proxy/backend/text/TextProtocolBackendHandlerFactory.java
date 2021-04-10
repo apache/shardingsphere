@@ -91,7 +91,7 @@ public final class TextProtocolBackendHandlerFactory {
         // TODO :Authority, need to refactor after GlobalRule is added
         if (!Strings.isNullOrEmpty(backendConnection.getSchemaName())) {
             MetaDataContexts contexts = ProxyContext.getInstance().getMetaDataContexts();
-            SQLCheckEngine.check(sqlStatement, Collections.emptyList(), contexts.getMetaData(backendConnection.getSchemaName()), backendConnection.getGrantee());
+            SQLCheckEngine.check(sqlStatement, Collections.emptyList(), contexts.getMetaData(backendConnection.getSchemaName()), contexts.getGlobalRuleMetaData(), backendConnection.getGrantee());
         }
     }
     
