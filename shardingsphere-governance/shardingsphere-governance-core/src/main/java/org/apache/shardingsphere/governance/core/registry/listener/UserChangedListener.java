@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.listener;
 
 import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.authority.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
@@ -29,16 +29,16 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Authentication changed listener.
+ * User changed listener.
  */
-public final class AuthenticationChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
+public final class UserChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
-    public AuthenticationChangedListener(final RegistryRepository registryRepository) {
+    public UserChangedListener(final RegistryRepository registryRepository) {
         super(registryRepository, Collections.singletonList(new RegistryCenterNode().getUsersNode()));
     }
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        return Optional.of(new UserRuleChangedEvent(YamlConfigurationConverter.convertUsers(event.getValue())));
+        return Optional.of(new AuthorityChangedEvent(YamlConfigurationConverter.convertUsers(event.getValue())));
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.governance.core.registry.listener;
 
 import org.apache.shardingsphere.governance.core.event.listener.PostGovernanceRepositoryEventListener;
 import org.apache.shardingsphere.governance.core.event.model.GovernanceEvent;
-import org.apache.shardingsphere.governance.core.event.model.auth.PrivilegeChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.authority.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.core.yaml.config.YamlConfigurationConverter;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Authentication changed listener.
+ * Privilege changed listener.
  */
 public final class PrivilegeNodeChangedListener extends PostGovernanceRepositoryEventListener<GovernanceEvent> {
     
@@ -39,6 +39,6 @@ public final class PrivilegeNodeChangedListener extends PostGovernanceRepository
     
     @Override
     protected Optional<GovernanceEvent> createEvent(final DataChangedEvent event) {
-        return Optional.of(new PrivilegeChangedEvent(YamlConfigurationConverter.convertUsers(event.getValue())));
+        return Optional.of(new AuthorityChangedEvent(YamlConfigurationConverter.convertUsers(event.getValue())));
     }
 }
