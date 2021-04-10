@@ -93,7 +93,7 @@ public final class TextProtocolBackendHandlerFactoryTest {
         when(globalRuleMetaData.getRules()).thenReturn(Collections.emptyList());
         when(metaDataContexts.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
     }
-
+    
     @SneakyThrows(ReflectiveOperationException.class)
     private void setTransactionContexts() {
         Field transactionContexts = ProxyContext.getInstance().getClass().getDeclaredField("transactionContexts");
