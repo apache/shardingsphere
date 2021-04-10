@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.algorithm.storage;
+package org.apache.shardingsphere.authority.algorithm.natived;
 
-import org.apache.shardingsphere.authority.algorithm.storage.loader.StoragePrivilegeLoadEngine;
+import org.apache.shardingsphere.authority.algorithm.natived.loader.StoragePrivilegeLoadEngine;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -30,9 +30,9 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Storage authority provide algorithm.
+ * Native authority provide algorithm.
 */
-public final class StorageAuthorityProviderAlgorithm implements AuthorityProvideAlgorithm {
+public final class NativeAuthorityProviderAlgorithm implements AuthorityProvideAlgorithm {
     
     private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
     
@@ -48,6 +48,6 @@ public final class StorageAuthorityProviderAlgorithm implements AuthorityProvide
     
     @Override
     public String getType() {
-        return "STORAGE";
+        return "NATIVE";
     }
 }

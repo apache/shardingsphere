@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import org.apache.shardingsphere.authority.AuthorityContext;
-import org.apache.shardingsphere.authority.algorithm.storage.StorageAuthorityProviderAlgorithm;
+import org.apache.shardingsphere.authority.algorithm.natived.NativeAuthorityProviderAlgorithm;
 import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
@@ -67,7 +67,7 @@ public final class ShowDatabasesExecutorTest {
     }
     
     private void initAuthorityProvider() {
-        AuthorityProvideAlgorithm algorithm = new StorageAuthorityProviderAlgorithm();
+        AuthorityProvideAlgorithm algorithm = new NativeAuthorityProviderAlgorithm();
         algorithm.init(Collections.emptyMap(), Collections.emptyList());
         AuthorityContext.getInstance().init(algorithm);
     }

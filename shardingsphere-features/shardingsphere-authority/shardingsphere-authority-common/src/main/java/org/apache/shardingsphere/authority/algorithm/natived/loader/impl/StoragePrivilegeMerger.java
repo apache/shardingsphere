@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.algorithm.storage.loader.impl;
+package org.apache.shardingsphere.authority.algorithm.natived.loader.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
