@@ -18,13 +18,11 @@
 package org.apache.shardingsphere.authority.provider.natived;
 
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.natived.loader.StoragePrivilegeLoader;
 import org.apache.shardingsphere.authority.provider.natived.loader.StoragePrivilegeBuilder;
 import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -38,10 +36,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class NativeAuthorityProviderAlgorithm implements AuthorityProvideAlgorithm {
     
     private final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new ConcurrentHashMap<>();
-    
-    static {
-        ShardingSphereServiceLoader.register(StoragePrivilegeLoader.class);
-    }
     
     @Override
     public void init(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
