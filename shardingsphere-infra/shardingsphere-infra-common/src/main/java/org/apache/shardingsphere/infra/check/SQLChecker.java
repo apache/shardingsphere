@@ -36,9 +36,10 @@ public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> 
      *
      * @param schemaName schema name
      * @param grantee grantee
+     * @param rule rule
      * @return check result
      */
-    boolean check(String schemaName, Grantee grantee);
+    boolean check(String schemaName, Grantee grantee, T rule);
     
     /**
      * Check SQL.
@@ -47,7 +48,8 @@ public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> 
      * @param parameters SQL parameters
      * @param metaData meta data
      * @param grantee grantee
+     * @param rule rule
      * @return SQL check result
      */
-    SQLCheckResult check(SQLStatement sqlStatement, List<Object> parameters, ShardingSphereMetaData metaData, Grantee grantee);
+    SQLCheckResult check(SQLStatement sqlStatement, List<Object> parameters, ShardingSphereMetaData metaData, Grantee grantee, T rule);
 }

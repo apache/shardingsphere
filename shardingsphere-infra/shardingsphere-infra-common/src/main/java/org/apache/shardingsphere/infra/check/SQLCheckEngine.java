@@ -21,11 +21,13 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * SQL check engine.
@@ -45,9 +47,10 @@ public final class SQLCheckEngine {
      * @param metaData meta data
      * @param grantee grantee
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public static void check(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingSphereMetaData metaData, final Grantee grantee) {
-        for (SQLChecker<?> each : OrderedSPIRegistry.getRegisteredServices(metaData.getRuleMetaData().getRules(), SQLChecker.class).values()) {
-            SQLCheckResult checkResult = each.check(sqlStatement, parameters, metaData, grantee);
+        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(metaData.getRuleMetaData().getRules(), SQLChecker.class).entrySet()) {
+            SQLCheckResult checkResult = entry.getValue().check(sqlStatement, parameters, metaData, grantee, entry.getKey());
             if (!checkResult.isPassed()) {
                 throw new SQLCheckException(checkResult.getErrorMessage());
             }
@@ -62,9 +65,10 @@ public final class SQLCheckEngine {
      * @param grantee grantee
      * @return check result
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public static boolean check(final String schemaName, final ShardingSphereMetaData metaData, final Grantee grantee) {
-        for (SQLChecker<?> each : OrderedSPIRegistry.getRegisteredServices(metaData.getRuleMetaData().getRules(), SQLChecker.class).values()) {
-            boolean checkResult = each.check(schemaName, grantee);
+        for (Entry<ShardingSphereRule, SQLChecker> entry : OrderedSPIRegistry.getRegisteredServices(metaData.getRuleMetaData().getRules(), SQLChecker.class).entrySet()) {
+            boolean checkResult = entry.getValue().check(schemaName, grantee, entry.getKey());
             if (!checkResult) {
                 return false;
             }
