@@ -42,13 +42,13 @@ import java.util.stream.Collectors;
  * MySQL privilege loader.
  */
 public final class MySQLPrivilegeLoader implements StoragePrivilegeLoader {
-
+    
     private static final String GLOBAL_PRIVILEGE_SQL = "SELECT * FROM mysql.user WHERE (user, host) in (%s)";
-
+    
     private static final String SCHEMA_PRIVILEGE_SQL = "SELECT * FROM mysql.db WHERE (user, host) in (%s)";
-
+    
     private static final String TABLE_PRIVILEGE_SQL = "SELECT Db, Table_name, Table_priv FROM mysql.tables_priv WHERE (user, host) in (%s)";
-
+    
     @Override
     public Map<ShardingSphereUser, ShardingSpherePrivileges> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         Map<ShardingSphereUser, ShardingSpherePrivileges> result = new LinkedHashMap<>();

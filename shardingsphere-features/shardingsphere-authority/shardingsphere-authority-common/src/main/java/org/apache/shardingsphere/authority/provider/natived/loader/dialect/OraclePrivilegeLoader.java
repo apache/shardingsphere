@@ -44,11 +44,11 @@ import java.util.stream.Collectors;
  * Oracle privilege loader.
  */
 public final class OraclePrivilegeLoader implements StoragePrivilegeLoader {
-
+    
     private static final String SYS_PRIVILEGE_SQL = "SELECT GRANTEE, PRIVILEGE, ADMIN_OPTION, INHERITED FROM DBA_SYS_PRIVS WHERE GRANTEE IN (%s)";
-
+    
     private static final String TABLE_PRIVILEGE_SQL = "SELECT GRANTEE, TABLE_SCHEMA, TABLE_NAME, PRIVILEGE, GRANTABLE, INHERITED FROM ALL_TAB_PRIVS WHERE GRANTEE IN (%s)";
-
+    
     @Override
     public Map<ShardingSphereUser, ShardingSpherePrivileges> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         Map<ShardingSphereUser, ShardingSpherePrivileges> result = new LinkedHashMap<>();
@@ -57,7 +57,7 @@ public final class OraclePrivilegeLoader implements StoragePrivilegeLoader {
         fillTablePrivileges(result, dataSource, users);
         return result;
     }
-
+    
     private void fillTablePrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap, final DataSource dataSource,
                                      final Collection<ShardingSphereUser> users) throws SQLException {
         Map<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> privilegeCache = new HashMap<>();
@@ -71,7 +71,7 @@ public final class OraclePrivilegeLoader implements StoragePrivilegeLoader {
         }
         fillTablePrivileges(privilegeCache, userPrivilegeMap);
     }
-
+    
     private void fillTablePrivileges(final Map<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> privilegeCache, 
                                      final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap) {
         for (Entry<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> entry : privilegeCache.entrySet()) {
@@ -87,7 +87,7 @@ public final class OraclePrivilegeLoader implements StoragePrivilegeLoader {
             }
         }
     }
-
+    
     private void collectTablePrivileges(final Map<ShardingSphereUser, Map<String, Map<String, List<PrivilegeType>>>> privilegeCache, final ResultSet resultSet) throws SQLException {
         String db = resultSet.getString("TABLE_SCHEMA");
         String tableName = resultSet.getString("TABLE_NAME");
@@ -102,7 +102,7 @@ public final class OraclePrivilegeLoader implements StoragePrivilegeLoader {
                     .add(getPrivilegeType(privilegeType));
         }
     }
-
+    
     private void fillSysPrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap, final DataSource dataSource, 
                                    final Collection<ShardingSphereUser> users) throws SQLException {
         Map<ShardingSphereUser, List<PrivilegeType>> privilegeCache = new HashMap<>();
@@ -116,13 +116,13 @@ public final class OraclePrivilegeLoader implements StoragePrivilegeLoader {
         }
         fillSysPrivileges(privilegeCache, userPrivilegeMap);
     }
-
+    
     private void fillSysPrivileges(final Map<ShardingSphereUser, List<PrivilegeType>> privilegeCache, final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap) throws SQLException {
         for (Entry<ShardingSphereUser, List<PrivilegeType>> entry : privilegeCache.entrySet()) {
             userPrivilegeMap.get(entry.getKey()).getAdministrativePrivileges().getPrivileges().addAll(entry.getValue());
         }
     }
-
+    
     private void collectSysPrivileges(final Map<ShardingSphereUser, List<PrivilegeType>> privilegeCache, final ResultSet resultSet) throws SQLException {
         String privilegeType = resultSet.getString("PRIVILEGE");
         String grantee = resultSet.getString("GRANTEE");
@@ -130,22 +130,22 @@ public final class OraclePrivilegeLoader implements StoragePrivilegeLoader {
                 .computeIfAbsent(new ShardingSphereUser(grantee, "", ""), k -> new ArrayList<>())
                 .add(getPrivilegeType(privilegeType));
     }
-
+    
     private Optional<ShardingSphereUser> findShardingSphereUser(final Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap, final ResultSet resultSet) throws SQLException {
         Grantee grantee = new Grantee(resultSet.getString("rolname"), "");
         return userPrivilegeMap.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst();
     }
-
+    
     private String getSysPrivilegesSQL(final Collection<ShardingSphereUser> users) {
         String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(", "));
         return String.format(SYS_PRIVILEGE_SQL, userList);
     }
-
+    
     private String getTablePrivilegesSQL(final Collection<ShardingSphereUser> users) {
         String userList = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(", "));
         return String.format(TABLE_PRIVILEGE_SQL, userList);
     }
-
+    
     private PrivilegeType getPrivilegeType(final String privilege) {
         switch (privilege) {
             case "SELECT":
@@ -181,7 +181,7 @@ public final class OraclePrivilegeLoader implements StoragePrivilegeLoader {
                 throw new UnsupportedOperationException(privilege);
         }
     }
-
+    
     @Override
     public String getType() {
         return "Oracle";
