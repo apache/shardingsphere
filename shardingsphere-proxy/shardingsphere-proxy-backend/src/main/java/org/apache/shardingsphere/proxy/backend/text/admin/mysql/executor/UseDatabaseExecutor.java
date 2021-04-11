@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.check.SQLCheckEngine;
+import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
