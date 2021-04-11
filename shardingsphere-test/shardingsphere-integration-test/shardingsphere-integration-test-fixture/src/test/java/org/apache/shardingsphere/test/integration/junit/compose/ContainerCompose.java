@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -57,6 +58,8 @@ public abstract class ContainerCompose extends ExternalResource implements Close
     private final List<ShardingSphereContainer> containers = new ArrayList<>();
     
     private volatile boolean started;
+    
+    private volatile boolean executed;
     
     public ContainerCompose(final String clusterName, final ParameterizedArray parameterizedArray) {
         this.clusterName = clusterName;
@@ -146,32 +149,14 @@ public abstract class ContainerCompose extends ExternalResource implements Close
      * @return ShardingSphere storage container
      */
     public abstract ShardingSphereStorageContainer getStorageContainer();
-    
-    /**
-     * Get target datasource for writer.
-     *
-     * @return datasource
-     */
-    public DataSource getDataSourceForWriter() {
-        return getAdapterContainer().getDataSource();
-    }
-    
-    /**
-     * Get target datasource for reader.
-     *
-     * @return datasource
-     */
-    public DataSource getDataSourceForReader() {
-        return getAdapterContainer().getDataSource();
-    }
-    
+
     /**
      * Get all target datasources.
      *
      * @return datasource map
      */
     public Map<String, DataSource> getDataSourceMap() {
-        return Collections.singletonMap(getAdapterContainer().getDockerName(), getAdapterContainer().getDataSource());
+        return Collections.singletonMap("adapterForWriter", getAdapterContainer().getDataSource());
     }
     
     @Override
@@ -181,6 +166,22 @@ public abstract class ContainerCompose extends ExternalResource implements Close
                 if (!started) {
                     start();
                     waitUntilReady();
+                }
+            }
+        }
+    }
+    
+    /**
+     * Execution initializer one time after container started.
+     *
+     * @param consumer initializer
+     */
+    public final void executeOnStarted(final Consumer<ContainerCompose> consumer) {
+        if (!executed) {
+            synchronized (this) {
+                if (!executed) {
+                    consumer.accept(this);
+                    executed = true;
                 }
             }
         }

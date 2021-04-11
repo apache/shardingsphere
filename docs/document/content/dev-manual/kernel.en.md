@@ -80,3 +80,15 @@ chapter = true
 | ---------------------------- | ----------------------------------------------------- |
 | ShardingResultMergerEngine   | Used by merge engine to process sharding result set   |
 | EncryptResultDecoratorEngine | Used by merge engine to process encryption result set |
+
+## StoragePrivilegeLoader
+
+| *SPI Name*                | *Description*                                       |
+| ------------------------- | ---------------------------------------------------- |
+| StoragePrivilegeLoader    | Use SQL dialect to load privilege metadata           |
+
+| *Implementation Class*    | *Description*                                        |
+| ------------------------- | ---------------------------------------------------- |
+| MySQLPrivilegeLoader      | Use MySQL dialect to load privilege metadata         |
+| OraclePrivilegeLoader     | Use Oracle dialect to load privilege metadata        |
+| PostgreSQLPrivilegeLoader | Use PostgreSQL dialect to load privilege metadata    |

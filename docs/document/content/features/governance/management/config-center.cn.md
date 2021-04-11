@@ -15,7 +15,7 @@ weight = 1
 
 ```
 namespace
-    ├──authentication                            # 权限配置
+    ├──users                                     # 权限配置
     ├──props                                     # 属性配置
     ├──schemas                                   # Schema 配置
     ├      ├──${schema_1}                        # Schema 名称1
@@ -28,13 +28,13 @@ namespace
     ├      ├      ├──table                       # 表结构配置
 ```
 
-### /authentication
+### /users
 
 权限配置，可配置访问 ShardingSphere-Proxy 的用户名和密码。
 
 ```yaml
-username: root
-password: root
+- root@127.0.0.1:root
+- sharding@%:sharding
 ```
 
 ### /props

@@ -21,13 +21,17 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
@@ -37,22 +41,42 @@ import java.util.stream.Collectors;
 public final class ShardingSphereRulesBuilder {
     
     static {
-        ShardingSphereServiceLoader.register(ShardingSphereRuleBuilder.class);
+        ShardingSphereServiceLoader.register(SchemaRuleBuilder.class);
+        ShardingSphereServiceLoader.register(GlobalRuleBuilder.class);
     }
     
     /**
-     * Build rules.
+     * Build schema rules.
      *
-     * @param ruleConfigurations rule configurations
+     * @param schemaName schema name
+     * @param schemaRuleConfigurations schema rule configurations
      * @param databaseType database type
      * @param dataSourceMap data source map
-     * @param schemaName schema name
-     * @return rules
+     * @return built schema rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> build(final Collection<RuleConfiguration> ruleConfigurations, final DatabaseType databaseType,
-                                                       final Map<String, DataSource> dataSourceMap, final String schemaName) {
-        Map<RuleConfiguration, ShardingSphereRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(ruleConfigurations, ShardingSphereRuleBuilder.class);
+    public static Collection<ShardingSphereRule> buildSchemaRules(final String schemaName, final Collection<RuleConfiguration> schemaRuleConfigurations,
+                                                                  final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
+        Map<RuleConfiguration, SchemaRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(schemaRuleConfigurations, SchemaRuleBuilder.class);
         return builders.entrySet().stream().map(entry -> entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey())).collect(Collectors.toList());
+    }
+    
+    /**
+     * Build global rules.
+     *
+     * @param globalRuleConfigurations global rule configurations
+     * @param mataDataMap mata data map
+     * @param users users
+     * @return built global rules
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static Collection<ShardingSphereRule> buildGlobalRules(final Collection<RuleConfiguration> globalRuleConfigurations, 
+                                                                  final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
+        Map<RuleConfiguration, GlobalRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(globalRuleConfigurations, GlobalRuleBuilder.class);
+        Collection<ShardingSphereRule> result = new LinkedList<>();
+        for (Entry<RuleConfiguration, GlobalRuleBuilder> entry : builders.entrySet()) {
+            result.add(entry.getValue().build(entry.getKey(), mataDataMap, users));
+        }
+        return result;
     }
 }

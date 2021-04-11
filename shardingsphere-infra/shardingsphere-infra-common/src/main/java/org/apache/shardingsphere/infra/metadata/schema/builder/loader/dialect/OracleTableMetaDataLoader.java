@@ -41,13 +41,18 @@ import java.util.stream.Collectors;
  * Table meta data loader for Oracle.
  */
 public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoader {
-    
-    private static final String TABLE_META_DATA_SQL = "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY, IDENTITY_COLUMN, COLLATION_NAME FROM information_schema.columns WHERE TABLE_SCHEMA=?";
+
+    private static final String TABLE_META_DATA_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, DATA_TYPE, IDENTITY_COLUMN, COLLATION FROM ALL_TAB_COLUMNS WHERE TABLE_SCHEMA=?";
     
     private static final String TABLE_META_DATA_SQL_WITH_EXISTED_TABLES = TABLE_META_DATA_SQL + " AND TABLE_NAME NOT IN (%s)";
     
-    private static final String INDEX_META_DATA_SQL = "SELECT TABLE_NAME, INDEX_NAME FROM information_schema.statistics WHERE TABLE_SCHEMA=? and TABLE_NAME IN (%s)";
-    
+    private static final String INDEX_META_DATA_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE TABLE_SCHEMA=? and TABLE_NAME IN (%s)";
+
+    private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT A.OWNER AS TABLE_SCHEMA, A.TABLE_NAME AS TABLE_NAME, B.COLUMN_NAME AS COLUMN_NAME FROM ALL_CONSTRAINTS A INNER JOIN"
+            + " ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND TABLE_SCHEMA=?";
+
+    private static final String PRIMARY_KEY_META_DATA_SQL_WITH_EXISTED_TABLES = PRIMARY_KEY_META_DATA_SQL + " AND TABLE_NAME NOT IN (%s)";
+
     @Override
     public Map<String, TableMetaData> load(final DataSource dataSource, final Collection<String> existedTables) throws SQLException {
         return loadTableMetaDataMap(dataSource, existedTables);
@@ -69,11 +74,12 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(existedTables))) {
             Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
+            Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(connection, existedTables);
             preparedStatement.setString(1, connection.getCatalog());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String tableName = resultSet.getString("TABLE_NAME");
-                    ColumnMetaData columnMetaData = loadColumnMetaData(dataTypes, resultSet);
+                    ColumnMetaData columnMetaData = loadColumnMetaData(dataTypes, resultSet, tablePrimaryKeys.getOrDefault(tableName, Collections.emptyList()));
                     if (!result.containsKey(tableName)) {
                         result.put(tableName, new LinkedList<>());
                     }
@@ -84,11 +90,11 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
         return result;
     }
     
-    private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet) throws SQLException {
+    private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet, final Collection<String> primaryKeys) throws SQLException {
         String columnName = resultSet.getString("COLUMN_NAME");
         String dataType = resultSet.getString("DATA_TYPE");
-        boolean primaryKey = "PRI".equals(resultSet.getString("COLUMN_KEY"));
-        boolean generated = "auto_increment".equals(resultSet.getString("IDENTITY_COLUMN"));
+        boolean primaryKey = primaryKeys.contains(columnName);
+        boolean generated = "YES".equals(resultSet.getString("IDENTITY_COLUMN"));
         String collationName = resultSet.getString("COLLATION_NAME");
         boolean caseSensitive = null != collationName && collationName.endsWith("_CS");
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
@@ -122,7 +128,27 @@ public final class OracleTableMetaDataLoader implements DialectTableMetaDataLoad
     private String getIndexMetaDataSQL(final Collection<String> tableNames) {
         return String.format(INDEX_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
-    
+
+    private Map<String, Collection<String>> loadTablePrimaryKeys(final Connection connection, final Collection<String> tableNames) throws SQLException {
+        Map<String, Collection<String>> result = new HashMap<>();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyMetaDataSQL(tableNames))) {
+            preparedStatement.setString(1, connection.getCatalog());
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    String columnName = resultSet.getString("COLUMN_NAME");
+                    String tableName = resultSet.getString("TABLE_NAME");
+                    result.computeIfAbsent(tableName, k -> new LinkedList<>()).add(columnName);
+                }
+            }
+        }
+        return result;
+    }
+
+    private String getPrimaryKeyMetaDataSQL(final Collection<String> existedTables) {
+        return existedTables.isEmpty() ? PRIMARY_KEY_META_DATA_SQL
+                : String.format(PRIMARY_KEY_META_DATA_SQL_WITH_EXISTED_TABLES, existedTables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    }
+
     @Override
     public String getDatabaseType() {
         return "Oracle";

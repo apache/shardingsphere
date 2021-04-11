@@ -27,12 +27,9 @@ governance:
       operationTimeoutMilliseconds: 500
   overwrite: false
 
-authentication:
-  users:
-    root:
-      password: root
-    sharding:
-      password: sharding
+users:
+  - root@:root
+  - sharding@:sharding
 
 props:
   alpha-1: alpha-A

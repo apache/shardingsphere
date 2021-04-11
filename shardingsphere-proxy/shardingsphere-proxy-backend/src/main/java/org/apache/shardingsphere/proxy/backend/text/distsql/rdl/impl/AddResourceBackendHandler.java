@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceAddedEvent;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
@@ -28,7 +27,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.Bac
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.converter.AddResourcesStatementConverter;
 
@@ -37,28 +36,31 @@ import java.util.Map;
 /**
  * Add resource backend handler.
  */
-@RequiredArgsConstructor
-public final class AddResourceBackendHandler implements TextProtocolBackendHandler {
+public final class AddResourceBackendHandler extends SchemaRequiredBackendHandler<AddResourceStatement> {
     
     private final DatabaseType databaseType;
     
-    private final AddResourceStatement sqlStatement;
+    private final DataSourceValidator dataSourceValidator;
     
-    private final BackendConnection backendConnection;
+    public AddResourceBackendHandler(final DatabaseType databaseType, final AddResourceStatement sqlStatement, final BackendConnection backendConnection) {
+        super(sqlStatement, backendConnection);
+        this.databaseType = databaseType;
+        this.dataSourceValidator = new DataSourceValidator();
+    }
     
     @Override
-    public ResponseHeader execute() {
+    public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) {
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
-        if (!DataSourceValidator.validate(dataSources)) {
+        if (!dataSourceValidator.validate(dataSources)) {
             throw new ResourceNotExistedException(dataSources.keySet());
         }
-        post(backendConnection, dataSources);
+        post(schemaName, dataSources);
         return new UpdateResponseHeader(sqlStatement);
     }
     
-    private void post(final BackendConnection backendConnection, final Map<String, DataSourceConfiguration> dataSources) {
+    private void post(final String schemaName, final Map<String, DataSourceConfiguration> dataSources) {
         // TODO Need to get the executed feedback from registry center for returning.
-        ShardingSphereEventBus.getInstance().post(new DataSourceAddedEvent(backendConnection.getSchemaName(), dataSources));
+        ShardingSphereEventBus.getInstance().post(new DataSourceAddedEvent(schemaName, dataSources));
     }
 }

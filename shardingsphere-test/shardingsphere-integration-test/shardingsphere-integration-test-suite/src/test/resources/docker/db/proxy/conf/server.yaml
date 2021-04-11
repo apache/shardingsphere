@@ -27,10 +27,8 @@
 #      operationTimeoutMilliseconds: 500
 #  overwrite: true
 
-authentication:
-  users:
-    root:
-      password: root
+users:
+  - root@:root
 
 props:
   max-connections-size-per-query: 1

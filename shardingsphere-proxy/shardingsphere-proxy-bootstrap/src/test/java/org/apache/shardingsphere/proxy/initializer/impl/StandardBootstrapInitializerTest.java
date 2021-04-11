@@ -20,13 +20,9 @@ package org.apache.shardingsphere.proxy.initializer.impl;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
-import org.apache.shardingsphere.infra.metadata.auth.Authentication;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapper;
@@ -112,9 +108,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     private void assertProxyConfiguration(final ProxyConfiguration actual) {
         assertSchemaDataSources(actual.getSchemaDataSources());
         assertSchemaRules(actual.getSchemaRules());
-        Authentication authentication = new DefaultAuthentication();
-        authentication.init(getPrivileges(actual.getUsers()));
-        assertAuthentication(authentication);
+        assertUsers(new ShardingSphereUsers(actual.getUsers()));
         assertProps(actual.getProps());
     }
     
@@ -152,15 +146,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         assertThat(((FixtureRuleConfiguration) actual).getName(), is("testRule"));
     }
     
-    private Map<ShardingSphereUser, ShardingSpherePrivilege> getPrivileges(final Collection<ShardingSphereUser> users) {
-        Map<ShardingSphereUser, ShardingSpherePrivilege> privileges = new HashMap<>(users.size(), 1);
-        for (ShardingSphereUser each : users) {
-            privileges.put(each, new ShardingSpherePrivilege());
-        }
-        return privileges;
-    }
-    
-    private void assertAuthentication(final Authentication actual) {
+    private void assertUsers(final ShardingSphereUsers actual) {
         Optional<ShardingSphereUser> rootUser = actual.findUser(new Grantee("root", ""));
         assertTrue(rootUser.isPresent());
         assertThat(rootUser.get().getPassword(), is("root"));
@@ -168,7 +154,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
     
     private YamlProxyServerConfiguration createYamlProxyServerConfiguration() {
         YamlProxyServerConfiguration result = new YamlProxyServerConfiguration();
-        result.setAuthentication(createYamlUserRuleConfiguration());
+        result.getUsers().add("root@:root");
         result.setProps(createProperties());
         return result;
     }
@@ -179,21 +165,7 @@ public final class StandardBootstrapInitializerTest extends AbstractBootstrapIni
         result.setProperty("beta-2", "beta-B");
         return result;
     }
-    
-    private YamlUserRuleConfiguration createYamlUserRuleConfiguration() {
-        Map<String, YamlUserConfiguration> users = new HashMap<>(1, 1);
-        users.put("root", createYamlUserConfiguration());
-        YamlUserRuleConfiguration result = new YamlUserRuleConfiguration();
-        result.setUsers(users);
-        return result;
-    }
-    
-    private YamlUserConfiguration createYamlUserConfiguration() {
-        YamlUserConfiguration result = new YamlUserConfiguration();
-        result.setPassword("root");
-        return result;
-    }
-    
+
     @Test
     public void assertDecorateMetaDataContexts() {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);

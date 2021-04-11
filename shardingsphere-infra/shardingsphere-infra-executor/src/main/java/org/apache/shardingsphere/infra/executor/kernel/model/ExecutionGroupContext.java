@@ -34,12 +34,5 @@ public final class ExecutionGroupContext<T> {
     
     private final Collection<ExecutionGroup<T>> inputGroups;
     
-    /**
-     * Get execution ID.
-     *
-     * @return execution ID
-     */
-    public String getExecutionID() {
-        return UUID.randomUUID().toString();
-    }
+    private final String executionID = UUID.randomUUID().toString();
 }
