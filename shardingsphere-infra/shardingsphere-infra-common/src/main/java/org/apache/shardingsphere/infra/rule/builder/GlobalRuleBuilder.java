@@ -37,10 +37,10 @@ public interface GlobalRuleBuilder<R extends GlobalRule, T extends RuleConfigura
     /**
      * Build global rule.
      *
-     * @param mataDataMap mata data map
      * @param ruleConfig rule configuration
+     * @param mataDataMap mata data map
      * @param users users
      * @return global rule
      */
-    R build(Map<String, ShardingSphereMetaData> mataDataMap, T ruleConfig, Collection<ShardingSphereUser> users);
+    R build(T ruleConfig, Map<String, ShardingSphereMetaData> mataDataMap, Collection<ShardingSphereUser> users);
 }

@@ -33,13 +33,13 @@ public final class AuthorityRuleConfigurationYamlSwapper implements YamlRuleConf
     @Override
     public YamlAuthorityRuleConfiguration swapToYamlConfiguration(final AuthorityRuleConfiguration data) {
         YamlAuthorityRuleConfiguration result = new YamlAuthorityRuleConfiguration();
-        result.setPrivilegeLoader(algorithmSwapper.swapToYamlConfiguration(data.getPrivilegeLoader()));
+        result.setProvider(algorithmSwapper.swapToYamlConfiguration(data.getProvider()));
         return result;
     }
     
     @Override
     public AuthorityRuleConfiguration swapToObject(final YamlAuthorityRuleConfiguration yamlConfig) {
-        return new AuthorityRuleConfiguration(algorithmSwapper.swapToObject(yamlConfig.getPrivilegeLoader()));
+        return new AuthorityRuleConfiguration(algorithmSwapper.swapToObject(yamlConfig.getProvider()));
     }
     
     @Override

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.integration.junit.compose;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.integration.env.EnvironmentType;
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
 import org.junit.rules.ExternalResource;
 
@@ -61,10 +60,8 @@ public final class ComposeManager extends ExternalResource {
     }
     
     @Override
-    protected void before() throws Throwable {
-        if (EnvironmentType.DOCKER != IntegrationTestEnvironment.getInstance().getEnvType()) {
-            DatabaseEnvironmentManager.executeInitSQLs();
-        } else {
+    protected void before() {
+        if (EnvironmentType.DOCKER == IntegrationTestEnvironment.getInstance().getEnvType()) {
             composeMap.values().forEach(each -> {
                 each.start();
                 each.waitUntilReady();

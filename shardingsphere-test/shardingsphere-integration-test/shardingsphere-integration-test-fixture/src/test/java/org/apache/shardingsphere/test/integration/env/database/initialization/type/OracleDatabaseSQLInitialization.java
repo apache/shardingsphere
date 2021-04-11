@@ -21,8 +21,10 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
 import org.apache.shardingsphere.test.integration.env.database.initialization.DatabaseSQLInitialization;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Database SQL initialization for Oracle.
@@ -30,8 +32,8 @@ import java.sql.SQLException;
 public final class OracleDatabaseSQLInitialization extends DefaultDatabaseSQLInitialization implements DatabaseSQLInitialization {
     
     @Override
-    public void executeInitSQLs(final String scenario, final DatabaseType databaseType) throws IOException, SQLException {
-        super.executeInitSQLs(scenario, databaseType);
+    public void executeInitSQLs(final String scenario, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) throws IOException, SQLException {
+        super.executeInitSQLs(scenario, databaseType, dataSourceMap);
     }
     
     @Override

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
@@ -49,6 +50,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -69,13 +71,27 @@ public final class TextProtocolBackendHandlerFactoryTest {
         when(backendConnection.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         setTransactionContexts();
         when(backendConnection.getSchemaName()).thenReturn("schema");
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        when(metaDataContexts.getMetaData("schema")).thenReturn(mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS));
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        mockGlobalRuleMetaData(metaDataContexts);
+        ShardingSphereMetaData shardingSphereMetaData = mockShardingSphereMetaData();
+        when(metaDataContexts.getMetaData("schema")).thenReturn(shardingSphereMetaData);
         when(metaDataContexts.getMetaData("schema").getResource()).thenReturn(mock(ShardingSphereResource.class));
         when(metaDataContexts.getMetaData("schema").getResource().getDatabaseType()).thenReturn(databaseType);
         TransactionContexts transactionContexts = mock(TransactionContexts.class);
         ProxyContext proxyContext = ProxyContext.getInstance();
         proxyContext.init(metaDataContexts, transactionContexts);
+    }
+    
+    private ShardingSphereMetaData mockShardingSphereMetaData() {
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        return result;
+    }
+    
+    private void mockGlobalRuleMetaData(final MetaDataContexts metaDataContexts) {
+        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
+        when(globalRuleMetaData.getRules()).thenReturn(Collections.emptyList());
+        when(metaDataContexts.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

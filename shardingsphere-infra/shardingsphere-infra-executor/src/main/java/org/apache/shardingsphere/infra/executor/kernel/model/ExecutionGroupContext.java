@@ -21,21 +21,18 @@ import lombok.Getter;
 
 import java.util.Collection;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Execution group context.
  *
  * @param <T> type of execution input value
  */
+@RequiredArgsConstructor
 @Getter
 public final class ExecutionGroupContext<T> {
     
-    private final String executionID;
-    
     private final Collection<ExecutionGroup<T>> inputGroups;
     
-    public ExecutionGroupContext(final Collection<ExecutionGroup<T>> inputGroups) {
-        executionID = UUID.randomUUID().toString();
-        this.inputGroups = inputGroups;
-    }
+    private final String executionID = UUID.randomUUID().toString();
 }
