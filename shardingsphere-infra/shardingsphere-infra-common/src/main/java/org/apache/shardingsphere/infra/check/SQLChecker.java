@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.check;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPI;
@@ -46,10 +45,9 @@ public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> 
      * 
      * @param sqlStatement SQL statement
      * @param parameters SQL parameters
-     * @param metaData meta data
      * @param grantee grantee
      * @param rule rule
      * @return SQL check result
      */
-    SQLCheckResult check(SQLStatement sqlStatement, List<Object> parameters, ShardingSphereMetaData metaData, Grantee grantee, T rule);
+    SQLCheckResult check(SQLStatement sqlStatement, List<Object> parameters, Grantee grantee, T rule);
 }

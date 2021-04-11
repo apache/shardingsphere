@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -39,7 +40,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -75,7 +78,7 @@ public final class TextProtocolBackendHandlerFactory {
         if (extraHandler.isPresent()) {
             return extraHandler.get();
         }
-        sqlCheck(backendConnection, sqlStatement);
+        SQLCheckEngine.check(sqlStatement, Collections.emptyList(), getRules(backendConnection.getSchemaName()), backendConnection.getGrantee());
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((TCLStatement) sqlStatement, sql, backendConnection);
         }
@@ -87,14 +90,6 @@ public final class TextProtocolBackendHandlerFactory {
         return databaseAdminBackendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(sqlStatement, sql, backendConnection));
     }
     
-    private static void sqlCheck(final BackendConnection backendConnection, final SQLStatement sqlStatement) {
-        // TODO :Authority, need to refactor after GlobalRule is added
-        if (!Strings.isNullOrEmpty(backendConnection.getSchemaName())) {
-            MetaDataContexts contexts = ProxyContext.getInstance().getMetaDataContexts();
-            SQLCheckEngine.check(sqlStatement, Collections.emptyList(), contexts.getMetaData(backendConnection.getSchemaName()), contexts.getGlobalRuleMetaData(), backendConnection.getGrantee());
-        }
-    }
-    
     private static DatabaseType getBackendDatabaseType(final DatabaseType defaultDatabaseType, final BackendConnection backendConnection) {
         return Strings.isNullOrEmpty(backendConnection.getSchemaName())
                 ? defaultDatabaseType : ProxyContext.getInstance().getMetaDataContexts().getMetaData(backendConnection.getSchemaName()).getResource().getDatabaseType();
@@ -102,5 +97,16 @@ public final class TextProtocolBackendHandlerFactory {
     
     private static Optional<ExtraTextProtocolBackendHandler> findExtraTextProtocolBackendHandler(final SQLStatement sqlStatement) {
         return ShardingSphereServiceLoader.getSingletonServiceInstances(ExtraTextProtocolBackendHandler.class).stream().filter(each -> each.accept(sqlStatement)).findFirst();
+    }
+    
+    private static Collection<ShardingSphereRule> getRules(final String schemaName) {
+        MetaDataContexts contexts = ProxyContext.getInstance().getMetaDataContexts();
+        if (Strings.isNullOrEmpty(schemaName)) {
+            return contexts.getGlobalRuleMetaData().getRules();
+        }
+        Collection<ShardingSphereRule> result;
+        result = new LinkedList<>(contexts.getMetaData(schemaName).getRuleMetaData().getRules());
+        result.addAll(contexts.getGlobalRuleMetaData().getRules());
+        return result;
     }
 }
