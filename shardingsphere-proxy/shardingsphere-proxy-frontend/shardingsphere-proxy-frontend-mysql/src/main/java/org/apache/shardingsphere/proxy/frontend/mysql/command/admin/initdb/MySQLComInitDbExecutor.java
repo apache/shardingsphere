@@ -22,7 +22,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.initdb.M
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.check.SQLCheckEngine;
-import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * COM_INIT_DB command executor for MySQL.
@@ -44,13 +45,18 @@ public final class MySQLComInitDbExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        String schema = SQLUtil.getExactlyValue(packet.getSchema());
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getMetaDataContexts();
-        if (ProxyContext.getInstance().schemaExists(schema)
-                && SQLCheckEngine.check(schema, metaDataContexts.getMetaData(schema), metaDataContexts.getGlobalRuleMetaData(), backendConnection.getGrantee())) {
+        String schemaName = SQLUtil.getExactlyValue(packet.getSchema());
+        if (ProxyContext.getInstance().schemaExists(schemaName) && SQLCheckEngine.check(schemaName, getRules(schemaName), backendConnection.getGrantee())) {
             backendConnection.setCurrentSchema(packet.getSchema());
             return Collections.singletonList(new MySQLOKPacket(1));
         }
         throw new UnknownDatabaseException(packet.getSchema());
+    }
+    
+    private Collection<ShardingSphereRule> getRules(final String schemaName) {
+        Collection<ShardingSphereRule> result;
+        result = new LinkedList<>(ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getRules());
+        result.addAll(ProxyContext.getInstance().getMetaDataContexts().getGlobalRuleMetaData().getRules());
+        return result;
     }
 }

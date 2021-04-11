@@ -23,7 +23,6 @@ import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.check.SQLChecker;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
@@ -46,7 +45,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
     }
     
     @Override
-    public SQLCheckResult check(final SQLStatement sqlStatement, final List<Object> parameters, final ShardingSphereMetaData metaData, final Grantee grantee, final AuthorityRule authorityRule) {
+    public SQLCheckResult check(final SQLStatement sqlStatement, final List<Object> parameters, final Grantee grantee, final AuthorityRule authorityRule) {
         if (null == grantee) {
             return new SQLCheckResult(true, "");
         }
