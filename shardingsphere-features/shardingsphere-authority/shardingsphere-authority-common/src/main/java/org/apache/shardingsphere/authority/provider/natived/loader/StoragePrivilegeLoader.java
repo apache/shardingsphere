@@ -32,11 +32,11 @@ import java.util.Map;
 public interface StoragePrivilegeLoader extends TypedSPI {
     
     /**
-     * Load privilege.
+     * Load privilege from storage.
      *
-     * @param users users
-     * @param dataSource data source
-     * @return ShardingSphere privileges
+     * @param users users to be loaded
+     * @param dataSource target data source to be loaded
+     * @return map of user and  privilege
      * @throws SQLException SQL exception
      */
     Map<ShardingSphereUser, ShardingSpherePrivileges> load(Collection<ShardingSphereUser> users, DataSource dataSource) throws SQLException;
