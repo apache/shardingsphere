@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.check;
+package org.apache.shardingsphere.infra.executor.check;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import lombok.RequiredArgsConstructor;
 
 /**
- * SQL check exception.
+ * SQL check result.
  */
+@RequiredArgsConstructor
 @Getter
-public final class SQLCheckException extends ShardingSphereException {
+public final class SQLCheckResult {
     
-    private static final long serialVersionUID = 4183020614721058122L;
+    private final boolean isPassed;
     
-    public SQLCheckException(final String errorMessage) {
-        super("SQL checking failed. Error message: %s.", errorMessage);
-    }
+    private final String errorMessage;
 }
