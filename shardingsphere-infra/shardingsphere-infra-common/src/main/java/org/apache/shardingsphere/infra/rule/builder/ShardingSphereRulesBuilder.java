@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.infra.rule.builder;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -31,12 +28,11 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere rule builder.
@@ -56,18 +52,13 @@ public final class ShardingSphereRulesBuilder {
      * @param schemaRuleConfigurations schema rule configurations
      * @param databaseType database type
      * @param dataSourceMap data source map
-     * @param users users
      * @return built schema rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> buildSchemaRules(final String schemaName, final Collection<RuleConfiguration> schemaRuleConfigurations,
-                                                                  final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereUser> users) {
+                                                                  final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) {
         Map<RuleConfiguration, SchemaRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(schemaRuleConfigurations, SchemaRuleBuilder.class);
-        Collection<ShardingSphereRule> result = new LinkedList<>();
-        for (Entry<RuleConfiguration, SchemaRuleBuilder> entry : builders.entrySet()) {
-            result.add(entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey(), users, result));
-        }
-        return result;
+        return builders.entrySet().stream().map(entry -> entry.getValue().build(schemaName, dataSourceMap, databaseType, entry.getKey())).collect(Collectors.toList());
     }
     
     /**
@@ -76,36 +67,16 @@ public final class ShardingSphereRulesBuilder {
      * @param globalRuleConfigurations global rule configurations
      * @param mataDataMap mata data map
      * @param users users
-     * @param schemaRules built schema rules
      * @return built global rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> buildGlobalRules(final Collection<RuleConfiguration> globalRuleConfigurations, final Map<String, ShardingSphereMetaData> mataDataMap, 
-                                                                  final Collection<ShardingSphereUser> users, final Collection<ShardingSphereRule> schemaRules) {
+    public static Collection<ShardingSphereRule> buildGlobalRules(final Collection<RuleConfiguration> globalRuleConfigurations, 
+                                                                  final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
         Map<RuleConfiguration, GlobalRuleBuilder> builders = OrderedSPIRegistry.getRegisteredServices(globalRuleConfigurations, GlobalRuleBuilder.class);
-        Collection<ShardingSphereRule> result = new LinkedList<>(schemaRules);
+        Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, GlobalRuleBuilder> entry : builders.entrySet()) {
-            DatabaseType databaseType = mataDataMap.isEmpty() ? new MySQLDatabaseType() : getDatabaseType(mataDataMap.values().iterator().next().getResource().getDataSources());
-            result.add(entry.getValue().build(mataDataMap, databaseType, entry.getKey(), users, result));
+            result.add(entry.getValue().build(entry.getKey(), mataDataMap, users));
         }
         return result;
-    }
-    
-    private static DatabaseType getDatabaseType(final Map<String, DataSource> dataSourceMap) {
-        DatabaseType result = null;
-        for (DataSource each : dataSourceMap.values()) {
-            DatabaseType databaseType = getDatabaseType(each);
-            Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
-            result = databaseType;
-        }
-        return null == result ? DatabaseTypeRegistry.getDefaultDatabaseType() : result;
-    }
-    
-    private static DatabaseType getDatabaseType(final DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
-        } catch (final SQLException ex) {
-            return null;
-        }
     }
 }

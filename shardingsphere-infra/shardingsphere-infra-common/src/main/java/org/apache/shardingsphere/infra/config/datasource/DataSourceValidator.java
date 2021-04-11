@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.infra.config.datasource;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -28,7 +25,6 @@ import java.util.Map;
 /**
  * Data source validator.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceValidator {
     
     /**
@@ -37,7 +33,7 @@ public final class DataSourceValidator {
      * @param dataSources data sources.
      * @return is valid or not
      */
-    public static boolean validate(final Map<String, DataSourceConfiguration> dataSources) {
+    public boolean validate(final Map<String, DataSourceConfiguration> dataSources) {
         Collection<DataSource> result = new LinkedList<>();
         try {
             for (DataSourceConfiguration each : dataSources.values()) {
@@ -48,12 +44,12 @@ public final class DataSourceValidator {
             // CHECKSTYLE:ON
             return false;
         } finally {
-            result.forEach(DataSourceValidator::close);
+            result.forEach(this::close);
         }
         return true;
     }
     
-    private static void close(final DataSource dataSource) {
+    private void close(final DataSource dataSource) {
         if (dataSource instanceof AutoCloseable) {
             try {
                 ((AutoCloseable) dataSource).close();

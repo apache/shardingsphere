@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.env.dataset.DataSetEnvironmentManager;
+import org.apache.shardingsphere.test.integration.junit.compose.GovernanceContainerCompose;
 import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 import org.junit.After;
 import org.junit.Before;
@@ -75,7 +76,8 @@ public abstract class BaseDMLIT extends SingleITCase {
         for (String each : new InlineExpressionParser(expectedDataSetMetadata.getDataNodes()).splitAndEvaluate()) {
             DataNode dataNode = new DataNode(each);
             try (
-                    Connection connection = getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
+                    Connection connection = getCompose() instanceof GovernanceContainerCompose
+                            ? getCompose().getDataSourceMap().get("adapterForReader").getConnection() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
                     PreparedStatement preparedStatement = connection.prepareStatement(generateFetchActualDataSQL(dataNode))) {
                 assertDataSet(preparedStatement, expectedDataSetMetadata, getDataSet().findRows(dataNode));
             }
@@ -101,7 +103,8 @@ public abstract class BaseDMLIT extends SingleITCase {
         String sql = String.format("SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type "
                 + "FROM pg_index i JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) WHERE i.indrelid = '%s'::regclass AND i.indisprimary", dataNode.getTableName());
         try (
-                Connection connection = getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
+                Connection connection = getCompose() instanceof GovernanceContainerCompose
+                        ? getCompose().getDataSourceMap().get("adapterForReader").getConnection() : getStorageContainer().getDataSourceMap().get(dataNode.getDataSourceName()).getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(sql)) {
             if (resultSet.next()) {

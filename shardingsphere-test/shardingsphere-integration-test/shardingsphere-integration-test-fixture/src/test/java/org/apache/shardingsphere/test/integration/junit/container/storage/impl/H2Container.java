@@ -19,21 +19,22 @@ package org.apache.shardingsphere.test.integration.junit.container.storage.impl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
+import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
 import org.apache.shardingsphere.test.integration.junit.container.storage.ShardingSphereStorageContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
+import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;
+import java.io.File;
+import java.io.FileReader;
+import java.sql.Connection;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * H2 container.
  */
 public final class H2Container extends ShardingSphereStorageContainer {
-    
-    private volatile Map<String, DataSource> actualDataSources;
-    
-    private volatile boolean isHealthy;
     
     public H2Container(final ParameterizedArray parameterizedArray) {
         super("h2-embedded", "h2:fake", new H2DatabaseType(), true, parameterizedArray);
@@ -41,20 +42,26 @@ public final class H2Container extends ShardingSphereStorageContainer {
     
     @Override
     @SneakyThrows
-    protected void configure() {
-        super.configure();
-        actualDataSources = ActualDataSourceBuilder.createActualDataSources(getParameterizedArray().getScenario(), getParameterizedArray().getDatabaseType());
-        isHealthy = true;
+    protected void execute() {
+        super.execute();
+        // TODO initialize SQL script
+        File file = new File(EnvironmentPath.getInitSQLFile(getDatabaseType(), getParameterizedArray().getScenario()));
+        for (Map.Entry<String, DataSource> each : getDataSourceMap().entrySet()) {
+            try (Connection connection = each.getValue().getConnection();
+                 FileReader reader = new FileReader(file)) {
+                RunScript.execute(connection, reader);
+            }
+        }
     }
     
     @Override
     public boolean isHealthy() {
-        return isHealthy;
+        return true;
     }
     
     @Override
     protected String getUrl(final String dataSourceName) {
-        return null;
+        return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", Objects.isNull(dataSourceName) ? "test_db" : dataSourceName);
     }
     
     @Override
@@ -64,17 +71,12 @@ public final class H2Container extends ShardingSphereStorageContainer {
     
     @Override
     protected String getUsername() {
-        return null;
+        return "sa";
     }
     
     @Override
     protected String getPassword() {
-        return null;
+        return "";
     }
     
-    @Override
-    @SneakyThrows
-    public synchronized Map<String, DataSource> getDataSourceMap() {
-        return actualDataSources;
-    }
 }

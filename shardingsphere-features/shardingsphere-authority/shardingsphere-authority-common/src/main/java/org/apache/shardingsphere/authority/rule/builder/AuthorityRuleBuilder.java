@@ -20,10 +20,8 @@ package org.apache.shardingsphere.authority.rule.builder;
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.GlobalRuleBuilder;
 
 import java.util.Collection;
@@ -35,9 +33,8 @@ import java.util.Map;
 public final class AuthorityRuleBuilder implements GlobalRuleBuilder<AuthorityRule, AuthorityRuleConfiguration> {
     
     @Override
-    public AuthorityRule build(final Map<String, ShardingSphereMetaData> mataDataMap, final DatabaseType databaseType,
-                               final AuthorityRuleConfiguration ruleConfig, final Collection<ShardingSphereUser> users, final Collection<ShardingSphereRule> builtRules) {
-        return new AuthorityRule(ruleConfig, mataDataMap, databaseType, users, builtRules);
+    public AuthorityRule build(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
+        return new AuthorityRule(ruleConfig, mataDataMap, users);
     }
     
     @Override

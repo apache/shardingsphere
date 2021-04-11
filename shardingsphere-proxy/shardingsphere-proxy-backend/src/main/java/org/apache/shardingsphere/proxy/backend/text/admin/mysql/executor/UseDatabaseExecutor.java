@@ -19,12 +19,16 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.check.SQLCheckEngine;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Use database executor.
@@ -36,10 +40,17 @@ public final class UseDatabaseExecutor implements DatabaseAdminExecutor {
     
     @Override
     public void execute(final BackendConnection backendConnection) {
-        String schema = SQLUtil.getExactlyValue(useStatement.getSchema());
-        if (!ProxyContext.getInstance().schemaExists(schema) && SQLCheckEngine.check(schema, ProxyContext.getInstance().getMetaDataContexts().getMetaData(schema), backendConnection.getGrantee())) {
-            throw new UnknownDatabaseException(schema);
+        String schemaName = SQLUtil.getExactlyValue(useStatement.getSchema());
+        if (!ProxyContext.getInstance().schemaExists(schemaName) && SQLCheckEngine.check(schemaName, getRules(schemaName), backendConnection.getGrantee())) {
+            throw new UnknownDatabaseException(schemaName);
         }
-        backendConnection.setCurrentSchema(schema);
+        backendConnection.setCurrentSchema(schemaName);
+    }
+    
+    private Collection<ShardingSphereRule> getRules(final String schemaName) {
+        Collection<ShardingSphereRule> result;
+        result = new LinkedList<>(ProxyContext.getInstance().getMetaDataContexts().getMetaData(schemaName).getRuleMetaData().getRules());
+        result.addAll(ProxyContext.getInstance().getMetaDataContexts().getGlobalRuleMetaData().getRules());
+        return result;
     }
 }
