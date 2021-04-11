@@ -78,7 +78,9 @@ public final class TextProtocolBackendHandlerFactory {
         if (extraHandler.isPresent()) {
             return extraHandler.get();
         }
-        SQLCheckEngine.check(sqlStatement, Collections.emptyList(), getRules(backendConnection.getSchemaName()), backendConnection.getGrantee());
+        String schemaName = backendConnection.getSchemaName();
+        SQLCheckEngine.check(sqlStatement, Collections.emptyList(), 
+                getRules(schemaName), schemaName, ProxyContext.getInstance().getMetaDataContexts().getMetaDataMap(), backendConnection.getGrantee());
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((TCLStatement) sqlStatement, sql, backendConnection);
         }

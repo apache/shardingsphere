@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.check.SQLCheckException;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
@@ -52,8 +53,9 @@ public final class ShowDatabasesExecutor implements DatabaseAdminQueryExecutor {
     
     private Collection<Object> getSchemaNames(final BackendConnection backendConnection) {
         try {
-            SQLCheckEngine.check(
-                    new MySQLShowDatabasesStatement(), Collections.emptyList(), ProxyContext.getInstance().getMetaDataContexts().getGlobalRuleMetaData().getRules(), backendConnection.getGrantee());
+            MetaDataContexts contexts = ProxyContext.getInstance().getMetaDataContexts();
+            SQLCheckEngine.check(new MySQLShowDatabasesStatement(), Collections.emptyList(), 
+                    contexts.getGlobalRuleMetaData().getRules(), backendConnection.getSchemaName(), contexts.getMetaDataMap(), backendConnection.getGrantee());
             return new ArrayList<>(ProxyContext.getInstance().getAllSchemaNames());
         } catch (final SQLCheckException ex) {
             Collection<Object> result = new LinkedList<>();
