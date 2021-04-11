@@ -1374,3 +1374,27 @@ LOBS
 TABLES
     : T A B L E S
     ;
+
+ALLOW
+    : A L L O W
+    ;
+
+DISALLOW
+    : D I S A L L O W
+    ;
+
+NONSCHEMA
+    : N O N S C H E M A
+    ;
+
+ANYSCHEMA
+    : A N Y S C H E M A
+    ;
+
+XMLSCHEMA
+    : X M L S C H E M A
+    ;
+
+COLUMNS
+    : C O L U M N S
+    ;

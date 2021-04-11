@@ -86,28 +86,27 @@ createXMLTypeTableClause
 
 XMLTypeStorageClause
     : STORE
-      (AS ( OBJECT RELATIONAL | ((SECUREFILE | BASICFILE)? (CLOB | BINARY XML) ((lobSegname (LP_ lobParameters RP_)? | (LP_ lobParameters RP_)))?)))
+      (AS ( OBJECT RELATIONAL | ((SECUREFILE | BASICFILE)? (CLOB | BINARY XML) (lobSegname (LP_ lobParameters RP_)? | (LP_ lobParameters RP_))?)))
       | (ALL VARRAYS AS (LOBS | TABLES ))
     ;
 
 XMLSchemaSpecClause
-    : (XMLSCHEMA XMLSchema_URL)? ELEMENT 
-      (element | XMLSchema_URL # element)? 
+    : (XMLSCHEMA xmlSchemaURLName)? ELEMENT (elementName | xmlSchemaURLName POUND_ elementName)? 
       (STORE ALL VARRAYS AS (LOBS | TABLES))? 
       ((ALLOW | DISALLOW) NONSCHEMA)?
       ((ALLOW | DISALLOW) ANYSCHEMA)?
     ;
 
 XMLTypeVirtualColumnsClause
-    : 
+    : VIRTUAL COLUMNS LP_ (columnName AS LP_ expr RP_ (COMMA_ columnName AS LP_ expr RP_)+) RP_
     ;
 
 OIDClause
-    : 
+    : OBJECT IDENTIFIER IS (SYSTEM GENERATED | PRIMARY KEY)
     ;
 
 OIDIndexClause
-    : 
+    : OIDINDEX (indexName)? LP_ (physicalAttributesClause | TABLESPACE tablespaceName)+ RP_
     ;
 
 createRelationalTableClause

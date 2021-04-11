@@ -199,6 +199,14 @@ locationSpecifier
     : identifier
     ;
 
+xmlSchemaURLName
+    : identifier
+    ;
+
+elementName
+    : identifier
+    ;
+
 subpartitionName
     : identifier
     ;
