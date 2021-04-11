@@ -73,6 +73,14 @@ public final class StoragePrivilegeBuilder {
         return metaDataList.isEmpty() ? buildDefaultPrivileges(users) : buildWithMetaData(metaDataList, users);
     }
     
+    private static Map<ShardingSphereUser, ShardingSpherePrivileges> buildDefaultPrivileges(final Collection<ShardingSphereUser> users) {
+        Map<ShardingSphereUser, ShardingSpherePrivileges> result = new LinkedHashMap<>(users.size(), 1);
+        ShardingSpherePrivileges privileges = new ShardingSpherePrivileges();
+        privileges.setSuperPrivilege();
+        users.forEach(each -> result.put(each, privileges));
+        return result;
+    }
+    
     private static Map<ShardingSphereUser, ShardingSpherePrivileges> buildWithMetaData(final Collection<ShardingSphereMetaData> metaDataList, final Collection<ShardingSphereUser> users) {
         Map<ShardingSphereUser, ShardingSpherePrivileges> result = new LinkedHashMap<>();
         for (ShardingSphereMetaData each : metaDataList) {
@@ -126,20 +134,6 @@ public final class StoragePrivilegeBuilder {
             }
         });
         executorService.shutdownNow();
-        return result;
-    }
-    
-    /**
-     * Build default privileges.
-     * 
-     * @param users users
-     * @return privileges
-     */
-    public static Map<ShardingSphereUser, ShardingSpherePrivileges> buildDefaultPrivileges(final Collection<ShardingSphereUser> users) {
-        Map<ShardingSphereUser, ShardingSpherePrivileges> result = new LinkedHashMap<>(users.size(), 1);
-        ShardingSpherePrivileges privileges = new ShardingSpherePrivileges();
-        privileges.setSuperPrivilege();
-        users.forEach(each -> result.put(each, privileges));
         return result;
     }
     
