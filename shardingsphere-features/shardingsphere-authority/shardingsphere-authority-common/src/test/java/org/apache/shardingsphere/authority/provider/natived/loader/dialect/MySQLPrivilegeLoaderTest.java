@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.authority.provider.natived.loader.dialect;
 
 import org.apache.shardingsphere.authority.provider.natived.loader.StoragePrivilegeLoader;
-import org.apache.shardingsphere.authority.model.PrivilegeType;
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.privilege.PrivilegeType;
+import org.apache.shardingsphere.authority.privilege.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -159,8 +159,8 @@ public final class MySQLPrivilegeLoaderTest {
         assertThat(actual.size(), is(2));
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         assertThat(actual.get(root).getAdministrativePrivileges().getPrivileges().size(), is(3));
-        Collection<PrivilegeType> expectedAdministrativePrivileges = new CopyOnWriteArraySet<>(Arrays.asList(PrivilegeType.SUPER, PrivilegeType.RELOAD, PrivilegeType.SHUTDOWN));
-        assertThat(actual.get(root).getAdministrativePrivileges().getPrivileges(), is(expectedAdministrativePrivileges));
+        Collection<PrivilegeType> expectedAdminPrivileges = new CopyOnWriteArraySet<>(Arrays.asList(PrivilegeType.SUPER, PrivilegeType.RELOAD, PrivilegeType.SHUTDOWN));
+        assertThat(actual.get(root).getAdministrativePrivileges().getPrivileges(), is(expectedAdminPrivileges));
         Collection<PrivilegeType> expectedDatabasePrivileges = new CopyOnWriteArraySet<>(
                 Arrays.asList(PrivilegeType.SELECT, PrivilegeType.INSERT, PrivilegeType.UPDATE, PrivilegeType.DELETE, PrivilegeType.CREATE, PrivilegeType.ALTER));
         assertThat(actual.get(root).getDatabasePrivileges().getGlobalPrivileges().size(), is(6));

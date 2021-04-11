@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.authority.rule;
 
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.privilege.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;

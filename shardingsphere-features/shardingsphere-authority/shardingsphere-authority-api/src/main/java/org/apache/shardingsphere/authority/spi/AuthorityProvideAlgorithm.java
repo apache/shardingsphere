@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.authority.spi;
 
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.privilege.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
