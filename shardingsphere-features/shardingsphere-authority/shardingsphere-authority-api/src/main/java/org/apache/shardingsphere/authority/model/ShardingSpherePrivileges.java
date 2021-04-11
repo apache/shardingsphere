@@ -43,15 +43,6 @@ public final class ShardingSpherePrivileges {
     }
     
     /**
-     * Is empty.
-     *
-     * @return is empty or not
-     */
-    public boolean isEmpty() {
-        return administrativePrivileges.getPrivileges().isEmpty() && databasePrivileges.getGlobalPrivileges().isEmpty() && databasePrivileges.getSpecificPrivileges().isEmpty();
-    }
-    
-    /**
      * Has privileges.
      *
      * @param privileges privileges
@@ -79,8 +70,8 @@ public final class ShardingSpherePrivileges {
      * @return has or not
      */
     public boolean hasPrivileges(final String schema) {
-        return administrativePrivileges.getPrivileges().contains(PrivilegeType.SUPER) || !databasePrivileges.getGlobalPrivileges().isEmpty()
-                || databasePrivileges.getSpecificPrivileges().containsKey(schema);
+        return administrativePrivileges.getPrivileges().contains(PrivilegeType.SUPER)
+                || !databasePrivileges.getGlobalPrivileges().isEmpty() || databasePrivileges.getSpecificPrivileges().containsKey(schema);
     }
     
     /**
