@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.model.database;
+package org.apache.shardingsphere.authority.privilege.database;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.model.PrivilegeType;
+import org.apache.shardingsphere.authority.privilege.PrivilegeType;
 
 import java.util.Collection;
 import java.util.Map;
@@ -29,46 +28,49 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 /**
- * Schema privileges.
+ * Database privileges.
  */
-@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
-public final class SchemaPrivileges {
-    
-    private final String name;
+public final class DatabasePrivileges {
     
     private final Collection<PrivilegeType> globalPrivileges = new CopyOnWriteArraySet<>();
     
-    private final Map<String, TablePrivileges> specificPrivileges = new ConcurrentHashMap<>();
+    private final Map<String, SchemaPrivileges> specificPrivileges = new ConcurrentHashMap<>();
     
     /**
      * Has privileges.
      *
+     * @param schema schema
      * @param privileges privileges
      * @return has privileges or not
      */
-    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return hasGlobalPrivileges(privileges);
+    public boolean hasPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
+        return hasGlobalPrivileges(privileges) || hasSpecificPrivileges(schema, privileges);
     }
     
     /**
      * Has privileges.
      *
+     * @param schema schema
      * @param table table
      * @param privileges privileges
      * @return has privileges or not
      */
-    public boolean hasPrivileges(final String table, final Collection<PrivilegeType> privileges) {
-        return hasGlobalPrivileges(privileges) || hasSpecificPrivileges(table, privileges);
+    public boolean hasPrivileges(final String schema, final String table, final Collection<PrivilegeType> privileges) {
+        return hasGlobalPrivileges(privileges) || hasSpecificPrivileges(schema, table, privileges);
     }
     
     private boolean hasGlobalPrivileges(final Collection<PrivilegeType> privileges) {
         return globalPrivileges.containsAll(privileges);
     }
     
-    private boolean hasSpecificPrivileges(final String table, final Collection<PrivilegeType> privileges) {
-        return specificPrivileges.containsKey(table) && specificPrivileges.get(table).hasPrivileges(getSpecificPrivileges(privileges));
+    private boolean hasSpecificPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
+        return specificPrivileges.containsKey(schema) && specificPrivileges.get(schema).hasPrivileges(getSpecificPrivileges(privileges));
+    }
+    
+    private boolean hasSpecificPrivileges(final String schema, final String table, final Collection<PrivilegeType> privileges) {
+        return specificPrivileges.containsKey(schema) && specificPrivileges.get(schema).hasPrivileges(table, getSpecificPrivileges(privileges));
     }
     
     private Collection<PrivilegeType> getSpecificPrivileges(final Collection<PrivilegeType> privileges) {

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.authority.provider.natived.loader;
 
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.privilege.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 

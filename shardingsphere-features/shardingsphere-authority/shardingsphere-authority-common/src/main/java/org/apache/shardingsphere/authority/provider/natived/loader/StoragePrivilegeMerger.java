@@ -19,9 +19,9 @@ package org.apache.shardingsphere.authority.provider.natived.loader;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.model.database.SchemaPrivileges;
-import org.apache.shardingsphere.authority.model.database.TablePrivileges;
+import org.apache.shardingsphere.authority.privilege.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.privilege.database.SchemaPrivileges;
+import org.apache.shardingsphere.authority.privilege.database.TablePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;

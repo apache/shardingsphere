@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.model.admin;
+package org.apache.shardingsphere.authority.privilege.database;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.shardingsphere.authority.model.PrivilegeType;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.authority.privilege.PrivilegeType;
 
 import java.util.Collection;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
- * Administrative privileges.
+ * Table privileges.
  */
-@Getter
+@RequiredArgsConstructor
 @EqualsAndHashCode
-public final class AdministrativePrivileges {
+@Getter
+public final class TablePrivileges {
     
-    private final Collection<PrivilegeType> privileges = new CopyOnWriteArraySet<>();
+    private final String tableName;
+    
+    private final Collection<PrivilegeType> privileges;
     
     /**
      * Has privileges.
@@ -40,6 +43,6 @@ public final class AdministrativePrivileges {
      * @return has privileges or not
      */
     public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return this.privileges.contains(PrivilegeType.SUPER) || this.privileges.containsAll(privileges);
+        return this.privileges.containsAll(privileges);
     }
 }

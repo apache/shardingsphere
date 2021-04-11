@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.model;
+package org.apache.shardingsphere.authority.privilege;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.shardingsphere.authority.model.admin.AdministrativePrivileges;
-import org.apache.shardingsphere.authority.model.database.DatabasePrivileges;
+import org.apache.shardingsphere.authority.privilege.admin.AdministrativePrivileges;
+import org.apache.shardingsphere.authority.privilege.database.DatabasePrivileges;
 
 import java.util.Collection;
 
@@ -40,15 +40,6 @@ public final class ShardingSpherePrivileges {
      */
     public void setSuperPrivilege() {
         administrativePrivileges.getPrivileges().add(PrivilegeType.SUPER);
-    }
-    
-    /**
-     * Is empty.
-     *
-     * @return is empty or not
-     */
-    public boolean isEmpty() {
-        return administrativePrivileges.getPrivileges().isEmpty() && databasePrivileges.getGlobalPrivileges().isEmpty() && databasePrivileges.getSpecificPrivileges().isEmpty();
     }
     
     /**
@@ -79,8 +70,8 @@ public final class ShardingSpherePrivileges {
      * @return has or not
      */
     public boolean hasPrivileges(final String schema) {
-        return administrativePrivileges.getPrivileges().contains(PrivilegeType.SUPER) || !databasePrivileges.getGlobalPrivileges().isEmpty()
-                || databasePrivileges.getSpecificPrivileges().containsKey(schema);
+        return administrativePrivileges.getPrivileges().contains(PrivilegeType.SUPER)
+                || !databasePrivileges.getGlobalPrivileges().isEmpty() || databasePrivileges.getSpecificPrivileges().containsKey(schema);
     }
     
     /**

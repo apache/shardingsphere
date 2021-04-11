@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.authority.provider.natived.loader.dialect;
 
-import org.apache.shardingsphere.authority.model.PrivilegeType;
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.model.database.SchemaPrivileges;
+import org.apache.shardingsphere.authority.privilege.PrivilegeType;
+import org.apache.shardingsphere.authority.privilege.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.privilege.database.SchemaPrivileges;
 import org.apache.shardingsphere.authority.provider.natived.loader.StoragePrivilegeLoader;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -72,9 +72,9 @@ public final class PostgreSQLPrivilegeLoaderTest {
         SchemaPrivileges schemaPrivileges = actual.get(user).getDatabasePrivileges().getSpecificPrivileges().get("db0");
         assertThat(schemaPrivileges.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege), is(true));
         assertThat(actual.get(user).getAdministrativePrivileges().getPrivileges().size(), is(4));
-        Collection<PrivilegeType> expectedAdministrativePrivilege = new CopyOnWriteArraySet(Arrays.asList(PrivilegeType.SUPER, PrivilegeType.CREATE_ROLE,
-                PrivilegeType.CREATE_DATABASE, PrivilegeType.CAN_LOGIN));
-        assertEquals(actual.get(user).getAdministrativePrivileges().getPrivileges(), expectedAdministrativePrivilege);
+        Collection<PrivilegeType> expectedAdminPrivileges = new CopyOnWriteArraySet(
+                Arrays.asList(PrivilegeType.SUPER, PrivilegeType.CREATE_ROLE, PrivilegeType.CREATE_DATABASE, PrivilegeType.CAN_LOGIN));
+        assertEquals(actual.get(user).getAdministrativePrivileges().getPrivileges(), expectedAdminPrivileges);
     }
     
     private Collection<ShardingSphereUser> createUsers() {
