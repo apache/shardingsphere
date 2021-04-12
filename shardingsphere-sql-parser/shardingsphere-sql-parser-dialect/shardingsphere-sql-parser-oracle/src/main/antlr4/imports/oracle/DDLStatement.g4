@@ -988,11 +988,11 @@ dropTablePartition
     ;
 
 partitionExtendedNames
-    : (PARTITION | PARTITIONS) (partitionName | partitionForClauses) (DOT_ (partitionName | partitionForClauses))*
+    : (PARTITION | PARTITIONS) (partitionName | partitionForClauses) (COMMA_ (partitionName | partitionForClauses))*
     ;
 
 partitionForClauses
-    : FOR LP_ partitionKeyValue (DOT_ partitionKeyValue)* RP_
+    : FOR LP_ partitionKeyValue (COMMA_ partitionKeyValue)* RP_
     ;
 
 updateIndexClauses
@@ -1006,12 +1006,12 @@ updateGlobalIndexClause
 updateAllIndexesClause
     : UPDATE INDEXES
     (LP_ indexName LP_ (updateIndexPartition | updateIndexSubpartition)
-    (DOT_ indexName LP_ (updateIndexPartition | updateIndexSubpartition) RP_)* RP_)?
+    (COMMA_ indexName LP_ (updateIndexPartition | updateIndexSubpartition) RP_)* RP_)?
     ;
 
 updateIndexPartition
     : indexPartitionDesc indexSubpartitionClause?
-    (DOT_ indexPartitionDesc indexSubpartitionClause?)*
+    (COMMA_ indexPartitionDesc indexSubpartitionClause?)*
     ;
 
 indexPartitionDesc
@@ -1023,14 +1023,14 @@ indexPartitionDesc
     ;
 
 indexSubpartitionClause
-    : STORE IN LP_ tablespaceName (DOT_ tablespaceName)* RP_
+    : STORE IN LP_ tablespaceName (COMMA_ tablespaceName)* RP_
     | LP_ SUBPARTITION subpartitionName? (TABLESPACE tablespaceName)? indexCompression? usableSpecification?
-    (DOT_ SUBPARTITION subpartitionName? (TABLESPACE tablespaceName)? indexCompression? usableSpecification?)* RP_
+    (COMMA_ SUBPARTITION subpartitionName? (TABLESPACE tablespaceName)? indexCompression? usableSpecification?)* RP_
     ;
 
 updateIndexSubpartition
     : SUBPARTITION subpartitionName? (TABLESPACE tablespaceName)?
-    (DOT_ SUBPARTITION subpartitionName? (TABLESPACE tablespaceName)?)*
+    (COMMA_ SUBPARTITION subpartitionName? (TABLESPACE tablespaceName)?)*
     ;
 
 supplementalLoggingProps
