@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.provider.natived.loader.dialect;
 
 import org.apache.shardingsphere.authority.provider.natived.loader.StoragePrivilegeLoader;
 import org.apache.shardingsphere.authority.model.privilege.PrivilegeType;
-import org.apache.shardingsphere.authority.model.privilege.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -155,7 +155,7 @@ public final class MySQLPrivilegeLoaderTest {
         return result;
     }
     
-    private void assertPrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> actual) {
+    private void assertPrivileges(final Map<ShardingSphereUser, NativePrivileges> actual) {
         assertThat(actual.size(), is(2));
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         assertThat(actual.get(root).getAdministrativePrivileges().getPrivileges().size(), is(3));
