@@ -32,7 +32,7 @@ public enum CommonErrorCode implements SQLErrorCode {
     SHARDING_TABLE_RULES_NOT_EXISTED(1101, "C1101", "Sharding table rule %s is not exist."),
     
     TABLES_IN_USED(1102, "C1102", "Can not drop rule, tables %s in the rule are still in used."),
-
+    
     RESOURCE_IN_USED(1103, "C1103", "Can not drop resources, resources %s in the rule are still in used."),
     
     RESOURCE_NOT_EXIST(1104, "C1104", "Can not drop resources, resources %s do not exist."),

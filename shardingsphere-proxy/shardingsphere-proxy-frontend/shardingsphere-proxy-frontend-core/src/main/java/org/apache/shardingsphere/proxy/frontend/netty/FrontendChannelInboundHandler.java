@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationResult;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.executor.ChannelThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyStateContext;
@@ -43,7 +43,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     private final BackendConnection backendConnection;
     
-    private volatile boolean authorized;
+    private volatile boolean authenticated;
     
     public FrontendChannelInboundHandler(final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine) {
         this.databaseProtocolFrontendEngine = databaseProtocolFrontendEngine;
@@ -54,21 +54,21 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     @Override
     public void channelActive(final ChannelHandlerContext context) {
         ChannelThreadExecutorGroup.getInstance().register(context.channel().id());
-        backendConnection.setConnectionId(databaseProtocolFrontendEngine.getAuthEngine().handshake(context));
+        backendConnection.setConnectionId(databaseProtocolFrontendEngine.getAuthenticationEngine().handshake(context));
     }
     
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object message) {
-        if (!authorized) {
-            authorized = auth(context, (ByteBuf) message);
+        if (!authenticated) {
+            authenticated = authenticate(context, (ByteBuf) message);
             return;
         }
         ProxyStateContext.execute(context, message, databaseProtocolFrontendEngine, backendConnection);
     }
     
-    private boolean auth(final ChannelHandlerContext context, final ByteBuf message) {
+    private boolean authenticate(final ChannelHandlerContext context, final ByteBuf message) {
         try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload(message)) {
-            AuthenticationResult authResult = databaseProtocolFrontendEngine.getAuthEngine().auth(context, payload);
+            AuthenticationResult authResult = databaseProtocolFrontendEngine.getAuthenticationEngine().authenticate(context, payload);
             if (authResult.isFinished()) {
                 backendConnection.setGrantee(new Grantee(authResult.getUsername(), authResult.getHostname()));
                 backendConnection.setCurrentSchema(authResult.getDatabase());

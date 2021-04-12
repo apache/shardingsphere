@@ -35,7 +35,7 @@ public final class DatabaseTypeRecognizer {
     /**
      * Get database type.
      * 
-     * @param dataSources data sources 
+     * @param dataSources data sources
      * @return database type
      */
     public static DatabaseType getDatabaseType(final Collection<DataSource> dataSources) {
@@ -48,6 +48,7 @@ public final class DatabaseTypeRecognizer {
         return null == result ? DatabaseTypeRegistry.getDefaultDatabaseType() : result;
     }
     
+    @SuppressWarnings("ReturnOfNull")
     private static DatabaseType getDatabaseType(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
             return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());

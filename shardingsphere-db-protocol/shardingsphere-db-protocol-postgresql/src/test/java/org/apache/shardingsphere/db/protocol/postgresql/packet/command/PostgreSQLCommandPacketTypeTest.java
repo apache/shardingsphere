@@ -26,7 +26,7 @@ public final class PostgreSQLCommandPacketTypeTest {
     
     @Test
     public void assertValueOf() {
-        assertThat(PostgreSQLCommandPacketType.valueOf(PostgreSQLCommandPacketType.AUTHENTICATION_OK.getValue()), is(PostgreSQLCommandPacketType.AUTHENTICATION_OK));
+        assertThat(PostgreSQLCommandPacketType.valueOf(PostgreSQLCommandPacketType.AUTHENTICATION_REQUEST.getValue()), is(PostgreSQLCommandPacketType.AUTHENTICATION_REQUEST));
     }
     
     @Test(expected = IllegalArgumentException.class)

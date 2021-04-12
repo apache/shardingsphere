@@ -36,6 +36,6 @@ public final class PostgreSQLComSyncPacket extends PostgreSQLCommandPacket {
     
     @Override
     public char getMessageType() {
-        return PostgreSQLCommandPacketType.SYNC.getValue();
+        return PostgreSQLCommandPacketType.SYNC_COMMAND.getValue();
     }
 }

@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
-import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
@@ -51,26 +52,27 @@ public final class PostgreSQLCommandExecutorFactoryTest {
         BackendConnection backendConnection = mock(BackendConnection.class);
         when(backendConnection.getSchemaName()).thenReturn("schema");
         Collection<InputOutput> inputOutputs = Arrays.asList(
-            new InputOutput(PostgreSQLCommandPacketType.QUERY, PostgreSQLComQueryPacket.class, PostgreSQLComQueryExecutor.class),
-            new InputOutput(PostgreSQLCommandPacketType.PARSE, PostgreSQLComParsePacket.class, PostgreSQLComParseExecutor.class),
-            new InputOutput(PostgreSQLCommandPacketType.BIND, PostgreSQLComBindPacket.class, PostgreSQLComBindExecutor.class),
-            new InputOutput(PostgreSQLCommandPacketType.DESCRIBE, null, PostgreSQLComDescribeExecutor.class),
-            new InputOutput(PostgreSQLCommandPacketType.EXECUTE, null, PostgreSQLComExecuteExecutor.class),
-            new InputOutput(PostgreSQLCommandPacketType.SYNC, null, PostgreSQLComSyncExecutor.class),
+            new InputOutput(PostgreSQLCommandPacketType.SIMPLE_QUERY, PostgreSQLComQueryPacket.class, PostgreSQLComQueryExecutor.class),
+            new InputOutput(PostgreSQLCommandPacketType.PARSE_COMMAND, PostgreSQLComParsePacket.class, PostgreSQLComParseExecutor.class),
+            new InputOutput(PostgreSQLCommandPacketType.BIND_COMMAND, PostgreSQLComBindPacket.class, PostgreSQLComBindExecutor.class),
+            new InputOutput(PostgreSQLCommandPacketType.DESCRIBE_COMMAND, null, PostgreSQLComDescribeExecutor.class),
+            new InputOutput(PostgreSQLCommandPacketType.EXECUTE_COMMAND, null, PostgreSQLComExecuteExecutor.class),
+            new InputOutput(PostgreSQLCommandPacketType.SYNC_COMMAND, null, PostgreSQLComSyncExecutor.class),
             new InputOutput(PostgreSQLCommandPacketType.TERMINATE, null, PostgreSQLComTerminationExecutor.class),
-            new InputOutput(PostgreSQLCommandPacketType.CLOSE, null, PostgreSQLUnsupportedCommandExecutor.class)
+            new InputOutput(PostgreSQLCommandPacketType.CLOSE_COMMAND, null, PostgreSQLUnsupportedCommandExecutor.class)
         );
         for (InputOutput inputOutput : inputOutputs) {
-            Class<? extends PostgreSQLCommandPacket> commandPacketClass = inputOutput.commandPacketClass;
+            Class<? extends PostgreSQLCommandPacket> commandPacketClass = inputOutput.getCommandPacketClass();
             if (null == commandPacketClass) {
                 commandPacketClass = PostgreSQLCommandPacket.class;
             }
-            CommandExecutor actual = PostgreSQLCommandExecutorFactory.newInstance(inputOutput.commandPacketType, mock(commandPacketClass), mock(BackendConnection.class));
-            assertThat(actual, instanceOf(inputOutput.resultClass));
+            CommandExecutor actual = PostgreSQLCommandExecutorFactory.newInstance(inputOutput.getCommandPacketType(), mock(commandPacketClass), mock(BackendConnection.class));
+            assertThat(actual, instanceOf(inputOutput.getResultClass()));
         }
     }
     
-    @AllArgsConstructor
+    @RequiredArgsConstructor
+    @Getter
     private static final class InputOutput {
         
         private final PostgreSQLCommandPacketType commandPacketType;

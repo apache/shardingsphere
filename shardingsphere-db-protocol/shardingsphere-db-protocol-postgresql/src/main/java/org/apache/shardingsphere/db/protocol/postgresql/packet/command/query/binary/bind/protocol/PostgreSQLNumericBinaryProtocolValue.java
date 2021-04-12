@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol;
 
+import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * Binary protocol value for numeric for PostgreSQL.
@@ -28,10 +29,7 @@ public final class PostgreSQLNumericBinaryProtocolValue implements PostgreSQLBin
     
     @Override
     public int getColumnLength(final Object value) {
-        if (null == value) {
-            return 0;
-        }
-        return value.toString().getBytes(StandardCharsets.UTF_8).length;
+        return null == value ? 0 : value.toString().getBytes(StandardCharsets.UTF_8).length;
     }
     
     @Override
