@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.natived.loader;
+package org.apache.shardingsphere.authority.provider.natived.builder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -43,10 +43,10 @@ public final class StoragePrivilegeMerger {
      * 
      * @param privileges privileges
      * @param schemaName schema name
-     * @param rules ShardingSphere rules
-     * @return privileges
+     * @param rules rules
+     * @return map of user and  privilege
      */
-    public static Map<ShardingSphereUser, NativePrivileges> merge(final Map<ShardingSphereUser, Collection<NativePrivileges>> privileges,
+    public static Map<ShardingSphereUser, NativePrivileges> merge(final Map<ShardingSphereUser, Collection<NativePrivileges>> privileges, 
                                                                   final String schemaName, final Collection<ShardingSphereRule> rules) {
         Map<ShardingSphereUser, NativePrivileges> result = new HashMap<>(privileges.size(), 1);
         for (Entry<ShardingSphereUser, Collection<NativePrivileges>> entry : privileges.entrySet()) {
@@ -83,7 +83,7 @@ public final class StoragePrivilegeMerger {
     private static Map<String, TablePrivileges> getMergedTablePrivileges(final SchemaPrivileges privilege, final Collection<ShardingSphereRule> rules) {
         Map<String, TablePrivileges> result = new HashMap<>(privilege.getSpecificPrivileges().size(), 1);
         for (Entry<String, TablePrivileges> entry : privilege.getSpecificPrivileges().entrySet()) {
-            Optional<String> logicalTable = getLogicalTable(entry, rules);
+            Optional<String> logicalTable = findLogicalTable(entry, rules);
             if (logicalTable.isPresent() && !result.containsKey(logicalTable.get())) {
                 result.put(logicalTable.get(), new TablePrivileges(logicalTable.get(), entry.getValue().getPrivileges()));
             }
@@ -91,7 +91,7 @@ public final class StoragePrivilegeMerger {
         return result;
     }
     
-    private static Optional<String> getLogicalTable(final Entry<String, TablePrivileges> privilege, final Collection<ShardingSphereRule> rules) {
+    private static Optional<String> findLogicalTable(final Entry<String, TablePrivileges> privilege, final Collection<ShardingSphereRule> rules) {
         for (ShardingSphereRule each : rules) {
             if (each instanceof DataNodeContainedRule) {
                 Optional<String> logicalTable = ((DataNodeContainedRule) each).findLogicTableByActualTable(privilege.getKey());

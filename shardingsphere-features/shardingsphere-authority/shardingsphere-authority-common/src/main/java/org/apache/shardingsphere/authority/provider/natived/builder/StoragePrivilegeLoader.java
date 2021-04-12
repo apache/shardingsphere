@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.natived.loader;
+package org.apache.shardingsphere.authority.provider.natived.builder;
 
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -32,7 +32,7 @@ import java.util.Map;
 public interface StoragePrivilegeLoader extends TypedSPI {
     
     /**
-     * Load privilege from storage.
+     * Load privileges from storage.
      *
      * @param users users to be loaded
      * @param dataSource target data source to be loaded

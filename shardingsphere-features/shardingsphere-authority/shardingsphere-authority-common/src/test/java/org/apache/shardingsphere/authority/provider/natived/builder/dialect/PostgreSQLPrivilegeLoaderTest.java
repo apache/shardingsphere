@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.natived.loader.dialect;
+package org.apache.shardingsphere.authority.provider.natived.builder.dialect;
 
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.SchemaPrivileges;
-import org.apache.shardingsphere.authority.provider.natived.loader.StoragePrivilegeLoader;
+import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeLoader;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
