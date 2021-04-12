@@ -31,7 +31,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -54,6 +53,5 @@ public final class PostgreSQLComParsePacketTest {
         assertNotNull(types);
         assertThat(types.size(), equalTo(1));
         assertThat(types.get(0).getColumnType(), is(PostgreSQLBinaryColumnType.POSTGRESQL_TYPE_UNSPECIFIED));
-        assertTrue(actual.toString().startsWith("PostgreSQLComParsePacket(statementId=sql, sql=sql, binaryStatementParameterTypes=["));
     }
 }
