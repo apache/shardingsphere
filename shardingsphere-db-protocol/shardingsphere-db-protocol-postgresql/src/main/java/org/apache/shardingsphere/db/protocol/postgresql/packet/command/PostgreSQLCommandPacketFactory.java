@@ -45,17 +45,17 @@ public final class PostgreSQLCommandPacketFactory {
      */
     public static PostgreSQLCommandPacket newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLPacketPayload payload, final int connectionId) {
         switch (commandPacketType) {
-            case QUERY:
+            case SIMPLE_QUERY:
                 return new PostgreSQLComQueryPacket(payload);
-            case PARSE:
+            case PARSE_COMMAND:
                 return new PostgreSQLComParsePacket(payload);
-            case BIND:
+            case BIND_COMMAND:
                 return new PostgreSQLComBindPacket(payload, connectionId);
-            case DESCRIBE:
+            case DESCRIBE_COMMAND:
                 return new PostgreSQLComDescribePacket(payload);
-            case EXECUTE:
+            case EXECUTE_COMMAND:
                 return new PostgreSQLComExecutePacket(payload);
-            case SYNC:
+            case SYNC_COMMAND:
                 return new PostgreSQLComSyncPacket(payload);
             case TERMINATE:
                 return new PostgreSQLComTerminationPacket(payload);

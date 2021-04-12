@@ -44,7 +44,7 @@ public final class PostgreSQLCommandPacketFactoryTest {
     
     @Test
     public void assertNewInstanceWithQueryComPacket() {
-        assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.QUERY, payload, 1), instanceOf(PostgreSQLComQueryPacket.class));
+        assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.SIMPLE_QUERY, payload, 1), instanceOf(PostgreSQLComQueryPacket.class));
     }
     
     @Test
@@ -53,7 +53,7 @@ public final class PostgreSQLCommandPacketFactoryTest {
         when(payload.readStringNul()).thenReturn("stat-id");
         when(payload.readStringNul()).thenReturn("SELECT * FROM t_order");
         when(payload.readInt2()).thenReturn(0);
-        assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.PARSE, payload, 1), instanceOf(PostgreSQLComParsePacket.class));
+        assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.PARSE_COMMAND, payload, 1), instanceOf(PostgreSQLComParsePacket.class));
     }
     
     @Test
@@ -63,22 +63,22 @@ public final class PostgreSQLCommandPacketFactoryTest {
         when(payload.readStringNul()).thenReturn("SELECT * FROM t_order");
         when(payload.readInt2()).thenReturn(0);
         BinaryStatementRegistry.getInstance().register(1);
-        assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.BIND, payload, 1), instanceOf(PostgreSQLComBindPacket.class));
+        assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.BIND_COMMAND, payload, 1), instanceOf(PostgreSQLComBindPacket.class));
     }
     
     @Test
     public void assertNewInstanceWithDescribeComPacket() {
-        assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.DESCRIBE, payload, 1), instanceOf(PostgreSQLComDescribePacket.class));
+        assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.DESCRIBE_COMMAND, payload, 1), instanceOf(PostgreSQLComDescribePacket.class));
     }
     
     @Test
     public void assertNewInstanceWithExecuteComPacket() {
-        assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.EXECUTE, payload, 1), instanceOf(PostgreSQLComExecutePacket.class));
+        assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.EXECUTE_COMMAND, payload, 1), instanceOf(PostgreSQLComExecutePacket.class));
     }
     
     @Test
     public void assertNewInstanceWithSyncComPacket() {
-        assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.SYNC, payload, 1), instanceOf(PostgreSQLComSyncPacket.class));
+        assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.SYNC_COMMAND, payload, 1), instanceOf(PostgreSQLComSyncPacket.class));
     }
     
     @Test

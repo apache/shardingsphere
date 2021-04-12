@@ -58,17 +58,17 @@ public final class PostgreSQLCommandExecutorFactory {
                                               final PostgreSQLCommandPacket commandPacket, final BackendConnection backendConnection) throws SQLException {
         log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
         switch (commandPacketType) {
-            case QUERY:
+            case SIMPLE_QUERY:
                 return new PostgreSQLComQueryExecutor((PostgreSQLComQueryPacket) commandPacket, backendConnection);
-            case PARSE:
+            case PARSE_COMMAND:
                 return new PostgreSQLComParseExecutor((PostgreSQLComParsePacket) commandPacket, backendConnection);
-            case BIND:
+            case BIND_COMMAND:
                 return new PostgreSQLComBindExecutor((PostgreSQLComBindPacket) commandPacket, backendConnection);
-            case DESCRIBE:
+            case DESCRIBE_COMMAND:
                 return new PostgreSQLComDescribeExecutor();
-            case EXECUTE:
+            case EXECUTE_COMMAND:
                 return new PostgreSQLComExecuteExecutor();
-            case SYNC:
+            case SYNC_COMMAND:
                 return new PostgreSQLComSyncExecutor();
             case TERMINATE:
                 return new PostgreSQLComTerminationExecutor();
