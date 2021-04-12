@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.authority.provider.natived.loader;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -30,8 +29,6 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -82,7 +79,7 @@ public final class StoragePrivilegeBuilder {
     }
     
     private static Map<ShardingSphereUser, NativePrivileges> buildWithMetaData(final Collection<ShardingSphereMetaData> metaDataList, final Collection<ShardingSphereUser> users) {
-        Map<ShardingSphereUser, NativePrivileges> result = new LinkedHashMap<>();
+        Map<ShardingSphereUser, NativePrivileges> result = new LinkedHashMap<>(users.size(), 1);
         for (ShardingSphereMetaData each : metaDataList) {
             result.putAll(buildWithMetaData(each, users));
         }
@@ -90,7 +87,7 @@ public final class StoragePrivilegeBuilder {
     }
     
     private static Map<ShardingSphereUser, NativePrivileges> buildWithMetaData(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users) {
-        DatabaseType databaseType = getDatabaseType(metaData.getResource().getAllInstanceDataSources());
+        DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(metaData.getResource().getAllInstanceDataSources());
         Optional<StoragePrivilegeLoader> loader = TypedSPIRegistry.findRegisteredService(StoragePrivilegeLoader.class, databaseType.getName(), new Properties());
         if (!loader.isPresent()) {
             return buildDefaultPrivileges(users);
@@ -98,24 +95,6 @@ public final class StoragePrivilegeBuilder {
         Map<ShardingSphereUser, Collection<NativePrivileges>> result = load(metaData.getResource().getAllInstanceDataSources(), users, loader.get());
         checkPrivileges(result);
         return StoragePrivilegeMerger.merge(result, metaData.getName(), metaData.getRuleMetaData().getRules());
-    }
-    
-    private static DatabaseType getDatabaseType(final Collection<DataSource> dataSources) {
-        DatabaseType result = null;
-        for (DataSource each : dataSources) {
-            DatabaseType databaseType = getDatabaseType(each);
-            Preconditions.checkState(null == result || result == databaseType, String.format("Database type inconsistent with '%s' and '%s'", result, databaseType));
-            result = databaseType;
-        }
-        return null == result ? DatabaseTypeRegistry.getDefaultDatabaseType() : result;
-    }
-    
-    private static DatabaseType getDatabaseType(final DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            return DatabaseTypeRegistry.getDatabaseTypeByURL(connection.getMetaData().getURL());
-        } catch (final SQLException ex) {
-            return null;
-        }
     }
     
     private static Map<ShardingSphereUser, Collection<NativePrivileges>> load(final Collection<DataSource> dataSources,
