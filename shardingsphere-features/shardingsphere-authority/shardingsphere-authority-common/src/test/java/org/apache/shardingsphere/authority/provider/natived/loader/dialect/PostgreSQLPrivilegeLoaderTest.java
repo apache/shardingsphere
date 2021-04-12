@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.authority.provider.natived.loader.dialect;
 
-import org.apache.shardingsphere.authority.model.privilege.PrivilegeType;
-import org.apache.shardingsphere.authority.model.privilege.NativePrivileges;
-import org.apache.shardingsphere.authority.model.privilege.database.SchemaPrivileges;
+import org.apache.shardingsphere.authority.model.PrivilegeType;
+import org.apache.shardingsphere.authority.provider.natived.privilege.NativePrivileges;
+import org.apache.shardingsphere.authority.provider.natived.privilege.database.SchemaPrivileges;
 import org.apache.shardingsphere.authority.provider.natived.loader.StoragePrivilegeLoader;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;

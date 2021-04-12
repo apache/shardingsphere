@@ -15,31 +15,61 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.model.privilege.admin;
+package org.apache.shardingsphere.authority.model;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.shardingsphere.authority.model.privilege.PrivilegeType;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
- * Administrative privileges.
+ * Privilege Type.
  */
+@RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-public final class AdministrativePrivileges {
+public enum PrivilegeType {
     
-    private final Collection<PrivilegeType> privileges = new CopyOnWriteArraySet<>();
-    
-    /**
-     * Has privileges.
-     *
-     * @param privileges privileges
-     * @return has privileges or not
-     */
-    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return this.privileges.contains(PrivilegeType.SUPER) || this.privileges.containsAll(privileges);
-    }
+    SELECT,
+    INSERT,
+    UPDATE,
+    DELETE,
+    CREATE,
+    ALTER,
+    DROP,
+    GRANT,
+    INDEX,
+    REFERENCES,
+    LOCK_TABLES,
+    CREATE_VIEW,
+    SHOW_VIEW,
+    EXECUTE,
+    EVENT,
+    TRIGGER,
+    SUPER,
+    SHOW_DB,
+    RELOAD,
+    SHUTDOWN,
+    PROCESS,
+    FILE,
+    CREATE_TMP,
+    REPL_SLAVE,
+    REPL_CLIENT,
+    CREATE_PROC,
+    ALTER_PROC,
+    CREATE_USER,
+    CREATE_TABLESPACE,
+    CREATE_ROLE,
+    DROP_ROLE,
+    TRUNCATE,
+    USAGE,
+    CONNECT,
+    TEMPORARY,
+    CREATE_DATABASE,
+    INHERIT,
+    CAN_LOGIN,
+    CREATE_SEQUENCE,
+    CREATE_TYPE,
+    CREATE_SESSION,
+    ALTER_SESSION,
+    CREATE_SYNONYM,
+    CREATE_TABLE
 }

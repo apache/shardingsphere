@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.checker;
 
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.model.privilege.PrivilegeType;
+import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.executor.check.SQLChecker;
