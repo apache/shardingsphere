@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 /**
  * Command complete packet for PostgreSQL.
  */
+@RequiredArgsConstructor
 public final class PostgreSQLCommandCompletePacket implements PostgreSQLPacket {
     
     @Getter
@@ -35,21 +37,12 @@ public final class PostgreSQLCommandCompletePacket implements PostgreSQLPacket {
     private final long rowCount;
     
     public PostgreSQLCommandCompletePacket() {
-        sqlCommand = "";
-        rowCount = 0;
-    }
-    
-    public PostgreSQLCommandCompletePacket(final String sqlCommand, final long rowCount) {
-        this.sqlCommand = sqlCommand;
-        this.rowCount = rowCount;
+        this("", 0);
     }
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
-        if ("INSERT".equals(sqlCommand)) {
-            payload.writeStringNul(sqlCommand + " 0 " + rowCount);
-        } else {
-            payload.writeStringNul(sqlCommand + " " + rowCount);
-        }
+        String delimiter = "INSERT".equals(sqlCommand) ? " 0 " : " ";
+        payload.writeStringNul(String.join(delimiter, sqlCommand, Long.toString(rowCount)));
     }
 }
