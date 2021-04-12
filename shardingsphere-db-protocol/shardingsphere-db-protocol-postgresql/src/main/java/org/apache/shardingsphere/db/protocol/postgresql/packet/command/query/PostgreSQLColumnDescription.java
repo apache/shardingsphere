@@ -47,6 +47,6 @@ public final class PostgreSQLColumnDescription {
         this.columnName = columnName;
         this.columnIndex = columnIndex;
         this.columnLength = columnLength;
-        typeOID = Types.ARRAY == columnType ? PostgreSQLArrayColumnType.getTypeOidByColumnTypeName(columnTypeName) : PostgreSQLBinaryColumnType.valueOfJDBCType(columnType).getValue();
+        typeOID = Types.ARRAY == columnType ? PostgreSQLArrayColumnType.getTypeOid(columnTypeName) : PostgreSQLBinaryColumnType.valueOfJDBCType(columnType).getValue();
     }
 }
