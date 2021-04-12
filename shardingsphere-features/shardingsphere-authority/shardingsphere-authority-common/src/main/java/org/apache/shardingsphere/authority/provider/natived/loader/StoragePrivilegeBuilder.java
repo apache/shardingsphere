@@ -20,7 +20,7 @@ package org.apache.shardingsphere.authority.provider.natived.loader;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.authority.privilege.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.model.privilege.ShardingSpherePrivileges;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
