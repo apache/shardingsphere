@@ -68,10 +68,10 @@ public final class NativePrivileges implements ShardingSpherePrivileges {
     }
     
     private boolean hasPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
-        return hasPrivileges(privileges) || databasePrivileges.hasPrivileges(schema, privileges);
+        return administrativePrivileges.hasPrivileges(privileges) || databasePrivileges.hasPrivileges(schema, privileges);
     }
     
     private boolean hasPrivileges(final String schema, final String table, final Collection<PrivilegeType> privileges) {
-        return hasPrivileges(privileges) || databasePrivileges.hasPrivileges(schema, table, privileges);
+        return administrativePrivileges.hasPrivileges(privileges) || databasePrivileges.hasPrivileges(schema, table, privileges);
     }
 }
