@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.authority.provider.natived.loader.dialect;
 
 import org.apache.shardingsphere.authority.provider.natived.loader.StoragePrivilegeLoader;
-import org.apache.shardingsphere.authority.model.privilege.PrivilegeType;
-import org.apache.shardingsphere.authority.model.privilege.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.model.privilege.database.SchemaPrivileges;
+import org.apache.shardingsphere.authority.model.PrivilegeType;
+import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
+import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.SchemaPrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -62,7 +62,7 @@ public final class OraclePrivilegeLoaderTest {
         assertPrivileges(TypedSPIRegistry.getRegisteredService(StoragePrivilegeLoader.class, "Oracle", new Properties()).load(users, dataSource));
     }
     
-    private void assertPrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> actual) {
+    private void assertPrivileges(final Map<ShardingSphereUser, NativePrivileges> actual) {
         assertThat(actual.size(), is(1));
         ShardingSphereUser user = new ShardingSphereUser("admin", "", "");
         assertThat(actual.get(user).getDatabasePrivileges().getGlobalPrivileges().size(), is(0));

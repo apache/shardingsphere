@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.authority.provider.natived.loader;
 
-import org.apache.shardingsphere.authority.model.privilege.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
 
@@ -39,5 +39,5 @@ public interface StoragePrivilegeLoader extends TypedSPI {
      * @return map of user and  privilege
      * @throws SQLException SQL exception
      */
-    Map<ShardingSphereUser, ShardingSpherePrivileges> load(Collection<ShardingSphereUser> users, DataSource dataSource) throws SQLException;
+    Map<ShardingSphereUser, NativePrivileges> load(Collection<ShardingSphereUser> users, DataSource dataSource) throws SQLException;
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.authority.provider.natived.loader;
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.authority.model.privilege.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -69,33 +69,33 @@ public final class StoragePrivilegeBuilder {
      * @param users users
      * @return privileges
      */
-    public static Map<ShardingSphereUser, ShardingSpherePrivileges> build(final Collection<ShardingSphereMetaData> metaDataList, final Collection<ShardingSphereUser> users) {
+    public static Map<ShardingSphereUser, NativePrivileges> build(final Collection<ShardingSphereMetaData> metaDataList, final Collection<ShardingSphereUser> users) {
         return metaDataList.isEmpty() ? buildDefaultPrivileges(users) : buildWithMetaData(metaDataList, users);
     }
     
-    private static Map<ShardingSphereUser, ShardingSpherePrivileges> buildDefaultPrivileges(final Collection<ShardingSphereUser> users) {
-        Map<ShardingSphereUser, ShardingSpherePrivileges> result = new LinkedHashMap<>(users.size(), 1);
-        ShardingSpherePrivileges privileges = new ShardingSpherePrivileges();
+    private static Map<ShardingSphereUser, NativePrivileges> buildDefaultPrivileges(final Collection<ShardingSphereUser> users) {
+        Map<ShardingSphereUser, NativePrivileges> result = new LinkedHashMap<>(users.size(), 1);
+        NativePrivileges privileges = new NativePrivileges();
         privileges.setSuperPrivilege();
         users.forEach(each -> result.put(each, privileges));
         return result;
     }
     
-    private static Map<ShardingSphereUser, ShardingSpherePrivileges> buildWithMetaData(final Collection<ShardingSphereMetaData> metaDataList, final Collection<ShardingSphereUser> users) {
-        Map<ShardingSphereUser, ShardingSpherePrivileges> result = new LinkedHashMap<>();
+    private static Map<ShardingSphereUser, NativePrivileges> buildWithMetaData(final Collection<ShardingSphereMetaData> metaDataList, final Collection<ShardingSphereUser> users) {
+        Map<ShardingSphereUser, NativePrivileges> result = new LinkedHashMap<>();
         for (ShardingSphereMetaData each : metaDataList) {
             result.putAll(buildWithMetaData(each, users));
         }
         return result;
     }
     
-    private static Map<ShardingSphereUser, ShardingSpherePrivileges> buildWithMetaData(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users) {
+    private static Map<ShardingSphereUser, NativePrivileges> buildWithMetaData(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users) {
         DatabaseType databaseType = getDatabaseType(metaData.getResource().getAllInstanceDataSources());
         Optional<StoragePrivilegeLoader> loader = TypedSPIRegistry.findRegisteredService(StoragePrivilegeLoader.class, databaseType.getName(), new Properties());
         if (!loader.isPresent()) {
             return buildDefaultPrivileges(users);
         }
-        Map<ShardingSphereUser, Collection<ShardingSpherePrivileges>> result = load(metaData.getResource().getAllInstanceDataSources(), users, loader.get());
+        Map<ShardingSphereUser, Collection<NativePrivileges>> result = load(metaData.getResource().getAllInstanceDataSources(), users, loader.get());
         checkPrivileges(result);
         return StoragePrivilegeMerger.merge(result, metaData.getName(), metaData.getRuleMetaData().getRules());
     }
@@ -118,11 +118,11 @@ public final class StoragePrivilegeBuilder {
         }
     }
     
-    private static Map<ShardingSphereUser, Collection<ShardingSpherePrivileges>> load(final Collection<DataSource> dataSources,
-                                                                                      final Collection<ShardingSphereUser> users, final StoragePrivilegeLoader loader) {
-        Map<ShardingSphereUser, Collection<ShardingSpherePrivileges>> result = new LinkedHashMap<>(users.size(), 1);
+    private static Map<ShardingSphereUser, Collection<NativePrivileges>> load(final Collection<DataSource> dataSources,
+                                                                              final Collection<ShardingSphereUser> users, final StoragePrivilegeLoader loader) {
+        Map<ShardingSphereUser, Collection<NativePrivileges>> result = new LinkedHashMap<>(users.size(), 1);
         ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CPU_CORES * 2, dataSources.isEmpty() ? 1 : dataSources.size()));
-        Collection<Future<Map<ShardingSphereUser, ShardingSpherePrivileges>>> futures = new HashSet<>(dataSources.size(), 1);
+        Collection<Future<Map<ShardingSphereUser, NativePrivileges>>> futures = new HashSet<>(dataSources.size(), 1);
         for (DataSource each : dataSources) {
             futures.add(executorService.submit(() -> loader.load(users, each)));
         }
@@ -137,9 +137,9 @@ public final class StoragePrivilegeBuilder {
         return result;
     }
     
-    private static void fillPrivileges(final Map<ShardingSphereUser, Collection<ShardingSpherePrivileges>> userPrivilegeMap,
-                                       final Future<Map<ShardingSphereUser, ShardingSpherePrivileges>> future) throws InterruptedException, ExecutionException, TimeoutException {
-        for (Entry<ShardingSphereUser, ShardingSpherePrivileges> entry : future.get(FUTURE_GET_TIME_OUT_MILLISECONDS, TimeUnit.MILLISECONDS).entrySet()) {
+    private static void fillPrivileges(final Map<ShardingSphereUser, Collection<NativePrivileges>> userPrivilegeMap,
+                                       final Future<Map<ShardingSphereUser, NativePrivileges>> future) throws InterruptedException, ExecutionException, TimeoutException {
+        for (Entry<ShardingSphereUser, NativePrivileges> entry : future.get(FUTURE_GET_TIME_OUT_MILLISECONDS, TimeUnit.MILLISECONDS).entrySet()) {
             if (!userPrivilegeMap.containsKey(entry.getKey())) {
                 userPrivilegeMap.put(entry.getKey(), new LinkedHashSet<>());
             }
@@ -147,13 +147,13 @@ public final class StoragePrivilegeBuilder {
         }
     }
     
-    private static void checkPrivileges(final Map<ShardingSphereUser, Collection<ShardingSpherePrivileges>> userPrivilegeMap) {
+    private static void checkPrivileges(final Map<ShardingSphereUser, Collection<NativePrivileges>> userPrivilegeMap) {
         userPrivilegeMap.forEach(StoragePrivilegeBuilder::checkPrivileges);
     }
     
-    private static void checkPrivileges(final ShardingSphereUser user, final Collection<ShardingSpherePrivileges> privileges) {
-        Iterator<ShardingSpherePrivileges> iterator = privileges.iterator();
-        ShardingSpherePrivileges current = iterator.next();
+    private static void checkPrivileges(final ShardingSphereUser user, final Collection<NativePrivileges> privileges) {
+        Iterator<NativePrivileges> iterator = privileges.iterator();
+        NativePrivileges current = iterator.next();
         while (iterator.hasNext()) {
             if (!current.equals(iterator.next())) {
                 throw new ShardingSphereException("Different physical instances have different privileges for user %s", user.getGrantee().toString().replaceAll("%", "%%"));

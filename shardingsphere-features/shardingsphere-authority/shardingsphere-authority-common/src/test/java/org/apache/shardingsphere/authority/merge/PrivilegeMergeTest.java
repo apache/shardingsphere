@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.authority.merge;
 
 import org.apache.shardingsphere.authority.provider.natived.loader.StoragePrivilegeMerger;
-import org.apache.shardingsphere.authority.model.privilege.PrivilegeType;
-import org.apache.shardingsphere.authority.model.privilege.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.model.privilege.database.SchemaPrivileges;
-import org.apache.shardingsphere.authority.model.privilege.database.TablePrivileges;
+import org.apache.shardingsphere.authority.model.PrivilegeType;
+import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
+import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.SchemaPrivileges;
+import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.TablePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.junit.Test;
@@ -42,12 +42,12 @@ public final class PrivilegeMergeTest {
     
     @Test
     public void assertPrivilegeMergeResult() {
-        ShardingSpherePrivileges privileges = buildPrivilege();
+        NativePrivileges privileges = buildPrivilege();
         ShardingSphereUser user = new ShardingSphereUser("test", "test", "%");
-        Map<ShardingSphereUser, Collection<ShardingSpherePrivileges>> privilegeMap = new HashMap();
+        Map<ShardingSphereUser, Collection<NativePrivileges>> privilegeMap = new HashMap();
         privilegeMap.put(user, Collections.singletonList(privileges));
         DataNodeContainedRule rule = buildShardingSphereRule();
-        Map<ShardingSphereUser, ShardingSpherePrivileges> result = StoragePrivilegeMerger.merge(privilegeMap, "schema", Collections.singletonList(rule));
+        Map<ShardingSphereUser, NativePrivileges> result = StoragePrivilegeMerger.merge(privilegeMap, "schema", Collections.singletonList(rule));
         assertEquals(1, result.size());
         assertTrue(result.containsKey(user));
         assertTrue(result.get(user).getAdministrativePrivileges().getPrivileges().isEmpty());
@@ -60,7 +60,7 @@ public final class PrivilegeMergeTest {
         assertTrue(result.get(user).getDatabasePrivileges().getSpecificPrivileges().get("schema").getSpecificPrivileges().get("test").getPrivileges().contains(PrivilegeType.SELECT));
     }
     
-    private ShardingSpherePrivileges buildPrivilege() {
+    private NativePrivileges buildPrivilege() {
         Collection<PrivilegeType> tablePrivileges = new LinkedList<>();
         tablePrivileges.add(PrivilegeType.SELECT);
         SchemaPrivileges schema1Privilege = new SchemaPrivileges("schema1");
@@ -69,7 +69,7 @@ public final class PrivilegeMergeTest {
         SchemaPrivileges schema2Privilege = new SchemaPrivileges("schema2");
         schema2Privilege.getSpecificPrivileges().put("table3", new TablePrivileges("table3", tablePrivileges));
         schema2Privilege.getSpecificPrivileges().put("table4", new TablePrivileges("table4", tablePrivileges));
-        ShardingSpherePrivileges result = new ShardingSpherePrivileges();
+        NativePrivileges result = new NativePrivileges();
         result.getDatabasePrivileges().getSpecificPrivileges().put("schema1", schema1Privilege);
         result.getDatabasePrivileges().getSpecificPrivileges().put("schema2", schema2Privilege);
         return result;

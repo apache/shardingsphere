@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.model.privilege.database;
-
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.model.privilege.PrivilegeType;
+package org.apache.shardingsphere.authority.model;
 
 import java.util.Collection;
 
 /**
- * Table privileges.
+ * ShardingSphere Privileges.
  */
-@RequiredArgsConstructor
-@EqualsAndHashCode
-@Getter
-public final class TablePrivileges {
+public interface ShardingSpherePrivileges {
     
-    private final String tableName;
+    /**
+     * Set super privilege.
+     */
+    void setSuperPrivilege();
     
-    private final Collection<PrivilegeType> privileges;
+    /**
+     * Has privileges.
+     *
+     * @param schema schema
+     * @return has or not
+     */
+    boolean hasPrivileges(String schema);
     
     /**
      * Has privileges.
@@ -42,7 +43,14 @@ public final class TablePrivileges {
      * @param privileges privileges
      * @return has privileges or not
      */
-    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return this.privileges.containsAll(privileges);
-    }
+    boolean hasPrivileges(Collection<PrivilegeType> privileges);
+    
+    /**
+     * Has privileges.
+     *
+     * @param accessSubject access subject
+     * @param privileges privileges
+     * @return has privileges or not
+     */
+    boolean hasPrivileges(AccessSubject accessSubject, Collection<PrivilegeType> privileges);
 }
