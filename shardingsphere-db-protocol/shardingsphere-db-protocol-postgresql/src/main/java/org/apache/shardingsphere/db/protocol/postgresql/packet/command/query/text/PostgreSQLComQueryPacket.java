@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.text;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  * Command query packet for PostgreSQL.
  */
 @Getter
-@ToString
 public final class PostgreSQLComQueryPacket extends PostgreSQLCommandPacket {
     
     private final String sql;
