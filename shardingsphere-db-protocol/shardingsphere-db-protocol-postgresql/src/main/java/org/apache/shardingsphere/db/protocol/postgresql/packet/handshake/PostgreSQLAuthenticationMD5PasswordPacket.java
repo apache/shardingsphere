@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -33,12 +32,14 @@ public final class PostgreSQLAuthenticationMD5PasswordPacket implements PostgreS
     
     private final byte[] md5Salt;
     
-    @Getter
-    private final char messageType = PostgreSQLCommandPacketType.AUTHENTICATION_MD5_PASSWORD.getValue();
-    
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt4(AUTH_REQ_MD5);
         payload.writeBytes(md5Salt);
+    }
+    
+    @Override
+    public char getMessageType() {
+        return PostgreSQLCommandPacketType.AUTHENTICATION_MD5_PASSWORD.getValue();
     }
 }

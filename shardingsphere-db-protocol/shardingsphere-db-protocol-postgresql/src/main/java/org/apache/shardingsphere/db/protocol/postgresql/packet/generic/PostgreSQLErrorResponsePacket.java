@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
-import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
@@ -69,9 +68,6 @@ public final class PostgreSQLErrorResponsePacket implements PostgreSQLPacket {
     
     public static final char FIELD_TYPE_ROUTINE = 'R';
     
-    @Getter
-    private final char messageType = PostgreSQLCommandPacketType.ERROR_RESPONSE.getValue();
-    
     private final Map<Character, String> fields = new HashMap<>();
     
     @Override
@@ -91,5 +87,10 @@ public final class PostgreSQLErrorResponsePacket implements PostgreSQLPacket {
      */
     public void addField(final char fieldType, final String fieldValue) {
         fields.put(fieldType, fieldValue);
+    }
+    
+    @Override
+    public char getMessageType() {
+        return PostgreSQLCommandPacketType.ERROR_RESPONSE.getValue();
     }
 }

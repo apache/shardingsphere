@@ -17,22 +17,23 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
 
-import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * SSL negative packet for PostgreSQL.
  */
-@Getter
 public final class PostgreSQLSSLNegativePacket implements PostgreSQLPacket {
     
     private static final char STATUS_CODE = 'N';
     
-    private final char messageType = '\0';
-    
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt1(STATUS_CODE);
+    }
+    
+    @Override
+    public char getMessageType() {
+        return '\0';
     }
 }

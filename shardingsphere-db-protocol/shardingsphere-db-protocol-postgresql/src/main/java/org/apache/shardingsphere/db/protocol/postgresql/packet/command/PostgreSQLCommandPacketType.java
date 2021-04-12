@@ -119,7 +119,7 @@ public enum PostgreSQLCommandPacketType implements CommandPacketType {
     PASSWORD_MESSAGE('p'),
     
     PORTAL_SUSPENDED('s'),
-
+    
     SASL_INITIAL_RESPONSE('p'),
     
     SASL_RESPONSE('p'),

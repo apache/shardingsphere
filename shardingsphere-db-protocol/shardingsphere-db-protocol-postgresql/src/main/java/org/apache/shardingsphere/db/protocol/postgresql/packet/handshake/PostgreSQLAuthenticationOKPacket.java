@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -29,13 +28,15 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 @RequiredArgsConstructor
 public final class PostgreSQLAuthenticationOKPacket implements PostgreSQLPacket {
     
-    @Getter
-    private final char messageType = PostgreSQLCommandPacketType.AUTHENTICATION_OK.getValue();
-    
     private final boolean success;
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt4(success ? 0 : 1);
+    }
+    
+    @Override
+    public char getMessageType() {
+        return PostgreSQLCommandPacketType.AUTHENTICATION_OK.getValue();
     }
 }

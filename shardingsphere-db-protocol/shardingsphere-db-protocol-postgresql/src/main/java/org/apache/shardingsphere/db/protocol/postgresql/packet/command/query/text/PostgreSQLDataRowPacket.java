@@ -36,8 +36,6 @@ import java.util.Collection;
 @Slf4j
 public final class PostgreSQLDataRowPacket implements PostgreSQLPacket {
     
-    private final char messageType = PostgreSQLCommandPacketType.DATA_ROW.getValue();
-    
     private final Collection<Object> data;
     
     @Override
@@ -68,5 +66,10 @@ public final class PostgreSQLDataRowPacket implements PostgreSQLPacket {
         } catch (final SQLException ex) {
             log.error("PostgreSQL DataRowPacket write SQLXML type exception", ex);
         }
+    }
+    
+    @Override
+    public char getMessageType() {
+        return PostgreSQLCommandPacketType.DATA_ROW.getValue();
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -28,9 +27,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  */
 @RequiredArgsConstructor
 public final class PostgreSQLCommandCompletePacket implements PostgreSQLPacket {
-    
-    @Getter
-    private final char messageType = PostgreSQLCommandPacketType.COMMAND_COMPLETE.getValue();
     
     private final String sqlCommand;
     
@@ -44,5 +40,10 @@ public final class PostgreSQLCommandCompletePacket implements PostgreSQLPacket {
     public void write(final PostgreSQLPacketPayload payload) {
         String delimiter = "INSERT".equals(sqlCommand) ? " 0 " : " ";
         payload.writeStringNul(String.join(delimiter, sqlCommand, Long.toString(rowCount)));
+    }
+    
+    @Override
+    public char getMessageType() {
+        return PostgreSQLCommandPacketType.COMMAND_COMPLETE.getValue();
     }
 }
