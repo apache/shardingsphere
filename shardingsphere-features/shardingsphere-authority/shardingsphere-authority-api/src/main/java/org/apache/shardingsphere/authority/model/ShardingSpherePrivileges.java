@@ -23,12 +23,12 @@ import java.util.Collection;
  * ShardingSphere Privileges.
  */
 public interface ShardingSpherePrivileges {
-    
+
     /**
      * Set super privilege.
      */
     void setSuperPrivilege();
-    
+
     /**
      * Has privileges.
      *
@@ -36,7 +36,7 @@ public interface ShardingSpherePrivileges {
      * @return has or not
      */
     boolean hasPrivileges(String schema);
-    
+
     /**
      * Has privileges.
      *
@@ -44,7 +44,7 @@ public interface ShardingSpherePrivileges {
      * @return has privileges or not
      */
     boolean hasPrivileges(Collection<PrivilegeType> privileges);
-    
+
     /**
      * Has privileges.
      *
