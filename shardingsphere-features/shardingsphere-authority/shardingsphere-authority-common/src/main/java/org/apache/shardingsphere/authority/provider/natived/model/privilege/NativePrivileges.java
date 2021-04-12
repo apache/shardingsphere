@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.natived.privilege;
+package org.apache.shardingsphere.authority.provider.natived.model.privilege;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.natived.privilege.admin.AdministrativePrivileges;
-import org.apache.shardingsphere.authority.provider.natived.privilege.database.DatabasePrivileges;
-import org.apache.shardingsphere.authority.model.subject.AccessSubject;
-import org.apache.shardingsphere.authority.model.subject.impl.SchemaAccessSubject;
-import org.apache.shardingsphere.authority.model.subject.impl.TableAccessSubject;
+import org.apache.shardingsphere.authority.provider.natived.model.privilege.admin.AdministrativePrivileges;
+import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.DatabasePrivileges;
+import org.apache.shardingsphere.authority.model.AccessSubject;
+import org.apache.shardingsphere.authority.provider.natived.model.subject.SchemaAccessSubject;
+import org.apache.shardingsphere.authority.provider.natived.model.subject.TableAccessSubject;
 
 import java.util.Collection;
 

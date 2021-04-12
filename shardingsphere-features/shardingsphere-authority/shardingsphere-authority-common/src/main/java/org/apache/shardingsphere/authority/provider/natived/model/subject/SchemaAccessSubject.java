@@ -15,10 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.model.subject;
+package org.apache.shardingsphere.authority.provider.natived.model.subject;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.authority.model.AccessSubject;
 
 /**
- * Access subject.
+ * Schema access subject.
  */
-public interface AccessSubject {
+@RequiredArgsConstructor
+@Getter
+public final class SchemaAccessSubject implements AccessSubject {
+    
+    private final String schema;
 }

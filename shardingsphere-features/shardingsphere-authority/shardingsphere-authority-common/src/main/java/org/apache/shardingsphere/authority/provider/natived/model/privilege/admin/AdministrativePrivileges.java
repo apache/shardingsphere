@@ -15,18 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.model.subject.impl;
+package org.apache.shardingsphere.authority.provider.natived.model.privilege.admin;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.model.subject.AccessSubject;
+import org.apache.shardingsphere.authority.model.PrivilegeType;
+
+import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
- * Schema access subject.
+ * Administrative privileges.
  */
-@RequiredArgsConstructor
 @Getter
-public final class SchemaAccessSubject implements AccessSubject {
+@EqualsAndHashCode
+public final class AdministrativePrivileges {
     
-    private final String schema;
+    private final Collection<PrivilegeType> privileges = new CopyOnWriteArraySet<>();
+    
+    /**
+     * Has privileges.
+     *
+     * @param privileges privileges
+     * @return has privileges or not
+     */
+    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
+        return this.privileges.contains(PrivilegeType.SUPER) || this.privileges.containsAll(privileges);
+    }
 }

@@ -15,34 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.natived.privilege.database;
-
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.model.PrivilegeType;
-
-import java.util.Collection;
+package org.apache.shardingsphere.authority.model;
 
 /**
- * Table privileges.
+ * Access subject.
  */
-@RequiredArgsConstructor
-@EqualsAndHashCode
-@Getter
-public final class TablePrivileges {
-    
-    private final String tableName;
-    
-    private final Collection<PrivilegeType> privileges;
-    
-    /**
-     * Has privileges.
-     *
-     * @param privileges privileges
-     * @return has privileges or not
-     */
-    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return this.privileges.containsAll(privileges);
-    }
+public interface AccessSubject {
 }

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.authority.merge;
 
 import org.apache.shardingsphere.authority.provider.natived.loader.StoragePrivilegeMerger;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
-import org.apache.shardingsphere.authority.provider.natived.privilege.NativePrivileges;
-import org.apache.shardingsphere.authority.provider.natived.privilege.database.SchemaPrivileges;
-import org.apache.shardingsphere.authority.provider.natived.privilege.database.TablePrivileges;
+import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
+import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.SchemaPrivileges;
+import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.TablePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.type.DataNodeContainedRule;
 import org.junit.Test;

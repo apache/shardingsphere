@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.authority.model;
 
-import org.apache.shardingsphere.authority.model.subject.AccessSubject;
-
 import java.util.Collection;
 
 /**
