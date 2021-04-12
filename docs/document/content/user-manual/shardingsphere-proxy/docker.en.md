@@ -7,7 +7,7 @@ weight = 3
 ## Pull Official Docker Clone
 
 ```bash
-docker pull apache/shardingsphere-proxy
+docker pull apache/sharding-proxy
 ```
 
 ## Build Docker Clone Manually (Optional)
@@ -28,7 +28,7 @@ Please refer to [Example](https://github.com/apache/shardingsphere/tree/master/s
 ## Run Docker
 
 ```bash
-docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e PORT=3308 -p13308:3308 apache/shardingsphere-proxy:latest
+docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e PORT=3308 -p13308:3308 apache/sharding-proxy:latest
 ```
 
 **Notice**
@@ -37,7 +37,7 @@ docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e PORT=3
 * You have to volume conf dir to /opt/shardingsphere-proxy/conf.
 
 ```bash
-docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e JVM_OPTS="-Djava.awt.headless=true" -e PORT=3308 -p13308:3308 apache/shardingsphere-proxy:latest
+docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e JVM_OPTS="-Djava.awt.headless=true" -e PORT=3308 -p13308:3308 apache/sharding-proxy:latest
 ```
 
 **Notice**
@@ -45,7 +45,7 @@ docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e JVM_OP
 * You can define JVM related parameters to environment variable `JVM_OPTS`.
 
 ```bash
-docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -v /${your_work_dir}/ext-lib:/opt/shardingsphere-proxy/ext-lib -p13308:3308 apache/shardingsphere-proxy:latest
+docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -v /${your_work_dir}/ext-lib:/opt/shardingsphere-proxy/ext-lib -p13308:3308 apache/sharding-proxy:latest
 ```
 
 **Notice**

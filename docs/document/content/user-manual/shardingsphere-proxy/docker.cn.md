@@ -7,7 +7,7 @@ weight = 3
 ## 拉取官方 Docker 镜像
 
 ```bash
-docker pull apache/shardingsphere-proxy
+docker pull apache/sharding-proxy
 ```
 
 ## 手动构建 Docker 镜像（可选）
@@ -28,7 +28,7 @@ mvn clean package -Prelease,docker
 ## 运行 Docker
 
 ```bash
-docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e PORT=3308 -p13308:3308 apache/shardingsphere-proxy:latest
+docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e PORT=3308 -p13308:3308 apache/sharding-proxy:latest
 ```
 
 **说明**
@@ -37,7 +37,7 @@ docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e PORT=3
 * 必须挂载配置路径到 /opt/shardingsphere-proxy/conf。
 
 ```bash
-docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e JVM_OPTS="-Djava.awt.headless=true" -e PORT=3308 -p13308:3308 apache/shardingsphere-proxy:latest
+docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e JVM_OPTS="-Djava.awt.headless=true" -e PORT=3308 -p13308:3308 apache/sharding-proxy:latest
 ```
 
 **说明**
@@ -45,7 +45,7 @@ docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e JVM_OP
 * 可以自定义JVM相关参数到环境变量 `JVM_OPTS` 中。
 
 ```bash
-docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -v /${your_work_dir}/ext-lib:/opt/shardingsphere-proxy/ext-lib -p13308:3308 apache/shardingsphere-proxy:latest
+docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -v /${your_work_dir}/ext-lib:/opt/shardingsphere-proxy/ext-lib -p13308:3308 apache/sharding-proxy:latest
 ```
 
 **说明**
