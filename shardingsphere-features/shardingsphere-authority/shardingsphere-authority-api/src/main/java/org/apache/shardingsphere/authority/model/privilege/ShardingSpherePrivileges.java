@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.privilege;
+package org.apache.shardingsphere.authority.model.privilege;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.shardingsphere.authority.privilege.admin.AdministrativePrivileges;
-import org.apache.shardingsphere.authority.privilege.database.DatabasePrivileges;
+import org.apache.shardingsphere.authority.model.privilege.admin.AdministrativePrivileges;
+import org.apache.shardingsphere.authority.model.privilege.database.DatabasePrivileges;
+import org.apache.shardingsphere.authority.model.subject.AccessSubject;
+import org.apache.shardingsphere.authority.model.subject.impl.SchemaAccessSubject;
+import org.apache.shardingsphere.authority.model.subject.impl.TableAccessSubject;
 
 import java.util.Collection;
 
@@ -43,27 +46,6 @@ public final class ShardingSpherePrivileges {
     }
     
     /**
-     * Has privileges.
-     *
-     * @param privileges privileges
-     * @return has privileges or not
-     */
-    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return administrativePrivileges.hasPrivileges(privileges);
-    }
-    
-    /**
-     * Has privileges.
-     *
-     * @param schema schema
-     * @param privileges privileges
-     * @return has privileges or not
-     */
-    public boolean hasPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
-        return hasPrivileges(privileges) || databasePrivileges.hasPrivileges(schema, privileges);
-    }
-    
-    /**
      * Has privilege for login and use db.
      *
      * @param schema schema
@@ -77,12 +59,35 @@ public final class ShardingSpherePrivileges {
     /**
      * Has privileges.
      *
-     * @param schema schema
-     * @param table table
      * @param privileges privileges
      * @return has privileges or not
      */
-    public boolean hasPrivileges(final String schema, final String table, final Collection<PrivilegeType> privileges) {
+    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
+        return administrativePrivileges.hasPrivileges(privileges);
+    }
+    
+    /**
+     * Has privileges.
+     *
+     * @param accessSubject access subject
+     * @param privileges privileges
+     * @return has privileges or not
+     */
+    public boolean hasPrivileges(final AccessSubject accessSubject, final Collection<PrivilegeType> privileges) {
+        if (accessSubject instanceof SchemaAccessSubject) {
+            return hasPrivileges(((SchemaAccessSubject) accessSubject).getSchema(), privileges);
+        }
+        if (accessSubject instanceof TableAccessSubject) {
+            return hasPrivileges(((TableAccessSubject) accessSubject).getSchema(), ((TableAccessSubject) accessSubject).getTable(), privileges);
+        }
+        throw new UnsupportedOperationException(accessSubject.getClass().getCanonicalName());
+    }
+    
+    private boolean hasPrivileges(final String schema, final Collection<PrivilegeType> privileges) {
+        return hasPrivileges(privileges) || databasePrivileges.hasPrivileges(schema, privileges);
+    }
+    
+    private boolean hasPrivileges(final String schema, final String table, final Collection<PrivilegeType> privileges) {
         return hasPrivileges(privileges) || databasePrivileges.hasPrivileges(schema, table, privileges);
     }
 }

@@ -15,29 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.natived.loader;
+package org.apache.shardingsphere.authority.model.privilege.database;
 
-import org.apache.shardingsphere.authority.model.privilege.ShardingSpherePrivileges;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPI;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.authority.model.privilege.PrivilegeType;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Map;
 
 /**
- * Storage privilege loader.
+ * Table privileges.
  */
-public interface StoragePrivilegeLoader extends TypedSPI {
+@RequiredArgsConstructor
+@EqualsAndHashCode
+@Getter
+public final class TablePrivileges {
+    
+    private final String tableName;
+    
+    private final Collection<PrivilegeType> privileges;
     
     /**
-     * Load privilege from storage.
+     * Has privileges.
      *
-     * @param users users to be loaded
-     * @param dataSource target data source to be loaded
-     * @return map of user and  privilege
-     * @throws SQLException SQL exception
+     * @param privileges privileges
+     * @return has privileges or not
      */
-    Map<ShardingSphereUser, ShardingSpherePrivileges> load(Collection<ShardingSphereUser> users, DataSource dataSource) throws SQLException;
+    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
+        return this.privileges.containsAll(privileges);
+    }
 }

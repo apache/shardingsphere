@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.privilege.admin;
+package org.apache.shardingsphere.authority.model.privilege.admin;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.shardingsphere.authority.privilege.PrivilegeType;
+import org.apache.shardingsphere.authority.model.privilege.PrivilegeType;
 
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArraySet;
