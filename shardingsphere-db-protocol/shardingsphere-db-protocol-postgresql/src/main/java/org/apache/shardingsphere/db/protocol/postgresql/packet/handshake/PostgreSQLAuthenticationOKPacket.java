@@ -37,6 +37,6 @@ public final class PostgreSQLAuthenticationOKPacket implements PostgreSQLPacket 
     
     @Override
     public char getMessageType() {
-        return PostgreSQLCommandPacketType.AUTHENTICATION_OK.getValue();
+        return PostgreSQLCommandPacketType.AUTHENTICATION_REQUEST.getValue();
     }
 }

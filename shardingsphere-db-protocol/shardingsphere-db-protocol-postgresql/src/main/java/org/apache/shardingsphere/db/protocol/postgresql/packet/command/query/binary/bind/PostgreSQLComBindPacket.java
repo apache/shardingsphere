@@ -84,6 +84,6 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     
     @Override
     public char getMessageType() {
-        return PostgreSQLCommandPacketType.BIND.getValue();
+        return PostgreSQLCommandPacketType.BIND_COMMAND.getValue();
     }
 }

@@ -38,6 +38,6 @@ public final class PostgreSQLComDescribePacket extends PostgreSQLCommandPacket {
     
     @Override
     public char getMessageType() {
-        return PostgreSQLCommandPacketType.DESCRIBE.getValue();
+        return PostgreSQLCommandPacketType.DESCRIBE_COMMAND.getValue();
     }
 }
