@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.auth;
+package org.apache.shardingsphere.proxy.frontend.postgresql.authentication;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 
 /**
- * Authentication result.
+ * PostgreSQL login result.
  */
-@RequiredArgsConstructor
 @Getter
-public final class AuthenticationResult {
+public final class PostgreSQLLoginResult {
     
-    private final String username;
+    private final PostgreSQLErrorCode errorCode;
     
-    private final String hostname;
+    private final String errorMessage;
     
-    private final String database;
-    
-    private final boolean finished;
+    public PostgreSQLLoginResult(final PostgreSQLErrorCode errorCode, final String errorMessage) {
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+    }
 }

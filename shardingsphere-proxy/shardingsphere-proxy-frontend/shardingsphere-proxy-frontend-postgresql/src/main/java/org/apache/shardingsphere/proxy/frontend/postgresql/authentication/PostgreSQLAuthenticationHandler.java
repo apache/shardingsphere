@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql.auth;
+package org.apache.shardingsphere.proxy.frontend.postgresql.authentication;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
