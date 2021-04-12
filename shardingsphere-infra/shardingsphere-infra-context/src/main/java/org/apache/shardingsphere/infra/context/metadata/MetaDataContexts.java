@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.optimize.context.CalciteContextFactory;
 import org.apache.shardingsphere.infra.state.StateContext;
@@ -63,6 +64,13 @@ public interface MetaDataContexts extends Closeable {
      * @return default mata data
      */
     ShardingSphereMetaData getDefaultMetaData();
+    
+    /**
+     * Get global rule meta data.
+     * 
+     * @return global rule meta data
+     */
+    ShardingSphereRuleMetaData getGlobalRuleMetaData();
     
     /**
      * Get executor engine.

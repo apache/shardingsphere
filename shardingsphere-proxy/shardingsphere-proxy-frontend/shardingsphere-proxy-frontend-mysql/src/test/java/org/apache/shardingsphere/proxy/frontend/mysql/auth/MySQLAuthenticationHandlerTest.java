@@ -19,21 +19,20 @@ package org.apache.shardingsphere.proxy.frontend.mysql.auth;
 
 import com.google.common.primitives.Bytes;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.authority.provider.natived.NativeAuthorityProviderAlgorithm;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPluginData;
-import org.apache.shardingsphere.infra.check.SQLChecker;
+import org.apache.shardingsphere.infra.executor.check.SQLChecker;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.authority.engine.impl.DefaultAuthority;
-import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.Before;
@@ -122,12 +121,8 @@ public final class MySQLAuthenticationHandlerTest {
     }
     
     private void setAuthority(final ShardingSphereUser user) {
-        DefaultAuthority authority = new DefaultAuthority();
-        ShardingSpherePrivileges privileges = new ShardingSpherePrivileges();
-        privileges.setSuperPrivilege();
-        Map<ShardingSphereUser, ShardingSpherePrivileges> userPrivilegeMap = new HashMap<>(1, 1);
-        userPrivilegeMap.put(user, privileges);
-        authority.init(userPrivilegeMap);
+        NativeAuthorityProviderAlgorithm algorithm = new NativeAuthorityProviderAlgorithm();
+        algorithm.init(Collections.emptyMap(), Collections.emptyList());
         initProxyContext(user);
     }
     
@@ -139,7 +134,8 @@ public final class MySQLAuthenticationHandlerTest {
     }
     
     private MetaDataContexts getMetaDataContexts(final ShardingSphereUser user) {
-        return new StandardMetaDataContexts(getMetaDataMap(), mock(ExecutorEngine.class), new ShardingSphereUsers(Collections.singleton(user)), new ConfigurationProperties(new Properties()));
+        return new StandardMetaDataContexts(getMetaDataMap(), 
+                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ShardingSphereUsers(Collections.singleton(user)), new ConfigurationProperties(new Properties()));
     }
     
     private Map<String, ShardingSphereMetaData> getMetaDataMap() {

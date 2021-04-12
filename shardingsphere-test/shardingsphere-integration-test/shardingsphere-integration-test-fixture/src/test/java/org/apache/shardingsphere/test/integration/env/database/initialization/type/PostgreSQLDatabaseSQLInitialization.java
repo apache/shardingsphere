@@ -20,17 +20,18 @@ package org.apache.shardingsphere.test.integration.env.database.initialization.t
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.database.initialization.DatabaseSQLInitialization;
-import org.apache.shardingsphere.test.integration.env.datasource.builder.ActualDataSourceBuilder;
+import org.h2.tools.RunScript;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 
 /**
  * Database SQL initialization for PostgreSQL.
@@ -38,19 +39,18 @@ import java.sql.Statement;
 public final class PostgreSQLDatabaseSQLInitialization implements DatabaseSQLInitialization {
     
     @Override
-    public void executeInitSQLs(final String scenario, final DatabaseType databaseType) throws IOException, JAXBException, SQLException {
+    public void executeInitSQLs(final String scenario, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap) throws IOException, JAXBException, SQLException {
         File file = new File(EnvironmentPath.getInitSQLFile(databaseType, scenario));
-        for (String each : DatabaseEnvironmentManager.getDatabaseNames(scenario)) {
-            // TODO use multiple threads to improve performance
-            DataSource preDataSource = ActualDataSourceBuilder.build(null, scenario, databaseType);
-            try (Connection connection = preDataSource.getConnection();
+        for (Map.Entry<String, DataSource> each : dataSourceMap.entrySet()) {
+            try (Connection connection = each.getValue().getConnection();
                  Statement statement = connection.createStatement()) {
                 statement.execute(String.format("SELECT pg_terminate_backend (pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '%s';", each));
-                statement.execute(String.format("DROP DATABASE IF EXISTS %s;", each));
-                statement.execute(String.format("CREATE DATABASE %s;", each));
+                statement.execute(String.format("DROP DATABASE IF EXISTS %s;", each.getKey()));
+                statement.execute(String.format("CREATE DATABASE %s;", each.getKey()));
             }
-            DataSource dataSource = ActualDataSourceBuilder.build(each, scenario, databaseType);
-            DatabaseEnvironmentManager.executeSQLScript(dataSource, file);
+            try (Connection connection = each.getValue().getConnection(); FileReader reader = new FileReader(file)) {
+                RunScript.execute(connection, reader);
+            }
         }
     }
     

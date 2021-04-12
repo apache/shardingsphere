@@ -149,32 +149,14 @@ public abstract class ContainerCompose extends ExternalResource implements Close
      * @return ShardingSphere storage container
      */
     public abstract ShardingSphereStorageContainer getStorageContainer();
-    
-    /**
-     * Get target datasource for writer.
-     *
-     * @return datasource
-     */
-    public DataSource getDataSourceForWriter() {
-        return getAdapterContainer().getDataSource();
-    }
-    
-    /**
-     * Get target datasource for reader.
-     *
-     * @return datasource
-     */
-    public DataSource getDataSourceForReader() {
-        return getAdapterContainer().getDataSource();
-    }
-    
+
     /**
      * Get all target datasources.
      *
      * @return datasource map
      */
     public Map<String, DataSource> getDataSourceMap() {
-        return Collections.singletonMap(getAdapterContainer().getDockerName(), getAdapterContainer().getDataSource());
+        return Collections.singletonMap("adapterForWriter", getAdapterContainer().getDataSource());
     }
     
     @Override

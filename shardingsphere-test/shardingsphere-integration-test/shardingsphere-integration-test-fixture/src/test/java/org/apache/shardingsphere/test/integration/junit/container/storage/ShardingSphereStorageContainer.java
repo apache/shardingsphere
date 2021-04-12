@@ -20,11 +20,11 @@ package org.apache.shardingsphere.test.integration.junit.container.storage;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.junit.annotation.XmlResource;
+import org.apache.shardingsphere.test.integration.env.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
-import org.apache.shardingsphere.test.integration.junit.processor.DatabaseProcessor;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap.Builder;
@@ -40,19 +40,20 @@ import java.util.Optional;
  */
 public abstract class ShardingSphereStorageContainer extends ShardingSphereContainer {
     
-    @XmlResource(file = "/env/{scenario}/databases.xml", processor = DatabaseProcessor.class)
     @Getter
-    private Collection<String> databases;
+    private final Collection<String> databases;
     
     private ImmutableMap<String, DataSource> dataSourceMap;
     
     @Getter
     private final DatabaseType databaseType;
     
+    @SneakyThrows
     public ShardingSphereStorageContainer(final String dockerName, final String dockerImageName, final DatabaseType databaseType,
                                           final boolean isFakeContainer, final ParameterizedArray parameterizedArray) {
         super(dockerName, dockerImageName, isFakeContainer, parameterizedArray);
         this.databaseType = databaseType;
+        this.databases = DatabaseEnvironmentManager.getDatabaseNames(getParameterizedArray().getScenario());
     }
     
     /**

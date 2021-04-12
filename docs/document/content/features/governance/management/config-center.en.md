@@ -11,11 +11,11 @@ weight = 1
 
 ## Structure in Configuration Center
 
-Under defined namespace, configuration center stores data sources, rule configurations, authentication configuration, and properties in YAML. Modifying nodes can dynamically refresh configurations.
+Under defined namespace, configuration center stores data sources, rule configurations, user configurations, and properties in YAML. Modifying nodes can dynamically refresh configurations.
 
 ```
 namespace
-    ├──authentication                            # Authentication configuration
+    ├──users                                     # Users configuration
     ├──props                                     # Properties configuration
     ├──schemas                                   # Schema configuration
     ├      ├──${schema_1}                        # Schema name 1
@@ -28,13 +28,13 @@ namespace
     ├      ├      ├──table                       # Table configuration
 ```
 
-### /authentication
+### /users
 
-Authentication configuration. Can configure username and password for ShardingSphere-Proxy.
+user configurations. Can configure username and password for ShardingSphere-Proxy.
 
 ```yaml
-username: root
-password: root
+- root@127.0.0.1:root
+- sharding@%:sharding
 ```
 
 ### /props

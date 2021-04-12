@@ -18,19 +18,18 @@
 package org.apache.shardingsphere.authority.rule;
 
 import org.apache.shardingsphere.authority.api.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.authority.spi.PrivilegeLoadAlgorithm;
+import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
+import org.apache.shardingsphere.authority.spi.AuthorityProvideAlgorithm;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.authority.engine.ShardingSphereAuthority;
-import org.apache.shardingsphere.authority.engine.AuthorityContext;
-import org.apache.shardingsphere.authority.engine.impl.DefaultAuthority;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
-import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Authority rule.
@@ -38,14 +37,33 @@ import java.util.Collection;
 public final class AuthorityRule implements GlobalRule {
     
     static {
-        ShardingSphereServiceLoader.register(PrivilegeLoadAlgorithm.class);
+        ShardingSphereServiceLoader.register(AuthorityProvideAlgorithm.class);
     }
     
-    public AuthorityRule(final AuthorityRuleConfiguration config, final String schemaName, final DatabaseType databaseType, 
-                         final Collection<DataSource> dataSources, final Collection<ShardingSphereUser> users, final Collection<ShardingSphereRule> builtRules) {
-        PrivilegeLoadAlgorithm privilegeLoader = ShardingSphereAlgorithmFactory.createAlgorithm(config.getPrivilegeLoader(), PrivilegeLoadAlgorithm.class);
-        ShardingSphereAuthority authority = null == AuthorityContext.getInstance().getAuthority() ? new DefaultAuthority() : AuthorityContext.getInstance().getAuthority();
-        authority.init(privilegeLoader.load(schemaName, databaseType, dataSources, builtRules, users));
-        AuthorityContext.getInstance().init(authority);
+    private final AuthorityProvideAlgorithm provider;
+    
+    public AuthorityRule(final AuthorityRuleConfiguration config, final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
+        provider = ShardingSphereAlgorithmFactory.createAlgorithm(config.getProvider(), AuthorityProvideAlgorithm.class);
+        provider.init(mataDataMap, users);
+    }
+    
+    /**
+     * Find Privileges.
+     *
+     * @param grantee grantee
+     * @return found privileges
+     */
+    public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
+        return provider.findPrivileges(grantee);
+    }
+    
+    /**
+     * Refresh authority.
+     *
+     * @param mataDataMap mata data map
+     * @param users users
+     */
+    public void refresh(final Map<String, ShardingSphereMetaData> mataDataMap, final Collection<ShardingSphereUser> users) {
+        provider.refresh(mataDataMap, users);
     }
 }

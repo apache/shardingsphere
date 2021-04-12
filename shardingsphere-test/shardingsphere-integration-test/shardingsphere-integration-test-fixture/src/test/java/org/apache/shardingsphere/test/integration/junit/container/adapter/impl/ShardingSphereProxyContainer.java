@@ -114,7 +114,7 @@ public final class ShardingSphereProxyContainer extends ShardingSphereAdapterCon
         HikariConfig result = new HikariConfig();
         result.setDriverClassName("com.mysql.jdbc.Driver");
         result.setJdbcUrl(getURL());
-        result.setUsername(getAuthentication().getUser());
+        result.setUsername(getAuthentication().getUsername());
         result.setPassword(getAuthentication().getPassword());
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");

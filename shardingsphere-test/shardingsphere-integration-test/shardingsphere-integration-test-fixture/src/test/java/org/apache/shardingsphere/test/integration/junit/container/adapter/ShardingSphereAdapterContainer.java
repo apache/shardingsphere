@@ -17,14 +17,18 @@
 
 package org.apache.shardingsphere.test.integration.junit.container.adapter;
 
+import com.google.common.io.ByteStreams;
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.junit.annotation.XmlResource;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfigurationConverter;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
 import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
-import org.apache.shardingsphere.test.integration.junit.processor.AuthenticationProcessor;
-import org.apache.shardingsphere.test.integration.junit.processor.AuthenticationProcessor.Authentication;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 
 /**
  * ShardingSphere adapter container.
@@ -32,15 +36,28 @@ import javax.sql.DataSource;
 public abstract class ShardingSphereAdapterContainer extends ShardingSphereContainer {
     
     @Getter
-    @XmlResource(file = "/docker/{scenario}/proxy/conf/server.yaml", processor = AuthenticationProcessor.class)
-    private Authentication authentication;
+    private final YamlUserConfiguration authentication;
     
     public ShardingSphereAdapterContainer(final String dockerName, final String dockerImageName, final ParameterizedArray parameterizedArray) {
         this(dockerName, dockerImageName, false, parameterizedArray);
     }
     
+    @SneakyThrows
     public ShardingSphereAdapterContainer(final String dockerName, final String dockerImageName, final boolean isFakeContainer, final ParameterizedArray parameterizedArray) {
         super(dockerName, dockerImageName, isFakeContainer, parameterizedArray);
+        this.authentication = loadAuthentication(parameterizedArray);
+    }
+    
+    private YamlUserConfiguration loadAuthentication(final ParameterizedArray parameterizedArray) throws IOException {
+        YamlProxyServerConfiguration configuration = YamlEngine.unmarshal(
+                ByteStreams.toByteArray(this.getClass().getResourceAsStream("/docker/" + parameterizedArray.getScenario() + "/proxy/conf/server.yaml")),
+                YamlProxyServerConfiguration.class
+        );
+        return YamlUserConfigurationConverter.convertYamlUserConfiguration(configuration.getUsers())
+                .stream()
+                .filter(each -> "root".equals(each.getUsername()))
+                .findFirst()
+                .orElse(new YamlUserConfiguration());
     }
     
     /**

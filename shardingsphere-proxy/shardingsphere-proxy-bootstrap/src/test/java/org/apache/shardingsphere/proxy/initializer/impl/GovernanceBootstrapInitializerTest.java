@@ -67,7 +67,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     private static final String SHARDING_RULE_YAML = "conf/reg_center/sharding-rule.yaml";
     
-    private static final String AUTHENTICATION_YAML = "conf/reg_center/authentication.yaml";
+    private static final String USERS_YAML = "conf/reg_center/users.yaml";
     
     private static final String PROPS_YAML = "conf/reg_center/props.yaml";
     
@@ -83,7 +83,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     private void initConfigCenter() {
         RegistryCenterNode node = new RegistryCenterNode();
-        registryRepository.persist(node.getAuthenticationPath(), readYAML(AUTHENTICATION_YAML));
+        registryRepository.persist(node.getUsersNode(), readYAML(USERS_YAML));
         registryRepository.persist(node.getPropsPath(), readYAML(PROPS_YAML));
         registryRepository.persist(node.getMetadataNodePath(), "db");
         registryRepository.persist(node.getMetadataDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));

@@ -122,7 +122,9 @@
     <sql-case id="alter_table_with_enable_all_triggers" value="ALTER TABLE t_log ADD name VARCHAR(10) ENABLE ALL TRIGGERS" db-types="Oracle" />
     <sql-case id="alter_table_with_disable_container_map" value="ALTER TABLE t_log ADD name VARCHAR(10) DISABLE CONTAINER_MAP" db-types="Oracle" />
     <sql-case id="alter_table_with_disable_containers_default" value="ALTER TABLE t_log ADD name VARCHAR(10) DISABLE CONTAINERS_DEFAULT" db-types="Oracle" />
-    
+    <sql-case id="alter_table_add_range_partition" value="ALTER TABLE t_order ADD PARTITION range_p_order VALUES LESS THAN(100)" db-types="Oracle" />
+    <sql-case id="alter_table_add_list_partition" value="ALTER TABLE t_order ADD PARTITION list_p_order VALUES(100, 200, 300)" db-types="Oracle" />
+    <sql-case id="alter_table_drop_partition" value="ALTER TABLE t_order DROP PARTITION list_p_order" db-types="Oracle" />
 <!--    alter index test-->
     <sql-case id="alter_index" value="ALTER INDEX order_index REBUILD PARALLEL" db-types="Oracle" />
     <sql-case id="alter_index_with_space" value="    ALTER INDEX
@@ -172,5 +174,5 @@
 <!--alter synonym test-->
     <sql-case id="alter_synonym_compile" value="ALTER SYNONYM offices COMPILE" db-types="Oracle" />
     <sql-case id="alter_public_synonym_compile" value="ALTER PUBLIC SYNONYM emp_table COMPILE" db-types="Oracle" />
-    <sql-case id="alter_synonym_noneditionable" value="ALTER SYNONYM offices NONEDITIONABLE" db-types="Oracle" />  
+    <sql-case id="alter_synonym_noneditionable" value="ALTER SYNONYM offices NONEDITIONABLE" db-types="Oracle" />
 </sql-cases>

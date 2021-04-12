@@ -22,8 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfiguration;
-import org.apache.shardingsphere.infra.metadata.user.yaml.swapper.UsersYamlSwapper;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfigurationConverter;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -107,13 +106,14 @@ public final class YamlConfigurationConverter {
     }
     
     /**
-     * Convert user rule from YAML content.
+     * Convert users from YAML content.
      *
      * @param yamlContent YAML content
      * @return users
      */
-    public static Collection<ShardingSphereUser> convertUserRule(final String yamlContent) {
-        return new UsersYamlSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlUsersConfiguration.class));
+    public static Collection<ShardingSphereUser> convertUsers(final String yamlContent) {
+        Collection<String> users = YamlEngine.unmarshal(yamlContent, Collection.class);
+        return YamlUserConfigurationConverter.convertShardingSphereUser(users);
     }
     
     /**
