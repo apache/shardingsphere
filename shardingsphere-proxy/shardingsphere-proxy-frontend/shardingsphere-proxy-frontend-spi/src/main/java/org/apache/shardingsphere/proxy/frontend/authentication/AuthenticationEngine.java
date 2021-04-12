@@ -15,23 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql.auth;
+package org.apache.shardingsphere.proxy.frontend.authentication;
 
-import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
+import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 
 /**
- * PostgreSQL login result.
+ * Authentication engine.
  */
-@Getter
-public final class PostgreSQLLoginResult {
+public interface AuthenticationEngine {
     
-    private final PostgreSQLErrorCode errorCode;
+    /**
+     * Handshake.
+     *
+     * @param context channel handler context
+     * @return connection ID
+     */
+    int handshake(ChannelHandlerContext context);
     
-    private final String errorMessage;
-    
-    public PostgreSQLLoginResult(final PostgreSQLErrorCode errorCode, final String errorMessage) {
-        this.errorCode = errorCode;
-        this.errorMessage = errorMessage;
-    }
+    /**
+     * Authenticate.
+     *
+     * @param context channel handler context
+     * @param payload packet payload
+     * @return authentication result
+     */
+    AuthenticationResult authenticate(ChannelHandlerContext context, PacketPayload payload);
 }

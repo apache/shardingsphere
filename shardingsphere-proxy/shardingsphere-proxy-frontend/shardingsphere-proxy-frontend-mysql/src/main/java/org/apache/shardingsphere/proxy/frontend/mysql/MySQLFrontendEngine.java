@@ -22,7 +22,7 @@ import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
-import org.apache.shardingsphere.proxy.frontend.mysql.auth.MySQLAuthenticationEngine;
+import org.apache.shardingsphere.proxy.frontend.mysql.authentication.MySQLAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.MySQLCommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
@@ -34,18 +34,18 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     
     private final FrontendContext frontendContext = new FrontendContext(false, true);
     
-    private final MySQLAuthenticationEngine authEngine = new MySQLAuthenticationEngine();
+    private final MySQLAuthenticationEngine authenticationEngine = new MySQLAuthenticationEngine();
     
     private final MySQLCommandExecuteEngine commandExecuteEngine = new MySQLCommandExecuteEngine();
     
     private final DatabasePacketCodecEngine<?> codecEngine = new MySQLPacketCodecEngine();
     
     @Override
-    public String getDatabaseType() {
-        return "MySQL";
+    public void release(final BackendConnection backendConnection) {
     }
     
     @Override
-    public void release(final BackendConnection backendConnection) {
+    public String getDatabaseType() {
+        return "MySQL";
     }
 }

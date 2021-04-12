@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql.auth;
+package org.apache.shardingsphere.proxy.frontend.postgresql.authentication;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationResult;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -65,7 +65,7 @@ public final class PostgreSQLAuthenticationEngineTest {
         byteBuf.writeInt(8);
         byteBuf.writeInt(80877103);
         PacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
-        AuthenticationResult actual = new PostgreSQLAuthenticationEngine().auth(mock(ChannelHandlerContext.class), payload);
+        AuthenticationResult actual = new PostgreSQLAuthenticationEngine().authenticate(mock(ChannelHandlerContext.class), payload);
         assertThat(actual.isFinished(), is(false));
     }
     
@@ -78,7 +78,7 @@ public final class PostgreSQLAuthenticationEngineTest {
         payload.writeStringNul(username);
         payload.writeStringNul("database");
         payload.writeStringNul("sharding_db");
-        AuthenticationResult actual = new PostgreSQLAuthenticationEngine().auth(mock(ChannelHandlerContext.class), payload);
+        AuthenticationResult actual = new PostgreSQLAuthenticationEngine().authenticate(mock(ChannelHandlerContext.class), payload);
         assertThat(actual.isFinished(), is(false));
     }
     
@@ -87,7 +87,7 @@ public final class PostgreSQLAuthenticationEngineTest {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(8, 512));
         payload.writeInt4(64);
         payload.writeInt4(196608);
-        AuthenticationResult actual = new PostgreSQLAuthenticationEngine().auth(mock(ChannelHandlerContext.class), payload);
+        AuthenticationResult actual = new PostgreSQLAuthenticationEngine().authenticate(mock(ChannelHandlerContext.class), payload);
         assertThat(actual.isFinished(), is(false));
     }
     
@@ -109,7 +109,7 @@ public final class PostgreSQLAuthenticationEngineTest {
         payload.writeStringNul(username);
         ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);
         PostgreSQLAuthenticationEngine engine = new PostgreSQLAuthenticationEngine();
-        AuthenticationResult actual = engine.auth(channelHandlerContext, payload);
+        AuthenticationResult actual = engine.authenticate(channelHandlerContext, payload);
         assertThat(actual.isFinished(), is(false));
         assertThat(actual.getUsername(), is(username));
         ArgumentCaptor<PostgreSQLAuthenticationMD5PasswordPacket> argumentCaptor = ArgumentCaptor.forClass(PostgreSQLAuthenticationMD5PasswordPacket.class);
@@ -124,7 +124,7 @@ public final class PostgreSQLAuthenticationEngineTest {
         StandardMetaDataContexts standardMetaDataContexts = new StandardMetaDataContexts();
         standardMetaDataContexts.getUsers().getUsers().add(new ShardingSphereUser(username, password, ""));
         ProxyContext.getInstance().init(standardMetaDataContexts, mock(TransactionContexts.class));
-        actual = engine.auth(channelHandlerContext, payload);
+        actual = engine.authenticate(channelHandlerContext, payload);
         assertThat(actual.isFinished(), is(password.equals(inputPassword)));
     }
     

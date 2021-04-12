@@ -23,7 +23,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.codec.PostgreSQLPacketCo
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
-import org.apache.shardingsphere.proxy.frontend.postgresql.auth.PostgreSQLAuthenticationEngine;
+import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.PostgreSQLAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLCommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
@@ -35,19 +35,19 @@ public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendE
     
     private final FrontendContext frontendContext = new FrontendContext(true, false);
     
-    private final PostgreSQLAuthenticationEngine authEngine = new PostgreSQLAuthenticationEngine();
+    private final PostgreSQLAuthenticationEngine authenticationEngine = new PostgreSQLAuthenticationEngine();
     
     private final PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
     
     private final DatabasePacketCodecEngine<?> codecEngine = new PostgreSQLPacketCodecEngine();
     
     @Override
-    public String getDatabaseType() {
-        return "PostgreSQL";
+    public void release(final BackendConnection backendConnection) {
+        BinaryStatementRegistry.getInstance().unregister(backendConnection.getConnectionId());
     }
     
     @Override
-    public void release(final BackendConnection backendConnection) {
-        BinaryStatementRegistry.getInstance().unregister(backendConnection.getConnectionId());
+    public String getDatabaseType() {
+        return "PostgreSQL";
     }
 }

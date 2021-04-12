@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.auth;
+package org.apache.shardingsphere.proxy.frontend.authentication;
 
 import org.junit.Test;
 

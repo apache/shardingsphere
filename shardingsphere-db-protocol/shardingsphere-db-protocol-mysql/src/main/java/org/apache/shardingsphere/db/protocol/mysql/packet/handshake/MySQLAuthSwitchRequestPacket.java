@@ -23,7 +23,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 /**
- * MySQL auth switch request packet.
+ * MySQL authentication switch request packet.
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::AuthSwitchRequest">AuthSwitchRequest</a>
  */
@@ -41,6 +41,6 @@ public final class MySQLAuthSwitchRequestPacket implements MySQLPacket {
     public void write(final MySQLPacketPayload payload) {
         payload.writeInt1(0xfe);
         payload.writeStringNul(authPluginName);
-        payload.writeStringNul(new String(authPluginData.getAuthPluginData()));
+        payload.writeStringNul(new String(authPluginData.getAuthenticationPluginData()));
     }
 }

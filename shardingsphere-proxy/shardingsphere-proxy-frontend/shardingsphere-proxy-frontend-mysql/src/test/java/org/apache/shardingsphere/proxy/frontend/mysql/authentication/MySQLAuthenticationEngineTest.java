@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.mysql.auth;
+package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationResultBuilder;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -94,7 +94,7 @@ public final class MySQLAuthenticationEngineTest {
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
         when(channelHandlerContext.channel()).thenReturn(channel);
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue());
-        authenticationEngine.auth(channelHandlerContext, payload);
+        authenticationEngine.authenticate(channelHandlerContext, payload);
         assertThat(getConnectionPhase(), is(MySQLConnectionPhase.AUTHENTICATION_METHOD_MISMATCH));
     }
     
@@ -109,7 +109,7 @@ public final class MySQLAuthenticationEngineTest {
         when(channel.remoteAddress()).thenReturn(new InetSocketAddress("localhost", 3307));
         when(channelHandlerContext.channel()).thenReturn(channel);
         setAuthenticationResult();
-        authenticationEngine.auth(channelHandlerContext, payload);
+        authenticationEngine.authenticate(channelHandlerContext, payload);
         assertThat(getAuthResponse(), is(authResponse));
     }
     
@@ -126,7 +126,7 @@ public final class MySQLAuthenticationEngineTest {
         ChannelHandlerContext context = getContext();
         setMetaDataContexts();
         when(authenticationHandler.login(anyString(), any(), any(), anyString())).thenReturn(Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR));
-        authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse));
+        authenticationEngine.authenticate(context, getPayload("root", "sharding_db", authResponse));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
     }
     
@@ -135,7 +135,7 @@ public final class MySQLAuthenticationEngineTest {
         ChannelHandlerContext context = getContext();
         setMetaDataContexts();
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
-        authenticationEngine.auth(context, getPayload("root", "ABSENT DATABASE", authResponse));
+        authenticationEngine.authenticate(context, getPayload("root", "ABSENT DATABASE", authResponse));
         verify(context).writeAndFlush(any(MySQLErrPacket.class));
     }
     
@@ -145,7 +145,7 @@ public final class MySQLAuthenticationEngineTest {
         ChannelHandlerContext context = getContext();
         when(authenticationHandler.login(anyString(), any(), any(), anyString())).thenReturn(Optional.empty());
         setMetaDataContexts();
-        authenticationEngine.auth(context, getPayload("root", "sharding_db", authResponse));
+        authenticationEngine.authenticate(context, getPayload("root", "sharding_db", authResponse));
         verify(context).writeAndFlush(any(MySQLOKPacket.class));
     }
     

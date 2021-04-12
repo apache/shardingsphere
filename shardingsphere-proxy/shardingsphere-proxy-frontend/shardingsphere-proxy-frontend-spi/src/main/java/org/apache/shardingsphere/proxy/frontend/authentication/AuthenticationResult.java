@@ -15,30 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.auth;
+package org.apache.shardingsphere.proxy.frontend.authentication;
 
-import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Authentication engine.
+ * Authentication result.
  */
-public interface AuthenticationEngine {
+@RequiredArgsConstructor
+@Getter
+public final class AuthenticationResult {
     
-    /**
-     * Handshake.
-     *
-     * @param context channel handler context
-     * @return connection ID
-     */
-    int handshake(ChannelHandlerContext context);
+    private final String username;
     
-    /**
-     * Authentication.
-     *
-     * @param context channel handler context
-     * @param payload packet payload
-     * @return authentication result
-     */
-    AuthenticationResult auth(ChannelHandlerContext context, PacketPayload payload);
+    private final String hostname;
+    
+    private final String database;
+    
+    private final boolean finished;
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.mysql.auth;
+package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 
 import com.google.common.primitives.Bytes;
 import lombok.SneakyThrows;
@@ -117,7 +117,7 @@ public final class MySQLAuthenticationHandlerTest {
     
     @Test
     public void assertGetAuthPluginData() {
-        assertThat(authenticationHandler.getAuthPluginData().getAuthPluginData(), is(Bytes.concat(part1, part2)));
+        assertThat(authenticationHandler.getAuthPluginData().getAuthenticationPluginData(), is(Bytes.concat(part1, part2)));
     }
     
     private void setAuthority(final ShardingSphereUser user) {

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql.auth;
+package org.apache.shardingsphere.proxy.frontend.postgresql.authentication;
 
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
@@ -34,9 +34,9 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.Postgre
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationResultBuilder;
-import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationEngine;
-import org.apache.shardingsphere.proxy.frontend.auth.AuthenticationResult;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
+import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -67,7 +67,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     }
     
     @Override
-    public AuthenticationResult auth(final ChannelHandlerContext context, final PacketPayload payload) {
+    public AuthenticationResult authenticate(final ChannelHandlerContext context, final PacketPayload payload) {
         if (SSL_REQUEST_PAYLOAD_LENGTH == payload.getByteBuf().markReaderIndex().readInt() && SSL_REQUEST_CODE == payload.getByteBuf().readInt()) {
             context.writeAndFlush(new PostgreSQLSSLNegativePacket());
             return AuthenticationResultBuilder.continued();

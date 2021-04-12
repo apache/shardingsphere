@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.mysql.auth;
+package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
@@ -48,13 +48,13 @@ public final class MySQLAuthenticationHandler {
      *
      * @param username username
      * @param hostname hostname
-     * @param authResponse auth response
+     * @param authenticationResponse authentication response
      * @param databaseName database name
      * @return login success or failure
      */
-    public Optional<MySQLServerErrorCode> login(final String username, final String hostname, final byte[] authResponse, final String databaseName) {
+    public Optional<MySQLServerErrorCode> login(final String username, final String hostname, final byte[] authenticationResponse, final String databaseName) {
         Optional<ShardingSphereUser> user = ProxyContext.getInstance().getMetaDataContexts().getUsers().findUser(new Grantee(username, hostname));
-        if (!user.isPresent() || !isPasswordRight(user.get().getPassword(), authResponse)) {
+        if (!user.isPresent() || !isPasswordRight(user.get().getPassword(), authenticationResponse)) {
             return Optional.of(MySQLServerErrorCode.ER_ACCESS_DENIED_ERROR);
         }
         return null == databaseName || SQLCheckEngine.check(databaseName, getRules(databaseName), user.get().getGrantee())
@@ -68,9 +68,9 @@ public final class MySQLAuthenticationHandler {
     private byte[] getAuthCipherBytes(final String password) {
         byte[] sha1Password = DigestUtils.sha1(password);
         byte[] doubleSha1Password = DigestUtils.sha1(sha1Password);
-        byte[] concatBytes = new byte[authPluginData.getAuthPluginData().length + doubleSha1Password.length];
-        System.arraycopy(authPluginData.getAuthPluginData(), 0, concatBytes, 0, authPluginData.getAuthPluginData().length);
-        System.arraycopy(doubleSha1Password, 0, concatBytes, authPluginData.getAuthPluginData().length, doubleSha1Password.length);
+        byte[] concatBytes = new byte[authPluginData.getAuthenticationPluginData().length + doubleSha1Password.length];
+        System.arraycopy(authPluginData.getAuthenticationPluginData(), 0, concatBytes, 0, authPluginData.getAuthenticationPluginData().length);
+        System.arraycopy(doubleSha1Password, 0, concatBytes, authPluginData.getAuthenticationPluginData().length, doubleSha1Password.length);
         byte[] sha1ConcatBytes = DigestUtils.sha1(concatBytes);
         return xor(sha1Password, sha1ConcatBytes);
     }
