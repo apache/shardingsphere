@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.authority.provider.natived.loader;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeRecognizer;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -93,7 +92,7 @@ public final class StoragePrivilegeBuilder {
             return buildDefaultPrivileges(users);
         }
         Map<ShardingSphereUser, Collection<NativePrivileges>> result = load(metaData.getResource().getAllInstanceDataSources(), users, loader.get());
-        checkPrivileges(result);
+        checkConsistent(result);
         return StoragePrivilegeMerger.merge(result, metaData.getName(), metaData.getRuleMetaData().getRules());
     }
     
@@ -126,17 +125,13 @@ public final class StoragePrivilegeBuilder {
         }
     }
     
-    private static void checkPrivileges(final Map<ShardingSphereUser, Collection<NativePrivileges>> userPrivilegeMap) {
-        userPrivilegeMap.forEach(StoragePrivilegeBuilder::checkPrivileges);
+    private static void checkConsistent(final Map<ShardingSphereUser, Collection<NativePrivileges>> userPrivilegeMap) {
+        userPrivilegeMap.forEach(StoragePrivilegeBuilder::checkConsistent);
     }
     
-    private static void checkPrivileges(final ShardingSphereUser user, final Collection<NativePrivileges> privileges) {
-        Iterator<NativePrivileges> iterator = privileges.iterator();
-        NativePrivileges current = iterator.next();
-        while (iterator.hasNext()) {
-            if (!current.equals(iterator.next())) {
-                throw new ShardingSphereException("Different physical instances have different privileges for user %s", user.getGrantee().toString().replaceAll("%", "%%"));
-            }
-        }
+    private static void checkConsistent(final ShardingSphereUser user, final Collection<NativePrivileges> privileges) {
+        NativePrivileges sample = privileges.iterator().next();
+        Preconditions.checkState(
+                privileges.stream().allMatch(each -> each.equals(sample)), "Different physical instances have different privileges for user %s", user.getGrantee().toString().replaceAll("%", "%%"));
     }
 }
