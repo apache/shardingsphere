@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.authority.merge;
 
-import org.apache.shardingsphere.authority.provider.natived.loader.StoragePrivilegeMerger;
+import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeMerger;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.SchemaPrivileges;
