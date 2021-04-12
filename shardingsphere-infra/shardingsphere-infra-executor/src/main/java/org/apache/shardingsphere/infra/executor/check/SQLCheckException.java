@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.check;
+package org.apache.shardingsphere.infra.executor.check;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;

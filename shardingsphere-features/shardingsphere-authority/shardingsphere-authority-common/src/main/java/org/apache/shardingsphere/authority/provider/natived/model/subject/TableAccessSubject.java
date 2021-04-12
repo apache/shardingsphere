@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.check;
+package org.apache.shardingsphere.authority.provider.natived.model.subject;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.authority.model.AccessSubject;
 
 /**
- * SQL check result.
+ * Table access subject.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SQLCheckResult {
+public final class TableAccessSubject implements AccessSubject {
     
-    private final boolean isPassed;
-    
-    private final String errorMessage;
+    private final String schema;
+
+    private final String table;
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.model.database;
+package org.apache.shardingsphere.authority.provider.natived.model.privilege.database;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
