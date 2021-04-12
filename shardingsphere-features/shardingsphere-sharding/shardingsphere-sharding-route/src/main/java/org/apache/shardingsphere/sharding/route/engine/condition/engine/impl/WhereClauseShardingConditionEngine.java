@@ -70,6 +70,14 @@ public final class WhereClauseShardingConditionEngine implements ShardingConditi
         }
         List<ShardingCondition> result = new ArrayList<>();
         ((WhereAvailable) sqlStatementContext).getWhere().ifPresent(segment -> result.addAll(createShardingConditions(sqlStatementContext, segment.getExpr(), parameters)));
+        Collection<WhereSegment> joinWhereSegments = sqlStatementContext.getSqlStatement() instanceof SelectStatement
+                ? WhereSegmentExtractUtils.getJoinWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()) : Collections.emptyList();
+        for (WhereSegment each : joinWhereSegments) {
+            Collection<ShardingCondition> joinShardingConditions = createShardingConditions(sqlStatementContext, each.getExpr(), parameters);
+            if (!result.containsAll(joinShardingConditions)) {
+                result.addAll(joinShardingConditions);
+            }
+        }
         Collection<WhereSegment> subqueryWhereSegments = sqlStatementContext.getSqlStatement() instanceof SelectStatement
                 ? WhereSegmentExtractUtils.getSubqueryWhereSegments((SelectStatement) sqlStatementContext.getSqlStatement()) : Collections.emptyList();
         for (WhereSegment each : subqueryWhereSegments) {
