@@ -79,9 +79,7 @@ public final class StoragePrivilegeBuilder {
     
     private static Map<ShardingSphereUser, NativePrivileges> buildWithMetaData(final Collection<ShardingSphereMetaData> metaDataList, final Collection<ShardingSphereUser> users) {
         Map<ShardingSphereUser, NativePrivileges> result = new LinkedHashMap<>(users.size(), 1);
-        for (ShardingSphereMetaData each : metaDataList) {
-            result.putAll(buildWithMetaData(each, users));
-        }
+        metaDataList.stream().map(each -> buildWithMetaData(each, users)).forEach(result::putAll);
         return result;
     }
     
