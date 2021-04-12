@@ -32,7 +32,7 @@ import java.util.Map;
 public interface StoragePrivilegeLoader extends TypedSPI {
     
     /**
-     * Load privilege from storage.
+     * Load privileges from storage.
      *
      * @param users users to be loaded
      * @param dataSource target data source to be loaded
