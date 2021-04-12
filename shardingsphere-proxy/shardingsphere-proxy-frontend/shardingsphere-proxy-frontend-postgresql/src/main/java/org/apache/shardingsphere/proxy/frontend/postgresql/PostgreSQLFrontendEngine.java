@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.postgresql.codec.PostgreSQLPacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
@@ -39,7 +40,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendE
     
     private final PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
     
-    private final DatabasePacketCodecEngine<?> codecEngine = new PostgreSQLPacketCodecEngine();
+    private final DatabasePacketCodecEngine<PostgreSQLPacket> codecEngine = new PostgreSQLPacketCodecEngine();
     
     @Override
     public void release(final BackendConnection backendConnection) {
