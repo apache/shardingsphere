@@ -32,8 +32,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.SQLException;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -45,12 +43,12 @@ public final class PostgreSQLCommandPacketFactoryTest {
     private PostgreSQLPacketPayload payload;
     
     @Test
-    public void assertNewInstanceWithQueryComPacket() throws SQLException {
+    public void assertNewInstanceWithQueryComPacket() {
         assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.QUERY, payload, 1), instanceOf(PostgreSQLComQueryPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithParseComPacket() throws SQLException {
+    public void assertNewInstanceWithParseComPacket() {
         when(payload.readInt4()).thenReturn(1);
         when(payload.readStringNul()).thenReturn("stat-id");
         when(payload.readStringNul()).thenReturn("SELECT * FROM t_order");
@@ -59,7 +57,7 @@ public final class PostgreSQLCommandPacketFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithBindComPacket() throws SQLException {
+    public void assertNewInstanceWithBindComPacket() {
         when(payload.readInt4()).thenReturn(1);
         when(payload.readStringNul()).thenReturn("stat-id");
         when(payload.readStringNul()).thenReturn("SELECT * FROM t_order");
@@ -69,27 +67,27 @@ public final class PostgreSQLCommandPacketFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithDescribeComPacket() throws SQLException {
+    public void assertNewInstanceWithDescribeComPacket() {
         assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.DESCRIBE, payload, 1), instanceOf(PostgreSQLComDescribePacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithExecuteComPacket() throws SQLException {
+    public void assertNewInstanceWithExecuteComPacket() {
         assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.EXECUTE, payload, 1), instanceOf(PostgreSQLComExecutePacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithSyncComPacket() throws SQLException {
+    public void assertNewInstanceWithSyncComPacket() {
         assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.SYNC, payload, 1), instanceOf(PostgreSQLComSyncPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithTerminationComPacket() throws SQLException {
+    public void assertNewInstanceWithTerminationComPacket() {
         assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.TERMINATE, payload, 1), instanceOf(PostgreSQLComTerminationPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithUnsupportedComPacket() throws SQLException {
+    public void assertNewInstanceWithUnsupportedComPacket() {
         assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.PORTAL_SUSPENDED, payload, 1), instanceOf(PostgreSQLUnsupportedCommandPacket.class));
     }
 }

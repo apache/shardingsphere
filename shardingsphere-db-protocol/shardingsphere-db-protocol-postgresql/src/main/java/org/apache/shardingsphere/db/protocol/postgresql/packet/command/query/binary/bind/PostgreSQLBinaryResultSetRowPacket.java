@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
@@ -33,9 +32,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 @RequiredArgsConstructor
 public final class PostgreSQLBinaryResultSetRowPacket implements PostgreSQLPacket {
     
-    @Getter
-    private final char messageType = PostgreSQLCommandPacketType.DATA_ROW.getValue();
-
     private final BinaryRow row;
     
     @Override
@@ -51,5 +47,10 @@ public final class PostgreSQLBinaryResultSetRowPacket implements PostgreSQLPacke
             payload.writeInt4(binaryProtocolValue.getColumnLength(value));
             binaryProtocolValue.write(payload, value);
         }
+    }
+    
+    @Override
+    public char getMessageType() {
+        return PostgreSQLCommandPacketType.DATA_ROW.getValue();
     }
 }
