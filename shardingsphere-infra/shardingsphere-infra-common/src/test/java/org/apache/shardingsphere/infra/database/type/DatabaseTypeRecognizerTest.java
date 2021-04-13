@@ -17,7 +17,13 @@
 
 package org.apache.shardingsphere.infra.database.type;
 
-import org.apache.shardingsphere.infra.database.type.dialect.*;
+import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -29,7 +35,9 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class DatabaseTypeRecognizerTest {
 
