@@ -31,16 +31,17 @@ import java.util.Set;
  * Owner token.
  */
 public final class OwnerToken extends SQLToken implements Substitutable, RouteUnitAware {
-
+    
     @Getter
     private final int stopIndex;
-
+    
     private final String ownerName;
-
+    
     private final String tableName;
-
+    
+    // TODO need to clear the quoteCharacter's owner 
     private final QuoteCharacter quoteCharacter;
-
+    
     public OwnerToken(final int startIndex, final int stopIndex, final String ownerName, final String tableName, final QuoteCharacter quoteCharacter) {
         super(startIndex);
         this.stopIndex = stopIndex;
@@ -48,7 +49,16 @@ public final class OwnerToken extends SQLToken implements Substitutable, RouteUn
         this.tableName = tableName;
         this.quoteCharacter = quoteCharacter;
     }
-
+    
+    /**
+     * Get quote character.
+     *
+     * @return quote character
+     */
+    public QuoteCharacter getQuoteCharacter() {
+        return Objects.nonNull(quoteCharacter) ? quoteCharacter : QuoteCharacter.NONE;
+    }
+    
     @Override
     public String toString(final RouteUnit routeUnit) {
         if (Objects.nonNull(ownerName) && tableName.equals(ownerName)) {
@@ -58,22 +68,9 @@ public final class OwnerToken extends SQLToken implements Substitutable, RouteUn
         }
         return toString();
     }
-
+    
     @Override
     public String toString() {
         return Objects.isNull(ownerName) ? "" : getQuoteCharacter().wrap(ownerName) + ".";
-    }
-
-    @Override
-    public int getStopIndex() {
-        return stopIndex;
-    }
-
-    /**
-     * get QuoteCharacter.
-     * @return column QuoteCharacter
-     */
-    public QuoteCharacter getQuoteCharacter() {
-        return Objects.nonNull(quoteCharacter) ? quoteCharacter : QuoteCharacter.NONE;
     }
 }
