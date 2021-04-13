@@ -34,7 +34,7 @@ public final class PostgreSQLComTerminationPacketTest {
         byteBuf.writeInt(1);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
         PostgreSQLComTerminationPacket packet = new PostgreSQLComTerminationPacket(payload);
-        assertThat(packet.getMessageType(), is(PostgreSQLCommandPacketType.TERMINATE.getValue()));
+        assertThat(packet.getIdentifier(), is(PostgreSQLCommandPacketType.TERMINATE.getValue()));
         assertThat(byteBuf.readerIndex(), is(4));
         packet.write(payload);
         assertThat(byteBuf.writerIndex(), is(4));

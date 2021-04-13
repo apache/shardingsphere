@@ -65,7 +65,7 @@ public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket {
     }
     
     @Override
-    public char getMessageType() {
+    public char getIdentifier() {
         return PostgreSQLCommandPacketType.PARSE_COMMAND.getValue();
     }
 }

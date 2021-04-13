@@ -40,7 +40,7 @@ public final class PostgreSQLComQueryPacket extends PostgreSQLCommandPacket {
     }
     
     @Override
-    public char getMessageType() {
+    public char getIdentifier() {
         return PostgreSQLCommandPacketType.SIMPLE_QUERY.getValue();
     }
 }

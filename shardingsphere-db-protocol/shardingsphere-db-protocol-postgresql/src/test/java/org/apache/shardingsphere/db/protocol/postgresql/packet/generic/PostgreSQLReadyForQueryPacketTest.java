@@ -33,7 +33,7 @@ public final class PostgreSQLReadyForQueryPacketTest {
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(1);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
         PostgreSQLReadyForQueryPacket packet = new PostgreSQLReadyForQueryPacket();
-        assertThat(packet.getMessageType(), is(PostgreSQLCommandPacketType.READY_FOR_QUERY.getValue()));
+        assertThat(packet.getIdentifier(), is(PostgreSQLCommandPacketType.READY_FOR_QUERY.getValue()));
         packet.write(payload);
         assertThat(byteBuf.writerIndex(), is(1));
         assertThat(byteBuf.readByte(), is((byte) 'I'));

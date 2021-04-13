@@ -73,7 +73,7 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
             postgreSQLErrorResponsePacket.write(payload);
         } finally {
             if (message instanceof PostgreSQLIdentifierPacket) {
-                out.writeByte(((PostgreSQLIdentifierPacket) message).getMessageType());
+                out.writeByte(((PostgreSQLIdentifierPacket) message).getIdentifier());
                 out.writeInt(payload.getByteBuf().readableBytes() + PAYLOAD_LENGTH);
             }
             out.writeBytes(payload.getByteBuf());

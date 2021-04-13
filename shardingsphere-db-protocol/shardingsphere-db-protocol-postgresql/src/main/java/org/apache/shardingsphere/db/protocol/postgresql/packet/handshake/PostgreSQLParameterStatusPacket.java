@@ -39,7 +39,7 @@ public final class PostgreSQLParameterStatusPacket implements PostgreSQLIdentifi
     }
     
     @Override
-    public char getMessageType() {
+    public char getIdentifier() {
         return PostgreSQLCommandPacketType.PARAMETER_STATUS.getValue();
     }
 }

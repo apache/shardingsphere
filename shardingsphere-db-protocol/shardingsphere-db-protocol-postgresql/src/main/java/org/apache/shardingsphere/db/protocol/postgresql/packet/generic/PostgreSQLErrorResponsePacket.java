@@ -90,7 +90,7 @@ public final class PostgreSQLErrorResponsePacket implements PostgreSQLIdentifier
     }
     
     @Override
-    public char getMessageType() {
+    public char getIdentifier() {
         return PostgreSQLCommandPacketType.ERROR_RESPONSE.getValue();
     }
 }

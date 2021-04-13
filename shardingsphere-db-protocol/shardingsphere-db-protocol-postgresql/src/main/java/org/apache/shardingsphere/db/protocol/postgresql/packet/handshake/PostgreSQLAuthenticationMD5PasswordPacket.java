@@ -39,7 +39,7 @@ public final class PostgreSQLAuthenticationMD5PasswordPacket implements PostgreS
     }
     
     @Override
-    public char getMessageType() {
+    public char getIdentifier() {
         return PostgreSQLCommandPacketType.AUTHENTICATION_REQUEST.getValue();
     }
 }

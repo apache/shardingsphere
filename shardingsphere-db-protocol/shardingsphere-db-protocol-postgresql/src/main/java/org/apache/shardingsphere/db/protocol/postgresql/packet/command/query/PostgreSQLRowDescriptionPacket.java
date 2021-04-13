@@ -51,7 +51,7 @@ public final class PostgreSQLRowDescriptionPacket implements PostgreSQLIdentifie
     }
     
     @Override
-    public char getMessageType() {
+    public char getIdentifier() {
         return PostgreSQLCommandPacketType.ROW_DESCRIPTION.getValue();
     }
 }

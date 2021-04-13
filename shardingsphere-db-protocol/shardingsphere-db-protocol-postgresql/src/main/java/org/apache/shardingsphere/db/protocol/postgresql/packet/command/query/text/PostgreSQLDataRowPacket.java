@@ -69,7 +69,7 @@ public final class PostgreSQLDataRowPacket implements PostgreSQLIdentifierPacket
     }
     
     @Override
-    public char getMessageType() {
+    public char getIdentifier() {
         return PostgreSQLCommandPacketType.DATA_ROW.getValue();
     }
 }

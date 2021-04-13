@@ -34,7 +34,7 @@ public final class PostgreSQLReadyForQueryPacket implements PostgreSQLIdentifier
     }
     
     @Override
-    public char getMessageType() {
+    public char getIdentifier() {
         return PostgreSQLCommandPacketType.READY_FOR_QUERY.getValue();
     }
 }
