@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.identifier;
 
 /**
  * PostgreSQL identifier tag.

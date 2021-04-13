@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLIdentifierTagType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTagType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
