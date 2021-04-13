@@ -59,7 +59,7 @@ public final class OwnerTokenTest {
 
     @Test
     public void assertOwnerTokenWithNoRouteUnitAndOwnerNameIsEmpty() {
-        OwnerToken ownerToken = new OwnerToken(0, 1, "", "t_user_detail", QuoteCharacter.NONE);
+        OwnerToken ownerToken = new OwnerToken(0, 1, null, "t_user_detail", QuoteCharacter.NONE);
         assertThat(ownerToken.toString(), is(""));
         assertTokenGrid(ownerToken);
     }
