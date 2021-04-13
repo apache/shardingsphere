@@ -74,7 +74,7 @@ public final class MySQLPrivilegeHandlerTest {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSourceForUsers(users);
         TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "MySQL", new Properties()).grantAll(users, dataSource);
-        assertGrantAll(users, dataSource.getConnection().createStatement());
+        assertGrantUsersAll(users, dataSource.getConnection().createStatement());
     }
     
     @Test
@@ -215,7 +215,7 @@ public final class MySQLPrivilegeHandlerTest {
         verify(statement).execute(String.format("CREATE USER %s", createUsers));
     }
     
-    private void assertGrantAll(final Collection<ShardingSphereUser> users, final Statement statement) throws SQLException {
+    private void assertGrantUsersAll(final Collection<ShardingSphereUser> users, final Statement statement) throws SQLException {
         String grantUsers = users.stream().map(each -> String.format("'%s'@'%s'",
                 each.getGrantee().getUsername(), each.getGrantee().getHostname())).collect(Collectors.joining(", "));
         verify(statement).execute(String.format("GRANT ALL ON *.* TO %s", grantUsers));
