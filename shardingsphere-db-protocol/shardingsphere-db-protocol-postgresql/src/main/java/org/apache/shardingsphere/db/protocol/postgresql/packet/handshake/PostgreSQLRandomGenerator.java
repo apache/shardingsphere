@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
 
-import java.util.concurrent.ThreadLocalRandom;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Random generator for PostgreSQL.
@@ -41,7 +42,7 @@ public final class PostgreSQLRandomGenerator {
     /**
      * Generate random bytes.
      *
-     * @param length length for generated random bytes.
+     * @param length length for generated random bytes
      * @return generated random bytes
      */
     public byte[] generateRandomBytes(final int length) {
@@ -49,5 +50,4 @@ public final class PostgreSQLRandomGenerator {
         ThreadLocalRandom.current().nextBytes(result);
         return result;
     }
-    
 }

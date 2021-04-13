@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
-import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
@@ -29,11 +28,13 @@ public final class PostgreSQLReadyForQueryPacket implements PostgreSQLPacket {
     
     private static final char STATUS = 'I';
     
-    @Getter
-    private final char messageType = PostgreSQLCommandPacketType.READY_FOR_QUERY.getValue();
-    
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt1(STATUS);
+    }
+    
+    @Override
+    public char getMessageType() {
+        return PostgreSQLCommandPacketType.READY_FOR_QUERY.getValue();
     }
 }

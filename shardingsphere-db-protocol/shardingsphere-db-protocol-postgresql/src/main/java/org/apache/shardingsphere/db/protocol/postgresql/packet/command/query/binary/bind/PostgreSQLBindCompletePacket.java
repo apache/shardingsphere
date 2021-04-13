@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind;
 
-import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
@@ -27,10 +26,12 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  */
 public final class PostgreSQLBindCompletePacket implements PostgreSQLPacket {
     
-    @Getter
-    private final char messageType = PostgreSQLCommandPacketType.BIND_COMPLETE.getValue();
-    
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
+    }
+    
+    @Override
+    public char getMessageType() {
+        return PostgreSQLCommandPacketType.BIND_COMPLETE.getValue();
     }
 }

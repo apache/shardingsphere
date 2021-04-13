@@ -28,7 +28,7 @@ public final class PostgreSQLFloat8ArrayBinaryProtocolValue implements PostgreSQ
     
     @Override
     public int getColumnLength(final Object value) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("PostgreSQLFloat8ArrayBinaryProtocolValue.getColumnLength()");
     }
     
     @Override
@@ -41,6 +41,6 @@ public final class PostgreSQLFloat8ArrayBinaryProtocolValue implements PostgreSQ
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("PostgreSQLFloat8ArrayBinaryProtocolValue.write()");
     }
 }

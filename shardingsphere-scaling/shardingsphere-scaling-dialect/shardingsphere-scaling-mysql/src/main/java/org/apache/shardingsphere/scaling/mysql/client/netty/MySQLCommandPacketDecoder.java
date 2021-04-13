@@ -42,16 +42,16 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
     private States currentState = States.ResponsePacket;
     
-    private boolean auth;
+    private boolean authenticated;
     
     private InternalResultSet internalResultSet;
     
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
         MySQLPacketPayload payload = new MySQLPacketPayload(in);
-        if (!auth) {
+        if (!authenticated) {
             out.add(decodeHandshakePacket(payload));
-            auth = true;
+            authenticated = true;
         } else {
             decodeCommandPacket(payload, out);
         }

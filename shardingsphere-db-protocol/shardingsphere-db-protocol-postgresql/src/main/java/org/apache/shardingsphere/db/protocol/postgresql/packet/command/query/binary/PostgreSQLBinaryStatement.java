@@ -19,7 +19,6 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bi
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import java.util.List;
 
@@ -28,7 +27,6 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class PostgreSQLBinaryStatement {
     
     private final String sql;
