@@ -111,34 +111,27 @@ public final class DatabaseTypeRecognizerTest {
 
         String url;
         switch (databaseType.getName()) {
-            case "H2": {
+            case "H2":
                 url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
                 break;
-            }
-            case "MariaDB": {
+            case "MariaDB":
                 url = "jdbc:mariadb://localhost:3306/test";
                 break;
-            }
-            case "MySQL": {
+            case "MySQL":
                 url = "jdbc:mysql://localhost:3306/test";
                 break;
-            }
-            case "Oracle": {
+            case "Oracle":
                 url = "jdbc:oracle:oci:@127.0.0.1/test";
                 break;
-            }
-            case "PostgreSQL": {
+            case "PostgreSQL":
                 url = "jdbc:postgresql://localhost:5432/test";
                 break;
-            }
-            case "SQL92": {
+            case "SQL92":
                 url = "jdbc:sqlserver://127.0.0.1;DatabaseName=test";
                 break;
-            }
-            case "SQLServer": {
+            case "SQLServer":
                 url = "jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=test";
                 break;
-            }
             default:
                 throw new IllegalStateException("Unexpected value: " + databaseType.getName());
         }
