@@ -108,7 +108,6 @@ public final class DatabaseTypeRecognizerTest {
         DataSource result = mock(DataSource.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(result.getConnection()).thenReturn(connection);
-
         String url;
         switch (databaseType.getName()) {
             case "H2":
@@ -135,10 +134,7 @@ public final class DatabaseTypeRecognizerTest {
             default:
                 throw new IllegalStateException("Unexpected value: " + databaseType.getName());
         }
-
         when(connection.getMetaData().getURL()).thenReturn(url);
-
         return result;
     }
-
 }
