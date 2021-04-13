@@ -46,6 +46,7 @@ public final class GovernanceContainerCompose extends ContainerCompose {
         this.storageContainer = createStorageContainer();
         this.adapterContainer = createAdapterContainer();
         this.storageContainer.setNetworkAliases(Collections.singletonList("mysql.sharding-governance.host"));
+        // TODO support other types of governance
         ZookeeperContainer zookeeperContainer = createZookeeperContainer();
         if ("proxy".equals(parameterizedArray.getAdapter())) {
             adapterContainerForReader = createContainer(() -> new ShardingSphereProxyContainer("ShardingSphere-Proxy-1", parameterizedArray), "ShardingSphere-Proxy-1");

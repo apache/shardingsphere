@@ -15,12 +15,14 @@
   ~ limitations under the License.
   -->
 
-<dataset>
+<dataset update-count="2">
     <metadata data-nodes="governance_db.t_order">
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />
         <column name="status" type="varchar" />
     </metadata>
+    <row data-node="governance_db.t_order" values="1, 1, insert" />
+    <row data-node="governance_db.t_order" values="2, 2, insert2" />
     <row data-node="governance_db.t_order" values="1000, 10, init" />
     <row data-node="governance_db.t_order" values="1001, 10, init" />
     <row data-node="governance_db.t_order" values="1002, 10, init" />

@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<dataset>
+<dataset update-count="1">
     <metadata data-nodes="governance_db.t_order">
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />
