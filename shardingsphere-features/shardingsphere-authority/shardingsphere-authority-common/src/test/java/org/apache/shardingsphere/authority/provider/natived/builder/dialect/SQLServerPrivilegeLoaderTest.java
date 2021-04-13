@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.loader.storage.impl.dialect;
+package org.apache.shardingsphere.authority.provider.natived.builder.dialect;
 
-import org.apache.shardingsphere.authority.loader.storage.impl.StoragePrivilegeLoader;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
-import org.apache.shardingsphere.authority.model.database.SchemaPrivileges;
+import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeLoader;
+import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
+import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.SchemaPrivileges;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
@@ -61,14 +62,14 @@ public final class SQLServerPrivilegeLoaderTest {
         assertPrivileges(TypedSPIRegistry.getRegisteredService(StoragePrivilegeLoader.class, "SQLServer", new Properties()).load(users, dataSource));
     }
 
-    private void assertPrivileges(final Map<ShardingSphereUser, ShardingSpherePrivileges> actual) {
+    private void assertPrivileges(final Map<ShardingSphereUser, NativePrivileges> actual) {
         assertThat(actual.size(), is(1));
         ShardingSphereUser user = new ShardingSphereUser("dbo", "", "");
         assertThat(actual.get(user).getDatabasePrivileges().getGlobalPrivileges().size(), is(0));
         assertThat(actual.get(user).getDatabasePrivileges().getSpecificPrivileges().size(), is(1));
         Collection<PrivilegeType> expectedSpecificPrivilege = new CopyOnWriteArraySet(Arrays.asList(PrivilegeType.INSERT, PrivilegeType.SELECT, PrivilegeType.UPDATE,
                 PrivilegeType.DELETE));
-        SchemaPrivileges schemaPrivileges = actual.get(user).getDatabasePrivileges().getSpecificPrivileges().get("db0");
+        SchemaPrivileges schemaPrivileges = actual.get(user).getDatabasePrivileges().getSpecificPrivileges().get("t_order");
         assertThat(schemaPrivileges.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege), is(true));
 
         assertThat(actual.get(user).getAdministrativePrivileges().getPrivileges().size(), is(1));
@@ -83,16 +84,34 @@ public final class SQLServerPrivilegeLoaderTest {
     }
 
     private DataSource mockDataSource(final Collection<ShardingSphereUser> users) throws SQLException {
-        ResultSet tablePrivilegeResultSet = mockTablePrivilegeResultSet();
+        ResultSet globalPrivilegeResultSet = mockGlobalPrivilegeResultSet();
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
-        String tablePrivilegeSql = "SELECT GRANTOR, GRANTEE, TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, PRIVILEGE_TYPE, IS_GRANTABLE from INFORMATION_SCHEMA.TABLE_PRIVILEGES WHERE GRANTEE IN (%s)";
         String userList = users.stream().map(item -> String.format("'%s'", item.getGrantee().getUsername())).collect(Collectors.joining(", "));
-        when(result.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSql, userList))).thenReturn(tablePrivilegeResultSet);
+
+        String globalPrivilegeSql = "SELECT pr.name AS GRANTEE, pe.state_desc AS STATE, pe.permission_name AS PRIVILEGE_TYPE"
+                + "FROM sys.server_principals AS pr JOIN sys.server_permissions AS pe"
+                + "ON pe.grantee_principal_id = pr.principal_id WHERE pr.name IN (%s) GROUP BY pr.name, pe.state_desc, pe.permission_name";
+        when(result.getConnection().createStatement().executeQuery(String.format(globalPrivilegeSql, userList))).thenReturn(globalPrivilegeResultSet);
+
         ResultSet schemaPrivilegeResultSet = mockSchemaPrivilegeResultSet();
-        String schemaPrivilegeSql = "SELECT pr.name AS GRANTEE, pe.state_desc AS STATE, pe.permission_name AS PRIVILEGE_TYPE "
-                + "FROM sys.database_principals AS pr JOIN sys.database_permissions AS pe "
-                + "ON pe.grantee_principal_id = pr.principal_id WHERE pr.name IN (%s)";
+        String schemaPrivilegeSql = "SELECT pr.name AS GRANTEE, pe.state_desc AS STATE, pe.permission_name AS PRIVILEGE_TYPE, o.name AS DB"
+                + "FROM sys.database_principals AS pr JOIN sys.database_permissions AS pe"
+                + "ON pe.grantee_principal_id = pr.principal_id JOIN sys.objects AS o"
+                + "ON pe.major_id = o.object_id WHERE pr.name IN (%s) GROUP BY pr.name, pe.state_desc, pe.permission_name, o.name";
         when(result.getConnection().createStatement().executeQuery(String.format(schemaPrivilegeSql, userList))).thenReturn(schemaPrivilegeResultSet);
+
+        ResultSet tablePrivilegeResultSet = mockTablePrivilegeResultSet();
+        String tablePrivilegeSql = "SELECT GRANTOR, GRANTEE, TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, PRIVILEGE_TYPE, IS_GRANTABLE from INFORMATION_SCHEMA.TABLE_PRIVILEGES WHERE GRANTEE IN (%s)";
+        when(result.getConnection().createStatement().executeQuery(String.format(tablePrivilegeSql, userList))).thenReturn(tablePrivilegeResultSet);
+        return result;
+    }
+
+    private ResultSet mockGlobalPrivilegeResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("STATE")).thenReturn("GRANT");
+        when(result.getString("GRANTEE")).thenReturn("dbo");
+        when(result.getString("PRIVILEGE_TYPE")).thenReturn("CONNECT");
         return result;
     }
 
@@ -113,6 +132,7 @@ public final class SQLServerPrivilegeLoaderTest {
         when(result.getString("STATE")).thenReturn("GRANT");
         when(result.getString("GRANTEE")).thenReturn("dbo");
         when(result.getString("PRIVILEGE_TYPE")).thenReturn("CONNECT");
+        when(result.getString("DB")).thenReturn("t_order");
         return result;
     }
 }

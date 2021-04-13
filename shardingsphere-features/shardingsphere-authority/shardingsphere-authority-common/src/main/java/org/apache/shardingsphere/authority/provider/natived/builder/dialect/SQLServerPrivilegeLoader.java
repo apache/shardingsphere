@@ -45,10 +45,16 @@ import java.util.stream.Collectors;
  */
 public final class SQLServerPrivilegeLoader implements StoragePrivilegeLoader {
 
+    private static final String GLOBAL_PRIVILEGE_SQL =
+            "SELECT pr.name AS GRANTEE, pe.state_desc AS STATE, pe.permission_name AS PRIVILEGE_TYPE"
+                    + "FROM sys.server_principals AS pr JOIN sys.server_permissions AS pe"
+                    + "ON pe.grantee_principal_id = pr.principal_id WHERE pr.name IN (%s) GROUP BY pr.name, pe.state_desc, pe.permission_name";
+
     private static final String SCHEMA_PRIVILEGE_SQL =
-            "SELECT pr.name AS GRANTEE, pe.state_desc AS STATE, pe.permission_name AS PRIVILEGE_TYPE "
-                    + "FROM sys.database_principals AS pr JOIN sys.database_permissions AS pe "
-                    + "ON pe.grantee_principal_id = pr.principal_id WHERE pr.name IN (%s)";
+            "SELECT pr.name AS GRANTEE, pe.state_desc AS STATE, pe.permission_name AS PRIVILEGE_TYPE, o.name AS DB"
+                    + "FROM sys.database_principals AS pr JOIN sys.database_permissions AS pe"
+                    + "ON pe.grantee_principal_id = pr.principal_id JOIN sys.objects AS o"
+                    + "ON pe.major_id = o.object_id WHERE pr.name IN (%s) GROUP BY pr.name, pe.state_desc, pe.permission_name, o.name";
 
     private static final String TABLE_PRIVILEGE_SQL =
             "SELECT GRANTOR, GRANTEE, TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, PRIVILEGE_TYPE, IS_GRANTABLE from INFORMATION_SCHEMA.TABLE_PRIVILEGES WHERE GRANTEE IN (%s)";
@@ -57,9 +63,29 @@ public final class SQLServerPrivilegeLoader implements StoragePrivilegeLoader {
     public Map<ShardingSphereUser, NativePrivileges> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
         Map<ShardingSphereUser, NativePrivileges> result = new LinkedHashMap<>();
         users.forEach(user -> result.put(user, new NativePrivileges()));
+        fillGlobalPrivileges(result, dataSource, users);
         fillSchemaPrivileges(result, dataSource, users);
         fillTablePrivileges(result, dataSource, users);
         return result;
+    }
+
+    private void fillGlobalPrivileges(final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap,
+                                      final DataSource dataSource, final Collection<ShardingSphereUser> users) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            Statement statement = connection.createStatement();
+            try (ResultSet resultSet = statement.executeQuery(getGlobalPrivilegesSQL(users))) {
+                while (resultSet.next()) {
+                    fillGlobalPrivileges(userPrivilegeMap, resultSet);
+                }
+            }
+        }
+    }
+
+    private void fillGlobalPrivileges(final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap, final ResultSet resultSet) throws SQLException {
+        Optional<ShardingSphereUser> user = findShardingSphereUser(userPrivilegeMap, resultSet);
+        if (user.isPresent()) {
+            userPrivilegeMap.get(user.get()).getAdministrativePrivileges().getPrivileges().addAll(loadPrivileges(resultSet));
+        }
     }
 
     private void fillSchemaPrivileges(final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap,
@@ -77,7 +103,10 @@ public final class SQLServerPrivilegeLoader implements StoragePrivilegeLoader {
     private void fillSchemaPrivileges(final Map<ShardingSphereUser, NativePrivileges> userPrivilegeMap, final ResultSet resultSet) throws SQLException {
         Optional<ShardingSphereUser> user = findShardingSphereUser(userPrivilegeMap, resultSet);
         if (user.isPresent()) {
-            userPrivilegeMap.get(user.get()).getAdministrativePrivileges().getPrivileges().addAll(loadSchemaPrivileges(resultSet));
+            String db = resultSet.getString("DB");
+            SchemaPrivileges schemaPrivileges = new SchemaPrivileges(db);
+            schemaPrivileges.getGlobalPrivileges().addAll(loadPrivileges(resultSet));
+            userPrivilegeMap.get(user.get()).getDatabasePrivileges().getSpecificPrivileges().put(db, schemaPrivileges);
         }
     }
 
@@ -131,12 +160,9 @@ public final class SQLServerPrivilegeLoader implements StoragePrivilegeLoader {
         return privileges.keySet().stream().filter(each -> each.getGrantee().equals(grantee)).findFirst();
     }
 
-    private Collection<PrivilegeType> loadSchemaPrivileges(final ResultSet resultSet) throws SQLException {
-        Collection<PrivilegeType> result = new LinkedList<>();
-        if ("GRANT".equals(resultSet.getString("STATE"))) {
-            result.add(getPrivilegeType(resultSet.getString("PRIVILEGE_TYPE")));
-        }
-        return result;
+    private String getGlobalPrivilegesSQL(final Collection<ShardingSphereUser> users) {
+        String userHostTuples = users.stream().map(each -> String.format("'%s'", each.getGrantee().getUsername())).collect(Collectors.joining(","));
+        return String.format(GLOBAL_PRIVILEGE_SQL, userHostTuples);
     }
 
     private String getSchemaPrivilegesSQL(final Collection<ShardingSphereUser> users) {
@@ -184,9 +210,85 @@ public final class SQLServerPrivilegeLoader implements StoragePrivilegeLoader {
                 return PrivilegeType.CREATE_RULE;
             case "CONNECT":
                 return PrivilegeType.CONNECT;
+            case "ADMINISTER BULK OPERATIONS":
+                return PrivilegeType.ADMINISTER_BULK_OPERATIONS;
+            case "ALTER ANY AVAILABILITY GROUP":
+                return PrivilegeType.ALTER_ANY_AVAILABILITY_GROUP;
+            case "ALTER ANY CONNECTION":
+                return PrivilegeType.ALTER_ANY_CONNECTION;
+            case "ALTER ANY CREDENTIAL":
+                return PrivilegeType.ALTER_ANY_CREDENTIAL;
+            case "ALTER ANY DATABASE":
+                return PrivilegeType.ALTER_ANY_DATABASE;
+            case "ALTER ANY ENDPOINT":
+                return PrivilegeType.ALTER_ANY_ENDPOINT;
+            case "ALTER ANY EVENT SESSION":
+                return PrivilegeType.ALTER_ANY_EVENT_SESSION;
+            case "ALTER ANY EVENT NOTIFICATION":
+                return PrivilegeType.ALTER_ANY_EVENT_NOTIFICATION;
+            case "ALTER ANY LINKED SERVER":
+                return PrivilegeType.ALTER_ANY_LINKED_SERVER;
+            case "ALTER ANY LOGIN":
+                return PrivilegeType.ALTER_ANY_LOGIN;
+            case "ALTER ANY SERVER AUDIT":
+                return PrivilegeType.ALTER_ANY_SERVER_AUDIT;
+            case "ALTER ANY SERVER ROLE":
+                return PrivilegeType.ALTER_ANY_SERVER_ROLE;
+            case "ALTER RESOURCES":
+                return PrivilegeType.ALTER_RESOURCES;
+            case "ALTER SERVER STATE":
+                return PrivilegeType.ALTER_SERVER_STATE;
+            case "ALTER SETTINGS":
+                return PrivilegeType.ALTER_SETTINGS;
+            case "ALTER TRACE":
+                return PrivilegeType.ALTER_TRACE;
+            case "AUTHENTICATE SERVER":
+                return PrivilegeType.AUTHENTICATE_SERVER;
+            case "CONNECT ANY DATABASE":
+                return PrivilegeType.CONNECT_ANY_DATABASE;
+            case "CONNECT SQL":
+                return PrivilegeType.CONNECT_SQL;
+            case "CONTROL SERVER":
+                return PrivilegeType.CONTROL_SERVER;
+            case "CREATE ANY DATABASE":
+                return PrivilegeType.CREATE_ANY_DATABASE;
+            case "CREATE AVAILABILITY GROUP":
+                return PrivilegeType.CREATE_AVAILABILITY_GROUP;
+            case "CREATE DDL EVENT NOTIFICATION":
+                return PrivilegeType.CREATE_DDL_EVENT_NOTIFICATION;
+            case "CREATE ENDPOINT":
+                return PrivilegeType.CREATE_ENDPOINT;
+            case "CREATE SERVER ROLE":
+                return PrivilegeType.CREATE_SERVER_ROLE;
+            case "CREATE TRACE EVENT NOTIFICATION ":
+                return PrivilegeType.CREATE_TRACE_EVENT_NOTIFICATION;
+            case "EXTERNAL ACCESS ASSEMBLY":
+                return PrivilegeType.EXTERNAL_ACCESS_ASSEMBLY;
+            case "IMPERSONATE ANY LOGIN":
+                return PrivilegeType.IMPERSONATE_ANY_LOGIN;
+            case "SELECT ALL USER SECURABLES":
+                return PrivilegeType.SELECT_ALL_USER_SECURABLES;
+            case "SHUTDOWN":
+                return PrivilegeType.SHUTDOWN;
+            case "UNSAFE ASSEMBLY":
+                return PrivilegeType.UNSAFE_ASSEMBLY;
+            case "VIEW ANY DATABASE":
+                return PrivilegeType.VIEW_ANY_DATABASE;
+            case "VIEW ANY DEFINITION":
+                return PrivilegeType.VIEW_ANY_DEFINITION;
+            case "VIEW SERVER STATE ":
+                return PrivilegeType.VIEW_SERVER_STATE;
             default:
                 throw new UnsupportedOperationException(privilege);
         }
+    }
+
+    private Collection<PrivilegeType> loadPrivileges(final ResultSet resultSet) throws SQLException {
+        Collection<PrivilegeType> result = new LinkedList<>();
+        if ("GRANT".equals(resultSet.getString("STATE"))) {
+            result.add(getPrivilegeType(resultSet.getString("PRIVILEGE_TYPE")));
+        }
+        return result;
     }
 
     @Override
