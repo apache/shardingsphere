@@ -66,10 +66,10 @@ public final class SQLServerPrivilegeLoaderTest {
         assertThat(actual.size(), is(1));
         ShardingSphereUser user = new ShardingSphereUser("dbo", "", "");
         assertThat(actual.get(user).getDatabasePrivileges().getGlobalPrivileges().size(), is(0));
-        assertThat(actual.get(user).getDatabasePrivileges().getSpecificPrivileges().size(), is(1));
+        assertThat(actual.get(user).getDatabasePrivileges().getSpecificPrivileges().size(), is(2));
         Collection<PrivilegeType> expectedSpecificPrivilege = new CopyOnWriteArraySet(Arrays.asList(PrivilegeType.INSERT, PrivilegeType.SELECT, PrivilegeType.UPDATE,
                 PrivilegeType.DELETE));
-        SchemaPrivileges schemaPrivileges = actual.get(user).getDatabasePrivileges().getSpecificPrivileges().get("t_order");
+        SchemaPrivileges schemaPrivileges = actual.get(user).getDatabasePrivileges().getSpecificPrivileges().get("db0");
         assertThat(schemaPrivileges.getSpecificPrivileges().get("t_order").hasPrivileges(expectedSpecificPrivilege), is(true));
 
         assertThat(actual.get(user).getAdministrativePrivileges().getPrivileges().size(), is(1));
