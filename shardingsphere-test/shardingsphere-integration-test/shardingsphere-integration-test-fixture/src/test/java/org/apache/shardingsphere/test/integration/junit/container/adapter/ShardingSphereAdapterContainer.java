@@ -21,7 +21,7 @@ import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfigurationConverter;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.config.yaml.YamlProxyServerConfiguration;
 import org.apache.shardingsphere.test.integration.junit.container.ShardingSphereContainer;
@@ -53,7 +53,7 @@ public abstract class ShardingSphereAdapterContainer extends ShardingSphereConta
                 ByteStreams.toByteArray(this.getClass().getResourceAsStream("/docker/" + parameterizedArray.getScenario() + "/proxy/conf/server.yaml")),
                 YamlProxyServerConfiguration.class
         );
-        return YamlUserConfigurationConverter.convertYamlUserConfiguration(configuration.getUsers())
+        return YamlUsersConfigurationConverter.convertYamlUserConfiguration(configuration.getUsers())
                 .stream()
                 .filter(each -> "root".equals(each.getUsername()))
                 .findFirst()
