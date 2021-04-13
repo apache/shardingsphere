@@ -72,41 +72,41 @@ createDefinitionClause
     ;
 
 createXMLTypeTableClause
-    : OF XMLTYPE
+    : OF? XMLTYPE
       (LP_ (objectProperties) RP_)?
-      (XMLTYPE XMLTypeStorageClause)?
-      (XMLSchemaSpecClause)?
-      (XMLTypeVirtualColumnsClause)?
+      (XMLTYPE xmlTypeStorageClause)?
+      (xmlSchemaSpecClause)?
+      (xmlTypeVirtualColumnsClause)?
       (ON COMMIT (DELETE | PRESERVE) ROWS)?
-      (OIDClause)?
-      (OIDIndexClause)?
+      (oidClause)?
+      (oidIndexClause)?
       (physicalProperties)?
       (tableProperties)?
     ;
 
-XMLTypeStorageClause
+xmlTypeStorageClause
     : STORE
       (AS ( OBJECT RELATIONAL | ((SECUREFILE | BASICFILE)? (CLOB | BINARY XML) (lobSegname (LP_ lobParameters RP_)? | (LP_ lobParameters RP_))?)))
       | (ALL VARRAYS AS (LOBS | TABLES ))
     ;
 
-XMLSchemaSpecClause
+xmlSchemaSpecClause
     : (XMLSCHEMA xmlSchemaURLName)? ELEMENT (elementName | xmlSchemaURLName POUND_ elementName)? 
       (STORE ALL VARRAYS AS (LOBS | TABLES))? 
       ((ALLOW | DISALLOW) NONSCHEMA)?
       ((ALLOW | DISALLOW) ANYSCHEMA)?
     ;
 
-XMLTypeVirtualColumnsClause
+xmlTypeVirtualColumnsClause
     : VIRTUAL COLUMNS LP_ (columnName AS LP_ expr RP_ (COMMA_ columnName AS LP_ expr RP_)+) RP_
     ;
 
-OIDClause
+oidClause
     : OBJECT IDENTIFIER IS (SYSTEM GENERATED | PRIMARY KEY)
     ;
 
-OIDIndexClause
-    : OIDINDEX (indexName)? LP_ (physicalAttributesClause | TABLESPACE tablespaceName)+ RP_
+oidIndexClause
+    : OIDINDEX indexName? LP_ (physicalAttributesClause | TABLESPACE tablespaceName)+ RP_
     ;
 
 createRelationalTableClause
@@ -502,7 +502,7 @@ segmentAttributesClause
     ;
 
 physicalAttributesClause
-    : (PCTFREE NUMBER_ | PCTUSED NUMBER_ | INITRANS NUMBER_ | storageClause)*
+    : (PCTFREE NUMBER_ | PCTUSED NUMBER_ | INITRANS NUMBER_ | storageClause)+
     ;
 
 loggingClause

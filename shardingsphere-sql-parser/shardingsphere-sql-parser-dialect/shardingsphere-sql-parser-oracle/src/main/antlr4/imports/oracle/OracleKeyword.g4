@@ -1398,3 +1398,7 @@ XMLSCHEMA
 COLUMNS
     : C O L U M N S
     ;
+
+OIDINDEX
+    : O I D I N D E X
+    ;

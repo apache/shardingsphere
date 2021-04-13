@@ -1139,15 +1139,25 @@
     </create-table>
     
     <create-table sql-case-id="create_table_with_xmltype_table_oracle">
-        <table name="xwarehouses" start-index="15" stop-index="26" />
+        <table name="xwarehouses" start-index="13" stop-index="23" />
     </create-table>
 
     <create-table sql-case-id="create_table_with_xmltype_column_oracle">
-        <table name="xwarehouses" start-index="15" stop-index="26" />
-        <column-definition type="NUMBER" start-index="28" stop-index="40">
+        <table name="xwarehouses" start-index="13" stop-index="23" />
+        <column-definition type="NUMBER" start-index="26" stop-index="44">
             <column name="warehouse_id" />
         </column-definition>
-        <column-definition type="XMLTYPE" start-index="49" stop-index="63">
+        <column-definition type="XMLTYPE" start-index="47" stop-index="68">
+            <column name="warehouse_spec" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_xmltype_column_clob_oracle">
+        <table name="xwarehouses" start-index="13" stop-index="23" />
+        <column-definition type="NUMBER" start-index="26" stop-index="44">
+            <column name="warehouse_id" />
+        </column-definition>
+        <column-definition type="XMLTYPE" start-index="47" stop-index="68">
             <column name="warehouse_spec" />
         </column-definition>
     </create-table>
