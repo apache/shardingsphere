@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ public final class PostgreSQLCommandCompletePacketTest {
         int expectedStringLength = expectedString.length();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufTestUtils.createByteBuf(expectedStringLength + 1));
         PostgreSQLCommandCompletePacket packet = new PostgreSQLCommandCompletePacket(sqlCommand, rowCount);
-        assertThat(packet.getIdentifier(), is(PostgreSQLCommandPacketType.COMMAND_COMPLETE.getValue()));
+        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.COMMAND_COMPLETE.getValue()));
         packet.write(payload);
         assertThat(payload.readStringNul(), is(expectedString));
     }
@@ -48,7 +48,7 @@ public final class PostgreSQLCommandCompletePacketTest {
         int expectedStringLength = expectedString.length();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufTestUtils.createByteBuf(expectedStringLength + 1));
         PostgreSQLCommandCompletePacket packet = new PostgreSQLCommandCompletePacket(sqlCommand, rowCount);
-        assertThat(packet.getIdentifier(), is(PostgreSQLCommandPacketType.COMMAND_COMPLETE.getValue()));
+        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.COMMAND_COMPLETE.getValue()));
         packet.write(payload);
         assertThat(payload.readStringNul(), is(expectedString));
     }

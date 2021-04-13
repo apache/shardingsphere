@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
 import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.ByteBufTestUtils;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
@@ -38,7 +38,7 @@ public final class PostgreSQLPasswordMessagePacketTest {
         payload.writeInt4(expectedLength);
         payload.writeStringNul(md5Digest);
         PostgreSQLPasswordMessagePacket packet = new PostgreSQLPasswordMessagePacket(payload);
-        assertThat(packet.getIdentifier(), is(PostgreSQLCommandPacketType.PASSWORD_MESSAGE.getValue()));
+        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.PASSWORD_MESSAGE.getValue()));
         assertThat(packet.getMd5Digest(), is(md5Digest));
         packet.write(payload);
         assertThat(byteBuf.writerIndex(), is(expectedLength));

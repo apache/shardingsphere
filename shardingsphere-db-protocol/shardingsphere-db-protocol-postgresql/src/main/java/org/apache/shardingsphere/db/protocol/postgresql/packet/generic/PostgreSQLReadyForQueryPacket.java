@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLIdentifierPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
@@ -35,6 +35,6 @@ public final class PostgreSQLReadyForQueryPacket implements PostgreSQLIdentifier
     
     @Override
     public char getIdentifier() {
-        return PostgreSQLCommandPacketType.READY_FOR_QUERY.getValue();
+        return PostgreSQLMessagePacketType.READY_FOR_QUERY.getValue();
     }
 }

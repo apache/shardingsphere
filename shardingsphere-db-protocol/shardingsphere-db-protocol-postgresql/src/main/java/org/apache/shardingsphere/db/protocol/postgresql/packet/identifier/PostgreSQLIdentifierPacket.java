@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.identifier;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
-import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 
 /**
- * Parse complete packet for PostgreSQL.
+ * Identifier packet for PostgreSQL.
  */
-public final class PostgreSQLParseCompletePacket implements PostgreSQLIdentifierPacket {
+public interface PostgreSQLIdentifierPacket extends PostgreSQLPacket {
     
-    @Override
-    public void write(final PostgreSQLPacketPayload payload) {
-    }
-    
-    @Override
-    public char getIdentifier() {
-        return PostgreSQLMessagePacketType.PARSE_COMPLETE.getValue();
-    }
+    /**
+     * Get identifier.
+     *
+     * @return identifier
+     */
+    char getIdentifier();
 }

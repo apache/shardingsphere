@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.identifier;
 
 /**
- * Identifier packet for PostgreSQL.
+ * PostgreSQL identifier tag.
  */
-public interface PostgreSQLIdentifierPacket extends PostgreSQLPacket {
+public interface PostgreSQLIdentifierTag {
     
     /**
-     * Get identifier.
-     *
-     * @return identifier
+     * Get identifier tag value.
+     * 
+     * @return identifier tag value
      */
-    char getIdentifier();
+    char getValue();
 }

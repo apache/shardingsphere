@@ -20,8 +20,8 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bi
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLIdentifierPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
@@ -51,6 +51,6 @@ public final class PostgreSQLBinaryResultSetRowPacket implements PostgreSQLIdent
     
     @Override
     public char getIdentifier() {
-        return PostgreSQLCommandPacketType.DATA_ROW.getValue();
+        return PostgreSQLMessagePacketType.DATA_ROW.getValue();
     }
 }

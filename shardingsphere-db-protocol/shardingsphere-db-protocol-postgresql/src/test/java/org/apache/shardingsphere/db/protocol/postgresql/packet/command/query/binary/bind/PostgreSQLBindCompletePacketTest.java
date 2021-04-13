@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind;
 
 import io.netty.buffer.ByteBuf;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,6 +47,6 @@ public final class PostgreSQLBindCompletePacketTest {
     @Test
     public void assertGetMessageType() {
         PostgreSQLBindCompletePacket rowPacket = new PostgreSQLBindCompletePacket();
-        assertThat(rowPacket.getIdentifier(), is(PostgreSQLCommandPacketType.BIND_COMPLETE.getValue()));
+        assertThat(rowPacket.getIdentifier(), is(PostgreSQLMessagePacketType.BIND_COMPLETE.getValue()));
     }
 }

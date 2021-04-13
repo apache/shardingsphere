@@ -20,7 +20,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.bi
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.db.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLBinaryColumnType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,6 +67,6 @@ public final class PostgreSQLBinaryResultSetRowPacketTest {
     @Test
     public void assertGetMessageType() {
         PostgreSQLBinaryResultSetRowPacket rowPacket = new PostgreSQLBinaryResultSetRowPacket(mock(BinaryRow.class));
-        assertThat(rowPacket.getIdentifier(), is(PostgreSQLCommandPacketType.DATA_ROW.getValue()));
+        assertThat(rowPacket.getIdentifier(), is(PostgreSQLMessagePacketType.DATA_ROW.getValue()));
     }
 }

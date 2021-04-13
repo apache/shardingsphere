@@ -30,8 +30,8 @@ public final class PostgreSQLCommandPacketTypeLoaderTest {
     @Test
     public void assertGetCommandPacketType() {
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
-        when(payload.readInt1()).thenReturn((int) PostgreSQLCommandPacketType.AUTHENTICATION_REQUEST.getValue());
-        assertThat(PostgreSQLCommandPacketTypeLoader.getCommandPacketType(payload), is(PostgreSQLCommandPacketType.AUTHENTICATION_REQUEST));
+        when(payload.readInt1()).thenReturn((int) PostgreSQLCommandPacketType.SIMPLE_QUERY.getValue());
+        assertThat(PostgreSQLCommandPacketTypeLoader.getCommandPacketType(payload), is(PostgreSQLCommandPacketType.SIMPLE_QUERY));
     }
     
     @Test(expected = IllegalArgumentException.class)

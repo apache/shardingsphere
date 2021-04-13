@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 
 import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 
 /**
  * Command packet for PostgreSQL.
