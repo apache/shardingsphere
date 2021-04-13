@@ -33,13 +33,9 @@
 #      operationTimeoutMilliseconds: 500
 #  overwrite: false
 #
-#authentication:
-#  users:
-#    root:
-#      password: root
-#      hostname: '%'
-#    sharding:
-#      password: sharding
+#users:
+#  - root@%:root
+#  - sharding@:sharding
 #
 #scaling:
 #  blockQueueSize: 10000
@@ -60,3 +56,8 @@
 #  sql-show: false
 #  check-table-metadata-enabled: false
 #  lock-wait-timeout-milliseconds: 50000 # The maximum time to wait for a lock
+#
+#rules:
+#  - !AUTHORITY
+#    provider:
+#      type: NATIVE

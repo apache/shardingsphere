@@ -29,7 +29,11 @@ chapter = true
 
 | *已知实现类*                   | *详细说明*                   |
 | ----------------------------- | --------------------------- |
-| MySQLTableMetaDataLoader      | 使用 MySQL 方言加载元数据     |
+| MySQLTableMetaDataLoader      | 使用 MySQL 方言加载元数据      |
+| OracleTableMetaDataLoader     | 使用 Oracle 方言加载元数据     |
+| PostgreSQLTableMetaDataLoader | 使用 PostgreSQL 方言加载元数据 |
+| SQLServerTableMetaDataLoader  | 使用 SQLServer 方言加载元数据  |
+| H2TableMetaDataLoader         | 使用 H2 方言加载元数据         |
 
 ## SQLRouter
 
@@ -76,3 +80,15 @@ chapter = true
 | ---------------------------- | ------------------- |
 | ShardingResultMergerEngine   | 用于处理分片结果集归并 |
 | EncryptResultDecoratorEngine | 用于处理加密结果集改写 |
+
+## StoragePrivilegeLoader
+
+| *SPI 名称*                 | *详细说明*                     |
+| ------------------------- | ----------------------------- |
+| StoragePrivilegeLoader    | 用于使用数据库方言加载权限信息    |
+
+| *已知实现类*                | *详细说明*                     |
+| ------------------------- | ----------------------------- |
+| MySQLPrivilegeLoader      | 使用 MySQL 方言加载权限信息      |
+| OraclePrivilegeLoader     | 使用 Oracle 方言加载权限信息     |
+| PostgreSQLPrivilegeLoader | 使用 PostgreSQL 方言加载权限信息 |

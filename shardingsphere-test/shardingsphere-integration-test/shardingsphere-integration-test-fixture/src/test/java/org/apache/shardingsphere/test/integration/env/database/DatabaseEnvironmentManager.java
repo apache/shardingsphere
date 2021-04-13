@@ -19,24 +19,15 @@ package org.apache.shardingsphere.test.integration.env.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.test.integration.env.EnvironmentPath;
-import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.env.database.initialization.DatabaseSQLInitialization;
-import org.h2.tools.RunScript;
 
-import javax.sql.DataSource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Properties;
 
 /**
  * Database environment manager.
@@ -50,7 +41,7 @@ public final class DatabaseEnvironmentManager {
     
     /**
      * Get database names.
-     * 
+     *
      * @param scenario scenario
      * @return database names
      * @throws IOException IO exception
@@ -66,40 +57,4 @@ public final class DatabaseEnvironmentManager {
         }
     }
     
-    /**
-     * Execute init SQLs.
-     * 
-     * @throws IOException IO exception
-     * @throws JAXBException JAXB exception
-     * @throws SQLException SQL exception
-     */
-    public static void executeInitSQLs() throws IOException, JAXBException, SQLException {
-        for (String each : IntegrationTestEnvironment.getInstance().getScenarios()) {
-            executeInitSQLs(each);
-        }
-    }
-    
-    private static void executeInitSQLs(final String scenario) throws IOException, JAXBException, SQLException {
-        for (DatabaseType each : IntegrationTestEnvironment.getInstance().getDataSourceEnvironments().keySet()) {
-            DatabaseSQLInitialization databaseSQLInitialization = TypedSPIRegistry.getRegisteredService(DatabaseSQLInitialization.class, each.getName(), new Properties());
-            databaseSQLInitialization.executeInitSQLs(scenario, each);
-        }
-    }
-    
-    /**
-     * Execute SQL script.
-     *
-     * @param dataSource data source
-     * @param file script file
-     *
-     * @throws SQLException SQL exception
-     * @throws IOException IO exception
-     */
-    public static void executeSQLScript(final DataSource dataSource, final File file) throws SQLException, IOException {
-        try (Connection connection = dataSource.getConnection();
-             FileReader reader = new FileReader(file)) {
-            // TODO If you don't use H2 in the future, you need to implement this method.
-            RunScript.execute(connection, reader);
-        }
-    }
 }

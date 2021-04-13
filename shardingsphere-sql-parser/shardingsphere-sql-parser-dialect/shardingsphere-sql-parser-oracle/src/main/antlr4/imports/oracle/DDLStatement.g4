@@ -278,7 +278,7 @@ tableAlias
     ;
 
 alterDefinitionClause
-    : (alterTableProperties | columnClauses | constraintClauses | alterExternalTable)?
+    : (alterTableProperties | columnClauses | constraintClauses | alterExternalTable | alterTablePartition)?
     ;
 
 alterTableProperties
@@ -952,4 +952,36 @@ rowMovementClause
 
 flashbackArchiveClause
     : FLASHBACK ARCHIVE flashbackArchiveName? | NO FLASHBACK ARCHIVE
+    ;
+
+alterSynonym
+    : ALTER PUBLIC? SYNONYM (schemaName DOT_)? synonymName (COMPILE | EDITIONABLE | NONEDITIONABLE)
+    ;
+
+alterTablePartition
+    : addTablePartition | dropTablePartition
+    ;
+
+addTablePartition
+    : ADD (addRangePartitionClause | addListPartitionClause)
+    ;
+
+addRangePartitionClause
+    : PARTITION partitionName? rangeValuesClause tablePartitionDescription
+    ((LP_? rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)* | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)* RP_?)
+        | hashSubpartitionQuantity)?
+    ;
+
+addListPartitionClause
+    : PARTITION partitionName? listValuesClause tablePartitionDescription
+    ((LP_? rangeSubpartitionDesc (COMMA_ rangeSubpartitionDesc)* | listSubpartitionDesc (COMMA_ listSubpartitionDesc)* | individualHashSubparts (COMMA_ individualHashSubparts)* RP_?)
+    | hashSubpartitionQuantity)?
+    ;
+
+dropTablePartition
+    : DROP partitionExtendedNames
+    ;
+
+partitionExtendedNames
+    : (PARTITION | PARTITIONS) partition
     ;

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.datasource.metadata;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.adapter.AdaptedDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
@@ -128,7 +129,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     @Override
     public ResultSet getColumnPrivileges(final String catalog, final String schema, final String table, final String columnNamePattern) throws SQLException {
         return createDatabaseMetaDataResultSet(
-            getDatabaseMetaData().getColumnPrivileges(getActualCatalog(catalog), getActualSchema(schema), getActualTable(table), columnNamePattern));
+            getDatabaseMetaData().getColumnPrivileges(getActualCatalog(catalog), getActualSchema(schema), getActualTable(catalog, table), columnNamePattern));
     }
     
     @Override
@@ -138,27 +139,27 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     @Override
     public ResultSet getBestRowIdentifier(final String catalog, final String schema, final String table, final int scope, final boolean nullable) throws SQLException {
-        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getBestRowIdentifier(getActualCatalog(catalog), getActualSchema(schema), getActualTable(table), scope, nullable));
+        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getBestRowIdentifier(getActualCatalog(catalog), getActualSchema(schema), getActualTable(catalog, table), scope, nullable));
     }
     
     @Override
     public ResultSet getVersionColumns(final String catalog, final String schema, final String table) throws SQLException {
-        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getVersionColumns(getActualCatalog(catalog), getActualSchema(schema), getActualTable(table)));
+        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getVersionColumns(getActualCatalog(catalog), getActualSchema(schema), getActualTable(catalog, table)));
     }
     
     @Override
     public ResultSet getPrimaryKeys(final String catalog, final String schema, final String table) throws SQLException {
-        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getPrimaryKeys(getActualCatalog(catalog), getActualSchema(schema), getActualTable(table)));
+        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getPrimaryKeys(getActualCatalog(catalog), getActualSchema(schema), getActualTable(catalog, table)));
     }
     
     @Override
     public ResultSet getImportedKeys(final String catalog, final String schema, final String table) throws SQLException {
-        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getImportedKeys(getActualCatalog(catalog), getActualSchema(schema), getActualTable(table)));
+        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getImportedKeys(getActualCatalog(catalog), getActualSchema(schema), getActualTable(catalog, table)));
     }
     
     @Override
     public ResultSet getExportedKeys(final String catalog, final String schema, final String table) throws SQLException {
-        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getExportedKeys(getActualCatalog(catalog), getActualSchema(schema), getActualTable(table)));
+        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getExportedKeys(getActualCatalog(catalog), getActualSchema(schema), getActualTable(catalog, table)));
     }
     
     @Override
@@ -175,7 +176,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     @Override
     public ResultSet getIndexInfo(final String catalog, final String schema, final String table, final boolean unique, final boolean approximate) throws SQLException {
-        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getIndexInfo(getActualCatalog(catalog), getActualSchema(schema), getActualTable(table), unique, approximate));
+        return createDatabaseMetaDataResultSet(getDatabaseMetaData().getIndexInfo(getActualCatalog(catalog), getActualSchema(schema), getActualTable(catalog, table), unique, approximate));
     }
     
     @Override
@@ -215,11 +216,15 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
         return tableNamePattern;
     }
     
-    private String getActualTable(final String table) {
+    private String getActualTable(final String catalog, final String table) {
         if (null == table) {
             return null;
         }
-        return findDataNodeContainedRule().map(each -> each.findFirstActualTable(table).orElse(table)).orElse(table);
+        return findDataNodeContainedRule().map(each -> findActualTable(each, catalog, table).orElse(table)).orElse(table);
+    }
+    
+    private Optional<String> findActualTable(final DataNodeContainedRule dataNodeContainedRule, final String catalog, final String table) {
+        return Strings.isNullOrEmpty(catalog) ? dataNodeContainedRule.findFirstActualTable(table) : dataNodeContainedRule.findActualTableByCatalog(catalog, table);  
     }
     
     private Optional<DataNodeContainedRule> findDataNodeContainedRule() {

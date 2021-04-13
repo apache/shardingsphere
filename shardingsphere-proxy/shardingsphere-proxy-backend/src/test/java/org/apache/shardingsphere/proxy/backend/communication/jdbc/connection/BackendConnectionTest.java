@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -27,6 +26,8 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -48,6 +49,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -100,8 +102,8 @@ public final class BackendConnectionTest {
     private void setMetaDataContexts() throws ReflectiveOperationException {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("metaDataContexts");
         field.setAccessible(true);
-        field.set(ProxyContext.getInstance(), 
-                new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), new DefaultAuthentication(), new ConfigurationProperties(new Properties())));
+        field.set(ProxyContext.getInstance(), new StandardMetaDataContexts(createMetaDataMap(), 
+                mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ShardingSphereUsers(Collections.emptyList()), new ConfigurationProperties(new Properties())));
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
@@ -265,7 +267,7 @@ public final class BackendConnectionTest {
         backendConnection.add(statement);
         Field field = backendConnection.getClass().getDeclaredField("cachedStatements");
         field.setAccessible(true);
-        assertTrue(((Collection<Statement>) field.get(backendConnection)).contains(statement));
+        assertTrue(((Collection<?>) field.get(backendConnection)).contains(statement));
     }
     
     @Test
@@ -274,7 +276,7 @@ public final class BackendConnectionTest {
         backendConnection.add(resultSet);
         Field field = backendConnection.getClass().getDeclaredField("cachedResultSets");
         field.setAccessible(true);
-        assertTrue(((Collection<ResultSet>) field.get(backendConnection)).contains(resultSet));
+        assertTrue(((Collection<?>) field.get(backendConnection)).contains(resultSet));
     }
     
     @Test

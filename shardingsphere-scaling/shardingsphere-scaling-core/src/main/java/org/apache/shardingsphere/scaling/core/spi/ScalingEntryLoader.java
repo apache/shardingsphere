@@ -34,7 +34,7 @@ public final class ScalingEntryLoader {
     
     static {
         ShardingSphereServiceLoader.register(ScalingEntry.class);
-        for (ScalingEntry each : ShardingSphereServiceLoader.newServiceInstances(ScalingEntry.class)) {
+        for (ScalingEntry each : ShardingSphereServiceLoader.getSingletonServiceInstances(ScalingEntry.class)) {
             SCALING_ENTRY_MAP.put(each.getDatabaseType(), each);
         }
     }

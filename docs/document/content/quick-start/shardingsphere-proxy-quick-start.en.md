@@ -10,6 +10,8 @@ Edit `%SHARDINGSPHERE_PROXY_HOME%/conf/config-xxx.yaml`. Please refer to [Config
 
 Edit `%SHARDINGSPHERE_PROXY_HOME%/conf/server.yaml`. Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/configuration/) for more details.
 
+> %SHARDINGSPHERE_PROXY_HOME% is the shardingsphere proxy extract path. for example: /Users/ss/shardingsphere-proxy-bin/
+
 ## 2. Import Dependencies
 
 If the backend database is PostgreSQL, there's no need for additional dependencies.

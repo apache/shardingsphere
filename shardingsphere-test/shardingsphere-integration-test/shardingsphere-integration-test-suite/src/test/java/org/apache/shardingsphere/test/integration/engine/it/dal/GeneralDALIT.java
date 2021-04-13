@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.test.integration.engine.it.dal;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelRuntimeStrategy;
-import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
-import org.apache.shardingsphere.test.integration.engine.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.junit.compose.ComposeManager;
+import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.runners.Parameterized;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,28 +43,33 @@ import static org.junit.Assert.assertThat;
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDALIT extends BaseDALIT {
     
-    public GeneralDALIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
+    @ClassRule
+    public static ComposeManager composeManager = new ComposeManager("GeneralDALIT");
+    
+    public GeneralDALIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
     }
     
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> getParameters() {
-        return ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DAL).stream()
-                .filter(each -> "proxy".equals(((ParameterizedArray) each[0]).getAdapter())
-                        && each[0] instanceof AssertionParameterizedArray && SQLExecuteType.Literal == ((AssertionParameterizedArray) each[0]).getSqlExecuteType()).collect(Collectors.toList());
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<ParameterizedArray> getParameters() {
+        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DAL)
+                .stream()
+                .filter(each -> SQLExecuteType.Literal == each.getSqlExecuteType())
+                .filter(each -> "proxy".equals(each.getAdapter()))
+                .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
+                .collect(Collectors.toList());
     }
     
-    @SuppressWarnings("JUnitTestMethodWithNoAssertions")
     @Test
-    public void assertExecute() throws SQLException {
+    public void assertExecute() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             assertExecuteForStatement(connection);
         }
     }
     
-    private void assertExecuteForStatement(final Connection connection) throws SQLException {
+    private void assertExecuteForStatement(final Connection connection) throws SQLException, ParseException {
         try (Statement statement = connection.createStatement()) {
-            boolean isQuery = statement.execute(getSql());
+            boolean isQuery = statement.execute(getSQL());
             if (isQuery) {
                 try (ResultSet resultSet = statement.getResultSet()) {
                     assertResultSet(resultSet);
@@ -74,4 +79,5 @@ public final class GeneralDALIT extends BaseDALIT {
             }
         }
     }
+    
 }

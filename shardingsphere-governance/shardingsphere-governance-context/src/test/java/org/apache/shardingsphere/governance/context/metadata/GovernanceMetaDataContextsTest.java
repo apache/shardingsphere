@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.governance.context.metadata;
 
-import org.apache.shardingsphere.governance.core.event.model.auth.UserRuleChangedEvent;
+import org.apache.shardingsphere.governance.core.event.model.authority.AuthorityChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataDeletedEvent;
 import org.apache.shardingsphere.governance.core.event.model.metadata.MetaDataPersistedEvent;
@@ -32,11 +32,14 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
 import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 import org.apache.shardingsphere.readwrite.splitting.common.rule.ReadWriteSplittingRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -70,8 +73,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class GovernanceMetaDataContextsTest {
     
-    private final DefaultAuthentication authentication = new DefaultAuthentication();
-    
     private final ConfigurationProperties props = new ConfigurationProperties(new Properties());
     
     @Mock
@@ -92,12 +93,15 @@ public final class GovernanceMetaDataContextsTest {
     public void setUp() {
         when(governanceFacade.getRegistryCenter()).thenReturn(registryCenter);
         when(registryCenter.loadDisabledDataSources("schema")).thenReturn(Collections.singletonList("schema.ds_1"));
-        governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(createMetaDataMap(), mock(ExecutorEngine.class), authentication, props), governanceFacade);
+        governanceMetaDataContexts = new GovernanceMetaDataContexts(new StandardMetaDataContexts(
+                createMetaDataMap(), mock(ShardingSphereRuleMetaData.class), mock(ExecutorEngine.class), new ShardingSphereUsers(Collections.emptyList()), props), governanceFacade);
     }
     
     private Map<String, ShardingSphereMetaData> createMetaDataMap() {
         when(metaData.getName()).thenReturn("schema");
-        when(metaData.getResource()).thenReturn(mock(ShardingSphereResource.class));
+        ShardingSphereResource resource = mock(ShardingSphereResource.class);
+        when(resource.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(metaData.getResource()).thenReturn(resource);
         when(metaData.getSchema()).thenReturn(mock(ShardingSphereSchema.class));
         when(metaData.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(readWriteSplittingRule));
         return Collections.singletonMap("schema", metaData);
@@ -111,11 +115,6 @@ public final class GovernanceMetaDataContextsTest {
     @Test
     public void assertGetDefaultMetaData() {
         assertNull(governanceMetaDataContexts.getDefaultMetaData());
-    }
-    
-    @Test
-    public void assertGetAuthentication() {
-        assertThat(governanceMetaDataContexts.getAuthentication(), is(authentication));
     }
     
     @Test
@@ -158,11 +157,10 @@ public final class GovernanceMetaDataContextsTest {
     }
     
     @Test
-    public void assertAuthenticationChanged() {
-        DefaultAuthentication authentication = new DefaultAuthentication();
-        UserRuleChangedEvent event = new UserRuleChangedEvent(authentication.getAuthentication().keySet());
+    public void assertAuthorityChanged() {
+        AuthorityChangedEvent event = new AuthorityChangedEvent(Collections.singleton(mock(ShardingSphereUser.class)));
         governanceMetaDataContexts.renew(event);
-        assertThat(governanceMetaDataContexts.getAuthentication().getAuthentication().size(), is(authentication.getAuthentication().size()));
+        assertThat(governanceMetaDataContexts.getUsers().getUsers().size(), is(1));
     }
     
     @Test

@@ -18,51 +18,59 @@
 package org.apache.shardingsphere.test.integration.engine.it.dcl;
 
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelLevel;
-import org.apache.shardingsphere.test.integration.engine.junit.parallel.annotaion.ParallelRuntimeStrategy;
-import org.apache.shardingsphere.test.integration.engine.param.ParameterizedArrayFactory;
-import org.apache.shardingsphere.test.integration.engine.param.SQLExecuteType;
-import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.common.SQLExecuteType;
+import org.apache.shardingsphere.test.integration.junit.compose.ComposeManager;
+import org.apache.shardingsphere.test.integration.junit.param.ParameterizedArrayFactory;
+import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.param.model.ParameterizedArray;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelLevel;
+import org.apache.shardingsphere.test.integration.junit.runner.parallel.annotaion.ParallelRuntimeStrategy;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.runners.Parameterized;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
 public final class GeneralDCLIT extends BaseDCLIT {
     
-    public GeneralDCLIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
+    @ClassRule
+    public static ComposeManager composeManager = new ComposeManager("GeneralDCLIT");
+    
+    public GeneralDCLIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
     }
     
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> getParameters() {
-        return ParameterizedArrayFactory.getAssertionParameterizedArray(SQLCommandType.DCL);
+    @Parameterized.Parameters(name = "{0}")
+    public static Collection<ParameterizedArray> getParameters() {
+        return ParameterizedArrayFactory.getAssertionParameterized(SQLCommandType.DCL)
+                .stream()
+                .peek(each -> each.setCompose(composeManager.getOrCreateCompose(each)))
+                .collect(Collectors.toList());
     }
     
     @Test
-    public void assertExecuteUpdate() throws SQLException {
+    public void assertExecuteUpdate() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                connection.createStatement().executeUpdate(getSql());
+                connection.createStatement().executeUpdate(getSQL());
             } else {
-                connection.prepareStatement(getSql()).executeUpdate();
+                connection.prepareStatement(getSQL()).executeUpdate();
             }
         }
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    public void assertExecute() throws SQLException, ParseException {
         try (Connection connection = getTargetDataSource().getConnection()) {
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
-                connection.createStatement().execute(getSql());
+                connection.createStatement().execute(getSQL());
             } else {
-                connection.prepareStatement(getSql()).execute();
+                connection.prepareStatement(getSQL()).execute();
             }
         }
     }

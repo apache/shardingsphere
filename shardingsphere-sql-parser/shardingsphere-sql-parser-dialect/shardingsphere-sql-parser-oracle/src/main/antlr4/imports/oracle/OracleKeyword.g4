@@ -1402,3 +1402,11 @@ COLUMNS
 OIDINDEX
     : O I D I N D E X
     ;
+
+EDITIONABLE
+    : E D I T I O N A B L E
+    ;
+
+NONEDITIONABLE
+    : N O N E D I T I O N A B L E
+    ;

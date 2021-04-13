@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.context.fixture;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
 
-public final class FixtureRule implements ShardingSphereRule {
+public final class FixtureRule implements SchemaRule {
 }

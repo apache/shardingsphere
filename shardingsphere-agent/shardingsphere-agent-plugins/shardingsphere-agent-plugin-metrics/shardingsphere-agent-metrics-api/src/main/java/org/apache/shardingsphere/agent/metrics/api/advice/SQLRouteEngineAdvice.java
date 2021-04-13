@@ -79,13 +79,11 @@ public final class SQLRouteEngineAdvice implements InstanceMethodAroundAdvice {
         RouteContext routeContext = (RouteContext) result.getResult();
         if (null != routeContext) {
             Collection<RouteUnit> routeUnits = routeContext.getRouteUnits();
-            for (RouteUnit each : routeUnits) {
+            routeUnits.forEach(each -> {
                 RouteMapper dataSourceMapper = each.getDataSourceMapper();
-                MetricsReporter.counterIncrement(ROUTE_DATASOURCE, new String[] {dataSourceMapper.getActualName()});
-                for (RouteMapper table : each.getTableMappers()) {
-                    MetricsReporter.counterIncrement(ROUTE_TABLE, new String[] {table.getActualName()});
-                }
-            }
+                MetricsReporter.counterIncrement(ROUTE_DATASOURCE, new String[]{dataSourceMapper.getActualName()});
+                each.getTableMappers().forEach(table -> MetricsReporter.counterIncrement(ROUTE_TABLE, new String[]{table.getActualName()}));
+            });
         }
     }
 }

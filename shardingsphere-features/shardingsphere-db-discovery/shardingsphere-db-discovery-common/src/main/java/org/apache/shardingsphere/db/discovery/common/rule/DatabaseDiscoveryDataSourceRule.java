@@ -20,7 +20,6 @@ package org.apache.shardingsphere.db.discovery.common.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.discovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.db.discovery.spi.DatabaseDiscoveryType;
 
@@ -33,10 +32,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Data base discovery data source rule.
+ * Database discovery data source rule.
  */
 @Getter
-@Slf4j
 public final class DatabaseDiscoveryDataSourceRule {
     
     private final String name;

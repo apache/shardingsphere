@@ -28,7 +28,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -52,7 +51,7 @@ public final class PostgreSQLComBindPacketTest {
     }
     
     @Test
-    public void assertWrite() throws SQLException {
+    public void assertWrite() {
         when(payload.readInt2()).thenReturn(1);
         when(payload.readInt4()).thenReturn(1);
         when(payload.readInt8()).thenReturn(11L);
@@ -66,7 +65,7 @@ public final class PostgreSQLComBindPacketTest {
     }
     
     @Test
-    public void assertWriteWithEmptySql() throws SQLException {
+    public void assertWriteWithEmptySql() {
         PostgreSQLComBindPacket bindPacket = new PostgreSQLComBindPacket(payload, 1);
         bindPacket.write(payload);
         assertNull(bindPacket.getSql());
@@ -75,8 +74,8 @@ public final class PostgreSQLComBindPacketTest {
     }
     
     @Test
-    public void getMessageType() throws SQLException {
+    public void getMessageType() {
         PostgreSQLComBindPacket bindPacket = new PostgreSQLComBindPacket(payload, 1);
-        assertThat(bindPacket.getMessageType(), is(PostgreSQLCommandPacketType.BIND.getValue()));
+        assertThat(bindPacket.getMessageType(), is(PostgreSQLCommandPacketType.BIND_COMMAND.getValue()));
     }
 }

@@ -90,7 +90,7 @@ public final class MySQLTableMetaDataLoader implements DialectTableMetaDataLoade
         boolean primaryKey = "PRI".equals(resultSet.getString("COLUMN_KEY"));
         boolean generated = "auto_increment".equals(resultSet.getString("EXTRA"));
         String collationName = resultSet.getString("COLLATION_NAME");
-        boolean caseSensitive = null != collationName && collationName.endsWith("_ci");
+        boolean caseSensitive = null != collationName && !collationName.endsWith("_ci");
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
     }
 

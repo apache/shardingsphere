@@ -24,11 +24,12 @@ import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
+import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUsers;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -58,6 +59,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapInitializerTest {
     
@@ -65,7 +67,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     private static final String SHARDING_RULE_YAML = "conf/reg_center/sharding-rule.yaml";
     
-    private static final String AUTHENTICATION_YAML = "conf/reg_center/authentication.yaml";
+    private static final String USERS_YAML = "conf/reg_center/users.yaml";
     
     private static final String PROPS_YAML = "conf/reg_center/props.yaml";
     
@@ -81,7 +83,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     
     private void initConfigCenter() {
         RegistryCenterNode node = new RegistryCenterNode();
-        registryRepository.persist(node.getAuthenticationPath(), readYAML(AUTHENTICATION_YAML));
+        registryRepository.persist(node.getUsersNode(), readYAML(USERS_YAML));
         registryRepository.persist(node.getPropsPath(), readYAML(PROPS_YAML));
         registryRepository.persist(node.getMetadataNodePath(), "db");
         registryRepository.persist(node.getMetadataDataSourcePath("db"), readYAML(DATA_SOURCE_YAML));
@@ -110,7 +112,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         assertNotNull(actual);
         assertSchemaDataSources(actual.getSchemaDataSources());
         assertSchemaRules(actual.getSchemaRules());
-        assertAuthentication(new DefaultAuthentication(actual.getUsers()));
+        assertUsers(new ShardingSphereUsers(actual.getUsers()));
         assertProps(actual.getProps());
     }
     
@@ -190,7 +192,7 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
         assertThat(props.getProperty("algorithm-expression"), is(expectedAlgorithmExpr));
     }
     
-    private void assertAuthentication(final DefaultAuthentication actual) {
+    private void assertUsers(final ShardingSphereUsers actual) {
         Optional<ShardingSphereUser> rootUser = actual.findUser(new Grantee("root", ""));
         assertTrue(rootUser.isPresent());
         assertThat(rootUser.get().getPassword(), is("root"));
@@ -202,11 +204,11 @@ public final class GovernanceBootstrapInitializerTest extends AbstractBootstrapI
     @Test
     public void assertDecorateMetaDataContexts() {
         StandardMetaDataContexts metaDataContexts = mock(StandardMetaDataContexts.class);
+        when(metaDataContexts.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         MetaDataContexts actualMetaDataContexts = getInitializer().decorateMetaDataContexts(metaDataContexts);
         assertNotNull(actualMetaDataContexts);
         assertThat(actualMetaDataContexts, instanceOf(GovernanceMetaDataContexts.class));
         assertThat(actualMetaDataContexts.getDefaultMetaData(), is(metaDataContexts.getDefaultMetaData()));
-        assertThat(actualMetaDataContexts.getAuthentication(), is(metaDataContexts.getAuthentication()));
         assertThat(actualMetaDataContexts.getProps(), is(metaDataContexts.getProps()));
     }
     

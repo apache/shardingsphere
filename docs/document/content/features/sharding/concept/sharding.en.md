@@ -15,7 +15,7 @@ Besides single sharding column, Apache ShardingSphere also supports multiple sha
 Data sharding can be achieved by sharding algorithms through `=`, `>=`, `<=`, `>`, `<`, `BETWEEN` and `IN`. 
 They need to be implemented by developers themselves and can be highly flexible.
 
-Currently, 4 kinds of sharding algorithms are available. 
+Currently, 3 kinds of sharding algorithms are available. 
 Since the sharding algorithm and business achievement are closely related, it extracts all kinds of scenarios by sharding strategies, instead of providing built-in sharding algorithms. 
 Therefore, it can provide higher abstraction and the interface for developers to implement sharding algorithm by themselves.
 
@@ -35,7 +35,7 @@ It has a relatively complex logic that requires developers to deal by themselves
 ## Sharding Strategy
 
 It includes the sharding key and the sharding algorithm, and the latter one is extracted out for its independence. 
-Only sharding key + sharding algorithm, i.e., the sharding strategy, can be used in sharding operation. For now, 5 kinds of sharding strategies are available.
+Only sharding key + sharding algorithm, i.e., the sharding strategy, can be used in sharding operation. For now, 4 kinds of sharding strategies are available.
 
 - Standard Sharding Strategy
 

@@ -25,14 +25,12 @@ import static org.junit.Assert.assertThat;
 public final class PostgreSQLArrayColumnTypeTest {
     
     @Test
-    public void assertIntegerArrayGot() {
-        int columnTypeName = PostgreSQLArrayColumnType.getTypeOidByColumnTypeName("_int4");
-        assertThat(columnTypeName, is(1007));
+    public void assertGetTypeOidSuccess() {
+        assertThat(PostgreSQLArrayColumnType.getTypeOid("_int4"), is(1007));
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertIllegalArgExThrown() {
-        PostgreSQLArrayColumnType.getTypeOidByColumnTypeName("not_exist_type");
+    public void assertGetTypeOidFailed() {
+        PostgreSQLArrayColumnType.getTypeOid("not_exist_type");
     }
-    
 }

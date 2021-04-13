@@ -35,14 +35,11 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.DefaultAuthentication;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
-import org.apache.shardingsphere.infra.metadata.auth.model.privilege.ShardingSpherePrivilege;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.schema.refresher.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.config.YamlRootRuleConfigurations;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
@@ -52,7 +49,6 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -102,7 +98,7 @@ public final class RegistryCenterTest {
     
     private static final String SHADOW_RULE_YAML = "yaml/registryCenter/data-shadow-rule.yaml";
     
-    private static final String AUTHENTICATION_YAML = "yaml/registryCenter/data-authentication.yaml";
+    private static final String USERS_YAML = "yaml/registryCenter/data-users.yaml";
     
     private static final String PROPS_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": false\n";
     
@@ -175,8 +171,8 @@ public final class RegistryCenterTest {
     public void assertPersistConfigurationForShardingRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
-        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(registryRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/rule"), any());
     }
     
     @Test
@@ -197,15 +193,15 @@ public final class RegistryCenterTest {
     public void assertPersistConfigurationForShardingRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
-        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(registryRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/rule"), any());
     }
     
     @Test
     public void assertPersistConfigurationForShardingRuleWithoutAuthenticationAndIsOverwrite() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), true);
-        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
         verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(SHARDING_RULE_YAML));
     }
     
@@ -213,23 +209,23 @@ public final class RegistryCenterTest {
     public void assertPersistConfigurationForReplicaQueryRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReadWriteSplittingRuleConfiguration(), false);
-        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(registryRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/rule"), any());
     }
     
     @Test
     public void assertPersistConfigurationForReplicaQueryRuleWithoutAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReadWriteSplittingRuleConfiguration(), false);
-        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(registryRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/rule"), any());
     }
     
     @Test
     public void assertPersistConfigurationForReadWriteSplittingWithoutAuthenticationAndIsOverwrite() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReadWriteSplittingRuleConfiguration(), true);
-        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
         verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(READ_WRITE_SPLITTING_RULE_YAML));
     }
     
@@ -237,7 +233,7 @@ public final class RegistryCenterTest {
     public void assertPersistConfigurationForDatabaseDiscoveryRuleWithoutAuthenticationAndIsOverwrite() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createDatabaseDiscoveryRuleConfiguration(), true);
-        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
         verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(DB_DISCOVERY_RULE_YAML));
     }
     
@@ -253,15 +249,15 @@ public final class RegistryCenterTest {
     public void assertPersistConfigurationForShardingRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), false);
-        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(registryRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/rule"), any());
     }
     
     @Test
     public void assertPersistConfigurationForShardingRuleWithAuthenticationAndIsOverwrite() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createRuleConfigurations(), true);
-        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
         verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(SHARDING_RULE_YAML));
     }
     
@@ -269,23 +265,23 @@ public final class RegistryCenterTest {
     public void assertPersistConfigurationForReplicaQueryRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsExisted() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReadWriteSplittingRuleConfiguration(), false);
-        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(registryRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/rule"), any());
     }
     
     @Test
     public void assertPersistConfigurationForReadWriteSplittingRuleWithAuthenticationAndIsNotOverwriteAndConfigurationIsNotExisted() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReadWriteSplittingRuleConfiguration(), false);
-        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
-        verify(registryRepository).persist(eq("/metadata/sharding_db/rule"), ArgumentMatchers.any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/rule"), any());
     }
     
     @Test
     public void assertPersistConfigurationForReadWriteSplittingRuleWithAuthenticationAndIsOverwrite() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createReadWriteSplittingRuleConfiguration(), true);
-        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
         verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(READ_WRITE_SPLITTING_RULE_YAML));
     }
     
@@ -293,7 +289,7 @@ public final class RegistryCenterTest {
     public void assertPersistConfigurationForDatabaseDiscoveryRuleWithAuthenticationAndIsOverwrite() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createDatabaseDiscoveryRuleConfiguration(), true);
-        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
         verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(DB_DISCOVERY_RULE_YAML));
     }
     
@@ -301,7 +297,7 @@ public final class RegistryCenterTest {
     public void assertPersistConfigurationForEncrypt() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createEncryptRuleConfiguration(), true);
-        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
         verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(ENCRYPT_RULE_YAML));
     }
     
@@ -315,15 +311,15 @@ public final class RegistryCenterTest {
     public void assertPersistConfigurationForShadow() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
         registryCenter.persistConfigurations("sharding_db", createDataSourceConfigurations(), createShadowRuleConfiguration(), true);
-        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), ArgumentMatchers.any());
+        verify(registryRepository).persist(eq("/metadata/sharding_db/datasource"), any());
         verify(registryRepository, times(0)).persist("/metadata/sharding_db/rule", readYAML(SHADOW_RULE_YAML));
     }
     
     @Test
     public void assertPersistGlobalConfiguration() {
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
-        registryCenter.persistGlobalConfiguration(createAuthentication().getAuthentication().keySet(), createProperties(), true);
-        verify(registryRepository, times(0)).persist("/authentication", readYAML(AUTHENTICATION_YAML));
+        registryCenter.persistGlobalConfiguration(YamlUserConfigurationConverter.convertShardingSphereUser(YamlEngine.unmarshal(readYAML(USERS_YAML), Collection.class)), createProperties(), true);
+        verify(registryRepository, times(0)).persist("/users", readYAML(USERS_YAML));
         verify(registryRepository).persist("/props", PROPS_YAML);
     }
     
@@ -371,17 +367,7 @@ public final class RegistryCenterTest {
     private Collection<RuleConfiguration> createShadowRuleConfiguration() {
         return new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(readYAML(SHADOW_RULE_YAML), YamlRootRuleConfigurations.class).getRules());
     }
-    
-    private DefaultAuthentication createAuthentication() {
-        Collection<ShardingSphereUser> users =
-                new UserRuleYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(AUTHENTICATION_YAML), YamlUserRuleConfiguration.class));
-        DefaultAuthentication result = new DefaultAuthentication();
-        for (ShardingSphereUser each : users) {
-            result.getAuthentication().put(each, new ShardingSpherePrivilege());
-        }
-        return result;
-    }
-    
+
     private Properties createProperties() {
         Properties result = new Properties();
         result.put(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.FALSE);
@@ -488,10 +474,10 @@ public final class RegistryCenterTest {
     }
     
     @Test
-    public void assertLoadAuthentication() {
-        when(registryRepository.get("/authentication")).thenReturn(readYAML(AUTHENTICATION_YAML));
+    public void assertLoadUsers() {
+        when(registryRepository.get("/users")).thenReturn(readYAML(USERS_YAML));
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
-        Collection<ShardingSphereUser> actual = registryCenter.loadUserRule();
+        Collection<ShardingSphereUser> actual = registryCenter.loadUsers();
         Optional<ShardingSphereUser> user = actual.stream().filter(each -> each.getGrantee().equals(new Grantee("root1", ""))).findFirst();
         assertTrue(user.isPresent());
         assertThat(user.get().getPassword(), is("root1"));
@@ -569,6 +555,27 @@ public final class RegistryCenterTest {
     public void assertRenewDataSourceEvent() {
         DataSourceAddedEvent event = new DataSourceAddedEvent("sharding_db", createDataSourceConfigurations());
         RegistryCenter registryCenter = new RegistryCenter(registryRepository);
+        registryCenter.renew(event);
+        verify(registryRepository).persist(startsWith("/metadata/sharding_db/datasource"), anyString());
+    }
+    
+    @Test
+    public void assertRenewDataSourceEventHasDataSourceConfig() {
+        DataSourceAddedEvent event = new DataSourceAddedEvent("sharding_db", createDataSourceConfigurations());
+        RegistryCenter registryCenter = new RegistryCenter(registryRepository);
+        String dataSourceYaml = "dataSources:\n"
+            + " ds_0:\n"
+            + "   dataSourceClassName: xxx\n"
+            + "   url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false\n"
+            + "   username: root\n"
+            + "   password: root\n"
+            + "   connectionTimeoutMilliseconds: 30000\n"
+            + "   idleTimeoutMilliseconds: 60000\n"
+            + "   maxLifetimeMilliseconds: 1800000\n"
+            + "   maxPoolSize: 50\n"
+            + "   minPoolSize: 1\n"
+            + "   maintenanceIntervalMilliseconds: 30000\n";
+        when(registryRepository.get("/metadata/sharding_db/datasource")).thenReturn(dataSourceYaml);
         registryCenter.renew(event);
         verify(registryRepository).persist(startsWith("/metadata/sharding_db/datasource"), anyString());
     }

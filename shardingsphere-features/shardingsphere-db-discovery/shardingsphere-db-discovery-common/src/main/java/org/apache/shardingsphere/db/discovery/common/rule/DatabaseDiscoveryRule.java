@@ -20,6 +20,8 @@ package org.apache.shardingsphere.db.discovery.common.rule;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
+import org.apache.shardingsphere.db.discovery.api.config.DatabaseDiscoveryRuleConfiguration;
+import org.apache.shardingsphere.db.discovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.db.discovery.common.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.db.discovery.spi.DatabaseDiscoveryType;
 import org.apache.shardingsphere.infra.aware.DataSourceNameAware;
@@ -27,15 +29,14 @@ import org.apache.shardingsphere.infra.aware.DataSourceNameAwareFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
-import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.rule.type.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 import org.apache.shardingsphere.infra.rule.event.impl.DataSourceNameDisabledEvent;
+import org.apache.shardingsphere.infra.rule.event.impl.PrimaryDataSourceEvent;
+import org.apache.shardingsphere.infra.rule.scope.SchemaRule;
+import org.apache.shardingsphere.infra.rule.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.type.StatusContainedRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.typed.TypedSPIRegistry;
-import org.apache.shardingsphere.db.discovery.api.config.DatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.db.discovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -47,9 +48,9 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Data base discovery rule.
+ * Database discovery rule.
  */
-public final class DatabaseDiscoveryRule implements DataSourceContainedRule, StatusContainedRule {
+public final class DatabaseDiscoveryRule implements SchemaRule, DataSourceContainedRule, StatusContainedRule {
     
     static {
         ShardingSphereServiceLoader.register(DatabaseDiscoveryType.class);
@@ -74,13 +75,13 @@ public final class DatabaseDiscoveryRule implements DataSourceContainedRule, Sta
         }
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
             String groupName = entry.getKey();
-            DatabaseDiscoveryDataSourceRule databaseDiscoveryDataSourceRule = entry.getValue();
-            DatabaseDiscoveryType databaseDiscoveryType = databaseDiscoveryDataSourceRule.getDatabaseDiscoveryType();
+            DatabaseDiscoveryDataSourceRule dbDiscoveryDataSourceRule = entry.getValue();
+            DatabaseDiscoveryType databaseDiscoveryType = dbDiscoveryDataSourceRule.getDatabaseDiscoveryType();
             Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
-            Collection<String> disabledDataSourceNames = databaseDiscoveryDataSourceRule.getDisabledDataSourceNames();
-            String primaryDataSourceName = databaseDiscoveryDataSourceRule.getPrimaryDataSourceName();
+            Collection<String> disabledDataSourceNames = dbDiscoveryDataSourceRule.getDisabledDataSourceNames();
+            String primaryDataSourceName = dbDiscoveryDataSourceRule.getPrimaryDataSourceName();
             databaseDiscoveryType.updatePrimaryDataSource(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
-            databaseDiscoveryDataSourceRule.updatePrimaryDataSourceName(databaseDiscoveryType.getPrimaryDataSource());
+            dbDiscoveryDataSourceRule.updatePrimaryDataSourceName(databaseDiscoveryType.getPrimaryDataSource());
             databaseDiscoveryType.updateMemberState(originalDataSourceMap, schemaName, disabledDataSourceNames);
             try {
                 databaseDiscoveryType.checkDatabaseDiscoveryConfig(dataSourceMap, schemaName);
@@ -105,13 +106,13 @@ public final class DatabaseDiscoveryRule implements DataSourceContainedRule, Sta
         }
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
             String groupName = entry.getKey();
-            DatabaseDiscoveryDataSourceRule databaseDiscoveryDataSourceRule = entry.getValue();
-            DatabaseDiscoveryType databaseDiscoveryType = databaseDiscoveryDataSourceRule.getDatabaseDiscoveryType();
+            DatabaseDiscoveryDataSourceRule dbDiscoveryDataSourceRule = entry.getValue();
+            DatabaseDiscoveryType databaseDiscoveryType = dbDiscoveryDataSourceRule.getDatabaseDiscoveryType();
             Map<String, DataSource> originalDataSourceMap = new HashMap<>(dataSourceMap);
-            Collection<String> disabledDataSourceNames = databaseDiscoveryDataSourceRule.getDisabledDataSourceNames();
-            String primaryDataSourceName = databaseDiscoveryDataSourceRule.getPrimaryDataSourceName();
+            Collection<String> disabledDataSourceNames = dbDiscoveryDataSourceRule.getDisabledDataSourceNames();
+            String primaryDataSourceName = dbDiscoveryDataSourceRule.getPrimaryDataSourceName();
             databaseDiscoveryType.updatePrimaryDataSource(originalDataSourceMap, schemaName, disabledDataSourceNames, groupName, primaryDataSourceName);
-            databaseDiscoveryDataSourceRule.updatePrimaryDataSourceName(databaseDiscoveryType.getPrimaryDataSource());
+            dbDiscoveryDataSourceRule.updatePrimaryDataSourceName(databaseDiscoveryType.getPrimaryDataSource());
             databaseDiscoveryType.updateMemberState(originalDataSourceMap, schemaName, disabledDataSourceNames);
             try {
                 databaseDiscoveryType.checkDatabaseDiscoveryConfig(dataSourceMap, schemaName);
@@ -124,8 +125,7 @@ public final class DatabaseDiscoveryRule implements DataSourceContainedRule, Sta
     }
     
     private void initAware() {
-        Optional<DataSourceNameAware> awareOptional = DataSourceNameAwareFactory.getInstance().getDataSourceNameAware();
-        awareOptional.ifPresent(dataSourceNameAware -> dataSourceNameAware.setRule(this));
+        DataSourceNameAwareFactory.getInstance().getDataSourceNameAware().ifPresent(optional -> optional.setRule(this));
     }
     
     /**

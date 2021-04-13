@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.infra.rewrite;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.properties.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.infra.rewrite.engine.GenericSQLRewriteEngine;
@@ -27,13 +29,10 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.ordered.OrderedSPIRegistry;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * SQL rewrite entry.
@@ -43,9 +42,6 @@ public final class SQLRewriteEntry {
     static {
         ShardingSphereServiceLoader.register(SQLRewriteContextDecorator.class);
     }
-    
-    @SuppressWarnings("rawtypes")
-    private static final Map<Collection<ShardingSphereRule>, Map<ShardingSphereRule, SQLRewriteContextDecorator>> RULES_TO_DECORATORS_MAP = new ConcurrentHashMap<>(32, 1);
     
     private final ShardingSphereSchema schema;
     
@@ -57,7 +53,7 @@ public final class SQLRewriteEntry {
     public SQLRewriteEntry(final ShardingSphereSchema schema, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
         this.schema = schema;
         this.props = props;
-        decorators = RULES_TO_DECORATORS_MAP.computeIfAbsent(rules, key -> OrderedSPIRegistry.getRegisteredServices(key, SQLRewriteContextDecorator.class));
+        decorators = OrderedSPIRegistry.getRegisteredServices(rules, SQLRewriteContextDecorator.class);
     }
     
     /**

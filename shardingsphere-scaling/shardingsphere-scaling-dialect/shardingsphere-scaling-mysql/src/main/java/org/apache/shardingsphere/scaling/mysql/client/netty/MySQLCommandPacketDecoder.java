@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.scaling.mysql.client.netty;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.ByteToMessageDecoder;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
@@ -26,34 +29,29 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageDecoder;
 import org.apache.shardingsphere.scaling.mysql.client.InternalResultSet;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 /**
  * MySQL Command Packet decoder.
  */
-@Slf4j
 public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
     private enum States { ResponsePacket, FieldPacket, RowDataPacket }
     
     private States currentState = States.ResponsePacket;
     
-    private boolean auth;
+    private boolean authenticated;
     
     private InternalResultSet internalResultSet;
     
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
         MySQLPacketPayload payload = new MySQLPacketPayload(in);
-        if (!auth) {
+        if (!authenticated) {
             out.add(decodeHandshakePacket(payload));
-            auth = true;
+            authenticated = true;
         } else {
             decodeCommandPacket(payload, out);
         }

@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.governance.core.yaml.config;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.config.YamlUserRuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.auth.builtin.yaml.swapper.UserRuleYamlSwapper;
-import org.apache.shardingsphere.infra.metadata.auth.model.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfigurationConverter;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.yaml.config.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlDataSourceConfigurationSwapper;
@@ -68,7 +66,9 @@ public final class YamlConfigurationConverter {
      * @return data source configurations
      */
     public static Map<String, DataSourceConfiguration> convertDataSourceConfigurations(final Map<String, Map<String, Object>> yamlDataSourceConfigs) {
-        return Maps.transformValues(yamlDataSourceConfigs, new YamlDataSourceConfigurationSwapper()::swapToDataSourceConfiguration);
+        Map<String, DataSourceConfiguration> result = new LinkedHashMap<>(yamlDataSourceConfigs.size());
+        yamlDataSourceConfigs.forEach((key, value) -> result.put(key, new YamlDataSourceConfigurationSwapper().swapToDataSourceConfiguration(value)));
+        return result;
     }
     
     /**
@@ -106,13 +106,14 @@ public final class YamlConfigurationConverter {
     }
     
     /**
-     * Convert user rule from YAML content.
+     * Convert users from YAML content.
      *
      * @param yamlContent YAML content
-     * @return authentication
+     * @return users
      */
-    public static Collection<ShardingSphereUser> convertUserRule(final String yamlContent) {
-        return new UserRuleYamlSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlUserRuleConfiguration.class));
+    public static Collection<ShardingSphereUser> convertUsers(final String yamlContent) {
+        Collection<String> users = YamlEngine.unmarshal(yamlContent, Collection.class);
+        return YamlUserConfigurationConverter.convertShardingSphereUser(users);
     }
     
     /**

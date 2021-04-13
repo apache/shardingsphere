@@ -20,16 +20,13 @@ package org.apache.shardingsphere.test.integration.engine.it.dal;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetadata;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.integration.engine.it.SingleIT;
-import org.apache.shardingsphere.test.integration.engine.param.model.AssertionParameterizedArray;
+import org.apache.shardingsphere.test.integration.engine.it.SingleITCase;
+import org.apache.shardingsphere.test.integration.junit.param.model.AssertionParameterizedArray;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -39,9 +36,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public abstract class BaseDALIT extends SingleIT {
+public abstract class BaseDALIT extends SingleITCase {
     
-    protected BaseDALIT(final AssertionParameterizedArray parameterizedArray) throws IOException, JAXBException, SQLException, ParseException {
+    public BaseDALIT(final AssertionParameterizedArray parameterizedArray) {
         super(parameterizedArray);
     }
     

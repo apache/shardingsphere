@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 
@@ -29,7 +30,7 @@ import java.util.Optional;
  * Aggregation projection segment.
  */
 @Getter
-public class AggregationProjectionSegment implements ProjectionSegment, AliasAvailable {
+public class AggregationProjectionSegment implements ProjectionSegment, AliasAvailable, ExpressionSegment {
     
     private final int startIndex;
     
