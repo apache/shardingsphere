@@ -1351,6 +1351,58 @@ WITHOUT
     : W I T H O U T
     ;
 
+XMLTYPE
+    : X M L T Y P E
+    ;
+
+RELATIONAL
+    : R E L A T I O N A L
+    ;
+
+XML
+    : X M L
+    ;
+
+VARRAYS
+    : V A R R A Y S
+    ;
+
+LOBS
+    : L O B S
+    ;
+
+TABLES
+    : T A B L E S
+    ;
+
+ALLOW
+    : A L L O W
+    ;
+
+DISALLOW
+    : D I S A L L O W
+    ;
+
+NONSCHEMA
+    : N O N S C H E M A
+    ;
+
+ANYSCHEMA
+    : A N Y S C H E M A
+    ;
+
+XMLSCHEMA
+    : X M L S C H E M A
+    ;
+
+COLUMNS
+    : C O L U M N S
+    ;
+
+OIDINDEX
+    : O I D I N D E X
+    ;
+
 EDITIONABLE
     : E D I T I O N A B L E
     ;

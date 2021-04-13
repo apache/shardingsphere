@@ -42,7 +42,7 @@ import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfigurationConverter;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.CreateUserStatementEvent;
 import org.apache.shardingsphere.infra.metadata.mapper.event.dcl.impl.GrantStatementEvent;
 import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
@@ -192,14 +192,14 @@ public final class RegistryCenter {
 
     private void persistUsers(final Collection<ShardingSphereUser> users, final boolean isOverwrite) {
         if (!users.isEmpty() && (isOverwrite || !hasUsers())) {
-            repository.persist(node.getUsersNode(), YamlEngine.marshal(YamlUserConfigurationConverter.convertYamlUserConfigurations(users)));
+            repository.persist(node.getUsersNode(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(users)));
         }
     }
 
     private void persistNewUsers(final Collection<ShardingSphereUser> users) {
         if (!users.isEmpty()) {
             Collection<String> yamlUsers = YamlEngine.unmarshal(repository.get(node.getUsersNode()), Collection.class);
-            Collection<String> newUsers = new LinkedHashSet<>(YamlUserConfigurationConverter.convertYamlUserConfigurations(users));
+            Collection<String> newUsers = new LinkedHashSet<>(YamlUsersConfigurationConverter.convertYamlUserConfigurations(users));
             newUsers.addAll(yamlUsers);
             repository.persist(node.getUsersNode(), YamlEngine.marshal(newUsers));
         }
@@ -207,7 +207,7 @@ public final class RegistryCenter {
     
     private void persistChangedPrivilege(final Collection<ShardingSphereUser> users) {
         if (!users.isEmpty()) {
-            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(YamlUserConfigurationConverter.convertYamlUserConfigurations(users)));
+            repository.persist(node.getPrivilegeNodePath(), YamlEngine.marshal(YamlUsersConfigurationConverter.convertYamlUserConfigurations(users)));
         }
     }
 
@@ -259,12 +259,10 @@ public final class RegistryCenter {
     /**
      * Load users.
      *
-     * @return authority
+     * @return users
      */
     public Collection<ShardingSphereUser> loadUsers() {
-        return hasUsers()
-                ? YamlConfigurationConverter.convertUsers(repository.get(node.getUsersNode()))
-                : Collections.emptyList();
+        return hasUsers() ? YamlConfigurationConverter.convertUsers(repository.get(node.getUsersNode())) : Collections.emptyList();
     }
     
     /**
@@ -461,9 +459,9 @@ public final class RegistryCenter {
     }
     
     /**
-     * User configuration cached event.
+     * User configuration event.
      *
-     * @param event user configuration cached event
+     * @param event user configuration event
      */
     @Subscribe
     public synchronized void renew(final CreateUserStatementEvent event) {
@@ -471,7 +469,7 @@ public final class RegistryCenter {
     }
     
     /**
-     * User with changed privilege cached event.
+     * User with changed privilege event.
      *
      * @param event grant event
      */

@@ -24,13 +24,15 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceValidator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
+import org.apache.shardingsphere.proxy.backend.exception.InvalidResourceException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler;
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.converter.AddResourcesStatementConverter;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -52,8 +54,14 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) {
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
-        if (!dataSourceValidator.validate(dataSources)) {
-            throw new ResourceNotExistedException(dataSources.keySet());
+        Collection<String> invalidDataSourceNames = new ArrayList<>();
+        for (String dataSourceName : dataSources.keySet()) {
+            if (!dataSourceValidator.validate(dataSources.get(dataSourceName))) {
+                invalidDataSourceNames.add(dataSourceName);
+            }
+        }
+        if (!invalidDataSourceNames.isEmpty()) {
+            throw new InvalidResourceException(invalidDataSourceNames);
         }
         post(schemaName, dataSources);
         return new UpdateResponseHeader(sqlStatement);
