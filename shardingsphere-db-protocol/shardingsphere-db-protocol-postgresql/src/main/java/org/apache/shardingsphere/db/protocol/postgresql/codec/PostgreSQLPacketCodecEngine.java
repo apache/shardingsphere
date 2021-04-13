@@ -68,9 +68,9 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             payload.getByteBuf().resetWriterIndex();
-            PostgreSQLErrorResponsePacket postgreSQLErrorResponsePacket = new PostgreSQLErrorResponsePacket();
-            postgreSQLErrorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, ex.getMessage());
-            postgreSQLErrorResponsePacket.write(payload);
+            PostgreSQLErrorResponsePacket errorResponsePacket = new PostgreSQLErrorResponsePacket();
+            errorResponsePacket.addField(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE, ex.getMessage());
+            errorResponsePacket.write(payload);
         } finally {
             if (message instanceof PostgreSQLIdentifierPacket) {
                 out.writeByte(((PostgreSQLIdentifierPacket) message).getIdentifier().getValue());
