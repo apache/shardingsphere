@@ -33,7 +33,7 @@ jobs:
       matrix:
         env: [ docker ]
         adapter: [ proxy, jdbc ]
-        scenario: [ db,tbl,dbtbl_with_read_write_splitting,encrypt,dbtbl_with_read_write_splitting_and_encrypt,read_write_splitting ]
+        scenario: [ db,tbl,dbtbl_with_read_write_splitting,encrypt,dbtbl_with_read_write_splitting_and_encrypt,read_write_splitting,sharding_governance ]
     steps:
       - name: Cache Maven Repos
         uses: actions/cache@v2
