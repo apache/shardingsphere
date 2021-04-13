@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.mysql;
+package org.apache.shardingsphere.proxy.frontend.mysql.err;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

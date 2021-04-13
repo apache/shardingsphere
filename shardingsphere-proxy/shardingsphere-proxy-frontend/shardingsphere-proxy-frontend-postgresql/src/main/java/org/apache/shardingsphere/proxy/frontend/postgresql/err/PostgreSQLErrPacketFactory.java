@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql;
+package org.apache.shardingsphere.proxy.frontend.postgresql.err;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
