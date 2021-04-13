@@ -17,13 +17,6 @@
 
 package org.apache.shardingsphere.infra.database.type;
 
-import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -115,21 +108,43 @@ public final class DatabaseTypeRecognizerTest {
         DataSource result = mock(DataSource.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(result.getConnection()).thenReturn(connection);
-        if (databaseType instanceof H2DatabaseType) {
-            when(connection.getMetaData().getURL()).thenReturn("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
-        } else if (databaseType instanceof MariaDBDatabaseType) {
-            when(connection.getMetaData().getURL()).thenReturn("jdbc:mariadb://localhost:3306/test");
-        } else if (databaseType instanceof MySQLDatabaseType) {
-            when(connection.getMetaData().getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
-        } else if (databaseType instanceof OracleDatabaseType) {
-            when(connection.getMetaData().getURL()).thenReturn("jdbc:oracle:oci:@127.0.0.1/test");
-        } else if (databaseType instanceof PostgreSQLDatabaseType) {
-            when(connection.getMetaData().getURL()).thenReturn("jdbc:postgresql://localhost:5432/test");
-        } else if (databaseType instanceof SQL92DatabaseType) {
-            when(connection.getMetaData().getURL()).thenReturn("jdbc:sqlserver://127.0.0.1;DatabaseName=test");
-        } else if (databaseType instanceof SQLServerDatabaseType) {
-            when(connection.getMetaData().getURL()).thenReturn("jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=test");
+
+        String url;
+        switch (databaseType.getName()) {
+            case "H2": {
+                url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
+                break;
+            }
+            case "MariaDB": {
+                url = "jdbc:mariadb://localhost:3306/test";
+                break;
+            }
+            case "MySQL": {
+                url = "jdbc:mysql://localhost:3306/test";
+                break;
+            }
+            case "Oracle": {
+                url = "jdbc:oracle:oci:@127.0.0.1/test";
+                break;
+            }
+            case "PostgreSQL": {
+                url = "jdbc:postgresql://localhost:5432/test";
+                break;
+            }
+            case "SQL92": {
+                url = "jdbc:sqlserver://127.0.0.1;DatabaseName=test";
+                break;
+            }
+            case "SQLServer": {
+                url = "jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=test";
+                break;
+            }
+            default:
+                throw new IllegalStateException("Unexpected value: " + databaseType.getName());
         }
+
+        when(connection.getMetaData().getURL()).thenReturn(url);
+
         return result;
     }
 
