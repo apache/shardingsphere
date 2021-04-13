@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 
@@ -24,37 +25,26 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Combinational sql token.
+ * Composable SQL token.
  */
-public final class CombinationalSQLToken extends SQLToken implements Substitutable {
-
+@Getter
+public final class ComposableSQLToken extends SQLToken implements Substitutable {
+    
     private final Collection<SQLToken> sqlTokens = new LinkedList<>();
-
+    
     private final int stopIndex;
-
-    public CombinationalSQLToken(final int startIndex, final int stopIndex) {
+    
+    public ComposableSQLToken(final int startIndex, final int stopIndex) {
         super(startIndex);
         this.stopIndex = stopIndex;
     }
-
+    
     /**
-     * add sql token.
-     * @param sqlToken sql token
+     * Add SQL token.
+     * 
+     * @param sqlToken SQL token
      */
     public void addSQLToken(final SQLToken sqlToken) {
-        this.sqlTokens.add(sqlToken);
-    }
-
-    /**
-     * get sql tokens.
-     * @return sql tokens
-     */
-    public Collection<SQLToken> getSQLTokens() {
-        return sqlTokens;
-    }
-
-    @Override
-    public int getStopIndex() {
-        return stopIndex;
+        sqlTokens.add(sqlToken);
     }
 }

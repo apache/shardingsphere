@@ -26,18 +26,18 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class CombinationalSQLTokenTest {
-
+public final class ComposableSQLTokenTest {
+    
     @Test
-    public void assertCombinationalSQLToken() {
-        CombinationalSQLToken combinationalSQLToken = new CombinationalSQLToken(0, 1);
+    public void assertComposableSQLToken() {
+        ComposableSQLToken composableSQLToken = new ComposableSQLToken(0, 1);
         SQLToken sqlToken = mock(SQLToken.class);
         when(sqlToken.getStartIndex()).thenReturn(2);
         when(sqlToken.compareTo(any(SQLToken.class))).thenReturn(0);
-        combinationalSQLToken.addSQLToken(sqlToken);
-        assertThat(combinationalSQLToken.getStartIndex(), is(0));
-        assertThat(combinationalSQLToken.getStopIndex(), is(1));
-        assertThat(combinationalSQLToken.getSQLTokens().size(), is(1));
-        assertThat(combinationalSQLToken.getSQLTokens().iterator().next().compareTo(sqlToken), is(0));
+        composableSQLToken.addSQLToken(sqlToken);
+        assertThat(composableSQLToken.getStartIndex(), is(0));
+        assertThat(composableSQLToken.getStopIndex(), is(1));
+        assertThat(composableSQLToken.getSqlTokens().size(), is(1));
+        assertThat(composableSQLToken.getSqlTokens().iterator().next().compareTo(sqlToken), is(0));
     }
 }
