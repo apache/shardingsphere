@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  * Command complete packet for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLCommandCompletePacket implements PostgreSQLPacket {
+public final class PostgreSQLCommandCompletePacket implements PostgreSQLIdentifierPacket {
     
     private final String sqlCommand;
     

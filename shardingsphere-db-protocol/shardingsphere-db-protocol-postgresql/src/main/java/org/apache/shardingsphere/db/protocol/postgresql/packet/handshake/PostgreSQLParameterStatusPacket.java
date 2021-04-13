@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  * Parameter status packet for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLParameterStatusPacket implements PostgreSQLPacket {
+public final class PostgreSQLParameterStatusPacket implements PostgreSQLIdentifierPacket {
     
     private final String key;
     

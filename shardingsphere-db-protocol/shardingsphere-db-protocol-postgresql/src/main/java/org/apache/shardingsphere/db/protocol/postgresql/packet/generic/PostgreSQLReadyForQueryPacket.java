@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * Ready for query packet for PostgreSQL.
  */
-public final class PostgreSQLReadyForQueryPacket implements PostgreSQLPacket {
+public final class PostgreSQLReadyForQueryPacket implements PostgreSQLIdentifierPacket {
     
     private static final char STATUS = 'I';
     

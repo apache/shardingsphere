@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  * AuthenticationMD5Password (backend) packet for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLAuthenticationMD5PasswordPacket implements PostgreSQLPacket {
+public final class PostgreSQLAuthenticationMD5PasswordPacket implements PostgreSQLIdentifierPacket {
     
     private static final int AUTH_REQ_MD5 = 5;
     

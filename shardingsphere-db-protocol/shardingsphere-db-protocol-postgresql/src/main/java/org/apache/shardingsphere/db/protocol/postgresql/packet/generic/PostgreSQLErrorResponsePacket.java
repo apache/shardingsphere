@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
@@ -30,7 +30,7 @@ import java.util.Map.Entry;
  * 
  * @see <a href="https://www.postgresql.org/docs/12/protocol-message-formats.html">ErrorResponse (B)</a>
  */
-public final class PostgreSQLErrorResponsePacket implements PostgreSQLPacket {
+public final class PostgreSQLErrorResponsePacket implements PostgreSQLIdentifierPacket {
     
     public static final char FIELD_TYPE_SEVERITY = 'S';
     

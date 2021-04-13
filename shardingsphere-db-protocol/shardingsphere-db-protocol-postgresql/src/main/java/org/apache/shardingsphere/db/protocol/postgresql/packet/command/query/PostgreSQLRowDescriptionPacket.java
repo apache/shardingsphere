@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
@@ -29,7 +29,7 @@ import java.util.Collection;
  * Row description packet for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLRowDescriptionPacket implements PostgreSQLPacket {
+public final class PostgreSQLRowDescriptionPacket implements PostgreSQLIdentifierPacket {
     
     @Getter
     private final int fieldCount;
