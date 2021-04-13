@@ -31,6 +31,7 @@ import org.apache.shardingsphere.proxy.backend.text.SchemaRequiredBackendHandler
 import org.apache.shardingsphere.proxy.config.util.DataSourceParameterConverter;
 import org.apache.shardingsphere.proxy.converter.AddResourcesStatementConverter;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
@@ -53,9 +54,14 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     public ResponseHeader execute(final String schemaName, final AddResourceStatement sqlStatement) {
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
-        Collection<String> invalidDataSources = dataSourceValidator.validate(dataSources);
-        if (!invalidDataSources.isEmpty()) {
-            throw new InvalidResourceException(invalidDataSources);
+        Collection<String> invalidDataSourceNames = new ArrayList<>();
+        for (String dataSourceName : dataSources.keySet()) {
+            if (!dataSourceValidator.validate(dataSources.get(dataSourceName))) {
+                invalidDataSourceNames.add(dataSourceName);
+            }
+        }
+        if (!invalidDataSourceNames.isEmpty()) {
+            throw new InvalidResourceException(invalidDataSourceNames);
         }
         post(schemaName, dataSources);
         return new UpdateResponseHeader(sqlStatement);

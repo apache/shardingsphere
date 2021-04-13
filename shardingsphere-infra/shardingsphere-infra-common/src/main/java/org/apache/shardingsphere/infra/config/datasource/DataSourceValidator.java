@@ -18,10 +18,6 @@
 package org.apache.shardingsphere.infra.config.datasource;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
 
 /**
  * Data source validator.
@@ -31,23 +27,23 @@ public final class DataSourceValidator {
     /**
      * Validate.
      *
-     * @param dataSourceConfigurations map of data source configuration
-     * @return collection of invalid data sources
+     * @param dataSourceConfiguration data source configuration
+     * @return is valid or not
      */
-    public Collection<String> validate(final Map<String, DataSourceConfiguration> dataSourceConfigurations) {
-        Collection<String> result = new ArrayList<>();
-        Collection<DataSource> createdDataSources = new LinkedList<>();
-        for (String dataSourceName : dataSourceConfigurations.keySet()) {
-            try {
-                createdDataSources.add(dataSourceConfigurations.get(dataSourceName).createDataSource());
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                result.add(dataSourceName);
+    public boolean validate(final DataSourceConfiguration dataSourceConfiguration) {
+        DataSource dataSource = null;
+        try {
+            dataSource = dataSourceConfiguration.createDataSource();
+            return true;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            return false;
+        } finally {
+            if (dataSource != null) {
+                close(dataSource);
             }
         }
-        createdDataSources.forEach(this::close);
-        return result;
     }
     
     private void close(final DataSource dataSource) {
