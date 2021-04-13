@@ -40,7 +40,7 @@ public final class DataSourceValidator {
             // CHECKSTYLE:ON
             return false;
         } finally {
-            if (dataSource != null) {
+            if (null != dataSource) {
                 close(dataSource);
             }
         }
