@@ -43,7 +43,7 @@ public final class PostgreSQLAuthenticationOKPacketTest {
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(4);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
         PostgreSQLAuthenticationOKPacket packet = new PostgreSQLAuthenticationOKPacket(isSuccess);
-        assertThat(packet.getMessageType(), is(PostgreSQLCommandPacketType.AUTHENTICATION_REQUEST.getValue()));
+        assertThat(packet.getIdentifier(), is(PostgreSQLCommandPacketType.AUTHENTICATION_REQUEST.getValue()));
         packet.write(payload);
         assertThat(byteBuf.writerIndex(), is(4));
         assertThat(byteBuf.readInt(), is(isSuccess ? 0 : 1));

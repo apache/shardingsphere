@@ -23,9 +23,9 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet;
 public interface PostgreSQLIdentifierPacket extends PostgreSQLPacket {
     
     /**
-     * Get message type.
+     * Get identifier.
      *
-     * @return message type
+     * @return identifier
      */
-    char getMessageType();
+    char getIdentifier();
 }

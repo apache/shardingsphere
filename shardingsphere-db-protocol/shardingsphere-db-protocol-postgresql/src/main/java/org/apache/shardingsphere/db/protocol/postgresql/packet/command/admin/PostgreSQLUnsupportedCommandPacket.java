@@ -29,7 +29,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 public final class PostgreSQLUnsupportedCommandPacket extends PostgreSQLCommandPacket {
     
     @Getter
-    private final char messageType;
+    private final char identifier;
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {

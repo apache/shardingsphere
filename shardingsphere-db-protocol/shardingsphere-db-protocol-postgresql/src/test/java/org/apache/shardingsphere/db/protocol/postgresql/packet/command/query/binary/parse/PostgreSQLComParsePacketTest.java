@@ -46,7 +46,7 @@ public final class PostgreSQLComParsePacketTest {
         when(payload.readStringNul()).thenReturn("sql");
         PostgreSQLComParsePacket actual = new PostgreSQLComParsePacket(payload);
         actual.write(payload);
-        assertThat(actual.getMessageType(), is('P'));
+        assertThat(actual.getIdentifier(), is('P'));
         assertThat(actual.getSql(), is("sql"));
         assertThat(actual.getStatementId(), is("sql"));
         List<PostgreSQLBinaryStatementParameterType> types = actual.getBinaryStatementParameterTypes();

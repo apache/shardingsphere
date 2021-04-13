@@ -40,6 +40,6 @@ public final class PostgreSQLComExecutePacketTest {
         verify(payload, atLeast(2)).readInt4();
         verify(payload).readStringNul();
         actual.write(payload);
-        assertThat(actual.getMessageType(), is('E'));
+        assertThat(actual.getIdentifier(), is('E'));
     }
 }

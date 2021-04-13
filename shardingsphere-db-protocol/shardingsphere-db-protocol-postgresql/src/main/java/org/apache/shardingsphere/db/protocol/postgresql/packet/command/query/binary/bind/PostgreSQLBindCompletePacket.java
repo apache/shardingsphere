@@ -31,7 +31,7 @@ public final class PostgreSQLBindCompletePacket implements PostgreSQLIdentifierP
     }
     
     @Override
-    public char getMessageType() {
+    public char getIdentifier() {
         return PostgreSQLCommandPacketType.BIND_COMPLETE.getValue();
     }
 }

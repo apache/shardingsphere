@@ -67,6 +67,6 @@ public final class PostgreSQLBinaryResultSetRowPacketTest {
     @Test
     public void assertGetMessageType() {
         PostgreSQLBinaryResultSetRowPacket rowPacket = new PostgreSQLBinaryResultSetRowPacket(mock(BinaryRow.class));
-        assertThat(rowPacket.getMessageType(), is(PostgreSQLCommandPacketType.DATA_ROW.getValue()));
+        assertThat(rowPacket.getIdentifier(), is(PostgreSQLCommandPacketType.DATA_ROW.getValue()));
     }
 }

@@ -37,7 +37,7 @@ public final class PostgreSQLParameterStatusPacketTest {
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(expectedLength);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf);
         PostgreSQLParameterStatusPacket packet = new PostgreSQLParameterStatusPacket(key, value);
-        assertThat(packet.getMessageType(), is(PostgreSQLCommandPacketType.PARAMETER_STATUS.getValue()));
+        assertThat(packet.getIdentifier(), is(PostgreSQLCommandPacketType.PARAMETER_STATUS.getValue()));
         packet.write(payload);
         assertThat(byteBuf.writerIndex(), is(expectedLength));
         assertThat(payload.readStringNul(), is(key));

@@ -50,7 +50,7 @@ public final class PostgreSQLBinaryResultSetRowPacket implements PostgreSQLIdent
     }
     
     @Override
-    public char getMessageType() {
+    public char getIdentifier() {
         return PostgreSQLCommandPacketType.DATA_ROW.getValue();
     }
 }

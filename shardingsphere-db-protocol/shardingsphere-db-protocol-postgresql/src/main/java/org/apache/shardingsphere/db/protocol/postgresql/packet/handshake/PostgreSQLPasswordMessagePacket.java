@@ -40,7 +40,7 @@ public final class PostgreSQLPasswordMessagePacket implements PostgreSQLIdentifi
     }
     
     @Override
-    public char getMessageType() {
+    public char getIdentifier() {
         return PostgreSQLCommandPacketType.PASSWORD_MESSAGE.getValue();
     }
 }

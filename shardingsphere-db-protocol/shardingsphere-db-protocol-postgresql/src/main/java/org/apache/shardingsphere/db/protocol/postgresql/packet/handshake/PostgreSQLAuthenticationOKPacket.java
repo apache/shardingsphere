@@ -36,7 +36,7 @@ public final class PostgreSQLAuthenticationOKPacket implements PostgreSQLIdentif
     }
     
     @Override
-    public char getMessageType() {
+    public char getIdentifier() {
         return PostgreSQLCommandPacketType.AUTHENTICATION_REQUEST.getValue();
     }
 }

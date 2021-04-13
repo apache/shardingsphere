@@ -35,7 +35,7 @@ public final class PostgreSQLComTerminationPacket extends PostgreSQLCommandPacke
     }
     
     @Override
-    public char getMessageType() {
+    public char getIdentifier() {
         return PostgreSQLCommandPacketType.TERMINATE.getValue();
     }
 }

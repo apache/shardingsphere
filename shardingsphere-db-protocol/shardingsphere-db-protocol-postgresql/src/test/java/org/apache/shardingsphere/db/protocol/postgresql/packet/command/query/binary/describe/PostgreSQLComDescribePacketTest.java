@@ -37,7 +37,7 @@ public final class PostgreSQLComDescribePacketTest {
     public void assertNewInstance() {
         PostgreSQLComDescribePacket actual = new PostgreSQLComDescribePacket(payload);
         actual.write(payload);
-        assertThat(actual.getMessageType(), is('D'));
+        assertThat(actual.getIdentifier(), is('D'));
         verify(payload).readInt4();
         verify(payload).readInt1();
         verify(payload).readStringNul();

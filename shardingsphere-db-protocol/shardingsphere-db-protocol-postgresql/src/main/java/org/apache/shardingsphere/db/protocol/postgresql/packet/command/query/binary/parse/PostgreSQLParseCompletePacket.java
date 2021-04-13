@@ -31,7 +31,7 @@ public final class PostgreSQLParseCompletePacket implements PostgreSQLIdentifier
     }
     
     @Override
-    public char getMessageType() {
+    public char getIdentifier() {
         return PostgreSQLCommandPacketType.PARSE_COMPLETE.getValue();
     }
 }

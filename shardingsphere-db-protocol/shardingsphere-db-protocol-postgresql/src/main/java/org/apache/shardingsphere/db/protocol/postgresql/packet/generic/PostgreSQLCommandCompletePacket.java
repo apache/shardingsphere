@@ -43,7 +43,7 @@ public final class PostgreSQLCommandCompletePacket implements PostgreSQLIdentifi
     }
     
     @Override
-    public char getMessageType() {
+    public char getIdentifier() {
         return PostgreSQLCommandPacketType.COMMAND_COMPLETE.getValue();
     }
 }
