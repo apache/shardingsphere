@@ -28,11 +28,4 @@ public interface PostgreSQLPacket extends DatabasePacket<PostgreSQLPacketPayload
     int MESSAGE_TYPE_LENGTH = 1;
     
     int PAYLOAD_LENGTH = 4;
-    
-    /**
-     * Get message type.
-     *
-     * @return message type
-     */
-    char getMessageType();
 }

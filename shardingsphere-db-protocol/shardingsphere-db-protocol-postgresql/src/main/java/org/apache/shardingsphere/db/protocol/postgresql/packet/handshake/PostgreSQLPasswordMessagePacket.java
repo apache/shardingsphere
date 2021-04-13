@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
 
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  * PasswordMessage (frontend) packet for PostgreSQL.
  */
 @Getter
-public final class PostgreSQLPasswordMessagePacket implements PostgreSQLPacket {
+public final class PostgreSQLPasswordMessagePacket implements PostgreSQLIdentifierPacket {
     
     private final String md5Digest;
     

@@ -42,9 +42,4 @@ public final class PostgreSQLComStartupPacket implements PostgreSQLPacket {
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
     }
-    
-    @Override
-    public char getMessageType() {
-        return '\0';
-    }
 }
