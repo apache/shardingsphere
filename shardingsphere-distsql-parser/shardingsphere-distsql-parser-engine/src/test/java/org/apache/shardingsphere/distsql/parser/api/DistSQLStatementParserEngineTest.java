@@ -19,10 +19,12 @@ package org.apache.shardingsphere.distsql.parser.api;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.impl.AddResourceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.impl.DropResourceStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -37,6 +39,8 @@ public final class DistSQLStatementParserEngineTest {
     
     private static final String RDL_ADD_RESOURCE_MULTIPLE = "ADD RESOURCE ds_0(HOST=127.0.0.1,PORT=3306,DB=test0,USER=ROOT,PASSWORD=123456),"
             + "ds_1(HOST=127.0.0.1,PORT=3306,DB=test1,USER=ROOT,PASSWORD=123456);";
+    
+    private static final String RDL_DROP_RESOURCE = "DROP RESOURCE ds_0,ds_1";
     
     private final DistSQLStatementParserEngine engine = new DistSQLStatementParserEngine();
     
@@ -87,5 +91,13 @@ public final class DistSQLStatementParserEngineTest {
         assertThat(dataSourceSegment.getDb(), is("test1"));
         assertThat(dataSourceSegment.getUser(), is("ROOT"));
         assertThat(dataSourceSegment.getPassword(), is("123456"));
+    }
+    
+    @Test
+    public void assertParseDropResource() {
+        SQLStatement sqlStatement = engine.parse(RDL_DROP_RESOURCE);
+        assertTrue(sqlStatement instanceof DropResourceStatement);
+        assertThat(((DropResourceStatement) sqlStatement).getResourceNames().size(), is(2));
+        assertTrue(((DropResourceStatement) sqlStatement).getResourceNames().containsAll(Arrays.asList("ds_0", "ds_1")));
     }
 }
