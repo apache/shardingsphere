@@ -48,7 +48,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class OraclePrivilegeLoaderTest {
+public final class OraclePrivilegeHandlerTest {
     
     @BeforeClass
     public static void setUp() {
