@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTagType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 
@@ -31,8 +31,8 @@ public final class PostgreSQLCommandPacketTypeLoaderTest {
     @Test
     public void assertGetCommandPacketType() {
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
-        when(payload.readInt1()).thenReturn((int) PostgreSQLIdentifierTagType.AUTHENTICATION_REQUEST.getValue());
-        assertThat(PostgreSQLCommandPacketTypeLoader.getCommandPacketType(payload), is(PostgreSQLIdentifierTagType.AUTHENTICATION_REQUEST));
+        when(payload.readInt1()).thenReturn((int) PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST.getValue());
+        assertThat(PostgreSQLCommandPacketTypeLoader.getCommandPacketType(payload), is(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST));
     }
     
     @Test(expected = IllegalArgumentException.class)

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTagType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,6 +56,6 @@ public final class PostgreSQLRowDescriptionPacketTest {
     @Test
     public void getMessageType() {
         PostgreSQLRowDescriptionPacket packet = new PostgreSQLRowDescriptionPacket(0, Collections.emptyList());
-        assertThat(packet.getIdentifier(), is(PostgreSQLIdentifierTagType.ROW_DESCRIPTION.getValue()));
+        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.ROW_DESCRIPTION.getValue()));
     }
 }

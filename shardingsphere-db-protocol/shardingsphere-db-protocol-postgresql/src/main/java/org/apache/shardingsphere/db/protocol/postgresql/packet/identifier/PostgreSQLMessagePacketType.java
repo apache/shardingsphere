@@ -21,13 +21,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Identifier tag for PostgreSQL.
+ * Message packet for PostgreSQL.
  * 
  * @see <a href="https://www.postgresql.org/docs/13/protocol-message-formats.html">Message Formats</a>
  */
 @RequiredArgsConstructor
 @Getter
-public enum PostgreSQLIdentifierTagType implements PostgreSQLIdentifierTag {
+public enum PostgreSQLMessagePacketType implements PostgreSQLIdentifierTag {
     
     AUTHENTICATION_REQUEST('R'),
     
@@ -97,8 +97,8 @@ public enum PostgreSQLIdentifierTagType implements PostgreSQLIdentifierTag {
      * @param value integer value
      * @return command packet type enum
      */
-    public static PostgreSQLIdentifierTagType valueOf(final int value) {
-        for (PostgreSQLIdentifierTagType each : values()) {
+    public static PostgreSQLMessagePacketType valueOf(final int value) {
+        for (PostgreSQLMessagePacketType each : values()) {
             if (value == each.value) {
                 return each;
             }

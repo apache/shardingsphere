@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse;
 
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTagType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
@@ -32,6 +32,6 @@ public final class PostgreSQLParseCompletePacket implements PostgreSQLIdentifier
     
     @Override
     public char getIdentifier() {
-        return PostgreSQLIdentifierTagType.PARSE_COMPLETE.getValue();
+        return PostgreSQLMessagePacketType.PARSE_COMPLETE.getValue();
     }
 }
