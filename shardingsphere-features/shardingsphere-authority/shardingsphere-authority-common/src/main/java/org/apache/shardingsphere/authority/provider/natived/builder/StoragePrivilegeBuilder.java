@@ -55,7 +55,7 @@ public final class StoragePrivilegeBuilder {
     private static final long FUTURE_GET_TIME_OUT_MILLISECONDS = 5000L;
     
     static {
-        ShardingSphereServiceLoader.register(StoragePrivilegeLoader.class);
+        ShardingSphereServiceLoader.register(StoragePrivilegeHandler.class);
     }
     
     /**
@@ -85,7 +85,7 @@ public final class StoragePrivilegeBuilder {
     
     private static Map<ShardingSphereUser, NativePrivileges> buildWithMetaData(final ShardingSphereMetaData metaData, final Collection<ShardingSphereUser> users) {
         DatabaseType databaseType = DatabaseTypeRecognizer.getDatabaseType(metaData.getResource().getAllInstanceDataSources());
-        Optional<StoragePrivilegeLoader> loader = TypedSPIRegistry.findRegisteredService(StoragePrivilegeLoader.class, databaseType.getName(), new Properties());
+        Optional<StoragePrivilegeHandler> loader = TypedSPIRegistry.findRegisteredService(StoragePrivilegeHandler.class, databaseType.getName(), new Properties());
         if (!loader.isPresent()) {
             return buildDefaultPrivileges(users);
         }
@@ -95,7 +95,7 @@ public final class StoragePrivilegeBuilder {
     }
     
     private static Map<ShardingSphereUser, Collection<NativePrivileges>> load(final Collection<DataSource> dataSources,
-                                                                              final Collection<ShardingSphereUser> users, final StoragePrivilegeLoader loader) {
+                                                                              final Collection<ShardingSphereUser> users, final StoragePrivilegeHandler loader) {
         Map<ShardingSphereUser, Collection<NativePrivileges>> result = new LinkedHashMap<>(users.size(), 1);
         ExecutorService executorService = Executors.newFixedThreadPool(Math.min(CPU_CORES * 2, dataSources.isEmpty() ? 1 : dataSources.size()));
         Collection<Future<Map<ShardingSphereUser, NativePrivileges>>> futures = new HashSet<>(dataSources.size(), 1);
