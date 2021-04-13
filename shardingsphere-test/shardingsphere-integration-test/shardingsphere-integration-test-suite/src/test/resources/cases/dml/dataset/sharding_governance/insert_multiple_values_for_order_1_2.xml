@@ -34,6 +34,8 @@
     <row data-node="governance_db.t_order" values="1008, 10, init" />
     <row data-node="governance_db.t_order" values="1009, 10, init" />
     <row data-node="governance_db.t_order" values="1100, 11, init" />
+    <row data-node="governance_db.t_order" values="1101, 11, init" />
+    <row data-node="governance_db.t_order" values="1102, 11, init" />
     <row data-node="governance_db.t_order" values="1103, 11, init" />
     <row data-node="governance_db.t_order" values="1104, 11, init" />
     <row data-node="governance_db.t_order" values="1105, 11, init" />

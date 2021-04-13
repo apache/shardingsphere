@@ -32,6 +32,8 @@
     <row data-node="governance_db.t_order" values="1008, 10, finished" />
     <row data-node="governance_db.t_order" values="1009, 10, finished" />
     <row data-node="governance_db.t_order" values="1100, 11, finished" />
+    <row data-node="governance_db.t_order" values="1101, 11, finished" />
+    <row data-node="governance_db.t_order" values="1102, 11, finished" />
     <row data-node="governance_db.t_order" values="1103, 11, finished" />
     <row data-node="governance_db.t_order" values="1104, 11, finished" />
     <row data-node="governance_db.t_order" values="1105, 11, finished" />
