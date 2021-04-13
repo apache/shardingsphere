@@ -30,6 +30,6 @@ public final class PostgreSQLParseCompletePacketTest {
     public void assertNewInstance() {
         PostgreSQLParseCompletePacket actual = new PostgreSQLParseCompletePacket();
         actual.write(mock(PostgreSQLPacketPayload.class));
-        assertThat(actual.getMessageType(), is('1'));
+        assertThat(actual.getIdentifier(), is('1'));
     }
 }

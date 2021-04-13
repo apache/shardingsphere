@@ -31,9 +31,4 @@ public final class PostgreSQLSSLNegativePacket implements PostgreSQLPacket {
     public void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt1(STATUS_CODE);
     }
-    
-    @Override
-    public char getMessageType() {
-        return '\0';
-    }
 }

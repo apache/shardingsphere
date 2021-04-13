@@ -20,6 +20,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 
 /**
  * Command packet type for PostgreSQL.
@@ -28,9 +29,7 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
  */
 @RequiredArgsConstructor
 @Getter
-public enum PostgreSQLCommandPacketType implements CommandPacketType {
-    
-    AUTHENTICATION_REQUEST('R'),
+public enum PostgreSQLCommandPacketType implements CommandPacketType, PostgreSQLIdentifierTag {
     
     SIMPLE_QUERY('Q'),
     
@@ -47,64 +46,6 @@ public enum PostgreSQLCommandPacketType implements CommandPacketType {
     CLOSE_COMMAND('C'),
     
     FLUSH_COMMAND('H'),
-    
-    PARSE_COMPLETE('1'),
-    
-    BIND_COMPLETE('2'),
-    
-    COMMAND_COMPLETE('C'),
-    
-    ROW_DESCRIPTION('T'),
-    
-    DATA_ROW('D'),
-    
-    READY_FOR_QUERY('Z'),
-    
-    CLOSE_COMPLETE('3'),
-    
-    COPY_DATA('d'),
-    
-    COPY_COMPLETE('c'),
-    
-    COPY_FAILURE('f'),
-    
-    COPY_IN_RESPONSE('G'),
-    
-    COPY_OUT_RESPONSE('H'),
-    
-    COPY_BOTH_RESPONSE('W'),
-    
-    EMPTY_QUERY_RESPONSE('I'),
-    
-    ERROR_RESPONSE('E'),
-    
-    FUNCTION_CALL('F'),
-    
-    FUNCTION_CALL_RESPONSE('V'),
-    
-    GSS_RESPONSE('p'),
-    
-    NOTICE_RESPONSE('N'),
-    
-    NOTIFICATION_RESPONSE('A'),
-    
-    SASL_INITIAL_RESPONSE('p'),
-    
-    SASL_RESPONSE('p'),
-    
-    BACKEND_KEY_DATA('K'),
-    
-    NEGOTIATE_PROTOCOL_VERSION('v'),
-    
-    NO_DATA('n'),
-    
-    PARAMETER_DESCRIPTION('t'),
-    
-    PARAMETER_STATUS('S'),
-    
-    PASSWORD_MESSAGE('p'),
-    
-    PORTAL_SUSPENDED('s'),
     
     TERMINATE('X');
     

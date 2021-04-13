@@ -41,6 +41,6 @@ public final class PostgreSQLComQueryPacketTest {
         actual.write(payload);
         verify(payload).readInt4();
         assertThat(actual.getSql(), is("sql"));
-        assertThat(actual.getMessageType(), is('Q'));
+        assertThat(actual.getIdentifier(), is('Q'));
     }
 }

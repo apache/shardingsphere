@@ -27,15 +27,43 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Storage privilege loader.
+ * Storage privilege handler.
  */
-public interface StoragePrivilegeLoader extends TypedSPI {
+public interface StoragePrivilegeHandler extends TypedSPI {
+    
+    /**
+     * Differentiate users between storage and exterior.
+     *
+     * @param users users from exterior
+     * @param dataSource target data source
+     * @return users non-existing in storage
+     * @throws SQLException SQL exception
+     */
+    Collection<ShardingSphereUser> diff(Collection<ShardingSphereUser> users, DataSource dataSource) throws SQLException;
+    
+    /**
+     * Create users in storage.
+     *
+     * @param users users to be created
+     * @param dataSource target data source
+     * @throws SQLException SQL exception
+     */
+    void create(Collection<ShardingSphereUser> users, DataSource dataSource) throws SQLException;
+    
+    /**
+     * Grant all privileges to users.
+     *
+     * @param users users to be granted
+     * @param dataSource target data source
+     * @throws SQLException SQL exception
+     */
+    void grantAll(Collection<ShardingSphereUser> users, DataSource dataSource) throws SQLException;
     
     /**
      * Load privileges from storage.
      *
      * @param users users to be loaded
-     * @param dataSource target data source to be loaded
+     * @param dataSource target data source
      * @return map of user and  privilege
      * @throws SQLException SQL exception
      */

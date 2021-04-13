@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.admin.PostgreSQLUnsupportedCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.BinaryStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.describe.PostgreSQLComDescribePacket;
@@ -84,10 +83,5 @@ public final class PostgreSQLCommandPacketFactoryTest {
     @Test
     public void assertNewInstanceWithTerminationComPacket() {
         assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.TERMINATE, payload, 1), instanceOf(PostgreSQLComTerminationPacket.class));
-    }
-    
-    @Test
-    public void assertNewInstanceWithUnsupportedComPacket() {
-        assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.PORTAL_SUSPENDED, payload, 1), instanceOf(PostgreSQLUnsupportedCommandPacket.class));
     }
 }

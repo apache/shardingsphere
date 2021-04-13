@@ -38,6 +38,6 @@ public final class PostgreSQLComSyncPacketTest {
         PostgreSQLComSyncPacket actual = new PostgreSQLComSyncPacket(payload);
         actual.write(payload);
         verify(payload).readInt4();
-        assertThat(actual.getMessageType(), is('S'));
+        assertThat(actual.getIdentifier(), is('S'));
     }
 }

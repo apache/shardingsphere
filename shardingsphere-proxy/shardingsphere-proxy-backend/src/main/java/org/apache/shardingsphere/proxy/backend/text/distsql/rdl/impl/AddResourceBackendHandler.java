@@ -34,6 +34,7 @@ import org.apache.shardingsphere.proxy.converter.AddResourcesStatementConverter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Add resource backend handler.
@@ -47,7 +48,7 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
     public AddResourceBackendHandler(final DatabaseType databaseType, final AddResourceStatement sqlStatement, final BackendConnection backendConnection) {
         super(sqlStatement, backendConnection);
         this.databaseType = databaseType;
-        this.dataSourceValidator = new DataSourceValidator();
+        dataSourceValidator = new DataSourceValidator();
     }
     
     @Override
@@ -55,9 +56,9 @@ public final class AddResourceBackendHandler extends SchemaRequiredBackendHandle
         Map<String, DataSourceConfiguration> dataSources = DataSourceParameterConverter.getDataSourceConfigurationMap(
                 DataSourceParameterConverter.getDataSourceParameterMapFromYamlConfiguration(AddResourcesStatementConverter.convert(databaseType, sqlStatement)));
         Collection<String> invalidDataSourceNames = new ArrayList<>();
-        for (String dataSourceName : dataSources.keySet()) {
-            if (!dataSourceValidator.validate(dataSources.get(dataSourceName))) {
-                invalidDataSourceNames.add(dataSourceName);
+        for (Entry<String, DataSourceConfiguration> entry : dataSources.entrySet()) {
+            if (!dataSourceValidator.validate(entry.getValue())) {
+                invalidDataSourceNames.add(entry.getKey());
             }
         }
         if (!invalidDataSourceNames.isEmpty()) {

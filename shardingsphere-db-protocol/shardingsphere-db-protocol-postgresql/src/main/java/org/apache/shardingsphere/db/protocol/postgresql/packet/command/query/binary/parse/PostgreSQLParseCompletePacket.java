@@ -17,21 +17,21 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.binary.parse;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * Parse complete packet for PostgreSQL.
  */
-public final class PostgreSQLParseCompletePacket implements PostgreSQLPacket {
+public final class PostgreSQLParseCompletePacket implements PostgreSQLIdentifierPacket {
     
     @Override
     public void write(final PostgreSQLPacketPayload payload) {
     }
     
     @Override
-    public char getMessageType() {
-        return PostgreSQLCommandPacketType.PARSE_COMPLETE.getValue();
+    public char getIdentifier() {
+        return PostgreSQLMessagePacketType.PARSE_COMPLETE.getValue();
     }
 }

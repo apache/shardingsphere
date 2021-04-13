@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.authority.provider.natived.builder.dialect;
 
 import org.apache.shardingsphere.authority.model.PrivilegeType;
-import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeLoader;
+import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeHandler;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.SchemaPrivileges;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.TablePrivileges;
@@ -31,6 +31,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ import java.util.stream.Collectors;
 /**
  * SQLServer privilege loader.
  */
-public final class SQLServerPrivilegeLoader implements StoragePrivilegeLoader {
+public final class SQLServerPrivilegeHandler implements StoragePrivilegeHandler {
 
     private static final String GLOBAL_PRIVILEGE_SQL =
             "SELECT pr.name AS GRANTEE, pe.state_desc AS STATE, pe.permission_name AS PRIVILEGE_TYPE"
@@ -58,6 +59,19 @@ public final class SQLServerPrivilegeLoader implements StoragePrivilegeLoader {
 
     private static final String TABLE_PRIVILEGE_SQL =
             "SELECT GRANTOR, GRANTEE, TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, PRIVILEGE_TYPE, IS_GRANTABLE from INFORMATION_SCHEMA.TABLE_PRIVILEGES WHERE GRANTEE IN (%s)";
+
+    @Override
+    public Collection<ShardingSphereUser> diff(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void create(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+    }
+
+    @Override
+    public void grantAll(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+    }
 
     @Override
     public Map<ShardingSphereUser, NativePrivileges> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {

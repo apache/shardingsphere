@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * Command complete packet for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLCommandCompletePacket implements PostgreSQLPacket {
+public final class PostgreSQLCommandCompletePacket implements PostgreSQLIdentifierPacket {
     
     private final String sqlCommand;
     
@@ -43,7 +43,7 @@ public final class PostgreSQLCommandCompletePacket implements PostgreSQLPacket {
     }
     
     @Override
-    public char getMessageType() {
-        return PostgreSQLCommandPacketType.COMMAND_COMPLETE.getValue();
+    public char getIdentifier() {
+        return PostgreSQLMessagePacketType.COMMAND_COMPLETE.getValue();
     }
 }

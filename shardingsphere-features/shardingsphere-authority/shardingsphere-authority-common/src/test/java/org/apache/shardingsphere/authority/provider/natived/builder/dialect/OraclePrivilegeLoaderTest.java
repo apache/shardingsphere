@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.authority.provider.natived.builder.dialect;
 
-import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeLoader;
+import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeHandler;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.SchemaPrivileges;
@@ -52,14 +52,14 @@ public final class OraclePrivilegeLoaderTest {
     
     @BeforeClass
     public static void setUp() {
-        ShardingSphereServiceLoader.register(StoragePrivilegeLoader.class);
+        ShardingSphereServiceLoader.register(StoragePrivilegeHandler.class);
     }
     
     @Test
     public void assertLoad() throws SQLException {
         Collection<ShardingSphereUser> users = createUsers();
         DataSource dataSource = mockDataSource(users);
-        assertPrivileges(TypedSPIRegistry.getRegisteredService(StoragePrivilegeLoader.class, "Oracle", new Properties()).load(users, dataSource));
+        assertPrivileges(TypedSPIRegistry.getRegisteredService(StoragePrivilegeHandler.class, "Oracle", new Properties()).load(users, dataSource));
     }
     
     private void assertPrivileges(final Map<ShardingSphereUser, NativePrivileges> actual) {

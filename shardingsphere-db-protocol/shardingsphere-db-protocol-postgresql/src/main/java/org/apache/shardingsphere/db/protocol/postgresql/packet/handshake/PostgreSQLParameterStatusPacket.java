@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
  * Parameter status packet for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLParameterStatusPacket implements PostgreSQLPacket {
+public final class PostgreSQLParameterStatusPacket implements PostgreSQLIdentifierPacket {
     
     private final String key;
     
@@ -39,7 +39,7 @@ public final class PostgreSQLParameterStatusPacket implements PostgreSQLPacket {
     }
     
     @Override
-    public char getMessageType() {
-        return PostgreSQLCommandPacketType.PARAMETER_STATUS.getValue();
+    public char getIdentifier() {
+        return PostgreSQLMessagePacketType.PARAMETER_STATUS.getValue();
     }
 }

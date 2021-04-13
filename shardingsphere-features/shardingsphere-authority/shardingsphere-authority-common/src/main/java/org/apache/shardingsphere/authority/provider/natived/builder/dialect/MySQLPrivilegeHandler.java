@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.provider.natived.builder.dialect;
 
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.SchemaPrivileges;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.TablePrivileges;
-import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeLoader;
+import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeHandler;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -39,15 +39,59 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * MySQL privilege loader.
+ * MySQL privilege handler.
  */
-public final class MySQLPrivilegeLoader implements StoragePrivilegeLoader {
+public final class MySQLPrivilegeHandler implements StoragePrivilegeHandler {
+    
+    private static final String CREATE_USER_SQL = "CREATE USER %s";
+    
+    private static final String GRANT_ALL_SQL = "GRANT ALL ON *.* TO %s";
     
     private static final String GLOBAL_PRIVILEGE_SQL = "SELECT * FROM mysql.user WHERE (user, host) in (%s)";
     
     private static final String SCHEMA_PRIVILEGE_SQL = "SELECT * FROM mysql.db WHERE (user, host) in (%s)";
     
     private static final String TABLE_PRIVILEGE_SQL = "SELECT Db, Table_name, Table_priv FROM mysql.tables_priv WHERE (user, host) in (%s)";
+    
+    @Override
+    public Collection<ShardingSphereUser> diff(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+        Collection<Grantee> grantees = new LinkedList<>();
+        try (Connection connection = dataSource.getConnection()) {
+            Statement statement = connection.createStatement();
+            try (ResultSet resultSet = statement.executeQuery(getGlobalPrivilegesSQL(users))) {
+                while (resultSet.next()) {
+                    grantees.add(new Grantee(resultSet.getString("user"), resultSet.getString("host")));
+                }
+            }
+        }
+        return users.stream().filter(each -> !grantees.contains(each.getGrantee())).collect(Collectors.toList());
+    }
+    
+    @Override
+    public void create(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+            statement.execute(getCreateUsersSQL(users));
+        }
+    }
+    
+    private String getCreateUsersSQL(final Collection<ShardingSphereUser> users) {
+        String createUsers = users.stream().map(each -> String.format("'%s'@'%s' IDENTIFIED BY '%s'",
+                each.getGrantee().getUsername(), each.getGrantee().getHostname(), each.getPassword())).collect(Collectors.joining(","));
+        return String.format(CREATE_USER_SQL, createUsers);
+    }
+    
+    @Override
+    public void grantAll(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+            statement.execute(getGrantAllSQL(users));
+        }
+    }
+    
+    private String getGrantAllSQL(final Collection<ShardingSphereUser> users) {
+        String grantUsers = users.stream().map(each -> String.format("'%s'@'%s'",
+                each.getGrantee().getUsername(), each.getGrantee().getHostname())).collect(Collectors.joining(","));
+        return String.format(GRANT_ALL_SQL, grantUsers);
+    }
     
     @Override
     public Map<ShardingSphereUser, NativePrivileges> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
