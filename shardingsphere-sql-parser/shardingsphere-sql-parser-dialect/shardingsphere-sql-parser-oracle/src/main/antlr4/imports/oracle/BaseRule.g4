@@ -203,6 +203,14 @@ locationSpecifier
     : identifier
     ;
 
+xmlSchemaURLName
+    : identifier
+    ;
+
+elementName
+    : identifier
+    ;
+
 subpartitionName
     : identifier
     ;
@@ -428,7 +436,7 @@ dataTypeName
     | BOOLEAN | PLS_INTEGER | BINARY_INTEGER | INTEGER | NUMBER | NATURAL | NATURALN | POSITIVE | POSITIVEN | SIGNTYPE
     | SIMPLE_INTEGER | BFILE | MLSLABEL | UROWID | DATE | TIMESTAMP | TIMESTAMP WITH TIME ZONE | TIMESTAMP WITH LOCAL TIME ZONE
     | INTERVAL DAY TO SECOND | INTERVAL YEAR TO MONTH | JSON | FLOAT | REAL | DOUBLE PRECISION | INT | SMALLINT
-    | DECIMAL | NUMERIC | DEC | IDENTIFIER_
+    | DECIMAL | NUMERIC | DEC | IDENTIFIER_ | XMLTYPE
     ;
 
 datetimeTypeSuffix
