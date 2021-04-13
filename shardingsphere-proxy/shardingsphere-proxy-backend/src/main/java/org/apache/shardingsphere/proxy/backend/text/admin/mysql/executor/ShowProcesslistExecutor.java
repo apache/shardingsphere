@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import org.apache.shardingsphere.governance.context.metadata.GovernanceMetaDataContexts;
 import org.apache.shardingsphere.governance.core.registry.RegistryCenterNode;
 import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
+import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -65,10 +67,11 @@ public final class ShowProcesslistExecutor implements DatabaseAdminQueryExecutor
         if (!ProxyContext.getInstance().getMetaData(backendConnection.getSchemaName()).isComplete()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        RegistryRepository registryRepository = ProxyContext.getInstance().getRegistryRepository();
-        if (null == registryRepository) {
+        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getMetaDataContexts();
+        if (!(metaDataContexts instanceof GovernanceMetaDataContexts)) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
+        RegistryRepository registryRepository = ((GovernanceMetaDataContexts) metaDataContexts).getRegistryRepository();
         List<String> executionNodeKeys = registryRepository.getChildrenKeys(REGISTRY_CENTER_NODE.getExecutionNodesPath());
         List<YamlExecuteProcessContext> executionNodeValues = executionNodeKeys.stream()
             .map(executionId -> YamlEngine.unmarshal(registryRepository.get(REGISTRY_CENTER_NODE.getExecutionPath(executionId)), YamlExecuteProcessContext.class)).collect(Collectors.toList());

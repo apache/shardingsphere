@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.context;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
@@ -48,8 +47,6 @@ public final class ProxyContext {
     
     private TransactionContexts transactionContexts;
     
-    private RegistryRepository registryRepository;
-    
     private ProxyContext() {
         backendDataSource = new JDBCBackendDataSource();
         metaDataContexts = new StandardMetaDataContexts();
@@ -74,15 +71,6 @@ public final class ProxyContext {
     public void init(final MetaDataContexts metaDataContexts, final TransactionContexts transactionContexts) {
         this.metaDataContexts = metaDataContexts;
         this.transactionContexts = transactionContexts;
-    }
-    
-    /**
-     * Initialize registry repository.
-     *
-     * @param registryRepository registry repository
-     */
-    public void initRegistryRepository(final RegistryRepository registryRepository) {
-        this.registryRepository = registryRepository;
     }
     
     /**

@@ -33,6 +33,7 @@ import org.apache.shardingsphere.governance.core.lock.GovernanceLock;
 import org.apache.shardingsphere.governance.core.registry.event.DisabledStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.governance.core.registry.schema.GovernanceSchema;
+import org.apache.shardingsphere.governance.repository.api.RegistryRepository;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.config.datasource.DataSourceConverter;
@@ -161,6 +162,15 @@ public final class GovernanceMetaDataContexts implements MetaDataContexts {
     @Override
     public StateContext getStateContext() {
         return metaDataContexts.getStateContext();
+    }
+    
+    /**
+     * Get registry repository.
+     *
+     * @return registry repository
+     */
+    public RegistryRepository getRegistryRepository() {
+        return governanceFacade.getRepositoryFacade().getRegistryRepository();
     }
     
     @Override
