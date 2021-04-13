@@ -15,26 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.generic;
-
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLIdentifierPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLIdentifierTagType;
-import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+package org.apache.shardingsphere.db.protocol.postgresql.packet;
 
 /**
- * Ready for query packet for PostgreSQL.
+ * PostgreSQL identifier tag.
  */
-public final class PostgreSQLReadyForQueryPacket implements PostgreSQLIdentifierPacket {
-    
-    private static final char STATUS = 'I';
-    
-    @Override
-    public void write(final PostgreSQLPacketPayload payload) {
-        payload.writeInt1(STATUS);
-    }
-    
-    @Override
-    public char getIdentifier() {
-        return PostgreSQLIdentifierTagType.READY_FOR_QUERY.getValue();
-    }
+public interface PostgreSQLIdentifierTag {
 }

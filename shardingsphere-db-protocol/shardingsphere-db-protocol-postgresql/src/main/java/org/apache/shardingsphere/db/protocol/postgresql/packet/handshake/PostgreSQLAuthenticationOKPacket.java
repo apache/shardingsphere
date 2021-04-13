@@ -19,7 +19,7 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLIdentifierPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLIdentifierTagType;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
@@ -37,6 +37,6 @@ public final class PostgreSQLAuthenticationOKPacket implements PostgreSQLIdentif
     
     @Override
     public char getIdentifier() {
-        return PostgreSQLCommandPacketType.AUTHENTICATION_REQUEST.getValue();
+        return PostgreSQLIdentifierTagType.AUTHENTICATION_REQUEST.getValue();
     }
 }

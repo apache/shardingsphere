@@ -21,7 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLIdentifierPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLIdentifierTagType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -84,10 +84,10 @@ public final class PostgreSQLPacketCodecEngineTest {
         when(byteBufAllocator.buffer()).thenReturn(payloadByteBuf);
         when(payloadByteBuf.readableBytes()).thenReturn(50);
         PostgreSQLIdentifierPacket actualMessage = mock(PostgreSQLIdentifierPacket.class);
-        when(actualMessage.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.AUTHENTICATION_REQUEST.getValue());
+        when(actualMessage.getIdentifier()).thenReturn(PostgreSQLIdentifierTagType.AUTHENTICATION_REQUEST.getValue());
         new PostgreSQLPacketCodecEngine().encode(context, actualMessage, byteBuf);
         verify(actualMessage).write(ArgumentMatchers.any());
-        verify(byteBuf).writeByte(PostgreSQLCommandPacketType.AUTHENTICATION_REQUEST.getValue());
+        verify(byteBuf).writeByte(PostgreSQLIdentifierTagType.AUTHENTICATION_REQUEST.getValue());
         verify(byteBuf).writeInt(54);
         verify(byteBuf).writeBytes(payloadByteBuf);
     }
