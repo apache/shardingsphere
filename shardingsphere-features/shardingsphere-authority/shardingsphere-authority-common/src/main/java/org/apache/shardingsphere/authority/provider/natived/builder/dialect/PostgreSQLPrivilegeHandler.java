@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.authority.provider.natived.builder.dialect;
 
+import org.apache.shardingsphere.authority.model.PrivilegeType;
+import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeHandler;
+import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.SchemaPrivileges;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.database.TablePrivileges;
-import org.apache.shardingsphere.authority.provider.natived.builder.StoragePrivilegeLoader;
-import org.apache.shardingsphere.authority.model.PrivilegeType;
-import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -42,14 +43,27 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * PostgreSQL privilege loader.
+ * PostgreSQL privilege handler.
  */
-public final class PostgreSQLPrivilegeLoader implements StoragePrivilegeLoader {
+public final class PostgreSQLPrivilegeHandler implements StoragePrivilegeHandler {
     
     private static final String ROLES_SQL = "select * from pg_roles WHERE rolname IN (%s)";
     
     private static final String TABLE_PRIVILEGE_SQL = 
             "SELECT grantor, grantee, table_catalog, table_name, privilege_type, is_grantable from information_schema.table_privileges WHERE grantee IN (%s)";
+    
+    @Override
+    public Collection<ShardingSphereUser> diff(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public void create(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+    }
+    
+    @Override
+    public void grantAll(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
+    }
     
     @Override
     public Map<ShardingSphereUser, NativePrivileges> load(final Collection<ShardingSphereUser> users, final DataSource dataSource) throws SQLException {
