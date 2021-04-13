@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.config.datasource.DataSourceConfiguration
 import org.apache.shardingsphere.infra.config.datasource.DataSourceParameter;
 import org.apache.shardingsphere.infra.context.metadata.MetaDataContexts;
 import org.apache.shardingsphere.infra.context.metadata.impl.StandardMetaDataContexts;
-import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfigurationConverter;
+import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
 import org.apache.shardingsphere.infra.yaml.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.proxy.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.config.YamlProxyConfiguration;
@@ -68,7 +68,7 @@ public final class GovernanceBootstrapInitializer extends AbstractBootstrapIniti
             governanceFacade.onlineInstance();
         } else {
             governanceFacade.onlineInstance(getDataSourceConfigurationMap(ruleConfigs), 
-                    getRuleConfigurations(ruleConfigs), YamlUserConfigurationConverter.convertShardingSphereUser(serverConfig.getUsers()), serverConfig.getProps());
+                    getRuleConfigurations(ruleConfigs), YamlUsersConfigurationConverter.convertShardingSphereUser(serverConfig.getUsers()), serverConfig.getProps());
         }
     }
     
